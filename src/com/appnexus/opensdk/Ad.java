@@ -12,7 +12,7 @@ public class Ad {
 	/**
 	 * 
 	 */
-	public Ad() {
+	public Ad(String body) {
 		// TODO Auto-generated constructor stub
 	}
 
