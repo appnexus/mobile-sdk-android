@@ -20,6 +20,7 @@ public class AdWebView extends WebView {
 	 */
 	protected AdWebView(Context context) {
 		super(context);
+		mAdFetcher = new AdFetcher(context);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -29,6 +30,7 @@ public class AdWebView extends WebView {
 	 */
 	protected AdWebView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		mAdFetcher = new AdFetcher(context);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -39,12 +41,8 @@ public class AdWebView extends WebView {
 	 */
 	protected AdWebView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
+		mAdFetcher = new AdFetcher(context);
 		// TODO Auto-generated constructor stub
-	}
-	
-	public void startServing(){
-		
-	}
-	
+	}	
 
 }

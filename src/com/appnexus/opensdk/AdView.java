@@ -71,7 +71,7 @@ public class AdView extends FrameLayout {
 	@Override
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
 		super.onLayout(changed, l, t, r, b);
-		this.addView(mAdWebView);
-		mAdWebView.startServing();
+		if(this.getChildCount()==0)
+			this.addView(mAdWebView);
 	}
 }
