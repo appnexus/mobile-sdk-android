@@ -9,12 +9,12 @@ package com.appnexus.opensdk;
  */
 public class Settings {
 	
-	String publisher_id="";
-	String ad_id="";
+	String app_id=null;
+	String placement_id=null;
 	
 	private static Settings settings_instance=null;
 	
-	static Settings getSettings(){
+	public static Settings getSettings(){
 		if(settings_instance==null){
 			settings_instance=new Settings();
 		}

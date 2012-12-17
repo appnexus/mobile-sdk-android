@@ -13,8 +13,6 @@ import android.webkit.WebView;
  */
 public class AdWebView extends WebView {
 
-	private String mPublisherID="";
-	private String mAdID="";
 	private AdFetcher mAdFetcher = null;
 	
 	/**
@@ -41,17 +39,6 @@ public class AdWebView extends WebView {
 	 */
 	protected AdWebView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		// TODO Auto-generated constructor stub
-	}
-	
-	/**
-	 * @param context
-	 */
-	protected AdWebView(Context context, String publisher_id, String ad_id) {
-		super(context);
-		mAdFetcher=new AdFetcher(context);
-		mPublisherID=publisher_id;
-		mAdID=ad_id;
 		// TODO Auto-generated constructor stub
 	}
 	

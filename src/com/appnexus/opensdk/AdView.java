@@ -20,12 +20,10 @@ import android.widget.FrameLayout;
 public class AdView extends FrameLayout {
 
 	private AdWebView mAdWebView;
-	private String mPublisherID = "";
-	private String mAdID = "";
 
 	private AdView(Context context) {
 		super(context);
-		mAdWebView = new AdWebView(context, mPublisherID, mAdID);
+		mAdWebView = new AdWebView(context);
 	}
 	
 	private void readAttributesFromXML(Context context, AttributeSet attrs){
@@ -39,11 +37,11 @@ public class AdView extends FrameLayout {
 		    int attr = a.getIndex(i);
 		    switch (attr)
 		    {
-		        case R.styleable.AdView_ad_id:
-		            Settings.getSettings().ad_id = a.getString(attr);
+		        case R.styleable.AdView_placement_id:
+		            Settings.getSettings().placement_id = a.getString(attr);
 		            break;
-		        case R.styleable.AdView_publisher_id:
-		            Settings.getSettings().publisher_id = a.getString(attr);
+		        case R.styleable.AdView_app_id:
+		            Settings.getSettings().app_id = a.getString(attr);
 		            break;
 		    }
 		}
@@ -53,21 +51,21 @@ public class AdView extends FrameLayout {
 
 	private AdView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		mAdWebView = new AdWebView(context, mPublisherID, mAdID);
+		mAdWebView = new AdWebView(context);
 		readAttributesFromXML(context, attrs);
 	}
 
 	private AdView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		mAdWebView = new AdWebView(context, mPublisherID, mAdID);
+		mAdWebView = new AdWebView(context);
 		readAttributesFromXML(context, attrs);
 	}
 
-	public AdView(Context context, String publisher_id, String ad_id) {
+	public AdView(Context context, String app_id, String placement_id) {
 		super(context);
-		mAdWebView = new AdWebView(context, publisher_id, ad_id);
-		mPublisherID = publisher_id;
-		mAdID = ad_id;
+		mAdWebView = new AdWebView(context);
+		Settings.getSettings().placement_id = placement_id;
+		Settings.getSettings().app_id = app_id;
 	}
 
 	@Override
@@ -75,6 +73,5 @@ public class AdView extends FrameLayout {
 		super.onLayout(changed, l, t, r, b);
 		this.addView(mAdWebView);
 		mAdWebView.startServing();
-
 	}
 }

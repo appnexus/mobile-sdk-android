@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
-import android.provider.Settings;
 import android.telephony.TelephonyManager;
 
 /**
@@ -28,7 +27,7 @@ public class AdFetcher{
 	 * 
 	 */
 	public AdFetcher(Context context) {
-		String aid = Settings.Secure.getString(context.getContentResolver(), "android_id");
+		String aid = android.provider.Settings.Secure.getString(context.getContentResolver(), "android_id");
 		String hidmd5 = md5(aid);
 		String hidsha1 = sha1(aid);
 		String optOut = "false";
@@ -42,7 +41,7 @@ public class AdFetcher{
 		String lon="0"; //TODO dynamicize
 		String ua = ""; //TODO WebSettings instance .getUserAgent(context);
 		String orientation=context.getResources().getConfiguration().orientation==Configuration.ORIENTATION_LANDSCAPE?"landscape":"portrait";
-		tasker.scheduleAtFixedRate(new AdRequest(new AdRequestParams(null, hidmd5, hidsha1, optOut, devMake, devModel, carrierName, null, firstLaunch, lat, lon, ua, orientation)), 0, msPeriod, TimeUnit.MILLISECONDS);
+		tasker.scheduleAtFixedRate(new AdRequest(new AdRequestParams(Settings.getSettings().placement_id, hidmd5, hidsha1, optOut, devMake, devModel, carrierName, Settings.getSettings().app_id, firstLaunch, lat, lon, ua, orientation)), 0, msPeriod, TimeUnit.MILLISECONDS);
 	}
 	/**
 	 * Sets the period. Default is one minute.
