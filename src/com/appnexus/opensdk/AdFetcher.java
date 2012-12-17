@@ -20,7 +20,7 @@ import android.telephony.TelephonyManager;
  */
 public class AdFetcher{
 	//The period in milliseconds
-	private int msPeriod=60*1000;
+	private int msPeriod=Settings.getSettings().refresh_rate_ms==-1?60*1000:Settings.getSettings().refresh_rate_ms;
 	private ScheduledExecutorService tasker;
 
 	/**

@@ -11,6 +11,7 @@ public class Settings {
 	
 	String app_id=null;
 	String placement_id=null;
+	int refresh_rate_ms=-1;
 	
 	private static Settings settings_instance=null;
 	

@@ -3,5 +3,6 @@
     <declare-styleable name="AdView">
         <attr name="app_id" format="string" />
         <attr name="placement_id" format="string" />
+        <attr name="refresh_rate_ms" format="integer" />
     </declare-styleable>
 </resources>

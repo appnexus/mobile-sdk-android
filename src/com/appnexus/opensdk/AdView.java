@@ -43,6 +43,9 @@ public class AdView extends FrameLayout {
 		        case R.styleable.AdView_app_id:
 		            Settings.getSettings().app_id = a.getString(attr);
 		            break;
+		        case R.styleable.AdView_refresh_rate_ms:
+		        	Settings.getSettings().refresh_rate_ms= a.getInt(attr, 60*1000);
+		            break;
 		    }
 		}
 		a.recycle();
