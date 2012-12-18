@@ -11,13 +11,15 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.util.Log;
 
 /**
  * @author jacob
  *
  */
-public class AdRequest extends AsyncTask<AdRequestParams, Integer, Ad> implements Runnable {
+public class AdRequest extends AsyncTask<AdRequestParams, Integer, Ad>{
 
 	AdRequestParams mParams;
 	/**
@@ -32,8 +34,9 @@ public class AdRequest extends AsyncTask<AdRequestParams, Integer, Ad> implement
 	 */
 	@Override
 	protected Ad doInBackground(AdRequestParams... params) {
-		AdRequestParams p = params[0];
+		AdRequestParams p = params.length==0?mParams:params[0];
 		String query_string = p.toString();
+		Log.d("OPENSDK", "fetching: "+query_string);
 		DefaultHttpClient h = new DefaultHttpClient();
 		HttpResponse r=null;
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -56,9 +59,5 @@ public class AdRequest extends AsyncTask<AdRequestParams, Integer, Ad> implement
 		
 	}
 
-	@Override
-	public void run() {
-		execute(mParams);
-	}
 
 }
