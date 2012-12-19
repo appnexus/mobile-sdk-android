@@ -51,7 +51,7 @@ public class AdRequest extends AsyncTask<AdRequestParams, Integer, Ad>{
 			e.printStackTrace();
 			return null;
 		}
-		return new Ad(out.toString());
+		return new Ad(out.toString(), r.getAllHeaders());
 	}
 	
 	@Override

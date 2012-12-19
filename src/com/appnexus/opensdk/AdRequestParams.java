@@ -39,7 +39,7 @@ public class AdRequestParams {
 	@Override
 	public String toString() {
 		Log.d("OPENSDK", "Placement ID" + Settings.getSettings().placement_id);
-		return "http://mobile.adnxs.com/mob?"
+		return Settings.getSettings().BASE_URL
 				+ (Settings.getSettings().placement_id != null ? "id="
 						+ Uri.encode(Settings.getSettings().placement_id)
 						: "id=NO-PLACEMENT-ID")

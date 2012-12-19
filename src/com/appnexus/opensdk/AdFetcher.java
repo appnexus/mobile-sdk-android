@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.location.Criteria;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.telephony.TelephonyManager;
@@ -37,24 +38,21 @@ public class AdFetcher {
 				.getSystemService(Context.LOCATION_SERVICE);
 		final String hidmd5 = md5(aid);
 		final String hidsha1 = sha1(aid);
-		final String optOut = "false";
+		final String optOut = "false";// TODO
 		final String devMake = Build.MANUFACTURER;
 		final String devModel = Build.MODEL;
 		TelephonyManager manager = (TelephonyManager) context
 				.getSystemService(Context.TELEPHONY_SERVICE);
 		final String carrierName = manager.getNetworkOperatorName();
 		tasker = Executors.newScheduledThreadPool(1);
-		final String firstLaunch = "" + Settings.getSettings().first_launch; // TODO
-																				// dynamicize
-		final String lat = ""
-				+ lm.getLastKnownLocation(
-						lm.getBestProvider(new Criteria(), false))
-						.getLatitude();
-		final String lon = ""
-				+ lm.getLastKnownLocation(
-						lm.getBestProvider(new Criteria(), false))
-						.getLongitude();
-		final String ua = Settings.getSettings().ua; // TODO
+		final String firstLaunch = "" + Settings.getSettings().first_launch;
+		Location lastLocation = lm.getLastKnownLocation(lm.getBestProvider(
+				new Criteria(), false));
+		final String lat = lastLocation != null ? ""
+				+ lastLocation.getLatitude() : "";
+		final String lon = lastLocation != null ? ""
+				+lastLocation.getLongitude() : "";
+		final String ua = Settings.getSettings().ua;
 		final String orientation = context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? "landscape"
 				: "portrait";
 		tasker.scheduleAtFixedRate(new Runnable() {

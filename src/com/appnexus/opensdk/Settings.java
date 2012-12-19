@@ -15,6 +15,7 @@ public class Settings {
 	boolean test_mode=false;
 	String ua=null;
 	boolean first_launch;
+	final String BASE_URL = "http://asweeney.adnxs.net:2048/mob?";
 	
 	private static Settings settings_instance=null;
 	
