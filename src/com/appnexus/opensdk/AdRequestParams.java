@@ -18,20 +18,17 @@ public class AdRequestParams {
 	String orientation;
 	final String sdkVersion = "1.0";
 
-	public AdRequestParams(String hidmd5, String hidsha1, String optOut,
-			String devMake, String devModel, String carrier,
-			String firstlaunch, String lat, String lon, String ua,
-			String orientation) {
-		this.hidmd5 = hidmd5;
-		this.hidsha1 = hidsha1;
-		this.optOut = optOut;
-		this.devMake = devMake;
-		this.devModel = devModel;
-		this.carrier = carrier;
-		this.firstlaunch = firstlaunch;
+	public AdRequestParams(String lat, String lon, String orientation) {
+		this.hidmd5 = Settings.getSettings().getHIDMD5();
+		this.hidsha1 = Settings.getSettings().getHIDMD5();
+		this.optOut = Settings.getSettings().optOut;
+		this.devMake = Settings.getSettings().deviceMake;
+		this.devModel = Settings.getSettings().deviceModel;
+		this.carrier = Settings.getSettings().getCarrierName();
+		this.firstlaunch = ""+Settings.getSettings().first_launch;
 		this.lat = lat;
 		this.lon = lon;
-		this.ua = ua;
+		this.ua = Settings.getSettings().ua;
 		this.orientation = orientation;
 
 	}
