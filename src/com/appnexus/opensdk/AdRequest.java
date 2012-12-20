@@ -20,13 +20,14 @@ import android.util.Log;
  *
  */
 public class AdRequest extends AsyncTask<AdRequestParams, Integer, Ad>{
-
+	AdWebView mAdWebView;
 	AdRequestParams mParams;
 	/**
 	 * 
 	 */
-	public AdRequest(AdRequestParams params) {
+	public AdRequest(AdRequestParams params, AdWebView owner) {
 		mParams=params;
+		mAdWebView=owner;
 	}
 
 	/**
@@ -56,7 +57,7 @@ public class AdRequest extends AsyncTask<AdRequestParams, Integer, Ad>{
 	
 	@Override
 	protected void onPostExecute(Ad result){
-		
+		mAdWebView.loadAd(result);
 	}
 
 

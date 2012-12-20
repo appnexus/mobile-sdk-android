@@ -25,13 +25,15 @@ public class AdFetcher {
 	// The period in milliseconds
 	private int msPeriod;
 	private ScheduledExecutorService tasker;
+	private AdWebView mAdWebView;
 
 	/**
 	 * 
 	 */
-	public AdFetcher(Context context) {
+	public AdFetcher(Context context, AdWebView owner) {
 		msPeriod = Settings.getSettings().refresh_rate_ms == -1 ? 60 * 1000
 				: Settings.getSettings().refresh_rate_ms;
+		mAdWebView = owner;
 		String aid = android.provider.Settings.Secure.getString(
 				context.getContentResolver(), "android_id");
 		LocationManager lm = (LocationManager) context
@@ -61,7 +63,7 @@ public class AdFetcher {
 			public void run() {
 				new AdRequest(new AdRequestParams(hidmd5, hidsha1, optOut,
 						devMake, devModel, carrierName, firstLaunch, lat, lon,
-						ua, orientation)).execute();
+						ua, orientation), mAdWebView).execute();
 			}
 		}, 0, msPeriod, TimeUnit.MILLISECONDS);
 	}

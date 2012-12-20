@@ -21,7 +21,7 @@ public class AdWebView extends WebView {
 	protected AdWebView(Context context) {
 		super(context);
 		Settings.getSettings().ua=this.getSettings().getUserAgentString();
-		mAdFetcher = new AdFetcher(context);
+		mAdFetcher = new AdFetcher(context, this);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -32,7 +32,7 @@ public class AdWebView extends WebView {
 	protected AdWebView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		Settings.getSettings().ua=this.getSettings().getUserAgentString();
-		mAdFetcher = new AdFetcher(context);
+		mAdFetcher = new AdFetcher(context, this);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -44,8 +44,12 @@ public class AdWebView extends WebView {
 	protected AdWebView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		Settings.getSettings().ua=this.getSettings().getUserAgentString();
-		mAdFetcher = new AdFetcher(context);
+		mAdFetcher = new AdFetcher(context, this);
 		// TODO Auto-generated constructor stub
 	}	
+	
+	protected void loadAd(Ad ad){
+		this.loadData(ad.getBody(), "text/html", "UTF-8");
+	}
 
 }
