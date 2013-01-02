@@ -37,6 +37,7 @@ public class AdRequest extends AsyncTask<AdRequestParams, Integer, Ad> {
 	protected Ad doInBackground(AdRequestParams... params) {
 		AdRequestParams p = params.length == 0 ? mParams : params[0];
 		String query_string = p.toString();
+		//String query_string = "http://m.google.com";
 		Log.d("OPENSDK", "fetching: " + query_string);
 		DefaultHttpClient h = new DefaultHttpClient();
 		HttpResponse r = null;

@@ -20,13 +20,12 @@ public class Ad {
 		// TODO Auto-generated constructor stub
 		mBody=body;
 		Log.d("OPENSDKHTTP", "RESPONSE BODY: "+body);
-		Log.d("OPENSDKHTTP", "RESPONSE HEADERS: ");
 		for(Header h : headers){
-			Log.d("OPENSDKHTTP", "HeADER: "+h.getName()+" Value: "+h.getValue());
+			Log.d("OPENSDKHTTP", "HEADER: "+h.getName()+" Value: "+h.getValue());
 		}
 	}
 	
 	public String getBody(){
-		return mBody==null?"TEST":mBody;
+		return mBody==null?"":mBody;
 	}
 }
