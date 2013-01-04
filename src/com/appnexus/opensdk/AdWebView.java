@@ -93,6 +93,8 @@ public class AdWebView extends WebView {
 	
 	protected void adDidntLoad(){
 		//TODO
+		if(!one_ad_loaded)
+			parent.hide();
 	}
 	
 

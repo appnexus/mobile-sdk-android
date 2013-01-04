@@ -3,12 +3,10 @@ package com.appnexus.opensdk;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 public class AdView extends FrameLayout {
 
