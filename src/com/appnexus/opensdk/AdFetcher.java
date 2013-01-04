@@ -62,9 +62,9 @@ public class AdFetcher {
 		Location lastLocation = lm.getLastKnownLocation(lm.getBestProvider(
 				new Criteria(), false));
 		final String lat = lastLocation != null ? ""
-				+ lastLocation.getLatitude() : "";
+				+ lastLocation.getLatitude() : null;
 		final String lon = lastLocation != null ? ""
-				+ lastLocation.getLongitude() : "";
+				+ lastLocation.getLongitude() : null;
 		final String orientation = mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? "landscape"
 				: "portrait";
 		tasker.scheduleAtFixedRate(new Runnable() {

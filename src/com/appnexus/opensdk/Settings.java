@@ -17,7 +17,7 @@ import android.telephony.TelephonyManager;
 public class Settings {
 	
 	Context context;
-	private String aid=null;//
+	private String aid=null;
 	private String hidmd5=null;
 	private String hidsha1=null;
 	private String carrierName=null;

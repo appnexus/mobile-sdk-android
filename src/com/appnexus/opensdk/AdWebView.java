@@ -3,6 +3,7 @@
  */
 package com.appnexus.opensdk;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.webkit.WebView;
@@ -18,7 +19,7 @@ public class AdWebView extends WebView {
 	 */
 	protected AdWebView(Context context) {
 		super(context);
-		Settings.getSettings().ua=this.getSettings().getUserAgentString();
+		setup();
 		// TODO Auto-generated constructor stub
 	}
 
@@ -28,7 +29,7 @@ public class AdWebView extends WebView {
 	 */
 	protected AdWebView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		Settings.getSettings().ua=this.getSettings().getUserAgentString();
+		setup();
 		// TODO Auto-generated constructor stub
 	}
 
@@ -39,9 +40,15 @@ public class AdWebView extends WebView {
 	 */
 	protected AdWebView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		Settings.getSettings().ua=this.getSettings().getUserAgentString();
+		setup();
 		// TODO Auto-generated constructor stub
 	}	
+	
+	@SuppressLint("SetJavaScriptEnabled")
+	private void setup(){
+		Settings.getSettings().ua=this.getSettings().getUserAgentString();
+		this.getSettings().setJavaScriptEnabled(true);
+	}
 	
 	protected void loadAd(Ad ad){
 		this.loadData(ad.getBody(), "text/html", "UTF-8");
