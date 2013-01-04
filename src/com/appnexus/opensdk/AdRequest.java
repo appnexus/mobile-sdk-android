@@ -9,6 +9,7 @@ import java.io.IOException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.os.AsyncTask;
@@ -49,10 +50,14 @@ public class AdRequest extends AsyncTask<AdRequestParams, Integer, Ad> {
 		} catch (ClientProtocolException e) {
 			Log.w("OPENSDK",
 					"Couldn't reach the ad server... check your internet connection");
-			e.printStackTrace();
+			mAdWebView.adDidntLoad();
 			return null;
 		} catch (IOException e) {
-			e.printStackTrace();
+			if(e instanceof HttpHostConnectException){
+				HttpHostConnectException he = (HttpHostConnectException)e;
+				Log.e("OPENSDK", he.getHost().getHostName()+":"+he.getHost().getPort()+" is unreachable.");
+			}
+			mAdWebView.adDidntLoad();
 			return null;
 		}
 		return new Ad(out.toString(), r.getAllHeaders());

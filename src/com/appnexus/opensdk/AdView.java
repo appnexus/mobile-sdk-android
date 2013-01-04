@@ -3,16 +3,17 @@ package com.appnexus.opensdk;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 public class AdView extends FrameLayout {
 
 	private AdWebView mAdWebView;
 	private AdFetcher mAdFetcher;
-	
 	/** Begin Construction **/
 	
 	public AdView(Context context, AttributeSet attrs) {
@@ -69,12 +70,17 @@ public class AdView extends FrameLayout {
 			}
 		}
 		a.recycle();
+
 		
 		//Make an AdFetcher
-		mAdWebView = new AdWebView(context);
+		mAdWebView = new AdWebView(context, this);
 		mAdFetcher=new AdFetcher(context, mAdWebView);
 		
 		mAdFetcher.start();
+		
+		//Hide the layout until an ad is loaded
+		hide();
+		
 	}
 
 	/** End Construction **/
@@ -84,5 +90,13 @@ public class AdView extends FrameLayout {
 		super.onLayout(changed, l, t, r, b);
 		if (this.getChildCount() == 0)
 			this.addView(mAdWebView);
+	}
+	
+	protected void show(){
+		setVisibility(VISIBLE);
+	}
+	
+	protected void hide(){
+		setVisibility(GONE);
 	}
 }
