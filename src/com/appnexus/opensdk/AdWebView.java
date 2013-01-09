@@ -70,20 +70,18 @@ public class AdWebView extends WebView {
 		this.getSettings().setLoadsImagesAutomatically(true);
 		this.getSettings().setSupportZoom(false);
 		
-		//Disable scrolling
-		this.setOnTouchListener(new View.OnTouchListener() {
+		/*this.setOnTouchListener(new View.OnTouchListener() {
 			
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				Toast.makeText(getContext(), "Touchy touchy", Toast.LENGTH_SHORT).show();
 				return true;
 			}
-		});
+		});*/
 	}
 	
 	protected void loadAd(Ad ad){
 		this.loadData(ad.getBody(), "text/html", "UTF-8");
-		this.setVisibility(VISIBLE);
 		adDidLoad();
 	}
 	

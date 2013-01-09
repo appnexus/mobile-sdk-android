@@ -95,6 +95,6 @@ public class AdView extends FrameLayout {
 	}
 	
 	protected void hide(){
-		setVisibility(GONE);
+		//setVisibility(GONE);
 	}
 }
