@@ -83,6 +83,7 @@ public class AdWebView extends WebView {
 	
 	protected void loadAd(Ad ad){
 		this.loadData(ad.getBody(), "text/html", "UTF-8");
+		this.setVisibility(VISIBLE);
 		adDidLoad();
 	}
 	
