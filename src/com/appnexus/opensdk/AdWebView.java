@@ -15,11 +15,8 @@ import android.widget.Toast;
  * @author jshufro@appnexus.com
  *
  */
-public class AdWebView extends WebView {
-	private AdView parent;
-	
-	private boolean one_ad_loaded = false;
-	
+public class AdWebView extends WebView implements Displayable{
+	private AdView parent; //Do we need this?
 	
 	/**
 	 * @param context
@@ -82,19 +79,13 @@ public class AdWebView extends WebView {
 	
 	protected void loadAd(Ad ad){
 		this.loadData(ad.getBody(), "text/html", "UTF-8");
-		adDidLoad();
 	}
-	
-	protected void adDidLoad(){
-		one_ad_loaded=true;
-		parent.show();
+
+	@Override
+	public View getView() {
+		return this;
 	}
-	
-	protected void adDidntLoad(){
-		//TODO
-		if(!one_ad_loaded)
-			parent.hide();
-	}
+
 	
 
 }

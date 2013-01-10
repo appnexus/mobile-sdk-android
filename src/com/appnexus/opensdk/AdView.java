@@ -6,18 +6,20 @@ import android.content.res.TypedArray;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
 import android.widget.FrameLayout;
 
 public class AdView extends FrameLayout {
 
 	private AdWebView mAdWebView;
 	private AdFetcher mAdFetcher;
+
 	/** Begin Construction **/
-	
+
 	public AdView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setup(context, attrs);
-		
+
 	}
 
 	public AdView(Context context, AttributeSet attrs, int defStyle) {
@@ -26,22 +28,23 @@ public class AdView extends FrameLayout {
 	}
 
 	private void setup(Context context, AttributeSet attrs) {
-		Settings.getSettings().context=context;
-		
+		Settings.getSettings().context = context;
+
 		// Determine if this is the first launch.
 		String pack = context.getPackageName();
-		Log.d("OPENSDK", "Package name is "+pack);
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context); 
-				//context.getSharedPreferences(
-				//pack, Context.MODE_PRIVATE);
+		Log.d("OPENSDK", "Package name is " + pack);
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		// context.getSharedPreferences(
+		// pack, Context.MODE_PRIVATE);
 		boolean firstUse = prefs.getBoolean("opensdk_first_launch", true);
-		if(firstUse){
+		if (firstUse) {
 			Settings.getSettings().first_launch = true;
 			prefs.edit().putBoolean("opensdk_first_launch", false).commit();
-		}else{
+		} else {
 			Settings.getSettings().first_launch = false;
 		}
-		
+
 		TypedArray a = context
 				.obtainStyledAttributes(attrs, R.styleable.AdView);
 
@@ -69,32 +72,40 @@ public class AdView extends FrameLayout {
 		}
 		a.recycle();
 
-		
-		//Make an AdFetcher
+		// Make an AdFetcher
 		mAdWebView = new AdWebView(context, this);
-		mAdFetcher=new AdFetcher(context, mAdWebView);
-		
+		mAdFetcher = new AdFetcher(context, mAdWebView);
+
 		mAdFetcher.start();
-		
-		//Hide the layout until an ad is loaded
+
+		// Hide the layout until an ad is loaded
 		hide();
-		
+
 	}
 
 	/** End Construction **/
-	
+
 	@Override
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
 		super.onLayout(changed, l, t, r, b);
-		if (this.getChildCount() == 0)
-			this.addView(mAdWebView);
+		/*
+		 * if (this.getChildCount() == 0) this.addView(mAdWebView);
+		 */// Don't do this since we have a displayable, not a webview
 	}
 	
-	protected void show(){
+	protected void display(Displayable d){
+		View displayable=d.getView();
+		if(displayable!=null){
+			this.addView(d.getView());
+			show();
+		}
+	}
+
+	protected void show() {
 		setVisibility(VISIBLE);
 	}
-	
-	protected void hide(){
-		//setVisibility(GONE);
+
+	protected void hide() {
+		setVisibility(GONE);
 	}
 }

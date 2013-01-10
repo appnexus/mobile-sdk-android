@@ -20,7 +20,7 @@ import android.util.Log;
  * 
  */
 public class AdRequest extends AsyncTask<AdRequestParams, Integer, Ad> {
-	AdWebView mAdWebView;
+
 	AdRequestParams mParams;
 
 	/**
@@ -50,14 +50,14 @@ public class AdRequest extends AsyncTask<AdRequestParams, Integer, Ad> {
 		} catch (ClientProtocolException e) {
 			Log.w("OPENSDK",
 					"Couldn't reach the ad server... check your internet connection");
-			mAdWebView.adDidntLoad();
+			//TODO
 			return null;
 		} catch (IOException e) {
 			if(e instanceof HttpHostConnectException){
 				HttpHostConnectException he = (HttpHostConnectException)e;
 				Log.e("OPENSDK", he.getHost().getHostName()+":"+he.getHost().getPort()+" is unreachable.");
 			}
-			mAdWebView.adDidntLoad();
+			//TODO
 			return null;
 		}
 		return new Ad(out.toString(), r.getAllHeaders());
