@@ -304,15 +304,15 @@ pause</string>
         <void method="set">
          <object idref="Point2D$Double8">
           <void method="setLocation">
-           <double>742.0</double>
-           <double>425.0</double>
+           <double>741.0</double>
+           <double>416.0</double>
           </void>
          </object>
-         <double>425.0</double>
+         <double>416.0</double>
         </void>
        </void>
       </object>
-      <double>742.0</double>
+      <double>741.0</double>
      </void>
     </void>
    </object>
