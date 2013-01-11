@@ -11,12 +11,12 @@ import android.util.Log;
  * @author jacob
  *
  */
-public class Ad {
+public class AdResponse {
 	private String mBody;
 	/**
 	 * 
 	 */
-	public Ad(String body, Header[] headers) {
+	public AdResponse(String body, Header[] headers) {
 		// TODO Auto-generated constructor stub
 		mBody=body;
 		Log.d("OPENSDKHTTP", "RESPONSE BODY: "+body);

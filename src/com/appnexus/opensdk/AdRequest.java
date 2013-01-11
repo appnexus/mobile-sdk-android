@@ -19,23 +19,22 @@ import android.util.Log;
  * @author jacob
  * 
  */
-public class AdRequest extends AsyncTask<AdRequestParams, Integer, Ad> {
+public class AdRequest extends AsyncTask<AdRequestParams, Integer, AdResponse> {
 
 	AdRequestParams mParams;
 
 	/**
 	 * 
 	 */
-	public AdRequest(AdRequestParams params, AdWebView owner) {
+	public AdRequest(AdRequestParams params) {
 		mParams = params;
-		mAdWebView = owner;
 	}
 
 	/**
 	 * @see android.os.AsyncTask#doInBackground(Params[])
 	 */
 	@Override
-	protected Ad doInBackground(AdRequestParams... params) {
+	protected AdResponse doInBackground(AdRequestParams... params) {
 		AdRequestParams p = params.length == 0 ? mParams : params[0];
 		String query_string = p.toString();
 		//String query_string = "http://m.google.com";
@@ -60,13 +59,12 @@ public class AdRequest extends AsyncTask<AdRequestParams, Integer, Ad> {
 			//TODO
 			return null;
 		}
-		return new Ad(out.toString(), r.getAllHeaders());
+		return new AdResponse(out.toString(), r.getAllHeaders());
 	}
 
 	@Override
-	protected void onPostExecute(Ad result) {
-		if (result != null)
-			mAdWebView.loadAd(result);
+	protected void onPostExecute(AdResponse result) {
+		// TODO urgently... how does the ad response send a displayable to the adview
 	}
 
 }

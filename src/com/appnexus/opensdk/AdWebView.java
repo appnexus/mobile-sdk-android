@@ -77,7 +77,7 @@ public class AdWebView extends WebView implements Displayable{
 		});*/
 	}
 	
-	protected void loadAd(Ad ad){
+	protected void loadAd(AdResponse ad){
 		this.loadData(ad.getBody(), "text/html", "UTF-8");
 	}
 
