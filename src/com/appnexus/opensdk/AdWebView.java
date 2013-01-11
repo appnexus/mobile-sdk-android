@@ -6,33 +6,20 @@ package com.appnexus.opensdk;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
-import android.widget.Toast;
 
 /**
  * @author jshufro@appnexus.com
  *
  */
 public class AdWebView extends WebView implements Displayable{
-	private AdView parent; //Do we need this?
 	
 	/**
 	 * @param context
 	 */
 	protected AdWebView(Context context) {
 		super(context);
-		setup();
-		// TODO Auto-generated constructor stub
-	}
-	
-	/**
-	 * @param context
-	 */
-	protected AdWebView(Context context, AdView parent) {
-		super(context);
-		this.parent=parent;
 		setup();
 		// TODO Auto-generated constructor stub
 	}

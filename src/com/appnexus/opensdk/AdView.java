@@ -7,12 +7,14 @@ import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
 
 public class AdView extends FrameLayout {
 
-	private AdWebView mAdWebView;
 	private AdFetcher mAdFetcher;
+	private int period;
+	private Displayable displayable;
 
 	/** Begin Construction **/
 
@@ -28,23 +30,41 @@ public class AdView extends FrameLayout {
 	}
 
 	private void setup(Context context, AttributeSet attrs) {
-		Settings.getSettings().context = context;
-
 		// Determine if this is the first launch.
-		String pack = context.getPackageName();
-		Log.d("OPENSDK", "Package name is " + pack);
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
-		// context.getSharedPreferences(
-		// pack, Context.MODE_PRIVATE);
-		boolean firstUse = prefs.getBoolean("opensdk_first_launch", true);
-		if (firstUse) {
+		if (prefs.getBoolean("opensdk_first_launch", true)) {
+			//This is the first launch, store a value to remember
 			Settings.getSettings().first_launch = true;
 			prefs.edit().putBoolean("opensdk_first_launch", false).commit();
 		} else {
+			//Found the stored value, this is NOT the first launch
 			Settings.getSettings().first_launch = false;
 		}
+		
+		loadVariablesFromXML(context, attrs);
+		
+		// Hide the layout until an ad is loaded
+		hide();
+		
+		//Store the UA in the settings
+		Settings.getSettings().ua=new WebView(context).getSettings().getUserAgentString();
 
+		// Make an AdFetcher - Continue the creation pass
+		mAdFetcher = new AdFetcher(this);
+		// Start the ad pass
+		start();
+	}
+
+	public void start(){
+		mAdFetcher.start();
+	}
+	
+	public void stop(){
+		mAdFetcher.stop();
+	}
+	
+	private void loadVariablesFromXML(Context context, AttributeSet attrs){
 		TypedArray a = context
 				.obtainStyledAttributes(attrs, R.styleable.AdView);
 
@@ -71,34 +91,23 @@ public class AdView extends FrameLayout {
 			}
 		}
 		a.recycle();
-
-		// Make an AdFetcher
-		mAdWebView = new AdWebView(context, this);
-		mAdFetcher = new AdFetcher(context, mAdWebView);
-
-		mAdFetcher.start();
-
-		// Hide the layout until an ad is loaded
-		hide();
-
-	}
-
-	/** End Construction **/
-
-	@Override
-	protected void onLayout(boolean changed, int l, int t, int r, int b) {
-		super.onLayout(changed, l, t, r, b);
-		/*
-		 * if (this.getChildCount() == 0) this.addView(mAdWebView);
-		 */// Don't do this since we have a displayable, not a webview
 	}
 	
+	/** End Construction **/
+
+	
 	protected void display(Displayable d){
-		View displayable=d.getView();
-		if(displayable!=null){
-			this.addView(d.getView());
-			show();
+		View ad=d.getView();
+		if(ad==null) return;
+		if(this.displayable==null){
+			this.addView(ad);
+			this.displayable=d;		
+		}else{
+			this.removeView(this.displayable.getView());
+			this.addView(ad);
+			this.displayable=d;
 		}
+		show();
 	}
 
 	protected void show() {
@@ -107,5 +116,19 @@ public class AdView extends FrameLayout {
 
 	protected void hide() {
 		setVisibility(GONE);
+	}
+
+	/**
+	 * @return the period in milliseconds
+	 */
+	public int getPeriod() {
+		return period;
+	}
+
+	/**
+	 * @param period the period to set in milliseconds
+	 */
+	public void setPeriod(int period) {
+		this.period = period;
 	}
 }
