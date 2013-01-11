@@ -71,8 +71,7 @@ public class AdFetcher {
 
 			@Override
 			public void run() {
-				new AdRequest(new AdRequestParams(lat, lon, orientation),
-						mAdWebView).execute();
+				new AdRequest(new AdRequestParams(lat, lon, orientation)).execute();
 			}
 		}, 0, msPeriod, TimeUnit.MILLISECONDS);
 	}
