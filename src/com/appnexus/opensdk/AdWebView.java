@@ -5,8 +5,10 @@ package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 /**
@@ -49,10 +51,19 @@ public class AdWebView extends WebView implements Displayable{
 	private void setup(){
 		Settings.getSettings().ua=this.getSettings().getUserAgentString();
 		this.getSettings().setJavaScriptEnabled(true);
+		this.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+		this.getSettings().setPluginState(WebSettings.PluginState.ON);
 		this.getSettings().setBuiltInZoomControls(false);
 		this.getSettings().setLightTouchEnabled(false);
 		this.getSettings().setLoadsImagesAutomatically(true);
 		this.getSettings().setSupportZoom(false);
+		
+        setHorizontalScrollBarEnabled(false);
+        setHorizontalScrollbarOverlay(false);
+        setVerticalScrollBarEnabled(false);
+        setVerticalScrollbarOverlay(false);
+        
+        setBackgroundColor(Color.TRANSPARENT);
 		
 		/*this.setOnTouchListener(new View.OnTouchListener() {
 			
