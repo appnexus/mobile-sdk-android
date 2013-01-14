@@ -7,8 +7,6 @@ import java.util.concurrent.TimeUnit;
 public class AdFetcher {
 	private ScheduledExecutorService tasker;
 	private AdView owner;
-	
-	private boolean running=false;
 
 	public AdFetcher(AdView owner) {
 		this.owner = owner;
@@ -24,15 +22,14 @@ public class AdFetcher {
 
 	protected void stop() {
 		tasker.shutdown();
+		tasker=null;
 	}
 
 	protected void start() {
-		if(running) return;
-		running=true;
+		if (tasker!=null) return;
 		
 		//Start a Scheduler to execute recurring tasks
-		if (tasker == null)
-			tasker = Executors.newScheduledThreadPool(1);
+		tasker = Executors.newScheduledThreadPool(1);
 
 		//Get the period from the settings
 		int msPeriod = Settings.getSettings().refresh_rate_ms == -1 ? 60 * 1000

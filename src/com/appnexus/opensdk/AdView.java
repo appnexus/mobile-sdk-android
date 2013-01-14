@@ -1,6 +1,9 @@
 package com.appnexus.opensdk;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.preference.PreferenceManager;
@@ -47,17 +50,46 @@ public class AdView extends FrameLayout {
 		// Hide the layout until an ad is loaded
 		hide();
 		
-		//Store the UA in the settings
+		// Store the UA in the settings
 		Settings.getSettings().ua=new WebView(context).getSettings().getUserAgentString();
 
+		// Register a broadcast receiver to pause add refresh when the phone is locked
+		setupBroadcast(context);
+		
 		// Make an AdFetcher - Continue the creation pass
 		mAdFetcher = new AdFetcher(this);
 		// Start the ad pass
 		start();
 	}
+	
+	public void setupBroadcast(Context context){
+		IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
+		filter.addAction(Intent.ACTION_SCREEN_ON);
+		BroadcastReceiver receiver = new BroadcastReceiver(){
+
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				if(intent.getAction().equals(Intent.ACTION_SCREEN_OFF)){
+					stop();
+					Log.d("OPENSDK", "Stopped ad requests since screen is off");
+				}else if(intent.getAction().equals(Intent.ACTION_SCREEN_ON)){
+					start();
+					Log.d("OPENSDK", "Started ad requests since screen is on");
+				}//TODO: Airplane mode
+				
+			}
+			
+		};
+		context.registerReceiver(receiver, filter);
+	}
 
 	public void start(){
 		mAdFetcher.start();
+	}
+	
+	public void pause(){
+		//huge TODO?
+		
 	}
 	
 	public void stop(){
