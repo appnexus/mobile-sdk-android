@@ -57,10 +57,9 @@ public class AdWebView extends WebView implements Displayable{
 		this.getSettings().setLightTouchEnabled(false);
 		this.getSettings().setLoadsImagesAutomatically(true);
 		this.getSettings().setSupportZoom(false);
+		this.getSettings().setUseWideViewPort(true);
 		
-        setHorizontalScrollBarEnabled(false);
         setHorizontalScrollbarOverlay(false);
-        setVerticalScrollBarEnabled(false);
         setVerticalScrollbarOverlay(false);
         
         setBackgroundColor(Color.TRANSPARENT);

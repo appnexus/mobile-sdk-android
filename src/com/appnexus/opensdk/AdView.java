@@ -97,16 +97,8 @@ public class AdView extends FrameLayout {
 
 	
 	protected void display(Displayable d){
-		View ad=d.getView();
-		if(ad==null) return;
-		if(this.displayable==null){
-			this.addView(ad);
-			this.displayable=d;		
-		}else{
-			this.removeView(this.displayable.getView());
-			this.addView(ad);
-			this.displayable=d;
-		}
+		this.removeAllViews();
+		this.addView(d.getView());
 		show();
 	}
 

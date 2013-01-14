@@ -13,10 +13,18 @@ public class HashingFunctions {
 			byte messageDigest[] = digest.digest();
 
 			// Create Hex String
-			StringBuffer hexString = new StringBuffer();
-			for (int i = 0; i < messageDigest.length; i++)
-				hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
-			return hexString.toString();
+			// Create Hex String
+			StringBuilder buf = new StringBuilder();
+			for (byte b : messageDigest) {
+				int halfbyte = (b >>> 4) & 0x0F;
+				int two_halfs = 0;
+				do {
+					buf.append((0 <= halfbyte) && (halfbyte <= 9) ? (char) ('0' + halfbyte)
+							: (char) ('a' + (halfbyte - 10)));
+					halfbyte = b & 0x0F;
+				} while (two_halfs++ < 1);
+			}
+			return buf.toString();
 
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
