@@ -9,7 +9,6 @@ import android.content.res.TypedArray;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.View;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 
@@ -17,8 +16,8 @@ public class AdView extends FrameLayout {
 
 	private AdFetcher mAdFetcher;
 	private int period;
-	private Displayable displayable;
-
+	private boolean auto_refresh=true;
+	private String placementID;
 	/** Begin Construction **/
 
 	public AdView(Context context, AttributeSet attrs) {
@@ -38,10 +37,12 @@ public class AdView extends FrameLayout {
 				.getDefaultSharedPreferences(context);
 		if (prefs.getBoolean("opensdk_first_launch", true)) {
 			//This is the first launch, store a value to remember
+			Clog.v("OPENSDK", "This is the first time OpenSDK has been launched in this app.");
 			Settings.getSettings().first_launch = true;
 			prefs.edit().putBoolean("opensdk_first_launch", false).commit();
 		} else {
 			//Found the stored value, this is NOT the first launch
+			Clog.v("OPENSDK", "This is not the first OpenSDK launch in this app.");
 			Settings.getSettings().first_launch = false;
 		}
 		
@@ -58,6 +59,9 @@ public class AdView extends FrameLayout {
 		
 		// Make an AdFetcher - Continue the creation pass
 		mAdFetcher = new AdFetcher(this);
+		mAdFetcher.setPeriod(period);
+		mAdFetcher.setAutoRefresh(getAutoRefresh());
+		
 		// Start the ad pass
 		start();
 	}
@@ -105,20 +109,23 @@ public class AdView extends FrameLayout {
 			int attr = a.getIndex(i);
 			switch (attr) {
 			case R.styleable.AdView_placement_id:
-				Settings.getSettings().placement_id = a.getString(attr);
-				Log.d("OPENSDK", "PLACEMENT="
-						+ Settings.getSettings().placement_id);
+				setPlacementID(a.getString(attr));
+				Clog.d("OPENSDK", "PLACEMENT="
+						+ getPlacementID());
 				break;
 			case R.styleable.AdView_app_id:
 				Settings.getSettings().app_id = a.getString(attr);
-				Log.d("OPENSDK", "APPID=" + Settings.getSettings().app_id);
+				Clog.d("OPENSDK", "APPID=" + Settings.getSettings().app_id);
 				break;
-			case R.styleable.AdView_refresh_rate_ms:
-				Settings.getSettings().refresh_rate_ms = a.getInt(attr,
-						60 * 1000);
+			case R.styleable.AdView_period:
+				setPeriod(a.getInt(attr,
+						60 * 1000));
 				break;
 			case R.styleable.AdView_test:
 				Settings.getSettings().test_mode = a.getBoolean(attr, false);
+				break;
+			case R.styleable.AdView_auto_refresh:
+				setAutoRefresh(a.getBoolean(attr, true));
 				break;
 			}
 		}
@@ -142,17 +149,27 @@ public class AdView extends FrameLayout {
 		setVisibility(GONE);
 	}
 
-	/**
-	 * @return the period in milliseconds
-	 */
 	public int getPeriod() {
 		return period;
 	}
 
-	/**
-	 * @param period the period to set in milliseconds
-	 */
 	public void setPeriod(int period) {
 		this.period = period;
+	}
+
+	public boolean getAutoRefresh() {
+		return auto_refresh;
+	}
+
+	public void setAutoRefresh(boolean auto_refresh) {
+		this.auto_refresh = auto_refresh;
+	}
+
+	public String getPlacementID() {
+		return placementID;
+	}
+
+	public void setPlacementID(String placementID) {
+		this.placementID = placementID;
 	}
 }

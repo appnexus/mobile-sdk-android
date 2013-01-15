@@ -10,8 +10,7 @@ public class Settings {
 	String deviceMake=Build.MANUFACTURER;
 	String deviceModel=Build.MODEL;
 	String app_id=null;
-	String placement_id=null; //TODO this means 1 id per app! very bad. fix this.
-	int refresh_rate_ms=-1;
+
 	boolean test_mode=false;
 	String ua=null;
 	boolean first_launch;
@@ -22,6 +21,7 @@ public class Settings {
 	private static Settings settings_instance=null;
 	public static Settings getSettings(){
 		if(settings_instance==null){
+			Clog.d("OPENSDK", "The AppNexus OpenSDK is initializing");
 			settings_instance=new Settings();
 		}
 		return settings_instance;

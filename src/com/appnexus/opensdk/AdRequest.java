@@ -21,7 +21,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.webkit.WebView;
 
 /**
  * @author jacob
@@ -86,8 +85,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
 	String getRequestUrl(){
 		return Settings.getSettings().BASE_URL
-				+ (Settings.getSettings().placement_id != null ? "id="
-						+ Uri.encode(Settings.getSettings().placement_id)
+				+ (owner.getPlacementID()!= null ? "id="
+						+ Uri.encode(owner.getPlacementID())
 						: "id=NO-PLACEMENT-ID")
 				+ (hidmd5 != null ? "&hidmd5=" + Uri.encode(hidmd5) : "")
 				+ (hidsha1 != null ? "&hidsha1=" + Uri.encode(hidsha1) : "")
