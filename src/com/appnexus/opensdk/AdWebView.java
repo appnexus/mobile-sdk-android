@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -58,24 +59,31 @@ public class AdWebView extends WebView implements Displayable{
 		this.getSettings().setLoadsImagesAutomatically(true);
 		this.getSettings().setSupportZoom(false);
 		this.getSettings().setUseWideViewPort(true);
+		this.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 		
         setHorizontalScrollbarOverlay(false);
+        setHorizontalScrollBarEnabled(false);
         setVerticalScrollbarOverlay(false);
+        setVerticalScrollBarEnabled(false);
         
         setBackgroundColor(Color.TRANSPARENT);
-		
-		/*this.setOnTouchListener(new View.OnTouchListener() {
+        setScrollBarStyle(WebView.SCROLLBARS_INSIDE_OVERLAY);
+		   
+        
+		setOnTouchListener(new OnTouchListener() {
 			
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				Toast.makeText(getContext(), "Touchy touchy", Toast.LENGTH_SHORT).show();
+				// TODO click the url in the ad.
 				return true;
 			}
-		});*/
+		});//Disables scrolling... also disables clicking.
 	}
 	
 	protected void loadAd(AdResponse ad){
-		this.loadData(ad.getBody(), "text/html", "UTF-8");
+		String body = "<html><head /><body style='margin:0;padding:0;'>" + ad.getBody() +
+				"</body></html>";
+		this.loadData(body, "text/html", "UTF-8");	
 	}
 
 	@Override

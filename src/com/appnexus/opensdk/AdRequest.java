@@ -21,6 +21,10 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
+
 
 /**
  * @author jacob
@@ -140,6 +144,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		if(true){//TODO, for now all ads go into a webview :)
 			d=new AdWebView(owner.getContext());
 			AdWebView awv = (AdWebView)d;
+			FrameLayout.LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER); //TODO
+			awv.setLayoutParams(lp);
 			awv.loadAd(result);
 			owner.display(awv);
 		}
