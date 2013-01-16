@@ -72,12 +72,12 @@ public class AdWebView extends WebView implements Displayable{
         
 		setOnTouchListener(new OnTouchListener() {
 			
+			//Disables all dragging in the webview. Might interfere with interactive creatives
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				// TODO click the url in the ad.
-				return true;
-			}
-		});//Disables scrolling... also disables clicking.
+			      return (event.getAction() == MotionEvent.ACTION_MOVE);
+			    }
+		});
 	}
 	
 	protected void loadAd(AdResponse ad){
