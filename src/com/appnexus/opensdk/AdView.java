@@ -135,6 +135,7 @@ public class AdView extends FrameLayout {
 
 	
 	protected void display(Displayable d){
+		if(d.failed()) return; //The displayable has failed to be parsed or turned into a View.
 		this.removeAllViews();
 		this.addView(d.getView());
 		show();

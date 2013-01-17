@@ -19,7 +19,7 @@ import android.widget.FrameLayout;
  * 
  */
 public class AdWebView extends WebView implements Displayable {
-
+	private boolean failed=false;
 	/**
 	 * @param context
 	 */
@@ -90,6 +90,11 @@ public class AdWebView extends WebView implements Displayable {
 	}
 
 	protected void loadAd(AdResponse ad) {
+		if(ad.getBody()==null){
+			fail();
+			return;
+		}
+		
 		String body = "<html><head /><body style='margin:0;padding:0;'>"
 				+ ad.getBody() + "</body></html>";
 		this.loadData(body, "text/html", "UTF-8");
@@ -107,5 +112,15 @@ public class AdWebView extends WebView implements Displayable {
 	@Override
 	public View getView() {
 		return this;
+	}
+
+	@Override
+	public void fail() {
+		failed=true;
+	}
+
+	@Override
+	public boolean failed() {
+		return failed;
 	}
 }
