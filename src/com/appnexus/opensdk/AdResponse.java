@@ -30,6 +30,7 @@ public class AdResponse {
 	
 	public String getBody(){
 		if (mBody==null) return "";
+		//TODO: test what happens when no ads are returned
 		try {
 			JSONObject response = new JSONObject(mBody);
 			JSONArray ads = response.getJSONArray("ads");

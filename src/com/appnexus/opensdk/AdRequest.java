@@ -20,7 +20,6 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
@@ -115,7 +114,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	@Override
 	protected AdResponse doInBackground(Void... params) {
 		String query_string = getRequestUrl();
-		Log.d("OPENSDK", "fetching: " + (query_string+="&tmp_id=2&format=html"));
+		Clog.d("OPENSDK", "fetching: " + (query_string+="&tmp_id=2&format=html")); //TODO these tags are wrong/misplaced here
 		DefaultHttpClient h = new DefaultHttpClient();
 		HttpResponse r = null;
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -124,13 +123,13 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			r.getEntity().writeTo(out);
 			out.close();
 		} catch (ClientProtocolException e) {
-			Log.w("OPENSDK",
+			Clog.w("OPENSDK",
 					"Couldn't reach the ad server... check your internet connection");
 			return null;
 		} catch (IOException e) {
 			if(e instanceof HttpHostConnectException){
 				HttpHostConnectException he = (HttpHostConnectException)e;
-				Log.e("OPENSDK", he.getHost().getHostName()+":"+he.getHost().getPort()+" is unreachable.");
+				Clog.e("OPENSDK", he.getHost().getHostName()+":"+he.getHost().getPort()+" is unreachable.");
 			}
 			return null;
 		}

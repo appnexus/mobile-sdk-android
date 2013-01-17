@@ -93,7 +93,6 @@ public class AdView extends FrameLayout {
 	
 	public void pause(){
 		//huge TODO?
-		
 	}
 	
 	public void stop(){

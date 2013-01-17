@@ -16,7 +16,7 @@ public class AdFetcher {
 
 	protected void setPeriod(int period) {
 		this.period = period;
-		//Restart with new period
+		//Restart with new period TODO this dumps the current ad, which is bad if server response changes the period
 		if(tasker!=null){
 			stop();
 			start();
