@@ -15,38 +15,61 @@ import android.util.Log;
  *
  */
 public class AdResponse {
-	private String mBody;
+	private String body;
+	private int height;
+	private int width;
+	private String type;
 	/**
 	 * 
 	 */
 	public AdResponse(String body, Header[] headers) {
 		// TODO Auto-generated constructor stub
-		mBody=body;
 		Log.d("OPENSDKHTTP", "RESPONSE BODY: "+body);
 		for(Header h : headers){
 			Log.d("OPENSDKHTTP", "HEADER: "+h.getName()+" Value: "+h.getValue());
 		}
-	}
-	
-	public String getBody(){
-		if (mBody==null) return "";
-		//TODO: test what happens when no ads are returned
+		
+		if(body==null) return;
+		
 		try {
-			JSONObject response = new JSONObject(mBody);
+			//TODO: test what happens when no ads are returned
+			//TODO: test what happens when there is an error returned
+			JSONObject response = new JSONObject(body);
 			JSONArray ads = response.getJSONArray("ads");
 			//is the array empty? if so, no ads were returned, and we need to fail gracefully
 			if(ads.length()==0){
-				return "";
+				return;
 			}
 			//for now, just take the first ad
 			JSONObject firstAd = ads.getJSONObject(0);
 			//assume there's content
-			//TODO handle the ad size
-			return firstAd.getString("content");
+			height = firstAd.getInt("height");
+			width = firstAd.getInt("width");
+			this.body = firstAd.getString("content");
+			type= firstAd.getString("type");
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block, BE VERY VERBOSE ABOUT WHAT WENT WRONG HERE
 			e.printStackTrace();
-			return "";
+			return;
 		}
+		
+	}
+	
+	protected String getBody(){
+		if (body==null) return "";
+		return body;
+	}
+	
+	protected int getHeight(){
+		return height;
+	}
+	
+	protected int getWidth(){
+		return width;
+	}
+	
+	//banner, interstitial
+	protected String getType(){
+		return type;
 	}
 }
