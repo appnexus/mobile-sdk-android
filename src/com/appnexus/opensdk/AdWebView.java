@@ -1,12 +1,7 @@
-/**
- * 
- */
 package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.graphics.Color;
-import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -18,37 +13,15 @@ import android.widget.FrameLayout;
  * @author jshufro@appnexus.com
  * 
  */
+@SuppressLint("ViewConstructor") //This will only be constructed by AdFetcher.
 public class AdWebView extends WebView implements Displayable {
 	private boolean failed=false;
-	/**
-	 * @param context
-	 */
-	protected AdWebView(Context context) {
-		super(context);
-		setup();
-		// TODO Auto-generated constructor stub
-	}
+	private AdView destination;
 
-	/**
-	 * @param context
-	 * @param attrs
-	 */
-	protected AdWebView(Context context, AttributeSet attrs) {
-		super(context, attrs);
+	protected AdWebView(AdView owner) {
+		super(owner.getContext());
+		destination=owner;
 		setup();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @param context
-	 *            The context for the AdWebView. Should be in an AdView
-	 * @param attrs
-	 * @param defStyle
-	 */
-	protected AdWebView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		setup();
-		// TODO Auto-generated constructor stub
 	}
 
 	@SuppressLint("SetJavaScriptEnabled")
@@ -94,16 +67,16 @@ public class AdWebView extends WebView implements Displayable {
 			fail();
 			return;
 		}
-		
+
 		String body = "<html><head /><body style='margin:0;padding:0;'>"
 				+ ad.getBody() + "</body></html>";
 		this.loadData(body, "text/html", "UTF-8");
 		
-		FrameLayout.LayoutParams resize = new FrameLayout.LayoutParams(this.getLayoutParams());
+		FrameLayout.LayoutParams resize = new FrameLayout.LayoutParams(destination.getLayoutParams());
 		
-		// WHY DO I MULTIPLY THESE BY 2? Because for some reason I have to, that's why.
-		resize.height=ad.getHeight()*2;
-		resize.width=ad.getWidth()*2;
+		final float scale = destination.getContext().getResources().getDisplayMetrics().density;
+		resize.height = (int)(ad.getHeight()*scale+0.5f);
+		resize.width = (int)(ad.getWidth()*scale+0.5f);
 		resize.gravity=Gravity.CENTER;
 		
 		this.setLayoutParams(resize);

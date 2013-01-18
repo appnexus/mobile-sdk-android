@@ -143,7 +143,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		if(result==null) return; //http request failed
 		Displayable d;
 		if(true){//TODO, for now all ads go into a webview :)
-			d=new AdWebView(owner.getContext());
+			d=new AdWebView(owner);
 			AdWebView awv = (AdWebView)d;
 			awv.loadAd(result);
 			owner.display(awv);

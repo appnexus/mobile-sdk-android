@@ -1,17 +1,24 @@
 package com.appnexus.opensdk;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import android.os.Handler;
+import android.os.Message;
 
 public class AdFetcher {
 	private ScheduledExecutorService tasker;
 	private AdView owner;
 	private int period = -1;
 	private boolean autoRefresh;
+	private RequestHandler handler;
 
+	//Fires requests whenever it receives a message
 	public AdFetcher(AdView owner) {
 		this.owner = owner;
+		handler = new RequestHandler(this);
 	}
 
 	protected void setPeriod(int period) {
@@ -57,8 +64,8 @@ public class AdFetcher {
 			tasker.schedule(new Runnable() {
 				@Override
 				public void run() {
-					Clog.v("OPENSDK", "AdRequest thread started.");
-					new AdRequest(owner).execute();
+					Clog.v("OPENSDK", "AdRequest message passed to handler.");
+					handler.sendEmptyMessage(0);
 				}
 			}, 0, TimeUnit.SECONDS);
 		} else {
@@ -67,22 +74,29 @@ public class AdFetcher {
 			tasker.scheduleAtFixedRate(new Runnable() {
 				@Override
 				public void run() {
-					try {
-						Clog.v("OPENSDK", "AdRequest thread started.");
-						new AdRequest(owner).execute();
-					} catch (Exception e) {
-						e.printStackTrace();
-						Clog.e("OPENSDK", "Fuuuuuuuuuck");
-					}
+					Clog.v("OPENSDK", "AdRequest message passed to handler.");
+					handler.sendEmptyMessage(0);
 				}
 			}, 0, msPeriod, TimeUnit.MILLISECONDS);
 		}
 	}
 
+	//Create a handler which will receive the AsyncTasks and spawn them from the main thread.
+	static class RequestHandler extends Handler{
+		private final WeakReference<AdFetcher> mFetcher;
+		
+		RequestHandler(AdFetcher f){
+			mFetcher=new WeakReference<AdFetcher>(f);
+		}
+		
+		@Override
+		public void handleMessage(Message msg){
+			new AdRequest(mFetcher.get().owner).execute();
+		}
+	}
 	protected boolean getAutoRefresh() {
 		return autoRefresh;
 	}
-
 	protected void setAutoRefresh(boolean autoRefresh) {
 		this.autoRefresh = autoRefresh;
 		// Restart with new autorefresh setting
