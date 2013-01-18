@@ -57,11 +57,13 @@ public class AdView extends FrameLayout {
 		// Register a broadcast receiver to pause add refresh when the phone is locked
 		setupBroadcast(context);
 		
+		Clog.v("OPENSDK", "Making an AdManager to begin fetching ads");
 		// Make an AdFetcher - Continue the creation pass
 		mAdFetcher = new AdFetcher(this);
 		mAdFetcher.setPeriod(period);
 		mAdFetcher.setAutoRefresh(getAutoRefresh());
 		
+		Clog.v("OPENSDK", "Fetching the first ad!");
 		// Start the ad pass
 		start();
 	}
@@ -104,6 +106,7 @@ public class AdView extends FrameLayout {
 				.obtainStyledAttributes(attrs, R.styleable.AdView);
 
 		final int N = a.getIndexCount();
+		Clog.v("OPENSDK", "Found "+N+" variables to read from xml");
 		for (int i = 0; i < N; ++i) {
 			int attr = a.getIndex(i);
 			switch (attr) {

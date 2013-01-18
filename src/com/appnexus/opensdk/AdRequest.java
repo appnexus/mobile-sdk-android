@@ -127,7 +127,12 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			if(e instanceof HttpHostConnectException){
 				HttpHostConnectException he = (HttpHostConnectException)e;
 				Clog.e("OPENSDK", he.getHost().getHostName()+":"+he.getHost().getPort()+" is unreachable.");
+			}else{
+				Clog.e("OPENSDK", "Ad couldn't be fetched due to io error, probably http related.");
 			}
+			return null;
+		} catch (Exception e){
+			Clog.e("OPENSDK", "Ad couldn't be fetched due to io error, probably http related.");
 			return null;
 		}
 		return new AdResponse(out.toString(), r.getAllHeaders());
