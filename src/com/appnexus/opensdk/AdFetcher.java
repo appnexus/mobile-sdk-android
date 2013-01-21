@@ -14,8 +14,11 @@ public class AdFetcher {
 	private int period = -1;
 	private boolean autoRefresh;
 	private RequestHandler handler;
+	private boolean shouldReset; // If the period changes, wait until the end of
+									// the new period before resetting? //TODO
+	private long lastFetchTime;
 
-	//Fires requests whenever it receives a message
+	// Fires requests whenever it receives a message
 	public AdFetcher(AdView owner) {
 		this.owner = owner;
 		handler = new RequestHandler(this);
@@ -81,28 +84,41 @@ public class AdFetcher {
 		}
 	}
 
-	//Create a handler which will receive the AsyncTasks and spawn them from the main thread.
-	static class RequestHandler extends Handler{
+	// Create a handler which will receive the AsyncTasks and spawn them from
+	// the main thread.
+	static class RequestHandler extends Handler {
 		private final WeakReference<AdFetcher> mFetcher;
-		
-		RequestHandler(AdFetcher f){
-			mFetcher=new WeakReference<AdFetcher>(f);
+
+		RequestHandler(AdFetcher f) {
+			mFetcher = new WeakReference<AdFetcher>(f);
 		}
-		
+
 		@Override
-		public void handleMessage(Message msg){
+		public void handleMessage(Message msg) {
+			// Update last fetch time once
+			Clog.i("OPENSDK", "Fetching a new ad for the first time in "+(int)(System.currentTimeMillis()-mFetcher.get().lastFetchTime)+"ms");
+			mFetcher.get().lastFetchTime = System.currentTimeMillis();
+			// Spawn an AdRequest
 			new AdRequest(mFetcher.get().owner).execute();
 		}
 	}
+
 	protected boolean getAutoRefresh() {
 		return autoRefresh;
 	}
+
 	protected void setAutoRefresh(boolean autoRefresh) {
 		this.autoRefresh = autoRefresh;
-		// Restart with new autorefresh setting
+		// Restart with new autorefresh setting, but only if auto-refresh was
+		// set to true
 		if (tasker != null) {
-			stop();
-			start();
+			if (autoRefresh == true) {
+				stop();
+				start();
+			} else {
+				// If we're setting it to false, just stop...
+				stop();
+			}
 		}
 	}
 }
