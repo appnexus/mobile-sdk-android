@@ -53,6 +53,9 @@ public class AdView extends FrameLayout {
 		
 		// Store the UA in the settings
 		Settings.getSettings().ua=new WebView(context).getSettings().getUserAgentString();
+		
+		// Store the AppID in the settings
+		Settings.getSettings().app_id= context.getApplicationContext().getPackageName();
 
 		// Register a broadcast receiver to pause add refresh when the phone is locked
 		setupBroadcast(context);
@@ -114,10 +117,6 @@ public class AdView extends FrameLayout {
 				setPlacementID(a.getString(attr));
 				Clog.d("OPENSDK", "PLACEMENT="
 						+ getPlacementID());
-				break;
-			case R.styleable.AdView_app_id:
-				Settings.getSettings().app_id = a.getString(attr);
-				Clog.d("OPENSDK", "APPID=" + Settings.getSettings().app_id);
 				break;
 			case R.styleable.AdView_period:
 				setPeriod(a.getInt(attr,
