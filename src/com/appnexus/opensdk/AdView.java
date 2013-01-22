@@ -72,7 +72,7 @@ public class AdView extends FrameLayout {
 	}
 	
 	public void setupBroadcast(Context context){
-		IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
+		IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF); //TODO switch to ACTION_USER_PRESENT etc
 		filter.addAction(Intent.ACTION_SCREEN_ON);
 		BroadcastReceiver receiver = new BroadcastReceiver(){
 
@@ -173,5 +173,20 @@ public class AdView extends FrameLayout {
 
 	public void setPlacementID(String placementID) {
 		this.placementID = placementID;
+	}
+
+	@Override
+	protected void finalize(){
+		//Just in case, kill the adfetcher's service
+		if(mAdFetcher!=null) mAdFetcher.stop();
+	}
+	
+	@Override
+	public void setVisibility(int visibility){
+		super.setVisibility(visibility);
+		//TODO test to make sure this gets called when it should...
+		if(visibility == GONE || visibility == INVISIBLE)
+			if(mAdFetcher!=null) mAdFetcher.stop();
+		//TODO assess whether we need to call start when the visibility is set to VISIBLE
 	}
 }

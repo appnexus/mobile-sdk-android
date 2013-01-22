@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.appnexus.opensdk;
 
 import org.apache.http.Header;
@@ -10,20 +7,14 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-/**
- * @author jacob
- *
- */
+
 public class AdResponse {
 	private String body;
 	private int height;
 	private int width;
 	private String type;
-	/**
-	 * 
-	 */
+
 	public AdResponse(String body, Header[] headers) {
-		// TODO Auto-generated constructor stub
 		Log.d("OPENSDKHTTP", "RESPONSE BODY: "+body);
 		for(Header h : headers){
 			Log.d("OPENSDKHTTP", "HEADER: "+h.getName()+" Value: "+h.getValue());

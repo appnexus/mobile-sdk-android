@@ -17,6 +17,8 @@ import android.content.res.Configuration;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
@@ -110,8 +112,14 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	 */
 	@Override
 	protected AdResponse doInBackground(Void... params) {
+		//Double check network connectivity before continuing
+		NetworkInfo ninfo = ((ConnectivityManager)owner.getContext().getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+		if(ninfo==null || !ninfo.isConnectedOrConnecting()){
+			Clog.d("OPENSDK", "Abandoning AdRequest because there is no network connectivity");
+			return null;
+		}
 		String query_string = getRequestUrl();
-		Clog.d("OPENSDK", "fetching: " + (query_string+="&tmp_id=2&format=html")); //TODO these tags are wrong/misplaced here
+		Clog.d("OPENSDK", "fetching: " + query_string);
 		DefaultHttpClient h = new DefaultHttpClient();
 		HttpResponse r = null;
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -141,6 +149,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	@Override
 	protected void onPostExecute(AdResponse result) {
 		if(result==null) return; //http request failed
+		//TODO move the construction of the displayable to the response or to the adview...
 		Displayable d;
 		if(true){//TODO, for now all ads go into a webview :)
 			d=new AdWebView(owner);

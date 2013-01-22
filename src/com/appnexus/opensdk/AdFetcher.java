@@ -14,8 +14,7 @@ public class AdFetcher {
 	private int period = -1;
 	private boolean autoRefresh;
 	private RequestHandler handler;
-	private boolean shouldReset; // If the period changes, wait until the end of
-									// the new period before resetting? //TODO
+	private boolean shouldReset;
 	private long lastFetchTime;
 
 	// Fires requests whenever it receives a message
@@ -90,6 +89,9 @@ public class AdFetcher {
 
 		@Override
 		public void handleMessage(Message msg) {
+			// If the adfetcher, for some reason, has vanished, do nothing with this message
+			if(mFetcher.get()==null) return;
+			
 			// Update last fetch time once
 			Clog.i("OPENSDK", "Fetching a new ad for the first time in "+(int)(System.currentTimeMillis()-mFetcher.get().lastFetchTime)+"ms");
 			mFetcher.get().lastFetchTime = System.currentTimeMillis();
