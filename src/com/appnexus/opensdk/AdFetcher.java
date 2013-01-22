@@ -26,12 +26,7 @@ public class AdFetcher {
 
 	protected void setPeriod(int period) {
 		this.period = period;
-		// Restart with new period TODO this dumps the current ad, which is bad
-		// if server response changes the period
-		if (tasker != null) {
-			stop();
-			start();
-		}
+		shouldReset = true;
 	}
 
 	protected int getPeriod() {
@@ -98,6 +93,12 @@ public class AdFetcher {
 			// Update last fetch time once
 			Clog.i("OPENSDK", "Fetching a new ad for the first time in "+(int)(System.currentTimeMillis()-mFetcher.get().lastFetchTime)+"ms");
 			mFetcher.get().lastFetchTime = System.currentTimeMillis();
+			//If we need to reset, reset.
+			if(mFetcher.get().shouldReset){
+				mFetcher.get().shouldReset=false;
+				mFetcher.get().stop();
+				mFetcher.get().start();
+			}
 			// Spawn an AdRequest
 			new AdRequest(mFetcher.get().owner).execute();
 		}
