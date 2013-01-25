@@ -14,6 +14,7 @@ import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.Criteria;
 import android.location.Location;
@@ -23,7 +24,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
-
 
 /**
  * @author jacob
@@ -42,58 +42,69 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	String lon;
 	String ua;
 	String orientation;
-	int width=-1;
-	int height=-1;
-	
+	int width = -1;
+	int height = -1;
+
 	/**
 	 * 
 	 */
 	public AdRequest(AdView owner) {
-		this.owner=owner;
+		this.owner = owner;
 		Context context = owner.getContext();
-		String aid=android.provider.Settings.Secure.getString(context.getContentResolver(), "android_id");
-		
-		//Get lat, long from any GPS information that might be currently available
-		LocationManager lm = (LocationManager) owner.getContext()
-				.getSystemService(Context.LOCATION_SERVICE);
-		Location lastLocation = lm.getLastKnownLocation(lm.getBestProvider(
-				new Criteria(), false));
-		lat = lastLocation != null ? ""
-				+ lastLocation.getLatitude() : null;
-		lon = lastLocation != null ? ""
-				+ lastLocation.getLongitude() : null;
-		//Get orientation, the current rotation of the device
+		String aid = android.provider.Settings.Secure.getString(
+				context.getContentResolver(), "android_id");
+
+		// Do we have access to location?
+		if (owner.getContext().checkCallingOrSelfPermission(
+				"android.permission.ACCESS_FINE_LOCATION") == PackageManager.PERMISSION_GRANTED
+				|| owner.getContext().checkCallingOrSelfPermission(
+						"android.permission.ACCESS_COARSE_LOCATION") == PackageManager.PERMISSION_GRANTED) {
+			// Get lat, long from any GPS information that might be currently
+			// available
+			LocationManager lm = (LocationManager) owner.getContext()
+					.getSystemService(Context.LOCATION_SERVICE);
+			Location lastLocation = lm.getLastKnownLocation(lm.getBestProvider(
+					new Criteria(), false));
+			lat = lastLocation != null ? "" + lastLocation.getLatitude() : null;
+			lon = lastLocation != null ? "" + lastLocation.getLongitude()
+					: null;
+		}else{
+			Clog.w("OPENSDK", "Permissions for location aren't set in the host app. This may affect demand.");
+		}
+		// Get orientation, the current rotation of the device
 		orientation = owner.getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? "landscape"
 				: "portrait";
-		//Get hidmd5, hidsha1, the devide ID hashed
-		if(Settings.getSettings().hidmd5==null){
-			Settings.getSettings().hidmd5=HashingFunctions.md5(aid);
+		// Get hidmd5, hidsha1, the devide ID hashed
+		if (Settings.getSettings().hidmd5 == null) {
+			Settings.getSettings().hidmd5 = HashingFunctions.md5(aid);
 		}
-		hidmd5=Settings.getSettings().hidmd5;
-		if(Settings.getSettings().hidsha1==null){
-			Settings.getSettings().hidsha1=HashingFunctions.sha1(aid);
+		hidmd5 = Settings.getSettings().hidmd5;
+		if (Settings.getSettings().hidsha1 == null) {
+			Settings.getSettings().hidsha1 = HashingFunctions.sha1(aid);
 		}
-		hidsha1=Settings.getSettings().hidsha1;
-		//Get devMake, devModel, the Make and Model of the current device
-		devMake=Settings.getSettings().deviceMake;
-		devModel=Settings.getSettings().deviceModel;
-		//Get carrier
-		if(Settings.getSettings().carrierName==null){
-			Settings.getSettings().carrierName=((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getNetworkOperatorName();
+		hidsha1 = Settings.getSettings().hidsha1;
+		// Get devMake, devModel, the Make and Model of the current device
+		devMake = Settings.getSettings().deviceMake;
+		devModel = Settings.getSettings().deviceModel;
+		// Get carrier
+		if (Settings.getSettings().carrierName == null) {
+			Settings.getSettings().carrierName = ((TelephonyManager) context
+					.getSystemService(Context.TELEPHONY_SERVICE))
+					.getNetworkOperatorName();
 		}
-		carrier=Settings.getSettings().carrierName;
-		//Get firstlaunch and convert it to a string
-		firstlaunch=""+Settings.getSettings().first_launch;
-		//Get ua, the user agent...
-		ua=Settings.getSettings().ua;
-		//Get wxh
-		this.width=owner.getAdWidth();
-		this.height=owner.getAdHeight();
+		carrier = Settings.getSettings().carrierName;
+		// Get firstlaunch and convert it to a string
+		firstlaunch = "" + Settings.getSettings().first_launch;
+		// Get ua, the user agent...
+		ua = Settings.getSettings().ua;
+		// Get wxh
+		this.width = owner.getAdWidth();
+		this.height = owner.getAdHeight();
 	}
 
-	String getRequestUrl(){
+	String getRequestUrl() {
 		return Settings.getSettings().BASE_URL
-				+ (owner.getPlacementID()!= null ? "id="
+				+ (owner.getPlacementID() != null ? "id="
 						+ Uri.encode(owner.getPlacementID())
 						: "id=NO-PLACEMENT-ID")
 				+ (hidmd5 != null ? "&hidmd5=" + Uri.encode(hidmd5) : "")
@@ -110,19 +121,28 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				+ (Settings.getSettings().test_mode ? "&istest=true" : "")
 				+ (ua != null ? "&ua=" + Uri.encode(ua) : "")
 				+ (orientation != null ? "&orientation=" + orientation : "")
-				+ ((width>0 && height>0) ? "&size=" + width + "x" + height : "")
-				+ "&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion);
+				+ ((width > 0 && height > 0) ? "&size=" + width + "x" + height
+						: "") + "&sdkver="
+				+ Uri.encode(Settings.getSettings().sdkVersion);
 	}
-	
+
 	/**
 	 * @see android.os.AsyncTask#doInBackground(Params[])
 	 */
 	@Override
 	protected AdResponse doInBackground(Void... params) {
-		//Double check network connectivity before continuing
-		NetworkInfo ninfo = ((ConnectivityManager)owner.getContext().getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
-		if(ninfo==null || !ninfo.isConnectedOrConnecting()){
-			Clog.d("OPENSDK", "Abandoning AdRequest because there is no network connectivity");
+		// Double check network connectivity before continuing
+		if (owner.getContext().checkCallingOrSelfPermission(
+				"android.permission.ACCESS_NETWORK_STATE") != PackageManager.PERMISSION_GRANTED){
+			Clog.e("OPENSDK", "The SDK needs permission ACCESS_NETWORK_STATE in the host app.");
+			return null;
+		}
+		NetworkInfo ninfo = ((ConnectivityManager) owner.getContext()
+				.getSystemService(Context.CONNECTIVITY_SERVICE))
+				.getActiveNetworkInfo();
+		if (ninfo == null || !ninfo.isConnectedOrConnecting()) {
+			Clog.d("OPENSDK",
+					"Abandoning AdRequest because there is no network connectivity");
 			return null;
 		}
 		String query_string = getRequestUrl();
@@ -138,22 +158,26 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			Clog.e("OPENSDK",
 					"Couldn't reach the ad server even though network connectivity was detected. Server is down?");
 			return null;
-		}catch (ConnectTimeoutException e){
-			Clog.e("OPENSDK",
-					"Connection to Ad Server timed out.");
+		} catch (ConnectTimeoutException e) {
+			Clog.e("OPENSDK", "Connection to Ad Server timed out.");
 			return null;
-		}catch (IOException e) {
-			if(e instanceof HttpHostConnectException){
-				HttpHostConnectException he = (HttpHostConnectException)e;
-				Clog.e("OPENSDK", he.getHost().getHostName()+":"+he.getHost().getPort()+" is unreachable.");
-			}else{
+		} catch (IOException e) {
+			if (e instanceof HttpHostConnectException) {
+				HttpHostConnectException he = (HttpHostConnectException) e;
+				Clog.e("OPENSDK", he.getHost().getHostName() + ":"
+						+ he.getHost().getPort() + " is unreachable.");
+			} else {
 				e.printStackTrace();
-				Clog.e("OPENSDK", "Ad couldn't be fetched due to io error, probably http related.");
+				Clog.e("OPENSDK",
+						"Ad couldn't be fetched due to io error, probably http related.");
 			}
 			return null;
-		} catch (Exception e){
+		} catch (SecurityException se){
+			Clog.e("OPENSDK", "The SDK needs permission INTERNET in the host app.");
+		} catch (Exception e) {
 			e.printStackTrace();
-			Clog.e("OPENSDK", "Ad couldn't be fetched due to io error, probably http related.");
+			Clog.e("OPENSDK",
+					"Ad couldn't be fetched due to io error, probably http related.");
 			return null;
 		}
 		return new AdResponse(owner, out.toString(), r.getAllHeaders());
@@ -161,7 +185,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
 	@Override
 	protected void onPostExecute(AdResponse result) {
-		if(result==null) return; //http request failed
+		if (result == null)
+			return; // http request failed
 		owner.display(result.getDisplayable());
 	}
 
