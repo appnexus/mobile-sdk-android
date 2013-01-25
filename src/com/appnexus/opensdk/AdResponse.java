@@ -13,13 +13,14 @@ public class AdResponse {
 	private int height;
 	private int width;
 	private String type;
+	private AdView owner;
 
-	public AdResponse(String body, Header[] headers) {
+	public AdResponse(AdView owner, String body, Header[] headers) {
 		Log.d("OPENSDKHTTP", "RESPONSE BODY: "+body);
 		for(Header h : headers){
 			Log.d("OPENSDKHTTP", "HEADER: "+h.getName()+" Value: "+h.getValue());
 		}
-		
+		this.owner=owner;
 		if(body==null) return;
 		
 		try {
@@ -39,8 +40,8 @@ public class AdResponse {
 			this.body = firstAd.getString("content");
 			type= firstAd.getString("type");
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block, BE VERY VERBOSE ABOUT WHAT WENT WRONG HERE
-			e.printStackTrace();
+			Clog.e("OPENSDK", "There was an error parsing the JSON response: "+body);
+			//e.printStackTrace();
 			return;
 		}
 		
@@ -62,5 +63,16 @@ public class AdResponse {
 	//banner, interstitial
 	protected String getType(){
 		return type;
+	}
+	
+	@SuppressWarnings("unused")
+	protected Displayable getDisplayable(){
+		if(true){ //All displayables, for now, are webviews
+			AdWebView out = new AdWebView(owner);
+			out.loadAd(this);
+			return out;
+		}else{
+			return null;
+		}
 	}
 }

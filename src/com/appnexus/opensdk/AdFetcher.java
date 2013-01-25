@@ -14,8 +14,10 @@ public class AdFetcher {
 	private int period = -1;
 	private boolean autoRefresh;
 	private RequestHandler handler;
-	private boolean shouldReset;
-	private long lastFetchTime;
+	private boolean shouldReset = false;
+	private long lastFetchTime=-1;
+	private long timePausedAt=-1;
+	private long pauseDuration=Long.MAX_VALUE;
 
 	// Fires requests whenever it receives a message
 	public AdFetcher(AdView owner) {
@@ -25,7 +27,8 @@ public class AdFetcher {
 
 	protected void setPeriod(int period) {
 		this.period = period;
-		shouldReset = true;
+		if(tasker!=null)
+			shouldReset = true;
 	}
 
 	protected int getPeriod() {
@@ -35,8 +38,11 @@ public class AdFetcher {
 	protected void stop() {
 		if (tasker == null)
 			return; // You can't stop the signal Mal
-		tasker.shutdown();
+		Clog.d("OPENSDK", "Ad Fetcher stopped");
+		tasker.shutdownNow();
 		tasker = null;
+		timePausedAt=System.currentTimeMillis();
+		
 	}
 
 	protected void start() {
@@ -44,6 +50,10 @@ public class AdFetcher {
 			Clog.d("OPENSDK",
 					"AdFetcher requested to start, but tasker already instantiated");
 			return;
+		}
+		Clog.d("OPENSDK", "Ad Fetcher starting");
+		if(timePausedAt!=-1){
+			pauseDuration+=System.currentTimeMillis()-timePausedAt;
 		}
 		makeTasker();
 	}
@@ -53,7 +63,7 @@ public class AdFetcher {
 		tasker = Executors.newScheduledThreadPool(1);
 
 		// Get the period from the settings
-		int msPeriod = period == -1 ? 60 * 1000 : period;
+		final int msPeriod = period == -1 ? 60 * 1000 : period;
 
 		if (!getAutoRefresh()) {
 			Clog.d("OPENSDK", "AdFetcher started in single-use mode");
@@ -68,13 +78,18 @@ public class AdFetcher {
 		} else {
 			Clog.d("OPENSDK", "AdFetcher started in autorefresh-mode");
 			// Start recurring ad requests
-			tasker.scheduleAtFixedRate(new Runnable() {
+			tasker.schedule(new Runnable(){
 				@Override
-				public void run() {
-					Clog.v("OPENSDK", "AdRequest message passed to handler.");
-					handler.sendEmptyMessage(0);
+				public void run(){
+					tasker.scheduleAtFixedRate(new Runnable() {
+						@Override
+						public void run() {
+							Clog.v("OPENSDK", "AdRequest message passed to handler.");
+							handler.sendEmptyMessage(0);
+						}
+					}, 0, msPeriod, TimeUnit.MILLISECONDS);
 				}
-			}, 0, msPeriod, TimeUnit.MILLISECONDS);
+			},msPeriod-pauseDuration>0?msPeriod-pauseDuration:0, TimeUnit.MILLISECONDS);
 		}
 	}
 
@@ -101,6 +116,9 @@ public class AdFetcher {
 				mFetcher.get().stop();
 				mFetcher.get().start();
 			}
+			// Reset pause duration
+			mFetcher.get().pauseDuration=0;
+			
 			// Spawn an AdRequest
 			new AdRequest(mFetcher.get().owner).execute();
 		}

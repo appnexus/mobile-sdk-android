@@ -72,7 +72,7 @@ public class AdView extends FrameLayout {
 	}
 	
 	public void setupBroadcast(Context context){
-		IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF); //TODO switch to ACTION_USER_PRESENT etc
+		IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
 		filter.addAction(Intent.ACTION_SCREEN_ON);
 		BroadcastReceiver receiver = new BroadcastReceiver(){
 
@@ -144,11 +144,13 @@ public class AdView extends FrameLayout {
 	}
 
 	protected void show() {
-		setVisibility(VISIBLE);
+		if(getVisibility()!=VISIBLE)
+			setVisibility(VISIBLE);
 	}
 
 	protected void hide() {
-		setVisibility(GONE);
+		if(getVisibility()!=GONE)
+			setVisibility(GONE);
 	}
 
 	public int getPeriod() {
@@ -177,16 +179,24 @@ public class AdView extends FrameLayout {
 
 	@Override
 	protected void finalize(){
+		try {
+			super.finalize();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 		//Just in case, kill the adfetcher's service
 		if(mAdFetcher!=null) mAdFetcher.stop();
 	}
 	
 	@Override
-	public void setVisibility(int visibility){
-		super.setVisibility(visibility);
-		//TODO test to make sure this gets called when it should...
-		if(visibility == GONE || visibility == INVISIBLE)
+	public void onWindowVisibilityChanged(int visibility){
+		super.onWindowVisibilityChanged(visibility);
+		if(visibility== VISIBLE){
+			Clog.d("OPENSDK", "The AdView has been unhidden.");
+			if(mAdFetcher!=null) mAdFetcher.start();
+		}else{
+			Clog.d("OPENSDK", "The AdView has been hidden.");
 			if(mAdFetcher!=null) mAdFetcher.stop();
-		//TODO assess whether we need to call start when the visibility is set to VISIBLE
+		}
 	}
 }

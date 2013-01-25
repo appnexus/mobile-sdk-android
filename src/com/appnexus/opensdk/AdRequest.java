@@ -9,6 +9,7 @@ import java.io.IOException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
 
@@ -128,35 +129,34 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			r.getEntity().writeTo(out);
 			out.close();
 		} catch (ClientProtocolException e) {
-			Clog.w("OPENSDK",
-					"Couldn't reach the ad server... check your internet connection");
+			Clog.e("OPENSDK",
+					"Couldn't reach the ad server even though network connectivity was detected. Server is down?");
 			return null;
-		} catch (IOException e) {
+		}catch (ConnectTimeoutException e){
+			Clog.e("OPENSDK",
+					"Connection to Ad Server timed out.");
+			return null;
+		}catch (IOException e) {
 			if(e instanceof HttpHostConnectException){
 				HttpHostConnectException he = (HttpHostConnectException)e;
 				Clog.e("OPENSDK", he.getHost().getHostName()+":"+he.getHost().getPort()+" is unreachable.");
 			}else{
+				e.printStackTrace();
 				Clog.e("OPENSDK", "Ad couldn't be fetched due to io error, probably http related.");
 			}
 			return null;
 		} catch (Exception e){
+			e.printStackTrace();
 			Clog.e("OPENSDK", "Ad couldn't be fetched due to io error, probably http related.");
 			return null;
 		}
-		return new AdResponse(out.toString(), r.getAllHeaders());
+		return new AdResponse(owner, out.toString(), r.getAllHeaders());
 	}
 
 	@Override
 	protected void onPostExecute(AdResponse result) {
 		if(result==null) return; //http request failed
-		//TODO move the construction of the displayable to the response or to the adview...
-		Displayable d;
-		if(true){//TODO, for now all ads go into a webview :)
-			d=new AdWebView(owner);
-			AdWebView awv = (AdWebView)d;
-			awv.loadAd(result);
-			owner.display(awv);
-		}
+		owner.display(result.getDisplayable());
 	}
 
 }
