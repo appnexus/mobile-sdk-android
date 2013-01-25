@@ -16,7 +16,7 @@ public class AdView extends FrameLayout {
 
 	private AdFetcher mAdFetcher;
 	private int period;
-	private boolean auto_refresh = true;
+	private boolean auto_refresh = false;
 	private String placementID;
 	private int measuredWidth;
 	private int measuredHeight;
@@ -82,10 +82,8 @@ public class AdView extends FrameLayout {
 		mAdFetcher = new AdFetcher(this);
 		mAdFetcher.setPeriod(period);
 		mAdFetcher.setAutoRefresh(getAutoRefresh());
-
-		Clog.v("OPENSDK", "Fetching the first ad!");
-		// Start the ad pass
-		//start();
+		
+		//We don't start the ad requesting here, since the view hasn't been sized yet.
 	}
 	
 	@Override
@@ -162,7 +160,7 @@ public class AdView extends FrameLayout {
 				Settings.getSettings().test_mode = a.getBoolean(attr, false);
 				break;
 			case R.styleable.AdView_auto_refresh:
-				setAutoRefresh(a.getBoolean(attr, true));
+				setAutoRefresh(a.getBoolean(attr, false));
 				break;
 			case R.styleable.AdView_width:
 				setAdWidth(a.getInt(attr, -1));

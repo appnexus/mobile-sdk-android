@@ -63,7 +63,7 @@ public class AdFetcher {
 		tasker = Executors.newScheduledThreadPool(1);
 
 		// Get the period from the settings
-		final int msPeriod = period == -1 ? 60 * 1000 : period;
+		final int msPeriod = period <= 0 ? 60 * 1000 : period;
 
 		if (!getAutoRefresh()) {
 			Clog.d("OPENSDK", "AdFetcher started in single-use mode");
@@ -83,6 +83,7 @@ public class AdFetcher {
 			tasker.schedule(new Runnable(){
 				@Override
 				public void run(){
+					Clog.d("OPENSDK", "Ad Request delay has ended, scheduling recurring ad fetches at "+msPeriod+"ms.");
 					tasker.scheduleAtFixedRate(new Runnable() {
 						@Override
 						public void run() {
