@@ -115,6 +115,7 @@ public class AdFetcher {
 				mFetcher.get().shouldReset=false;
 				mFetcher.get().stop();
 				mFetcher.get().start();
+				return;
 			}
 			// Reset pause duration
 			mFetcher.get().pauseDuration=0;
