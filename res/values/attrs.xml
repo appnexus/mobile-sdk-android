@@ -5,5 +5,7 @@
         <attr name="period" format="integer" />
         <attr name="test" format="boolean" />
         <attr name="auto_refresh" format="boolean" />
+        <attr name="width" format="integer" />
+        <attr name="height" format="integer"/>
     </declare-styleable>
 </resources>

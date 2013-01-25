@@ -78,6 +78,8 @@ public class AdFetcher {
 		} else {
 			Clog.d("OPENSDK", "AdFetcher started in autorefresh-mode");
 			// Start recurring ad requests
+			long stall = msPeriod-pauseDuration>0?msPeriod-pauseDuration:0;
+			Clog.d("OPENSDK", "Ad request will be delayed "+stall+"ms to account for idletime");
 			tasker.schedule(new Runnable(){
 				@Override
 				public void run(){
@@ -89,7 +91,7 @@ public class AdFetcher {
 						}
 					}, 0, msPeriod, TimeUnit.MILLISECONDS);
 				}
-			},msPeriod-pauseDuration>0?msPeriod-pauseDuration:0, TimeUnit.MILLISECONDS);
+			}, stall, TimeUnit.MILLISECONDS);
 		}
 	}
 

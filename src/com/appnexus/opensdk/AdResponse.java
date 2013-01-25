@@ -18,7 +18,7 @@ public class AdResponse {
 	public AdResponse(AdView owner, String body, Header[] headers) {
 		Log.d("OPENSDKHTTP", "RESPONSE BODY: "+body);
 		for(Header h : headers){
-			Log.d("OPENSDKHTTP", "HEADER: "+h.getName()+" Value: "+h.getValue());
+			Log.v("OPENSDKHTTP", "HEADER: "+h.getName()+" Value: "+h.getValue());
 		}
 		this.owner=owner;
 		if(body==null) return;

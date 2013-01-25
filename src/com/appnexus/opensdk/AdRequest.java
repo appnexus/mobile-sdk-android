@@ -42,6 +42,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	String lon;
 	String ua;
 	String orientation;
+	int width=-1;
+	int height=-1;
 	
 	/**
 	 * 
@@ -84,6 +86,9 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		firstlaunch=""+Settings.getSettings().first_launch;
 		//Get ua, the user agent...
 		ua=Settings.getSettings().ua;
+		//Get wxh
+		this.width=owner.getAdWidth();
+		this.height=owner.getAdHeight();
 	}
 
 	String getRequestUrl(){
@@ -105,6 +110,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				+ (Settings.getSettings().test_mode ? "&istest=true" : "")
 				+ (ua != null ? "&ua=" + Uri.encode(ua) : "")
 				+ (orientation != null ? "&orientation=" + orientation : "")
+				+ ((width>0 && height>0) ? "&size=" + width + "x" + height : "")
 				+ "&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion);
 	}
 	
