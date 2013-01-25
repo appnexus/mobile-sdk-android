@@ -26,6 +26,11 @@ public class AdView extends FrameLayout {
 
 	/** Begin Construction **/
 
+	public AdView(Context context){
+		super(context, null);
+		setup(context, null);
+	}
+	
 	public AdView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setup(context, attrs);
@@ -54,8 +59,8 @@ public class AdView extends FrameLayout {
 			Settings.getSettings().first_launch = false;
 		}
 
-		// Load user variables
-		loadVariablesFromXML(context, attrs);
+		// Load user variables only if attrs isn't null
+		if(attrs!=null) loadVariablesFromXML(context, attrs);
 
 		// Hide the layout until an ad is loaded
 		//hide();
