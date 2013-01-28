@@ -23,6 +23,8 @@ public class AdView extends FrameLayout {
 	private boolean measured=false;
 	private int width=-1;
 	private int height=-1;
+	private BroadcastReceiver receiver;
+	private boolean receiverRegistered=false;
 
 	/** Begin Construction **/
 
@@ -73,10 +75,6 @@ public class AdView extends FrameLayout {
 		Settings.getSettings().app_id = context.getApplicationContext()
 				.getPackageName();
 
-		// Register a broadcast receiver to pause add refresh when the phone is
-		// locked
-		setupBroadcast(context);
-
 		Clog.v("OPENSDK", "Making an AdManager to begin fetching ads");
 		// Make an AdFetcher - Continue the creation pass
 		mAdFetcher = new AdFetcher(this);
@@ -107,10 +105,10 @@ public class AdView extends FrameLayout {
 		}
 	}
 
-	public void setupBroadcast(Context context) {
+	private void setupBroadcast(Context context) {
 		IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
 		filter.addAction(Intent.ACTION_SCREEN_ON);
-		BroadcastReceiver receiver = new BroadcastReceiver() {
+		receiver = new BroadcastReceiver() {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
@@ -126,6 +124,10 @@ public class AdView extends FrameLayout {
 
 		};
 		context.registerReceiver(receiver, filter);
+	}
+	
+	private void dismantleBroadcast(){
+		getContext().unregisterReceiver(receiver);
 	}
 
 	public void start() {
@@ -232,10 +234,21 @@ public class AdView extends FrameLayout {
 	public void onWindowVisibilityChanged(int visibility) {
 		super.onWindowVisibilityChanged(visibility);
 		if (visibility == VISIBLE) {
+			// Register a broadcast receiver to pause add refresh when the phone is
+			// locked
+			if(!receiverRegistered){
+				setupBroadcast(getContext());
+				receiverRegistered=true;
+			}
 			Clog.d("OPENSDK", "The AdView has been unhidden.");
 			if (mAdFetcher != null)
 				mAdFetcher.start();
 		} else {
+			//Unregister the receiver to prevent a leak.
+			if(receiverRegistered){
+				dismantleBroadcast();
+				receiverRegistered=false;
+			}
 			Clog.d("OPENSDK", "The AdView has been hidden.");
 			if (mAdFetcher != null)
 				mAdFetcher.stop();
