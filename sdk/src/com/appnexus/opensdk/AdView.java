@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 
@@ -117,10 +116,10 @@ public class AdView extends FrameLayout {
 			public void onReceive(Context context, Intent intent) {
 				if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
 					stop();
-					Log.d("OPENSDK", "Stopped ad requests since screen is off");
+					Clog.d("OPENSDK", "Stopped ad requests since screen is off");
 				} else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
 					start();
-					Log.d("OPENSDK", "Started ad requests since screen is on");
+					Clog.d("OPENSDK", "Started ad requests since screen is on");
 				}// TODO: Airplane mode
 
 			}
@@ -152,33 +151,33 @@ public class AdView extends FrameLayout {
 				.obtainStyledAttributes(attrs, R.styleable.AdView);
 
 		final int N = a.getIndexCount();
-		Clog.v("OPENSDK", "Found " + N + " variables to read from xml");
+		Clog.v("OPENSDK-XML", "Found " + N + " variables to read from xml");
 		for (int i = 0; i < N; ++i) {
 			int attr = a.getIndex(i);
 			switch (attr) {
 			case R.styleable.AdView_placement_id:
 				setPlacementID(a.getString(attr));
-				Clog.d("OPENSDK", "Placement id=" + getPlacementID());
+				Clog.d("OPENSDK-XML", "Placement id=" + getPlacementID());
 				break;
 			case R.styleable.AdView_period:
 				setPeriod(a.getInt(attr, 60 * 1000));
-				Clog.d("OPENSDK", "Period set to "+getPeriod()+"ms in xml");
+				Clog.d("OPENSDK-XML", "Period set to "+getPeriod()+"ms in xml");
 				break;
 			case R.styleable.AdView_test:
 				Settings.getSettings().test_mode = a.getBoolean(attr, false);
-				Clog.d("OPENSDK", "Test mode set to "+Settings.getSettings().test_mode+" in xml");
+				Clog.d("OPENSDK-XML", "Test mode set to "+Settings.getSettings().test_mode+" in xml");
 				break;
 			case R.styleable.AdView_auto_refresh:
 				setAutoRefresh(a.getBoolean(attr, false));
-				Clog.d("OPENSDK", "Auto-refresh is set to "+getAutoRefresh()+" in xml");
+				Clog.d("OPENSDK-XML", "Auto-refresh is set to "+getAutoRefresh()+" in xml");
 				break;
 			case R.styleable.AdView_width:
 				setAdWidth(a.getInt(attr, -1));
-				Clog.d("OPENSDK", "AdView width set to "+getAdWidth()+" in xml");
+				Clog.d("OPENSDK-XML", "Ad width set to "+getAdWidth()+" in xml");
 				break;
 			case R.styleable.AdView_height:
 				setAdHeight(a.getInt(attr, -1));
-				Clog.d("OPENSDK", "AdView height set to "+getAdWidth()+" in xml");
+				Clog.d("OPENSDK-XML", "Ad height set to "+getAdWidth()+" in xml");
 				break;
 			}
 		}

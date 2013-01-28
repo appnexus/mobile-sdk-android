@@ -24,7 +24,7 @@ public class Settings {
 	private static Settings settings_instance=null;
 	public static Settings getSettings(){
 		if(settings_instance==null){
-			Clog.v("OPENSDK", "The AppNexus OpenSDK is initializing");
+			Clog.v("OPENSDK", "The AppNexus OpenSDK is initializing.");
 			settings_instance=new Settings();
 		}
 		return settings_instance;

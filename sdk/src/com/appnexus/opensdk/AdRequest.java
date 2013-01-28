@@ -146,7 +146,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			return null;
 		}
 		String query_string = getRequestUrl();
-		Clog.d("OPENSDK-REQUEST", "fetching: " + query_string);
+		Clog.d("OPENSDK-REQUEST", "Fetching: " + query_string);
 		DefaultHttpClient h = new DefaultHttpClient();
 		HttpResponse r = null;
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -156,10 +156,10 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			out.close();
 		} catch (ClientProtocolException e) {
 			Clog.e("OPENSDK-REQUEST",
-					"Couldn't reach the ad server even though network connectivity was detected. Server is down?");
+					"Couldn't reach the ad server even though network connectivity was detected. Is the server down?");
 			return null;
 		} catch (ConnectTimeoutException e) {
-			Clog.e("OPENSDK-REQUEST", "Connection to Ad Server timed out.");
+			Clog.e("OPENSDK-REQUEST", "Connection to ad server timed out.");
 			return null;
 		} catch (IOException e) {
 			if (e instanceof HttpHostConnectException) {

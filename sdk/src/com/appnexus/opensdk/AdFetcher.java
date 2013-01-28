@@ -38,7 +38,7 @@ public class AdFetcher {
 	protected void stop() {
 		if (tasker == null)
 			return; // You can't stop the signal Mal
-		Clog.d("OPENSDK", "Ad Fetcher stopped");
+		Clog.d("OPENSDK", "AdFetcher stopped");
 		tasker.shutdownNow();
 		tasker = null;
 		timePausedAt=System.currentTimeMillis();
@@ -51,7 +51,7 @@ public class AdFetcher {
 					"AdFetcher requested to start, but tasker already instantiated");
 			return;
 		}
-		Clog.d("OPENSDK", "Ad Fetcher starting");
+		Clog.d("OPENSDK", "AdFetcher starting");
 		if(timePausedAt!=-1){
 			pauseDuration+=System.currentTimeMillis()-timePausedAt;
 		}
@@ -76,7 +76,7 @@ public class AdFetcher {
 				}
 			}, 0, TimeUnit.SECONDS);
 		} else {
-			Clog.v("OPENSDK", "AdFetcher started in autorefresh-mode");
+			Clog.v("OPENSDK", "AdFetcher started in auto-refresh mode");
 			// Start recurring ad requests
 			long stall = msPeriod-pauseDuration>0?msPeriod-pauseDuration:0;
 			Clog.v("OPENSDK", "Ad request will be delayed "+stall+"ms to account for idletime");
@@ -110,9 +110,6 @@ public class AdFetcher {
 			// If the adfetcher, for some reason, has vanished, do nothing with this message
 			if(mFetcher.get()==null) return;
 			
-			// Update last fetch time once
-			Clog.d("OPENSDK", "Fetching a new ad for the first time in "+(int)(System.currentTimeMillis()-mFetcher.get().lastFetchTime)+"ms");
-			mFetcher.get().lastFetchTime = System.currentTimeMillis();
 			//If we need to reset, reset.
 			if(mFetcher.get().shouldReset){
 				mFetcher.get().shouldReset=false;
@@ -122,6 +119,10 @@ public class AdFetcher {
 			}
 			// Reset pause duration
 			mFetcher.get().pauseDuration=0;
+			
+			// Update last fetch time once
+			Clog.d("OPENSDK", "Fetching a new ad for the first time in "+(int)(System.currentTimeMillis()-mFetcher.get().lastFetchTime)+"ms");
+			mFetcher.get().lastFetchTime = System.currentTimeMillis();
 			
 			// Spawn an AdRequest
 			new AdRequest(mFetcher.get().owner).execute();
