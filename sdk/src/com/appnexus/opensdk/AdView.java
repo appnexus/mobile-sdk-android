@@ -45,6 +45,7 @@ public class AdView extends FrameLayout {
 	}
 
 	private void setup(Context context, AttributeSet attrs) {
+		Clog.d("OPENSDK-INTERFACE", "new AdView()");
 		// Determine if this is the first launch.
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
@@ -70,10 +71,12 @@ public class AdView extends FrameLayout {
 		// Store the UA in the settings
 		Settings.getSettings().ua = new WebView(context).getSettings()
 				.getUserAgentString();
+		Clog.v("OPENSDK", "Your user-agent string is: "+Settings.getSettings().ua);
 
 		// Store the AppID in the settings
 		Settings.getSettings().app_id = context.getApplicationContext()
 				.getPackageName();
+		Clog.v("OPENSDK", "Saving "+Settings.getSettings().app_id+" as your app-id");
 
 		Clog.v("OPENSDK", "Making an AdManager to begin fetching ads");
 		// Make an AdFetcher - Continue the creation pass
@@ -85,7 +88,7 @@ public class AdView extends FrameLayout {
 	}
 	
 	@Override
-	public void onLayout(boolean changed, int left, int top, int right, int bottom){
+	public final void onLayout(boolean changed, int left, int top, int right, int bottom){
 		super.onLayout(changed, left, top, right, bottom);
 		if(!measured){
 			//Convert to dips
@@ -131,6 +134,7 @@ public class AdView extends FrameLayout {
 	}
 
 	public void start() {
+		Clog.d("OPENSDK-INTERFACE", "start()");
 		mAdFetcher.start();
 	}
 
@@ -139,6 +143,7 @@ public class AdView extends FrameLayout {
 	}
 
 	public void stop() {
+		Clog.d("OPENSDK-INTERFACE", "stop()");
 		mAdFetcher.stop();
 	}
 
@@ -153,21 +158,28 @@ public class AdView extends FrameLayout {
 			switch (attr) {
 			case R.styleable.AdView_placement_id:
 				setPlacementID(a.getString(attr));
-				Clog.d("OPENSDK", "PLACEMENT=" + getPlacementID());
+				Clog.d("OPENSDK", "Placement id=" + getPlacementID());
 				break;
 			case R.styleable.AdView_period:
 				setPeriod(a.getInt(attr, 60 * 1000));
+				Clog.d("OPENSDK", "Period set to "+getPeriod()+"ms in xml");
 				break;
 			case R.styleable.AdView_test:
 				Settings.getSettings().test_mode = a.getBoolean(attr, false);
+				Clog.d("OPENSDK", "Test mode set to "+Settings.getSettings().test_mode+" in xml");
 				break;
 			case R.styleable.AdView_auto_refresh:
 				setAutoRefresh(a.getBoolean(attr, false));
+				Clog.d("OPENSDK", "Auto-refresh is set to "+getAutoRefresh()+" in xml");
 				break;
 			case R.styleable.AdView_width:
 				setAdWidth(a.getInt(attr, -1));
+				Clog.d("OPENSDK", "AdView width set to "+getAdWidth()+" in xml");
+				break;
 			case R.styleable.AdView_height:
 				setAdHeight(a.getInt(attr, -1));
+				Clog.d("OPENSDK", "AdView height set to "+getAdWidth()+" in xml");
+				break;
 			}
 		}
 		a.recycle();
@@ -195,26 +207,32 @@ public class AdView extends FrameLayout {
 	}
 
 	public int getPeriod() {
+		Clog.d("OPENSDK-INTERFACE", "getPeriod() returned:"+period);
 		return period;
 	}
 
 	public void setPeriod(int period) {
+		Clog.d("OPENSDK-INTERFACE", "setPeriod() to:"+period);
 		this.period = period;
 	}
 
 	public boolean getAutoRefresh() {
+		Clog.d("OPENSDK-INTERFACE", "getAutoRefresh() returned:"+auto_refresh);
 		return auto_refresh;
 	}
 
 	public void setAutoRefresh(boolean auto_refresh) {
+		Clog.d("OPENSDK-INTERFACE", "setAutoRefresh() to:"+auto_refresh);
 		this.auto_refresh = auto_refresh;
 	}
 
 	public String getPlacementID() {
+		Clog.d("OPENSDK-INTERFACE", "getPlacementID() returned:"+placementID);
 		return placementID;
 	}
 
 	public void setPlacementID(String placementID) {
+		Clog.d("OPENSDK-INTERFACE", "setPlacementID() to:"+placementID);
 		this.placementID = placementID;
 	}
 
@@ -256,18 +274,22 @@ public class AdView extends FrameLayout {
 	}
 	
 	public void setAdHeight(int h){
+		Clog.d("OPENSDK-INTERFACE", "setAdHeight() to:"+h);
 		height=h;
 	}
 	
 	public void setAdWidth(int w){
+		Clog.d("OPENSDK-INTERFACE", "setAdWidth() to:"+w);
 		width=w;
 	}
 	
 	public int getAdHeight(){
+		Clog.d("OPENSDK-INTERFACE", "getAdHeight() returned:"+height);
 		return height;
 	}
 	
 	public int getAdWidth(){
+		Clog.d("OPENSDK-INTERFACE", "getAdWidth() returned:"+width);
 		return width;
 	}
 }

@@ -141,12 +141,12 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				.getSystemService(Context.CONNECTIVITY_SERVICE))
 				.getActiveNetworkInfo();
 		if (ninfo == null || !ninfo.isConnectedOrConnecting()) {
-			Clog.d("OPENSDK",
+			Clog.d("OPENSDK-REQUEST",
 					"Abandoning AdRequest because there is no network connectivity");
 			return null;
 		}
 		String query_string = getRequestUrl();
-		Clog.d("OPENSDK", "fetching: " + query_string);
+		Clog.d("OPENSDK-REQUEST", "fetching: " + query_string);
 		DefaultHttpClient h = new DefaultHttpClient();
 		HttpResponse r = null;
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -155,38 +155,40 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			r.getEntity().writeTo(out);
 			out.close();
 		} catch (ClientProtocolException e) {
-			Clog.e("OPENSDK",
+			Clog.e("OPENSDK-REQUEST",
 					"Couldn't reach the ad server even though network connectivity was detected. Server is down?");
 			return null;
 		} catch (ConnectTimeoutException e) {
-			Clog.e("OPENSDK", "Connection to Ad Server timed out.");
+			Clog.e("OPENSDK-REQUEST", "Connection to Ad Server timed out.");
 			return null;
 		} catch (IOException e) {
 			if (e instanceof HttpHostConnectException) {
 				HttpHostConnectException he = (HttpHostConnectException) e;
-				Clog.e("OPENSDK", he.getHost().getHostName() + ":"
+				Clog.e("OPENSDK-REQUEST", he.getHost().getHostName() + ":"
 						+ he.getHost().getPort() + " is unreachable.");
 			} else {
 				e.printStackTrace();
-				Clog.e("OPENSDK",
+				Clog.e("OPENSDK-REQUEST",
 						"Ad couldn't be fetched due to io error, probably http related.");
 			}
 			return null;
 		} catch (SecurityException se){
 			Clog.e("OPENSDK", "The SDK needs permission INTERNET in the host app.");
-		} catch (Exception e) {
+		}/* catch (Exception e) {
 			e.printStackTrace();
 			Clog.e("OPENSDK",
 					"Ad couldn't be fetched due to io error, probably http related.");
 			return null;
-		}
+		}*/
 		return new AdResponse(owner, out.toString(), r.getAllHeaders());
 	}
 
 	@Override
 	protected void onPostExecute(AdResponse result) {
-		if (result == null)
+		if (result == null){
+			Clog.v("OPENSDK-RESPONSE", "Request received no response from the server");
 			return; // http request failed
+		}
 		owner.display(result.getDisplayable());
 	}
 
