@@ -13,7 +13,6 @@ public class HashingFunctions {
 			byte messageDigest[] = digest.digest();
 
 			// Create Hex String
-			// Create Hex String
 			StringBuilder buf = new StringBuilder();
 			for (byte b : messageDigest) {
 				int halfbyte = (b >>> 4) & 0x0F;

@@ -5,8 +5,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
 
 public class AdResponse {
 	private String body;
@@ -16,20 +14,25 @@ public class AdResponse {
 	private AdView owner;
 
 	public AdResponse(AdView owner, String body, Header[] headers) {
-		Log.d("OPENSDKHTTP", "RESPONSE BODY: "+body);
+		Clog.d("OPENSDK-RESPONSE", "Response body: "+body);
 		for(Header h : headers){
-			Log.v("OPENSDKHTTP", "HEADER: "+h.getName()+" Value: "+h.getValue());
+			Clog.v("OPENSDKHTTP-RESPONSE", "Header: "+h.getName()+" Value: "+h.getValue());
 		}
 		this.owner=owner;
 		if(body==null) return;
 		
 		try {
-			//TODO: test what happens when no ads are returned
-			//TODO: test what happens when there is an error returned
 			JSONObject response = new JSONObject(body);
+			String status = response.getString("status");
+			if(status.equals("error")){
+				String error = response.getString("errorMessage");
+				Clog.e("OPENSDK-RESPONSE", "The server replied with an error: "+error);
+				return;
+			}
 			JSONArray ads = response.getJSONArray("ads");
 			//is the array empty? if so, no ads were returned, and we need to fail gracefully
 			if(ads.length()==0){
+				Clog.w("OPENSDK-RESPONSE", "The server responded, but didn't return any ads.");
 				return;
 			}
 			//for now, just take the first ad
@@ -40,7 +43,7 @@ public class AdResponse {
 			this.body = firstAd.getString("content");
 			type= firstAd.getString("type");
 		} catch (JSONException e) {
-			Clog.e("OPENSDK", "There was an error parsing the JSON response: "+body);
+			Clog.e("OPENSDK-RESPONSE", "There was an error parsing the JSON response: "+body);
 			//e.printStackTrace();
 			return;
 		}

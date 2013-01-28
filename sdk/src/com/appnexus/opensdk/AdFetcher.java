@@ -66,7 +66,7 @@ public class AdFetcher {
 		final int msPeriod = period <= 0 ? 60 * 1000 : period;
 
 		if (!getAutoRefresh()) {
-			Clog.d("OPENSDK", "AdFetcher started in single-use mode");
+			Clog.v("OPENSDK", "AdFetcher started in single-use mode");
 			// Request an ad once
 			tasker.schedule(new Runnable() {
 				@Override
@@ -76,14 +76,14 @@ public class AdFetcher {
 				}
 			}, 0, TimeUnit.SECONDS);
 		} else {
-			Clog.d("OPENSDK", "AdFetcher started in autorefresh-mode");
+			Clog.v("OPENSDK", "AdFetcher started in autorefresh-mode");
 			// Start recurring ad requests
 			long stall = msPeriod-pauseDuration>0?msPeriod-pauseDuration:0;
-			Clog.d("OPENSDK", "Ad request will be delayed "+stall+"ms to account for idletime");
+			Clog.v("OPENSDK", "Ad request will be delayed "+stall+"ms to account for idletime");
 			tasker.schedule(new Runnable(){
 				@Override
 				public void run(){
-					Clog.d("OPENSDK", "Ad Request delay has ended, scheduling recurring ad fetches at "+msPeriod+"ms.");
+					Clog.v("OPENSDK", "Ad Request delay has ended, scheduling recurring ad fetches at "+msPeriod+"ms.");
 					tasker.scheduleAtFixedRate(new Runnable() {
 						@Override
 						public void run() {
@@ -111,7 +111,7 @@ public class AdFetcher {
 			if(mFetcher.get()==null) return;
 			
 			// Update last fetch time once
-			Clog.i("OPENSDK", "Fetching a new ad for the first time in "+(int)(System.currentTimeMillis()-mFetcher.get().lastFetchTime)+"ms");
+			Clog.d("OPENSDK", "Fetching a new ad for the first time in "+(int)(System.currentTimeMillis()-mFetcher.get().lastFetchTime)+"ms");
 			mFetcher.get().lastFetchTime = System.currentTimeMillis();
 			//If we need to reset, reset.
 			if(mFetcher.get().shouldReset){

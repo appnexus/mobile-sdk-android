@@ -179,7 +179,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			Clog.e("OPENSDK",
 					"Ad couldn't be fetched due to io error, probably http related.");
 			return null;
-		}*/
+		}*///Leave this commented to figure out what other exceptions might come up during testing!
 		return new AdResponse(owner, out.toString(), r.getAllHeaders());
 	}
 
