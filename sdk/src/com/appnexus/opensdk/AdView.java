@@ -24,7 +24,8 @@ public class AdView extends FrameLayout {
 	private int height=-1;
 	private BroadcastReceiver receiver;
 	private boolean receiverRegistered=false;
-
+	private boolean running=false;
+	
 	/** Begin Construction **/
 
 	public AdView(Context context){
@@ -89,16 +90,21 @@ public class AdView extends FrameLayout {
 	@Override
 	public final void onLayout(boolean changed, int left, int top, int right, int bottom){
 		super.onLayout(changed, left, top, right, bottom);
-		if(!measured){
+		if(!measured || changed){
 			//Convert to dips
 			float density = getContext().getResources().getDisplayMetrics().density;
 			measuredWidth = (int)((right - left)/density + 0.5f);
-			measuredHeight = (int)((bottom - top)/density + 0.5f);;
+			measuredHeight = (int)((bottom - top)/density + 0.5f);
+			if(measuredHeight<height || measuredWidth<width ){
+				Clog.e("OPENSDK", "You requested an Ad larger than the measured ad space. Ad space size: "+measuredWidth+"x"+measuredHeight+", request size: "+width+"x"+height);
+				//Hide the space, since no ad will be loaded due to error
+				hide();
+				//Stop any request in progress
+				if(mAdFetcher!=null) mAdFetcher.stop();
+				//Returning here allows the SDK to re-request when the layout next changes, and maybe the error will be amended. 
+				return;
+			}
 			measured = true;
-			//See if the developer specified a size before using the AdView size
-			if(width==-1) width=measuredWidth;
-			if(height==-1) height=measuredHeight;
-			Clog.d("OPENSDK", "Using wxh "+width+"x"+height);
 			
 			// Hide the adview
 			hide();
@@ -135,6 +141,7 @@ public class AdView extends FrameLayout {
 	public void start() {
 		Clog.d("OPENSDK-INTERFACE", "start()");
 		mAdFetcher.start();
+		running=true;
 	}
 
 	public void pause() {
@@ -144,6 +151,7 @@ public class AdView extends FrameLayout {
 	public void stop() {
 		Clog.d("OPENSDK-INTERFACE", "stop()");
 		mAdFetcher.stop();
+		running=false;
 	}
 
 	private void loadVariablesFromXML(Context context, AttributeSet attrs) {
@@ -258,7 +266,7 @@ public class AdView extends FrameLayout {
 				receiverRegistered=true;
 			}
 			Clog.d("OPENSDK", "The AdView has been unhidden.");
-			if (mAdFetcher != null)
+			if (mAdFetcher != null && running)
 				mAdFetcher.start();
 		} else {
 			//Unregister the receiver to prevent a leak.
@@ -267,8 +275,10 @@ public class AdView extends FrameLayout {
 				receiverRegistered=false;
 			}
 			Clog.d("OPENSDK", "The AdView has been hidden.");
-			if (mAdFetcher != null)
+			if (mAdFetcher != null && running){
 				mAdFetcher.stop();
+				running = false;
+			}
 		}
 	}
 	
@@ -291,4 +301,13 @@ public class AdView extends FrameLayout {
 		Clog.d("OPENSDK-INTERFACE", "getAdWidth() returned:"+width);
 		return width;
 	}
+	
+	protected int getContainerWidth(){
+		return measuredWidth;
+	}
+	
+	protected int getContainerHeight(){
+		return measuredHeight;
+	}
+	
 }

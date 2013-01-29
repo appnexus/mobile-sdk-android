@@ -44,6 +44,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	String orientation;
 	int width = -1;
 	int height = -1;
+	int maxWidth = -1;
+	int maxHeight = -1;
 
 	/**
 	 * 
@@ -100,6 +102,10 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		// Get wxh
 		this.width = owner.getAdWidth();
 		this.height = owner.getAdHeight();
+		
+		maxHeight = owner.getContainerHeight();
+		maxWidth = owner.getContainerWidth();
+		
 	}
 
 	String getRequestUrl() {
@@ -122,8 +128,9 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				+ (ua != null ? "&ua=" + Uri.encode(ua) : "")
 				+ (orientation != null ? "&orientation=" + orientation : "")
 				+ ((width > 0 && height > 0) ? "&size=" + width + "x" + height
-						: "") + "&sdkver="
-				+ Uri.encode(Settings.getSettings().sdkVersion);
+						: "") 
+				+ ((maxHeight > 0 && maxWidth>0)? "&max-size="+maxWidth+"x"+maxHeight:"")
+				+ "&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion);
 	}
 
 	/**

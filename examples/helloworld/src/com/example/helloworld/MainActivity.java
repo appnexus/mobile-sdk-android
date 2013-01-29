@@ -18,8 +18,8 @@ public class MainActivity extends Activity {
 		RelativeLayout rl = (RelativeLayout)(findViewById(R.id.mainview));
 		AdView av = new AdView(this);
 		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, 100);
-/*		av.setAdHeight(50);
-		av.setAdWidth(640);*/
+		av.setAdHeight(50);
+		av.setAdWidth(320);
 		av.setLayoutParams(lp);
 		av.setPlacementID("656561");
 		rl.addView(av);
