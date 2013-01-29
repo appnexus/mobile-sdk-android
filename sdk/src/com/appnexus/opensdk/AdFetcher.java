@@ -46,6 +46,11 @@ public class AdFetcher {
 	}
 
 	protected void start() {
+		//Better have a placement ID!
+		if(owner.getPlacementID()==null){
+			Clog.e("OPENSDK", "No placement ID set.");
+			return;
+		}
 		if (tasker != null) {
 			Clog.d("OPENSDK",
 					"AdFetcher requested to start, but tasker already instantiated");
