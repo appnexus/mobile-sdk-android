@@ -247,9 +247,7 @@ public class AdView extends FrameLayout {
 	protected void finalize() {
 		try {
 			super.finalize();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
+		} catch (Throwable e){}
 		// Just in case, kill the adfetcher's service
 		if (mAdFetcher != null)
 			mAdFetcher.stop();

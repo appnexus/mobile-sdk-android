@@ -111,7 +111,7 @@ public class AdFetcher {
 		}
 
 		@Override
-		public void handleMessage(Message msg) {
+		synchronized public void handleMessage(Message msg) {
 			// If the adfetcher, for some reason, has vanished, do nothing with this message
 			if(mFetcher.get()==null) return;
 			

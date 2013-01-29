@@ -16,10 +16,14 @@ public class AdResponse {
 	public AdResponse(AdView owner, String body, Header[] headers) {
 		Clog.d("OPENSDK-RESPONSE", "Response body: "+body);
 		for(Header h : headers){
-			Clog.v("OPENSDKHTTP-RESPONSE", "Header: "+h.getName()+" Value: "+h.getValue());
+			Clog.v("OPENSDK-RESPONSE", "Header: "+h.getName()+" Value: "+h.getValue());
 		}
 		this.owner=owner;
 		if(body==null) return;
+		if(body.equals("")){
+			Clog.e("OPENSDK-RESPONSE", "The server returned a blank response.");
+			return;
+		}
 		
 		try {
 			JSONObject response = new JSONObject(body);
@@ -44,7 +48,7 @@ public class AdResponse {
 			type= firstAd.getString("type");
 		} catch (JSONException e) {
 			Clog.e("OPENSDK-RESPONSE", "There was an error parsing the JSON response: "+body);
-			//e.printStackTrace();
+			e.printStackTrace();
 			return;
 		}
 		

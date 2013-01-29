@@ -25,9 +25,7 @@ public class HashingFunctions {
 			}
 			return buf.toString();
 
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
+		} catch (NoSuchAlgorithmException e) {}
 		return "";
 	}
 
@@ -52,9 +50,7 @@ public class HashingFunctions {
 			}
 			return buf.toString();
 
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
+		} catch (NoSuchAlgorithmException e) {}
 		return "";
 	}
 }

@@ -174,19 +174,18 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				Clog.e("OPENSDK-REQUEST", he.getHost().getHostName() + ":"
 						+ he.getHost().getPort() + " is unreachable.");
 			} else {
-				e.printStackTrace();
 				Clog.e("OPENSDK-REQUEST",
 						"Ad couldn't be fetched due to io error, probably http related.");
 			}
 			return null;
 		} catch (SecurityException se){
 			Clog.e("OPENSDK", "The SDK needs permission INTERNET in the host app.");
-		}/* catch (Exception e) {
+		}catch (Exception e) {
 			e.printStackTrace();
 			Clog.e("OPENSDK",
-					"Ad couldn't be fetched due to io error, probably http related.");
+					"Ad couldn't be fetched due to uncaught exception, see above trace.");
 			return null;
-		}*///Leave this commented to figure out what other exceptions might come up during testing!
+		}//Leave this commented to figure out what other exceptions might come up during testing!
 		return new AdResponse(owner, out.toString(), r.getAllHeaders());
 	}
 
