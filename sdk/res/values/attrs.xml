@@ -2,7 +2,7 @@
 <resources>
     <declare-styleable name="AdView">
         <attr name="placement_id" format="string" />
-        <attr name="period" format="integer" />
+        <attr name="auto_refresh_interval" format="integer" />
         <attr name="test" format="boolean" />
         <attr name="auto_refresh" format="boolean" />
         <attr name="width" format="integer" />

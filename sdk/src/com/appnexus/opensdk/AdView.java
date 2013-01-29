@@ -167,9 +167,9 @@ public class AdView extends FrameLayout {
 				setPlacementID(a.getString(attr));
 				Clog.d("OPENSDK-XML", "Placement id=" + getPlacementID());
 				break;
-			case R.styleable.AdView_period:
-				setPeriod(a.getInt(attr, 60 * 1000));
-				Clog.d("OPENSDK-XML", "Period set to "+getPeriod()+"ms in xml");
+			case R.styleable.AdView_auto_refresh_interval:
+				setAutoRefreshInterval(a.getInt(attr, 60 * 1000));
+				Clog.d("OPENSDK-XML", "Period set to "+getAutoRefreshInterval()+"ms in xml");
 				break;
 			case R.styleable.AdView_test:
 				Settings.getSettings().test_mode = a.getBoolean(attr, false);
@@ -213,13 +213,13 @@ public class AdView extends FrameLayout {
 			setVisibility(GONE);
 	}
 
-	public int getPeriod() {
-		Clog.d("OPENSDK-INTERFACE", "getPeriod() returned:"+period);
+	public int getAutoRefreshInterval() {
+		Clog.d("OPENSDK-INTERFACE", "getAutoRefreshInterval() returned:"+period);
 		return period;
 	}
 
-	public void setPeriod(int period) {
-		Clog.d("OPENSDK-INTERFACE", "setPeriod() to:"+period);
+	public void setAutoRefreshInterval(int period) {
+		Clog.d("OPENSDK-INTERFACE", "setAutoRefreshInterval() to:"+period);
 		this.period = period;
 	}
 
