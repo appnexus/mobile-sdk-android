@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:opensdk="http://schemas.android.com/apk/res/com.example.helloworld"
    	android:id="@+id/mainview"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,8 +8,8 @@
 
     <!-- xmlns:opensdk="http://schemas.android.com/apk/res/com.example.helloworld" -->
 
-<!--     
-    <com.appnexus.opensdk.AdView
+     
+    <!--<com.appnexus.opensdk.AdView
         android:id="@+id/ad"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -16,7 +17,7 @@
         opensdk:width="320"
         opensdk:height="50"
         opensdk:auto_refresh="false"
-        opensdk:period="15000"/> -->
+        opensdk:auto_refresh_interval="15000"/>-->
 
 
     <TextView
