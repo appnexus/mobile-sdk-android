@@ -38,7 +38,7 @@ public class AdFetcher {
 	protected void stop() {
 		if (tasker == null)
 			return; // You can't stop the signal Mal
-		Clog.d(Settings.getSettings().baseLogTag, "AdFetcher stopped");
+		Clog.d(Clog.baseLogTag, Clog.getString(R.string.stop));
 		tasker.shutdownNow();
 		tasker = null;
 		timePausedAt=System.currentTimeMillis();
@@ -48,15 +48,15 @@ public class AdFetcher {
 	protected void start() {
 		//Better have a placement ID!
 		if(owner.getPlacementID()==null){
-			Clog.e(Settings.getSettings().baseLogTag, "No placement ID set.");
+			Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_placement_id));
 			return;
 		}
 		if (tasker != null) {
-			Clog.d(Settings.getSettings().baseLogTag,
-					"AdFetcher requested to start, but tasker already instantiated");
+			Clog.d(Clog.baseLogTag,
+					Clog.getString(R.string.moot_restart));
 			return;
 		}
-		Clog.d(Settings.getSettings().baseLogTag, "AdFetcher starting");
+		Clog.d(Clog.baseLogTag, Clog.getString(R.string.moot_restart));
 		if(timePausedAt!=-1){
 			pauseDuration+=System.currentTimeMillis()-timePausedAt;
 		}
@@ -71,28 +71,28 @@ public class AdFetcher {
 		final int msPeriod = period <= 0 ? 60 * 1000 : period;
 
 		if (!getAutoRefresh()) {
-			Clog.v(Settings.getSettings().baseLogTag, "AdFetcher started in single-use mode");
+			Clog.v(Clog.baseLogTag, Clog.getString(R.string.fetcher_start_single));
 			// Request an ad once
 			tasker.schedule(new Runnable() {
 				@Override
 				public void run() {
-					Clog.v(Settings.getSettings().baseLogTag, "AdRequest message passed to handler.");
+					Clog.v(Clog.baseLogTag, Clog.getString(R.string.handler_message_pass));
 					handler.sendEmptyMessage(0);
 				}
 			}, 0, TimeUnit.SECONDS);
 		} else {
-			Clog.v(Settings.getSettings().baseLogTag, "AdFetcher started in auto-refresh mode");
+			Clog.v(Clog.baseLogTag, Clog.getString(R.string.fetcher_start_auto));
 			// Start recurring ad requests
 			long stall = msPeriod-pauseDuration>0?msPeriod-pauseDuration:0;
-			Clog.v(Settings.getSettings().baseLogTag, "Ad request will be delayed "+stall+"ms to account for idletime");
+			Clog.v(Clog.baseLogTag, Clog.getString(R.string.request_delayed_by_x_ms, stall));
 			tasker.schedule(new Runnable(){
 				@Override
 				public void run(){
-					Clog.v(Settings.getSettings().baseLogTag, "Ad Request delay has ended, scheduling recurring ad fetches at "+msPeriod+"ms.");
+					Clog.v(Clog.baseLogTag, Clog.getString(R.string.request_delayed_by_x_ms, msPeriod));
 					tasker.scheduleAtFixedRate(new Runnable() {
 						@Override
 						public void run() {
-							Clog.v(Settings.getSettings().baseLogTag, "AdRequest message passed to handler.");
+							Clog.v(Clog.baseLogTag, Clog.getString(R.string.handler_message_pass));
 							handler.sendEmptyMessage(0);
 						}
 					}, 0, msPeriod, TimeUnit.MILLISECONDS);
@@ -126,7 +126,7 @@ public class AdFetcher {
 			mFetcher.get().pauseDuration=0;
 			
 			// Update last fetch time once
-			Clog.d(Settings.getSettings().baseLogTag, "Fetching a new ad for the first time in "+(int)(System.currentTimeMillis()-mFetcher.get().lastFetchTime)+"ms");
+			Clog.d(Clog.baseLogTag, Clog.getString(R.string.new_ad_since, (int)(System.currentTimeMillis()-mFetcher.get().lastFetchTime)));
 			mFetcher.get().lastFetchTime = System.currentTimeMillis();
 			
 			// Spawn an AdRequest

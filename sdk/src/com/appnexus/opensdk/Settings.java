@@ -15,22 +15,22 @@ public class Settings {
 	String ua=null;
 	boolean first_launch;
 	final String sdkVersion = "1.0";
-	final String baseLogTag = "OPENSDK";
-	final String publicFunctionsLogTag = "-INTERFACE";
-	final String httpReqLogTag = "-REQUEST";
-	final String httpRespLogTag = "-RESPONSE";
+	
 	//final String BASE_URL = "http://asweeney.adnxs.net:2048/mob?";
 	final String BASE_URL = "http://mobile-dev.adnxs.net/mob?";
 	//final String BASE_URL = "http://shuf.ro/anmob/json/?";
 	//final String BASE_URL = "http://shuf.ro/anmob/noads/?";
 	//final String BASE_URL = "http://shuf.ro/anmob/error/?";
 	
+	
+	//STATICS
 	private static Settings settings_instance=null;
 	public static Settings getSettings(){
 		if(settings_instance==null){
 			settings_instance=new Settings();
-			Clog.v(Settings.getSettings().baseLogTag, "The AppNexus "+getSettings().baseLogTag+" is initializing.");
+			Clog.v(Clog.baseLogTag, "The AppNexus "+Clog.baseLogTag+" is initializing.");
 		}
 		return settings_instance;
 	}
+
 }

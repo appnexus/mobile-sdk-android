@@ -24,8 +24,8 @@ public class MainActivity extends Activity {
 		av.setAdWidth(320);
 		av.setLayoutParams(lp);
 		av.setPlacementID("656561");
+		av.setAutoRefresh(true);
 		rl.addView(av);
-		av.loadAd();
 	}
 
 	@Override

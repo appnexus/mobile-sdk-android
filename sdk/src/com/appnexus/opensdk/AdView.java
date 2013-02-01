@@ -25,6 +25,7 @@ public class AdView extends FrameLayout {
 	private BroadcastReceiver receiver;
 	private boolean receiverRegistered=false;
 	private boolean running=false;
+	private boolean shouldReloadOnResume=false;
 	
 	/** Begin Construction **/
 
@@ -45,20 +46,21 @@ public class AdView extends FrameLayout {
 	}
 
 	private void setup(Context context, AttributeSet attrs) {
-		Clog.d(Settings.getSettings().baseLogTag+Settings.getSettings().publicFunctionsLogTag, "new AdView()");
+		// Store self.context in the settings for errors
+		Clog.error_context = this.getContext();
+		
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.new_adview));
 		// Determine if this is the first launch.
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		if (prefs.getBoolean("opensdk_first_launch", true)) {
 			// This is the first launch, store a value to remember
-			Clog.v(Settings.getSettings().baseLogTag,
-					"This is the first time OpenSDK has been launched in this app.");
+			Clog.v(Clog.baseLogTag,Clog.getString(R.string.first_opensdk_launch));
 			Settings.getSettings().first_launch = true;
 			prefs.edit().putBoolean("opensdk_first_launch", false).commit();
 		} else {
 			// Found the stored value, this is NOT the first launch
-			Clog.v(Settings.getSettings().baseLogTag,
-					"This is not the first OpenSDK launch in this app.");
+			Clog.v(Clog.baseLogTag,Clog.getString(R.string.not_first_opensdk_launch));
 			Settings.getSettings().first_launch = false;
 		}
 
@@ -71,14 +73,14 @@ public class AdView extends FrameLayout {
 		// Store the UA in the settings
 		Settings.getSettings().ua = new WebView(context).getSettings()
 				.getUserAgentString();
-		Clog.v(Settings.getSettings().baseLogTag, "Your user-agent string is: "+Settings.getSettings().ua);
+		Clog.v(Clog.baseLogTag, Clog.getString(R.string.ua, Settings.getSettings().ua));
 
 		// Store the AppID in the settings
 		Settings.getSettings().app_id = context.getApplicationContext()
 				.getPackageName();
-		Clog.v(Settings.getSettings().baseLogTag, "Saving "+Settings.getSettings().app_id+" as your app-id");
-
-		Clog.v(Settings.getSettings().baseLogTag, "Making an AdManager to begin fetching ads");
+		Clog.v(Clog.baseLogTag, Clog.getString(R.string.appid, Settings.getSettings().app_id));
+		
+		Clog.v(Clog.baseLogTag, Clog.getString(R.string.making_adman));
 		// Make an AdFetcher - Continue the creation pass
 		mAdFetcher = new AdFetcher(this);
 		mAdFetcher.setPeriod(period);
@@ -96,7 +98,7 @@ public class AdView extends FrameLayout {
 			measuredWidth = (int)((right - left)/density + 0.5f);
 			measuredHeight = (int)((bottom - top)/density + 0.5f);
 			if(measuredHeight<height || measuredWidth<width ){
-				Clog.e(Settings.getSettings().baseLogTag, "You requested an Ad larger than the measured ad space. Ad space size: "+measuredWidth+"x"+measuredHeight+", request size: "+width+"x"+height);
+				Clog.e(Clog.baseLogTag, Clog.getString(R.string.adsize_too_big, measuredWidth, measuredHeight, width, height));
 				//Hide the space, since no ad will be loaded due to error
 				hide();
 				//Stop any request in progress
@@ -109,13 +111,19 @@ public class AdView extends FrameLayout {
 			// Hide the adview
 			hide();
 			// Start the ad pass if auto is enabled
-			if(this.auto_refresh)
-				start();
-			else if(this.running){
+			if(this.auto_refresh){
+				if(!receiverRegistered){
+					setupBroadcast(getContext());
+					receiverRegistered=true;
+				}
 				start();
 			}
 		}
 		if(running){
+			if(!receiverRegistered){
+				setupBroadcast(getContext());
+				receiverRegistered=true;
+			}
 			start();
 		}
 	}
@@ -143,12 +151,15 @@ public class AdView extends FrameLayout {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF) && AdView.this.auto_refresh) {
+				if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
 					stop();
-					Clog.d(Settings.getSettings().baseLogTag, "Stopped ad requests since screen is off");
-				} else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON) && AdView.this.auto_refresh) {
-					start();
-					Clog.d(Settings.getSettings().baseLogTag, "Started ad requests since screen is on");
+					Clog.d(Clog.baseLogTag, Clog.getString(R.string.screen_off_stop));
+				} else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
+					if(auto_refresh)
+						start(); //TODO unpause
+					else if (shouldReloadOnResume)
+						start();
+					Clog.d(Clog.baseLogTag, Clog.getString(R.string.screen_on_start));
 				}// TODO: Airplane mode
 
 			}
@@ -162,13 +173,13 @@ public class AdView extends FrameLayout {
 	}
 
 	public void start() {
-		Clog.d(Settings.getSettings().baseLogTag+Settings.getSettings().publicFunctionsLogTag, "start()");
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.start));
 		mAdFetcher.start();
 		running=true;
 	}
 
 	public void stop() {
-		Clog.d(Settings.getSettings().baseLogTag+Settings.getSettings().publicFunctionsLogTag, "stop()");
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.stop));
 		mAdFetcher.stop();
 		running=false;
 	}
@@ -178,34 +189,37 @@ public class AdView extends FrameLayout {
 				.obtainStyledAttributes(attrs, R.styleable.AdView);
 
 		final int N = a.getIndexCount();
-		Clog.v("OPENSDK-XML", "Found " + N + " variables to read from xml");
+		Clog.v(Clog.xmlLogTag, Clog.getString(R.string.found_n_in_xml, N));
 		for (int i = 0; i < N; ++i) {
 			int attr = a.getIndex(i);
 			switch (attr) {
 			case R.styleable.AdView_placement_id:
 				setPlacementID(a.getString(attr));
-				Clog.d("OPENSDK-XML", "Placement id=" + getPlacementID());
+				Clog.d(Clog.xmlLogTag, Clog.getString(R.string.placement_id, this.placementID));
 				break;
 			case R.styleable.AdView_auto_refresh_interval:
 				setAutoRefreshInterval(a.getInt(attr, 60 * 1000));
-				Clog.d("OPENSDK-XML", "Period set to "+getAutoRefreshInterval()+"ms in xml");
+				Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_set_period, period));
 				break;
 			case R.styleable.AdView_test:
 				Settings.getSettings().test_mode = a.getBoolean(attr, false);
-				Clog.d("OPENSDK-XML", "Test mode set to "+Settings.getSettings().test_mode+" in xml");
+				Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_set_test, Settings.getSettings().test_mode));
 				break;
 			case R.styleable.AdView_auto_refresh:
 				setAutoRefresh(a.getBoolean(attr, false));
-				Clog.d("OPENSDK-XML", "Auto-refresh is set to "+getAutoRefresh()+" in xml");
+				Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_set_auto_refresh, auto_refresh));
 				break;
 			case R.styleable.AdView_width:
 				setAdWidth(a.getInt(attr, -1));
-				Clog.d("OPENSDK-XML", "Ad width set to "+getAdWidth()+" in xml");
+				Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_ad_width, width));
 				break;
 			case R.styleable.AdView_height:
 				setAdHeight(a.getInt(attr, -1));
-				Clog.d("OPENSDK-XML", "Ad height set to "+getAdWidth()+" in xml");
+				Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_ad_height, height));
 				break;
+			case R.styleable.AdView_should_reload_on_resume:
+				setShouldReloadOnResume(a.getBoolean(attr, false));
+				Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_set_should_reload, shouldReloadOnResume));
 			}
 		}
 		a.recycle();
@@ -223,8 +237,10 @@ public class AdView extends FrameLayout {
 	}
 
 	protected void show() {
-		if (getVisibility() != VISIBLE)
+		if (getVisibility() != VISIBLE){
+			this.requesting_visible = true;
 			setVisibility(VISIBLE);
+		}
 	}
 
 	protected void hide() {
@@ -233,22 +249,22 @@ public class AdView extends FrameLayout {
 	}
 
 	public int getAutoRefreshInterval() {
-		Clog.d(Settings.getSettings().baseLogTag+Settings.getSettings().publicFunctionsLogTag, "getAutoRefreshInterval() returned:"+period);
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.get_period, period));
 		return period;
 	}
 
 	public void setAutoRefreshInterval(int period) {
-		Clog.d(Settings.getSettings().baseLogTag+Settings.getSettings().publicFunctionsLogTag, "setAutoRefreshInterval() to:"+period);
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_period, period));
 		this.period = period;
 	}
 
 	public boolean getAutoRefresh() {
-		Clog.d(Settings.getSettings().baseLogTag+Settings.getSettings().publicFunctionsLogTag, "getAutoRefresh() returned:"+auto_refresh);
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.get_auto_refresh, auto_refresh));
 		return auto_refresh;
 	}
 
 	public void setAutoRefresh(boolean auto_refresh) {
-		Clog.d(Settings.getSettings().baseLogTag+Settings.getSettings().publicFunctionsLogTag, "setAutoRefresh() to:"+auto_refresh);
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_auto_refresh, auto_refresh));
 		this.auto_refresh = auto_refresh;
 		if(!running){
 			running=true;
@@ -257,12 +273,12 @@ public class AdView extends FrameLayout {
 	}
 
 	public String getPlacementID() {
-		Clog.d(Settings.getSettings().baseLogTag+Settings.getSettings().publicFunctionsLogTag, "getPlacementID() returned:"+placementID);
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.get_placement_id, placementID));
 		return placementID;
 	}
 
 	public void setPlacementID(String placementID) {
-		Clog.d(Settings.getSettings().baseLogTag+Settings.getSettings().publicFunctionsLogTag, "setPlacementID() to:"+placementID);
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_placement_id, placementID));
 		this.placementID = placementID;
 	}
 
@@ -275,7 +291,8 @@ public class AdView extends FrameLayout {
 		if (mAdFetcher != null)
 			mAdFetcher.stop();
 	}
-
+	
+	private boolean requesting_visible=false;
 	@Override
 	public void onWindowVisibilityChanged(int visibility) {
 		super.onWindowVisibilityChanged(visibility);
@@ -286,16 +303,20 @@ public class AdView extends FrameLayout {
 				setupBroadcast(getContext());
 				receiverRegistered=true;
 			}
-			Clog.d(Settings.getSettings().baseLogTag, "The AdView has been unhidden.");
-			if (mAdFetcher != null && running)
+			Clog.d(Clog.baseLogTag, Clog.getString(R.string.unhidden));
+			if (mAdFetcher != null && running && shouldReloadOnResume && !requesting_visible)
 				mAdFetcher.start();
+			else{
+				//Were' not displaying the adview, the system is
+				requesting_visible=false;
+			}
 		} else {
 			//Unregister the receiver to prevent a leak.
 			if(receiverRegistered){
 				dismantleBroadcast();
 				receiverRegistered=false;
 			}
-			Clog.d(Settings.getSettings().baseLogTag, "The AdView has been hidden.");
+			Clog.d(Clog.baseLogTag, Clog.getString(R.string.hidden));
 			if (mAdFetcher != null && running){
 				mAdFetcher.stop();
 				running = false;
@@ -304,22 +325,22 @@ public class AdView extends FrameLayout {
 	}
 	
 	public void setAdHeight(int h){
-		Clog.d(Settings.getSettings().baseLogTag+Settings.getSettings().publicFunctionsLogTag, "setAdHeight() to:"+h);
+		Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_height, h));
 		height=h;
 	}
 	
 	public void setAdWidth(int w){
-		Clog.d(Settings.getSettings().baseLogTag+Settings.getSettings().publicFunctionsLogTag, "setAdWidth() to:"+w);
+		Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_width, w));
 		width=w;
 	}
 	
 	public int getAdHeight(){
-		Clog.d(Settings.getSettings().baseLogTag+Settings.getSettings().publicFunctionsLogTag, "getAdHeight() returned:"+height);
+		Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_height, height));
 		return height;
 	}
 	
 	public int getAdWidth(){
-		Clog.d(Settings.getSettings().baseLogTag+Settings.getSettings().publicFunctionsLogTag, "getAdWidth() returned:"+width);
+		Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_width, width));
 		return width;
 	}
 	
@@ -329,6 +350,17 @@ public class AdView extends FrameLayout {
 	
 	protected int getContainerHeight(){
 		return measuredHeight;
+	}
+
+	@SuppressWarnings("unused")
+	private boolean getShouldReloadOnResume() {
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.get_should_resume, shouldReloadOnResume));
+		return shouldReloadOnResume;
+	}
+
+	private void setShouldReloadOnResume(boolean shouldReloadOnResume) {
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_should_resume, shouldReloadOnResume));
+		this.shouldReloadOnResume = shouldReloadOnResume;
 	}
 	
 }

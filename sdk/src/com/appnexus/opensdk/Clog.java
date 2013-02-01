@@ -1,5 +1,6 @@
 package com.appnexus.opensdk;
 
+import android.content.Context;
 import android.util.Log;
 
 public class Clog{
@@ -33,5 +34,34 @@ public class Clog{
 	}
 	static void e(String LogTag, String message, Throwable tr){
 		if(!clogged) Log.e(LogTag, message, tr);
+	}
+	
+	
+	protected static String baseLogTag = "OPENSDK";
+	protected static String publicFunctionsLogTag = baseLogTag+"-INTERFACE";
+	protected static String httpReqLogTag = baseLogTag+"-REQUEST";
+	protected static String httpRespLogTag = baseLogTag+"-RESPONSE";
+	protected static String xmlLogTag = baseLogTag+"-XML";
+	protected static Context error_context;
+	protected static String getString(int id){
+		return error_context.getString(id);
+	}
+	protected static String getString(int id, long l){
+		return String.format(error_context.getString(id), l);
+	}
+	protected static String getString(int id, String s){
+		return String.format(error_context.getString(id), s);
+	}
+	protected static String getString(int id, String s, int i){
+		return String.format(error_context.getString(id), s, i);
+	}
+	protected static String getString(int id, int a, int b, int c, int d){
+		return String.format(error_context.getString(id), a, b, c, d);
+	}
+	protected static String getString(int id, boolean b){
+		return String.format(error_context.getString(id), b);
+	}
+	protected static String getString(int id, String s, String ss){
+		return String.format(error_context.getString(id), s, ss);
 	}
 }

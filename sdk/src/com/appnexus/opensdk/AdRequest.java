@@ -71,7 +71,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			lon = lastLocation != null ? "" + lastLocation.getLongitude()
 					: null;
 		}else{
-			Clog.w(Settings.getSettings().baseLogTag, "Permissions for location aren't set in the host app. This may affect demand.");
+			Clog.w(Clog.baseLogTag, Clog.getString(R.string.permissions_missing_location));
 		}
 		// Get orientation, the current rotation of the device
 		orientation = owner.getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? "landscape"
@@ -141,19 +141,19 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		// Double check network connectivity before continuing
 		if (owner.getContext().checkCallingOrSelfPermission(
 				"android.permission.ACCESS_NETWORK_STATE") != PackageManager.PERMISSION_GRANTED){
-			Clog.e(Settings.getSettings().baseLogTag, "The SDK needs permission ACCESS_NETWORK_STATE in the host app.");
+			Clog.e(Clog.baseLogTag, Clog.getString(R.string.permissions_missing_network_state));
 			return null;
 		}
 		NetworkInfo ninfo = ((ConnectivityManager) owner.getContext()
 				.getSystemService(Context.CONNECTIVITY_SERVICE))
 				.getActiveNetworkInfo();
 		if (ninfo == null || !ninfo.isConnectedOrConnecting()) {
-			Clog.d(Settings.getSettings().baseLogTag+Settings.getSettings().httpReqLogTag,
-					"Abandoning AdRequest because there is no network connectivity");
+			Clog.d(Clog.httpReqLogTag,
+					Clog.getString(R.string.no_connectivity));
 			return null;
 		}
 		String query_string = getRequestUrl();
-		Clog.d(Settings.getSettings().baseLogTag+Settings.getSettings().httpReqLogTag, "Fetching: " + query_string);
+		Clog.d(Clog.httpReqLogTag, Clog.getString(R.string.fetch_url, query_string));
 		DefaultHttpClient h = new DefaultHttpClient();
 		HttpResponse r = null;
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -162,28 +162,27 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			r.getEntity().writeTo(out);
 			out.close();
 		} catch (ClientProtocolException e) {
-			Clog.e(Settings.getSettings().baseLogTag+Settings.getSettings().httpReqLogTag,
-					"Couldn't reach the ad server even though network connectivity was detected. Is the server down?");
+			Clog.e(Clog.httpReqLogTag,
+					Clog.getString(R.string.http_unknown));
 			return null;
 		} catch (ConnectTimeoutException e) {
-			Clog.e(Settings.getSettings().baseLogTag+Settings.getSettings().httpReqLogTag, "Connection to ad server timed out.");
+			Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_timeout));
 			return null;
 		} catch (IOException e) {
 			if (e instanceof HttpHostConnectException) {
 				HttpHostConnectException he = (HttpHostConnectException) e;
-				Clog.e(Settings.getSettings().baseLogTag+Settings.getSettings().httpReqLogTag, he.getHost().getHostName() + ":"
-						+ he.getHost().getPort() + " is unreachable.");
+				Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unreachable, he.getHost().getHostName(), he.getHost().getPort()));
 			} else {
-				Clog.e(Settings.getSettings().baseLogTag+Settings.getSettings().httpReqLogTag,
-						"Ad couldn't be fetched due to io error, probably http related.");
+				Clog.e(Clog.httpReqLogTag,
+						Clog.getString(R.string.http_io));
 			}
 			return null;
 		} catch (SecurityException se){
-			Clog.e(Settings.getSettings().baseLogTag, "The SDK needs permission INTERNET in the host app.");
+			Clog.e(Clog.baseLogTag, Clog.getString(R.string.permissions_internet));
 		}catch (Exception e) {
 			e.printStackTrace();
-			Clog.e(Settings.getSettings().baseLogTag,
-					"Ad couldn't be fetched due to uncaught exception, see above trace.");
+			Clog.e(Clog.baseLogTag,
+					Clog.getString(R.string.unknown_exception));
 			return null;
 		}//Leave this commented to figure out what other exceptions might come up during testing!
 		return new AdResponse(owner, out.toString(), r.getAllHeaders());
@@ -192,7 +191,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	@Override
 	protected void onPostExecute(AdResponse result) {
 		if (result == null){
-			Clog.v(Settings.getSettings().baseLogTag+Settings.getSettings().httpRespLogTag, "Request received no response from the server");
+			Clog.v(Clog.httpRespLogTag, Clog.getString(R.string.no_response));
 			return; // http request failed
 		}
 		owner.display(result.getDisplayable());
