@@ -38,7 +38,7 @@ public class AdFetcher {
 	protected void stop() {
 		if (tasker == null)
 			return; // You can't stop the signal Mal
-		Clog.d("OPENSDK", "AdFetcher stopped");
+		Clog.d(Settings.getSettings().baseLogTag, "AdFetcher stopped");
 		tasker.shutdownNow();
 		tasker = null;
 		timePausedAt=System.currentTimeMillis();
@@ -48,15 +48,15 @@ public class AdFetcher {
 	protected void start() {
 		//Better have a placement ID!
 		if(owner.getPlacementID()==null){
-			Clog.e("OPENSDK", "No placement ID set.");
+			Clog.e(Settings.getSettings().baseLogTag, "No placement ID set.");
 			return;
 		}
 		if (tasker != null) {
-			Clog.d("OPENSDK",
+			Clog.d(Settings.getSettings().baseLogTag,
 					"AdFetcher requested to start, but tasker already instantiated");
 			return;
 		}
-		Clog.d("OPENSDK", "AdFetcher starting");
+		Clog.d(Settings.getSettings().baseLogTag, "AdFetcher starting");
 		if(timePausedAt!=-1){
 			pauseDuration+=System.currentTimeMillis()-timePausedAt;
 		}
@@ -71,28 +71,28 @@ public class AdFetcher {
 		final int msPeriod = period <= 0 ? 60 * 1000 : period;
 
 		if (!getAutoRefresh()) {
-			Clog.v("OPENSDK", "AdFetcher started in single-use mode");
+			Clog.v(Settings.getSettings().baseLogTag, "AdFetcher started in single-use mode");
 			// Request an ad once
 			tasker.schedule(new Runnable() {
 				@Override
 				public void run() {
-					Clog.v("OPENSDK", "AdRequest message passed to handler.");
+					Clog.v(Settings.getSettings().baseLogTag, "AdRequest message passed to handler.");
 					handler.sendEmptyMessage(0);
 				}
 			}, 0, TimeUnit.SECONDS);
 		} else {
-			Clog.v("OPENSDK", "AdFetcher started in auto-refresh mode");
+			Clog.v(Settings.getSettings().baseLogTag, "AdFetcher started in auto-refresh mode");
 			// Start recurring ad requests
 			long stall = msPeriod-pauseDuration>0?msPeriod-pauseDuration:0;
-			Clog.v("OPENSDK", "Ad request will be delayed "+stall+"ms to account for idletime");
+			Clog.v(Settings.getSettings().baseLogTag, "Ad request will be delayed "+stall+"ms to account for idletime");
 			tasker.schedule(new Runnable(){
 				@Override
 				public void run(){
-					Clog.v("OPENSDK", "Ad Request delay has ended, scheduling recurring ad fetches at "+msPeriod+"ms.");
+					Clog.v(Settings.getSettings().baseLogTag, "Ad Request delay has ended, scheduling recurring ad fetches at "+msPeriod+"ms.");
 					tasker.scheduleAtFixedRate(new Runnable() {
 						@Override
 						public void run() {
-							Clog.v("OPENSDK", "AdRequest message passed to handler.");
+							Clog.v(Settings.getSettings().baseLogTag, "AdRequest message passed to handler.");
 							handler.sendEmptyMessage(0);
 						}
 					}, 0, msPeriod, TimeUnit.MILLISECONDS);
@@ -126,7 +126,7 @@ public class AdFetcher {
 			mFetcher.get().pauseDuration=0;
 			
 			// Update last fetch time once
-			Clog.d("OPENSDK", "Fetching a new ad for the first time in "+(int)(System.currentTimeMillis()-mFetcher.get().lastFetchTime)+"ms");
+			Clog.d(Settings.getSettings().baseLogTag, "Fetching a new ad for the first time in "+(int)(System.currentTimeMillis()-mFetcher.get().lastFetchTime)+"ms");
 			mFetcher.get().lastFetchTime = System.currentTimeMillis();
 			
 			// Spawn an AdRequest

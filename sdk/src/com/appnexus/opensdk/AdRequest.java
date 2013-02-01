@@ -71,7 +71,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			lon = lastLocation != null ? "" + lastLocation.getLongitude()
 					: null;
 		}else{
-			Clog.w("OPENSDK", "Permissions for location aren't set in the host app. This may affect demand.");
+			Clog.w(Settings.getSettings().baseLogTag, "Permissions for location aren't set in the host app. This may affect demand.");
 		}
 		// Get orientation, the current rotation of the device
 		orientation = owner.getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? "landscape"
@@ -141,19 +141,19 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		// Double check network connectivity before continuing
 		if (owner.getContext().checkCallingOrSelfPermission(
 				"android.permission.ACCESS_NETWORK_STATE") != PackageManager.PERMISSION_GRANTED){
-			Clog.e("OPENSDK", "The SDK needs permission ACCESS_NETWORK_STATE in the host app.");
+			Clog.e(Settings.getSettings().baseLogTag, "The SDK needs permission ACCESS_NETWORK_STATE in the host app.");
 			return null;
 		}
 		NetworkInfo ninfo = ((ConnectivityManager) owner.getContext()
 				.getSystemService(Context.CONNECTIVITY_SERVICE))
 				.getActiveNetworkInfo();
 		if (ninfo == null || !ninfo.isConnectedOrConnecting()) {
-			Clog.d("OPENSDK-REQUEST",
+			Clog.d(Settings.getSettings().baseLogTag+Settings.getSettings().httpReqLogTag,
 					"Abandoning AdRequest because there is no network connectivity");
 			return null;
 		}
 		String query_string = getRequestUrl();
-		Clog.d("OPENSDK-REQUEST", "Fetching: " + query_string);
+		Clog.d(Settings.getSettings().baseLogTag+Settings.getSettings().httpReqLogTag, "Fetching: " + query_string);
 		DefaultHttpClient h = new DefaultHttpClient();
 		HttpResponse r = null;
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -162,27 +162,27 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			r.getEntity().writeTo(out);
 			out.close();
 		} catch (ClientProtocolException e) {
-			Clog.e("OPENSDK-REQUEST",
+			Clog.e(Settings.getSettings().baseLogTag+Settings.getSettings().httpReqLogTag,
 					"Couldn't reach the ad server even though network connectivity was detected. Is the server down?");
 			return null;
 		} catch (ConnectTimeoutException e) {
-			Clog.e("OPENSDK-REQUEST", "Connection to ad server timed out.");
+			Clog.e(Settings.getSettings().baseLogTag+Settings.getSettings().httpReqLogTag, "Connection to ad server timed out.");
 			return null;
 		} catch (IOException e) {
 			if (e instanceof HttpHostConnectException) {
 				HttpHostConnectException he = (HttpHostConnectException) e;
-				Clog.e("OPENSDK-REQUEST", he.getHost().getHostName() + ":"
+				Clog.e(Settings.getSettings().baseLogTag+Settings.getSettings().httpReqLogTag, he.getHost().getHostName() + ":"
 						+ he.getHost().getPort() + " is unreachable.");
 			} else {
-				Clog.e("OPENSDK-REQUEST",
+				Clog.e(Settings.getSettings().baseLogTag+Settings.getSettings().httpReqLogTag,
 						"Ad couldn't be fetched due to io error, probably http related.");
 			}
 			return null;
 		} catch (SecurityException se){
-			Clog.e("OPENSDK", "The SDK needs permission INTERNET in the host app.");
+			Clog.e(Settings.getSettings().baseLogTag, "The SDK needs permission INTERNET in the host app.");
 		}catch (Exception e) {
 			e.printStackTrace();
-			Clog.e("OPENSDK",
+			Clog.e(Settings.getSettings().baseLogTag,
 					"Ad couldn't be fetched due to uncaught exception, see above trace.");
 			return null;
 		}//Leave this commented to figure out what other exceptions might come up during testing!
@@ -192,7 +192,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	@Override
 	protected void onPostExecute(AdResponse result) {
 		if (result == null){
-			Clog.v("OPENSDK-RESPONSE", "Request received no response from the server");
+			Clog.v(Settings.getSettings().baseLogTag+Settings.getSettings().httpRespLogTag, "Request received no response from the server");
 			return; // http request failed
 		}
 		owner.display(result.getDisplayable());
