@@ -108,9 +108,32 @@ public class AdView extends FrameLayout {
 			
 			// Hide the adview
 			hide();
-			// Start the ad pass
+			// Start the ad pass if auto is enabled
+			if(this.auto_refresh)
+				start();
+			else if(this.running){
+				start();
+			}
+		}
+		if(running){
 			start();
 		}
+	}
+	
+	public void loadAd(){
+		if(this.getWindowVisibility()==VISIBLE){
+			stop();
+			start();
+		}else{
+			running=true;
+		}
+	}
+	
+	public void loadAd(String placementID, int width, int height){
+		this.setAdHeight(height);
+		this.setAdWidth(width);
+		this.setPlacementID(placementID);
+		loadAd();
 	}
 
 	private void setupBroadcast(Context context) {
@@ -120,10 +143,10 @@ public class AdView extends FrameLayout {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+				if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF) && AdView.this.auto_refresh) {
 					stop();
 					Clog.d(Settings.getSettings().baseLogTag, "Stopped ad requests since screen is off");
-				} else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
+				} else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON) && AdView.this.auto_refresh) {
 					start();
 					Clog.d(Settings.getSettings().baseLogTag, "Started ad requests since screen is on");
 				}// TODO: Airplane mode
@@ -227,6 +250,10 @@ public class AdView extends FrameLayout {
 	public void setAutoRefresh(boolean auto_refresh) {
 		Clog.d(Settings.getSettings().baseLogTag+Settings.getSettings().publicFunctionsLogTag, "setAutoRefresh() to:"+auto_refresh);
 		this.auto_refresh = auto_refresh;
+		if(!running){
+			running=true;
+			start();
+		}
 	}
 
 	public String getPlacementID() {
