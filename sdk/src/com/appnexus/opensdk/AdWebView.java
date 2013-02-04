@@ -89,8 +89,7 @@ public class AdWebView extends WebView implements Displayable {
 		return this;
 	}
 
-	@Override
-	public void fail() {
+	private void fail() {
 		failed=true;
 	}
 
