@@ -112,11 +112,14 @@ public abstract class AdView extends FrameLayout {
 			hide();
 
 			onFirstLayout();
+			
+			
 		}
 	}
 	
+	// If single-use mode, we must manually start the fetcher
 	protected void onFirstLayout(){
-		
+		mAdFetcher.start();
 	}
 	
 	public void loadAd(){

@@ -25,7 +25,7 @@ public class MainActivity extends Activity {
 		av.setLayoutParams(lp);
 		av.setPlacementID("656561");
 		av.setAutoRefreshInterval(10000);
-		av.setAutoRefresh(true);
+		//av.setAutoRefresh(true);
 		rl.addView(av);
 	}
 
