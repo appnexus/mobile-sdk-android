@@ -13,6 +13,7 @@ import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;

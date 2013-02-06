@@ -1,6 +1,6 @@
 package com.example.helloworld;
 
-import com.appnexus.opensdk.AdView;
+import com.appnexus.opensdk.BannerAdView;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -10,7 +10,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
 
 public class MainActivity extends Activity {
-	private AdView av;
+	private BannerAdView av;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -18,12 +18,13 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		
 		RelativeLayout rl = (RelativeLayout)(findViewById(R.id.mainview));
-		av = new AdView(this);
+		av = new BannerAdView(this);
 		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, 100);
 		//av.setAdHeight(50);
 		//av.setAdWidth(320);
 		av.setLayoutParams(lp);
 		av.setPlacementID("656561");
+		av.setAutoRefreshInterval(10000);
 		av.setAutoRefresh(true);
 		rl.addView(av);
 	}

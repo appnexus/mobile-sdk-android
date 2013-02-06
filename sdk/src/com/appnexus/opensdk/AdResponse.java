@@ -6,6 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+
 public class AdResponse {
 	private String body;
 	private int height;

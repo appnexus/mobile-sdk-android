@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="AdView">
+
+    <declare-styleable name="BannerAdView">
         <attr name="placement_id" format="string" />
-        <attr name="auto_refresh_interval" format="integer" />
         <attr name="test" format="boolean" />
-        <attr name="auto_refresh" format="boolean" />
         <attr name="width" format="integer" />
-        <attr name="height" format="integer"/>
+        <attr name="height" format="integer" />
         <attr name="should_reload_on_resume" format="boolean" />
+        <attr name="auto_refresh_interval" format="integer" />
+        <attr name="auto_refresh" format="boolean" />
     </declare-styleable>
+
 </resources>

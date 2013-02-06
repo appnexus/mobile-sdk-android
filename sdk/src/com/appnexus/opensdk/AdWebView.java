@@ -1,5 +1,7 @@
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.R;
+
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.view.Gravity;
