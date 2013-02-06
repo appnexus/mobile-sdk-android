@@ -32,5 +32,9 @@ public class Settings {
 		}
 		return settings_instance;
 	}
+	
+	private Settings(){
+		
+	}
 
 }
