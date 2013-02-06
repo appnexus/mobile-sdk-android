@@ -40,6 +40,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	String firstlaunch;
 	String lat;
 	String lon;
+	String locDataAge;
+	String locDataPrecision;
 	String ua;
 	String orientation;
 	int width = -1;
@@ -67,9 +69,12 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 					.getSystemService(Context.LOCATION_SERVICE);
 			Location lastLocation = lm.getLastKnownLocation(lm.getBestProvider(
 					new Criteria(), false));
-			lat = lastLocation != null ? "" + lastLocation.getLatitude() : null;
-			lon = lastLocation != null ? "" + lastLocation.getLongitude()
-					: null;
+			if(lastLocation!=null){
+				lat = "" + lastLocation.getLatitude();
+				lon = "" + lastLocation.getLongitude();
+				locDataAge = ""+(System.currentTimeMillis()-lastLocation.getTime());
+				locDataPrecision = ""+lastLocation.getAccuracy();
+			}
 		}else{
 			Clog.w(Clog.baseLogTag, Clog.getString(R.string.permissions_missing_location));
 		}
@@ -124,6 +129,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				+ (firstlaunch != null ? "&firstlaunch=" + firstlaunch : "")
 				+ (lat != null ? "&lat=" + lat : "")
 				+ (lon != null ? "&lon=" + lon : "")
+				+ (locDataAge != null ? "&loc_age=" + locDataAge : "")
+				+ (locDataPrecision != null ? "&loc_prec=" + locDataPrecision : "")
 				+ (Settings.getSettings().test_mode ? "&istest=true" : "")
 				+ (ua != null ? "&ua=" + Uri.encode(ua) : "")
 				+ (orientation != null ? "&orientation=" + orientation : "")

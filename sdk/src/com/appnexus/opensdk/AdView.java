@@ -44,6 +44,19 @@ public class AdView extends FrameLayout {
 		super(context, attrs, defStyle);
 		setup(context, attrs);
 	}
+	
+	public AdView(Context context, String placement_id){
+		super(context);
+		this.setPlacementID(placement_id);
+		setup(context, null);
+	}
+	
+	public AdView(Context context, String placement_id, int ad_width, int ad_height){
+		super(context);
+		this.setAdHeight(ad_height);
+		this.setAdWidth(ad_width);
+		setup(context, null);
+	}
 
 	private void setup(Context context, AttributeSet attrs) {
 		// Store self.context in the settings for errors
@@ -136,6 +149,11 @@ public class AdView extends FrameLayout {
 			running=true;
 		}
 	}
+
+	public void loadAd(String placementID){
+		this.setPlacementID(placementID);
+		loadAd();
+	}
 	
 	public void loadAd(String placementID, int width, int height){
 		this.setAdHeight(height);
@@ -172,16 +190,25 @@ public class AdView extends FrameLayout {
 		getContext().unregisterReceiver(receiver);
 	}
 
-	public void start() {
+	protected void start() {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.start));
 		mAdFetcher.start();
 		running=true;
 	}
 
-	public void stop() {
+	protected void stop() {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.stop));
 		mAdFetcher.stop();
 		running=false;
+	}
+	
+	public void startAutoRefresh(){
+		this.setAutoRefresh(true);
+	}
+	
+	public void startAutoRefresh(int interval){
+		this.setAutoRefreshInterval(interval);
+		this.startAutoRefresh();
 	}
 
 	private void loadVariablesFromXML(Context context, AttributeSet attrs) {
