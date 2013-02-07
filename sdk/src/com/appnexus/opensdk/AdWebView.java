@@ -76,13 +76,13 @@ public class AdWebView extends WebView implements Displayable {
 		Clog.v(Clog.baseLogTag, Clog.getString(R.string.webview_loading, body));
 		this.loadData(body, "text/html", "UTF-8");
 		
-		FrameLayout.LayoutParams resize = new FrameLayout.LayoutParams(destination.getLayoutParams());
+
 		
 		final float scale = destination.getContext().getResources().getDisplayMetrics().density;
-		resize.height = (int)(ad.getHeight()*scale+0.5f);
-		resize.width = (int)(ad.getWidth()*scale+0.5f);
-		resize.gravity=Gravity.CENTER;
-		
+		int rheight = (int)(ad.getHeight()*scale+0.5f);
+		int rwidth = (int)(ad.getWidth()*scale+0.5f);
+		int rgravity=Gravity.CENTER;
+		FrameLayout.LayoutParams resize = new FrameLayout.LayoutParams(rwidth, rheight, rgravity);
 		this.setLayoutParams(resize);
 	}
 

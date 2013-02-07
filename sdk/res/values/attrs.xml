@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <attr name="placement_id" format="string" />
+    <attr name="test" format="boolean" />
+    <attr name="width" format="integer" />
+    <attr name="height" format="integer" />
     <declare-styleable name="BannerAdView">
-        <attr name="placement_id" format="string" />
-        <attr name="test" format="boolean" />
-        <attr name="width" format="integer" />
-        <attr name="height" format="integer" />
+        <attr name="placement_id" />
+        <attr name="test"/>
+        <attr name="width"/>
+        <attr name="height" />
         <attr name="should_reload_on_resume" format="boolean" />
         <attr name="auto_refresh_interval" format="integer" />
         <attr name="auto_refresh" format="boolean" />
+    </declare-styleable>
+    
+    <declare-styleable name="InterstitialAdView">
+        <attr name="placement_id" />
+        <attr name="test"/>
+        <attr name="color" format="integer" />
     </declare-styleable>
 
 </resources>

@@ -12,11 +12,11 @@ public abstract class AdView extends FrameLayout {
 
 	protected AdFetcher mAdFetcher;
 	private String placementID;
-	private int measuredWidth;
-	private int measuredHeight;
+	protected int measuredWidth;
+	protected int measuredHeight;
 	private boolean measured=false;
-	private int width=-1;
-	private int height=-1;
+	protected int width=-1;
+	protected int height=-1;
 	
 	
 	/** Begin Construction **/

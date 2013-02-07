@@ -7,10 +7,10 @@
     <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="17" />
-    
+
     <!-- Give the SDK the permissions it requires -->
-    <uses-permission android:name='android.permission.ACCESS_NETWORK_STATE' />
-    <uses-permission android:name='android.permission.INTERNET' />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -26,6 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.appnexus.opensdk.AdActivity" />
     </application>
 
 </manifest>

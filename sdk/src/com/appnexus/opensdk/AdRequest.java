@@ -5,6 +5,7 @@ package com.appnexus.opensdk;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Random;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -12,6 +13,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
+
+import com.appnexus.opensdk.InterstitialAdView.Size;
 
 
 import android.content.Context;
@@ -45,6 +48,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	String locDataPrecision;
 	String ua;
 	String orientation;
+	String allowedSizes;
 	int width = -1;
 	int height = -1;
 	int maxWidth = -1;
@@ -112,6 +116,28 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		maxHeight = owner.getContainerHeight();
 		maxWidth = owner.getContainerWidth();
 		
+		
+		if(owner instanceof InterstitialAdView){
+			//Make string for allowed_sizes
+			allowedSizes="";
+			for(Size s :((InterstitialAdView)owner).getAllowedSizes()){
+				allowedSizes+=""+s.width()+"x"+s.height();
+				// If not last size, add a comma
+				if(((InterstitialAdView)owner).getAllowedSizes().indexOf(s)!=((InterstitialAdView)owner).getAllowedSizes().size()-1)
+					allowedSizes+=",";
+			}
+			
+			// For now choose a random allowed_size to make things work. TODO this will not be needed later
+			Random rand = new Random();
+			int choice = rand.nextInt(((InterstitialAdView)owner).getAllowedSizes().size());
+			Size rsize = ((InterstitialAdView)owner).getAllowedSizes().get(choice);
+			this.width=rsize.width();
+			this.height=rsize.height();
+		}
+		
+		
+		
+		
 	}
 
 	String getRequestUrl() {
@@ -138,6 +164,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				+ ((width > 0 && height > 0) ? "&size=" + width + "x" + height
 						: "") 
 				+ ((maxHeight > 0 && maxWidth>0)? "&max-size="+maxWidth+"x"+maxHeight:"")
+				+ (allowedSizes!=null && !allowedSizes.equals("")? "&allowed_sizes="+allowedSizes:"")
 				+ "&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion);
 	}
 

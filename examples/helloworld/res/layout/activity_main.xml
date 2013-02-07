@@ -1,15 +1,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:opensdk="http://schemas.android.com/apk/res/com.example.helloworld"
-   	android:id="@+id/mainview"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity" >
 
     <!-- xmlns:opensdk="http://schemas.android.com/apk/res/com.example.helloworld" -->
 
-     
-    <!--<com.appnexus.opensdk.AdView
+
+    <!--
+        <com.appnexus.opensdk.AdView
         android:id="@+id/ad"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -17,8 +18,8 @@
         opensdk:width="320"
         opensdk:height="50"
         opensdk:auto_refresh="false"
-        opensdk:auto_refresh_interval="15000"/>-->
-
+        opensdk:auto_refresh_interval="15000"/>
+    -->
 
     <TextView
         android:layout_width="wrap_content"
@@ -26,5 +27,21 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:text="@string/hello_world" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button android:text="Load int."
+            android:onClick="loadIA"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button android:text="Show int." 
+            android:onClick="showIA"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 
 </RelativeLayout>

@@ -423,7 +423,7 @@ boolean failed()</string>
     <void property="methods">
      <void property="text">
       <string>(set/get)OnLoadedListener
-(set/get)OnLoadFailedListener</string>
+(set/get)OnRequestFailedListener</string>
      </void>
     </void>
     <void property="name">
@@ -480,15 +480,15 @@ boolean failed()</string>
         <void method="set">
          <object idref="Point2D$Double13">
           <void method="setLocation">
-           <double>314.0</double>
-           <double>642.0</double>
+           <double>384.0</double>
+           <double>640.0</double>
           </void>
          </object>
-         <double>642.0</double>
+         <double>640.0</double>
         </void>
        </void>
       </object>
-      <double>314.0</double>
+      <double>384.0</double>
      </void>
     </void>
    </object>
