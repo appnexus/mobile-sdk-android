@@ -6,7 +6,6 @@ import com.appnexus.opensdk.AdListener;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.graphics.Color;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,25 +21,13 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
-/*		RelativeLayout rl = (RelativeLayout)(findViewById(R.id.mainview));
-		av = new BannerAdView(this);
-		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, 100);
-		//av.setAdHeight(50);
-		//av.setAdWidth(320);
-		av.setLayoutParams(lp);
-		av.setPlacementID("656561");
-		av.setAutoRefreshInterval(10000);
-		//av.setAutoRefresh(true);
-		rl.addView(av);*/
-		
+				
 		//Interstitial
 		showButton = (Button) findViewById(R.id.showbutton);
 		showButton.setClickable(false);
 		showButton.setEnabled(false);
 		iav = new InterstitialAdView(this);
 		iav.setPlacementID("656561");
-		iav.setBackgroundColor(Color.MAGENTA);
 		iav.setAdListener(new AdListener(){
 
 			@Override
@@ -79,7 +66,7 @@ public class MainActivity extends Activity {
 		iav.loadAd();
 	}
 	public void showIA(View view){
-		if(iav.show()) interstitials--;
+		interstitials=iav.show();
 		if(interstitials<1){
 			showButton.setClickable(false);
 			showButton.setEnabled(false);

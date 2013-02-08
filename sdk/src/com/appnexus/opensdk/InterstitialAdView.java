@@ -13,14 +13,16 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Window;
 import android.view.WindowManager;
 
 public class InterstitialAdView extends AdView {
+	protected static final long MAX_AGE = 5000;
 	protected ArrayList<Size> allowedSizes;
 	protected int backgroundColor=Color.BLACK;
 	protected static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
-	protected static Queue<Displayable> q = new LinkedList<Displayable>();
+	protected static Queue<Pair<Long, Displayable>> q = new LinkedList<Pair<Long, Displayable>>();
 	protected AdListener adListener;
 
 	public InterstitialAdView(Context context) {
@@ -117,14 +119,23 @@ public class InterstitialAdView extends AdView {
 	@Override
 	protected void display(Displayable d){
 		if(adListener!=null) adListener.onAdLoaded(this);
-		InterstitialAdView.q.add(d);
+		InterstitialAdView.q.add(new Pair<Long, Displayable>(System.currentTimeMillis(), d));
 	}
 	
-	protected void popAndRender(){
-		Displayable view = InterstitialAdView.q.poll();
-		if(view==null) return; //Throw an error
-		super.display(view);
-	}
+/*	protected void popAndRender(){
+		Pair<Long, Displayable> p = InterstitialAdView.q.poll();
+				
+		//Get oldest ad that isn't too old
+		while (p != null && System.currentTimeMillis()-p.first>5*1000){
+			Log.w("OPENSDK", "Interstitial ad was told to display, but is over the age limit."); // TODO
+			p=InterstitialAdView.q.poll();
+		}
+		
+		if(p.second==null) return; //Throw an error
+		
+		super.display(p.second);
+		
+	}*/
 	
 	@Override
 	public void onLayout(boolean changed, int left, int top, int right, int bottom){
@@ -149,13 +160,30 @@ public class InterstitialAdView extends AdView {
 		return adListener;
 	}
 	
-	public boolean show(){
+	public int show(){
+		//Make sure there is an ad to show
+		ArrayList<Pair<Long, Displayable>> to_remove = new ArrayList<Pair<Long, Displayable>>();
+		long now = System.currentTimeMillis();
+		for(Pair<Long, Displayable> p : InterstitialAdView.q){
+			if(p==null || p.second == null || now-p.first > InterstitialAdView.MAX_AGE){
+				to_remove.add(p);
+			}else{
+				//We've reached a valid ad, so we can launch the activity.
+				break;
+			}
+		}
+		//Before we do anything else, clear the head of the queue of invalid ads
+		for(Pair<Long, Displayable> p : to_remove){
+			InterstitialAdView.q.remove(p);
+		}
 		if(!InterstitialAdView.q.isEmpty()){
 			Intent i = new Intent(getContext(), AdActivity.class);
+			i.putExtra("Time", now);
 			getContext().startActivity(i);
-			return true;
+			return InterstitialAdView.q.size()-1; // Return the number of ads remaining, less the one we're about to show
 		}
-		return false;
+		Log.w("OPENSDK", "An interstitial ad was requested to display, but no valid ads were in the queue. Load more.");
+		return InterstitialAdView.q.size();
 	}
 	
 	public ArrayList<Size> getAllowedSizes(){

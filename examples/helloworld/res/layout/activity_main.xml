@@ -9,17 +9,14 @@
     <!-- xmlns:opensdk="http://schemas.android.com/apk/res/com.example.helloworld" -->
 
 
-    <!--
-        <com.appnexus.opensdk.AdView
+    <com.appnexus.opensdk.BannerAdView
         android:id="@+id/ad"
+        android:layout_alignParentTop="true"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         opensdk:placement_id="656561"
         opensdk:width="320"
-        opensdk:height="50"
-        opensdk:auto_refresh="false"
-        opensdk:auto_refresh_interval="15000"/>
-    -->
+        opensdk:height="50"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -29,19 +26,22 @@
         android:text="@string/hello_world" />
 
     <LinearLayout
+        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
 
         <Button android:text="Load int."
             android:onClick="loadIA"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
         <Button android:text="Show int." 
             android:id="@+id/showbutton"
             android:onClick="showIA"
-            android:layout_width="wrap_content"
+            android:layout_width="0px"
+            android:layout_weight="1"
             android:layout_height="wrap_content"/>
     </LinearLayout>
 
