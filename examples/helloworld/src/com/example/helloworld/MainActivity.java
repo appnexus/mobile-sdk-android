@@ -6,12 +6,13 @@ import com.appnexus.opensdk.AdListener;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements AdListener{
 	private BannerAdView av;
 	InterstitialAdView iav;
 	private int interstitials;
@@ -28,25 +29,7 @@ public class MainActivity extends Activity {
 		showButton.setEnabled(false);
 		iav = new InterstitialAdView(this);
 		iav.setPlacementID("656561");
-		iav.setAdListener(new AdListener(){
-
-			@Override
-			public void onAdLoaded(InterstitialAdView iAdView) {
-				interstitials++;
-				if(interstitials>0){
-					showButton.setClickable(true);
-					showButton.setEnabled(true);
-				}
-				
-			}
-
-			@Override
-			public void onAdRequestFailed(InterstitialAdView iAdView) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		});
+		iav.setAdListener(this);
 		//iav.loadAd();
 		//iav.show();
 	}
@@ -71,5 +54,21 @@ public class MainActivity extends Activity {
 			showButton.setClickable(false);
 			showButton.setEnabled(false);
 		}
+	}
+
+	@Override
+	public void onAdLoaded(InterstitialAdView iAdView) {
+		interstitials++;
+		if(interstitials>0){
+			showButton.setClickable(true);
+			showButton.setEnabled(true);
+		}
+		
+	}
+
+	@Override
+	public void onAdRequestFailed(InterstitialAdView iAdView) {
+		Log.e("HelloWorld", "Ad request failed");
+		
 	}
 }
