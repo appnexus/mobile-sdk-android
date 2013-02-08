@@ -152,10 +152,10 @@ public abstract class AdView extends FrameLayout {
 					// View.
 		this.removeAllViews();
 		this.addView(d.getView());
-		show();
+		unhide();
 	}
 
-	protected void show() {
+	protected void unhide() {
 		if (getVisibility() != VISIBLE){
 			setVisibility(VISIBLE);
 		}

@@ -45,16 +45,22 @@ public class AdFetcher {
 		timePausedAt=System.currentTimeMillis();
 		
 	}
+	
+	private void requestFailed(){
+		if(owner instanceof InterstitialAdView) ((InterstitialAdView) owner).fail();
+	}
 
 	protected void start() {
 		//Better have a placement ID!
 		if(owner.getPlacementID()==null){
 			Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_placement_id));
+			requestFailed();
 			return;
 		}
 		if (tasker != null) {
 			Clog.d(Clog.baseLogTag,
 					Clog.getString(R.string.moot_restart));
+			requestFailed();
 			return;
 		}
 		Clog.d(Clog.baseLogTag, Clog.getString(R.string.moot_restart));

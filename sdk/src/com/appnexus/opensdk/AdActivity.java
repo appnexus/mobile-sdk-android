@@ -1,6 +1,7 @@
 package com.appnexus.opensdk;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -13,6 +14,7 @@ public class AdActivity extends Activity {
 	public void onCreate(Bundle b){
 		super.onCreate(b);
 		layout = new FrameLayout(this);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 		setContentView(layout);
 		setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
 	}

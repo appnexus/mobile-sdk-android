@@ -2,6 +2,7 @@ package com.example.helloworld;
 
 import com.appnexus.opensdk.BannerAdView;
 import com.appnexus.opensdk.InterstitialAdView;
+import com.appnexus.opensdk.AdListener;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -9,12 +10,13 @@ import android.graphics.Color;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.RelativeLayout;
+import android.widget.Button;
 
 public class MainActivity extends Activity {
 	private BannerAdView av;
 	InterstitialAdView iav;
+	private int interstitials;
+	Button showButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +35,31 @@ public class MainActivity extends Activity {
 		rl.addView(av);*/
 		
 		//Interstitial
+		showButton = (Button) findViewById(R.id.showbutton);
+		showButton.setClickable(false);
+		showButton.setEnabled(false);
 		iav = new InterstitialAdView(this);
 		iav.setPlacementID("656561");
 		iav.setBackgroundColor(Color.MAGENTA);
+		iav.setAdListener(new AdListener(){
+
+			@Override
+			public void onAdLoaded(InterstitialAdView iAdView) {
+				interstitials++;
+				if(interstitials>0){
+					showButton.setClickable(true);
+					showButton.setEnabled(true);
+				}
+				
+			}
+
+			@Override
+			public void onAdRequestFailed(InterstitialAdView iAdView) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 		//iav.loadAd();
 		//iav.show();
 	}
@@ -55,6 +79,10 @@ public class MainActivity extends Activity {
 		iav.loadAd();
 	}
 	public void showIA(View view){
-		iav.show();
+		if(iav.show()) interstitials--;
+		if(interstitials<1){
+			showButton.setClickable(false);
+			showButton.setEnabled(false);
+		}
 	}
 }

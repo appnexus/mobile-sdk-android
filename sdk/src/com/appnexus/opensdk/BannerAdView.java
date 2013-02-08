@@ -256,8 +256,8 @@ public class BannerAdView extends AdView {
 	}
 	
 	@Override
-	protected void show(){
-		super.show();
+	protected void unhide(){
+		super.unhide();
 		this.requesting_visible = true;
 	}
 }

@@ -54,9 +54,6 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	int maxWidth = -1;
 	int maxHeight = -1;
 
-	/**
-	 * 
-	 */
 	public AdRequest(AdView owner) {
 		this.owner = owner;
 		Context context = owner.getContext();
@@ -135,9 +132,12 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			this.height=rsize.height();
 		}
 		
-		
-		
-		
+	}
+	
+	private void fail(){
+		if(owner instanceof InterstitialAdView){
+			((InterstitialAdView) owner).fail();
+		}
 	}
 
 	String getRequestUrl() {
@@ -177,6 +177,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		if (owner.getContext().checkCallingOrSelfPermission(
 				"android.permission.ACCESS_NETWORK_STATE") != PackageManager.PERMISSION_GRANTED){
 			Clog.e(Clog.baseLogTag, Clog.getString(R.string.permissions_missing_network_state));
+			fail();
 			return null;
 		}
 		NetworkInfo ninfo = ((ConnectivityManager) owner.getContext()
@@ -185,6 +186,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		if (ninfo == null || !ninfo.isConnectedOrConnecting()) {
 			Clog.d(Clog.httpReqLogTag,
 					Clog.getString(R.string.no_connectivity));
+			fail();
 			return null;
 		}
 		String query_string = getRequestUrl();
@@ -199,9 +201,11 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		} catch (ClientProtocolException e) {
 			Clog.e(Clog.httpReqLogTag,
 					Clog.getString(R.string.http_unknown));
+			fail();
 			return null;
 		} catch (ConnectTimeoutException e) {
 			Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_timeout));
+			fail();
 			return null;
 		} catch (IOException e) {
 			if (e instanceof HttpHostConnectException) {
@@ -211,13 +215,17 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				Clog.e(Clog.httpReqLogTag,
 						Clog.getString(R.string.http_io));
 			}
+			fail();
 			return null;
 		} catch (SecurityException se){
+			fail();
 			Clog.e(Clog.baseLogTag, Clog.getString(R.string.permissions_internet));
+			return null;
 		}catch (Exception e) {
 			e.printStackTrace();
 			Clog.e(Clog.baseLogTag,
 					Clog.getString(R.string.unknown_exception));
+			fail();
 			return null;
 		}//Leave this commented to figure out what other exceptions might come up during testing!
 		return new AdResponse(owner, out.toString(), r.getAllHeaders());
@@ -227,6 +235,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	protected void onPostExecute(AdResponse result) {
 		if (result == null){
 			Clog.v(Clog.httpRespLogTag, Clog.getString(R.string.no_response));
+			//Don't call fail again!
 			return; // http request failed
 		}
 		owner.display(result.getDisplayable());

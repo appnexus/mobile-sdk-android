@@ -21,6 +21,7 @@ public class InterstitialAdView extends AdView {
 	protected int backgroundColor=Color.BLACK;
 	protected static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
 	protected static Queue<Displayable> q = new LinkedList<Displayable>();
+	protected AdListener adListener;
 
 	public InterstitialAdView(Context context) {
 		super(context);
@@ -109,12 +110,17 @@ public class InterstitialAdView extends AdView {
 		}
 	}
 	
+	protected void fail(){
+		if(adListener!=null) adListener.onAdRequestFailed(this);
+	}
+	
 	@Override
 	protected void display(Displayable d){
+		if(adListener!=null) adListener.onAdLoaded(this);
 		InterstitialAdView.q.add(d);
 	}
 	
-	protected void render(){
+	protected void popAndRender(){
 		Displayable view = InterstitialAdView.q.poll();
 		if(view==null) return; //Throw an error
 		super.display(view);
@@ -135,23 +141,21 @@ public class InterstitialAdView extends AdView {
 		Log.w("OPENSDK-INTERFACE", "setAdHeight() called for an interstitial ad.");//TODO clog
 	}
 	
-	//TODO
 	public void setAdListener(AdListener listener){
-		
+		adListener=listener;
 	}
 	
-	//TODO
 	public AdListener getAdListener(){
-		return null;
+		return adListener;
 	}
 	
-	
-	//TODO
-	public void show(){
+	public boolean show(){
 		if(!InterstitialAdView.q.isEmpty()){
 			Intent i = new Intent(getContext(), AdActivity.class);
 			getContext().startActivity(i);
+			return true;
 		}
+		return false;
 	}
 	
 	public ArrayList<Size> getAllowedSizes(){
@@ -174,11 +178,7 @@ public class InterstitialAdView extends AdView {
 	
 	}
 	
-	abstract public class AdListener{
-		abstract public void onAdLoaded(InterstitialAdView iAdView);
-		abstract public void onAdRequestFailed(InterstitialAdView iAdView);
-	}
-	
+
 	public class Size{
 		private int w;
 		private int h;
