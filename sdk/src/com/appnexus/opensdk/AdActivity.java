@@ -2,6 +2,7 @@ package com.appnexus.opensdk;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Pair;
@@ -15,13 +16,24 @@ public class AdActivity extends Activity {
 	
 	FrameLayout layout;
 	long now;
+	int orientation;
 	
 	@Override
 	public void onCreate(Bundle b){
 		super.onCreate(b);
 		layout = new FrameLayout(this);
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+		
+		orientation=getIntent().getIntExtra("Orientation", Configuration.ORIENTATION_LANDSCAPE);
+		switch(orientation){
+		case Configuration.ORIENTATION_LANDSCAPE:
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+			break;
+		case Configuration.ORIENTATION_PORTRAIT:
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+			break;
+		}
 		setContentView(layout);
+		
 		setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
 		now = getIntent().getLongExtra("Time", System.currentTimeMillis());
 		

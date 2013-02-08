@@ -147,6 +147,7 @@ public class InterstitialAdView extends AdView {
 		return adListener;
 	}
 	
+
 	public int show(){
 		Clog.d(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.show_int));
 		//Make sure there is an ad to show
@@ -167,6 +168,7 @@ public class InterstitialAdView extends AdView {
 		if(!InterstitialAdView.q.isEmpty()){
 			Intent i = new Intent(getContext(), AdActivity.class);
 			i.putExtra("Time", now);
+			i.putExtra("Orientation", getContext().getResources().getConfiguration().orientation);
 			getContext().startActivity(i);
 			return InterstitialAdView.q.size()-1; // Return the number of ads remaining, less the one we're about to show
 		}
