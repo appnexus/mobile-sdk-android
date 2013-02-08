@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
@@ -53,7 +52,7 @@ public class AdActivity extends Activity {
 			}
 			Pair<Long, Displayable> p = InterstitialAdView.q.poll();
 			while(p!=null && p.second!=null && now-p.first > InterstitialAdView.MAX_AGE){
-				Log.w("OPENSDK", "Interstitial ad was told to display, but is over the age limit."); // TODO
+				Clog.w(Clog.baseLogTag, Clog.getString(R.string.too_old));
 				p=InterstitialAdView.q.poll();
 			}
 			if(p==null) return;

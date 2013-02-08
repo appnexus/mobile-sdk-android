@@ -12,7 +12,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.Pair;
 import android.view.Window;
 import android.view.WindowManager;
@@ -105,6 +104,7 @@ public class InterstitialAdView extends AdView {
 	
 	@Override
 	public void loadAd(){
+		Clog.d(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.load_ad_int));
 		if(mAdFetcher!=null){
 			//Load an interstitial ad
 			mAdFetcher.stop();
@@ -122,21 +122,6 @@ public class InterstitialAdView extends AdView {
 		InterstitialAdView.q.add(new Pair<Long, Displayable>(System.currentTimeMillis(), d));
 	}
 	
-/*	protected void popAndRender(){
-		Pair<Long, Displayable> p = InterstitialAdView.q.poll();
-				
-		//Get oldest ad that isn't too old
-		while (p != null && System.currentTimeMillis()-p.first>5*1000){
-			Log.w("OPENSDK", "Interstitial ad was told to display, but is over the age limit."); // TODO
-			p=InterstitialAdView.q.poll();
-		}
-		
-		if(p.second==null) return; //Throw an error
-		
-		super.display(p.second);
-		
-	}*/
-	
 	@Override
 	public void onLayout(boolean changed, int left, int top, int right, int bottom){
 		onFirstLayout();
@@ -144,23 +129,26 @@ public class InterstitialAdView extends AdView {
 	
 	@Override
 	public void setAdWidth(int width){
-		Log.w("OPENSDK-INTERFACE", "setAdWidth() called for an interstitial ad."); //TODO clog
+		Clog.w(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.set_width_int));
 	}
 	
 	@Override
 	public void setAdHeight(int height){
-		Log.w("OPENSDK-INTERFACE", "setAdHeight() called for an interstitial ad.");//TODO clog
+		Clog.w(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.set_height_int));
 	}
 	
 	public void setAdListener(AdListener listener){
+		Clog.d(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.set_ad_listener));
 		adListener=listener;
 	}
 	
 	public AdListener getAdListener(){
+		Clog.d(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.get_ad_listener));
 		return adListener;
 	}
 	
 	public int show(){
+		Clog.d(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.show_int));
 		//Make sure there is an ad to show
 		ArrayList<Pair<Long, Displayable>> to_remove = new ArrayList<Pair<Long, Displayable>>();
 		long now = System.currentTimeMillis();
@@ -182,28 +170,35 @@ public class InterstitialAdView extends AdView {
 			getContext().startActivity(i);
 			return InterstitialAdView.q.size()-1; // Return the number of ads remaining, less the one we're about to show
 		}
-		Log.w("OPENSDK", "An interstitial ad was requested to display, but no valid ads were in the queue. Load more.");
+		Clog.w(Clog.baseLogTag, Clog.getString(R.string.empty_queue));
 		return InterstitialAdView.q.size();
 	}
 	
 	public ArrayList<Size> getAllowedSizes(){
+		Clog.d(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.get_allowed_sizes));
 		return allowedSizes;
 	}
 	
 	public void setAllowedSizes(ArrayList<Size> allowed_sizes){
+		Clog.d(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.set_allowed_sizes));
 		allowedSizes=allowed_sizes;
 	}
 	
 	public void setBackgroundColor(int color){
+		Clog.d(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.set_bg));
 		backgroundColor = color;
 	}
 	
-	public int getBackgroundColor(){return backgroundColor;}
+	public int getBackgroundColor(){
+		Clog.d(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.get_bg));
+		return backgroundColor;}
 	
 	
-	//TODO?
 	public void destroy(){
-	
+		Clog.d(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.destroy_int));
+		if(this.mAdFetcher!=null) mAdFetcher.stop();
+		InterstitialAdView.q=null;
+		InterstitialAdView.INTERSTITIALADVIEW_TO_USE=null;
 	}
 	
 
