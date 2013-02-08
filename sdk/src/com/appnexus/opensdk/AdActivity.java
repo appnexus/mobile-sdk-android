@@ -3,16 +3,16 @@ package com.appnexus.opensdk;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
+import android.widget.FrameLayout;
 
 public class AdActivity extends Activity {
 	
-	RelativeLayout layout;
+	FrameLayout layout;
 	
 	@Override
 	public void onCreate(Bundle b){
 		super.onCreate(b);
-		layout = new RelativeLayout(this);
+		layout = new FrameLayout(this);
 		setContentView(layout);
 		setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
 	}
@@ -24,7 +24,7 @@ public class AdActivity extends Activity {
 			if(((ViewGroup)av.getParent())!=null){
 				((ViewGroup)av.getParent()).removeAllViews();
 			}
-			layout.addView(av.q.poll().getView());
+			layout.addView(InterstitialAdView.q.poll().getView());
 		}
 	}
 
