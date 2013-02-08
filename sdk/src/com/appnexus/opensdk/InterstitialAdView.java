@@ -18,7 +18,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 public class InterstitialAdView extends AdView {
-	protected static final long MAX_AGE = 5000;
+	protected static final long MAX_AGE = 60000;
 	protected ArrayList<Size> allowedSizes;
 	protected int backgroundColor=Color.BLACK;
 	protected static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
