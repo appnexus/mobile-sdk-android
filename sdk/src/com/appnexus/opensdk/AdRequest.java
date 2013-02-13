@@ -155,7 +155,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 						: "&appid=NO-APP-ID")
 				+ (firstlaunch != null ? "&firstlaunch=" + firstlaunch : "")
 				+ (lat != null ? "&lat=" + lat : "")
-				+ (lon != null ? "&lon=" + lon : "")
+				+ (lon != null ? "&long=" + lon : "")
 				+ (locDataAge != null ? "&loc_age=" + locDataAge : "")
 				+ (locDataPrecision != null ? "&loc_prec=" + locDataPrecision : "")
 				+ (Settings.getSettings().test_mode ? "&istest=true" : "")
