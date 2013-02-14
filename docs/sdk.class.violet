@@ -98,10 +98,10 @@ loadAd(string, int, int)</string>
          <object idref="Point2D$Double2">
           <void method="setLocation">
            <double>707.0</double>
-           <double>633.0</double>
+           <double>642.0</double>
           </void>
          </object>
-         <double>633.0</double>
+         <double>642.0</double>
         </void>
        </void>
       </object>
@@ -493,6 +493,37 @@ boolean failed()</string>
     </void>
    </object>
   </void>
+  <void method="addNode">
+   <object class="com.horstmann.violet.ClassNode" id="ClassNode10">
+    <void property="name">
+     <void property="text">
+      <string>MRAIDWebView</string>
+     </void>
+    </void>
+   </object>
+   <object class="java.awt.geom.Point2D$Double" id="Point2D$Double14">
+    <void class="java.awt.geom.Point2D$Double" method="getField">
+     <string>x</string>
+     <void method="set">
+      <object idref="Point2D$Double14">
+       <void class="java.awt.geom.Point2D$Double" method="getField">
+        <string>y</string>
+        <void method="set">
+         <object idref="Point2D$Double14">
+          <void method="setLocation">
+           <double>771.0</double>
+           <double>841.0</double>
+          </void>
+         </object>
+         <double>841.0</double>
+        </void>
+       </void>
+      </object>
+      <double>771.0</double>
+     </void>
+    </void>
+   </object>
+  </void>
   <void method="connect">
    <object class="com.horstmann.violet.ClassRelationshipEdge">
     <void property="endArrowHead">
@@ -627,6 +658,18 @@ boolean failed()</string>
    </object>
    <object idref="ClassNode9"/>
    <object idref="ClassNode1"/>
+  </void>
+  <void method="connect">
+   <object class="com.horstmann.violet.ClassRelationshipEdge">
+    <void property="bentStyle">
+     <object class="com.horstmann.violet.BentStyle" field="VHV"/>
+    </void>
+    <void property="endArrowHead">
+     <object class="com.horstmann.violet.ArrowHead" field="TRIANGLE"/>
+    </void>
+   </object>
+   <object idref="ClassNode10"/>
+   <object idref="ClassNode3"/>
   </void>
  </object>
 </java>
