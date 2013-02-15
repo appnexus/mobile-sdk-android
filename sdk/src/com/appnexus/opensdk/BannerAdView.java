@@ -10,12 +10,19 @@ import android.util.AttributeSet;
 public class BannerAdView extends AdView {
 
 	private int period;
-	private boolean auto_refresh = false;
-	private boolean running = false;
-	private boolean shouldReloadOnResume = false;
+	private boolean auto_refresh;
+	private boolean running;
+	private boolean shouldReloadOnResume;
 	private BroadcastReceiver receiver;
-	private boolean receiverRegistered=false;
-
+	private boolean receiverRegistered;
+	
+	private void setDefaultsBeforeXML(){
+		running=false;
+		auto_refresh=false;
+		shouldReloadOnResume=false;
+		receiverRegistered=false;
+	}
+	
 	public BannerAdView(Context context) {
 		super(context);
 		// TODO Auto-generated constructor stub
@@ -62,8 +69,9 @@ public class BannerAdView extends AdView {
 							Clog.getString(R.string.screen_off_stop));
 				} else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
 					if (auto_refresh)
-						start(); // TODO unpause
+						start();
 					else if (shouldReloadOnResume)
+						stop();
 						start();
 					Clog.d(Clog.baseLogTag,
 							Clog.getString(R.string.screen_on_start));
@@ -106,23 +114,26 @@ public class BannerAdView extends AdView {
 	@Override
 	public void loadAd() {
 		if (getVisibility() != VISIBLE)
-			running = true; // Load the ad when presence changes back
+			running=true; // Load the ad when presence changes back
 	}
 
 	protected void start() {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.start));
 		mAdFetcher.start();
-		running = true;
+		running=true;
 	}
 
 	protected void stop() {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.stop));
 		mAdFetcher.stop();
-		running = false;
+		running=false;
 	}
 
 	@Override
 	protected void loadVariablesFromXML(Context context, AttributeSet attrs) {
+		//Defaults
+		setDefaultsBeforeXML();
+		
 		TypedArray a = context
 				.obtainStyledAttributes(attrs, R.styleable.BannerAdView);
 
@@ -195,8 +206,7 @@ public class BannerAdView extends AdView {
 				Clog.getString(R.string.set_auto_refresh, auto_refresh));
 		this.auto_refresh = auto_refresh;
 		if(mAdFetcher!=null) mAdFetcher.setAutoRefresh(auto_refresh);
-		if (!running) {
-			running = true;
+		if (!running && mAdFetcher!=null) {
 			start();
 		}
 	}
@@ -223,8 +233,8 @@ public class BannerAdView extends AdView {
 				receiverRegistered=true;
 			}
 			Clog.d(Clog.baseLogTag, Clog.getString(R.string.unhidden));
-			if (mAdFetcher != null && running && shouldReloadOnResume && !requesting_visible)
-				mAdFetcher.start();
+			if (mAdFetcher != null && (!requesting_visible || running || shouldReloadOnResume || auto_refresh))
+				start();
 			else{
 				//Were' not displaying the adview, the system is
 				requesting_visible=false;
@@ -237,8 +247,7 @@ public class BannerAdView extends AdView {
 			}
 			Clog.d(Clog.baseLogTag, Clog.getString(R.string.hidden));
 			if (mAdFetcher != null && running){
-				mAdFetcher.stop();
-				running = false;
+				stop();
 			}
 		}
 	}

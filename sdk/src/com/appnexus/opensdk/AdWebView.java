@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
 /**
@@ -58,6 +59,13 @@ public class AdWebView extends WebView implements Displayable {
 			}
 		});
 		
+		setWebViewClient(new WebViewClient(){
+			@Override
+			public void onReceivedError(WebView view, int errorCode, String description, String failingURL){
+				Clog.e(Clog.httpReqLogTag, String.format(Clog.getString(R.string.webclient_error), errorCode, description));
+			}
+		});
+		
 	}
 	
 	@Override
@@ -67,6 +75,7 @@ public class AdWebView extends WebView implements Displayable {
 
 	protected void loadAd(AdResponse ad) {
 		if(ad.getBody()==""){
+			Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.blank_ad));
 			fail();
 			return;
 		}

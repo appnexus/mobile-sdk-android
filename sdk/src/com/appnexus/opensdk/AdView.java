@@ -69,9 +69,6 @@ public abstract class AdView extends FrameLayout {
 			Settings.getSettings().first_launch = false;
 		}
 
-		// Load user variables only if attrs isn't null
-		if(attrs!=null) loadVariablesFromXML(context, attrs);
-
 		// Store the UA in the settings
 		Settings.getSettings().ua = new WebView(context).getSettings()
 				.getUserAgentString();
@@ -85,6 +82,8 @@ public abstract class AdView extends FrameLayout {
 		Clog.v(Clog.baseLogTag, Clog.getString(R.string.making_adman));
 		// Make an AdFetcher - Continue the creation pass
 		mAdFetcher = new AdFetcher(this);
+		// Load user variables only if attrs isn't null
+		if(attrs!=null) loadVariablesFromXML(context, attrs);
 		
 		//We don't start the ad requesting here, since the view hasn't been sized yet.
 	}

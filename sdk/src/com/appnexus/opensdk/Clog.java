@@ -42,26 +42,33 @@ public class Clog{
 	protected static String httpReqLogTag = baseLogTag+"-REQUEST";
 	protected static String httpRespLogTag = baseLogTag+"-RESPONSE";
 	protected static String xmlLogTag = baseLogTag+"-XML";
+	protected static String jsLogTag = baseLogTag+"-JS";
 	protected static Context error_context;
 	protected static String getString(int id){
 		return error_context.getString(id);
 	}
 	protected static String getString(int id, long l){
+		if(clogged) return null;
 		return String.format(error_context.getString(id), l);
 	}
 	protected static String getString(int id, String s){
+		if(clogged) return null;
 		return String.format(error_context.getString(id), s);
 	}
 	protected static String getString(int id, String s, int i){
+		if(clogged) return null;
 		return String.format(error_context.getString(id), s, i);
 	}
 	protected static String getString(int id, int a, int b, int c, int d){
+		if(clogged) return null;
 		return String.format(error_context.getString(id), a, b, c, d);
 	}
 	protected static String getString(int id, boolean b){
+		if(clogged) return null;
 		return String.format(error_context.getString(id), b);
 	}
 	protected static String getString(int id, String s, String ss){
+		if(clogged) return null;
 		return String.format(error_context.getString(id), s, ss);
 	}
 }

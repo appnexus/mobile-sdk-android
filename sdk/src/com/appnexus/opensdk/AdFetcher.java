@@ -19,7 +19,7 @@ public class AdFetcher {
 	private long lastFetchTime=-1;
 	private long timePausedAt=-1;
 	private long pauseDuration=Long.MAX_VALUE;
-
+	
 	// Fires requests whenever it receives a message
 	public AdFetcher(AdView owner) {
 		this.owner = owner;
@@ -39,9 +39,14 @@ public class AdFetcher {
 	protected void stop() {
 		if (tasker == null)
 			return; // You can't stop the signal Mal
+		tasker.shutdownNow(); // TODO A warning if the tasker is stopped with scheduled tasks still waiting?
+		try {
+			tasker.awaitTermination(period, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException e) {
+			return;
+		}
+		tasker=null;
 		Clog.d(Clog.baseLogTag, Clog.getString(R.string.stop));
-		tasker.shutdownNow();
-		tasker = null;
 		timePausedAt=System.currentTimeMillis();
 		
 	}
@@ -51,6 +56,7 @@ public class AdFetcher {
 	}
 
 	protected void start() {
+		Clog.d(Clog.baseLogTag, Clog.getString(R.string.start));
 		//Better have a placement ID!
 		if(owner.getPlacementID()==null){
 			Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_placement_id));
@@ -63,7 +69,7 @@ public class AdFetcher {
 			requestFailed();
 			return;
 		}
-		Clog.d(Clog.baseLogTag, Clog.getString(R.string.moot_restart));
+		
 		if(timePausedAt!=-1){
 			pauseDuration+=System.currentTimeMillis()-timePausedAt;
 		}

@@ -16,7 +16,9 @@
         android:layout_height="50dp"
         opensdk:placement_id="656561"
         opensdk:width="320"
-        opensdk:height="50"/>
+        opensdk:height="50"
+        opensdk:auto_refresh="false"
+        opensdk:auto_refresh_interval="20000"/>
 
     <TextView
         android:layout_width="wrap_content"

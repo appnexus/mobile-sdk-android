@@ -104,7 +104,7 @@ public class InterstitialAdView extends AdView {
 	
 	@Override
 	public void loadAd(){
-		Clog.d(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.load_ad_int));
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.load_ad_int));
 		if(mAdFetcher!=null){
 			//Load an interstitial ad
 			mAdFetcher.stop();
@@ -129,27 +129,27 @@ public class InterstitialAdView extends AdView {
 	
 	@Override
 	public void setAdWidth(int width){
-		Clog.w(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.set_width_int));
+		Clog.w(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_width_int));
 	}
 	
 	@Override
 	public void setAdHeight(int height){
-		Clog.w(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.set_height_int));
+		Clog.w(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_height_int));
 	}
 	
 	public void setAdListener(AdListener listener){
-		Clog.d(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.set_ad_listener));
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_ad_listener));
 		adListener=listener;
 	}
 	
 	public AdListener getAdListener(){
-		Clog.d(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.get_ad_listener));
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.get_ad_listener));
 		return adListener;
 	}
 	
 
 	public int show(){
-		Clog.d(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.show_int));
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.show_int));
 		//Make sure there is an ad to show
 		ArrayList<Pair<Long, Displayable>> to_remove = new ArrayList<Pair<Long, Displayable>>();
 		long now = System.currentTimeMillis();
@@ -177,27 +177,27 @@ public class InterstitialAdView extends AdView {
 	}
 	
 	public ArrayList<Size> getAllowedSizes(){
-		Clog.d(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.get_allowed_sizes));
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.get_allowed_sizes));
 		return allowedSizes;
 	}
 	
 	public void setAllowedSizes(ArrayList<Size> allowed_sizes){
-		Clog.d(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.set_allowed_sizes));
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_allowed_sizes));
 		allowedSizes=allowed_sizes;
 	}
 	
 	public void setBackgroundColor(int color){
-		Clog.d(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.set_bg));
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_bg));
 		backgroundColor = color;
 	}
 	
 	public int getBackgroundColor(){
-		Clog.d(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.get_bg));
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.get_bg));
 		return backgroundColor;}
 	
 	
 	public void destroy(){
-		Clog.d(Clog.baseLogTag+Clog.publicFunctionsLogTag, Clog.getString(R.string.destroy_int));
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.destroy_int));
 		if(this.mAdFetcher!=null) mAdFetcher.stop();
 		InterstitialAdView.q=null;
 		InterstitialAdView.INTERSTITIALADVIEW_TO_USE=null;

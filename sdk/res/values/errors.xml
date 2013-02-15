@@ -75,4 +75,6 @@
 	<string formatted="false" name="destroy_int">destroy() called on interstitial.</string>
 	<string formatted="false" name="empty_queue">show() was called, but there are no valid ads in the queue. Load more?</string>
 	<string formatted="false" name="too_old">Interstitial ad was told to display, but is over the age limit.</string>
+	<string formatted="false" name="webclient_error">WebClient error: %d%s</string>
+	<string formatted="false" name="blank_ad">The server returned an ad, but it was blank.</string>
 </resources>
