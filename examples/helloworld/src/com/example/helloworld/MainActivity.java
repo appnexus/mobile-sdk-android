@@ -27,9 +27,9 @@ public class MainActivity extends Activity implements AdListener{
 		showButton = (Button) findViewById(R.id.showbutton);
 		showButton.setClickable(false);
 		showButton.setEnabled(false);
-		//iav = new InterstitialAdView(this);
-		//iav.setPlacementID("656561");
-		//iav.setAdListener(this);
+		iav = new InterstitialAdView(this);
+		iav.setPlacementID("656561");
+		iav.setAdListener(this);
 	}
 
 	@Override
