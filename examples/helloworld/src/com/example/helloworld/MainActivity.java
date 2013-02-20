@@ -39,8 +39,9 @@ public class MainActivity extends Activity implements AdListener{
 		return true;
 	}
 
-	public void loadAd(MenuItem mi){
+	public boolean loadAd(MenuItem mi){
 		av.loadAd();
+		return true;
 	}
 	
 	public void loadIA(View view){

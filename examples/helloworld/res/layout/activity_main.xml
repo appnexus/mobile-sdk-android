@@ -18,6 +18,7 @@
         opensdk:width="320"
         opensdk:height="50"
         opensdk:auto_refresh="false"
+        opensdk:should_reload_on_resume="false"
         opensdk:auto_refresh_interval="20000"/>
 
     <TextView

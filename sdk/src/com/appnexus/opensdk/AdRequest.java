@@ -123,13 +123,6 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				if(((InterstitialAdView)owner).getAllowedSizes().indexOf(s)!=((InterstitialAdView)owner).getAllowedSizes().size()-1)
 					allowedSizes+=",";
 			}
-			
-			// For now choose a random allowed_size to make things work. TODO this will not be needed later
-			Random rand = new Random();
-			int choice = rand.nextInt(((InterstitialAdView)owner).getAllowedSizes().size());
-			Size rsize = ((InterstitialAdView)owner).getAllowedSizes().get(choice);
-			this.width=rsize.width();
-			this.height=rsize.height();
 		}
 		
 	}
@@ -163,8 +156,9 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				+ (orientation != null ? "&orientation=" + orientation : "")
 				+ ((width > 0 && height > 0) ? "&size=" + width + "x" + height
 						: "") 
-				+ ((maxHeight > 0 && maxWidth>0)? "&max-size="+maxWidth+"x"+maxHeight:"")
-				+ (allowedSizes!=null && !allowedSizes.equals("")? "&allowed_sizes="+allowedSizes:"")
+				+ ((maxHeight > 0 && maxWidth>0) && !(owner instanceof InterstitialAdView)? "&max-size="+maxWidth+"x"+maxHeight:"") //max-size
+				+ ((maxHeight > 0 && maxWidth>0) && (owner instanceof InterstitialAdView)? "&size="+maxWidth+"x"+maxHeight:"") //max-size for interstitials is called size
+				+ (allowedSizes!=null && !allowedSizes.equals("")? "&promo_sizes="+allowedSizes:"")
 				+ "&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion);
 	}
 
