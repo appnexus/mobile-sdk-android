@@ -55,7 +55,7 @@ public abstract class AdView extends FrameLayout {
 		Clog.error_context = this.getContext();
 		
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.new_adview));
-		// Determine if this is the first launch.
+		// Determine if this is the first launch. TODO also write to a file if we have permissions, then use OR logic between shared prefs and file presence.
 		SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		if (prefs.getBoolean("opensdk_first_launch", true)) {

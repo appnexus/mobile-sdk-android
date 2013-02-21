@@ -20,6 +20,12 @@
         opensdk:auto_refresh="false"
         opensdk:should_reload_on_resume="false"
         opensdk:auto_refresh_interval="20000"/>
+    
+    <com.appnexus.mraid.MRAIDWebView
+        android:id="@+id/mraid_container"
+        android:layout_below="@id/ad"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"/>
 
     <TextView
         android:layout_width="wrap_content"

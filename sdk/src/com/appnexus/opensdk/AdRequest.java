@@ -5,7 +5,6 @@ package com.appnexus.opensdk;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Random;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;

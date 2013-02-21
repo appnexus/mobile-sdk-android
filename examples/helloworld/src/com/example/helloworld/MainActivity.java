@@ -1,5 +1,6 @@
 package com.example.helloworld;
 
+import com.appnexus.mraid.MRAIDWebView;
 import com.appnexus.opensdk.BannerAdView;
 import com.appnexus.opensdk.InterstitialAdView;
 import com.appnexus.opensdk.AdListener;
@@ -30,6 +31,10 @@ public class MainActivity extends Activity implements AdListener{
 		iav = new InterstitialAdView(this);
 		iav.setPlacementID("656561");
 		iav.setAdListener(this);
+		
+		//mraid
+		MRAIDWebView mraid_space = (MRAIDWebView) findViewById(R.id.mraid_container);
+		mraid_space.load("<script>document.write('Mraid version ');document.write(mraid.getVersion())</script>");
 	}
 
 	@Override
