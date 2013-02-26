@@ -34,7 +34,7 @@ public class MainActivity extends Activity implements AdListener{
 		
 		//mraid
 		MRAIDWebView mraid_space = (MRAIDWebView) findViewById(R.id.mraid_container);
-		mraid_space.load("<script>document.write('Mraid version ');document.write(mraid.getVersion())</script>");
+		mraid_space.load(mraid_space.getAdMobTestBannerDotJs());
 	}
 
 	@Override
