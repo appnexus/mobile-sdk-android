@@ -32,13 +32,15 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:layout_below="@id/mraid_container"
         android:text="@string/hello_world" />
 
     <LinearLayout
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="horizontal" 
+        android:id="@+id/ll">
 
         <Button android:text="Load int."
             android:onClick="loadIA"
