@@ -39,7 +39,6 @@ public class AdWebView extends WebView implements Displayable {
 		this.getSettings().setSupportZoom(false);
 		this.getSettings().setUseWideViewPort(true);
 		this.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-		this.getSettings().setUseWideViewPort(false);
 		
 		setHorizontalScrollbarOverlay(false);
 		setHorizontalScrollBarEnabled(false);

@@ -43,7 +43,7 @@ public class MainActivity extends Activity implements AdListener{
 		
 		//mraid
 		MRAIDWebView mraid_space = (MRAIDWebView) findViewById(R.id.mraid_container);
-		mraid_space.load(MRAIDTests.getAdMobTestJs(this.getResources()));
+		mraid_space.load(MRAIDTests.getMoPubTestJs(this.getResources()));
 		
 		//admob
 		if(true) return;
