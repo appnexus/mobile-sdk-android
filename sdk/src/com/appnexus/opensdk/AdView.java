@@ -151,6 +151,7 @@ public abstract class AdView extends FrameLayout {
 					// View.
 		this.removeAllViews();
 		this.addView(d.getView());
+		Clog.d("MRAID", "Adding view: w:"+d.getView().getLayoutParams().width+" h:"+d.getView().getLayoutParams().height);
 		unhide();
 	}
 
@@ -213,6 +214,11 @@ public abstract class AdView extends FrameLayout {
 	
 	protected int getContainerHeight(){
 		return measuredHeight;
+	}
+	protected void expand(int w, int h){
+		//Only expand w and h if they are >0, otherwise they are match_parent or something
+		if(this.getLayoutParams().width>0) this.getLayoutParams().width=w;
+		if(this.getLayoutParams().height>0) this.getLayoutParams().height=h;
 	}
 
 	

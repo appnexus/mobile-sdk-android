@@ -72,15 +72,16 @@ public class AdResponse {
 	protected String getType(){
 		return type;
 	}
-	
-	@SuppressWarnings("unused")
+
 	protected Displayable getDisplayable(){
-		if(true){ //All displayables, for now, are webviews
+		if(!getBody().contains("mraid.js")){
 			AdWebView out = new AdWebView(owner);
 			out.loadAd(this);
 			return out;
 		}else{
-			return null;
+			MRAIDWebView out = new MRAIDWebView(owner);
+			out.loadAd(this);
+			return out;
 		}
 	}
 }

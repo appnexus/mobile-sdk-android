@@ -8,7 +8,7 @@
 
     <!-- xmlns:opensdk="http://schemas.android.com/apk/res/com.example.helloworld" -->
 
-
+	<!-- 
     <com.appnexus.opensdk.BannerAdView
         android:id="@+id/ad"
         android:layout_alignParentTop="true"
@@ -19,20 +19,26 @@
         opensdk:height="50"
         opensdk:auto_refresh="false"
         opensdk:should_reload_on_resume="false"
-        opensdk:auto_refresh_interval="20000"/>
-    
-    <com.appnexus.mraid.MRAIDWebView
-        android:id="@+id/mraid_container"
-        android:layout_below="@id/ad"
+        opensdk:auto_refresh_interval="20000"/> -->
+
+    <com.appnexus.opensdk.BannerAdView
+        android:id="@+id/ad2"
+        android:layout_alignParentTop="true"
         android:layout_width="match_parent"
-        android:layout_height="50dp"/>
+        android:layout_height="50dp"
+        opensdk:placement_id="656561"
+        opensdk:width="300"
+        opensdk:height="50"
+        opensdk:auto_refresh="false"
+        opensdk:should_reload_on_resume="false"
+        opensdk:auto_refresh_interval="20000"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_below="@id/mraid_container"
+        android:layout_below="@id/ad2"
         android:text="@string/hello_world" />
 
     <LinearLayout

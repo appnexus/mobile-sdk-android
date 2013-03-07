@@ -10,7 +10,6 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
 
 /**
  * @author jshufro@appnexus.com
@@ -90,7 +89,7 @@ public class AdWebView extends WebView implements Displayable {
 		int rheight = (int)(ad.getHeight()*scale+0.5f);
 		int rwidth = (int)(ad.getWidth()*scale+0.5f);
 		int rgravity=Gravity.CENTER;
-		FrameLayout.LayoutParams resize = new FrameLayout.LayoutParams(rwidth, rheight, rgravity);
+		AdView.LayoutParams resize = new AdView.LayoutParams(rwidth, rheight, rgravity);
 		this.setLayoutParams(resize);
 	}
 

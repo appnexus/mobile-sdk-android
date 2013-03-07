@@ -1,7 +1,5 @@
 package com.example.helloworld;
 
-import com.appnexus.mraid.MRAIDWebView;
-import com.appnexus.mraid.MRAIDTests;
 import com.appnexus.opensdk.BannerAdView;
 import com.appnexus.opensdk.InterstitialAdView;
 import com.appnexus.opensdk.AdListener;
@@ -32,7 +30,7 @@ public class MainActivity extends Activity implements AdListener{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-				
+		
 		//Interstitial
 		showButton = (Button) findViewById(R.id.showbutton);
 		showButton.setClickable(false);
@@ -40,10 +38,6 @@ public class MainActivity extends Activity implements AdListener{
 		iav = new InterstitialAdView(this);
 		iav.setPlacementID("656561");
 		iav.setAdListener(this);
-		
-		//mraid
-		MRAIDWebView mraid_space = (MRAIDWebView) findViewById(R.id.mraid_container);
-		mraid_space.load(MRAIDTests.getMoPubTestJs(this.getResources()));
 		
 		//admob
 		if(true) return;
