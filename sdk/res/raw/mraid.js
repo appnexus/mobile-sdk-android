@@ -152,8 +152,5 @@
 			listeners['viewableChange'][i](is_viewable_now);
 		}
 	};
-
-	mraid.util.setState=function(new_state){
-		state=new_state
 		
 }());
