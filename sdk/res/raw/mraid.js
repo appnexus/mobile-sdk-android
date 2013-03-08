@@ -64,11 +64,11 @@
 			mraid.util.errorEvent("mraid.close() called while state is 'loading'.", "mraid.close()");
 			break;
 		case 'default':
-			//TODO hide the ad
+			window.location="mraid://close/";
 			mraid.util.stateChangeEvent('hidden');
 			break;
 		case 'expanded':
-			//TODO unexpand
+			window.location="mraid://close/";
 			mraid.util.stateChangeEvent('default');
 			break;
 		case 'hidden':
@@ -84,24 +84,24 @@
 			mraid.util.errorEvent("mraid.expand() called while state is 'loading'.", "mraid.expand()");
 			break;
 		case 'default':
-			//TODO expand
+			window.location="mraid://expand/"+(url!=null ? "?url="+url:"");
 			mraid.util.stateChangeEvent('expanded');
 			break;
 		case 'expanded':
 			mraid.util.errorEvent("mraid.expand() called while state is 'expanded'.", "mraid.expand()");
 			break;
 		case 'hidden':
-			//TODO unhide
+			window.location="mraid://expand/"+(url!=null ? "?url="+url:"");
 			mraid.util.stateChangeEvent('default');
 			break;
 		}
-		//TODO if url is set, open the url
 	};
 
 	// Takes an object... {width:300, height:250, useCustomClose:false, isModal:false};
 	mraid.setExpandProperties(properties){
 		properties.isModal=true; // Read only property.
 		expand_properties=properties;
+		window.location="mraid://setExpandProperties/?properties="+JSON.stringify(properties);
 	};
 
 	// Takes a boolean
@@ -113,7 +113,7 @@
 
 	// Loads a given URL
 	mraid.open=function(url){
-		window.location=url;
+		window.location=url;//Is there any reason to make a native call here?
 	};
 
 	// ----- MRAID UTILITY FUNCTIONS -----
@@ -131,25 +131,29 @@
 		for(var i=0;i<listeners['ready'].length;i++){
 			listeners['ready'][i]();
 		}
-	}
+	};
 
 	mraid.util.errorEvent=function(message, what_doing){
 		for(var i=0;i<listeners['error'].length;i++){
 			listeners['error'][i](message, what_doing);
 		}
-	}
+	};
 
 	mraid.util.stateChangeEvent=function(new_state){
 		state=new_state;
 		for(var i=0;i<listeners['stateChange'].length;i++){
 			listeners['stateChange'][i](new_state);
 		}
-	}
+	};
 
-	mraid.util.viewableChange=function(is_viewable_now){
+	mraid.util.viewableChangeEvent=function(is_viewable_now){
+		is_viewable = is_viewable_now;
 		for(var i=0;i<listeners['viewableChange'].length;i++){
 			listeners['viewableChange'][i](is_viewable_now);
 		}
-	}
+	};
+
+	mraid.util.setState=function(new_state){
+		state=new_state
 		
 }());
