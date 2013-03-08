@@ -2,14 +2,15 @@
 
 	// Set up some variables
 	var mraid = window.mraid = {};
+	var mraid.util = {};
 	var listeners = [];
 	var listeners['ready']=[];
 	var listeners['error']=[];
 	var listeners['stateChange']=[];
 	var listeners['viewableChange']=[];
 	var state='loading'; //Can be loading, default, expanded, or hidden
-	var placement_type='inline'; // TODO set this to 'interstitial' from the java
-	var is_viewable=false; // TODO set this from the java in onViewabilityChange
+	var placement_type='inline'; 
+	var is_viewable=false;  
 	var expand_properties={width:300, height:250, useCustomClose:false, isModal:true};
 
 	// ----- MRAID AD API FUNCTIONS -----
@@ -58,16 +59,42 @@
 
 	//Closes an expanded ad or hides an ad in default state
 	mraid.close=function(){
-		//TODO Check the state to make sure we can close
-		//TODO Call native close function
-		//TODO Broadcast stateChange/update state variable
+		switch(mraid.getState()){
+		case 'loading':
+			mraid.util.errorEvent("mraid.close() called while state is 'loading'.", "mraid.close()");
+			break;
+		case 'default':
+			//TODO hide the ad
+			mraid.util.stateChangeEvent('hidden');
+			break;
+		case 'expanded':
+			//TODO unexpand
+			mraid.util.stateChangeEvent('default');
+			break;
+		case 'hidden':
+			mraid.util.errorEvent("mraid.close() called while ad was already hidden". "mraid.close()");
+			break;
+		}
 	};
 
 	// Expands a default state ad, or unhides a hidden ad. Optionally takes a URL to load in the expanded view
 	mraid.expand=function(url){
-		//TODO Check the state to make sure we can expand
-		//TODO Call native expand function
-		//TODO Broadcase stateChange
+		switch(mraid.getState()){
+		case 'loading':
+			mraid.util.errorEvent("mraid.expand() called while state is 'loading'.", "mraid.expand()");
+			break;
+		case 'default':
+			//TODO expand
+			mraid.util.stateChangeEvent('expanded');
+			break;
+		case 'expanded':
+			mraid.util.errorEvent("mraid.expand() called while state is 'expanded'.", "mraid.expand()");
+			break;
+		case 'hidden':
+			//TODO unhide
+			mraid.util.stateChangeEvent('default');
+			break;
+		}
 		//TODO if url is set, open the url
 	};
 
@@ -88,4 +115,41 @@
 	mraid.open=function(url){
 		window.location=url;
 	};
+
+	// ----- MRAID UTILITY FUNCTIONS -----
+	// These functions are called by the native SDK to drive events and update information
+
+	mraid.util.setPlacementType=function(type){
+		placement_type=type;
+	};
+
+	mraid.util.setIsViewable=function(is_it_viewable){
+		is_viewable=is_it_viewable;
+	};
+
+	mraid.util.readyEvent=function(){
+		for(var i=0;i<listeners['ready'].length;i++){
+			listeners['ready'][i]();
+		}
+	}
+
+	mraid.util.errorEvent=function(message, what_doing){
+		for(var i=0;i<listeners['error'].length;i++){
+			listeners['error'][i](message, what_doing);
+		}
+	}
+
+	mraid.util.stateChangeEvent=function(new_state){
+		state=new_state;
+		for(var i=0;i<listeners['stateChange'].length;i++){
+			listeners['stateChange'][i](new_state);
+		}
+	}
+
+	mraid.util.viewableChange=function(is_viewable_now){
+		for(var i=0;i<listeners['viewableChange'].length;i++){
+			listeners['viewableChange'][i](is_viewable_now);
+		}
+	}
+		
 }());
