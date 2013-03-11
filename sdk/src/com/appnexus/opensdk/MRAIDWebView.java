@@ -1,6 +1,10 @@
 package com.appnexus.opensdk;
 
 
+import java.io.DataOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.DisplayMetrics;
@@ -64,6 +68,18 @@ public class MRAIDWebView extends WebView implements Displayable {
 		int rgravity=Gravity.CENTER;
 		AdView.LayoutParams resize = new AdView.LayoutParams(rwidth, rheight, rgravity);
 		this.setLayoutParams(resize);
+		
+		// Save the html to a file for debugging TODO remove this
+		try {
+			DataOutputStream out = new DataOutputStream(getContext().openFileOutput("last_mraid_ad.html", Context.MODE_PRIVATE));
+			out.writeUTF(html);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		this.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
 	}

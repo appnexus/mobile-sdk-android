@@ -123,7 +123,7 @@ public class MoPubImplementation extends MRAIDImplementation {
 
 	@Override
 	protected String getMraidDotJS(Resources r) {
-		InputStream ins = r.openRawResource(R.raw.mraid_mopub);
+		InputStream ins = r.openRawResource(R.raw.mraid);
 		try {
 			byte[] buffer = new byte[ins.available()];
 			ins.read(buffer);

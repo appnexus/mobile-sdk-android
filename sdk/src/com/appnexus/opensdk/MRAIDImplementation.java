@@ -48,7 +48,7 @@ public abstract class MRAIDImplementation {
 		@Override
 		public boolean onConsoleMessage(ConsoleMessage consoleMessage){
 			//super.onConsoleMessage(consoleMessage);
-			Log.w("MRAID", "Received console message: "+consoleMessage.message()+" at line "+consoleMessage.lineNumber());
+			Log.w("MRAID", "Received console message: "+consoleMessage.message()+" at line "+consoleMessage.lineNumber()+" sourceId "+consoleMessage.sourceId());
 			return true;
 		}
 		

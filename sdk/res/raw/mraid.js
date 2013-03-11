@@ -2,12 +2,12 @@
 
 	// Set up some variables
 	var mraid = window.mraid = {};
-	var mraid.util = {};
+	mraid.util = {};
 	var listeners = [];
-	var listeners['ready']=[];
-	var listeners['error']=[];
-	var listeners['stateChange']=[];
-	var listeners['viewableChange']=[];
+	listeners['ready']=[];
+	listeners['error']=[];
+	listeners['stateChange']=[];
+	listeners['viewableChange']=[];
 	var state='loading'; //Can be loading, default, expanded, or hidden
 	var placement_type='inline'; 
 	var is_viewable=false;  
@@ -40,17 +40,17 @@
 	};
 
 	//returns 'inline' or 'interstitial'
-	mraid.getPlacementType(){
+	mraid.getPlacementType=function(){
 		return placement_type;
 	};
 
 	//returns true or false
-	mraid.isViewable(){
+	mraid.isViewable=function(){
 		return is_viewable;
 	};
 
 	//returns a json object... {width:300, height:250, useCustomClose:false, isModal:false};
-	mraid.getExpandProperties(){
+	mraid.getExpandProperties=function(){
 		return expand_properties;
 	};
 
@@ -72,7 +72,7 @@
 			mraid.util.stateChangeEvent('default');
 			break;
 		case 'hidden':
-			mraid.util.errorEvent("mraid.close() called while ad was already hidden". "mraid.close()");
+			mraid.util.errorEvent("mraid.close() called while ad was already hidden", "mraid.close()");
 			break;
 		}
 	};
@@ -98,10 +98,10 @@
 	};
 
 	// Takes an object... {width:300, height:250, useCustomClose:false, isModal:false};
-	mraid.setExpandProperties(properties){
+	mraid.setExpandProperties=function(properties){
 		properties.isModal=true; // Read only property.
 		expand_properties=properties;
-		window.location="mraid://setExpandProperties/?properties="+JSON.stringify(properties);
+		window.location="mraid://setExpandProperties/?properties="+encodeURIComponent(JSON.stringify(properties));
 	};
 
 	// Takes a boolean
@@ -114,6 +114,7 @@
 	// Loads a given URL
 	mraid.open=function(url){
 		window.location=url;//Is there any reason to make a native call here?
+		//TODO Should this launch the URL in the native browser? I think yes.
 	};
 
 	// ----- MRAID UTILITY FUNCTIONS -----
@@ -121,10 +122,6 @@
 
 	mraid.util.setPlacementType=function(type){
 		placement_type=type;
-	};
-
-	mraid.util.setIsViewable=function(is_it_viewable){
-		is_viewable=is_it_viewable;
 	};
 
 	mraid.util.readyEvent=function(){
@@ -152,5 +149,10 @@
 			listeners['viewableChange'][i](is_viewable_now);
 		}
 	};
-		
+
+	mraid.util.setIsViewable=function(is_it_viewable){
+		is_viewable=is_it_viewable;
+		mraid.util.viewableChangeEvent(is_viewable);
+	};
+
 }());
