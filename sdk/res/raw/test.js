@@ -12,7 +12,7 @@
       assert(mraid.getVersion()==="1.0", "Get Version");
       assert(mraid.getState()==="loading", "Loading state");
       // Set the expand properties
-      var expand_props = {width:250,height:250,useCustomClose:false,lockOrientation:true};
+      var expand_props = {width:250,height:250,useCustomClose:false,isModal:true};
       mraid.setExpandProperties(expand_props);
       assert(mraid.getExpandProperties()==expand_props, "Set expand properties");
       // Listen for the state change events
@@ -20,7 +20,6 @@
       mraid.addEventListener('stateChange', onStateChange);
       mraid.addEventListener('ready', onReady);
       mraid.addEventListener('stateChange', onlyOnce);
-
       var j=0;
       function onlyOnce(){
         if(j<1){
@@ -49,11 +48,11 @@
 
       function onStateChange(new_state){
         if(new_state==="hidden"){
-          assert(mraid.isViewable===false, "Not viewable when state is hidden");
+          assert(mraid.isViewable()===false, "Not viewable when state is hidden");
         }else if(new_state==="default"){
-          assert(mraid.isViewable===true, "Viewable in default state");
+          assert(mraid.isViewable()===true, "Viewable in default state");
         }else if(new_state==="expanded"){
-          assert(mraid.isViewable===true, "Viewable in expanded state");
+          assert(mraid.isViewable()===true, "Viewable in expanded state");
         }
       }
 

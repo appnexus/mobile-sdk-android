@@ -64,11 +64,11 @@
 			mraid.util.errorEvent("mraid.close() called while state is 'loading'.", "mraid.close()");
 			break;
 		case 'default':
-			window.location="mraid://close/";
+			window.open("mraid://close/");
 			mraid.util.stateChangeEvent('hidden');
 			break;
 		case 'expanded':
-			window.location="mraid://close/";
+			window.open("mraid://close/");
 			mraid.util.stateChangeEvent('default');
 			break;
 		case 'hidden':
@@ -84,14 +84,14 @@
 			mraid.util.errorEvent("mraid.expand() called while state is 'loading'.", "mraid.expand()");
 			break;
 		case 'default':
-			window.location="mraid://expand/"+(url!=null ? "?url="+url:"");
+			window.open("mraid://expand/"+(url!=null ? "?url="+encodeURIComponent(url):""));
 			mraid.util.stateChangeEvent('expanded');
 			break;
 		case 'expanded':
 			mraid.util.errorEvent("mraid.expand() called while state is 'expanded'.", "mraid.expand()");
 			break;
 		case 'hidden':
-			window.location="mraid://expand/"+(url!=null ? "?url="+url:"");
+			window.open("mraid://expand/"+(url!=null ? "?url="+encodeURIComponent(url):""));
 			mraid.util.stateChangeEvent('default');
 			break;
 		}
@@ -101,7 +101,7 @@
 	mraid.setExpandProperties=function(properties){
 		properties.isModal=true; // Read only property.
 		expand_properties=properties;
-		window.location="mraid://setExpandProperties/?properties="+encodeURIComponent(JSON.stringify(properties));
+		window.open("mraid://setExpandProperties/?properties="+encodeURIComponent(JSON.stringify(properties)));
 	};
 
 	// Takes a boolean
@@ -113,8 +113,7 @@
 
 	// Loads a given URL
 	mraid.open=function(url){
-		window.location=url;//Is there any reason to make a native call here?
-		//TODO Should this launch the URL in the native browser? I think yes.
+		window.open("mraid://expand/"+(url!=null ? "?url="+encodeURIComponent(url):""));
 	};
 
 	// ----- MRAID UTILITY FUNCTIONS -----
@@ -137,6 +136,7 @@
 	};
 
 	mraid.util.stateChangeEvent=function(new_state){
+		if(state===new_state) return;
 		state=new_state;
 		for(var i=0;i<listeners['stateChange'].length;i++){
 			listeners['stateChange'][i](new_state);
@@ -151,6 +151,7 @@
 	};
 
 	mraid.util.setIsViewable=function(is_it_viewable){
+		if(is_viewable===is_it_viewable) return;
 		is_viewable=is_it_viewable;
 		mraid.util.viewableChangeEvent(is_viewable);
 	};

@@ -55,7 +55,7 @@ public class MRAIDWebView extends WebView implements Displayable {
 		String html = ar.getBody();
 		
 		if(html.contains("mraid.js")){
-			setImplementation(new MoPubImplementation(this));
+			setImplementation(new MRAIDImplementation(this));
 		}
 		
 		if(implementation!=null){

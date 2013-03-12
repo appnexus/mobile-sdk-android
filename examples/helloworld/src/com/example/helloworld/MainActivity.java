@@ -74,6 +74,7 @@ public class MainActivity extends Activity implements AdListener{
 	public void loadIA(View view){
 		iav.loadAd();
 	}
+	
 	public void showIA(View view){
 		interstitials=iav.show();
 		if(interstitials<1){
