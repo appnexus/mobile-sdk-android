@@ -91,6 +91,11 @@ public class MRAIDImplementation {
 					view.loadUrl("javascript:window.mraid.util.setIsViewable(true)");
 					view.loadUrl("javascript:window.mraid.util.stateChangeEvent('default')");
 					view.loadUrl("javascript:window.mraid.util.readyEvent();");
+					
+					//Store width and height for close()
+					default_width = owner.getLayoutParams().width;
+					default_height = owner.getLayoutParams().height;
+					
 					readyFired = true;
 				}
 			}
@@ -147,15 +152,10 @@ public class MRAIDImplementation {
 			else if(bnvp.getName().equals("h")) height = Integer.parseInt(bnvp.getValue());
 		}
 		//TODO: Use custom close
-		//TODO: lockOrientation
-		
-		//Store width and height for close()
-		default_width = owner.getLayoutParams().width;
-		default_height = owner.getLayoutParams().height;
 		
 		owner.expand(width, height);
 		//Fire the stateChange
-		this.owner.loadUrl("javascript:window.mraidbridge.fireChangeEvent({state:'expanded'});");
+		this.owner.loadUrl("javascript:window.mraid.util.stateChangeEvent('expanded');");
 		expanded=true;
 	}
 	
@@ -165,7 +165,7 @@ public class MRAIDImplementation {
 		url = url.replaceFirst("mraid://", "");
 		
 		//Separate the function from the parameters
-		String func = url.split("\\?")[0];
+		String func = url.split("\\?")[0].replaceAll("/", "");
 		String params;
 		ArrayList<BasicNameValuePair> parameters = new ArrayList<BasicNameValuePair>();
 		if(url.split("\\?").length>1){
@@ -182,7 +182,5 @@ public class MRAIDImplementation {
 		}else if(func.equals("close")){
 			close();
 		}
-				
 	}
-
 }

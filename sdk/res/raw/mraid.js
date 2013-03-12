@@ -84,14 +84,14 @@
 			mraid.util.errorEvent("mraid.expand() called while state is 'loading'.", "mraid.expand()");
 			break;
 		case 'default':
-			window.open("mraid://expand/"+(url!=null ? "?url="+encodeURIComponent(url):""));
+			window.open("mraid://expand/"+"?w="+mraid.getExpandProperties().width+"&h="+mraid.getExpandProperties().height+"&useCustomClose="+mraid.getExpandProperties().useCustomClose+(url!=null ? "&url="+url:""));
 			mraid.util.stateChangeEvent('expanded');
 			break;
 		case 'expanded':
 			mraid.util.errorEvent("mraid.expand() called while state is 'expanded'.", "mraid.expand()");
 			break;
 		case 'hidden':
-			window.open("mraid://expand/"+(url!=null ? "?url="+encodeURIComponent(url):""));
+			window.open("mraid://expand/"+(url!=null ? "?url="+url:""));
 			mraid.util.stateChangeEvent('default');
 			break;
 		}
@@ -101,7 +101,6 @@
 	mraid.setExpandProperties=function(properties){
 		properties.isModal=true; // Read only property.
 		expand_properties=properties;
-		window.open("mraid://setExpandProperties/?properties="+encodeURIComponent(JSON.stringify(properties)));
 	};
 
 	// Takes a boolean
@@ -113,7 +112,7 @@
 
 	// Loads a given URL
 	mraid.open=function(url){
-		window.open("mraid://expand/"+(url!=null ? "?url="+encodeURIComponent(url):""));
+		window.open("mraid://open/"+(url!=null ? "?url="+encodeURIComponent(url):""));
 	};
 
 	// ----- MRAID UTILITY FUNCTIONS -----
