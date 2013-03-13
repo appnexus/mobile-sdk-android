@@ -4,8 +4,8 @@ package com.appnexus.opensdk;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
@@ -16,7 +16,7 @@ import android.widget.FrameLayout;
 public class MRAIDWebView extends WebView implements Displayable {
 	private MRAIDImplementation implementation;
 	private boolean failed=false;
-	private AdView owner;
+	protected AdView owner;
 	private int default_width;
 	private int default_height;
 	public MRAIDWebView(AdView owner) {
@@ -36,7 +36,14 @@ public class MRAIDWebView extends WebView implements Displayable {
 		this.getSettings().setSupportZoom(false);
 		this.getSettings().setUseWideViewPort(true);
 		this.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+		
+		setOnTouchListener(new OnTouchListener() {
 
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				return (event.getAction() == MotionEvent.ACTION_MOVE);
+			}
+		});
 	}
 	
 	protected void setImplementation(MRAIDImplementation imp){
@@ -50,7 +57,6 @@ public class MRAIDWebView extends WebView implements Displayable {
 	}
 
 	public void loadAd(AdResponse ar){	
-		Log.d("MRAID", "Loading an MRAID ad");
 		String html = ar.getBody();
 		
 		if(html.contains("mraid.js")){

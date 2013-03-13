@@ -49,8 +49,6 @@ public class AdWebView extends WebView implements Displayable {
 
 		setOnTouchListener(new OnTouchListener() {
 
-			// Disables all dragging in the webview. Might interfere with
-			// interactive creatives. TODO?
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				return (event.getAction() == MotionEvent.ACTION_MOVE);

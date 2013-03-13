@@ -1,6 +1,6 @@
 <resources>
 	<string formatted="false" name="fetcher_stopped">AdFetcher stopped</string>
-	<string formatted="false" name="no_placement_id">No placement ID set</string>
+	<string formatted="false" name="no_placement_id">E105: No placement ID set</string>
 	<string formatted="false" name="moot_restart">AdFetcher requested to start, but tasker already instantiated</string>
 	<string formatted="false" name="fetcher_start">AdFetcher starting</string>
 	<string formatted="false" name="fetcher_start_single">AdFetcher starting in single-use mode</string>
@@ -9,7 +9,7 @@
 	<string formatted="false" name="request_delayed_by_x_ms">Ad request will be delayed by %dms to account for idletime</string>
 	<string formatted="false" name="request_delay_over">Ad Request delay has ended, scheduling recurring ad fetches at %dms</string>
 	<string formatted="false" name="new_ad_since">Fetching a new ad for the first time in %dms</string>
-	<string formatted="false" name="permissions_missing_location">E100: Permissions for location aren\'t set in the host app. This may affect demand.</string>
+	<string formatted="false" name="permissions_missing_location">E100: Location permissions ACCESS_COARSE_LOCATION and/or ACCESS_FINE_LOCATION aren\'t set in the host app. This may affect demand.</string>
 	<string formatted="false" name="permissions_missing_network_state">E101: The SDK needs permission ACCESS_NETWORK_STATE in the host app.</string>
 	<string formatted="false" name="no_connectivity">E104: Abandoning AdRequest because there is no network connectivity.</string>
 	<string formatted="false" name="fetch_url">Fetching: %s</string>
@@ -22,7 +22,7 @@
 	<string formatted="false" name="no_response">Request received no response from the server.</string>
 	<string formatted="false" name="response_body">Response body: %s</string>
 	<string formatted="false" name="response_header">Header: %s Value: %s</string>
-	<string formatted="false" name="response_blank">E300: The server returned a blank response.</string>
+	<string formatted="false" name="response_blank">E300: The server returned a blank 200 OK HTTP response.</string>
 	<string formatted="false" name="response_error">E301: The server replied with an error: %s</string>
 	<string formatted="false" name="response_no_ads">E302: The server responded, but didn\'t return any ads.</string>
 	<string formatted="false" name="response_json_error">E303: There was an error parsing the JSON response: %s</string>
@@ -31,13 +31,13 @@
 	<string formatted="false" name="not_first_opensdk_launch">This is not the first OpenSDK launch in this app</string>
 	<string formatted="false" name="ua">Your user agent string is: %s</string>
 	<string formatted="false" name="appid">Saving %s as your app-id</string>
-	<string formatted="false" name="making_adman">Making an AdManager to begin fetching ads</string>
+	<string formatted="false" name="making_adman">Making an AdFetcher to begin fetching ads</string>
 	<string formatted="false" name="adsize_too_big">E103: You requested an Ad larger than the measured ad space. Ad space size: %dx%d, request size: %dx%d</string>
 	<string formatted="false" name="using_wxh">Using wxh %dx%d</string>
 	<string formatted="false" name="screen_off_stop">Stopped ad requests since screen is off</string>
 	<string formatted="false" name="screen_on_start">Starting ad requests since screen is on</string>
-	<string formatted="false" name="start">start()</string>
-	<string formatted="false" name="stop">stop()</string>
+	<string formatted="false" name="start">AdView.start()</string>
+	<string formatted="false" name="stop">AdView.stop()</string>
 	<string formatted="false" name="found_n_in_xml">Found %d variables to read from xml</string>
 	<string formatted="false" name="placement_id">Placement id:%s</string>
 	<string formatted="false" name="xml_set_period">Auto refresh interval set to %dms in xml</string>
@@ -73,8 +73,11 @@
 	<string formatted="false" name="set_bg">setBackgroundColor() called on interstitial.</string>
 	<string formatted="false" name="get_bg">getBackgroundColor() called on interstitial.</string>
 	<string formatted="false" name="destroy_int">destroy() called on interstitial.</string>
-	<string formatted="false" name="empty_queue">show() was called, but there are no valid ads in the queue. Load more?</string>
-	<string formatted="false" name="too_old">Interstitial ad was told to display, but is over the age limit.</string>
+	<string formatted="false" name="empty_queue">show() was called, and wants an interstitial ad, but there are no valid interstitials in the queue. Load more?</string>
+	<string formatted="false" name="too_old">An interstitial ad was told to display, but is over the 60s age limit.</string>
 	<string formatted="false" name="webclient_error">WebClient error: %d%s</string>
-	<string formatted="false" name="blank_ad">The server returned an ad, but it was blank.</string>
+	<string formatted="false" name="blank_ad">The server returned an ad with the response, but it was blank. There is probably an issue with the creative.</string>
+	<string formatted="false" name="webview_received_error">Error %d received, %s, while fetching url %s</string>
+	<string formatted="false" name="console_message">Received console message: %s at line %d with sourceId %d</string>
+	<string formatted="false" name="js_alert">Received javascript alert: %s while loading %d</string>
 </resources>

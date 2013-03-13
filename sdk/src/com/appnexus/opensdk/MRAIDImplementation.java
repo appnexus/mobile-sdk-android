@@ -12,7 +12,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
-import android.util.Log;
 import android.view.Gravity;
 import android.webkit.ConsoleMessage;
 import android.webkit.JsResult;
@@ -36,7 +35,6 @@ public class MRAIDImplementation {
 		//Check to ensure <html> tags are present
 		if(!html.contains("<html>")){
 			html="<html><head></head><body style='padding:0;margin:0;'>"+html+"</body></html>";
-			Log.d("MRAID", "ADDING HTML TAGS");
 		}
 		
 		//Insert mraid script source
@@ -58,7 +56,7 @@ public class MRAIDImplementation {
 	
 	protected void onReceivedError(WebView view, int errorCode, String desc,
 			String failingUrl) {
-		Log.w("MRAID", String.format("Error %n received, %s, while fetching url %s", errorCode, desc, failingUrl));
+		Clog.w(Clog.mraidLogTab, Clog.getString(R.string.webview_received_error, errorCode, desc, failingUrl));
 	}
 	
 	protected WebViewClient getWebViewClient() {
@@ -86,9 +84,12 @@ public class MRAIDImplementation {
 			@Override
 			public void onPageFinished(WebView view, String url) {
 				//Fire the ready event only once
-				//TODO ads not reloading when rotated
 				if(!readyFired){
-					//Set the placement type TODO 
+					if(owner.owner instanceof BannerAdView){
+						view.loadUrl("javascript:window.mraid.util.setPlacementType('inline')");
+					}else if(owner.owner instanceof InterstitialAdView){
+						view.loadUrl("javascript:window.mraid.util.setPlacementType('interstitial')");
+					}
 					view.loadUrl("javascript:window.mraid.util.setIsViewable(true)");
 					view.loadUrl("javascript:window.mraid.util.stateChangeEvent('default')");
 					view.loadUrl("javascript:window.mraid.util.readyEvent();");
@@ -108,14 +109,14 @@ public class MRAIDImplementation {
 			@Override
 			public boolean onConsoleMessage(ConsoleMessage consoleMessage){
 				//super.onConsoleMessage(consoleMessage);
-				Log.w("MRAID", "Received console message: "+consoleMessage.message()+" at line "+consoleMessage.lineNumber()+" sourceId "+consoleMessage.sourceId());
+				Clog.w(Clog.mraidLogTab, Clog.getString(R.string.console_message, consoleMessage.message(), consoleMessage.lineNumber(),consoleMessage.sourceId()));
 				return true;
 			}
 			
 			@Override
 			public boolean onJsAlert(WebView view, String url, String message, JsResult result){
 				///super.onJsAlert(view, url, message, result);
-				Log.w("MRAID", "Received JsAlert: "+message+" while loading "+url);
+				Clog.w(Clog.mraidLogTab, Clog.getString(R.string.js_alert, message, url));
 				result.confirm();
 				return true;
 			}
@@ -173,7 +174,6 @@ public class MRAIDImplementation {
 	
 	protected void dispatch_mraid_call(String url) {
 		//Remove the fake protocol
-		Log.d("MRAID", "Command url: "+url);
 		url = url.replaceFirst("mraid://", "");
 		
 		//Separate the function from the parameters
@@ -184,7 +184,6 @@ public class MRAIDImplementation {
 			params = url.split("\\?")[1];
 		
 			for(String s : params.split("&")){
-				Log.d("MRAID", "Parameter: "+s.split("=")[0]+" Value: "+s.split("=")[1]);
 				parameters.add(new BasicNameValuePair(s.split("=")[0], s.split("=")[1]));
 			}
 		}

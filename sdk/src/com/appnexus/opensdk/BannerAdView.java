@@ -25,28 +25,23 @@ public class BannerAdView extends AdView {
 	
 	public BannerAdView(Context context) {
 		super(context);
-		// TODO Auto-generated constructor stub
 	}
 
 	public BannerAdView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		// TODO Auto-generated constructor stub
 	}
 
 	public BannerAdView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		// TODO Auto-generated constructor stub
 	}
 
 	public BannerAdView(Context context, String placement_id) {
 		super(context, placement_id);
-		// TODO Auto-generated constructor stub
 	}
 
 	public BannerAdView(Context context, String placement_id, int ad_width,
 			int ad_height) {
 		super(context, placement_id, ad_width, ad_height);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -75,7 +70,7 @@ public class BannerAdView extends AdView {
 						start();
 					Clog.d(Clog.baseLogTag,
 							Clog.getString(R.string.screen_on_start));
-				}// TODO: Airplane mode
+				}
 
 			}
 

@@ -43,6 +43,7 @@ public class Clog{
 	protected static String httpRespLogTag = baseLogTag+"-RESPONSE";
 	protected static String xmlLogTag = baseLogTag+"-XML";
 	protected static String jsLogTag = baseLogTag+"-JS";
+	protected static String mraidLogTab = baseLogTag+"-MRAID";
 	protected static Context error_context;
 	protected static String getString(int id){
 		return error_context.getString(id);
@@ -70,5 +71,13 @@ public class Clog{
 	protected static String getString(int id, String s, String ss){
 		if(clogged) return null;
 		return String.format(error_context.getString(id), s, ss);
+	}
+	protected static String getString(int id, int i, String s, String ss){
+		if(clogged) return null;
+		return String.format(error_context.getString(id),i, s, ss);
+	}
+	protected static String getString(int id, String s, int i, String ss){
+		if(clogged) return null;
+		return String.format(error_context.getString(id),s,i,ss);
 	}
 }

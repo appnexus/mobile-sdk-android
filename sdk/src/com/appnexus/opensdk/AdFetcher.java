@@ -39,7 +39,7 @@ public class AdFetcher {
 	protected void stop() {
 		if (tasker == null)
 			return; // You can't stop the signal Mal
-		tasker.shutdownNow(); // TODO A warning if the tasker is stopped with scheduled tasks still waiting?
+		tasker.shutdownNow();
 		try {
 			tasker.awaitTermination(period, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
