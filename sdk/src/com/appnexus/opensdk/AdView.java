@@ -17,6 +17,7 @@ public abstract class AdView extends FrameLayout {
 	private boolean measured=false;
 	protected int width=-1;
 	protected int height=-1;
+	private boolean mraid_expand=false;
 	
 	
 	/** Begin Construction **/
@@ -91,6 +92,10 @@ public abstract class AdView extends FrameLayout {
 	@Override
 	public void onLayout(boolean changed, int left, int top, int right, int bottom){
 		super.onLayout(changed, left, top, right, bottom);
+		if(mraid_expand){
+			mraid_expand=false;
+			return;
+		}
 		if(!measured || changed){
 			//Convert to dips
 			float density = getContext().getResources().getDisplayMetrics().density;
@@ -215,10 +220,11 @@ public abstract class AdView extends FrameLayout {
 	protected int getContainerHeight(){
 		return measuredHeight;
 	}
-	protected void expand(int w, int h){
+	protected void expand(final int w, final int h){
 		//Only expand w and h if they are >0, otherwise they are match_parent or something
-		if(this.getLayoutParams().width>0) this.getLayoutParams().width=w;
-		if(this.getLayoutParams().height>0) this.getLayoutParams().height=h;
+		mraid_expand=true;
+		if(getLayoutParams().width>0) getLayoutParams().width=w;
+		if(getLayoutParams().height>0) getLayoutParams().height=h;
 	}
 
 	

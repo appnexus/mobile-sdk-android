@@ -133,15 +133,18 @@ public class MRAIDImplementation {
 	}
 	
 	protected void close(){
-		if(!expanded) return;
-		AdView.LayoutParams lp = new AdView.LayoutParams(owner.getLayoutParams());
-		lp.height=default_height;
-		lp.width=default_width;
-		lp.gravity=Gravity.CENTER;
-		owner.setLayoutParams(lp);
-		
-		this.owner.loadUrl("javascript:window.mraidbridge.fireChangeEvent({state:'default'});");
-		expanded=false;
+		if(expanded){
+			AdView.LayoutParams lp = new AdView.LayoutParams(owner.getLayoutParams());
+			lp.height=default_height;
+			lp.width=default_width;
+			lp.gravity=Gravity.CENTER;
+			owner.setLayoutParams(lp);
+			owner.close();
+			this.owner.loadUrl("javascript:window.mraid.util.stateChangeEvent('default');");
+			expanded=false;
+		}else{
+			//Is state default? Hide the view
+		}
 	}
 	
 	protected void expand(ArrayList<BasicNameValuePair> parameters) {

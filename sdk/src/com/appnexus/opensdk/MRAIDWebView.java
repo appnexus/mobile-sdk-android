@@ -1,10 +1,6 @@
 package com.appnexus.opensdk;
 
 
-import java.io.DataOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.DisplayMetrics;
@@ -14,12 +10,15 @@ import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.FrameLayout;
 
 @SuppressLint("ViewConstructor")
 public class MRAIDWebView extends WebView implements Displayable {
 	private MRAIDImplementation implementation;
 	private boolean failed=false;
 	private AdView owner;
+	private int default_width;
+	private int default_height;
 	public MRAIDWebView(AdView owner) {
 		super(owner.getContext());
 		this.owner=owner;
@@ -69,18 +68,6 @@ public class MRAIDWebView extends WebView implements Displayable {
 		AdView.LayoutParams resize = new AdView.LayoutParams(rwidth, rheight, rgravity);
 		this.setLayoutParams(resize);
 		
-		// Save the html to a file for debugging TODO remove this
-		try {
-			DataOutputStream out = new DataOutputStream(getContext().openFileOutput("last_mraid_ad.html", Context.MODE_PRIVATE));
-			out.writeUTF(html);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 		this.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null);
 	}
 	
@@ -104,13 +91,28 @@ public class MRAIDWebView extends WebView implements Displayable {
 		h = (int) (h*metrics.density+0.5);
 		w = (int) (w*metrics.density+0.5);
 		
-		AdView.LayoutParams lp = new AdView.LayoutParams(this.getLayoutParams());
+		FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(this.getLayoutParams());
+		default_width=lp.width;
+		default_height=lp.height;
 		lp.height=h;
 		lp.width=w;
 		lp.gravity=Gravity.CENTER;
-		
+			
 		if(owner!=null){
 			owner.expand(w, h);
+		}
+		
+		this.setLayoutParams(lp);
+	}
+	
+	protected void close() {
+		FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(this.getLayoutParams());
+		lp.height=default_height;
+		lp.width=default_width;
+		lp.gravity=Gravity.CENTER;
+			
+		if(owner!=null){
+			owner.expand(default_width, default_height);
 		}
 		
 		this.setLayoutParams(lp);
@@ -125,4 +127,5 @@ public class MRAIDWebView extends WebView implements Displayable {
 	public boolean failed() {
 		return failed;
 	}
+
 }
