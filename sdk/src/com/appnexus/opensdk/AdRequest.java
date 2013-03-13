@@ -26,6 +26,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 
 /**
@@ -57,7 +58,10 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		this.owner = owner;
 		Context context = owner.getContext();
 		String aid = android.provider.Settings.Secure.getString(
-				context.getContentResolver(), "android_id");
+				context.getContentResolver(), Secure.ANDROID_ID);
+		//String aid = ((TelephonyManager)owner.getContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
+		Clog.e("RAWR", aid);
+
 
 		// Do we have access to location?
 		if (owner.getContext().checkCallingOrSelfPermission(
@@ -133,12 +137,18 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	}
 
 	String getRequestUrl() {
+		//TODO connection_type
+		//TODO dev_time
+		//TODO devtz
+		//TODO mcc
+		//TODO mnc
+		//TODO os
 		return Settings.getSettings().BASE_URL
 				+ (owner.getPlacementID() != null ? "id="
 						+ Uri.encode(owner.getPlacementID())
 						: "id=NO-PLACEMENT-ID")
-				+ (hidmd5 != null ? "&hidmd5=" + Uri.encode(hidmd5) : "")
-				+ (hidsha1 != null ? "&hidsha1=" + Uri.encode(hidsha1) : "")
+				+ (hidmd5 != null ? "&md5udid=" + Uri.encode(hidmd5) : "")
+				+ (hidsha1 != null ? "&sha1udid=" + Uri.encode(hidsha1) : "")
 				+ (devMake != null ? "&devmake=" + Uri.encode(devMake) : "")
 				+ (devModel != null ? "&devmodel=" + Uri.encode(devModel) : "")
 				+ (carrier != null ? "&carrier=" + Uri.encode(carrier) : "")
@@ -146,7 +156,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 						+ Uri.encode(Settings.getSettings().app_id)
 						: "&appid=NO-APP-ID")
 				+ (firstlaunch != null ? "&firstlaunch=" + firstlaunch : "")
-				+ (lat != null && lon != null ? "&loc=" + lat + "," + lon : "")
+				+ (lat != null && lon != null ? "&loc=" + lat + ";" + lon : "")
 				+ (locDataAge != null ? "&loc_age=" + locDataAge : "")
 				+ (locDataPrecision != null ? "&loc_prec=" + locDataPrecision : "")
 				+ (Settings.getSettings().test_mode ? "&istest=true" : "")
