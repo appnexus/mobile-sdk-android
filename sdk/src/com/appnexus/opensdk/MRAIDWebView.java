@@ -84,7 +84,7 @@ public class MRAIDWebView extends WebView implements Displayable {
 	}
 	
 	//w,h in dips. this function converts to pixels
-	protected void expand(int w, int h){
+	protected void expand(int w, int h, boolean cust_close, MRAIDImplementation caller){
 		//TODO change these to FrameLayout.LayoutParams, since this gets added to an AdView
 		DisplayMetrics metrics = new DisplayMetrics();
 		((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(metrics);
@@ -99,10 +99,20 @@ public class MRAIDWebView extends WebView implements Displayable {
 		lp.gravity=Gravity.CENTER;
 			
 		if(owner!=null){
-			owner.expand(w, h);
+			owner.expand(w, h, cust_close, caller);
 		}
 		
 		this.setLayoutParams(lp);
+	}
+	
+	protected void hide(){
+		owner.hide();
+	}
+	
+	protected void show(){
+		if(owner!=null){
+			owner.expand(default_width, default_height, true, null);
+		}
 	}
 	
 	protected void close() {
@@ -112,7 +122,7 @@ public class MRAIDWebView extends WebView implements Displayable {
 		lp.gravity=Gravity.CENTER;
 			
 		if(owner!=null){
-			owner.expand(default_width, default_height);
+			owner.expand(default_width, default_height, true, null);
 		}
 		
 		this.setLayoutParams(lp);

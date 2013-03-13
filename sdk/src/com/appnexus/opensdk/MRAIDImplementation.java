@@ -24,6 +24,7 @@ public class MRAIDImplementation {
 	MRAIDWebView owner;
 	boolean readyFired=false;
 	boolean expanded=false;
+	boolean hidden=false;
 	int default_width, default_height;
 	
 	public MRAIDImplementation(MRAIDWebView owner){
@@ -143,23 +144,31 @@ public class MRAIDImplementation {
 			this.owner.loadUrl("javascript:window.mraid.util.stateChangeEvent('default');");
 			expanded=false;
 		}else{
-			//Is state default? Hide the view
+			//state must be default
+			owner.hide();
+			hidden=true;
 		}
 	}
 	
 	protected void expand(ArrayList<BasicNameValuePair> parameters) {
-		int width=owner.getLayoutParams().width;//Use current height and width as expansion defaults.
-		int height=owner.getLayoutParams().height;
-		for(BasicNameValuePair bnvp : parameters){
-			if(bnvp.getName().equals("w")) width = Integer.parseInt(bnvp.getValue());
-			else if(bnvp.getName().equals("h")) height = Integer.parseInt(bnvp.getValue());
-		}
-		//TODO: Use custom close
+		if(!hidden){
+			int width=owner.getLayoutParams().width;//Use current height and width as expansion defaults.
+			int height=owner.getLayoutParams().height;
+			boolean useCustomClose=false;
+			for(BasicNameValuePair bnvp : parameters){
+				if(bnvp.getName().equals("w")) width = Integer.parseInt(bnvp.getValue());
+				else if(bnvp.getName().equals("h")) height = Integer.parseInt(bnvp.getValue());
+				else if(bnvp.getName().equals("useCustomClose")) useCustomClose = Boolean.parseBoolean(bnvp.getValue());
+			}
 		
-		owner.expand(width, height);
-		//Fire the stateChange
-		this.owner.loadUrl("javascript:window.mraid.util.stateChangeEvent('expanded');");
-		expanded=true;
+			owner.expand(width, height, useCustomClose, this);
+			//Fire the stateChange
+			this.owner.loadUrl("javascript:window.mraid.util.stateChangeEvent('expanded');");
+			expanded=true;
+		}else{
+			owner.show();
+			hidden=false;
+		}
 	}
 	
 	protected void dispatch_mraid_call(String url) {

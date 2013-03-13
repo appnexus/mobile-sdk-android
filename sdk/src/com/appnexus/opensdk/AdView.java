@@ -3,10 +3,14 @@ package com.appnexus.opensdk;
 import com.appnexus.opensdk.R;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
+import android.view.Gravity;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 
 public abstract class AdView extends FrameLayout {
 
@@ -220,12 +224,35 @@ public abstract class AdView extends FrameLayout {
 	protected int getContainerHeight(){
 		return measuredHeight;
 	}
-	protected void expand(final int w, final int h){
+	
+	//Used only by MRAID
+	private ImageButton close;
+	protected void expand(int w, int h, boolean custom_close, final MRAIDImplementation caller){
 		//Only expand w and h if they are >0, otherwise they are match_parent or something
 		mraid_expand=true;
 		if(getLayoutParams().width>0) getLayoutParams().width=w;
 		if(getLayoutParams().height>0) getLayoutParams().height=h;
+		if(!custom_close && close==null){
+			//Add a stock close button to the top right corner
+			close = new ImageButton(this.getContext());
+			close.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_menu_close_clear_cancel));
+			FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.RIGHT | Gravity.TOP);
+			blp.rightMargin=(this.getMeasuredWidth()-this.getChildAt(0).getMeasuredWidth())/2;
+			close.setLayoutParams(blp);
+			close.setBackgroundColor(Color.TRANSPARENT);
+			close.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					caller.close();
+					
+				}
+			});
+			this.addView(close);
+		}else if(custom_close && close!=null){
+			close.setVisibility(GONE);
+		}else if(!custom_close && close!=null){
+			close.setVisibility(VISIBLE);
+		}
 	}
-
-	
 }

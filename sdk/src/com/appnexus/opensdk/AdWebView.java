@@ -83,8 +83,6 @@ public class AdWebView extends WebView implements Displayable {
 		Clog.v(Clog.baseLogTag, Clog.getString(R.string.webview_loading, body));
 		this.loadData(body, "text/html", "UTF-8");
 		
-
-		
 		final float scale = destination.getContext().getResources().getDisplayMetrics().density;
 		int rheight = (int)(ad.getHeight()*scale+0.5f);
 		int rwidth = (int)(ad.getWidth()*scale+0.5f);
