@@ -112,7 +112,7 @@
 
 	// Loads a given URL
 	mraid.open=function(url){
-		window.open("mraid://open/"+(url!=null ? "?url="+encodeURIComponent(url):""));
+		window.open(url);
 	};
 
 	// ----- MRAID UTILITY FUNCTIONS -----
