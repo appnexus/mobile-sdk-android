@@ -134,14 +134,6 @@
 		}
 	};
 
-	mraid.util.stateChangeEvent=function(new_state){
-		if(state===new_state) return;
-		state=new_state;
-		for(var i=0;i<listeners['stateChange'].length;i++){
-			listeners['stateChange'][i](new_state);
-		}
-	};
-
 	mraid.util.viewableChangeEvent=function(is_viewable_now){
 		is_viewable = is_viewable_now;
 		for(var i=0;i<listeners['viewableChange'].length;i++){
@@ -153,6 +145,17 @@
 		if(is_viewable===is_it_viewable) return;
 		is_viewable=is_it_viewable;
 		mraid.util.viewableChangeEvent(is_viewable);
+	};
+
+	mraid.util.stateChangeEvent=function(new_state){
+		if(state===new_state) return;
+		state=new_state;
+		if(new_state==='hidden'){
+			mraid.util.setIsViewable(false);
+		}
+		for(var i=0;i<listeners['stateChange'].length;i++){
+			listeners['stateChange'][i](new_state);
+		}
 	};
 
 }());
