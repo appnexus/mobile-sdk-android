@@ -200,6 +200,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				+ (dev_time!=null?"&devtime="+Uri.encode(dev_time):"")
 				+ (connection_type!=null?"&connection_type="+Uri.encode(connection_type):"")
 				
+				+ "&format=json"
 				+ "&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion);
 	}
 
