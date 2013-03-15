@@ -1,5 +1,8 @@
 package com.appnexus.opensdk;
 
+import java.util.Locale;
+import java.util.TimeZone;
+
 import android.os.Build;
 
 public class Settings {
@@ -15,6 +18,12 @@ public class Settings {
 	String ua=null;
 	boolean first_launch;
 	final String sdkVersion = "1.0";
+	
+	String mcc;
+	String mnc;
+	String dev_timezone=TimeZone.getDefault().getDisplayName();
+	String os="Android "+Build.VERSION.RELEASE;
+	String language=Locale.getDefault().getLanguage();
 	
 	//final String BASE_URL = "http://asweeney.adnxs.net:2048/mob?";
 	final String BASE_URL = "http://mobile-dev.adnxs.net/mob?";
