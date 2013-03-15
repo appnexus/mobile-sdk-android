@@ -3,7 +3,9 @@ package com.appnexus.opensdk;
 import com.appnexus.opensdk.R;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -60,6 +62,18 @@ public class AdWebView extends WebView implements Displayable {
 			public void onReceivedError(WebView view, int errorCode, String description, String failingURL){
 				Clog.e(Clog.httpReqLogTag, String.format(Clog.getString(R.string.webclient_error), errorCode, description));
 			}
+
+			@Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				if (url.startsWith("http://")) {
+					Intent intent = new Intent(Intent.ACTION_VIEW,
+							Uri.parse(url));
+					getContext().startActivity(intent);
+					return true;
+				}
+				return false;
+			}
+
 		});
 		
 	}

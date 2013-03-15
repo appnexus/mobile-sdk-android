@@ -43,6 +43,10 @@ public class MRAIDImplementation {
 		//Check to ensure <html> tags are present
 		if(!html.contains("<html>")){
 			html="<html><head></head><body style='padding:0;margin:0;'>"+html+"</body></html>";
+		} else if (!html.contains("<head>")) {
+			// The <html> tags are present, but there is no <head> section to
+			// inject the mraid js
+			html = html.replace("<html>", "<html><head></head>");
 		}
 		
 		//Insert mraid script source
@@ -74,6 +78,12 @@ public class MRAIDImplementation {
 
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				if (url.startsWith("http://")) {
+					Intent intent = new Intent(Intent.ACTION_VIEW,
+							Uri.parse(url));
+					view.getContext().startActivity(intent);
+					return true;
+				}
 				if(url.startsWith("mraid://")){
 					MRAIDImplementation.this.dispatch_mraid_call(url);
 					
