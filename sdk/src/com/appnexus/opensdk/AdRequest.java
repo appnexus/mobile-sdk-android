@@ -49,6 +49,13 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	String ua;
 	String orientation;
 	String allowedSizes;
+	String mcc;
+	String mnc;
+	String connection_type;
+	String dev_time; //Set at the time of the request
+	String dev_timezone;
+	String os;
+	String language;
 	int width = -1;
 	int height = -1;
 	int maxWidth = -1;
@@ -116,6 +123,24 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		maxHeight = owner.getContainerHeight();
 		maxWidth = owner.getContainerWidth();
 		
+		if (Settings.getSettings().mcc == null
+				|| Settings.getSettings().mnc == null) {
+			TelephonyManager tm = (TelephonyManager) owner.getContext()
+					.getSystemService(Context.TELEPHONY_SERVICE);
+			String networkOperator = tm.getNetworkOperator();
+			if (networkOperator != null) {
+				Settings.getSettings().mcc = networkOperator.substring(0, 3);
+				Settings.getSettings().mnc = networkOperator.substring(3);
+			}
+		}
+		mcc=Settings.getSettings().mcc;
+		mnc=Settings.getSettings().mnc;
+		
+		//TODO check to see if this crashes from missing perms
+		ConnectivityManager cm = (ConnectivityManager) owner.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo wifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		connection_type=wifi.isConnected() ? "wifi":"wan";
+		dev_time=""+System.currentTimeMillis();
 		
 		if(owner instanceof InterstitialAdView){
 			//Make string for allowed_sizes
@@ -128,6 +153,11 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			}
 		}
 		
+		mcc=Settings.getSettings().mcc;
+		mnc=Settings.getSettings().mnc;
+		dev_timezone=Settings.getSettings().dev_timezone;
+		os=Settings.getSettings().os;
+		language=Settings.getSettings().language;
 	}
 	
 	private void fail(){
@@ -137,12 +167,6 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	}
 
 	String getRequestUrl() {
-		//TODO connection_type
-		//TODO dev_time
-		//TODO devtz
-		//TODO mcc
-		//TODO mnc
-		//TODO os
 		return Settings.getSettings().BASE_URL
 				+ (owner.getPlacementID() != null ? "id="
 						+ Uri.encode(owner.getPlacementID())
@@ -167,6 +191,15 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				+ ((maxHeight > 0 && maxWidth>0) && !(owner instanceof InterstitialAdView)? "&max-size="+maxWidth+"x"+maxHeight:"") //max-size
 				+ ((maxHeight > 0 && maxWidth>0) && (owner instanceof InterstitialAdView)? "&size="+maxWidth+"x"+maxHeight:"") //max-size for interstitials is called size
 				+ (allowedSizes!=null && !allowedSizes.equals("")? "&promo_sizes="+allowedSizes:"")
+				
+				+ (mcc!=null?"&mcc="+Uri.encode(mcc):"")
+				+ (mnc!=null?"&mnc="+Uri.encode(mnc):"")
+				+ (os!=null?"&os="+Uri.encode(os):"")
+				+ (language!=null?"&language="+Uri.encode(language):"")
+				+ (dev_timezone!=null?"&devtz="+Uri.encode(dev_timezone):"")
+				+ (dev_time!=null?"&devtime="+Uri.encode(dev_time):"")
+				+ (connection_type!=null?"&connection_type="+Uri.encode(connection_type):"")
+				
 				+ "&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion);
 	}
 
