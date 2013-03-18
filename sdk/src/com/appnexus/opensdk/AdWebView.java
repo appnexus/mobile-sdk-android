@@ -77,11 +77,6 @@ public class AdWebView extends WebView implements Displayable {
 		});
 		
 	}
-	
-	@Override
-	public void flingScroll(int vx, int vy){
-		return;
-	}
 
 	protected void loadAd(AdResponse ad) {
 		if(ad.getBody()==""){

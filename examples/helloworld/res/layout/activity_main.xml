@@ -27,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         opensdk:placement_id="656561"
-        opensdk:width="250"
+        opensdk:width="300"
         opensdk:height="50"
         opensdk:auto_refresh="false"
         opensdk:should_reload_on_resume="false"

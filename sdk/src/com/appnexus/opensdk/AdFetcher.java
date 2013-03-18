@@ -43,6 +43,7 @@ public class AdFetcher {
 		try {
 			tasker.awaitTermination(period, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
+			tasker=null;
 			return;
 		}
 		tasker=null;
