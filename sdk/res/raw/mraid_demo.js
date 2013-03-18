@@ -6,7 +6,7 @@
 	mraid.setExpandProperties(expand_props);
 	mraid.addEventListener('stateChange', onChange);
 			alert('MAIN');
-	mraid.addEventListener('visibilityChange', onVis);
+	mraid.addEventListener('viewableChange', onVis);
 			alert('MAIN');
 	function onChange(new_state){
 		if(new_state==="default"){

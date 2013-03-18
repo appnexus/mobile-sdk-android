@@ -67,7 +67,6 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		String aid = android.provider.Settings.Secure.getString(
 				context.getContentResolver(), Secure.ANDROID_ID);
 		//String aid = ((TelephonyManager)owner.getContext().getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
-		Clog.e("RAWR", aid);
 
 
 		// Do we have access to location?
