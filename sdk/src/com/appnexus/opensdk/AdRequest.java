@@ -166,46 +166,42 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	}
 
 	String getRequestUrl() {
-		return Settings.getSettings().BASE_URL
-				+ (owner.getPlacementID() != null ? "id="
+		StringBuilder sb = new StringBuilder(Settings.getSettings().BASE_URL);
+		sb.append((owner.getPlacementID() != null ? "id="
 						+ Uri.encode(owner.getPlacementID())
-						: "id=NO-PLACEMENT-ID")
-				+ (hidmd5 != null ? "&md5udid=" + Uri.encode(hidmd5) : "")
-				+ (hidsha1 != null ? "&sha1udid=" + Uri.encode(hidsha1) : "")
-				+ (devMake != null ? "&devmake=" + Uri.encode(devMake) : "")
-				+ (devModel != null ? "&devmodel=" + Uri.encode(devModel) : "")
-				+ (carrier != null ? "&carrier=" + Uri.encode(carrier) : "")
-				+ (Settings.getSettings().app_id != null ? "&appid="
+						: "id=NO-PLACEMENT-ID"));
+		sb.append((hidmd5 != null ? "&md5udid=" + Uri.encode(hidmd5) : ""));
+		sb.append((hidsha1 != null ? "&sha1udid=" + Uri.encode(hidsha1) : ""));
+		sb.append((devMake != null ? "&devmake=" + Uri.encode(devMake) : ""));
+		sb.append((devModel != null ? "&devmodel=" + Uri.encode(devModel) : ""));
+		sb.append((carrier != null ? "&carrier=" + Uri.encode(carrier) : ""));
+		sb.append((Settings.getSettings().app_id != null ? "&appid="
 						+ Uri.encode(Settings.getSettings().app_id)
-						: "&appid=NO-APP-ID")
-				+ (firstlaunch != null ? "&firstlaunch=" + firstlaunch : "")
-				+ (lat != null && lon != null ? "&loc=" + lat + ";" + lon : "")
-				+ (locDataAge != null ? "&loc_age=" + locDataAge : "")
-				+ (locDataPrecision != null ? "&loc_prec=" + locDataPrecision : "")
-				+ (Settings.getSettings().test_mode ? "&istest=true" : "")
-				+ (ua != null ? "&ua=" + Uri.encode(ua) : "")
-				+ (orientation != null ? "&orientation=" + orientation : "")
-				+ ((width > 0 && height > 0) ? "&size=" + width + "x" + height
-						: "") 
-				+ ((maxHeight > 0 && maxWidth>0) && !(owner instanceof InterstitialAdView)? "&max-size="+maxWidth+"x"+maxHeight:"") //max-size
-				+ ((maxHeight > 0 && maxWidth>0) && (owner instanceof InterstitialAdView)? "&size="+maxWidth+"x"+maxHeight:"") //max-size for interstitials is called size
-				+ (allowedSizes!=null && !allowedSizes.equals("")? "&promo_sizes="+allowedSizes:"")
-				
-				+ (mcc!=null?"&mcc="+Uri.encode(mcc):"")
-				+ (mnc!=null?"&mnc="+Uri.encode(mnc):"")
-				+ (os!=null?"&os="+Uri.encode(os):"")
-				+ (language!=null?"&language="+Uri.encode(language):"")
-				+ (dev_timezone!=null?"&devtz="+Uri.encode(dev_timezone):"")
-				+ (dev_time!=null?"&devtime="+Uri.encode(dev_time):"")
-				+ (connection_type!=null?"&connection_type="+Uri.encode(connection_type):"")
-				
-				+ "&format=json"
-				+ "&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion);
+						: "&appid=NO-APP-ID"));
+		sb.append((firstlaunch != null ? "&firstlaunch=" + firstlaunch : ""));
+		sb.append((lat != null && lon != null ? "&loc=" + lat + ";" + lon : ""));
+		sb.append((locDataAge != null ? "&loc_age=" + locDataAge : ""));
+		sb.append((locDataPrecision != null ? "&loc_prec=" + locDataPrecision : ""));
+		sb.append((Settings.getSettings().test_mode ? "&istest=true" : ""));
+		sb.append((ua != null ? "&ua=" + Uri.encode(ua) : ""));
+		sb.append((orientation != null ? "&orientation=" + orientation : ""));
+		sb.append(((width > 0 && height > 0) ? "&size=" + width + "x" + height
+				: ""));
+		sb.append(((maxHeight > 0 && maxWidth>0) && !(owner instanceof InterstitialAdView)? "&max-size="+maxWidth+"x"+maxHeight:""));
+		sb.append(((maxHeight > 0 && maxWidth>0) && (owner instanceof InterstitialAdView)? "&size="+maxWidth+"x"+maxHeight:""));
+		sb.append((allowedSizes!=null && !allowedSizes.equals("")? "&promo_sizes="+allowedSizes:""));
+		sb.append((mcc!=null?"&mcc="+Uri.encode(mcc):""));
+		sb.append((mnc!=null?"&mnc="+Uri.encode(mnc):""));
+		sb.append((os!=null?"&os="+Uri.encode(os):""));
+		sb.append((language!=null?"&language="+Uri.encode(language):""));
+		sb.append((dev_timezone!=null?"&devtz="+Uri.encode(dev_timezone):""));
+		sb.append((dev_time!=null?"&devtime="+Uri.encode(dev_time):""));
+		sb.append((connection_type!=null?"&connection_type="+Uri.encode(connection_type):""));
+		sb.append("&format=json");
+		sb.append("&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion));
+		return sb.toString();
 	}
 
-	/**
-	 * @see android.os.AsyncTask#doInBackground(Params[])
-	 */
 	@Override
 	protected AdResponse doInBackground(Void... params) {
 		// Double check network connectivity before continuing
