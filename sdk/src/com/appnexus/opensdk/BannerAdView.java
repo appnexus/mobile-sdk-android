@@ -7,6 +7,11 @@ import android.content.IntentFilter;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 
+/**
+ * This view is added to an existing layout in order to display ads.
+ * @author Jacob Shufro
+ *
+ */
 public class BannerAdView extends AdView {
 
 	private int period;
@@ -23,22 +28,49 @@ public class BannerAdView extends AdView {
 		receiverRegistered=false;
 	}
 	
+	/**
+	 * Creates a new BannerAdView
+	 * @param context	The context of the {@link ViewGroup} to which the BannerAdView is being added.
+	 */
 	public BannerAdView(Context context) {
 		super(context);
 	}
 
+	/**
+	 * Creates a new BannerAdView
+	 * @param context	The context of the {@link ViewGroup} to which the BannerAdView is being added.
+	 * @param attrs		The {@link AttributeSet} to use when creating the BannerAdView.
+	 */
 	public BannerAdView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
+	/**
+	 * Creates a new BannerAdView
+	 * @param context	The context of the {@link ViewGroup} to which the BannerAdView is being added.
+	 * @param attrs		The {@link AttributeSet} to use when creating the BannerAdView.
+	 * @param defStyle	The default style to apply to this view. If 0, no style will be applied (beyond what is included in the theme). This may either be an attribute resource, whose value will be retrieved from the current theme, or an explicit style resource.
+	 */
 	public BannerAdView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 	}
 
+	/**
+	 * Creates a new BannerAdView
+	 * @param context		The context of the {@link ViewGroup} to which the BannerAdView is being added.
+	 * @param placement_id	The AppNexus placement id to use for this BannerAdView.
+	 */
 	public BannerAdView(Context context, String placement_id) {
 		super(context, placement_id);
 	}
 
+	/**
+	 * Creates a new BannerAdView
+	 * @param context		The context of the {@link ViewGroup} to which the BannerAdView is being added.
+	 * @param placement_id	The AppNexus placement id to use for this BannerAdView.
+	 * @param ad_width		The height of the ad to request. Note: This is not the same as layout_width.
+	 * @param ad_height		Thewidth of the ad to request. Note: This is not the same as layout_height.
+	 */
 	public BannerAdView(Context context, String placement_id, int ad_width,
 			int ad_height) {
 		super(context, placement_id, ad_width, ad_height);
@@ -106,6 +138,9 @@ public class BannerAdView extends AdView {
 		}
 	}
 
+	/**
+	 * Loads a new ad, or, if the BannerAdView is not visible, tells the view to load a new ad when it becomes visible.
+	 */
 	@Override
 	public void loadAd() {
 		if (getVisibility() != VISIBLE)
@@ -177,12 +212,20 @@ public class BannerAdView extends AdView {
 		a.recycle();
 	}
 
+	/**
+	 * 
+	 * @return The interval, in milliseconds, at which the BannerAdView will request new ads, if autorefresh is enabled.
+	 */
 	public int getAutoRefreshInterval() {
 		Clog.d(Clog.publicFunctionsLogTag,
 				Clog.getString(R.string.get_period, period));
 		return period;
 	}
 
+	/**
+	 * 
+	 * @param period The interval, in milliseconds, at which the BannerAdView will request new ads, if autorefresh is enabled.
+	 */
 	public void setAutoRefreshInterval(int period) {
 		Clog.d(Clog.publicFunctionsLogTag,
 				Clog.getString(R.string.set_period, period));
@@ -190,12 +233,20 @@ public class BannerAdView extends AdView {
 		if(mAdFetcher!=null) mAdFetcher.setPeriod(period);
 	}
 
+	/**
+	 * 
+	 * @return Whether this view should periodically request new ads.
+	 */
 	public boolean getAutoRefresh() {
 		Clog.d(Clog.publicFunctionsLogTag,
 				Clog.getString(R.string.get_auto_refresh, auto_refresh));
 		return auto_refresh;
 	}
 
+	/**
+	 * 
+	 * @param auto_refresh	Whether this view should periodically request new ads.
+	 */
 	public void setAutoRefresh(boolean auto_refresh) {
 		Clog.d(Clog.publicFunctionsLogTag,
 				Clog.getString(R.string.set_auto_refresh, auto_refresh));
@@ -206,11 +257,19 @@ public class BannerAdView extends AdView {
 		}
 	}
 	
+	/**
+	 * 
+	 * @return Whether or not this view should load a new ad if the user resumes use of the app from a screenlock or multitask.
+	 */
 	public boolean getShouldReloadOnResume() {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.get_should_resume, shouldReloadOnResume));
 		return shouldReloadOnResume;
 	}
 
+	/**
+	 * 
+	 * @param shouldReloadOnResume Whether or not this view should load a new ad if the user resumes use of the app from a screenlock or multitask.
+	 */
 	public void setShouldReloadOnResume(boolean shouldReloadOnResume) {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_should_resume, shouldReloadOnResume));
 		this.shouldReloadOnResume = shouldReloadOnResume;
@@ -250,10 +309,17 @@ public class BannerAdView extends AdView {
 		getContext().unregisterReceiver(receiver);
 	}
 	
+	/**
+	 * Begins automatically reloading ads at the set period (60 seconds by default).
+	 */
 	public void startAutoRefresh(){
 		this.setAutoRefresh(true);
 	}
 	
+	/**
+	 * Sets the autorefresh period and begins automatically reloading ads.
+	 * @param interval
+	 */
 	public void startAutoRefresh(int interval){
 		this.setAutoRefreshInterval(interval);
 		this.startAutoRefresh();

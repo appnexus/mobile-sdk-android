@@ -12,6 +12,12 @@ import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
+/**
+ * The parent class of InterstitialAdView and BannerAdView.
+ * This can not be instantiated.
+ * @author jacob
+ *
+ */
 public abstract class AdView extends FrameLayout {
 
 	protected AdFetcher mAdFetcher;
@@ -26,55 +32,28 @@ public abstract class AdView extends FrameLayout {
 	
 	/** Begin Construction **/
 	
-	/**
-	 * Creates a new AdView
-	 * @param context	The Context of the {@link ViewGroup} to which the AdView is being added.
-	 */
 	public AdView(Context context){
 		super(context, null);
 		setup(context, null);
 	}
 	
-	/**
-	 * Creates a new AdView
-	 * @param context	The {@link Context} of the {@link ViewGroup} to which the AdView is being added.
-	 * @param attrs		The {@link AttributeSet} with which to create the view.
-	 */
 	public AdView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setup(context, attrs);
 
 	}
 
-	/**
-	 * Creates a new AdView
-	 * @param context	The {@link Context} of the {@link ViewGroup} to which the AdView is being added.
-	 * @param attrs		The {@link AttributeSet} with which to create the view.
-	 * @param defStyle	The default style to apply to this view. If 0, no style will be applied (beyond what is included in the theme). This may either be an attribute resource, whose value will be retrieved from the current theme, or an explicit style resource.
-	 */
 	public AdView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		setup(context, attrs);
 	}
 	
-	/**
-	 * Creates a new AdView
-	 * @param context		The {@link Context} of the {@link ViewGroup} to which the AdView is being added.
-	 * @param placement_id	The AppNexus placement id to use for this placement.
-	 */
 	public AdView(Context context, String placement_id){
 		super(context);
 		this.setPlacementID(placement_id);
 		setup(context, null);
 	}
 	
-	/**
-	 * Creates a new AdView
-	 * @param context		The {@link Context} of the {@link ViewGroup} to which the AdView is being added.
-	 * @param placement_id	The AppNexus placement id to use for this placement.
-	 * @param ad_width		The width, in pixels, of the ad to request. This is not the same as layout_width.
-	 * @param ad_height		The height, in pixels, of the ad to request. This is not the same as layout_height.
-	 */
 	public AdView(Context context, String placement_id, int ad_width, int ad_height){
 		super(context);
 		this.setAdHeight(ad_height);

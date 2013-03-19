@@ -16,6 +16,11 @@ import android.util.Pair;
 import android.view.Window;
 import android.view.WindowManager;
 
+/**
+ * This class controls loading and displaying interstitial ads.
+ * @author Jacob Shufro
+ *
+ */
 public class InterstitialAdView extends AdView {
 	protected static final long MAX_AGE = 60000;
 	protected ArrayList<Size> allowedSizes;
@@ -24,18 +29,39 @@ public class InterstitialAdView extends AdView {
 	protected static Queue<Pair<Long, Displayable>> q = new LinkedList<Pair<Long, Displayable>>();
 	protected AdListener adListener;
 
+	/**
+	 * Creates a new InterstitialAdView
+	 * @param context	The context of the {@link ViewGroup} to which the InterstitialAdView is being added.
+	 */
 	public InterstitialAdView(Context context) {
 		super(context);
 	}
 
+	/**
+	 * Creates a new InterstitialAdView
+	 * @param context	The context of the {@link ViewGroup} to which the InterstitialAdView is being added.
+	 * @param attrs		The {@link AttributeSet} to use when creating the InterstitialAdView.
+	 */
 	public InterstitialAdView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
+	/**
+	 * 
+	 * Creates a new InterstitialAdView
+	 * @param context	The context of the {@link ViewGroup} to which the InterstitialAdView is being added.
+	 * @param attrs		The {@link AttributeSet} to use when creating the InterstitialAdView.rs
+	 * @param defStyle	The default style to apply to this view. If 0, no style will be applied (beyond what is included in the theme). This may either be an attribute resource, whose value will be retrieved from the current theme, or an explicit style resource.
+	 */
 	public InterstitialAdView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 	}
 
+	/**
+	 * 
+	 * @param context	The context of the {@link ViewGroup} to which the InterstitialAdView is being added.
+	 * @param placement_id	The AppNexus placement id to use for this InterstitialAdView.
+	 */
 	public InterstitialAdView(Context context, String placement_id) {
 		super(context, placement_id);
 	}
@@ -102,6 +128,9 @@ public class InterstitialAdView extends AdView {
 		a.recycle();
 	}
 	
+	/**
+	 * Requests a new add from the server and stores it in a local queue.
+	 */
 	@Override
 	public void loadAd(){
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.load_ad_int));
@@ -127,6 +156,7 @@ public class InterstitialAdView extends AdView {
 		onFirstLayout();
 	}
 	
+	//No javadoc since these just print errors
 	@Override
 	public void setAdWidth(int width){
 		Clog.w(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_width_int));
@@ -137,17 +167,28 @@ public class InterstitialAdView extends AdView {
 		Clog.w(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_height_int));
 	}
 	
+	/**
+	 * Sets the listener that the InterstitialAdView will call events in.
+	 * @param listener	The {@link AdListener} object to use.
+	 */
 	public void setAdListener(AdListener listener){
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_ad_listener));
 		adListener=listener;
 	}
 	
+	/**
+	 * Gets the listener that the InterstitialAdView will call events in.
+	 * @return The {@link AdListener} object in use.
+	 */
 	public AdListener getAdListener(){
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.get_ad_listener));
 		return adListener;
 	}
 	
-
+	/**
+	 * Pops ads from the queue until it finds one that does not exceed the timeout, and displays it in a new activity. All ads in the queue which do exceed the timeout are removed.
+	 * @return	The number of remaining ads in the queue that do not exceed the timeout.
+	 */
 	public int show(){
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.show_int));
 		//Make sure there is an ad to show
@@ -176,26 +217,44 @@ public class InterstitialAdView extends AdView {
 		return InterstitialAdView.q.size();
 	}
 	
+	/**
+	 * Returns an {@link ArrayList} of {@link Size}s which are allowed to be displayed.
+	 * @return The {@link ArrayList} of {@link Size}s which are allowed to be displayed.
+	 */
 	public ArrayList<Size> getAllowedSizes(){
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.get_allowed_sizes));
 		return allowedSizes;
 	}
 	
+	/**
+	 * Sets the {@link ArrayList} of {@link Size}s which are allowed to be displayed.
+	 * @param allowed_sizes The {@link ArrayList} of {@link Size}s which are allowed to be displayed.
+	 */
 	public void setAllowedSizes(ArrayList<Size> allowed_sizes){
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_allowed_sizes));
 		allowedSizes=allowed_sizes;
 	}
 	
+	/**
+	 * Sets the background {@link Color} to use behind the interstitial ad.
+	 */
 	public void setBackgroundColor(int color){
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_bg));
 		backgroundColor = color;
 	}
 	
+	/**
+	 * Gets the background {@link Color} to use behind the interstitial ad.
+	 * @return The background {@link Color} to use behind the interstitial ad.
+	 */
 	public int getBackgroundColor(){
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.get_bg));
-		return backgroundColor;}
+		return backgroundColor;
+	}
 	
-	
+	/**
+	 * Destroys this InterstitialAdView object.
+	 */
 	public void destroy(){
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.destroy_int));
 		if(this.mAdFetcher!=null) mAdFetcher.stop();
@@ -203,7 +262,11 @@ public class InterstitialAdView extends AdView {
 		InterstitialAdView.INTERSTITIALADVIEW_TO_USE=null;
 	}
 	
-
+	/**
+	 * A convenience class which holds a width and height in integers.
+	 * @author Jacob Shufro
+	 *
+	 */
 	public class Size{
 		private int w;
 		private int h;
@@ -211,12 +274,26 @@ public class InterstitialAdView extends AdView {
 			this.w=w;
 			this.h=h;
 		}
+		/**
+		 * 
+		 * @return The width, in pixels.
+		 */
 		public int width(){
 			return w;
 		}
+		/**
+		 * 
+		 * @return The height, in pixels.
+		 */
 		public int height(){
 			return h;
 		}
+		/**
+		 * Determines whether this size object fits inside a rectangle of the given width and height
+		 * @param width The width to check against.
+		 * @param height The height to check against.
+		 * @return	True, if the size fits inside the described rectangle, otherwise, false. 
+		 */
 		public boolean fitsIn(int width, int height){
 			return h < height && w < width;
 		}
