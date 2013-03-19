@@ -25,29 +25,56 @@ public abstract class AdView extends FrameLayout {
 	
 	
 	/** Begin Construction **/
-
+	
+	/**
+	 * Creates a new AdView
+	 * @param context	The Context of the {@link ViewGroup} to which the AdView is being added.
+	 */
 	public AdView(Context context){
 		super(context, null);
 		setup(context, null);
 	}
 	
+	/**
+	 * Creates a new AdView
+	 * @param context	The {@link Context} of the {@link ViewGroup} to which the AdView is being added.
+	 * @param attrs		The {@link AttributeSet} with which to create the view.
+	 */
 	public AdView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		setup(context, attrs);
 
 	}
 
+	/**
+	 * Creates a new AdView
+	 * @param context	The {@link Context} of the {@link ViewGroup} to which the AdView is being added.
+	 * @param attrs		The {@link AttributeSet} with which to create the view.
+	 * @param defStyle	The default style to apply to this view. If 0, no style will be applied (beyond what is included in the theme). This may either be an attribute resource, whose value will be retrieved from the current theme, or an explicit style resource.
+	 */
 	public AdView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		setup(context, attrs);
 	}
 	
+	/**
+	 * Creates a new AdView
+	 * @param context		The {@link Context} of the {@link ViewGroup} to which the AdView is being added.
+	 * @param placement_id	The AppNexus placement id to use for this placement.
+	 */
 	public AdView(Context context, String placement_id){
 		super(context);
 		this.setPlacementID(placement_id);
 		setup(context, null);
 	}
 	
+	/**
+	 * Creates a new AdView
+	 * @param context		The {@link Context} of the {@link ViewGroup} to which the AdView is being added.
+	 * @param placement_id	The AppNexus placement id to use for this placement.
+	 * @param ad_width		The width, in pixels, of the ad to request. This is not the same as layout_width.
+	 * @param ad_height		The height, in pixels, of the ad to request. This is not the same as layout_height.
+	 */
 	public AdView(Context context, String placement_id, int ad_width, int ad_height){
 		super(context);
 		this.setAdHeight(ad_height);
@@ -133,6 +160,9 @@ public abstract class AdView extends FrameLayout {
 		mAdFetcher.start();
 	}
 	
+	/**
+	 * Loads a new ad, if the ad space is visible.
+	 */
 	public void loadAd(){
 		if(this.getWindowVisibility()==VISIBLE && mAdFetcher!=null){
 			//Reload Ad Fetcher to get new ad at user's request
@@ -141,11 +171,21 @@ public abstract class AdView extends FrameLayout {
 		}
 	}
 
+	/**
+	 * Loads a new ad, if the ad space is visible, and sets the placement id attribute of the AdView to the supplied parameter.
+	 * @param placementID	The new placement id to use.
+	 */
 	public void loadAd(String placementID){
 		this.setPlacementID(placementID);
 		loadAd();
 	}
 	
+	/**
+	 * Loads a new ad, if the ad space is visible, and sets the placement id, ad width, and ad height attribute of the AdView to the supplied parameters.
+	 * @param placementID	The new placement id to use.
+	 * @param width			The new width to use.
+	 * @param height		The new height to use.
+	 */
 	public void loadAd(String placementID, int width, int height){
 		this.setAdHeight(height);
 		this.setAdWidth(width);
@@ -179,12 +219,19 @@ public abstract class AdView extends FrameLayout {
 	}
 
 
-
+	/**
+	 * 
+	 * @return The current placement id.
+	 */
 	public String getPlacementID() {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.get_placement_id, placementID));
 		return placementID;
 	}
 
+	/**
+	 * Sets the placement id of the AdView.
+	 * @param placementID	The placement id to use
+	 */
 	public void setPlacementID(String placementID) {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_placement_id, placementID));
 		this.placementID = placementID;
@@ -200,21 +247,36 @@ public abstract class AdView extends FrameLayout {
 			mAdFetcher.stop();
 	}
 	
+	/**
+	 * Sets the height of the ad to request.
+	 * @param h	The height, in pixels, to use.
+	 */
 	public void setAdHeight(int h){
 		Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_height, h));
 		height=h;
 	}
 	
+	/**
+	 * Sets the width of the ad to request.
+	 * @param w	The width, in pixels, to use.
+	 */
 	public void setAdWidth(int w){
 		Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_width, w));
 		width=w;
 	}
 	
+	/**
+	 * @return The height of the ad to be requested.
+	 */
 	public int getAdHeight(){
 		Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_height, height));
 		return height;
 	}
 	
+	/**
+	 * 
+	 * @return The width of the ad to be requested.
+	 */
 	public int getAdWidth(){
 		Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_width, width));
 		return width;
