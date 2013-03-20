@@ -127,7 +127,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			TelephonyManager tm = (TelephonyManager) owner.getContext()
 					.getSystemService(Context.TELEPHONY_SERVICE);
 			String networkOperator = tm.getNetworkOperator();
-			if (networkOperator != null) {
+			if (networkOperator != null && networkOperator.length()>=6) {
 				Settings.getSettings().mcc = networkOperator.substring(0, 3);
 				Settings.getSettings().mnc = networkOperator.substring(3);
 			}
