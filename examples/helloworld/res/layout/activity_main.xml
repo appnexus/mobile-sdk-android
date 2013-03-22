@@ -8,7 +8,8 @@
 
     <!-- xmlns:opensdk="http://schemas.android.com/apk/res/com.example.helloworld" -->
 
-	<!-- 
+
+    <!--
     <com.appnexus.opensdk.BannerAdView
         android:id="@+id/ad"
         android:layout_alignParentTop="true"
@@ -19,47 +20,62 @@
         opensdk:height="50"
         opensdk:auto_refresh="false"
         opensdk:should_reload_on_resume="false"
-        opensdk:auto_refresh_interval="20000"/> -->
+        opensdk:auto_refresh_interval="20000"/>
+    -->
 
     <com.appnexus.opensdk.BannerAdView
         android:id="@+id/ad2"
-        android:layout_alignParentTop="true"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        opensdk:placement_id="656561"
-        opensdk:width="300"
-        opensdk:height="50"
+        android:layout_alignParentTop="true"
         opensdk:auto_refresh="true"
+        opensdk:auto_refresh_interval="20000"
+        opensdk:height="50"
+        opensdk:placement_id="656561"
         opensdk:should_reload_on_resume="true"
-        opensdk:auto_refresh_interval="20000"/>
+        opensdk:width="300" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/ad2"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_below="@id/ad2"
         android:text="@string/hello_world" />
 
+    <com.appnexus.opensdk.BannerAdView
+        android:id="@+id/ad3"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_above="@+id/ll"
+        opensdk:auto_refresh="true"
+        opensdk:auto_refresh_interval="20000"
+        opensdk:height="50"
+        opensdk:placement_id="656561"
+        opensdk:should_reload_on_resume="true"
+        opensdk:width="320" />
+
     <LinearLayout
-        android:layout_alignParentBottom="true"
+        android:id="@id/ll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" 
-        android:id="@+id/ll">
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal" >
 
-        <Button android:text="Load int."
-            android:onClick="loadIA"
+        <Button
             android:layout_width="0px"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <Button android:text="Show int." 
-            android:id="@+id/showbutton"
-            android:onClick="showIA"
-            android:layout_width="0px"
             android:layout_weight="1"
-            android:layout_height="wrap_content"/>
+            android:onClick="loadIA"
+            android:text="Load int." />
+
+        <Button
+            android:id="@+id/showbutton"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="showIA"
+            android:text="Show int." />
     </LinearLayout>
 
 </RelativeLayout>
