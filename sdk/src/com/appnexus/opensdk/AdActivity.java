@@ -1,14 +1,18 @@
 package com.appnexus.opensdk;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Pair;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
@@ -18,19 +22,42 @@ public class AdActivity extends Activity {
 	long now;
 	int orientation;
 	
+	@SuppressLint("InlinedApi")
 	@Override
 	public void onCreate(Bundle b){
 		super.onCreate(b);
 		layout = new FrameLayout(this);
 		
-		orientation=getIntent().getIntExtra("Orientation", Configuration.ORIENTATION_LANDSCAPE);
-		switch(orientation){
-		case Configuration.ORIENTATION_LANDSCAPE:
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-			break;
-		case Configuration.ORIENTATION_PORTRAIT:
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-			break;
+		Activity a = this;
+		if(a!=null){
+			Display d = ((WindowManager)a.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+			switch (this.getResources().getConfiguration().orientation){
+		        case Configuration.ORIENTATION_PORTRAIT:
+		            if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO){
+		            	a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		            } else {
+		                int rotation = d.getRotation();
+		            if(rotation == android.view.Surface.ROTATION_90|| rotation == android.view.Surface.ROTATION_180){
+		                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+		                } else {
+		                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		                }
+		            }   
+		        break;
+
+		        case Configuration.ORIENTATION_LANDSCAPE:
+		            if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO){
+		                a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		            } else {
+		                int rotation = d.getRotation();
+		                if(rotation == android.view.Surface.ROTATION_0 || rotation == android.view.Surface.ROTATION_90){
+		                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		                } else {
+		                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+		                }
+		            }
+		        break;
+			}
 		}
 		setContentView(layout);
 		
