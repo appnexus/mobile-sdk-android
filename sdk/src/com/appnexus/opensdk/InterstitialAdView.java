@@ -262,6 +262,10 @@ public class InterstitialAdView extends AdView {
 		InterstitialAdView.INTERSTITIALADVIEW_TO_USE=null;
 	}
 	
+	protected String getMRAIDAdType(){
+		return "interstitial";
+	}
+	
 	/**
 	 * A convenience class which holds a width and height in integers.
 	 * @author Jacob Shufro

@@ -299,4 +299,5 @@ public abstract class AdView extends FrameLayout {
 			close.setVisibility(VISIBLE);
 		}
 	}
+	abstract String getMRAIDAdType();
 }

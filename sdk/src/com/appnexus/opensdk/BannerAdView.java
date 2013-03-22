@@ -330,4 +330,8 @@ public class BannerAdView extends AdView {
 		super.unhide();
 		this.requesting_visible = true;
 	}
+	
+	protected String getMRAIDAdType(){
+		return "inline";
+	}
 }

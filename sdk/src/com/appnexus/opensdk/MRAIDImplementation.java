@@ -103,11 +103,7 @@ public class MRAIDImplementation {
 			public void onPageFinished(WebView view, String url) {
 				//Fire the ready event only once
 				if(!readyFired){
-					if(owner.owner instanceof BannerAdView){
-						view.loadUrl("javascript:window.mraid.util.setPlacementType('inline')");
-					}else if(owner.owner instanceof InterstitialAdView){
-						view.loadUrl("javascript:window.mraid.util.setPlacementType('interstitial')");
-					}
+					view.loadUrl("javascript:window.mraid.util.setPlacementType('"+owner.owner.getMRAIDAdType()+"')");
 					view.loadUrl("javascript:window.mraid.util.setIsViewable(true)");
 					view.loadUrl("javascript:window.mraid.util.stateChangeEvent('default')");
 					view.loadUrl("javascript:window.mraid.util.readyEvent();");

@@ -241,14 +241,14 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_timeout));
 			fail();
 			return null;
+		} catch (HttpHostConnectException e){
+			HttpHostConnectException he = (HttpHostConnectException) e;
+			Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unreachable, he.getHost().getHostName(), he.getHost().getPort()));
+			fail();
+			return null;
 		} catch (IOException e) {
-			if (e instanceof HttpHostConnectException) {
-				HttpHostConnectException he = (HttpHostConnectException) e;
-				Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unreachable, he.getHost().getHostName(), he.getHost().getPort()));
-			} else {
-				Clog.e(Clog.httpReqLogTag,
-						Clog.getString(R.string.http_io));
-			}
+			Clog.e(Clog.httpReqLogTag,
+				Clog.getString(R.string.http_io));
 			fail();
 			return null;
 		} catch (SecurityException se){
