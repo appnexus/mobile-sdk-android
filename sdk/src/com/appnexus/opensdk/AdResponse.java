@@ -5,6 +5,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.appnexus.opensdk.utils.Clog;
+
 
 
 public class AdResponse {

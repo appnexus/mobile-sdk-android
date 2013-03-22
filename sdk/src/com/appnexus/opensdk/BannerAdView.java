@@ -1,5 +1,8 @@
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Settings;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;

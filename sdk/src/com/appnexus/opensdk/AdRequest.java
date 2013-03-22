@@ -14,6 +14,9 @@ import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import com.appnexus.opensdk.InterstitialAdView.Size;
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.HashingFunctions;
+import com.appnexus.opensdk.utils.Settings;
 
 
 import android.content.Context;

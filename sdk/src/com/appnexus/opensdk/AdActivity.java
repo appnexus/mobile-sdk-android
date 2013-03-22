@@ -1,5 +1,7 @@
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.utils.Clog;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;

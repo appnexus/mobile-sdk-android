@@ -5,6 +5,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.appnexus.opensdk.utils.Clog;
+
 
 import android.os.Handler;
 import android.os.Message;

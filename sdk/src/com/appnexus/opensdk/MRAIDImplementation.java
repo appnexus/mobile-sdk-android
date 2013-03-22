@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import org.apache.http.message.BasicNameValuePair;
 
 import com.appnexus.opensdk.MRAIDWebView;
+import com.appnexus.opensdk.utils.Clog;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
