@@ -38,25 +38,6 @@ public class MainActivity extends Activity implements AdListener{
 		iav = new InterstitialAdView(this);
 		iav.setPlacementID("656561");
 		iav.setAdListener(this);
-		
-		//admob
-		if(true) return;
-		layout=(RelativeLayout) findViewById(R.id.mainview);
-		AdView av = new AdView(this, AdSize.BANNER, "a1512e787095f19");
-		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 50);
-		lp.addRule(RelativeLayout.ABOVE, R.id.ll);
-		lp.alignWithParent=true;
-		av.setLayoutParams(lp);
-		
-		layout.addView(av);
-		AdRequest ar = new AdRequest();
-		ar.addTestDevice("AE736B8A6A42CDC5B796A8A2BAB34524");
-		av.loadAd(ar);
-		GestureOverlayView gov = (GestureOverlayView)av.getChildAt(0);
-		FrameLayout fl = (FrameLayout) gov.getChildAt(0);
-		for(int i=0;i<fl.getChildCount();i++){
-			Log.d("ADMOB", fl.getChildAt(i).toString());
-		}
 	}
 
 	@Override
