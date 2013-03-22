@@ -89,6 +89,16 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		}else{
 			Clog.w(Clog.baseLogTag, Clog.getString(R.string.permissions_missing_location));
 		}
+		
+		// Do we have ACCESS_NETWORK_STATE?
+		if (owner.getContext().checkCallingOrSelfPermission(
+				"android.permission.ACCESS_NETWORK_STATE") != PackageManager.PERMISSION_GRANTED){
+			Clog.e(Clog.baseLogTag, Clog.getString(R.string.permissions_missing_network_state));
+			fail();
+			this.cancel(true);
+			return;
+		}
+		
 		// Get orientation, the current rotation of the device
 		orientation = owner.getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? "landscape"
 				: "portrait";
@@ -204,13 +214,6 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
 	@Override
 	protected AdResponse doInBackground(Void... params) {
-		// Double check network connectivity before continuing
-		if (owner.getContext().checkCallingOrSelfPermission(
-				"android.permission.ACCESS_NETWORK_STATE") != PackageManager.PERMISSION_GRANTED){
-			Clog.e(Clog.baseLogTag, Clog.getString(R.string.permissions_missing_network_state));
-			fail();
-			return null;
-		}
 		NetworkInfo ninfo = ((ConnectivityManager) owner.getContext()
 				.getSystemService(Context.CONNECTIVITY_SERVICE))
 				.getActiveNetworkInfo();

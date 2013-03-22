@@ -29,8 +29,8 @@
         opensdk:placement_id="656561"
         opensdk:width="300"
         opensdk:height="50"
-        opensdk:auto_refresh="false"
-        opensdk:should_reload_on_resume="false"
+        opensdk:auto_refresh="true"
+        opensdk:should_reload_on_resume="true"
         opensdk:auto_refresh_interval="20000"/>
 
     <TextView
