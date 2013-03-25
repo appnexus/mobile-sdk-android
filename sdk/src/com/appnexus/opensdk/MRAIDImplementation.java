@@ -81,7 +81,7 @@ public class MRAIDImplementation {
 
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
-				if (url.startsWith("http://") || url.startsWith("market://")) {
+				if (!url.startsWith("mraid:") && !url.startsWith("javascript:")) {
 					Intent intent = new Intent(Intent.ACTION_VIEW,
 							Uri.parse(url));
 					view.getContext().startActivity(intent);
