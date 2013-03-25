@@ -18,11 +18,13 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.JsResult;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -98,6 +100,16 @@ public class MRAIDImplementation {
 				} catch(ActivityNotFoundException e){
 					return false;
 				}
+			}
+			
+			@Override
+			public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error){
+				Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.webclient_error, error.getPrimaryError(), error.toString()));
+			}
+			
+			@Override
+			public void onReceivedError(WebView view, int errorCode, String description, String failingURL){
+				Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.webclient_error, errorCode, description));
 			}
 			
 			@Override

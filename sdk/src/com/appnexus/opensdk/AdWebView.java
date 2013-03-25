@@ -69,6 +69,7 @@ public class AdWebView extends WebView implements Displayable {
 			
 			@Override
 			public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error){
+				AdWebView.this.fail();
 				Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.webclient_error, error.getPrimaryError(), error.toString()));
 			}
 
@@ -96,8 +97,7 @@ public class AdWebView extends WebView implements Displayable {
 		String body = "<html><head /><body style='margin:0;padding:0;'>"
 				+ ad.getBody() + "</body></html>";
 		Clog.v(Clog.baseLogTag, Clog.getString(R.string.webview_loading, body));
-		//this.loadData(body, "text/html", "UTF-8");
-		this.loadUrl("https://git.corp.appnexus.com/");
+		this.loadData(body, "text/html", "UTF-8");
 		
 		final float scale = destination.getContext().getResources().getDisplayMetrics().density;
 		int rheight = (int)(ad.getHeight()*scale+0.5f);
