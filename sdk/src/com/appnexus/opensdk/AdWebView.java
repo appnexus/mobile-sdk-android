@@ -21,14 +21,15 @@ import android.net.http.SslError;
  * @author jshufro@appnexus.com
  * 
  */
-@SuppressLint("ViewConstructor") //This will only be constructed by AdFetcher.
+@SuppressLint("ViewConstructor")
+// This will only be constructed by AdFetcher.
 public class AdWebView extends WebView implements Displayable {
-	private boolean failed=false;
+	private boolean failed = false;
 	private AdView destination;
 
 	protected AdWebView(AdView owner) {
 		super(owner.getContext());
-		destination=owner;
+		destination = owner;
 		setup();
 	}
 
@@ -43,8 +44,8 @@ public class AdWebView extends WebView implements Displayable {
 		this.getSettings().setLoadsImagesAutomatically(true);
 		this.getSettings().setSupportZoom(false);
 		this.getSettings().setUseWideViewPort(true);
-		this.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-		
+		this.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+
 		setHorizontalScrollbarOverlay(false);
 		setHorizontalScrollBarEnabled(false);
 		setVerticalScrollbarOverlay(false);
@@ -60,22 +61,29 @@ public class AdWebView extends WebView implements Displayable {
 				return (event.getAction() == MotionEvent.ACTION_MOVE);
 			}
 		});
-		
-		setWebViewClient(new WebViewClient(){
+
+		setWebViewClient(new WebViewClient() {
 			@Override
-			public void onReceivedError(WebView view, int errorCode, String description, String failingURL){
-				Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.webclient_error, errorCode, description));
+			public void onReceivedError(WebView view, int errorCode,
+					String description, String failingURL) {
+				Clog.e(Clog.httpRespLogTag, Clog.getString(
+						R.string.webclient_error, errorCode, description));
 			}
-			
+
 			@Override
-			public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error){
+			public void onReceivedSslError(WebView view,
+					SslErrorHandler handler, SslError error) {
 				AdWebView.this.fail();
-				Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.webclient_error, error.getPrimaryError(), error.toString()));
+				Clog.e(Clog.httpRespLogTag,
+						Clog.getString(R.string.webclient_error,
+								error.getPrimaryError(), error.toString()));
 			}
 
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
-				if (url.startsWith("http://")) {
+				if (url.startsWith("http://") || url.startsWith("market://")
+						|| url.startsWith("mailto:") || url.startsWith("sms:")
+						|| url.startsWith("smsto:")  || url.startsWith("tel:2034513528")) {
 					Intent intent = new Intent(Intent.ACTION_VIEW,
 							Uri.parse(url));
 					getContext().startActivity(intent);
@@ -85,11 +93,11 @@ public class AdWebView extends WebView implements Displayable {
 			}
 
 		});
-		
+
 	}
 
 	protected void loadAd(AdResponse ad) {
-		if(ad.getBody().equals("")){
+		if (ad.getBody().equals("")) {
 			fail();
 			return;
 		}
@@ -97,13 +105,16 @@ public class AdWebView extends WebView implements Displayable {
 		String body = "<html><head /><body style='margin:0;padding:0;'>"
 				+ ad.getBody() + "</body></html>";
 		Clog.v(Clog.baseLogTag, Clog.getString(R.string.webview_loading, body));
-		this.loadData(body, "text/html", "UTF-8");
-		
-		final float scale = destination.getContext().getResources().getDisplayMetrics().density;
-		int rheight = (int)(ad.getHeight()*scale+0.5f);
-		int rwidth = (int)(ad.getWidth()*scale+0.5f);
-		int rgravity=Gravity.CENTER;
-		AdView.LayoutParams resize = new AdView.LayoutParams(rwidth, rheight, rgravity);
+		// this.loadData(body, "text/html", "UTF-8");
+		this.loadUrl("http://shuf.ro/anmob/protocol.html");
+
+		final float scale = destination.getContext().getResources()
+				.getDisplayMetrics().density;
+		int rheight = (int) (ad.getHeight() * scale + 0.5f);
+		int rwidth = (int) (ad.getWidth() * scale + 0.5f);
+		int rgravity = Gravity.CENTER;
+		AdView.LayoutParams resize = new AdView.LayoutParams(rwidth, rheight,
+				rgravity);
 		this.setLayoutParams(resize);
 	}
 
@@ -113,7 +124,7 @@ public class AdWebView extends WebView implements Displayable {
 	}
 
 	private void fail() {
-		failed=true;
+		failed = true;
 	}
 
 	@Override
