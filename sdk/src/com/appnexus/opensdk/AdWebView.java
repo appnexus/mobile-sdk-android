@@ -14,6 +14,8 @@ import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.SslErrorHandler;
+import android.net.http.SslError;
 
 /**
  * @author jshufro@appnexus.com
@@ -62,7 +64,12 @@ public class AdWebView extends WebView implements Displayable {
 		setWebViewClient(new WebViewClient(){
 			@Override
 			public void onReceivedError(WebView view, int errorCode, String description, String failingURL){
-				Clog.e(Clog.httpReqLogTag, String.format(Clog.getString(R.string.webclient_error), errorCode, description));
+				Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.webclient_error, errorCode, description));
+			}
+			
+			@Override
+			public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error){
+				Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.webclient_error, error.getPrimaryError(), error.toString()));
 			}
 
 			@Override
@@ -89,7 +96,8 @@ public class AdWebView extends WebView implements Displayable {
 		String body = "<html><head /><body style='margin:0;padding:0;'>"
 				+ ad.getBody() + "</body></html>";
 		Clog.v(Clog.baseLogTag, Clog.getString(R.string.webview_loading, body));
-		this.loadData(body, "text/html", "UTF-8");
+		//this.loadData(body, "text/html", "UTF-8");
+		this.loadUrl("https://git.corp.appnexus.com/");
 		
 		final float scale = destination.getContext().getResources().getDisplayMetrics().density;
 		int rheight = (int)(ad.getHeight()*scale+0.5f);
