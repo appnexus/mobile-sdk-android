@@ -81,8 +81,7 @@ public class AdWebView extends WebView implements Displayable {
 	}
 
 	protected void loadAd(AdResponse ad) {
-		if(ad.getBody()==""){
-			Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.blank_ad));
+		if(ad.getBody().equals("")){
 			fail();
 			return;
 		}

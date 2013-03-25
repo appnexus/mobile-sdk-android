@@ -1,6 +1,6 @@
 package com.appnexus.opensdk.test;
 
-import com.appnexus.opensdk.HashingFunctions;
+import com.appnexus.opensdk.utils.HashingFunctions;
 
 import junit.framework.TestCase;
 

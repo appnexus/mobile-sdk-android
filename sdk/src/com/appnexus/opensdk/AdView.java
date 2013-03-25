@@ -180,6 +180,7 @@ public abstract class AdView extends FrameLayout {
 	/** End Construction **/
 
 	protected void display(Displayable d) {
+		if(d==null) return;
 		if (d.failed())
 			return; // The displayable has failed to be parsed or turned into a
 					// View.

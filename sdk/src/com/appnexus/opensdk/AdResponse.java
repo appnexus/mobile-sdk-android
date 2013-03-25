@@ -15,18 +15,29 @@ public class AdResponse {
 	private int width;
 	private String type;
 	private AdView owner;
+	boolean fail=false;
 
 	public AdResponse(AdView owner, String body, Header[] headers) {
-		Clog.d(Clog.httpRespLogTag, Clog.getString(R.string.response_body, body));
-		for(Header h : headers){
-			Clog.v(Clog.httpRespLogTag, Clog.getString(R.string.response_header, h.getName(), h.getValue()));
-		}
-		this.owner=owner;
-		if(body==null) return;
-		if(body.equals("")){
+		if(body==null){
+			fail=true;
+			return;
+		}else if(body.equals("HTTP_ERROR")){
+			fail=true;
+			return;
+		}else if(body.equals("")){
 			Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
+			fail=true;
 			return;
 		}
+		
+		Clog.d(Clog.httpRespLogTag, Clog.getString(R.string.response_body, body));
+		if(headers!=null){
+			for(Header h : headers){
+				Clog.v(Clog.httpRespLogTag, Clog.getString(R.string.response_header, h.getName(), h.getValue()));
+			}
+		}
+		
+		this.owner=owner;
 		
 		try {
 			JSONObject response = new JSONObject(body);
@@ -49,6 +60,7 @@ public class AdResponse {
 			width = firstAd.getInt("width");
 			this.body = firstAd.getString("content");
 			type= firstAd.getString("type");
+			if (this.body.equals("") || this.body==null)Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.blank_ad));
 		} catch (JSONException e) {
 			Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_json_error,body));
 			e.printStackTrace();
@@ -76,6 +88,7 @@ public class AdResponse {
 	}
 
 	protected Displayable getDisplayable(){
+		if(fail) return null;
 		if(!getBody().contains("mraid.js")){
 			AdWebView out = new AdWebView(owner);
 			out.loadAd(this);

@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ConnectTimeoutException;
@@ -233,6 +234,9 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try {
 			r = h.execute(new HttpGet(query_string));
+			if(!httpShouldContinue(r.getStatusLine())){
+				return new AdResponse(null, "HTTP_ERROR", null);
+			}
 			r.getEntity().writeTo(out);
 			out.close();
 		} catch (ClientProtocolException e) {
@@ -266,6 +270,18 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			return null;
 		}//Leave this commented to figure out what other exceptions might come up during testing!
 		return new AdResponse(owner, out.toString(), r.getAllHeaders());
+	}
+
+	private boolean httpShouldContinue(StatusLine statusLine) {
+		int http_error_code=statusLine.getStatusCode();
+		switch(http_error_code){
+		default:
+			Clog.d(Clog.httpRespLogTag, Clog.getString(R.string.http_bad_status, http_error_code));
+			return false;
+		case 200:
+			return true;
+		}
+		
 	}
 
 	@Override
