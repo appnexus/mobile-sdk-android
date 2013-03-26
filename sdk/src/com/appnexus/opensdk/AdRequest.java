@@ -174,9 +174,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	}
 	
 	private void fail(){
-		if(owner instanceof InterstitialAdView){
-			((InterstitialAdView) owner).fail();
-		}
+		owner.fail();
 	}
 
 	String getRequestUrl() {

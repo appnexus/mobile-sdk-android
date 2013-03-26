@@ -308,4 +308,8 @@ public abstract class AdView extends FrameLayout {
 		}
 	}
 	abstract String getMRAIDAdType();
+	
+	void fail(){
+	
+	}
 }

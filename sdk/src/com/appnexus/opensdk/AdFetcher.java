@@ -55,7 +55,7 @@ public class AdFetcher {
 	}
 	
 	private void requestFailed(){
-		if(owner instanceof InterstitialAdView) ((InterstitialAdView) owner).fail();
+		owner.fail();
 	}
 
 	protected void start() {
