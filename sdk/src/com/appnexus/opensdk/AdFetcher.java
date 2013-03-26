@@ -131,6 +131,9 @@ public class AdFetcher {
 			// If the adfetcher, for some reason, has vanished, do nothing with this message
 			if(mFetcher.get()==null) return;
 			
+			// If an MRAID ad is expanded in the owning view, do nothing with this message
+			if(mFetcher.get().owner.isMRAIDExpanded()) return;
+			
 			//If we need to reset, reset.
 			if(mFetcher.get().shouldReset){
 				mFetcher.get().shouldReset=false;

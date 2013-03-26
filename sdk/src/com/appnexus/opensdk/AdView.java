@@ -137,9 +137,13 @@ public abstract class AdView extends FrameLayout {
 	// If single-use mode, we must manually start the fetcher
 	protected void onFirstLayout(){
 		// If an MRAID ad is expanded here, don't fetch on resume... that's just bad
-		if(this.getChildCount()>0 && this.getChildAt(0) instanceof MRAIDWebView && ((MRAIDWebView) getChildAt(0)).getImplementation().expanded)
+		if(isMRAIDExpanded())
 			return;
 		mAdFetcher.start();
+	}
+	
+	protected boolean isMRAIDExpanded(){
+		return this.getChildCount()>0 && this.getChildAt(0) instanceof MRAIDWebView && ((MRAIDWebView) getChildAt(0)).getImplementation().expanded;
 	}
 	
 	/**
