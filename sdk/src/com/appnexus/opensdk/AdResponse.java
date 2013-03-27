@@ -16,17 +16,18 @@ public class AdResponse {
 	private String type;
 	private AdView owner;
 	boolean fail=false;
+	final static String http_error="HTTP_ERROR";
 
 	public AdResponse(AdView owner, String body, Header[] headers) {
 		if(body==null){
-			fail=true;
+			this.fail=true;
 			return;
-		}else if(body.equals("HTTP_ERROR")){
-			fail=true;
+		}else if(body.equals(AdResponse.http_error)){
+			this.fail=true;
 			return;
-		}else if(body.equals("")){
+		}else if(body.length()==0){
 			Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
-			fail=true;
+			this.fail=true;
 			return;
 		}
 		
@@ -88,7 +89,7 @@ public class AdResponse {
 	}
 
 	protected Displayable getDisplayable(){
-		if(fail) return null;
+		if(this.fail) return null;
 		if(!getBody().contains("mraid.js")){
 			AdWebView out = new AdWebView(owner);
 			out.loadAd(this);

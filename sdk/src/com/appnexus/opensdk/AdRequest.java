@@ -233,7 +233,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		try {
 			r = h.execute(new HttpGet(query_string));
 			if(!httpShouldContinue(r.getStatusLine())){
-				return new AdResponse(null, "HTTP_ERROR", null);
+				return new AdResponse(null, AdResponse.http_error, null);
 			}
 			r.getEntity().writeTo(out);
 			out.close();

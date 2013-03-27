@@ -143,7 +143,12 @@ public abstract class AdView extends FrameLayout {
 	}
 	
 	protected boolean isMRAIDExpanded(){
-		return this.getChildCount()>0 && this.getChildAt(0) instanceof MRAIDWebView && ((MRAIDWebView) getChildAt(0)).getImplementation().expanded;
+		if(this.getChildCount()>0
+				&& this.getChildAt(0) instanceof MRAIDWebView
+				&& ((MRAIDWebView) getChildAt(0)).getImplementation().expanded){
+			return true;
+		}
+		return false;
 	}
 	
 	/**
