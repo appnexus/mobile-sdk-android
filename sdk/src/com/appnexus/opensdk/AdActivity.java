@@ -30,34 +30,9 @@ public class AdActivity extends Activity {
 		super.onCreate(b);
 		layout = new FrameLayout(this);
 		
-		Display d = ((WindowManager)getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-		switch (this.getResources().getConfiguration().orientation){
-	        case Configuration.ORIENTATION_PORTRAIT:
-	            if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO){
-	            	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-	            } else {
-	                int rotation = d.getRotation();
-	            if(rotation == android.view.Surface.ROTATION_90|| rotation == android.view.Surface.ROTATION_180){
-	                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
-	                } else {
-	                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-	                }
-	            }   
-	        break;
-
-	        case Configuration.ORIENTATION_LANDSCAPE:
-	            if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO){
-	                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-	            } else {
-	                int rotation = d.getRotation();
-	                if(rotation == android.view.Surface.ROTATION_0 || rotation == android.view.Surface.ROTATION_90){
-	                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-	                } else {
-	                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-	                }
-	            }
-	        break;
-		}
+		//Lock the orientation
+		AdActivity.lockOrientation(this);
+	
 		setContentView(layout);
 		
 		setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
@@ -95,6 +70,38 @@ public class AdActivity extends Activity {
 			}
 			if(p==null) return;
 			layout.addView(p.second.getView());
+		}
+	}
+	
+	@SuppressLint("InlinedApi")
+	protected static void lockOrientation(Activity a){
+		Display d = ((WindowManager)a.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+		switch (a.getResources().getConfiguration().orientation){
+	        case Configuration.ORIENTATION_PORTRAIT:
+	            if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO){
+	            	a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+	            } else {
+	                int rotation = d.getRotation();
+	            if(rotation == android.view.Surface.ROTATION_90|| rotation == android.view.Surface.ROTATION_180){
+	                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+	                } else {
+	                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+	                }
+	            }   
+	        break;
+
+	        case Configuration.ORIENTATION_LANDSCAPE:
+	            if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO){
+	                a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+	            } else {
+	                int rotation = d.getRotation();
+	                if(rotation == android.view.Surface.ROTATION_0 || rotation == android.view.Surface.ROTATION_90){
+	                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+	                } else {
+	                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+	                }
+	            }
+	        break;
 		}
 	}
 

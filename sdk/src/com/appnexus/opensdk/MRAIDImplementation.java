@@ -12,16 +12,12 @@ import com.appnexus.opensdk.utils.Clog;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.net.http.SslError;
-import android.view.Display;
 import android.view.Gravity;
-import android.view.WindowManager;
 import android.webkit.ConsoleMessage;
 import android.webkit.JsResult;
 import android.webkit.SslErrorHandler;
@@ -198,37 +194,9 @@ public class MRAIDImplementation {
 			//Fire the stateChange
 			this.owner.loadUrl("javascript:window.mraid.util.stateChangeEvent('expanded');");
 			expanded=true;
-			Activity a = ((Activity)this.owner.getContext());
-			if(a!=null){
-				Display d = ((WindowManager)a.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-				switch (owner.getContext().getResources().getConfiguration().orientation){
-			        case Configuration.ORIENTATION_PORTRAIT:
-			            if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO){
-			            	a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-			            } else {
-			                int rotation = d.getRotation();
-			            if(rotation == android.view.Surface.ROTATION_90|| rotation == android.view.Surface.ROTATION_180){
-			                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
-			                } else {
-			                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-			                }
-			            }   
-			        break;
-	
-			        case Configuration.ORIENTATION_LANDSCAPE:
-			            if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO){
-			                a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-			            } else {
-			                int rotation = d.getRotation();
-			                if(rotation == android.view.Surface.ROTATION_0 || rotation == android.view.Surface.ROTATION_90){
-			                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-			                } else {
-			                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-			                }
-			            }
-			        break;
-				}
-			}
+			//Lock the orientation
+			AdActivity.lockOrientation((Activity)this.owner.getContext());
+
 		}else{
 			owner.show();
 			hidden=false;
