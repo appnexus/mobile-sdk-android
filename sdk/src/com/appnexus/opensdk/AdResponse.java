@@ -40,8 +40,14 @@ public class AdResponse {
 		
 		this.owner=owner;
 		
+		parseResponse(body);
+		
+	}
+	
+	private void parseResponse(String body){
+		JSONObject response;
 		try {
-			JSONObject response = new JSONObject(body);
+			response = new JSONObject(body);
 			String status = response.getString("status");
 			if(status.equals("error")){
 				String error = response.getString("errorMessage");
@@ -67,7 +73,7 @@ public class AdResponse {
 			e.printStackTrace();
 			return;
 		}
-		
+
 	}
 	
 	protected String getBody(){

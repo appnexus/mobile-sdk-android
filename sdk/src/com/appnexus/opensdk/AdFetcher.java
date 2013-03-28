@@ -89,13 +89,7 @@ public class AdFetcher {
 		if (!getAutoRefresh()) {
 			Clog.v(Clog.baseLogTag, Clog.getString(R.string.fetcher_start_single));
 			// Request an ad once
-			tasker.schedule(new Runnable() {
-				@Override
-				public void run() {
-					Clog.v(Clog.baseLogTag, Clog.getString(R.string.handler_message_pass));
-					handler.sendEmptyMessage(0);
-				}
-			}, 0, TimeUnit.SECONDS);
+			tasker.schedule(new MessageRunnable(), 0, TimeUnit.SECONDS);
 		} else {
 			Clog.v(Clog.baseLogTag, Clog.getString(R.string.fetcher_start_auto));
 			// Start recurring ad requests
@@ -105,16 +99,21 @@ public class AdFetcher {
 				@Override
 				public void run(){
 					Clog.v(Clog.baseLogTag, Clog.getString(R.string.request_delayed_by_x_ms, msPeriod));
-					tasker.scheduleAtFixedRate(new Runnable() {
-						@Override
-						public void run() {
-							Clog.v(Clog.baseLogTag, Clog.getString(R.string.handler_message_pass));
-							handler.sendEmptyMessage(0);
-						}
-					}, 0, msPeriod, TimeUnit.MILLISECONDS);
+					tasker.scheduleAtFixedRate(new MessageRunnable(), 0, msPeriod, TimeUnit.MILLISECONDS);
 				}
 			}, stall, TimeUnit.MILLISECONDS);
 		}
+	}
+	
+	class MessageRunnable implements Runnable{
+
+		@Override
+		public void run() {
+			Clog.v(Clog.baseLogTag, Clog.getString(R.string.handler_message_pass));
+			handler.sendEmptyMessage(0);
+			
+		}
+		
 	}
 
 	// Create a handler which will receive the AsyncTasks and spawn them from
@@ -129,10 +128,8 @@ public class AdFetcher {
 		@Override
 		synchronized public void handleMessage(Message msg) {
 			// If the adfetcher, for some reason, has vanished, do nothing with this message
-			if(mFetcher.get()==null) return;
-			
 			// If an MRAID ad is expanded in the owning view, do nothing with this message
-			if(mFetcher.get().owner.isMRAIDExpanded()) return;
+			if(mFetcher.get()==null || mFetcher.get().owner.isMRAIDExpanded()) return;
 			
 			//If we need to reset, reset.
 			if(mFetcher.get().shouldReset){

@@ -38,7 +38,12 @@ public class AdActivity extends Activity {
 		setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
 		now = getIntent().getLongExtra("Time", System.currentTimeMillis());
 		
-		//Ads a close button.
+		//Add a close button.
+		addCloseButton(layout);
+		
+	}
+	
+	private void addCloseButton(FrameLayout layout){
 		ImageButton close = new ImageButton(this);
 		close.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_menu_close_clear_cancel));
 		FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.RIGHT | Gravity.TOP);
@@ -53,7 +58,6 @@ public class AdActivity extends Activity {
 			}
 		});
 		layout.addView(close);
-		
 	}
 	
 	protected void setIAdView(InterstitialAdView av){
