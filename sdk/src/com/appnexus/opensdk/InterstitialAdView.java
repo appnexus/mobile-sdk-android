@@ -151,6 +151,10 @@ public class InterstitialAdView extends AdView {
 	
 	@Override
 	protected void display(Displayable d){
+		if(d==null && adListener!=null){
+			adListener.onAdRequestFailed(this);
+			return;
+		}
 		if(adListener!=null) adListener.onAdLoaded(this);
 		InterstitialAdView.q.add(new Pair<Long, Displayable>(System.currentTimeMillis(), d));
 	}
