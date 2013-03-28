@@ -3,7 +3,6 @@
  */
 package com.appnexus.opensdk;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.apache.http.HttpResponse;
@@ -13,6 +12,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import com.appnexus.opensdk.InterstitialAdView.Size;
 import com.appnexus.opensdk.utils.Clog;
@@ -229,14 +229,13 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		Clog.d(Clog.httpReqLogTag, Clog.getString(R.string.fetch_url, query_string));
 		DefaultHttpClient h = new DefaultHttpClient();
 		HttpResponse r = null;
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		String out = null;
 		try {
 			r = h.execute(new HttpGet(query_string));
 			if(!httpShouldContinue(r.getStatusLine())){
 				return new AdResponse(null, AdResponse.http_error, null);
 			}
-			r.getEntity().writeTo(out);
-			out.close();
+			out = EntityUtils.toString(r.getEntity());
 		} catch (ClientProtocolException e) {
 			Clog.e(Clog.httpReqLogTag,
 					Clog.getString(R.string.http_unknown));
@@ -267,7 +266,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			fail();
 			return null;
 		}//Leave this commented to figure out what other exceptions might come up during testing!
-		return new AdResponse(owner, out.toString(), r.getAllHeaders());
+		return new AdResponse(owner, out, r.getAllHeaders());
 	}
 
 	private boolean httpShouldContinue(StatusLine statusLine) {
