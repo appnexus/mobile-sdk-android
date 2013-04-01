@@ -146,7 +146,14 @@ public class InterstitialAdView extends AdView {
 	
 	@Override
 	protected void fail(){
-		if(adListener!=null) adListener.onAdRequestFailed(this);
+		if(adListener!=null) this.post(new Runnable(){
+
+			@Override
+			public void run() {
+				InterstitialAdView.this.adListener.onAdRequestFailed(InterstitialAdView.this);
+			}
+			
+		});
 	}
 	
 	@Override
