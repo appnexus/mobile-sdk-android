@@ -28,11 +28,11 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentTop="true"
-        opensdk:auto_refresh="true"
+        opensdk:auto_refresh="false"
         opensdk:auto_refresh_interval="20000"
         opensdk:height="50"
         opensdk:placement_id="656561"
-        opensdk:should_reload_on_resume="true"
+        opensdk:should_reload_on_resume="false"
         opensdk:width="300" />
 
     <TextView
@@ -43,7 +43,7 @@
         android:layout_centerVertical="true"
         android:text="@string/hello_world" />
 
-    <com.appnexus.opensdk.BannerAdView
+    <!-- <com.appnexus.opensdk.BannerAdView
         android:id="@+id/ad3"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -53,10 +53,10 @@
         opensdk:height="50"
         opensdk:placement_id="656561"
         opensdk:should_reload_on_resume="true"
-        opensdk:width="320" />
+        opensdk:width="320" />  -->
 
     <LinearLayout
-        android:id="@id/ll"
+        android:id="@+id/ll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
