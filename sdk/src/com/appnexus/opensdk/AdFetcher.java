@@ -162,9 +162,6 @@ public class AdFetcher {
 			if (autoRefresh == true) {
 				stop();
 				start();
-			} else {
-				// If we're setting it to false, just stop...
-				stop();
 			}
 		}
 	}
