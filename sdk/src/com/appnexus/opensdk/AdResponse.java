@@ -26,7 +26,7 @@ public class AdResponse {
 			this.fail=true;
 			return;
 		}else if(body.length()==0){
-			Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
+			Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
 			this.fail=true;
 			return;
 		}
@@ -57,7 +57,7 @@ public class AdResponse {
 			JSONArray ads = response.getJSONArray("ads");
 			//is the array empty? if so, no ads were returned, and we need to fail gracefully
 			if(ads.length()==0){
-				Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
+				Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
 				return;
 			}
 			//for now, just take the first ad
