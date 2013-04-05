@@ -6,55 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity" >
 
-    <!-- xmlns:opensdk="http://schemas.android.com/apk/res/com.example.helloworld" -->
-
-
-    <!--
-    <com.appnexus.opensdk.BannerAdView
-        android:id="@+id/ad"
-        android:layout_alignParentTop="true"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        opensdk:placement_id="656561"
-        opensdk:width="320"
-        opensdk:height="50"
-        opensdk:auto_refresh="false"
-        opensdk:should_reload_on_resume="false"
-        opensdk:auto_refresh_interval="20000"/>
-    -->
-
-    <com.appnexus.opensdk.BannerAdView
-        android:id="@+id/ad2"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentTop="true"
-        opensdk:auto_refresh="false"
-        opensdk:auto_refresh_interval="20000"
-        opensdk:height="50"
-        opensdk:placement_id="656561"
-        opensdk:should_reload_on_resume="false"
-        opensdk:width="300" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/ad2"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="@string/hello_world" />
-
-    <!-- <com.appnexus.opensdk.BannerAdView
-        android:id="@+id/ad3"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_above="@+id/ll"
-        opensdk:auto_refresh="true"
-        opensdk:auto_refresh_interval="20000"
-        opensdk:height="50"
-        opensdk:placement_id="656561"
-        opensdk:should_reload_on_resume="true"
-        opensdk:width="320" />  -->
-
     <LinearLayout
         android:id="@+id/ll"
         android:layout_width="match_parent"

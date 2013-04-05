@@ -3,19 +3,15 @@ package com.example.helloworld;
 import com.appnexus.opensdk.BannerAdView;
 import com.appnexus.opensdk.InterstitialAdView;
 import com.appnexus.opensdk.AdListener;
-import com.google.ads.AdRequest;
-import com.google.ads.AdSize;
-import com.google.ads.AdView;
+import com.google.ads.*;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.gesture.GestureOverlayView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 public class MainActivity extends Activity implements AdListener{
@@ -30,6 +26,16 @@ public class MainActivity extends Activity implements AdListener{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		//AdMob
+		layout = (RelativeLayout) findViewById(R.id.mainview);
+		adview=new AdView(this, AdSize.BANNER, "849bdfd661384a7a");
+		
+		layout.addView(adview);
+		AdRequest ar = new AdRequest();
+		ar.addTestDevice("AE736B8A6A42CDC5B796A8A2BAB34524");
+
+		adview.loadAd(new AdRequest());
 		
 		//Interstitial
 		showButton = (Button) findViewById(R.id.showbutton);
