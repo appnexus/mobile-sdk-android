@@ -2,6 +2,7 @@ package com.appnexus.opensdk;
 
 import android.app.Activity;
 
+import com.appnexus.opensdk.utils.Clog;
 import com.google.ads.Ad;
 import com.google.ads.AdListener;
 import com.google.ads.AdRequest.ErrorCode;
@@ -49,6 +50,7 @@ public class AdMobMediationInterstitial implements CustomEventInterstitial,
 			Activity activity, String label, String placement_id, MediationAdRequest adRequest,
 			Object extra) {
 		iav=new InterstitialAdView(activity, placement_id);
+		iav.setAdListener(this);
 		this.listener=listener;
 		iav.loadAd();
 	}

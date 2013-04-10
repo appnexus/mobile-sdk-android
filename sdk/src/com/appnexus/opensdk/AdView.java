@@ -53,15 +53,15 @@ public abstract class AdView extends FrameLayout {
 	
 	public AdView(Context context, String placement_id){
 		super(context);
-		this.setPlacementID(placement_id);
 		setup(context, null);
+		this.setPlacementID(placement_id);
 	}
 	
 	public AdView(Context context, String placement_id, int ad_width, int ad_height){
 		super(context);
+		setup(context, null);
 		this.setAdHeight(ad_height);
 		this.setAdWidth(ad_width);
-		setup(context, null);
 	}
 
 	protected void setup(Context context, AttributeSet attrs) {

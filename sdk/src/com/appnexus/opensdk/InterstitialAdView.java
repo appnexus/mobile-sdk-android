@@ -158,8 +158,10 @@ public class InterstitialAdView extends AdView {
 	
 	@Override
 	protected void display(Displayable d){
-		if(d==null && adListener!=null){
-			adListener.onAdRequestFailed(this);
+		if(d==null){
+			if(adListener!=null){
+				adListener.onAdRequestFailed(this);
+			}
 			return;
 		}
 		if(adListener!=null) adListener.onAdLoaded(this);
@@ -273,7 +275,7 @@ public class InterstitialAdView extends AdView {
 	public void destroy(){
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.destroy_int));
 		if(this.mAdFetcher!=null) mAdFetcher.stop();
-		InterstitialAdView.q=null;
+		InterstitialAdView.q.clear();
 		InterstitialAdView.INTERSTITIALADVIEW_TO_USE=null;
 	}
 	
