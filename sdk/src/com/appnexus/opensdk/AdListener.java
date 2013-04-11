@@ -8,12 +8,12 @@ package com.appnexus.opensdk;
 public interface AdListener{
 	/**
 	 * Called when an ad has successfully been loaded from the server.
-	 * @param iAdView	The {@link InterstitialAdView} that loaded the ad.
+	 * @param iAdView	The {@link AdView} that loaded the ad.
 	 */
-	public void onAdLoaded(InterstitialAdView iAdView);
+	public void onAdLoaded(AdView adView);
 	/**
 	 * Called when ad ad request fails.
-	 * @param iAdView The {@link InterstitialAdView} that loaded the ad.
+	 * @param iAdView The {@link AdView} that loaded the ad.
 	 */
-	public void onAdRequestFailed(InterstitialAdView iAdView);
+	public void onAdRequestFailed(AdView adView);
 }
