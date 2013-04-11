@@ -31,6 +31,7 @@ public abstract class AdView extends FrameLayout {
 	protected int width=-1;
 	protected int height=-1;
 	private boolean mraid_expand=false;
+	protected AdListener adListener;
 	
 	
 	/** Begin Construction **/
@@ -189,12 +190,18 @@ public abstract class AdView extends FrameLayout {
 	/** End Construction **/
 
 	protected void display(Displayable d) {
-		if(d==null) return;
-		if (d.failed())
+		if(d==null){
+			if(this.adListener!=null) adListener.onAdRequestFailed(this);
+			return;
+		}
+		if (d.failed()){
+			if(this.adListener!=null) adListener.onAdRequestFailed(this);
 			return; // The displayable has failed to be parsed or turned into a
 					// View.
+		}
 		this.removeAllViews();
 		this.addView(d.getView());
+		if(this.adListener!=null) adListener.onAdLoaded(this);
 		Clog.d("MRAID", "Adding view: w:"+d.getView().getLayoutParams().width+" h:"+d.getView().getLayoutParams().height);
 		unhide();
 	}
@@ -314,7 +321,32 @@ public abstract class AdView extends FrameLayout {
 	}
 	abstract String getMRAIDAdType();
 	
-	void fail(){
+	/**
+	 * Sets the listener that the InterstitialAdView will call events in.
+	 * @param listener	The {@link AdListener} object to use.
+	 */
+	public void setAdListener(AdListener listener){
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_ad_listener));
+		adListener=listener;
+	}
 	
+	/**
+	 * Gets the listener that the InterstitialAdView will call events in.
+	 * @return The {@link AdListener} object in use.
+	 */
+	public AdListener getAdListener(){
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.get_ad_listener));
+		return adListener;
+	}
+	
+	protected void fail(){
+		if(adListener!=null) this.post(new Runnable(){
+
+			@Override
+			public void run() {
+				AdView.this.adListener.onAdRequestFailed(AdView.this);
+			}
+			
+		});
 	}
 }

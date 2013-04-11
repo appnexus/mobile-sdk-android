@@ -30,7 +30,6 @@ public class InterstitialAdView extends AdView {
 	protected int backgroundColor=Color.BLACK;
 	protected static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
 	protected static Queue<Pair<Long, Displayable>> q = new LinkedList<Pair<Long, Displayable>>();
-	protected AdListener adListener;
 
 	/**
 	 * Creates a new InterstitialAdView
@@ -145,23 +144,9 @@ public class InterstitialAdView extends AdView {
 	}
 	
 	@Override
-	protected void fail(){
-		if(adListener!=null) this.post(new Runnable(){
-
-			@Override
-			public void run() {
-				InterstitialAdView.this.adListener.onAdRequestFailed(InterstitialAdView.this);
-			}
-			
-		});
-	}
-	
-	@Override
 	protected void display(Displayable d){
 		if(d==null){
-			if(adListener!=null){
-				adListener.onAdRequestFailed(this);
-			}
+			fail();
 			return;
 		}
 		if(adListener!=null) adListener.onAdLoaded(this);
@@ -182,24 +167,6 @@ public class InterstitialAdView extends AdView {
 	@Override
 	public void setAdHeight(int height){
 		Clog.w(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_height_int));
-	}
-	
-	/**
-	 * Sets the listener that the InterstitialAdView will call events in.
-	 * @param listener	The {@link AdListener} object to use.
-	 */
-	public void setAdListener(AdListener listener){
-		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_ad_listener));
-		adListener=listener;
-	}
-	
-	/**
-	 * Gets the listener that the InterstitialAdView will call events in.
-	 * @return The {@link AdListener} object in use.
-	 */
-	public AdListener getAdListener(){
-		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.get_ad_listener));
-		return adListener;
 	}
 	
 	/**

@@ -1,7 +1,6 @@
 package com.example.helloworld;
 
 import com.appnexus.opensdk.BannerAdView;
-import com.appnexus.opensdk.InterstitialAdView;
 import com.appnexus.opensdk.AdListener;
 import com.google.ads.*;
 import com.google.ads.AdRequest.ErrorCode;
@@ -77,22 +76,6 @@ public class MainActivity extends Activity implements AdListener, com.google.ads
 	}
 
 	@Override
-	public void onAdLoaded(InterstitialAdView iAdView) {
-		interstitials++;
-		if(interstitials>0){
-			showButton.setClickable(true);
-			showButton.setEnabled(true);
-		}
-		
-	}
-
-	@Override
-	public void onAdRequestFailed(InterstitialAdView iAdView) {
-		Log.e("HelloWorld", "Ad request failed");
-		
-	}
-
-	@Override
 	public void onDismissScreen(Ad arg0) {
 		// TODO Auto-generated method stub
 		
@@ -119,5 +102,21 @@ public class MainActivity extends Activity implements AdListener, com.google.ads
 	@Override
 	public void onReceiveAd(Ad arg0) {
 		interstitial.show();
+	}
+
+	@Override
+	public void onAdLoaded(com.appnexus.opensdk.AdView adView) {
+		interstitials++;
+		if(interstitials>0){
+			showButton.setClickable(true);
+			showButton.setEnabled(true);
+		}
+		
+	}
+
+	@Override
+	public void onAdRequestFailed(com.appnexus.opensdk.AdView adView) {
+		Log.e("HelloWorld", "Ad request failed");
+		
 	}
 }
