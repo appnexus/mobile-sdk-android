@@ -26,7 +26,8 @@ public class Settings {
 	public String os="Android "+Build.VERSION.RELEASE;
 	public String language=Locale.getDefault().getLanguage();
 	
-	public final String BASE_URL = "http://mobile-dev.adnxs.net/mob?";
+	//public final String BASE_URL = "http://mobile-dev.adnxs.net/mob?";
+	public final String BASE_URL = "http://mobile.adnxs.com/mob?";
 	//final String BASE_URL = "http://asweeney.adnxs.net:2048/mob?";
 	//final String BASE_URL = "http://shuf.ro/anmob/json/?";
 	//final String BASE_URL = "http://shuf.ro/anmob/noads/?";
