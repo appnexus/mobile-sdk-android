@@ -35,7 +35,6 @@ public class TestFailingAdRequest extends TestCase implements AdRequester{
 			shouldPass=response.getBody()!=null?false:true;
 			if(response.getBody()!=null)
 				shouldPass=response.getBody().length()>0?false:true;
-			Log.e("TEST", "Should pass set to "+shouldPass);
 	}
 
 	@Override
