@@ -1,7 +1,5 @@
 package com.appnexus.opensdk.test;
 
-import android.util.Log;
-
 import com.appnexus.opensdk.AdRequest;
 import com.appnexus.opensdk.AdRequester;
 import com.appnexus.opensdk.AdResponse;
