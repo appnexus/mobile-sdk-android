@@ -14,11 +14,11 @@ public class AdResponse {
 	private int height;
 	private int width;
 	private String type;
-	private AdView owner;
 	boolean fail=false;
 	final static String http_error="HTTP_ERROR";
+	boolean isMraid=false;
 
-	public AdResponse(AdView owner, String body, Header[] headers) {
+	public AdResponse(AdRequester requester, String body, Header[] headers) {
 		if(body==null){
 			this.fail=true;
 			return;
@@ -38,9 +38,9 @@ public class AdResponse {
 			}
 		}
 		
-		this.owner=owner;
-		
 		parseResponse(body);
+		
+		isMraid=getBody().contains("mraid.js");
 		
 	}
 	
@@ -92,18 +92,5 @@ public class AdResponse {
 	//banner, interstitial
 	protected String getType(){
 		return type;
-	}
-
-	protected Displayable getDisplayable(){
-		if(this.fail) return null;
-		if(!getBody().contains("mraid.js")){
-			AdWebView out = new AdWebView(owner);
-			out.loadAd(this);
-			return out;
-		}else{
-			MRAIDWebView out = new MRAIDWebView(owner);
-			out.loadAd(this);
-			return out;
-		}
 	}
 }
