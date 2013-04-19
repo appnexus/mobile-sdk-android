@@ -81,4 +81,5 @@
 	<string formatted="false" name="console_message">Received console message: %s at line %d with sourceId %s</string>
 	<string formatted="false" name="http_bad_status">HTTP response code %d, aborting.</string>
 	<string formatted="false" name="js_alert">Received javascript alert: %s while loading %s</string>
+	<string formatted="false" name="conversion_pixel">Firing pixel: %s</string>
 </resources>

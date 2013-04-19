@@ -40,7 +40,7 @@ public class InstallTrackerPixel extends BroadcastReceiver{
 				ArrayList<BasicNameValuePair> parameters = getParameters(referralString);
 				String url = getPixelUrl(parameters);
 				
-				Clog.d(Clog.baseLogTag, "Firing pixel: "+url);
+				Clog.d(Clog.baseLogTag, Clog.getString(R.string.conversion_pixel, url));
 				
 				try{
 					HttpClient client = new DefaultHttpClient();
