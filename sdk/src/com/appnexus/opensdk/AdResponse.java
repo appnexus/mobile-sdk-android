@@ -10,6 +10,7 @@ import com.appnexus.opensdk.utils.Clog;
 
 
 public class AdResponse {
+	public AdRequester requester;
 	private String body;
 	private int height;
 	private int width;
@@ -19,6 +20,7 @@ public class AdResponse {
 	boolean isMraid=false;
 
 	public AdResponse(AdRequester requester, String body, Header[] headers) {
+		this.requester=requester;
 		if(body==null){
 			this.fail=true;
 			return;
@@ -76,21 +78,21 @@ public class AdResponse {
 
 	}
 	
-	protected String getBody(){
+	public String getBody(){
 		if (body==null) return "";
 		return body;
 	}
 	
-	protected int getHeight(){
+	public int getHeight(){
 		return height;
 	}
 	
-	protected int getWidth(){
+	public int getWidth(){
 		return width;
 	}
 	
 	//banner, interstitial
-	protected String getType(){
+	public String getType(){
 		return type;
 	}
 }
