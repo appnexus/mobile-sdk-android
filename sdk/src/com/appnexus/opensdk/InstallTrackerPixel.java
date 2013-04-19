@@ -53,7 +53,7 @@ public class InstallTrackerPixel extends BroadcastReceiver{
 				}
 				
 			}
-		}).run();
+		}).start();
 
 	}
 	
