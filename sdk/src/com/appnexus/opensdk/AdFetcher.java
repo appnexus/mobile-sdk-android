@@ -11,9 +11,9 @@ import com.appnexus.opensdk.utils.Clog;
 import android.os.Handler;
 import android.os.Message;
 
-public class AdFetcher {
+public class AdFetcher implements AdRequester{
 	private ScheduledExecutorService tasker;
-	private AdView owner;
+	protected AdView owner;
 	private int period = -1;
 	private boolean autoRefresh;
 	private RequestHandler handler;
@@ -146,7 +146,7 @@ public class AdFetcher {
 			mFetcher.get().lastFetchTime = System.currentTimeMillis();
 			
 			// Spawn an AdRequest
-			new AdRequest(mFetcher.get().owner).execute();
+			new AdRequest(mFetcher.get()).execute();
 		}
 	}
 
@@ -163,6 +163,24 @@ public class AdFetcher {
 				stop();
 				start();
 			}
+		}
+	}
+
+	@Override
+	public void failed(AdRequest request) {
+		owner.fail();
+	}
+
+	@Override
+	public void onReceiveResponse(AdResponse response) {
+		if(response.isMraid){
+			MRAIDWebView output = new MRAIDWebView(owner);
+			output.loadAd(response);
+			owner.display(output);
+		}else{
+			AdWebView output = new AdWebView(owner);
+			output.loadAd(response);
+			owner.display(output);
 		}
 	}
 }

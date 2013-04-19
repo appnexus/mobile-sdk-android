@@ -6,6 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity" >
 
+    <com.appnexus.opensdk.BannerAdView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        opensdk:placement_id="1281482"
+        opensdk:height="50"
+        opensdk:width="320"
+        />
+    
     <LinearLayout
         android:id="@+id/ll"
         android:layout_width="match_parent"
