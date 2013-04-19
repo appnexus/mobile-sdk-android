@@ -75,9 +75,9 @@
 	<string formatted="false" name="destroy_int">destroy() called on interstitial.</string>
 	<string formatted="false" name="empty_queue">show() was called, and wants an interstitial ad, but there are no valid interstitials in the queue. Load more?</string>
 	<string formatted="false" name="too_old">An interstitial ad was told to display, but is over the 60s age limit.</string>
-	<string formatted="false" name="webclient_error">WebClient error: %d %s</string>
-	<string formatted="false" name="blank_ad">The server returned an ad with the response, but it was blank. There is probably an issue with the creative.</string>
-	<string formatted="false" name="webview_received_error">Error %d received, %s, while fetching url %s</string>
+	<string formatted="false" name="webclient_error">E205: WebClient error: %d %s</string>
+	<string formatted="false" name="blank_ad">E302: The server returned an ad with the response, but it was blank. There is probably an issue with the creative.</string>
+	<string formatted="false" name="webview_received_error">E206: Error %d received, %s, while fetching url %s</string>
 	<string formatted="false" name="console_message">Received console message: %s at line %d with sourceId %s</string>
 	<string formatted="false" name="http_bad_status">HTTP response code %d, aborting.</string>
 	<string formatted="false" name="js_alert">Received javascript alert: %s while loading %s</string>

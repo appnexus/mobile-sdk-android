@@ -22,13 +22,13 @@ public class BannerAdView extends AdView {
 	private boolean running;
 	private boolean shouldReloadOnResume;
 	private BroadcastReceiver receiver;
-	private boolean receiverRegistered;
+	private boolean receiversRegistered;
 	
 	private void setDefaultsBeforeXML(){
 		running=false;
 		auto_refresh=false;
 		shouldReloadOnResume=false;
-		receiverRegistered=false;
+		receiversRegistered=false;
 	}
 	
 	/**
@@ -120,9 +120,9 @@ public class BannerAdView extends AdView {
 
 		// Are we coming back from a screen/user presence change?
 		if (running) {
-			if (!receiverRegistered) {
+			if (!receiversRegistered) {
 				setupBroadcast(getContext());
-				receiverRegistered = true;
+				receiversRegistered = true;
 			}
 			start();
 		}
@@ -134,9 +134,9 @@ public class BannerAdView extends AdView {
 	protected void onFirstLayout() {
 		super.onFirstLayout();
 		if (this.auto_refresh) {
-			if (!receiverRegistered) {
+			if (!receiversRegistered) {
 				setupBroadcast(getContext());
-				receiverRegistered = true;
+				receiversRegistered = true;
 			}
 		}
 	}
@@ -285,9 +285,9 @@ public class BannerAdView extends AdView {
 		if (visibility == VISIBLE) {
 			// Register a broadcast receiver to pause add refresh when the phone is
 			// locked
-			if(!receiverRegistered){
+			if(!receiversRegistered){
 				setupBroadcast(getContext());
-				receiverRegistered=true;
+				receiversRegistered=true;
 			}
 			Clog.d(Clog.baseLogTag, Clog.getString(R.string.unhidden));
 			if (mAdFetcher != null && (!requesting_visible || running || shouldReloadOnResume || auto_refresh))
@@ -298,9 +298,9 @@ public class BannerAdView extends AdView {
 			}
 		} else {
 			//Unregister the receiver to prevent a leak.
-			if(receiverRegistered){
+			if(receiversRegistered){
 				dismantleBroadcast();
-				receiverRegistered=false;
+				receiversRegistered=false;
 			}
 			Clog.d(Clog.baseLogTag, Clog.getString(R.string.hidden));
 			if (mAdFetcher != null && running){
