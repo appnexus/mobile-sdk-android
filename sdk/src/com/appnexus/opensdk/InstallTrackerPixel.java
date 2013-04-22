@@ -5,6 +5,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.HashingFunctions;
 import com.appnexus.opensdk.utils.Settings;
 
 import android.content.BroadcastReceiver;
@@ -12,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings.Secure;
 
 public class InstallTrackerPixel extends BroadcastReceiver{
 	BroadcastReceiver receiver_install;
@@ -58,16 +60,22 @@ public class InstallTrackerPixel extends BroadcastReceiver{
 
 	private String getInstallUrl(String params){
 		String appid = null;
+		String hidmd5 = null;
+		String hidsha1 = null;
 		if(context!=null){
 			appid = context.getApplicationContext().getPackageName();
-		}else{
-			Clog.e("OPENSDK", "CONTEXT NULL!?!?!?!");
+			String aid = android.provider.Settings.Secure.getString(
+					context.getContentResolver(), Secure.ANDROID_ID);
+			// Get hidmd5, hidsha1, the devide ID hashed
+			hidmd5 = HashingFunctions.md5(aid);
+			hidsha1 = HashingFunctions.sha1(aid);
 		}
-			
 		
 		StringBuilder urlBuilder = new StringBuilder(Settings.getSettings().INSTALL_BASE_URL);
 		urlBuilder.append(params);
 		urlBuilder.append(appid!=null?"&appid="+Uri.encode(appid):"");
+		urlBuilder.append(hidmd5!=null?"&md5udid="+Uri.encode(hidmd5):"");
+		urlBuilder.append(hidsha1!=null?"&sha1udid="+Uri.encode(hidmd5):"");
 		
 		return urlBuilder.toString();
 	}
