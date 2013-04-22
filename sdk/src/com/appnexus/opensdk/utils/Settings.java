@@ -28,7 +28,7 @@ public class Settings {
 	
 	//public final String BASE_URL = "http://mobile-dev.adnxs.net/mob?";
 	public final String BASE_URL = "http://mobile.adnxs.com/mob?";
-	public final String PIXEL_BASE_URL = "http://mobile.adnxs.com/px?";
+	public final String INSTALL_BASE_URL = "http://mobile.adnxs.com/install?";
 	//final String BASE_URL = "http://asweeney.adnxs.net:2048/mob?";
 	//final String BASE_URL = "http://shuf.ro/anmob/json/?";
 	//final String BASE_URL = "http://shuf.ro/anmob/noads/?";

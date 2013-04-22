@@ -1,11 +1,8 @@
 package com.appnexus.opensdk;
 
-import java.util.ArrayList;
-
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
@@ -30,15 +27,17 @@ public class InstallTrackerPixel extends BroadcastReceiver{
 	@Override
 	public void onReceive(Context context, final Intent intent) {
 		this.context=context;
+		Clog.error_context=context;
+		final Bundle extras = intent.getExtras();
+		
 		new Thread(new Runnable(){
 
 			@Override
 			public void run() {
-				Bundle extras = intent.getExtras();
 				String referralString = extras.getString("referrer");
 
-				ArrayList<BasicNameValuePair> parameters = getParameters(referralString);
-				String url = getPixelUrl(parameters);
+				String url = getInstallUrl(referralString);
+				
 				
 				Clog.d(Clog.baseLogTag, Clog.getString(R.string.conversion_pixel, url));
 				
@@ -56,47 +55,18 @@ public class InstallTrackerPixel extends BroadcastReceiver{
 		}).start();
 
 	}
-	
-	private ArrayList<BasicNameValuePair> getParameters(String s){
-		ArrayList<BasicNameValuePair> output = new ArrayList<BasicNameValuePair>();
-		String[] fields = s.split("&");
-		for(String pair : fields){
-			output.add(new BasicNameValuePair(pair.split("=")[0], pair.split("=")[1]));
-		}
-		return output;
-	}
-	
-	private String getPixelUrl(ArrayList<BasicNameValuePair> input){
-		String source = null;
-		String medium = null;
-		String term = null;
-		String content = null;
-		String campaign = null;
+
+	private String getInstallUrl(String params){
 		String appid = null;
-		
-		for(BasicNameValuePair p : input){
-			if(p.getName().equals("utm_source")){
-				source=p.getValue();
-			}else if(p.getName().equals("utm_medium")){
-				medium=p.getValue();
-			}else if(p.getName().equals("utm_term")){
-				term=p.getValue();
-			}else if(p.getName().equals("utm_content")){
-				content=p.getValue();
-			}else if(p.getName().equals("utm_campaign")){
-				campaign=p.getValue();
-			}
+		if(context!=null){
+			appid = context.getApplicationContext().getPackageName();
+		}else{
+			Clog.e("OPENSDK", "CONTEXT NULL!?!?!?!");
 		}
+			
 		
-		if(context!=null) appid = context.getApplicationContext()
-				.getPackageName();
-		
-		StringBuilder urlBuilder = new StringBuilder(Settings.getSettings().PIXEL_BASE_URL);
-		urlBuilder.append(source!=null?"source="+Uri.encode(source):"");
-		urlBuilder.append(medium!=null?"&medium="+Uri.encode(medium):"");
-		urlBuilder.append(term!=null?"&term="+Uri.encode(term):"");
-		urlBuilder.append(content!=null?"&content="+Uri.encode(content):"");
-		urlBuilder.append(campaign!=null?"&campaign="+Uri.encode(campaign):"");
+		StringBuilder urlBuilder = new StringBuilder(Settings.getSettings().INSTALL_BASE_URL);
+		urlBuilder.append(params);
 		urlBuilder.append(appid!=null?"&appid="+Uri.encode(appid):"");
 		
 		return urlBuilder.toString();
