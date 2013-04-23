@@ -227,7 +227,6 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	private void fail() {
 		if(requester!=null) requester.failed(this);
 		if(adListener!=null) adListener.onAdRequestFailed(null);
-		
 	}
 
 	public String getRequestUrl() {
@@ -294,6 +293,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		String query_string = getRequestUrl();
 		Clog.d(Clog.httpReqLogTag,
 				Clog.getString(R.string.fetch_url, query_string));
+
 		HttpResponse r = null;
 		String out = null;
 		try {
