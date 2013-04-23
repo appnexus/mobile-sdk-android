@@ -12,6 +12,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 
 import com.appnexus.opensdk.InterstitialAdView.Size;
@@ -40,6 +43,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
 	AdView owner;
 	AdRequester requester;
+	AdListener adListener;
 	Context context;
 	String hidmd5;
 	String hidsha1;
@@ -70,10 +74,13 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	public AdRequest(AdRequester requester, String aid, String lat, String lon,
 			String placementId, String orientation, String carrier, int width,
 			int height, int maxWidth, int maxHeight, String mcc, String mnc,
-			String connectionType) {
+			String connectionType, AdListener adListener) {
+		this.adListener=adListener;
 		this.requester = requester;
-		hidmd5 = HashingFunctions.md5(aid);
-		hidsha1 = HashingFunctions.sha1(aid);
+		if(aid!=null){
+			hidmd5 = HashingFunctions.md5(aid);
+			hidsha1 = HashingFunctions.sha1(aid);
+		}
 		devMake = Settings.getSettings().deviceMake;
 		devModel = Settings.getSettings().deviceModel;
 
@@ -218,7 +225,9 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	}
 
 	private void fail() {
-		requester.failed(this);
+		if(requester!=null) requester.failed(this);
+		if(adListener!=null) adListener.onAdRequestFailed(null);
+		
 	}
 
 	public String getRequestUrl() {
@@ -285,12 +294,16 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		String query_string = getRequestUrl();
 		Clog.d(Clog.httpReqLogTag,
 				Clog.getString(R.string.fetch_url, query_string));
-		DefaultHttpClient h = new DefaultHttpClient();
 		HttpResponse r = null;
 		String out = null;
 		try {
+			HttpParams p = new BasicHttpParams();
+			HttpConnectionParams.setConnectionTimeout(p, Settings.getSettings().HTTP_CONNECTION_TIMEOUT);
+			HttpConnectionParams.setSoTimeout(p, Settings.getSettings().HTTP_SOCKET_TIMEOUT);
+			DefaultHttpClient h = new DefaultHttpClient(p);
 			r = h.execute(new HttpGet(query_string));
 			if (!httpShouldContinue(r.getStatusLine())) {
+				fail();
 				return new AdResponse(null, AdResponse.http_error, null);
 			}
 			out = EntityUtils.toString(r.getEntity());
@@ -324,6 +337,10 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			fail();
 			return null;
 		}
+		if(out.equals("")){
+			fail();
+			return null;
+		}
 		return new AdResponse(requester, out, r.getAllHeaders());
 	}
 
@@ -347,7 +364,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			// Don't call fail again!
 			return; // http request failed
 		}
-		requester.onReceiveResponse(result);
+		if(requester!=null) requester.onReceiveResponse(result);
+		if(adListener!=null) adListener.onAdLoaded(null);
 	}
 
 }

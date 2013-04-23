@@ -1,16 +1,22 @@
 package com.appnexus.opensdk.test;
 
+import com.appnexus.opensdk.AdListener;
 import com.appnexus.opensdk.AdRequest;
 import com.appnexus.opensdk.AdRequester;
 import com.appnexus.opensdk.AdResponse;
+import com.appnexus.opensdk.AdView;
 
 import junit.framework.TestCase;
 
-public class TestFailingAdRequest extends TestCase implements AdRequester{
+public class TestFailingAdRequest extends TestCase implements AdRequester, AdListener{
+	int notifyCount=0;
 	AdRequest shouldNotWork;
-	boolean shouldPass=true;
+	AdRequest shouldNotWork2;
+	boolean shouldPass=false;
+	boolean shouldPass2=false;
 	protected void setUp(){
-		shouldNotWork=new AdRequest(this, "123456", null, null, null, "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi");
+		shouldNotWork=new AdRequest(this, "123456", null, null, null, "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", null);
+		shouldNotWork2=new AdRequest(null, "123456", null, null, null, "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", this);
 	}
 
 	public void testFailingRequest(){
@@ -19,9 +25,15 @@ public class TestFailingAdRequest extends TestCase implements AdRequester{
 		assertEquals(true, shouldPass);
 	}
 	
+	public void testFailingRequestListener(){
+		shouldNotWork2.execute();
+		pause();
+		assertEquals(true, shouldPass2);
+	}
+	
 	synchronized void pause(){
 		try {
-			wait(60*1000);
+			wait(30*1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			return;
@@ -33,11 +45,25 @@ public class TestFailingAdRequest extends TestCase implements AdRequester{
 			shouldPass=response.getBody()!=null?false:true;
 			if(response.getBody()!=null)
 				shouldPass=response.getBody().length()>0?false:true;
+			notify();
 	}
 
 	@Override
 	synchronized public void failed(AdRequest request) {
 		shouldPass=true;
+		notify();
+	}
+
+	@Override
+	synchronized public void onAdLoaded(AdView adView) {
+		shouldPass2=false;
+		notify();
+	}
+
+	@Override
+	synchronized public void onAdRequestFailed(AdView adView) {
+		shouldPass2=true;
+		notify();
 	}
 
 }
