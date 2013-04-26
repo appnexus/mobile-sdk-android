@@ -126,7 +126,7 @@ public class InstallTrackerPixel extends BroadcastReceiver{
 					return;
 				}
 				Clog.d(Clog.baseLogTag, Clog.getString(R.string.conversion_pixel_delay, delay));
-				new PixelHttpTask(30*1000).execute(extras);
+				new PixelHttpTask(delay).execute(extras);
 			}
 		}		
 	}
