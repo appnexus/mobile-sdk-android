@@ -12,6 +12,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings.Secure;
 
@@ -34,31 +35,10 @@ public class InstallTrackerPixel extends BroadcastReceiver{
 	public void onReceive(Context context, final Intent intent) {
 		this.context=context;
 		Clog.error_context=context;
-		final Bundle extras = intent.getExtras();
+		Bundle extras = intent.getExtras();
 		
-		new Thread(new Runnable(){
-
-			@Override
-			public void run() {
-				String referralString = extras.getString("referrer");
-
-				String url = getInstallUrl(referralString);
-				
-				
-				Clog.d(Clog.baseLogTag, Clog.getString(R.string.conversion_pixel, url));
-				
-				try{
-					HttpClient client = new DefaultHttpClient();
-					HttpGet get = new HttpGet(url);
-					client.execute(get);
-					// TODO: what happens if it fails? what is the server response if it succeeds?
-				}catch(Exception e){
-					e.printStackTrace();
-					// TODO: repeat the request later?
-				}
-				
-			}
-		}).start();
+		new PixelHttpTask(0).execute(extras);
+		//new Thread(new RequestRunnable(extras)).start();
 
 	}
 
@@ -83,6 +63,62 @@ public class InstallTrackerPixel extends BroadcastReceiver{
 		urlBuilder.append(hidsha1!=null?"&sha1udid="+Uri.encode(hidmd5):"");
 		
 		return urlBuilder.toString();
+	}
+	
+	private class PixelHttpTask extends AsyncTask<Bundle, Void, Boolean>{
+		
+		Bundle extras;
+		int delay;
+		
+		public PixelHttpTask(int delay){
+			super();
+			this.delay=delay;
+		}
+		
+		@Override
+		synchronized protected Boolean doInBackground(Bundle... params) {
+			
+			if(params == null || params.length<1 || params[0]==null)
+				return true; //Didn't really succeed but can't try again without proper bundle info
+			
+			if(delay>0){
+				try {
+					Thread.sleep(delay);
+				} catch (InterruptedException e1) {
+					//Give up
+					return true;
+				}
+			}
+			extras=params[0];
+			String referralString = extras.getString("referrer");
+
+			String url = getInstallUrl(referralString);
+			
+			
+			Clog.d(Clog.baseLogTag, Clog.getString(R.string.conversion_pixel, url));
+			
+			try{
+				HttpClient client = new DefaultHttpClient();
+				HttpGet get = new HttpGet(url);
+				client.execute(get);
+			}catch(Exception e){
+				e.printStackTrace();
+				return false;
+			}
+			return true;
+		}
+		
+		@Override
+		protected void onPostExecute(Boolean succeeded){
+			if(succeeded){
+				Clog.d(Clog.baseLogTag, "Pixel call succeeded");
+				return;
+			}else{
+				// Wait 30 seconds and try, try again.
+				Clog.d(Clog.baseLogTag, "Pixel call failed, retrying in 30 seconds.");
+				new PixelHttpTask(30*1000).execute(extras);
+			}
+		}		
 	}
 
 }
