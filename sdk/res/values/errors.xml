@@ -1,6 +1,6 @@
 <resources>
 	<string formatted="false" name="fetcher_stopped">AdFetcher stopped</string>
-	<string formatted="false" name="no_placement_id">E105: No placement ID set</string>
+	<string formatted="false" name="no_placement_id">E104: No placement ID set</string>
 	<string formatted="false" name="moot_restart">AdFetcher requested to start, but tasker already instantiated</string>
 	<string formatted="false" name="fetcher_start">AdFetcher starting</string>
 	<string formatted="false" name="fetcher_start_single">AdFetcher starting in single-use mode</string>
@@ -11,7 +11,7 @@
 	<string formatted="false" name="new_ad_since">Fetching a new ad for the first time in %dms</string>
 	<string formatted="false" name="permissions_missing_location">E100: Location permissions ACCESS_COARSE_LOCATION and/or ACCESS_FINE_LOCATION aren\'t set in the host app. This may affect demand.</string>
 	<string formatted="false" name="permissions_missing_network_state">E101: The SDK needs permission ACCESS_NETWORK_STATE in the host app.</string>
-	<string formatted="false" name="no_connectivity">E104: Abandoning AdRequest because there is no network connectivity.</string>
+	<string formatted="false" name="no_connectivity">E207: Abandoning AdRequest because there is no network connectivity.</string>
 	<string formatted="false" name="fetch_url">Fetching: %s</string>
 	<string formatted="false" name="http_unknown">E200: Couldn\'t reach the ad server even though network connectivity was detected. Is the server down?</string>
 	<string formatted="false" name="http_timeout">E201: Connection to ad server timed out.</string>
@@ -25,7 +25,7 @@
 	<string formatted="false" name="response_blank">The server returned a blank 200 OK HTTP response.</string>
 	<string formatted="false" name="response_error">E301: The server replied with an error: %s</string>
 	<string formatted="false" name="response_no_ads">The server responded, but didn\'t return any ads.</string>
-	<string formatted="false" name="response_json_error">E303: There was an error parsing the JSON response: %s</string>
+	<string formatted="false" name="response_json_error">E300: There was an error parsing the JSON response: %s</string>
 	<string formatted="false" name="new_adview">new AdView()</string>
 	<string formatted="false" name="first_opensdk_launch">This is the first time OpenSDK has been launched in this app.</string>
 	<string formatted="false" name="not_first_opensdk_launch">This is not the first OpenSDK launch in this app</string>
@@ -82,4 +82,7 @@
 	<string formatted="false" name="http_bad_status">HTTP response code %d, aborting.</string>
 	<string formatted="false" name="js_alert">Received javascript alert: %s while loading %s</string>
 	<string formatted="false" name="conversion_pixel">Firing pixel: %s</string>
+	<string formatted="false" name="conversion_pixel_success">Firing pixel succeeded</string>
+	<string formatted="false" name="conversion_pixel_fail">Install pixel failed to send.</string>
+	<string formatted="false" name="conversion_pixel_delay">Firing pixel did not succeed, retrying in %dms</string>
 </resources>

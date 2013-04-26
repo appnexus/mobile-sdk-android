@@ -78,15 +78,16 @@ public class InstallTrackerPixel extends BroadcastReceiver{
 		@Override
 		synchronized protected Boolean doInBackground(Bundle... params) {
 			
-			if(params == null || params.length<1 || params[0]==null)
+			if(params == null || params.length<1 || params[0]==null){
+				Clog.d(Clog.baseLogTag, Clog.getString(R.string.conversion_pixel_fail));
 				return true; //Didn't really succeed but can't try again without proper bundle info
+			}
 			
 			if(delay>0){
 				try {
 					Thread.sleep(delay);
 				} catch (InterruptedException e1) {
-					//Give up
-					return true;
+					//Just continue until time limit is met
 				}
 			}
 			extras=params[0];
@@ -111,11 +112,20 @@ public class InstallTrackerPixel extends BroadcastReceiver{
 		@Override
 		protected void onPostExecute(Boolean succeeded){
 			if(succeeded){
-				Clog.d(Clog.baseLogTag, "Pixel call succeeded");
+				Clog.d(Clog.baseLogTag, Clog.getString(R.string.conversion_pixel_success));
 				return;
 			}else{
 				// Wait 30 seconds and try, try again.
-				Clog.d(Clog.baseLogTag, "Pixel call failed, retrying in 30 seconds.");
+				if(delay==0){
+					delay=30*1000;					
+				}else if(delay<300*1000){
+					delay=delay*2;
+				}else{
+					//Give up
+					Clog.d(Clog.baseLogTag, Clog.getString(R.string.conversion_pixel_fail));
+					return;
+				}
+				Clog.d(Clog.baseLogTag, Clog.getString(R.string.conversion_pixel_delay, delay));
 				new PixelHttpTask(30*1000).execute(extras);
 			}
 		}		
