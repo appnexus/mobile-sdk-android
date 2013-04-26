@@ -16,10 +16,6 @@ import android.os.Bundle;
 import android.provider.Settings.Secure;
 
 public class InstallTrackerPixel extends BroadcastReceiver{
-	
-	/* SET THIS TO YOUR PIXEL ID */
-	final String pid = "";
-	
 	BroadcastReceiver receiver_install;
 	Context context;
 	
@@ -76,7 +72,6 @@ public class InstallTrackerPixel extends BroadcastReceiver{
 		}
 		
 		StringBuilder urlBuilder = new StringBuilder(Settings.getSettings().INSTALL_BASE_URL);
-		urlBuilder.append(pid!=null && !pid.equals("")?"&id="+Uri.encode(pid):"");
 		urlBuilder.append(params);
 		urlBuilder.append(appid!=null?"&appid="+Uri.encode(appid):"");
 		urlBuilder.append(hidmd5!=null?"&md5udid="+Uri.encode(hidmd5):"");
