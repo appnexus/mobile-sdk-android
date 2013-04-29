@@ -73,13 +73,8 @@ public class DemoMainActivity extends FragmentActivity implements TabHost.OnTabC
     
     private class TabInfo {
         private String tag;
-        private Class<?> clss;
-        private Bundle args;
-        private Fragment fragment;
         TabInfo(String tag, Class<?> clazz, Bundle args) {
             this.tag = tag;
-            this.clss = clazz;
-            this.args = args;
         }
 
    }
@@ -121,6 +116,7 @@ public class DemoMainActivity extends FragmentActivity implements TabHost.OnTabC
 	@Override
 	public void onPageSelected(int arg0) {
 		// TODO Auto-generated method stub
+		this.mTabHost.setCurrentTab(arg0);
 		
 	}
 

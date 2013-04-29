@@ -3,6 +3,17 @@
 
     <string name="app_name">OpenSDKDemo</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string-array name="sizes">
+        <item>300x50</item>
+        <item>320x50</item>
+        <item>640x50</item>
+    </string-array>
+    
+    <string-array name="refresh">
+        <item>Off</item>
+        <item>30s</item>
+        <item>60s</item>
+        <item>120s</item>
+    </string-array>
 
 </resources>
