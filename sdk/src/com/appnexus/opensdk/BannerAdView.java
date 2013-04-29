@@ -146,8 +146,11 @@ public class BannerAdView extends AdView {
 	 */
 	@Override
 	public void loadAd() {
-		if (getVisibility() != VISIBLE)
+		if (getVisibility() != VISIBLE){
 			running=true; // Load the ad when presence changes back
+		}else{
+			super.loadAd();
+		}
 	}
 
 	protected void start() {

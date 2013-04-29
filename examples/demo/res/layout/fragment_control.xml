@@ -26,23 +26,27 @@
         android:orientation="horizontal" >
 
         <RadioGroup
+            android:id="@+id/radiogroup"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
 
             <RadioButton
+                android:id="@+id/radio_banner"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Banner" />
 
             <RadioButton
+                android:id="@+id/radio_interstitial"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Interstitial" />
 
             <RadioButton
+                android:id="@+id/radio_mraid"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -112,6 +116,7 @@
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/loadad"
         android:text="Load Ad" />
 
 </LinearLayout>
