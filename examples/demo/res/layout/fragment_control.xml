@@ -3,110 +3,115 @@
     xmlns:opensdk="http://schemas.android.com/apk/res/com.example.opensdkdemo"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
-    
+    android:orientation="vertical"
+    android:padding="5dp" >
+
     <!-- Banner -->
+
     <com.appnexus.opensdk.BannerAdView
         android:id="@+id/banner"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        opensdk:width="320"
         opensdk:height="50"
         opensdk:placement_id="1281482"
-        />
-    
+        opensdk:width="320" />
+
     <!-- Buttons -->
-    <LinearLayout 
+
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
-        
-        <Button 
-            android:layout_width="0dp"
+        android:layout_height="0px"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <RadioGroup
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            
-            android:text="Banner"
-            />
-        
-        <Button 
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            
-            android:text="Interstitial"
-            />
-        
-        <Button 
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            
-            android:text="MRAID"
-            />
-        
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Banner" />
+
+            <RadioButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Interstitial" />
+
+            <RadioButton
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="MRAID" />
+        </RadioGroup>
     </LinearLayout>
-    
+
     <!-- Size Selector, Refresh Rate Selector -->
-    <LinearLayout 
+
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
-        
+        android:layout_height="0px"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
         <TextView
-            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            
+            android:layout_height="wrap_content"
             android:text="Size: " />
-        
-        <Spinner 
+
+        <Spinner
             android:id="@+id/size_dropdown"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
         
+        <View
+            android:layout_width="30dp"
+            android:layout_height="0dp"
+            />
+
         <TextView
-            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            
+            android:layout_height="wrap_content"
             android:text="Refresh rate: " />
-        
-        <Spinner 
+
+        <Spinner
             android:id="@+id/refresh_dropdown"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        
+            android:layout_height="wrap_content" />
     </LinearLayout>
-    
+
     <!-- Placement ID -->
-    <LinearLayout 
+
+    <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
-        
+        android:layout_height="0px"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
         <TextView
-            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            
+            android:layout_height="wrap_content"
             android:text="Placement ID: " />
-        
-        <EditText 
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:inputType="number"
             android:maxLines="1"
-            android:minWidth="100dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        
+            android:minWidth="100dp" />
     </LinearLayout>
-    
+
     <!-- Load Ad Button -->
+
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        
         android:text="Load Ad" />
 
 </LinearLayout>
