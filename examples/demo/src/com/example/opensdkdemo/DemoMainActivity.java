@@ -20,6 +20,8 @@ public class DemoMainActivity extends FragmentActivity implements TabHost.OnTabC
 	private HashMap<String, TabInfo> mapTabInfo = new HashMap<String, DemoMainActivity.TabInfo>();
 	private ViewPager mViewPager;
 	private PagerAdapter mPagerAdapter;
+	
+	private DebugTabFragment dfrag;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +60,15 @@ public class DemoMainActivity extends FragmentActivity implements TabHost.OnTabC
         List<Fragment> fragments = new Vector<Fragment>();
         fragments.add(Fragment.instantiate(this, MainTabFragment.class.getName()));
         fragments.add(Fragment.instantiate(this, DebugTabFragment.class.getName()));
+        
+        dfrag = (DebugTabFragment) fragments.get(1);
+        
         this.mPagerAdapter  = new PagerAdapter(super.getSupportFragmentManager(), fragments);
         //
         this.mViewPager = (ViewPager)super.findViewById(R.id.viewpager);
         this.mViewPager.setAdapter(this.mPagerAdapter);
         this.mViewPager.setOnPageChangeListener(this);
+        
     }
     
     private static void AddTab(DemoMainActivity activity, TabHost tabHost, TabHost.TabSpec tabSpec, TabInfo tabInfo) {
@@ -117,6 +123,8 @@ public class DemoMainActivity extends FragmentActivity implements TabHost.OnTabC
 	public void onPageSelected(int arg0) {
 		// TODO Auto-generated method stub
 		this.mTabHost.setCurrentTab(arg0);
+		
+		if(dfrag!=null) dfrag.refresh();
 		
 	}
 

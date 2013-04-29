@@ -56,6 +56,7 @@ public class MainTabFragment extends Fragment implements AdListener{
 		radioGroup.setOnCheckedChangeListener(new RadioGroupListener());
 		
 		iav = new InterstitialAdView(out.getContext());
+		iav.setPlacementID("1281482");
 		iav.setAdListener(this);
 		
 		sizes.setOnItemSelectedListener(new SizeSelectedListener());

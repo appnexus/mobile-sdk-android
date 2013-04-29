@@ -10,6 +10,7 @@
         android:textStyle="bold"
         android:text="Last request URL" />
     <TextView
+        android:id="@+id/request_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Last request URL Here" />
@@ -19,6 +20,7 @@
         android:textStyle="bold"
         android:text="Last server response" />
     <TextView
+        android:id="@+id/response_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Last response JSON here" />

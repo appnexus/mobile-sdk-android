@@ -85,4 +85,23 @@ public class Clog{
 		if(clogged) return null;
 		return String.format(error_context.getString(id),i,s);
 	}
+	
+	private static String lastRequest="";
+	private static String lastResponse="";
+	
+	public static void setLastRequest(String lastRequest){
+		Clog.lastRequest=lastRequest;
+	}
+	
+	public static String getLastRequest(){
+		return lastRequest;
+	}
+	
+	public static void setLastResponse(String lastResponse){
+		Clog.lastResponse=lastResponse;
+	}
+	
+	public static String getLastResponse(){
+		return lastResponse;
+	}
 }

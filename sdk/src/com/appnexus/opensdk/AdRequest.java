@@ -175,6 +175,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	
 	private void fail(){
 		owner.fail();
+		Clog.setLastResponse("");
 	}
 
 	String getRequestUrl() {
@@ -226,6 +227,9 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			return null;
 		}
 		String query_string = getRequestUrl();
+		
+		Clog.setLastRequest(query_string);
+		
 		Clog.d(Clog.httpReqLogTag, Clog.getString(R.string.fetch_url, query_string));
 		DefaultHttpClient h = new DefaultHttpClient();
 		HttpResponse r = null;

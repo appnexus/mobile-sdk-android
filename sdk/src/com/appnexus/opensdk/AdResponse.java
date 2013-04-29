@@ -21,15 +21,20 @@ public class AdResponse {
 	public AdResponse(AdView owner, String body, Header[] headers) {
 		if(body==null){
 			this.fail=true;
+			Clog.setLastResponse("");
 			return;
 		}else if(body.equals(AdResponse.http_error)){
 			this.fail=true;
+			Clog.setLastResponse("");
 			return;
 		}else if(body.length()==0){
 			Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
 			this.fail=true;
+			Clog.setLastResponse("");
 			return;
 		}
+		
+		Clog.setLastResponse(body);
 		
 		Clog.d(Clog.httpRespLogTag, Clog.getString(R.string.response_body, body));
 		if(headers!=null){
