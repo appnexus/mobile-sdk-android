@@ -8,6 +8,8 @@ import com.appnexus.opensdk.utils.Clog;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
@@ -23,8 +26,8 @@ public class MainTabFragment extends Fragment implements AdListener{
 	private BannerAdView bannerAdView;
 	private InterstitialAdView iav;
 	private RadioGroup radioGroup;
+	private EditText placementEditText;
 	private boolean isInterstitial = false;
-	private String size="300x50";
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -59,7 +62,35 @@ public class MainTabFragment extends Fragment implements AdListener{
 		
 		refresh.setOnItemSelectedListener(new RefreshSelectedListener());
 		
+		placementEditText = (EditText) out.findViewById(R.id.edit_text);
+		placementEditText.addTextChangedListener(new PlacementTextWatcher());
+		
 		return out;
+	}
+	
+	private class PlacementTextWatcher implements TextWatcher{
+
+		@Override
+		public void afterTextChanged(Editable s) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count,
+				int after) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before,
+				int count) {
+			bannerAdView.setPlacementID(s.toString());
+			iav.setPlacementID(s.toString());
+			
+		}
+		
 	}
 	
 	private class RefreshSelectedListener implements AdapterView.OnItemSelectedListener{
@@ -79,6 +110,7 @@ public class MainTabFragment extends Fragment implements AdListener{
 			}catch (NumberFormatException e){
 				return;
 			}
+			bannerAdView.setAutoRefresh(true);
 			bannerAdView.setAutoRefreshInterval(refresh*1000);
 			
 		}
@@ -101,7 +133,6 @@ public class MainTabFragment extends Fragment implements AdListener{
 			String size_string = parent.getResources().getStringArray(R.array.sizes)[position];
 			
 			Log.d(Constants.logTag, "Size selected to: "+size_string);
-			size=size_string;
 			
 			int width = Integer.parseInt(size_string.split("x")[0]);
 			int height = Integer.parseInt(size_string.split("x")[1]);
