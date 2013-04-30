@@ -141,18 +141,6 @@ public class BannerAdView extends AdView {
 		}
 	}
 
-	/**
-	 * Loads a new ad, or, if the BannerAdView is not visible, tells the view to load a new ad when it becomes visible.
-	 */
-	@Override
-	public void loadAd() {
-		if (getVisibility() != VISIBLE){
-			running=true; // Load the ad when presence changes back
-		}else{
-			super.loadAd();
-		}
-	}
-
 	protected void start() {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.start));
 		mAdFetcher.start();
