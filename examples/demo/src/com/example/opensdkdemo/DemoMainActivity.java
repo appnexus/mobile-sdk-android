@@ -37,8 +37,8 @@ public class DemoMainActivity extends FragmentActivity implements TabHost.OnTabC
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.demo_main, menu);
-		return true;
+		//getMenuInflater().inflate(R.menu.demo_main, menu);
+		return false;
 	}
 	
     private void initialiseTabHost(Bundle args) {
