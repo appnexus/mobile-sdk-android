@@ -11,25 +11,18 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.TextSwitcher;
-import android.widget.TextView;
-import android.widget.ViewSwitcher.ViewFactory;
 
 public class MainTabFragment extends Fragment implements AdListener{
 	private Button loadAdButton;
-	private Button toggle;
-	private TextSwitcher toggleText;
 	private BannerAdView bannerAdView;
 	private InterstitialAdView iav;
 	private RadioGroup radioGroup;
