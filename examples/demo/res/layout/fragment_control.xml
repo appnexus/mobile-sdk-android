@@ -1,67 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:opensdk="http://schemas.android.com/apk/res/com.example.opensdkdemo"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<LinearLayout 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="5dp" >
 
     <!-- Banner -->
-
-    <com.appnexus.opensdk.BannerAdView
-        android:id="@+id/banner"
+    <FrameLayout
         android:layout_width="fill_parent"
-        android:layout_height="50dp"
-        opensdk:height="50"
-        opensdk:placement_id="1281482"
-        opensdk:width="320" />
+        android:minHeight="50dp"
+        android:layout_height="wrap_content" >
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Banners will load here." />
+
+        <com.appnexus.opensdk.BannerAdView
+            android:id="@+id/banner"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            opensdk:height="50"
+            opensdk:placement_id="1281482"
+            opensdk:width="320" />
+    </FrameLayout>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="4dp"
+        android:background="@android:color/darker_gray" />
 
     <!-- Buttons -->
 
-    <LinearLayout
+    <RadioGroup
+        android:id="@+id/radiogroup"
         android:layout_width="fill_parent"
-        android:layout_height="0px"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="horizontal" >
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="20dp" >
 
-        <RadioGroup
-            android:id="@+id/radiogroup"
-            android:layout_width="fill_parent"
+        <RadioButton
+            android:id="@+id/radio_banner"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:gravity="center"
+            android:padding="30dp"
+            android:text="Banner" />
 
-            <RadioButton
-                android:id="@+id/radio_banner"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Banner" />
+        <View
+            android:layout_width="30dp"
+            android:layout_height="0dp" />
 
-            <RadioButton
-                android:id="@+id/radio_interstitial"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Interstitial" />
+        <RadioButton
+            android:id="@+id/radio_interstitial"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="30dp"
+            android:text="Interstitial" />
 
-            <RadioButton
+        <!--
+                 <RadioButton
                 android:id="@+id/radio_mraid"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="MRAID" />
-        </RadioGroup>
-    </LinearLayout>
+        -->
+    </RadioGroup>
 
     <!-- Size Selector, Refresh Rate Selector -->
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="4dp"
+        android:background="@android:color/darker_gray" />
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="0px"
         android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="horizontal" >
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="20dp" >
 
         <TextView
             android:layout_width="wrap_content"
@@ -72,11 +100,10 @@
             android:id="@+id/size_dropdown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-        
+
         <View
             android:layout_width="30dp"
-            android:layout_height="0dp"
-            />
+            android:layout_height="0dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -91,12 +118,18 @@
 
     <!-- Placement ID -->
 
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="4dp"
+        android:background="@android:color/darker_gray" />
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="0px"
         android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="horizontal" >
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="20dp" >
 
         <TextView
             android:layout_width="wrap_content"
@@ -109,16 +142,22 @@
             android:layout_height="wrap_content"
             android:inputType="number"
             android:maxLines="1"
-            android:text="1281482"
-            android:minWidth="100dp" />
+            android:minWidth="100dp"
+            android:text="1281482" />
     </LinearLayout>
 
     <!-- Load Ad Button -->
 
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="4dp"
+        android:background="@android:color/darker_gray" />
+
     <Button
+        android:id="@+id/loadad"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/loadad"
         android:text="Load Ad" />
 
 </LinearLayout>
+</ScrollView>
