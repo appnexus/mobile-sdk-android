@@ -89,23 +89,23 @@ public class Clog{
 	private static String lastRequest="";
 	private static String lastResponse="";
 	
-	public static void setLastRequest(String lastRequest){
+	synchronized public static void setLastRequest(String lastRequest){
 		Clog.lastRequest=lastRequest;
 	}
 	
-	public static String getLastRequest(){
+	synchronized public static String getLastRequest(){
 		return lastRequest;
 	}
 	
-	public static void clearLastResponse(){
+	synchronized public static void clearLastResponse(){
 		Clog.lastResponse="";
 	}
 	
-	public static void setLastResponse(String lastResponse){
+	synchronized public static void setLastResponse(String lastResponse){
 		Clog.lastResponse=lastResponse;
 	}
 	
-	public static String getLastResponse(){
+	synchronized public static String getLastResponse(){
 		return lastResponse;
 	}
 }

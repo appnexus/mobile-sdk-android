@@ -6,6 +6,8 @@ import com.appnexus.opensdk.BannerAdView;
 import com.appnexus.opensdk.InterstitialAdView;
 import com.appnexus.opensdk.utils.Clog;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -56,7 +58,7 @@ public class MainTabFragment extends Fragment implements AdListener{
 		radioGroup.setOnCheckedChangeListener(new RadioGroupListener());
 		
 		iav = new InterstitialAdView(out.getContext());
-		iav.setPlacementID("1281482");
+		//iav.setPlacementID("1281482");
 		iav.setAdListener(this);
 		
 		sizes.setOnItemSelectedListener(new SizeSelectedListener());
@@ -65,6 +67,15 @@ public class MainTabFragment extends Fragment implements AdListener{
 		
 		placementEditText = (EditText) out.findViewById(R.id.edit_text);
 		placementEditText.addTextChangedListener(new PlacementTextWatcher());
+		
+		//Load default placement
+		SharedPreferences sp = getActivity().getSharedPreferences("opensdkdemo", Activity.MODE_PRIVATE);
+		String saved_placement=sp.getString("placement", "NO_PLACEMENT");
+		if(!saved_placement.equals("NO_PLACEMENT")){
+			placementEditText.setText(saved_placement);
+		}else{
+			placementEditText.setText("000000");
+		}
 		
 		return out;
 	}
@@ -90,6 +101,11 @@ public class MainTabFragment extends Fragment implements AdListener{
 			bannerAdView.setPlacementID(s.toString());
 			iav.setPlacementID(s.toString());
 			
+			SharedPreferences sp = getActivity().getSharedPreferences("opensdkdemo", Activity.MODE_PRIVATE);
+			String saved_placement=sp.getString("placement", "NO_PLACEMENT");
+			if(!saved_placement.equals(s.toString())){
+				sp.edit().putString("placement", s.toString()).commit();
+			}
 		}
 		
 	}
@@ -99,7 +115,10 @@ public class MainTabFragment extends Fragment implements AdListener{
 		@Override
 		public void onItemSelected(AdapterView<?> parent, View view, int position,
 				long id) {
-			String setting = parent.getResources().getStringArray(R.array.refresh)[position];
+			String[] str_array=parent.getResources().getStringArray(R.array.refresh);
+			if(position>=str_array.length) return;
+			String setting = str_array[position];
+			
 			if(setting.equals("Off")){
 				bannerAdView.setAutoRefresh(false);
 				return;
@@ -131,7 +150,9 @@ public class MainTabFragment extends Fragment implements AdListener{
 		public void onItemSelected(AdapterView<?> parent, View view, int position,
 				long id) {
 			// Get size from array based on position parameter
-			String size_string = parent.getResources().getStringArray(R.array.sizes)[position];
+			String[] str_array=parent.getResources().getStringArray(R.array.sizes);
+			if(position>=str_array.length) return;
+			String size_string = str_array[position];
 			
 			Log.d(Constants.logTag, "Size selected to: "+size_string);
 			
