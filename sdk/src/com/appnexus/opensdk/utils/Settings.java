@@ -26,11 +26,11 @@ public class Settings {
 	public String os="Android "+Build.VERSION.RELEASE;
 	public String language=Locale.getDefault().getLanguage();
 	
-	//public final String BASE_URL = "http://mobile-dev.adnxs.net/mob?";
-	//public final String INSTALL_BASE_URL = "http://mobile-dev.adnxs.com/install?";
+	public final String BASE_URL = "http://mobile-dev.adnxs.net/mob?";
+	public final String INSTALL_BASE_URL = "http://mobile-dev.adnxs.com/install?";
 	
-	public final String BASE_URL = "http://mobile.adnxs.com/mob?";
-	public final String INSTALL_BASE_URL = "http://mobile.adnxs.com/install?";
+	//public final String BASE_URL = "http://mobile.adnxs.com/mob?";
+	//public final String INSTALL_BASE_URL = "http://mobile.adnxs.com/install?";
 	
 	//final String BASE_URL = "http://asweeney.adnxs.net:2048/mob?";
 	//final String BASE_URL = "http://shuf.ro/anmob/json/?";
