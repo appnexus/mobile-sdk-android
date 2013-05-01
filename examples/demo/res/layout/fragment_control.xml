@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 <LinearLayout 
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="5dp" >
 
@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Banners will load here." />
+            android:text="@string/banner_space" />
 
         <com.appnexus.opensdk.BannerAdView
             android:id="@+id/banner"
@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="30dp"
-            android:text="Banner" />
+            android:text="@string/banner_button" />
 
         <View
             android:layout_width="30dp"
@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="30dp"
-            android:text="Interstitial" />
+            android:text="@string/interstitital_button" />
 
         <!--
                  <RadioButton
@@ -95,7 +95,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Size: " />
+            android:text="@string/size_spinner" />
 
         <Spinner
             android:id="@+id/size_dropdown"
@@ -109,7 +109,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Refresh rate: " />
+            android:text="@string/refresh_rate_spinner" />
 
         <Spinner
             android:id="@+id/refresh_dropdown"
@@ -135,7 +135,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Placement ID: " />
+            android:text="@string/placement_id_edittext" />
 
         <EditText
             android:id="@+id/edit_text"
@@ -144,7 +144,7 @@
             android:inputType="number"
             android:maxLines="1"
             android:minWidth="100dp"
-            android:text="1281482" />
+            android:text="@string/default_placement_id" />
     </LinearLayout>
 
     <!-- Load Ad Button -->
@@ -158,7 +158,7 @@
         android:id="@+id/loadad"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Load Ad" />
+        android:text="@string/load_ad_button" />
 
 </LinearLayout>
 </ScrollView>

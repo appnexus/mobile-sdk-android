@@ -14,7 +14,7 @@
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Last request URL:"
+            android:text="@string/last_request_title"
             android:textStyle="bold" />
 
         <View
@@ -35,7 +35,7 @@
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Last server response:"
+            android:text="@string/last_response_title"
             android:textStyle="bold" />
 
         <View
@@ -57,7 +57,7 @@
             android:id="@+id/email"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Email This Information" />
+            android:text="@string/email_data" />
     </LinearLayout>
 
 </ScrollView>

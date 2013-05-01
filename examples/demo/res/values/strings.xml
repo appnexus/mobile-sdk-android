@@ -3,6 +3,18 @@
 
     <string name="app_name">OpenSDKDemo</string>
     <string name="action_settings">Settings</string>
+    <string name="banner_space">Banners will load here.</string>
+    <string name="banner_button">Banner</string>
+    <string name="interstitital_button">Interstitial</string>
+    <string name="size_spinner">Size: </string>
+    <string name="refresh_rate_spinner">Refresh Rate: </string>
+    <string name="placement_id_edittext">Placement Id: </string>
+    <string name="default_placement_id">656561</string>
+    <string name="load_ad_button">Load Ad</string>
+    
+    <string name="last_request_title">Last Request URL:</string>
+    <string name="last_response_title">Last Server Response:</string>
+    <string name="email_data">Email This Information</string>
     <string-array name="sizes">
         <item>300x50</item>
         <item>320x50</item>
