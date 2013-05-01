@@ -97,6 +97,10 @@ public class Clog{
 		return lastRequest;
 	}
 	
+	public static void clearLastResponse(){
+		Clog.lastResponse="";
+	}
+	
 	public static void setLastResponse(String lastResponse){
 		Clog.lastResponse=lastResponse;
 	}

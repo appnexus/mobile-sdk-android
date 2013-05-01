@@ -175,7 +175,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	
 	private void fail(){
 		owner.fail();
-		Clog.setLastResponse("");
+		Clog.clearLastResponse();
 	}
 
 	String getRequestUrl() {
