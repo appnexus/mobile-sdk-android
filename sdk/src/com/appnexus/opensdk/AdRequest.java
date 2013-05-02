@@ -193,7 +193,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 						: "&appid=NO-APP-ID"));
 		sb.append((firstlaunch != null ? "&firstlaunch=" + firstlaunch : ""));
 		sb.append(lat != null && lon != null ? "&loc=" + lat + "," + "lon" : "");
-		sb.append((locDataAge != null ? "&loc_age=" + locDataAge : ""));
+		sb.append((locDataAge != null ? "&" +
+				"loc_age=" + locDataAge : ""));
 		sb.append((locDataPrecision != null ? "&loc_prec=" + locDataPrecision : ""));
 		sb.append((Settings.getSettings().test_mode ? "&istest=true" : ""));
 		sb.append((ua != null ? "&ua=" + Uri.encode(ua) : ""));
