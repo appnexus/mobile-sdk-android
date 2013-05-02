@@ -15,9 +15,9 @@ public class TestShortestSuccessfulAdRequest extends TestCase implements AdReque
 	boolean shouldWorkDidWork2 = false;
 	
 	protected void setUp() {
-		shouldWork = new AdRequest(this, null, null, null, "1281482",
+		shouldWork = new AdRequest(this, null, null, null, "656561",
 				null, null, 320, 50, -1, -1, null, null, null, null);
-		shouldWork2 = new AdRequest(null, null, null, null, "1281482",
+		shouldWork2 = new AdRequest(null, null, null, null, "656561",
 				null, null, 320, 50, -1, -1, null, null, null, this);
 	}
 
@@ -42,7 +42,6 @@ public class TestShortestSuccessfulAdRequest extends TestCase implements AdReque
 
 	@Override
 	synchronized public void failed(AdRequest request) {
-		fail("A valid ad request failed");
 		shouldWorkDidWork = false;
 		notify();
 	}

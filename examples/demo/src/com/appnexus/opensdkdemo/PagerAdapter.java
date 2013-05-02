@@ -1,4 +1,4 @@
-package com.example.opensdkdemo;
+package com.appnexus.opensdkdemo;
 
 import java.util.List;
 

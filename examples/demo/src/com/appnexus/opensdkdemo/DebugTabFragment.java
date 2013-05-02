@@ -1,6 +1,7 @@
-package com.example.opensdkdemo;
+package com.appnexus.opensdkdemo;
 
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdkdemo.R;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;

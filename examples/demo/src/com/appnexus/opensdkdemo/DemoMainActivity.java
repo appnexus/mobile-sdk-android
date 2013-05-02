@@ -1,8 +1,10 @@
-package com.example.opensdkdemo;
+package com.appnexus.opensdkdemo;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
+
+import com.appnexus.opensdkdemo.R;
 
 import android.os.Bundle;
 import android.content.Context;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.opensdkdemo"
+    package="com.appnexus.opensdkdemo"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -20,7 +20,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.example.opensdkdemo.DemoMainActivity"
+            android:name="com.appnexus.opensdkdemo.DemoMainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,6 +29,13 @@
             </intent-filter>
         </activity>
         <activity android:name="com.appnexus.opensdk.AdActivity" />
+        
+        <uses-library android:name="android.test.runner" />
     </application>
+    
+    
+    <instrumentation android:name="android.test.InstrumentationTestRunner"
+        android:targetPackage="com.appnexus.opensdkdemo"
+        android:label="OpenSDK Unit and Instrumentation Tests" />
 
 </manifest>

@@ -1,10 +1,11 @@
-package com.example.opensdkdemo;
+package com.appnexus.opensdkdemo;
 
 import com.appnexus.opensdk.AdListener;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.BannerAdView;
 import com.appnexus.opensdk.InterstitialAdView;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdkdemo.R;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
