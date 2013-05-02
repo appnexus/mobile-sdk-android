@@ -10,15 +10,17 @@ import com.appnexus.opensdk.utils.Clog;
 
 
 public class AdResponse {
+	public AdRequester requester;
 	private String body;
 	private int height;
 	private int width;
 	private String type;
-	private AdView owner;
 	boolean fail=false;
 	final static String http_error="HTTP_ERROR";
+	boolean isMraid=false;
 
-	public AdResponse(AdView owner, String body, Header[] headers) {
+	public AdResponse(AdRequester requester, String body, Header[] headers) {
+		this.requester=requester;
 		if(body==null){
 			this.fail=true;
 			Clog.clearLastResponse();
@@ -43,9 +45,9 @@ public class AdResponse {
 			}
 		}
 		
-		this.owner=owner;
-		
 		parseResponse(body);
+		
+		isMraid=getBody().contains("mraid.js");
 		
 	}
 	
@@ -81,34 +83,21 @@ public class AdResponse {
 
 	}
 	
-	protected String getBody(){
+	public String getBody(){
 		if (body==null) return "";
 		return body;
 	}
 	
-	protected int getHeight(){
+	public int getHeight(){
 		return height;
 	}
 	
-	protected int getWidth(){
+	public int getWidth(){
 		return width;
 	}
 	
 	//banner, interstitial
-	protected String getType(){
+	public String getType(){
 		return type;
-	}
-
-	protected Displayable getDisplayable(){
-		if(this.fail) return null;
-		if(!getBody().contains("mraid.js")){
-			AdWebView out = new AdWebView(owner);
-			out.loadAd(this);
-			return out;
-		}else{
-			MRAIDWebView out = new MRAIDWebView(owner);
-			out.loadAd(this);
-			return out;
-		}
 	}
 }
