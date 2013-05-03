@@ -44,6 +44,7 @@
 	<string formatted="false" name="xml_set_test">Test mode set to %b in xml</string>
 	<string formatted="false" name="xml_set_auto_refresh">Auto-refresh is set to %b in xml</string>
 	<string formatted="false" name="xml_set_should_reload">ShouldReloadOnResume is set to %b in xml</string>
+	<string formatted="false" name="xml_set_opens_native_browser">OpensNativeBrowser is set to %b in xml</string>
 	<string formatted="false" name="xml_ad_width">Ad width set to %d in xml</string>
 	<string formatted="false" name="xml_ad_height">Ad height set to %d in xml</string>
 	<string formatted="false" name="get_period">getAutoRefreshInterval() returned %d</string>
@@ -52,6 +53,8 @@
 	<string formatted="false" name="set_auto_refresh">setAutoRefresh() to: %b</string>
 	<string formatted="false" name="get_placement_id">getPlacementID() returned %s</string>
 	<string formatted="false" name="set_placement_id">setPlacementID() to: %s</string>
+	<string formatted="false" name="get_opens_native_browser">getOpensNativeBrowser() returned %b</string>
+	<string formatted="false" name="set_opens_native_browser">setOpensNativeBrowser() to: %b</string>
 	<string formatted="false" name="hidden">The AdView has been hidden.</string>
 	<string formatted="false" name="unhidden">The AdView has been unhidden.</string>
 	<string formatted="false" name="set_height">setAdHeight() to: %d</string>

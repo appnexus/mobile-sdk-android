@@ -12,12 +12,14 @@
         <attr name="should_reload_on_resume" format="boolean" />
         <attr name="auto_refresh_interval" format="integer" />
         <attr name="auto_refresh" format="boolean" />
+        <attr name="opens_native_browser" format="boolean" />
     </declare-styleable>
     
     <declare-styleable name="InterstitialAdView">
         <attr name="placement_id" />
         <attr name="test"/>
         <attr name="color" format="integer" />
+        <attr name="opens_native_browser"/>
     </declare-styleable>
 
 </resources>

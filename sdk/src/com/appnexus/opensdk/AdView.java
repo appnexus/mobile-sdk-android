@@ -25,6 +25,7 @@ public abstract class AdView extends FrameLayout {
 
 	protected AdFetcher mAdFetcher;
 	private String placementID;
+	protected boolean opensNativeBrowser=false;
 	protected int measuredWidth;
 	protected int measuredHeight;
 	private boolean measured=false;
@@ -350,5 +351,15 @@ public abstract class AdView extends FrameLayout {
 			}
 			
 		});
+	}
+
+	public boolean getOpensNativeBrowser() {
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.get_opens_native_browser, opensNativeBrowser));
+		return opensNativeBrowser;
+	}
+
+	public void setOpensNativeBrowser(boolean opensNativeBrowser) {
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_opens_native_browser, opensNativeBrowser));
+		this.opensNativeBrowser = opensNativeBrowser;
 	}
 }
