@@ -125,6 +125,10 @@ public class InterstitialAdView extends AdView {
 						Clog.getString(R.string.xml_set_test,
 								Settings.getSettings().test_mode));
 				break;
+			case R.styleable.InterstitialAdView_opens_native_browser:
+				Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_set_opens_native_browser));
+				this.setOpensNativeBrowser(a.getBoolean(attr, false));
+				break;
 			}
 		}
 		a.recycle();

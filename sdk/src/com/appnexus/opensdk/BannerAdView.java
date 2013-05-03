@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.TypedArray;
-import android.provider.OpenableColumns;
 import android.util.AttributeSet;
 
 /**
