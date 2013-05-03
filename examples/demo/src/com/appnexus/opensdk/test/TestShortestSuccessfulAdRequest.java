@@ -15,9 +15,9 @@ public class TestShortestSuccessfulAdRequest extends TestCase implements AdReque
 	boolean shouldWorkDidWork2 = false;
 	
 	protected void setUp() {
-		shouldWork = new AdRequest(this, null, null, null, "656561",
+		shouldWork = new AdRequest(this, null, null, null, "1281482",
 				null, null, 320, 50, -1, -1, null, null, null, null);
-		shouldWork2 = new AdRequest(null, null, null, null, "656561",
+		shouldWork2 = new AdRequest(null, null, null, null, "1281482",
 				null, null, 320, 50, -1, -1, null, null, null, this);
 	}
 
