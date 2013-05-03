@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.TypedArray;
+import android.provider.OpenableColumns;
 import android.util.AttributeSet;
 
 /**
@@ -201,6 +202,11 @@ public class BannerAdView extends AdView {
 				setShouldReloadOnResume(a.getBoolean(attr, false));
 				Clog.d(Clog.xmlLogTag, Clog.getString(
 						R.string.xml_set_should_reload, shouldReloadOnResume));
+				break;
+			case R.styleable.BannerAdView_opens_native_browser:
+				setOpensNativeBrowser(a.getBoolean(attr, false));
+				Clog.d(Clog.xmlLogTag, Clog.getString(
+						R.string.xml_set_opens_native_browser, opensNativeBrowser));
 			}
 		}
 		a.recycle();
