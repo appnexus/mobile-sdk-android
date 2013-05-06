@@ -302,6 +302,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			HttpParams p = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(p, Settings.getSettings().HTTP_CONNECTION_TIMEOUT);
 			HttpConnectionParams.setSoTimeout(p, Settings.getSettings().HTTP_SOCKET_TIMEOUT);
+			HttpConnectionParams.setSocketBufferSize(p, 8192);
 			DefaultHttpClient h = new DefaultHttpClient(p);
 			r = h.execute(new HttpGet(query_string));
 			if (!httpShouldContinue(r.getStatusLine())) {
