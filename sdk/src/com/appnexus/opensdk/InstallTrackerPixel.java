@@ -3,6 +3,9 @@ package com.appnexus.opensdk;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HashingFunctions;
@@ -101,7 +104,9 @@ public class InstallTrackerPixel extends BroadcastReceiver{
 			Clog.d(Clog.baseLogTag, Clog.getString(R.string.conversion_pixel, url));
 			
 			try{
-				HttpClient client = new DefaultHttpClient();
+				HttpParams p = new BasicHttpParams();
+				HttpConnectionParams.setSocketBufferSize(p, 8192);
+				HttpClient client = new DefaultHttpClient(p);
 				HttpGet get = new HttpGet(url);
 				client.execute(get);
 			}catch(Exception e){
