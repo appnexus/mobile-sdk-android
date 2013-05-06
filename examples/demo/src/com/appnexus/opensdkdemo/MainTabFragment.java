@@ -21,14 +21,19 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 public class MainTabFragment extends Fragment implements AdListener{
 	private Button loadAdButton;
 	private BannerAdView bannerAdView;
 	private InterstitialAdView iav;
 	private RadioGroup radioGroup;
+	private TextView bannerText;
 	private EditText placementEditText;
 	private boolean isInterstitial = false;
 	
@@ -53,6 +58,27 @@ public class MainTabFragment extends Fragment implements AdListener{
 		loadAdButton.setOnClickListener(new LoadAdOnClickListener());
 		
 		bannerAdView = (BannerAdView) out.findViewById(R.id.banner);
+		
+		bannerAdView.setAdListener(new AdListener() {
+			
+			@Override
+			public void onAdRequestFailed(AdView adView) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onAdLoaded(AdView adView) {
+				FrameLayout adframe = (FrameLayout) getView().findViewById(R.id.adframe);
+				LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(adframe.getLayoutParams());
+				lp.height=LinearLayout.LayoutParams.WRAP_CONTENT;
+				adframe.setLayoutParams(lp);
+				bannerText.setVisibility(TextView.INVISIBLE);
+				
+			}
+		});
+		
+		bannerText = (TextView) out.findViewById(R.id.bannertext);
 		
 		radioGroup = (RadioGroup) out.findViewById(R.id.radiogroup);
 		radioGroup.check(R.id.radio_banner);
@@ -162,6 +188,7 @@ public class MainTabFragment extends Fragment implements AdListener{
 			
 			bannerAdView.setAdWidth(width);
 			bannerAdView.setAdHeight(height);
+
 		}
 
 		@Override
@@ -177,6 +204,7 @@ public class MainTabFragment extends Fragment implements AdListener{
 		@Override
 		public void onClick(View v) {
 			Log.d(Constants.logTag, "Load ad pressed.");
+			
 			if(!isInterstitial){
 				bannerAdView.loadAd();
 				return;

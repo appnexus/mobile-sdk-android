@@ -12,11 +12,13 @@
 
     <!-- Banner -->
     <FrameLayout
+        android:id="@+id/adframe"
         android:layout_width="fill_parent"
         android:minHeight="50dp"
         android:layout_height="wrap_content" >
         
         <TextView
+            android:id="@+id/bannertext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -25,7 +27,7 @@
         <com.appnexus.opensdk.BannerAdView
             android:id="@+id/banner"
             android:layout_width="fill_parent"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             opensdk:height="50"
             opensdk:placement_id="1281482"
             opensdk:width="320" />

@@ -3,6 +3,7 @@ package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -28,15 +29,22 @@ public class MRAIDWebView extends WebView implements Displayable {
 	@SuppressLint("SetJavaScriptEnabled")
 	private void setup(){
 		this.getSettings().setJavaScriptEnabled(true);
+		//this.setInitialScale(100);
 		this.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 		this.getSettings().setPluginState(WebSettings.PluginState.ON);
 		this.getSettings().setBuiltInZoomControls(false);
 		this.getSettings().setLightTouchEnabled(false);
 		this.getSettings().setLoadsImagesAutomatically(true);
 		this.getSettings().setSupportZoom(false);
-		this.getSettings().setUseWideViewPort(true);
+		this.getSettings().setUseWideViewPort(false);
 		this.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-		
+		setHorizontalScrollbarOverlay(false);
+		setHorizontalScrollBarEnabled(false);
+		setVerticalScrollbarOverlay(false);
+		setVerticalScrollBarEnabled(false);
+
+		setBackgroundColor(Color.TRANSPARENT);
+		setScrollBarStyle(WebView.SCROLLBARS_INSIDE_OVERLAY);
 		setOnTouchListener(new OnTouchListener() {
 
 			@Override

@@ -125,11 +125,12 @@ public abstract class AdView extends FrameLayout {
 				//Returning here allows the SDK to re-request when the layout next changes, and maybe the error will be amended. 
 				return;
 			}
-			measured = true;
+			
 			
 			// Hide the adview
-			hide();
+			if(!measured) hide();
 
+			measured = true;
 			onFirstLayout();
 			
 			
