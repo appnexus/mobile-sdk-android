@@ -2,5 +2,8 @@
 
     <string name="app_name">OpenSDK</string>
     <string name="License">PlaceHolder</string>
+    <string name="back">Navigate back.</string>
+    <string name="forward">Navigate forward.</string>
+    <string name="refresh">Refresh current page.</string>
 
 </resources>
