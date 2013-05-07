@@ -24,7 +24,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout.LayoutParams;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -33,6 +32,7 @@ public class MainTabFragment extends Fragment implements AdListener{
 	private BannerAdView bannerAdView;
 	private InterstitialAdView iav;
 	private RadioGroup radioGroup;
+	private RadioGroup radioGroup2;
 	private TextView bannerText;
 	private EditText placementEditText;
 	private boolean isInterstitial = false;
@@ -83,6 +83,10 @@ public class MainTabFragment extends Fragment implements AdListener{
 		radioGroup = (RadioGroup) out.findViewById(R.id.radiogroup);
 		radioGroup.check(R.id.radio_banner);
 		radioGroup.setOnCheckedChangeListener(new RadioGroupListener());
+		
+		radioGroup2 = (RadioGroup) out.findViewById(R.id.radiogroup2);
+		radioGroup2.check(R.id.radio_inapp);
+		radioGroup2.setOnCheckedChangeListener(new RadioGroup2Listener());
 		
 		iav = new InterstitialAdView(out.getContext());
 		//iav.setPlacementID("1281482");
@@ -229,6 +233,25 @@ public class MainTabFragment extends Fragment implements AdListener{
 					Clog.d(Constants.logTag, "Set to load an interstitial");
 					break;					
 			}
+		}
+		
+	}
+	
+	private class RadioGroup2Listener implements RadioGroup.OnCheckedChangeListener{
+
+		@Override
+		public void onCheckedChanged(RadioGroup group, int checkedId) {
+			switch(checkedId){
+				default:
+					bannerAdView.setOpensNativeBrowser(false);
+					iav.setOpensNativeBrowser(false);
+					break;
+				case R.id.radio_native:
+					bannerAdView.setOpensNativeBrowser(true);
+					iav.setOpensNativeBrowser(true);
+					break;
+			}
+			
 		}
 		
 	}

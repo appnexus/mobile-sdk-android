@@ -1,166 +1,203 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:opensdk="http://schemas.android.com/apk/res/com.appnexus.opensdkdemo"
-    android:fillViewport="true"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-<LinearLayout 
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="5dp" >
+    android:layout_height="match_parent"
+    android:fillViewport="true" >
 
-    <!-- Banner -->
-    <FrameLayout
-        android:id="@+id/adframe"
-        android:layout_width="fill_parent"
-        android:minHeight="50dp"
-        android:layout_height="wrap_content" >
-        
-        <TextView
-            android:id="@+id/bannertext"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/banner_space" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="5dp" >
 
-        <com.appnexus.opensdk.BannerAdView
-            android:id="@+id/banner"
+        <!-- Banner -->
+
+        <FrameLayout
+            android:id="@+id/adframe"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            opensdk:height="50"
-            opensdk:placement_id="1281482"
-            opensdk:width="320"/>
-    </FrameLayout>
+            android:minHeight="50dp" >
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="4dp"
-        android:background="@android:color/darker_gray" />
+            <TextView
+                android:id="@+id/bannertext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/banner_space" />
 
-    <!-- Buttons -->
-
-    <RadioGroup
-        android:id="@+id/radiogroup"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="20dp" >
-
-        <RadioButton
-            android:id="@+id/radio_banner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="30dp"
-            android:text="@string/banner_button" />
+            <com.appnexus.opensdk.BannerAdView
+                android:id="@+id/banner"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                opensdk:height="50"
+                opensdk:placement_id="1281482"
+                opensdk:width="320" />
+        </FrameLayout>
 
         <View
-            android:layout_width="30dp"
-            android:layout_height="0dp" />
+            android:layout_width="fill_parent"
+            android:layout_height="4dp"
+            android:background="@android:color/darker_gray" />
 
-        <RadioButton
-            android:id="@+id/radio_interstitial"
-            android:layout_width="wrap_content"
+        <!-- Buttons -->
+
+        <RadioGroup
+            android:id="@+id/radiogroup"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="30dp"
-            android:text="@string/interstitital_button" />
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="20dp" >
 
-        <!--
+            <RadioButton
+                android:id="@+id/radio_banner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="3dp"
+                android:text="@string/banner_button" />
+
+            <View
+                android:layout_width="15dp"
+                android:layout_height="0dp" />
+
+            <RadioButton
+                android:id="@+id/radio_interstitial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="3dp"
+                android:text="@string/interstitital_button" />
+
+            <!--
                  <RadioButton
                 android:id="@+id/radio_mraid"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="MRAID" />
-        -->
-    </RadioGroup>
-
-    <!-- Size Selector, Refresh Rate Selector -->
-
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="4dp"
-        android:background="@android:color/darker_gray" />
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="0px"
-        android:layout_weight="1"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="20dp" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/size_spinner" />
-
-        <Spinner
-            android:id="@+id/size_dropdown"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            -->
+        </RadioGroup>
 
         <View
-            android:layout_width="30dp"
-            android:layout_height="0dp" />
+            android:layout_width="fill_parent"
+            android:layout_height="4dp"
+            android:background="@android:color/darker_gray" />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <RadioGroup
+            android:id="@+id/radiogroup2"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/refresh_rate_spinner" />
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="20dp" >
 
-        <Spinner
-            android:id="@+id/refresh_dropdown"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            <RadioButton
+                android:id="@+id/radio_inapp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="3dp"
+                android:text="@string/inapp_button" />
+
+            <View
+                android:layout_width="15dp"
+                android:layout_height="0dp" />
+
+            <RadioButton
+                android:id="@+id/radio_native"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="3dp"
+                android:text="@string/native_button" />
+        </RadioGroup>
+
+        <!-- Size Selector, Refresh Rate Selector -->
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="4dp"
+            android:background="@android:color/darker_gray" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0px"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="20dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/size_spinner" />
+
+            <Spinner
+                android:id="@+id/size_dropdown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <View
+                android:layout_width="30dp"
+                android:layout_height="0dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/refresh_rate_spinner" />
+
+            <Spinner
+                android:id="@+id/refresh_dropdown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- Placement ID -->
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="4dp"
+            android:background="@android:color/darker_gray" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0px"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="20dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/placement_id_edittext" />
+
+            <EditText
+                android:id="@+id/edit_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLines="1"
+                android:minWidth="100dp"
+                android:text="@string/default_placement_id" />
+        </LinearLayout>
+
+        <!-- Load Ad Button -->
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="4dp"
+            android:background="@android:color/darker_gray" />
+
+        <Button
+            android:id="@+id/loadad"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/load_ad_button" />
     </LinearLayout>
 
-    <!-- Placement ID -->
-
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="4dp"
-        android:background="@android:color/darker_gray" />
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="0px"
-        android:layout_weight="1"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="20dp" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/placement_id_edittext" />
-
-        <EditText
-            android:id="@+id/edit_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:maxLines="1"
-            android:minWidth="100dp"
-            android:text="@string/default_placement_id" />
-    </LinearLayout>
-
-    <!-- Load Ad Button -->
-
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="4dp"
-        android:background="@android:color/darker_gray" />
-
-    <Button
-        android:id="@+id/loadad"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/load_ad_button" />
-
-</LinearLayout>
 </ScrollView>

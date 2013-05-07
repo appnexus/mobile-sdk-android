@@ -11,6 +11,8 @@
     <string name="placement_id_edittext">Placement Id: </string>
     <string name="default_placement_id">656561</string>
     <string name="load_ad_button">Load Ad</string>
+    <string name="inapp_button">In-App Browser</string>
+    <string name="native_button">Native Browser</string>
     
     <string name="last_request_title">Last Request URL:</string>
     <string name="last_response_title">Last Server Response:</string>
