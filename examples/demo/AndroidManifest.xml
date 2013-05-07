@@ -29,6 +29,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.appnexus.opensdk.AdActivity" />
+        <activity android:name="com.appnexus.opensdk.BrowserActivity" />
         
         <uses-library android:name="android.test.runner" />
     </application>

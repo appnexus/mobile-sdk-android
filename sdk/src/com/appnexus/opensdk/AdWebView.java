@@ -83,8 +83,17 @@ public class AdWebView extends WebView implements Displayable {
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
 				if(url.startsWith("javascript:") || url.startsWith("mraid:")) return false;
-				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-				getContext().startActivity(intent);
+				
+				//TODO add clogging
+				
+				if(destination.getOpensNativeBrowser()){
+					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+					getContext().startActivity(intent);
+				}else{
+					Intent intent = new Intent(destination.getContext(), BrowserActivity.class);
+					intent.putExtra("url", url);
+					destination.getContext().startActivity(intent);
+				}
 				return true;
 			}
 
