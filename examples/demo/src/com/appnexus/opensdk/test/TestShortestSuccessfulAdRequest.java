@@ -16,9 +16,9 @@ public class TestShortestSuccessfulAdRequest extends TestCase implements AdReque
 	
 	protected void setUp() {
 		shouldWork = new AdRequest(this, null, null, null, "1281482",
-				null, null, 320, 50, -1, -1, null, null, null, null);
+				null, null, 320, 50, -1, -1, null, null, null, false, null);
 		shouldWork2 = new AdRequest(null, null, null, null, "1281482",
-				null, null, 320, 50, -1, -1, null, null, null, this);
+				null, null, 320, 50, -1, -1, null, null, null, false, this);
 	}
 
 	public void testSucceedingRequest() {

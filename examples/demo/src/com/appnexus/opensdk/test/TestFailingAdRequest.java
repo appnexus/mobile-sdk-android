@@ -15,8 +15,8 @@ public class TestFailingAdRequest extends TestCase implements AdRequester, AdLis
 	boolean shouldPass=false;
 	boolean shouldPass2=false;
 	protected void setUp(){
-		shouldNotWork=new AdRequest(this, "123456", null, null, null, "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", null);
-		shouldNotWork2=new AdRequest(null, "123456", null, null, null, "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", this);
+		shouldNotWork=new AdRequest(this, "123456", null, null, null, "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, null);
+		shouldNotWork2=new AdRequest(null, "123456", null, null, null, "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, this);
 	}
 
 	public void testFailingRequest(){

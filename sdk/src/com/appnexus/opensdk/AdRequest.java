@@ -66,6 +66,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	String os;
 	String language;
 	String placementId;
+	String nativeBrowser;
 	int width = -1;
 	int height = -1;
 	int maxWidth = -1;
@@ -74,7 +75,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	public AdRequest(AdRequester requester, String aid, String lat, String lon,
 			String placementId, String orientation, String carrier, int width,
 			int height, int maxWidth, int maxHeight, String mcc, String mnc,
-			String connectionType, AdListener adListener) {
+			String connectionType, boolean nativeBrowser, AdListener adListener) {
 		this.adListener=adListener;
 		this.requester = requester;
 		if(aid!=null){
@@ -110,6 +111,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		this.language = Settings.getSettings().language;
 
 		this.placementId = placementId;
+		
+		this.nativeBrowser=nativeBrowser?"1":"0";
 	}
 
 	public AdRequest(AdFetcher fetcher) {
@@ -216,6 +219,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 					allowedSizes += ",";
 			}
 		}
+		
+		nativeBrowser = owner.getOpensNativeBrowser()?"1":"0";
 
 		mcc = Settings.getSettings().mcc;
 		mnc = Settings.getSettings().mnc;
@@ -272,8 +277,10 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		sb.append((dev_time != null ? "&devtime=" + Uri.encode(dev_time) : ""));
 		sb.append((connection_type != null ? "&connection_type="
 				+ Uri.encode(connection_type) : ""));
+		sb.append((nativeBrowser != null ? "&native_browser="+nativeBrowser:""));
 		sb.append("&format=json");
 		sb.append("&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion));
+		
 		return sb.toString();
 	}
 
