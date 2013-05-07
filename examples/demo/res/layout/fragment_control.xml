@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             opensdk:height="50"
             opensdk:placement_id="1281482"
-            opensdk:width="320" />
+            opensdk:width="320"/>
     </FrameLayout>
 
     <View
