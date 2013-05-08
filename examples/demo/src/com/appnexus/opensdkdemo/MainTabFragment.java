@@ -1,5 +1,8 @@
 package com.appnexus.opensdkdemo;
 
+import yuku.ambilwarna.AmbilWarnaDialog;
+import yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener;
+
 import com.appnexus.opensdk.AdListener;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.BannerAdView;
@@ -36,6 +39,9 @@ public class MainTabFragment extends Fragment implements AdListener{
 	private TextView bannerText;
 	private EditText placementEditText;
 	private boolean isInterstitial = false;
+	private Button colorButton;
+	private View colorView;
+	private int color=0xff000000;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -98,6 +104,33 @@ public class MainTabFragment extends Fragment implements AdListener{
 		
 		placementEditText = (EditText) out.findViewById(R.id.edit_text);
 		placementEditText.addTextChangedListener(new PlacementTextWatcher());
+		
+		colorButton = (Button) out.findViewById(R.id.color_button);
+		colorView = (View) out.findViewById(R.id.color);
+		colorButton.setOnClickListener(new View.OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				AmbilWarnaDialog d = new AmbilWarnaDialog(out.getContext(), color, new OnAmbilWarnaListener() {
+					
+					@Override
+					public void onOk(AmbilWarnaDialog dialog, int color) {
+						MainTabFragment.this.color=color;
+						MainTabFragment.this.colorView.setBackgroundColor(color);
+						MainTabFragment.this.iav.setBackgroundColor(color);
+						
+					}
+					
+					@Override
+					public void onCancel(AmbilWarnaDialog dialog) {
+						// TODO Auto-generated method stub
+						
+					}
+				});
+				d.show();
+			}
+			
+		});
 		
 		//Load default placement
 		SharedPreferences sp = getActivity().getSharedPreferences("opensdkdemo", Activity.MODE_PRIVATE);

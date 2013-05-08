@@ -34,13 +34,43 @@
                 opensdk:placement_id="1281482"
                 opensdk:width="320" />
         </FrameLayout>
-
+        
+        <!-- Color Picker -->
         <View
             android:layout_width="fill_parent"
             android:layout_height="4dp"
             android:background="@android:color/darker_gray" />
+        
+        <LinearLayout 
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingLeft="20dp"
+            >
+            <View
+                android:id="@+id/color"
+                android:background="@android:color/black"
+                android:layout_width="50dp"
+                android:layout_height="50dp" 
+                />
+            <View
+                android:layout_width="15dp"
+                android:layout_height="0dp" />
+            <Button
+                android:id="@+id/color_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/color_button_text"
+                />
+            
+        </LinearLayout>
 
         <!-- Buttons -->
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="4dp"
+            android:background="@android:color/darker_gray" />
 
         <RadioGroup
             android:id="@+id/radiogroup"
