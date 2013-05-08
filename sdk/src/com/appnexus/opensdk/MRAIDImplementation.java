@@ -18,12 +18,15 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.view.Gravity;
+import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.JsResult;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+import android.widget.VideoView;
 
 @SuppressLint("InlinedApi")
 public class MRAIDImplementation {
@@ -164,6 +167,20 @@ public class MRAIDImplementation {
 						Clog.getString(R.string.js_alert, message, url));
 				result.confirm();
 				return true;
+			}
+			
+			@Override
+			public void onShowCustomView(View view, CustomViewCallback callback) {
+			    super.onShowCustomView(view, callback);
+			    if (view instanceof FrameLayout){
+			        FrameLayout frame = (FrameLayout) view;
+			        if (frame.getFocusedChild() instanceof VideoView){
+			            VideoView video = (VideoView) frame.getFocusedChild();
+			            frame.removeView(video);
+			            ((Activity)MRAIDImplementation.this.owner.getContext()).setContentView(video);
+			            video.start();
+			        }
+			    }
 			}
 		};
 	}
