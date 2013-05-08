@@ -89,9 +89,11 @@ public class AdWebView extends WebView implements Displayable {
 				//TODO add clogging
 				
 				if(destination.getOpensNativeBrowser()){
+					Clog.d(Clog.baseLogTag, Clog.getString(R.string.opening_native));
 					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 					getContext().startActivity(intent);
 				}else{
+					Clog.d(Clog.baseLogTag, Clog.getString(R.string.opening_inapp));
 					Intent intent = new Intent(destination.getContext(), BrowserActivity.class);
 					intent.putExtra("url", url);
 					if(destination.getBrowserStyle()!=null){

@@ -1,5 +1,6 @@
 package com.appnexus.opensdk;
 import com.appnexus.opensdk.AdView.BrowserStyle;
+import com.appnexus.opensdk.utils.Clog;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -74,6 +75,7 @@ public class BrowserActivity extends Activity {
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url){
 				if(url.startsWith("http")){
+					Clog.d(Clog.baseLogTag, Clog.getString(R.string.opening_url, url));
 					webview.loadUrl(url);
 					return true;
 				}
@@ -116,6 +118,7 @@ public class BrowserActivity extends Activity {
 
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
+				Clog.d(Clog.baseLogTag, Clog.getString(R.string.opening_native_current));
 				Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(webview.getUrl()));
 				startActivity(i);
 				finish();
