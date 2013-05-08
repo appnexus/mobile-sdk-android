@@ -42,18 +42,20 @@ public class MainTabFragment extends Fragment implements AdListener{
 	private Button colorButton;
 	private View colorView;
 	private int color=0xff000000;
+	private Spinner sizes;
+	private Spinner refresh;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 		final View out = inflater.inflate(R.layout.fragment_control, null);
 		
-		Spinner sizes = (Spinner ) out.findViewById(R.id.size_dropdown);
+		sizes = (Spinner ) out.findViewById(R.id.size_dropdown);
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(container.getContext(), R.array.sizes, android.R.layout.simple_spinner_item);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		
 		sizes.setAdapter(adapter);
 		
-		Spinner refresh = (Spinner ) out.findViewById(R.id.refresh_dropdown);
+		refresh = (Spinner ) out.findViewById(R.id.refresh_dropdown);
 		ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(container.getContext(), R.array.refresh, android.R.layout.simple_spinner_item);
 		adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		
@@ -140,7 +142,9 @@ public class MainTabFragment extends Fragment implements AdListener{
 		}else{
 			placementEditText.setText("000000");
 		}
-		
+		sizes.setEnabled(true);
+		refresh.setEnabled(true);
+		colorButton.setEnabled(false);
 		return out;
 	}
 	
@@ -260,9 +264,15 @@ public class MainTabFragment extends Fragment implements AdListener{
 			switch(checkedId){
 				default:
 					isInterstitial=false;
+					sizes.setEnabled(true);
+					refresh.setEnabled(true);
+					colorButton.setEnabled(false);
 					break;
 				case R.id.radio_interstitial:
 					isInterstitial=true;
+					sizes.setEnabled(false);
+					refresh.setEnabled(false);
+					colorButton.setEnabled(true);
 					Clog.d(Constants.logTag, "Set to load an interstitial");
 					break;					
 			}

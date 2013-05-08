@@ -1,7 +1,15 @@
 package com.appnexus.opensdk;
+import com.appnexus.opensdk.AdView.BrowserStyle;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Pair;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.WebSettings.PluginState;
@@ -16,7 +24,8 @@ public class BrowserActivity extends Activity {
 	private ImageButton forward;
 	private ImageButton refresh;
 
-	@SuppressLint("SetJavaScriptEnabled")
+	@SuppressWarnings("deprecation")
+	@SuppressLint({ "SetJavaScriptEnabled", "NewApi" })
 	@Override
 	public void onCreate(Bundle savedInstance){
 		super.onCreate(savedInstance);
@@ -74,6 +83,46 @@ public class BrowserActivity extends Activity {
 		
 		String url = (String) getIntent().getExtras().get("url");
 		
+		String id = (String) getIntent().getExtras().get("bridgeid");
+		if(id!=null){
+			BrowserStyle style=null;
+			for(Pair<String, BrowserStyle> p : AdView.BrowserStyle.bridge){
+				if(p.first.equals(id)){
+					style=p.second;
+					AdView.BrowserStyle.bridge.remove(p);
+				}
+			}
+			if(style!=null){
+				int sdk = android.os.Build.VERSION.SDK_INT;
+				if(sdk>=android.os.Build.VERSION_CODES.JELLY_BEAN){
+					back.setBackground(style.backButton);
+					forward.setBackground(style.forwardButton);
+					refresh.setBackground(style.refreshButton);
+				}else{
+					back.setBackgroundDrawable(style.backButton);
+					forward.setBackgroundDrawable(style.forwardButton);
+					refresh.setBackgroundDrawable(style.refreshButton);
+				}
+			}
+		}
+		
 		webview.loadUrl(url);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu){
+		MenuItem open = menu.add("Open With Browser");
+		open.setOnMenuItemClickListener(new OnMenuItemClickListener(){
+
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(webview.getUrl()));
+				startActivity(i);
+				finish();
+				return true;
+			}
+			
+		});
+		return true;
 	}
 }

@@ -1,5 +1,6 @@
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.AdView.BrowserStyle;
 import com.appnexus.opensdk.R;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
@@ -8,6 +9,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -92,6 +94,11 @@ public class AdWebView extends WebView implements Displayable {
 				}else{
 					Intent intent = new Intent(destination.getContext(), BrowserActivity.class);
 					intent.putExtra("url", url);
+					if(destination.getBrowserStyle()!=null){
+						String i = ""+this.hashCode();
+						intent.putExtra("bridgeid", i);
+						AdView.BrowserStyle.bridge.add(new Pair<String, BrowserStyle>(i, destination.getBrowserStyle()));
+					}
 					destination.getContext().startActivity(intent);
 				}
 				return true;

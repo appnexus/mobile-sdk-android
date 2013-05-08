@@ -1,5 +1,7 @@
 package com.appnexus.opensdk;
 
+import java.util.ArrayList;
+
 import com.appnexus.opensdk.R;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
@@ -7,8 +9,10 @@ import com.appnexus.opensdk.utils.Settings;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
 import android.webkit.WebView;
@@ -33,6 +37,7 @@ public abstract class AdView extends FrameLayout {
 	protected int height=-1;
 	private boolean mraid_expand=false;
 	protected AdListener adListener;
+	private BrowserStyle browserStyle;
 	
 	
 	/** Begin Construction **/
@@ -361,5 +366,28 @@ public abstract class AdView extends FrameLayout {
 	public void setOpensNativeBrowser(boolean opensNativeBrowser) {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_opens_native_browser, opensNativeBrowser));
 		this.opensNativeBrowser = opensNativeBrowser;
+	}
+	
+	protected BrowserStyle getBrowserStyle() {
+		return browserStyle;
+	}
+
+	protected void setBrowserStyle(BrowserStyle browserStyle) {
+		this.browserStyle = browserStyle;
+	}
+
+	static class BrowserStyle{
+		
+		public BrowserStyle(Drawable forwardButton, Drawable backButton, Drawable refreshButton){
+			this.forwardButton=forwardButton;
+			this.backButton=backButton;
+			this.refreshButton=refreshButton;
+		}
+		
+		Drawable forwardButton;
+		Drawable backButton;
+		Drawable refreshButton;
+		
+		static final ArrayList<Pair<String, BrowserStyle>> bridge = new ArrayList<Pair<String, BrowserStyle>>();
 	}
 }
