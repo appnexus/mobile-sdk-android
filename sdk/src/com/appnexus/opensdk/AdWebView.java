@@ -43,7 +43,6 @@ public class AdWebView extends WebView implements Displayable {
 	private void setup() {
 		Settings.getSettings().ua = this.getSettings().getUserAgentString();
 		this.getSettings().setJavaScriptEnabled(true);
-		this.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 		this.getSettings().setPluginState(WebSettings.PluginState.ON);
 		this.getSettings().setBuiltInZoomControls(false);
 		this.getSettings().setLightTouchEnabled(false);

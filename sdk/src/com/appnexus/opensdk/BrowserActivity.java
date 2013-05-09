@@ -13,10 +13,13 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.VideoView;
 
 
 public class BrowserActivity extends Activity {
@@ -38,7 +41,6 @@ public class BrowserActivity extends Activity {
 		refresh = (ImageButton) findViewById(R.id.browser_refresh);
 		
 		webview.getSettings().setJavaScriptEnabled(true);
-		webview.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 		webview.getSettings().setDomStorageEnabled(true);
 		webview.getSettings().setPluginState(PluginState.ON_DEMAND);
 		
@@ -81,6 +83,21 @@ public class BrowserActivity extends Activity {
 				}
 				return false;
 			}
+		});
+		
+		webview.setWebChromeClient(new WebChromeClient(){
+			public void onShowCustomView(View view, CustomViewCallback callback) {
+			    super.onShowCustomView(view, callback);
+			    if (view instanceof FrameLayout){
+			        FrameLayout frame = (FrameLayout) view;
+			        if (frame.getFocusedChild() instanceof VideoView){
+			            VideoView video = (VideoView) frame.getFocusedChild();
+			            frame.removeView(video);
+			            ((Activity)webview.getContext()).setContentView(video);
+			            video.start();
+			        }
+			    }
+			}	
 		});
 		
 		String url = (String) getIntent().getExtras().get("url");
