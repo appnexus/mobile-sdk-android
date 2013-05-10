@@ -75,7 +75,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	public AdRequest(AdRequester requester, String aid, String lat, String lon,
 			String placementId, String orientation, String carrier, int width,
 			int height, int maxWidth, int maxHeight, String mcc, String mnc,
-			String connectionType, boolean nativeBrowser, AdListener adListener) {
+			String connectionType, boolean isNativeBrowser, AdListener adListener) {
 		this.adListener=adListener;
 		this.requester = requester;
 		if(aid!=null){
@@ -112,7 +112,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
 		this.placementId = placementId;
 		
-		this.nativeBrowser=nativeBrowser?"1":"0";
+		this.nativeBrowser=isNativeBrowser?"1":"0";
 	}
 
 	public AdRequest(AdFetcher fetcher) {
