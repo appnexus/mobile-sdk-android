@@ -222,16 +222,22 @@ public class MRAIDImplementation {
 
 	protected void expand(ArrayList<BasicNameValuePair> parameters) {
 		if (!hidden) {
-			int width = owner.getLayoutParams().width;// Use current height and
-														// width as expansion
-														// defaults.
+			int width = owner.getLayoutParams().width;// Use current height and width as expansion defaults.
 			int height = owner.getLayoutParams().height;
 			boolean useCustomClose = false;
 			for (BasicNameValuePair bnvp : parameters) {
 				if (bnvp.getName().equals("w"))
-					width = Integer.parseInt(bnvp.getValue());
+					try{
+						width = Integer.parseInt(bnvp.getValue());
+					}catch (NumberFormatException e){
+						//Do nothing
+					}
 				else if (bnvp.getName().equals("h"))
-					height = Integer.parseInt(bnvp.getValue());
+					try{
+						height = Integer.parseInt(bnvp.getValue());
+					}catch (NumberFormatException e){
+						//Do nothing
+					}
 				else if (bnvp.getName().equals("useCustomClose"))
 					useCustomClose = Boolean.parseBoolean(bnvp.getValue());
 			}
@@ -255,13 +261,17 @@ public class MRAIDImplementation {
 		url = url.replaceFirst("mraid://", "");
 
 		// Separate the function from the parameters
-		String func = url.split("\\?")[0].replaceAll("/", "");
+		String[] qMarkSplit = url.split("\\?");
+		String func = qMarkSplit[0].replaceAll("/", "");
 		String params;
 		ArrayList<BasicNameValuePair> parameters = new ArrayList<BasicNameValuePair>();
-		if (url.split("\\?").length > 1) {
-			params = url.split("\\?")[1];
+		if (qMarkSplit.length > 1) {
+			params = url.substring(url.indexOf("?")+1);
 
 			for (String s : params.split("&")) {
+				if(s.split("=").length<2){
+					continue;
+				}
 				parameters.add(new BasicNameValuePair(s.split("=")[0], s
 						.split("=")[1]));
 			}

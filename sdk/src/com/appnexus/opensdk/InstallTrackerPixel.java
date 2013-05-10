@@ -105,6 +105,8 @@ public class InstallTrackerPixel extends BroadcastReceiver{
 			
 			try{
 				HttpParams p = new BasicHttpParams();
+				HttpConnectionParams.setConnectionTimeout(p, Settings.getSettings().HTTP_CONNECTION_TIMEOUT);
+				HttpConnectionParams.setSoTimeout(p, Settings.getSettings().HTTP_SOCKET_TIMEOUT);
 				HttpConnectionParams.setSocketBufferSize(p, 8192);
 				HttpClient client = new DefaultHttpClient(p);
 				HttpGet get = new HttpGet(url);

@@ -54,7 +54,7 @@ public class MRAIDWebView extends WebView implements Displayable {
 	}
 	
 	protected void setImplementation(MRAIDImplementation imp){
-		implementation=imp;
+		this.implementation=imp;
 		this.setWebViewClient(imp.getWebViewClient());
 		this.setWebChromeClient(imp.getWebChromeClient());
 	}

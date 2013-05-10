@@ -21,6 +21,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.VideoView;
 
 
@@ -29,6 +30,7 @@ public class BrowserActivity extends Activity {
 	private ImageButton back;
 	private ImageButton forward;
 	private ImageButton refresh;
+	private ProgressBar progressBar;
 
 	@SuppressWarnings("deprecation")
 	@SuppressLint({ "SetJavaScriptEnabled", "NewApi" })
@@ -41,6 +43,7 @@ public class BrowserActivity extends Activity {
 		back = (ImageButton) findViewById(R.id.browser_back);
 		forward = (ImageButton) findViewById(R.id.browser_forward);
 		refresh = (ImageButton) findViewById(R.id.browser_refresh);
+		progressBar = (ProgressBar) findViewById(R.id.progress_bar);
 		
 		webview.getSettings().setJavaScriptEnabled(true);
 		webview.getSettings().setDomStorageEnabled(true);
@@ -123,6 +126,17 @@ public class BrowserActivity extends Activity {
 						Clog.getString(R.string.js_alert, message, url));
 				result.confirm();
 				return true;
+			}
+			
+			@Override
+			public void onProgressChanged(WebView view, int progress){
+				if(progress<100 && progressBar.getVisibility()==ProgressBar.GONE){
+					progressBar.setVisibility(ProgressBar.VISIBLE);
+				}
+				progressBar.setProgress(progress);
+				if(progress==100){
+					progressBar.setVisibility(ProgressBar.GONE);
+				}
 			}
 		});
 		
