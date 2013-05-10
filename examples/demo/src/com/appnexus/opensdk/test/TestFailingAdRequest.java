@@ -22,12 +22,14 @@ public class TestFailingAdRequest extends TestCase implements AdRequester, AdLis
 	public void testFailingRequest(){
 		shouldNotWork.execute();
 		pause();
+		shouldNotWork.cancel(true);
 		assertEquals(true, shouldPass);
 	}
 	
 	public void testFailingRequestListener(){
 		shouldNotWork2.execute();
 		pause();
+		shouldNotWork2.cancel(true);
 		assertEquals(true, shouldPass2);
 	}
 	
@@ -36,6 +38,8 @@ public class TestFailingAdRequest extends TestCase implements AdRequester, AdLis
 			wait(30*1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+			shouldNotWork.cancel(true);
+			shouldNotWork2.cancel(true);
 			return;
 		}
 	}

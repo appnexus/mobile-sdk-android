@@ -49,6 +49,7 @@ public class TestVisibility extends
 
 	@Override
 	synchronized public void onAdRequestFailed(AdView adView) {
+		assertEquals(false, true);
 		notify();
 	}
 

@@ -24,12 +24,14 @@ public class TestShortestSuccessfulAdRequest extends TestCase implements AdReque
 	public void testSucceedingRequest() {
 		shouldWork.execute();
 		pause();
+		shouldWork.cancel(true);
 		assertEquals(true, shouldWorkDidWork);
 	}
 	
 	public void testSucceedingRequestListener() {
 		shouldWork2.execute();
 		pause();
+		shouldWork2.cancel(true);
 		assertEquals(true, shouldWorkDidWork2);
 	}
 
@@ -51,6 +53,8 @@ public class TestShortestSuccessfulAdRequest extends TestCase implements AdReque
 			wait(10*1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+			shouldWork.cancel(true);
+			shouldWork2.cancel(true);
 			return;
 		}
 	}

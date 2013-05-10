@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings.PluginState;
+import android.webkit.ConsoleMessage;
+import android.webkit.JsResult;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -86,6 +88,7 @@ public class BrowserActivity extends Activity {
 		});
 		
 		webview.setWebChromeClient(new WebChromeClient(){
+			@Override
 			public void onShowCustomView(View view, CustomViewCallback callback) {
 			    super.onShowCustomView(view, callback);
 			    if (view instanceof FrameLayout){
@@ -98,6 +101,29 @@ public class BrowserActivity extends Activity {
 			        }
 			    }
 			}	
+			
+			
+			//TODO Change clogs
+			@Override
+			public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+				// super.onConsoleMessage(consoleMessage);
+				Clog.w(Clog.mraidLogTab,
+						Clog.getString(R.string.console_message,
+								consoleMessage.message(),
+								consoleMessage.lineNumber(),
+								consoleMessage.sourceId()));
+				return true;
+			}
+
+			@Override
+			public boolean onJsAlert(WebView view, String url, String message,
+					JsResult result) {
+				// /super.onJsAlert(view, url, message, result);
+				Clog.w(Clog.mraidLogTab,
+						Clog.getString(R.string.js_alert, message, url));
+				result.confirm();
+				return true;
+			}
 		});
 		
 		String url = (String) getIntent().getExtras().get("url");
