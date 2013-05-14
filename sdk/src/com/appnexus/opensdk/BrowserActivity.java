@@ -85,6 +85,12 @@ public class BrowserActivity extends Activity {
 					Clog.d(Clog.baseLogTag, Clog.getString(R.string.opening_url, url));
 					webview.loadUrl(url);
 					return true;
+				}else if(url.startsWith("market")){
+					Intent i = new Intent(Intent.ACTION_VIEW);
+					i.setData(Uri.parse(url));
+					startActivity(i);
+					finish();
+					return true;
 				}
 				return false;
 			}
