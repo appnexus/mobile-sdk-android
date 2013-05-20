@@ -124,7 +124,9 @@ public class BannerAdView extends AdView {
 				setupBroadcast(getContext());
 				receiversRegistered = true;
 			}
-			start();
+			if(shouldReloadOnResume){
+				start();
+			}
 		}
 
 	}

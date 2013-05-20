@@ -15,10 +15,12 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
 import android.webkit.JsResult;
 import android.webkit.SslErrorHandler;
@@ -94,8 +96,7 @@ public class MRAIDImplementation {
 						owner.getContext().startActivity(intent);
 					}
 					return true;
-				}
-				if (url.startsWith("mraid://")) {
+				}else if (url.startsWith("mraid://")) {
 					MRAIDImplementation.this.dispatch_mraid_call(url);
 
 					return true;
@@ -147,42 +148,69 @@ public class MRAIDImplementation {
 	}
 
 	protected WebChromeClient getWebChromeClient() {
-		return new WebChromeClient() {
-			@Override
-			public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-				// super.onConsoleMessage(consoleMessage);
-				Clog.w(Clog.mraidLogTab,
-						Clog.getString(R.string.console_message,
-								consoleMessage.message(),
-								consoleMessage.lineNumber(),
-								consoleMessage.sourceId()));
-				return true;
-			}
+		return new MRAIDWebChromeClient();
+	}
+	
+	class MRAIDWebChromeClient extends WebChromeClient implements MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener{
+		ViewGroup old_content;
+		CustomViewCallback c;
+		VideoView video;
+		public WebView webView;
+		
+		@Override
+		public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+			// super.onConsoleMessage(consoleMessage);
+			Clog.w(Clog.mraidLogTab,
+					Clog.getString(R.string.console_message,
+							consoleMessage.message(),
+							consoleMessage.lineNumber(),
+							consoleMessage.sourceId()));
+			return true;
+		}
 
-			@Override
-			public boolean onJsAlert(WebView view, String url, String message,
-					JsResult result) {
-				// /super.onJsAlert(view, url, message, result);
-				Clog.w(Clog.mraidLogTab,
-						Clog.getString(R.string.js_alert, message, url));
-				result.confirm();
-				return true;
-			}
+		@Override
+		public boolean onJsAlert(WebView view, String url, String message,
+				JsResult result) {
+			// /super.onJsAlert(view, url, message, result);
+			Clog.w(Clog.mraidLogTab,
+					Clog.getString(R.string.js_alert, message, url));
+			result.confirm();
+			return true;
+		}
+		
+		@Override
+		public void onShowCustomView(View view, CustomViewCallback callback) {
+		    super.onShowCustomView(view, callback);
+		    c=callback;
+		    if (view instanceof FrameLayout){
+		        FrameLayout frame = (FrameLayout) view;
+		        if (frame.getFocusedChild() instanceof VideoView){
+		            video = (VideoView) frame.getFocusedChild();
+		            frame.removeView(video);
+		            old_content=(ViewGroup)((Activity)MRAIDImplementation.this.owner.getContext()).findViewById(android.R.id.content);
+		            ((Activity)MRAIDImplementation.this.owner.getContext()).setContentView(video);
+		            video.setOnCompletionListener(this);
+		            video.setOnErrorListener(this);
+		            video.start();
+		        }
+		    }
+		}
+		@Override
+		public boolean onError(MediaPlayer mp, int what, int extra) {
+			video.stopPlayback();
+			c.onCustomViewHidden();
+			((Activity)MRAIDImplementation.this.owner.getContext()).setContentView(old_content);
+			return false;
+		}
+
+		@Override
+		public void onCompletion(MediaPlayer mp) {
+			video.stopPlayback();
+			c.onCustomViewHidden();
+			((Activity)MRAIDImplementation.this.owner.getContext()).setContentView(old_content);
 			
-			@Override
-			public void onShowCustomView(View view, CustomViewCallback callback) {
-			    super.onShowCustomView(view, callback);
-			    if (view instanceof FrameLayout){
-			        FrameLayout frame = (FrameLayout) view;
-			        if (frame.getFocusedChild() instanceof VideoView){
-			            VideoView video = (VideoView) frame.getFocusedChild();
-			            frame.removeView(video);
-			            ((Activity)MRAIDImplementation.this.owner.getContext()).setContentView(video);
-			            video.start();
-			        }
-			    }
-			}
-		};
+		}
+		
 	}
 
 	protected void onVisible() {

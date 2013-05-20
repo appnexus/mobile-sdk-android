@@ -11,6 +11,7 @@
     <string name="placement_id_edittext">Placement Id: </string>
     <string name="default_placement_id">656561</string>
     <string name="load_ad_button">Load Ad</string>
+    <string name="paste_ad_button">Paste Ad</string>
     <string name="inapp_button">In-App Browser</string>
     <string name="native_button">Native Browser</string>
     <string name="color_button_text">Select Interstitial BG Color</string>

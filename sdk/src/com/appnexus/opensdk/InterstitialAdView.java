@@ -148,7 +148,7 @@ public class InterstitialAdView extends AdView {
 	}
 	
 	@Override
-	protected void display(Displayable d){
+	public void display(Displayable d){
 		if(d==null){
 			fail();
 			return;

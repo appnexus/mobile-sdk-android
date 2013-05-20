@@ -29,6 +29,7 @@ public class MRAIDWebView extends WebView implements Displayable {
 	@SuppressLint("SetJavaScriptEnabled")
 	private void setup(){
 		this.getSettings().setJavaScriptEnabled(true);
+		this.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 		//this.setInitialScale(100);
 		this.getSettings().setPluginState(WebSettings.PluginState.ON);
 		this.getSettings().setBuiltInZoomControls(false);

@@ -33,7 +33,7 @@ public class AdWebView extends WebView implements Displayable {
 	private boolean failed = false;
 	private AdView destination;
 
-	protected AdWebView(AdView owner) {
+	public AdWebView(AdView owner) {
 		super(owner.getContext());
 		destination = owner;
 		setup();
@@ -43,6 +43,7 @@ public class AdWebView extends WebView implements Displayable {
 	private void setup() {
 		Settings.getSettings().ua = this.getSettings().getUserAgentString();
 		this.getSettings().setJavaScriptEnabled(true);
+		this.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
 		this.getSettings().setPluginState(WebSettings.PluginState.ON);
 		this.getSettings().setBuiltInZoomControls(false);
 		this.getSettings().setLightTouchEnabled(false);
@@ -115,7 +116,7 @@ public class AdWebView extends WebView implements Displayable {
 
 	}
 
-	protected void loadAd(AdResponse ad) {
+	public void loadAd(AdResponse ad) {
 		if (ad.getBody().equals("")) {
 			fail();
 			return;

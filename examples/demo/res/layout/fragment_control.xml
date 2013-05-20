@@ -228,6 +228,19 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/load_ad_button" />
+        
+        <!-- Load Ad Button -->
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="4dp"
+            android:background="@android:color/darker_gray" />
+
+        <Button
+            android:id="@+id/pastead"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/paste_ad_button" />
     </LinearLayout>
 
 </ScrollView>

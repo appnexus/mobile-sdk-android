@@ -192,12 +192,22 @@ public abstract class AdView extends FrameLayout {
 		this.setPlacementID(placementID);
 		loadAd();
 	}
+	
+	public void loadHtml(String content, int width, int height){
+		this.mAdFetcher.stop();
+		
+		AdWebView awv = new AdWebView(this);
+		awv.loadData(content, "text/html", "UTF-8");
+		FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(width, height);
+		awv.setLayoutParams(lp);
+		this.display(awv);
+	}
 
 	protected abstract void loadVariablesFromXML(Context context, AttributeSet attrs);
 
 	/** End Construction **/
 
-	protected void display(Displayable d) {
+	public void display(Displayable d) {
 		if(d==null){
 			if(this.adListener!=null) adListener.onAdRequestFailed(this);
 			return;

@@ -4,18 +4,25 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 import yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener;
 
 import com.appnexus.opensdk.AdListener;
+import com.appnexus.opensdk.AdResponse;
 import com.appnexus.opensdk.AdView;
+import com.appnexus.opensdk.AdWebView;
 import com.appnexus.opensdk.BannerAdView;
 import com.appnexus.opensdk.InterstitialAdView;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdkdemo.R;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +39,7 @@ import android.widget.TextView;
 
 public class MainTabFragment extends Fragment implements AdListener{
 	private Button loadAdButton;
+	private Button pasteAdButton;
 	private BannerAdView bannerAdView;
 	private InterstitialAdView iav;
 	private RadioGroup radioGroup;
@@ -64,6 +72,9 @@ public class MainTabFragment extends Fragment implements AdListener{
 		// Locate member views
 		loadAdButton = (Button) out.findViewById(R.id.loadad);
 		loadAdButton.setOnClickListener(new LoadAdOnClickListener());
+		
+		pasteAdButton = (Button) out.findViewById(R.id.pastead);
+		pasteAdButton.setOnClickListener(new PasteAdOnClickListener());
 		
 		bannerAdView = (BannerAdView) out.findViewById(R.id.banner);
 		
@@ -253,6 +264,82 @@ public class MainTabFragment extends Fragment implements AdListener{
 			
 			// Load and display an interstitial
 			iav.loadAd();
+		}
+		
+	}
+	
+	private class PasteAdOnClickListener implements View.OnClickListener{
+
+		@Override
+		public void onClick(View v) {
+			Log.d(Constants.logTag, "Paste ad pressed.");
+			
+			//Set up an alert
+			AlertDialog.Builder alert = new AlertDialog.Builder(getView().getContext());
+			
+			alert.setTitle("Enter HTML");
+			alert.setMessage("Paste or enter HTML ad tag here: ");
+			
+			final LinearLayout view = new LinearLayout(getView().getContext());
+			view.setOrientation(LinearLayout.VERTICAL);
+			final EditText input = new EditText(getView().getContext());
+			final EditText width = new EditText(getView().getContext());
+			final EditText height = new EditText(getView().getContext());
+			TextView h= new TextView(getView().getContext());
+			TextView w= new TextView(getView().getContext());
+			
+			h.setText("H: ");
+			w.setText("W: ");
+			LinearLayout hll = new LinearLayout(getView().getContext());
+			LinearLayout wll = new LinearLayout(getView().getContext());
+			hll.addView(h);
+			hll.addView(height);
+			wll.addView(w);
+			wll.addView(width);
+			width.setInputType(InputType.TYPE_CLASS_NUMBER);
+			height.setInputType(InputType.TYPE_CLASS_NUMBER);
+			
+			view.addView(input);
+			view.addView(wll);
+			view.addView(hll);
+			alert.setView(view);
+			
+			alert.setPositiveButton("Load", new OnClickListener(){
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					String value = input.getText().toString();
+					
+					DisplayMetrics metrics = new DisplayMetrics();
+					MainTabFragment.this.getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+					float d = metrics.density;
+					int h = (int) ((Integer.parseInt(height.getText().toString())-0.5f)/(d));
+					int w = (int) ((Integer.parseInt(width.getText().toString())-0.5f)/(d));
+					
+					AdResponse fakeResponse = new AdResponse(null, null, null);
+					fakeResponse.body=value;
+					fakeResponse.height=h;
+					fakeResponse.width=w;
+					if(isInterstitial){
+						AdWebView awv = new AdWebView(iav);
+						awv.loadAd(fakeResponse);
+						iav.display(awv);
+					}else{
+						AdWebView awv = new AdWebView(bannerAdView);
+						awv.loadAd(fakeResponse);
+						bannerAdView.setAutoRefresh(false);
+						bannerAdView.setShouldReloadOnResume(false);
+						bannerAdView.removeAllViews();
+						bannerAdView.display(awv);
+					}
+				}
+				
+			});
+			
+			alert.setNegativeButton("Cancel", null);
+			
+			alert.show();
+			
 		}
 		
 	}

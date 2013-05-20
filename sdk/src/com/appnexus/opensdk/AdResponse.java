@@ -11,9 +11,9 @@ import com.appnexus.opensdk.utils.Clog;
 
 public class AdResponse {
 	public AdRequester requester;
-	private String body;
-	private int height;
-	private int width;
+	public String body;
+	public int height;
+	public int width;
 	private String type;
 	boolean fail=false;
 	final static String http_error="HTTP_ERROR";
