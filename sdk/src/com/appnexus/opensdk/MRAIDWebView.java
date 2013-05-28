@@ -6,7 +6,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
@@ -45,13 +44,6 @@ public class MRAIDWebView extends WebView implements Displayable {
 
 		setBackgroundColor(Color.TRANSPARENT);
 		setScrollBarStyle(WebView.SCROLLBARS_INSIDE_OVERLAY);
-		setOnTouchListener(new OnTouchListener() {
-
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				return (event.getAction() == MotionEvent.ACTION_MOVE);
-			}
-		});
 	}
 	
 	protected void setImplementation(MRAIDImplementation imp){

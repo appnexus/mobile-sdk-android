@@ -12,7 +12,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.util.Pair;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -60,14 +59,6 @@ public class AdWebView extends WebView implements Displayable {
 
 		setBackgroundColor(Color.TRANSPARENT);
 		setScrollBarStyle(WebView.SCROLLBARS_INSIDE_OVERLAY);
-
-		setOnTouchListener(new OnTouchListener() {
-
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				return (event.getAction() == MotionEvent.ACTION_MOVE);
-			}
-		});
 
 		setWebChromeClient(new AdWebChromeClient());
 		
