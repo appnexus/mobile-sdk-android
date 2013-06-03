@@ -248,7 +248,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				+ Uri.encode(Settings.getSettings().app_id)
 				: "&appid=NO-APP-ID"));
 		sb.append((firstlaunch != null ? "&firstlaunch=" + firstlaunch : ""));
-		sb.append(lat != null && lon != null ? "&loc=" + lat + "," + "lon" : "");
+		sb.append(lat != null && lon != null ? "&loc=" + lat + "," + "lon=" + lon : "");
 		sb.append((locDataAge != null ? "&" +
 				"loc_age=" + locDataAge : ""));
 		sb.append((locDataPrecision != null ? "&loc_prec=" + locDataPrecision : ""));
