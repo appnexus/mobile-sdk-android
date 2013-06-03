@@ -75,10 +75,11 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	public AdRequest(AdRequester requester, String aid, String lat, String lon,
 			String placementId, String orientation, String carrier, int width,
 			int height, int maxWidth, int maxHeight, String mcc, String mnc,
-			String connectionType, boolean isNativeBrowser, AdListener adListener) {
-		this.adListener=adListener;
+			String connectionType, boolean isNativeBrowser,
+			AdListener adListener) {
+		this.adListener = adListener;
 		this.requester = requester;
-		if(aid!=null){
+		if (aid != null) {
 			hidmd5 = HashingFunctions.md5(aid);
 			hidsha1 = HashingFunctions.sha1(aid);
 		}
@@ -111,13 +112,13 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		this.language = Settings.getSettings().language;
 
 		this.placementId = placementId;
-		
-		this.nativeBrowser=isNativeBrowser?"1":"0";
+
+		this.nativeBrowser = isNativeBrowser ? "1" : "0";
 	}
 
 	public AdRequest(AdFetcher fetcher) {
 		this.owner = fetcher.owner;
-		this.requester=fetcher;
+		this.requester = fetcher;
 		this.placementId = owner.getPlacementID();
 		context = owner.getContext();
 		String aid = android.provider.Settings.Secure.getString(
@@ -147,8 +148,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		}
 
 		// Do we have ACCESS_NETWORK_STATE?
-		if (context.checkCallingOrSelfPermission(
-				"android.permission.ACCESS_NETWORK_STATE") != PackageManager.PERMISSION_GRANTED) {
+		if (context
+				.checkCallingOrSelfPermission("android.permission.ACCESS_NETWORK_STATE") != PackageManager.PERMISSION_GRANTED) {
 			Clog.e(Clog.baseLogTag,
 					Clog.getString(R.string.permissions_missing_network_state));
 			fail();
@@ -219,8 +220,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 					allowedSizes += ",";
 			}
 		}
-		
-		nativeBrowser = owner.getOpensNativeBrowser()?"1":"0";
+
+		nativeBrowser = owner.getOpensNativeBrowser() ? "1" : "0";
 
 		mcc = Settings.getSettings().mcc;
 		mnc = Settings.getSettings().mnc;
@@ -230,8 +231,10 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	}
 
 	private void fail() {
-		if(requester!=null) requester.failed(this);
-		if(adListener!=null) adListener.onAdRequestFailed(null);
+		if (requester != null)
+			requester.failed(this);
+		if (adListener != null)
+			adListener.onAdRequestFailed(null);
 		Clog.clearLastResponse();
 	}
 
@@ -239,22 +242,24 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		StringBuilder sb = new StringBuilder(Settings.getSettings().BASE_URL);
 		sb.append((placementId != null ? "id=" + Uri.encode(placementId)
 				: "id=NO-PLACEMENT-ID"));
-		sb.append((hidmd5 != null ? "&md5udid=" + Uri.encode(hidmd5) : ""));
-		sb.append((hidsha1 != null ? "&sha1udid=" + Uri.encode(hidsha1) : ""));
-		sb.append((devMake != null ? "&devmake=" + Uri.encode(devMake) : ""));
-		sb.append((devModel != null ? "&devmodel=" + Uri.encode(devModel) : ""));
-		sb.append((carrier != null ? "&carrier=" + Uri.encode(carrier) : ""));
-		sb.append((Settings.getSettings().app_id != null ? "&appid="
+		sb.append((!isEmpty(hidmd5) ? "&md5udid=" + Uri.encode(hidmd5) : ""));
+		sb.append((!isEmpty(hidsha1) ? "&sha1udid=" + Uri.encode(hidsha1) : ""));
+		sb.append((!isEmpty(devMake) ? "&devmake=" + Uri.encode(devMake) : ""));
+		sb.append((!isEmpty(devModel) ? "&devmodel=" + Uri.encode(devModel)
+				: ""));
+		sb.append((!isEmpty(carrier) ? "&carrier=" + Uri.encode(carrier) : ""));
+		sb.append((!isEmpty(Settings.getSettings().app_id) ? "&appid="
 				+ Uri.encode(Settings.getSettings().app_id)
 				: "&appid=NO-APP-ID"));
-		sb.append((firstlaunch != null ? "&firstlaunch=" + firstlaunch : ""));
-		sb.append(lat != null && lon != null ? "&loc=" + lat + "," + "lon=" + lon : "");
-		sb.append((locDataAge != null ? "&" +
-				"loc_age=" + locDataAge : ""));
-		sb.append((locDataPrecision != null ? "&loc_prec=" + locDataPrecision : ""));
+		sb.append((!isEmpty(firstlaunch) ? "&firstlaunch=" + firstlaunch : ""));
+		sb.append(!isEmpty(lat) && !isEmpty(lon) ? "&loc=" + lat + "," + "lon="
+				+ lon : "");
+		sb.append((!isEmpty(locDataAge) ? "&" + "loc_age=" + locDataAge : ""));
+		sb.append((!isEmpty(locDataPrecision) ? "&loc_prec=" + locDataPrecision
+				: ""));
 		sb.append((Settings.getSettings().test_mode ? "&istest=true" : ""));
-		sb.append((ua != null ? "&ua=" + Uri.encode(ua) : ""));
-		sb.append((orientation != null ? "&orientation=" + orientation : ""));
+		sb.append((!isEmpty(ua) ? "&ua=" + Uri.encode(ua) : ""));
+		sb.append((!isEmpty(orientation) ? "&orientation=" + orientation : ""));
 		sb.append(((width > 0 && height > 0) ? "&size=" + width + "x" + height
 				: ""));
 		if (owner != null) {
@@ -265,22 +270,22 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 					&& (owner instanceof InterstitialAdView) ? "&size="
 					+ maxWidth + "x" + maxHeight : ""));
 		}
-		sb.append((allowedSizes != null && !allowedSizes.equals("") ? "&promo_sizes="
-				+ allowedSizes
+		sb.append((!isEmpty(allowedSizes) ? "&promo_sizes=" + allowedSizes : ""));
+		sb.append((!isEmpty(mcc) ? "&mcc=" + Uri.encode(mcc) : ""));
+		sb.append((!isEmpty(mnc) ? "&mnc=" + Uri.encode(mnc) : ""));
+		sb.append((!isEmpty(os) ? "&os=" + Uri.encode(os) : ""));
+		sb.append((!isEmpty(language) ? "&language=" + Uri.encode(language)
 				: ""));
-		sb.append((mcc != null ? "&mcc=" + Uri.encode(mcc) : ""));
-		sb.append((mnc != null ? "&mnc=" + Uri.encode(mnc) : ""));
-		sb.append((os != null ? "&os=" + Uri.encode(os) : ""));
-		sb.append((language != null ? "&language=" + Uri.encode(language) : ""));
-		sb.append((dev_timezone != null ? "&devtz=" + Uri.encode(dev_timezone)
-				: ""));
-		sb.append((dev_time != null ? "&devtime=" + Uri.encode(dev_time) : ""));
-		sb.append((connection_type != null ? "&connection_type="
+		sb.append((!isEmpty(dev_timezone) ? "&devtz="
+				+ Uri.encode(dev_timezone) : ""));
+		sb.append((!isEmpty(dev_time) ? "&devtime=" + Uri.encode(dev_time) : ""));
+		sb.append((!isEmpty(connection_type) ? "&connection_type="
 				+ Uri.encode(connection_type) : ""));
-		sb.append((nativeBrowser != null ? "&native_browser="+nativeBrowser:""));
+		sb.append((!isEmpty(nativeBrowser) ? "&native_browser=" + nativeBrowser
+				: ""));
 		sb.append("&format=json");
 		sb.append("&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion));
-		
+
 		return sb.toString();
 	}
 
@@ -298,17 +303,20 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			}
 		}
 		String query_string = getRequestUrl();
-		
+
 		Clog.setLastRequest(query_string);
-		
-		Clog.d(Clog.httpReqLogTag, Clog.getString(R.string.fetch_url, query_string));
+
+		Clog.d(Clog.httpReqLogTag,
+				Clog.getString(R.string.fetch_url, query_string));
 
 		HttpResponse r = null;
 		String out = null;
 		try {
 			HttpParams p = new BasicHttpParams();
-			HttpConnectionParams.setConnectionTimeout(p, Settings.getSettings().HTTP_CONNECTION_TIMEOUT);
-			HttpConnectionParams.setSoTimeout(p, Settings.getSettings().HTTP_SOCKET_TIMEOUT);
+			HttpConnectionParams.setConnectionTimeout(p,
+					Settings.getSettings().HTTP_CONNECTION_TIMEOUT);
+			HttpConnectionParams.setSoTimeout(p,
+					Settings.getSettings().HTTP_SOCKET_TIMEOUT);
 			HttpConnectionParams.setSocketBufferSize(p, 8192);
 			DefaultHttpClient h = new DefaultHttpClient(p);
 			r = h.execute(new HttpGet(query_string));
@@ -347,7 +355,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			fail();
 			return null;
 		}
-		if(out.equals("")){
+		if (out.equals("")) {
 			fail();
 			return null;
 		}
@@ -374,8 +382,18 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			// Don't call fail again!
 			return; // http request failed
 		}
-		if(requester!=null) requester.onReceiveResponse(result);
-		if(adListener!=null) adListener.onAdLoaded(null);
+		if (requester != null)
+			requester.onReceiveResponse(result);
+		if (adListener != null)
+			adListener.onAdLoaded(null);
+	}
+
+	private boolean isEmpty(String str) {
+		if (str == null)
+			return true;
+		if (str.equals(""))
+			return true;
+		return false;
 	}
 
 }
