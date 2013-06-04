@@ -27,6 +27,8 @@ public class Settings {
 
 	public final int HTTP_CONNECTION_TIMEOUT = 15000;
 	public final int HTTP_SOCKET_TIMEOUT = 20000;
+	
+	public final int FETCH_THREAD_COUNT = 4;
 	//public final String BASE_URL = "http://mobile-dev.adnxs.net/mob?";
 	//public final String INSTALL_BASE_URL = "http://mobile-dev.adnxs.com/install?";
 

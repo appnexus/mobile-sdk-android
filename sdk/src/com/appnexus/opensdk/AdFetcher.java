@@ -6,6 +6,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Settings;
 
 
 import android.os.Handler;
@@ -81,7 +82,7 @@ public class AdFetcher implements AdRequester{
 
 	private void makeTasker() {
 		// Start a Scheduler to execute recurring tasks
-		tasker = Executors.newScheduledThreadPool(1);
+		tasker = Executors.newScheduledThreadPool(Settings.getSettings().FETCH_THREAD_COUNT);
 
 		// Get the period from the settings
 		final int msPeriod = period <= 0 ? 60 * 1000 : period;
