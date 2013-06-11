@@ -30,7 +30,7 @@ public class InstallTrackerPixel extends BroadcastReceiver{
 	Context context;
 	
 	
-	//Test with am broadcast -a com.android.vending.INSTALL_REFERRER --es "referrer" "utm_source=test_source&utm_medium=test_medium&utm_term=test_term&utm_content=test_content&utm_campaign=test_name"
+	//Test with am broadcast -a com.android.vending.INSTALL_REFERRER --es "referrer" adb shell am broadcast -a com.android.vending.INSTALL_REFERRER --es "referrer" "utm_source%3Dtest_source%26utm_medium%3Dtest_medium%26utm_term%3Dtest_term%26utm_content%3Dtest_content%26utm_campaign%3Dtest_name"
 	//in adb
 	public InstallTrackerPixel(){
 		super();
@@ -62,7 +62,7 @@ public class InstallTrackerPixel extends BroadcastReceiver{
 		
 		StringBuilder urlBuilder = new StringBuilder(Settings.getSettings().INSTALL_BASE_URL);
 		urlBuilder.append(pid!=null && !pid.equals("")?"&id="+Uri.encode(pid):"");
-		urlBuilder.append(params!=null?params:"");
+		urlBuilder.append(params!=null?"&"+params:"");
 		urlBuilder.append(appid!=null?"&appid="+Uri.encode(appid):"");
 		urlBuilder.append(hidmd5!=null?"&md5udid="+Uri.encode(hidmd5):"");
 		urlBuilder.append(hidsha1!=null?"&sha1udid="+Uri.encode(hidmd5):"");
