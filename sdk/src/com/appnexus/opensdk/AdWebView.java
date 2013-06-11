@@ -116,7 +116,7 @@ public class AdWebView extends WebView implements Displayable {
 		String body = "<html><head /><body style='margin:0;padding:0;'>"
 				+ ad.getBody() + "</body></html>";
 		Clog.v(Clog.baseLogTag, Clog.getString(R.string.webview_loading, body));
-		this.loadData(body, "text/html", "UTF-8");
+		this.loadDataWithBaseURL("http://mobile.adnxs.com", body, "text/html", "UTF-8", null);
 
 		final float scale = destination.getContext().getResources()
 				.getDisplayMetrics().density;
