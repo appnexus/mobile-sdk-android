@@ -167,44 +167,36 @@ public class BannerAdView extends AdView {
 		Clog.v(Clog.xmlLogTag, Clog.getString(R.string.found_n_in_xml, N));
 		for (int i = 0; i < N; ++i) {
 			int attr = a.getIndex(i);
-			switch (attr) {
-			case R.styleable.BannerAdView_placement_id:
+			if (attr == R.styleable.BannerAdView_placement_id) {
 				setPlacementID(a.getString(attr));
 				Clog.d(Clog.xmlLogTag,
 						Clog.getString(R.string.placement_id, a.getString(attr)));
-				break;
-			case R.styleable.BannerAdView_auto_refresh_interval:
+			}else if(attr == R.styleable.BannerAdView_auto_refresh_interval){
 				setAutoRefreshInterval(a.getInt(attr, 60 * 1000));
 				Clog.d(Clog.xmlLogTag,
 						Clog.getString(R.string.xml_set_period, period));
-				break;
-			case R.styleable.BannerAdView_test:
+			}else if(attr == R.styleable.BannerAdView_test){
 				Settings.getSettings().test_mode = a.getBoolean(attr, false);
 				Clog.d(Clog.xmlLogTag,
 						Clog.getString(R.string.xml_set_test,
 								Settings.getSettings().test_mode));
-				break;
-			case R.styleable.BannerAdView_auto_refresh:
+			}else if(attr == R.styleable.BannerAdView_auto_refresh){
 				setAutoRefresh(a.getBoolean(attr, false));
 				Clog.d(Clog.xmlLogTag, Clog.getString(
 						R.string.xml_set_auto_refresh, auto_refresh));
-				break;
-			case R.styleable.BannerAdView_width:
+			}else if(attr == R.styleable.BannerAdView_width){
 				setAdWidth(a.getInt(attr, -1));
 				Clog.d(Clog.xmlLogTag,
 						Clog.getString(R.string.xml_ad_width, a.getInt(attr, -1)));
-				break;
-			case R.styleable.BannerAdView_height:
+			}else if(attr == R.styleable.BannerAdView_height){
 				setAdHeight(a.getInt(attr, -1));
 				Clog.d(Clog.xmlLogTag,
 						Clog.getString(R.string.xml_ad_height, a.getInt(attr, -1)));
-				break;
-			case R.styleable.BannerAdView_should_reload_on_resume:
+			}else if(attr == R.styleable.BannerAdView_should_reload_on_resume){
 				setShouldReloadOnResume(a.getBoolean(attr, false));
 				Clog.d(Clog.xmlLogTag, Clog.getString(
 						R.string.xml_set_should_reload, shouldReloadOnResume));
-				break;
-			case R.styleable.BannerAdView_opens_native_browser:
+			}else if(attr == R.styleable.BannerAdView_opens_native_browser){
 				setOpensNativeBrowser(a.getBoolean(attr, false));
 				Clog.d(Clog.xmlLogTag, Clog.getString(
 						R.string.xml_set_opens_native_browser, opensNativeBrowser));

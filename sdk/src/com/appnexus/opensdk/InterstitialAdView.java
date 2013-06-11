@@ -113,22 +113,18 @@ public class InterstitialAdView extends AdView {
 		Clog.v(Clog.xmlLogTag, Clog.getString(R.string.found_n_in_xml, N));
 		for (int i = 0; i < N; ++i) {
 			int attr = a.getIndex(i);
-			switch (attr) {
-			case R.styleable.InterstitialAdView_placement_id:
+			if (attr == R.styleable.InterstitialAdView_placement_id){
 				setPlacementID(a.getString(attr));
 				Clog.d(Clog.xmlLogTag,
 						Clog.getString(R.string.placement_id, a.getString(attr)));
-				break;
-			case R.styleable.InterstitialAdView_test:
+			}else if(attr == R.styleable.InterstitialAdView_test){
 				Settings.getSettings().test_mode = a.getBoolean(attr, false);
 				Clog.d(Clog.xmlLogTag,
 						Clog.getString(R.string.xml_set_test,
 								Settings.getSettings().test_mode));
-				break;
-			case R.styleable.InterstitialAdView_opens_native_browser:
+			}else if(attr == R.styleable.InterstitialAdView_opens_native_browser){
 				Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_set_opens_native_browser));
 				this.setOpensNativeBrowser(a.getBoolean(attr, false));
-				break;
 			}
 		}
 		a.recycle();
