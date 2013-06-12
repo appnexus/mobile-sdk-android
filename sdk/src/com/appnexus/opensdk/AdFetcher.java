@@ -37,7 +37,7 @@ public class AdFetcher implements AdRequester{
 	private boolean shouldReset = false;
 	private long lastFetchTime=-1;
 	private long timePausedAt=-1;
-	private long pauseDuration=Long.MAX_VALUE;
+	private long pauseDuration=Long.MAX_VALUE/2;
 	
 	// Fires requests whenever it receives a message
 	public AdFetcher(AdView owner) {
@@ -117,6 +117,7 @@ public class AdFetcher implements AdRequester{
 				public void run(){
 					Clog.v(Clog.baseLogTag, Clog.getString(R.string.request_delayed_by_x_ms, msPeriod));
 					tasker.scheduleAtFixedRate(new MessageRunnable(), 0, msPeriod, TimeUnit.MILLISECONDS);
+					pauseDuration=0;
 				}
 			}, stall, TimeUnit.MILLISECONDS);
 		}
