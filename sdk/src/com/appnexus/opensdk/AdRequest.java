@@ -238,7 +238,6 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
 		mcc = Settings.getSettings().mcc;
 		mnc = Settings.getSettings().mnc;
-		dev_timezone = Settings.getSettings().dev_timezone;
 		os = Settings.getSettings().os;
 		language = Settings.getSettings().language;
 	}
@@ -265,8 +264,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				+ Uri.encode(Settings.getSettings().app_id)
 				: "&appid=NO-APP-ID"));
 		sb.append((!isEmpty(firstlaunch) ? "&firstlaunch=" + firstlaunch : ""));
-		sb.append(!isEmpty(lat) && !isEmpty(lon) ? "&loc=" + lat + "," + "lon="
-				+ lon : "");
+		sb.append(!isEmpty(lat) && !isEmpty(lon) ? "&loc=" + lat + "," + lon : "");
 		sb.append((!isEmpty(locDataAge) ? "&" + "loc_age=" + locDataAge : ""));
 		sb.append((!isEmpty(locDataPrecision) ? "&loc_prec=" + locDataPrecision
 				: ""));

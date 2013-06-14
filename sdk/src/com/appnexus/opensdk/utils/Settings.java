@@ -37,7 +37,7 @@ public class Settings {
 
 	public String mcc;
 	public String mnc;
-	public String dev_timezone = TimeZone.getDefault().getDisplayName();
+	public String dev_timezone = TimeZone.getDefault().getID();
 	public String os = "Android " + Build.VERSION.RELEASE;
 	public String language = Locale.getDefault().getLanguage();
 
