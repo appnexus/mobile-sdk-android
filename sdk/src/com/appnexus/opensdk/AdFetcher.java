@@ -37,7 +37,6 @@ public class AdFetcher implements AdRequester{
 	private boolean shouldReset = false;
 	private long lastFetchTime=-1;
 	private long timePausedAt=-1;
-	private long pauseDuration=Long.MAX_VALUE/2;
 	
 	// Fires requests whenever it receives a message
 	public AdFetcher(AdView owner) {
@@ -89,10 +88,6 @@ public class AdFetcher implements AdRequester{
 			requestFailed();
 			return;
 		}
-		
-		if(timePausedAt!=-1){
-			pauseDuration+=System.currentTimeMillis()-timePausedAt;
-		}
 		makeTasker();
 	}
 
@@ -110,14 +105,19 @@ public class AdFetcher implements AdRequester{
 		} else {
 			Clog.v(Clog.baseLogTag, Clog.getString(R.string.fetcher_start_auto));
 			// Start recurring ad requests
-			long stall = msPeriod-pauseDuration>0?msPeriod-pauseDuration:0;
+			long stall_temp;
+			if(timePausedAt!=-1 && lastFetchTime!=-1){
+				stall_temp = msPeriod-(timePausedAt-lastFetchTime);
+			}else{
+				stall_temp=0;
+			}
+			final long stall = stall_temp;//Stupid lexical scoping
 			Clog.v(Clog.baseLogTag, Clog.getString(R.string.request_delayed_by_x_ms, stall));
 			tasker.schedule(new Runnable(){
 				@Override
 				public void run(){
-					Clog.v(Clog.baseLogTag, Clog.getString(R.string.request_delayed_by_x_ms, msPeriod));
+					Clog.v(Clog.baseLogTag, Clog.getString(R.string.request_delayed_by_x_ms, stall));
 					tasker.scheduleAtFixedRate(new MessageRunnable(), 0, msPeriod, TimeUnit.MILLISECONDS);
-					pauseDuration=0;
 				}
 			}, stall, TimeUnit.MILLISECONDS);
 		}
@@ -156,8 +156,6 @@ public class AdFetcher implements AdRequester{
 				mFetcher.get().start();
 				return;
 			}
-			// Reset pause duration
-			mFetcher.get().pauseDuration=0;
 			
 			// Update last fetch time once
 			Clog.d(Clog.baseLogTag, Clog.getString(R.string.new_ad_since, (int)(System.currentTimeMillis()-mFetcher.get().lastFetchTime)));
@@ -200,5 +198,11 @@ public class AdFetcher implements AdRequester{
 			output.loadAd(response);
 			owner.display(output);
 		}
+	}
+
+	public void clearDurations() {
+		lastFetchTime=-1;
+		timePausedAt=-1;
+		
 	}
 }

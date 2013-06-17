@@ -194,6 +194,7 @@ public abstract class AdView extends FrameLayout {
 		if (this.getWindowVisibility() == VISIBLE && mAdFetcher != null) {
 			// Reload Ad Fetcher to get new ad at user's request
 			mAdFetcher.stop();
+			mAdFetcher.clearDurations();
 			mAdFetcher.start();
 		}
 	}

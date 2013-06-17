@@ -260,7 +260,10 @@ public class BannerAdView extends AdView {
 		Clog.d(Clog.publicFunctionsLogTag,
 				Clog.getString(R.string.set_auto_refresh, auto_refresh));
 		this.auto_refresh = auto_refresh;
-		if(mAdFetcher!=null) mAdFetcher.setAutoRefresh(auto_refresh);
+		if(mAdFetcher!=null){
+			mAdFetcher.setAutoRefresh(auto_refresh);
+			mAdFetcher.clearDurations();
+		}
 		if (!running && mAdFetcher!=null) {
 			start();
 		}
