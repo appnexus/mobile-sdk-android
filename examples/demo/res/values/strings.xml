@@ -38,13 +38,13 @@
         <item>300x50</item>
         <item>300x250</item>
         <item>320x50</item>
-        <item>320x320</item>
+        <!-- <item>320x320</item> -->
         <item>320x480</item>
-        <item>600x300</item>
+        <!-- <item>600x300</item> -->
         <item>640x50</item>
-        <item>640x264</item>
-        <item>640x480</item>
-        <item>728x90</item>
+        <!-- <item>640x264</item> -->
+        <!-- <item>640x480</item> -->
+        <!-- <item>728x90</item> -->
     </string-array>
     
     <string-array name="refresh">
