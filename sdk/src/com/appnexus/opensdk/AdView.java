@@ -395,7 +395,9 @@ public abstract class AdView extends FrameLayout {
 		} else if (custom_close && close != null) {
 			close.setVisibility(GONE);
 		} else if (!custom_close && close != null) {
+			this.removeView(close);
 			close.setVisibility(VISIBLE);
+			this.addView(close);//Re-add to send to top
 		}
 	}
 
