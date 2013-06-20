@@ -97,15 +97,14 @@ public class MRAIDWebView extends WebView implements Displayable {
 
 	@Override
 	public void onVisibilityChanged(View view, int visibility) {
-		switch (visibility) {
-		case View.VISIBLE:
-			if (implementation != null)
+		if (visibility == View.VISIBLE) {
+			if (implementation != null) {
 				implementation.onVisible();
-			break;
-		default:
-			if (implementation != null)
+			}
+		} else {
+			if (implementation != null) {
 				implementation.onInvisible();
-			break;
+			}
 		}
 	}
 
