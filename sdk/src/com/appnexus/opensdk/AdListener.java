@@ -12,24 +12,30 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
-*/
+ */
 
 package com.appnexus.opensdk;
 
 /**
  * Implement this interface to create a class which can react to ad events.
+ * 
  * @author Jacob Shufro
- *
+ * 
  */
-public interface AdListener{
+public interface AdListener {
 	/**
 	 * Called when an ad has successfully been loaded from the server.
-	 * @param iAdView	The {@link AdView} that loaded the ad.
+	 * 
+	 * @param iAdView
+	 *            The {@link AdView} that loaded the ad.
 	 */
 	public void onAdLoaded(AdView adView);
+
 	/**
 	 * Called when ad ad request fails.
-	 * @param iAdView The {@link AdView} that loaded the ad.
+	 * 
+	 * @param iAdView
+	 *            The {@link AdView} that loaded the ad.
 	 */
 	public void onAdRequestFailed(AdView adView);
 }

@@ -12,7 +12,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
-*/
+ */
 
 package com.appnexus.opensdk;
 
@@ -91,7 +91,7 @@ public class MRAIDImplementation {
 
 	protected void onReceivedError(WebView view, int errorCode, String desc,
 			String failingUrl) {
-		Clog.w(Clog.mraidLogTab, Clog.getString(
+		Clog.w(Clog.mraidLogTag, Clog.getString(
 				R.string.webview_received_error, errorCode, desc, failingUrl));
 	}
 
@@ -106,13 +106,14 @@ public class MRAIDImplementation {
 						Intent intent = new Intent(Intent.ACTION_VIEW,
 								Uri.parse(url));
 						owner.getContext().startActivity(intent);
-					}else{
-						Intent intent = new Intent(owner.getContext(), BrowserActivity.class);
+					} else {
+						Intent intent = new Intent(owner.getContext(),
+								BrowserActivity.class);
 						intent.putExtra("url", url);
 						owner.getContext().startActivity(intent);
 					}
 					return true;
-				}else if (url.startsWith("mraid://")) {
+				} else if (url.startsWith("mraid://")) {
 					MRAIDImplementation.this.dispatch_mraid_call(url);
 
 					return true;
@@ -166,17 +167,18 @@ public class MRAIDImplementation {
 	protected WebChromeClient getWebChromeClient() {
 		return new MRAIDWebChromeClient();
 	}
-	
-	class MRAIDWebChromeClient extends WebChromeClient implements MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener{
+
+	class MRAIDWebChromeClient extends WebChromeClient implements
+			MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
 		ViewGroup old_content;
 		CustomViewCallback c;
 		VideoView video;
 		public WebView webView;
-		
+
 		@Override
 		public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
 			// super.onConsoleMessage(consoleMessage);
-			Clog.w(Clog.mraidLogTab,
+			Clog.w(Clog.mraidLogTag,
 					Clog.getString(R.string.console_message,
 							consoleMessage.message(),
 							consoleMessage.lineNumber(),
@@ -188,34 +190,38 @@ public class MRAIDImplementation {
 		public boolean onJsAlert(WebView view, String url, String message,
 				JsResult result) {
 			// /super.onJsAlert(view, url, message, result);
-			Clog.w(Clog.mraidLogTab,
+			Clog.w(Clog.mraidLogTag,
 					Clog.getString(R.string.js_alert, message, url));
 			result.confirm();
 			return true;
 		}
-		
+
 		@Override
 		public void onShowCustomView(View view, CustomViewCallback callback) {
-		    super.onShowCustomView(view, callback);
-		    c=callback;
-		    if (view instanceof FrameLayout){
-		        FrameLayout frame = (FrameLayout) view;
-		        if (frame.getFocusedChild() instanceof VideoView){
-		            video = (VideoView) frame.getFocusedChild();
-		            frame.removeView(video);
-		            old_content=(ViewGroup)((Activity)MRAIDImplementation.this.owner.getContext()).findViewById(android.R.id.content);
-		            ((Activity)MRAIDImplementation.this.owner.getContext()).setContentView(video);
-		            video.setOnCompletionListener(this);
-		            video.setOnErrorListener(this);
-		            video.start();
-		        }
-		    }
+			super.onShowCustomView(view, callback);
+			c = callback;
+			if (view instanceof FrameLayout) {
+				FrameLayout frame = (FrameLayout) view;
+				if (frame.getFocusedChild() instanceof VideoView) {
+					video = (VideoView) frame.getFocusedChild();
+					frame.removeView(video);
+					old_content = (ViewGroup) ((Activity) MRAIDImplementation.this.owner
+							.getContext()).findViewById(android.R.id.content);
+					((Activity) MRAIDImplementation.this.owner.getContext())
+							.setContentView(video);
+					video.setOnCompletionListener(this);
+					video.setOnErrorListener(this);
+					video.start();
+				}
+			}
 		}
+
 		@Override
 		public boolean onError(MediaPlayer mp, int what, int extra) {
 			video.stopPlayback();
 			c.onCustomViewHidden();
-			((Activity)MRAIDImplementation.this.owner.getContext()).setContentView(old_content);
+			((Activity) MRAIDImplementation.this.owner.getContext())
+					.setContentView(old_content);
 			return false;
 		}
 
@@ -223,10 +229,11 @@ public class MRAIDImplementation {
 		public void onCompletion(MediaPlayer mp) {
 			video.stopPlayback();
 			c.onCustomViewHidden();
-			((Activity)MRAIDImplementation.this.owner.getContext()).setContentView(old_content);
-			
+			((Activity) MRAIDImplementation.this.owner.getContext())
+					.setContentView(old_content);
+
 		}
-		
+
 	}
 
 	protected void onVisible() {
@@ -266,21 +273,23 @@ public class MRAIDImplementation {
 
 	protected void expand(ArrayList<BasicNameValuePair> parameters) {
 		if (!hidden) {
-			int width = owner.getLayoutParams().width;// Use current height and width as expansion defaults.
+			int width = owner.getLayoutParams().width;// Use current height and
+														// width as expansion
+														// defaults.
 			int height = owner.getLayoutParams().height;
 			boolean useCustomClose = false;
 			for (BasicNameValuePair bnvp : parameters) {
 				if (bnvp.getName().equals("w"))
-					try{
+					try {
 						width = Integer.parseInt(bnvp.getValue());
-					}catch (NumberFormatException e){
-						//Do nothing
+					} catch (NumberFormatException e) {
+						// Do nothing
 					}
 				else if (bnvp.getName().equals("h"))
-					try{
+					try {
 						height = Integer.parseInt(bnvp.getValue());
-					}catch (NumberFormatException e){
-						//Do nothing
+					} catch (NumberFormatException e) {
+						// Do nothing
 					}
 				else if (bnvp.getName().equals("useCustomClose"))
 					useCustomClose = Boolean.parseBoolean(bnvp.getValue());
@@ -310,10 +319,10 @@ public class MRAIDImplementation {
 		String params;
 		ArrayList<BasicNameValuePair> parameters = new ArrayList<BasicNameValuePair>();
 		if (qMarkSplit.length > 1) {
-			params = url.substring(url.indexOf("?")+1);
+			params = url.substring(url.indexOf("?") + 1);
 
 			for (String s : params.split("&")) {
-				if(s.split("=").length<2){
+				if (s.split("=").length < 2) {
 					continue;
 				}
 				parameters.add(new BasicNameValuePair(s.split("=")[0], s

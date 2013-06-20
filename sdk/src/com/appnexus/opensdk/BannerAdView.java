@@ -12,7 +12,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
-*/
+ */
 
 package com.appnexus.opensdk;
 
@@ -28,8 +28,9 @@ import android.util.AttributeSet;
 
 /**
  * This view is added to an existing layout in order to display ads.
+ * 
  * @author Jacob Shufro
- *
+ * 
  */
 public class BannerAdView extends AdView {
 
@@ -39,17 +40,20 @@ public class BannerAdView extends AdView {
 	private boolean shouldReloadOnResume;
 	private BroadcastReceiver receiver;
 	private boolean receiversRegistered;
-	
-	private void setDefaultsBeforeXML(){
-		running=false;
-		auto_refresh=false;
-		shouldReloadOnResume=false;
-		receiversRegistered=false;
+
+	private void setDefaultsBeforeXML() {
+		running = false;
+		auto_refresh = false;
+		shouldReloadOnResume = false;
+		receiversRegistered = false;
 	}
-	
+
 	/**
 	 * Creates a new BannerAdView
-	 * @param context	The context of the {@link ViewGroup} to which the BannerAdView is being added.
+	 * 
+	 * @param context
+	 *            The context of the {@link ViewGroup} to which the BannerAdView
+	 *            is being added.
 	 */
 	public BannerAdView(Context context) {
 		super(context);
@@ -57,8 +61,13 @@ public class BannerAdView extends AdView {
 
 	/**
 	 * Creates a new BannerAdView
-	 * @param context	The context of the {@link ViewGroup} to which the BannerAdView is being added.
-	 * @param attrs		The {@link AttributeSet} to use when creating the BannerAdView.
+	 * 
+	 * @param context
+	 *            The context of the {@link ViewGroup} to which the BannerAdView
+	 *            is being added.
+	 * @param attrs
+	 *            The {@link AttributeSet} to use when creating the
+	 *            BannerAdView.
 	 */
 	public BannerAdView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -66,9 +75,18 @@ public class BannerAdView extends AdView {
 
 	/**
 	 * Creates a new BannerAdView
-	 * @param context	The context of the {@link ViewGroup} to which the BannerAdView is being added.
-	 * @param attrs		The {@link AttributeSet} to use when creating the BannerAdView.
-	 * @param defStyle	The default style to apply to this view. If 0, no style will be applied (beyond what is included in the theme). This may either be an attribute resource, whose value will be retrieved from the current theme, or an explicit style resource.
+	 * 
+	 * @param context
+	 *            The context of the {@link ViewGroup} to which the BannerAdView
+	 *            is being added.
+	 * @param attrs
+	 *            The {@link AttributeSet} to use when creating the
+	 *            BannerAdView.
+	 * @param defStyle
+	 *            The default style to apply to this view. If 0, no style will
+	 *            be applied (beyond what is included in the theme). This may
+	 *            either be an attribute resource, whose value will be retrieved
+	 *            from the current theme, or an explicit style resource.
 	 */
 	public BannerAdView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
@@ -76,8 +94,12 @@ public class BannerAdView extends AdView {
 
 	/**
 	 * Creates a new BannerAdView
-	 * @param context		The context of the {@link ViewGroup} to which the BannerAdView is being added.
-	 * @param placement_id	The AppNexus placement id to use for this BannerAdView.
+	 * 
+	 * @param context
+	 *            The context of the {@link ViewGroup} to which the BannerAdView
+	 *            is being added.
+	 * @param placement_id
+	 *            The AppNexus placement id to use for this BannerAdView.
 	 */
 	public BannerAdView(Context context, String placement_id) {
 		super(context, placement_id);
@@ -85,10 +107,18 @@ public class BannerAdView extends AdView {
 
 	/**
 	 * Creates a new BannerAdView
-	 * @param context		The context of the {@link ViewGroup} to which the BannerAdView is being added.
-	 * @param placement_id	The AppNexus placement id to use for this BannerAdView.
-	 * @param ad_width		The height of the ad to request. Note: This is not the same as layout_width.
-	 * @param ad_height		Thewidth of the ad to request. Note: This is not the same as layout_height.
+	 * 
+	 * @param context
+	 *            The context of the {@link ViewGroup} to which the BannerAdView
+	 *            is being added.
+	 * @param placement_id
+	 *            The AppNexus placement id to use for this BannerAdView.
+	 * @param ad_width
+	 *            The height of the ad to request. Note: This is not the same as
+	 *            layout_width.
+	 * @param ad_height
+	 *            Thewidth of the ad to request. Note: This is not the same as
+	 *            layout_height.
 	 */
 	public BannerAdView(Context context, String placement_id, int ad_width,
 			int ad_height) {
@@ -118,7 +148,7 @@ public class BannerAdView extends AdView {
 						start();
 					else if (shouldReloadOnResume)
 						stop();
-						start();
+					start();
 					Clog.d(Clog.baseLogTag,
 							Clog.getString(R.string.screen_on_start));
 				}
@@ -140,14 +170,14 @@ public class BannerAdView extends AdView {
 				setupBroadcast(getContext());
 				receiversRegistered = true;
 			}
-			if(shouldReloadOnResume){
+			if (shouldReloadOnResume) {
 				start();
 			}
 		}
 
 	}
 
-	// Make sure receive is registered.
+	// Make sure receiver is registered.
 	@Override
 	protected void onFirstLayout() {
 		super.onFirstLayout();
@@ -162,22 +192,22 @@ public class BannerAdView extends AdView {
 	protected void start() {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.start));
 		mAdFetcher.start();
-		running=true;
+		running = true;
 	}
 
 	protected void stop() {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.stop));
 		mAdFetcher.stop();
-		running=false;
+		running = false;
 	}
 
 	@Override
 	protected void loadVariablesFromXML(Context context, AttributeSet attrs) {
-		//Defaults
+		// Defaults
 		setDefaultsBeforeXML();
-		
-		TypedArray a = context
-				.obtainStyledAttributes(attrs, R.styleable.BannerAdView);
+
+		TypedArray a = context.obtainStyledAttributes(attrs,
+				R.styleable.BannerAdView);
 
 		final int N = a.getIndexCount();
 		Clog.v(Clog.xmlLogTag, Clog.getString(R.string.found_n_in_xml, N));
@@ -185,37 +215,40 @@ public class BannerAdView extends AdView {
 			int attr = a.getIndex(i);
 			if (attr == R.styleable.BannerAdView_placement_id) {
 				setPlacementID(a.getString(attr));
-				Clog.d(Clog.xmlLogTag,
-						Clog.getString(R.string.placement_id, a.getString(attr)));
-			}else if(attr == R.styleable.BannerAdView_auto_refresh_interval){
+				Clog.d(Clog.xmlLogTag, Clog.getString(R.string.placement_id,
+						a.getString(attr)));
+			} else if (attr == R.styleable.BannerAdView_auto_refresh_interval) {
 				setAutoRefreshInterval(a.getInt(attr, 60 * 1000));
 				Clog.d(Clog.xmlLogTag,
 						Clog.getString(R.string.xml_set_period, period));
-			}else if(attr == R.styleable.BannerAdView_test){
+			} else if (attr == R.styleable.BannerAdView_test) {
 				Settings.getSettings().test_mode = a.getBoolean(attr, false);
 				Clog.d(Clog.xmlLogTag,
 						Clog.getString(R.string.xml_set_test,
 								Settings.getSettings().test_mode));
-			}else if(attr == R.styleable.BannerAdView_auto_refresh){
+			} else if (attr == R.styleable.BannerAdView_auto_refresh) {
 				setAutoRefresh(a.getBoolean(attr, false));
 				Clog.d(Clog.xmlLogTag, Clog.getString(
 						R.string.xml_set_auto_refresh, auto_refresh));
-			}else if(attr == R.styleable.BannerAdView_width){
+			} else if (attr == R.styleable.BannerAdView_width) {
 				setAdWidth(a.getInt(attr, -1));
 				Clog.d(Clog.xmlLogTag,
-						Clog.getString(R.string.xml_ad_width, a.getInt(attr, -1)));
-			}else if(attr == R.styleable.BannerAdView_height){
+						Clog.getString(R.string.xml_ad_width,
+								a.getInt(attr, -1)));
+			} else if (attr == R.styleable.BannerAdView_height) {
 				setAdHeight(a.getInt(attr, -1));
 				Clog.d(Clog.xmlLogTag,
-						Clog.getString(R.string.xml_ad_height, a.getInt(attr, -1)));
-			}else if(attr == R.styleable.BannerAdView_should_reload_on_resume){
+						Clog.getString(R.string.xml_ad_height,
+								a.getInt(attr, -1)));
+			} else if (attr == R.styleable.BannerAdView_should_reload_on_resume) {
 				setShouldReloadOnResume(a.getBoolean(attr, false));
 				Clog.d(Clog.xmlLogTag, Clog.getString(
 						R.string.xml_set_should_reload, shouldReloadOnResume));
-			}else if(attr == R.styleable.BannerAdView_opens_native_browser){
+			} else if (attr == R.styleable.BannerAdView_opens_native_browser) {
 				setOpensNativeBrowser(a.getBoolean(attr, false));
 				Clog.d(Clog.xmlLogTag, Clog.getString(
-						R.string.xml_set_opens_native_browser, opensNativeBrowser));
+						R.string.xml_set_opens_native_browser,
+						opensNativeBrowser));
 			}
 		}
 		a.recycle();
@@ -223,7 +256,8 @@ public class BannerAdView extends AdView {
 
 	/**
 	 * 
-	 * @return The interval, in milliseconds, at which the BannerAdView will request new ads, if autorefresh is enabled.
+	 * @return The interval, in milliseconds, at which the BannerAdView will
+	 *         request new ads, if autorefresh is enabled.
 	 */
 	public int getAutoRefreshInterval() {
 		Clog.d(Clog.publicFunctionsLogTag,
@@ -233,13 +267,16 @@ public class BannerAdView extends AdView {
 
 	/**
 	 * 
-	 * @param period The interval, in milliseconds, at which the BannerAdView will request new ads, if autorefresh is enabled.
+	 * @param period
+	 *            The interval, in milliseconds, at which the BannerAdView will
+	 *            request new ads, if autorefresh is enabled.
 	 */
 	public void setAutoRefreshInterval(int period) {
 		Clog.d(Clog.publicFunctionsLogTag,
 				Clog.getString(R.string.set_period, period));
 		this.period = period;
-		if(mAdFetcher!=null) mAdFetcher.setPeriod(period);
+		if (mAdFetcher != null)
+			mAdFetcher.setPeriod(period);
 	}
 
 	/**
@@ -254,96 +291,108 @@ public class BannerAdView extends AdView {
 
 	/**
 	 * 
-	 * @param auto_refresh	Whether this view should periodically request new ads.
+	 * @param auto_refresh
+	 *            Whether this view should periodically request new ads.
 	 */
 	public void setAutoRefresh(boolean auto_refresh) {
 		Clog.d(Clog.publicFunctionsLogTag,
 				Clog.getString(R.string.set_auto_refresh, auto_refresh));
 		this.auto_refresh = auto_refresh;
-		if(mAdFetcher!=null){
+		if (mAdFetcher != null) {
 			mAdFetcher.setAutoRefresh(auto_refresh);
 			mAdFetcher.clearDurations();
 		}
-		if (!running && mAdFetcher!=null) {
+		if (!running && mAdFetcher != null) {
 			start();
 		}
 	}
-	
+
 	/**
 	 * 
-	 * @return Whether or not this view should load a new ad if the user resumes use of the app from a screenlock or multitask.
+	 * @return Whether or not this view should load a new ad if the user resumes
+	 *         use of the app from a screenlock or multitask.
 	 */
 	public boolean getShouldReloadOnResume() {
-		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.get_should_resume, shouldReloadOnResume));
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
+				R.string.get_should_resume, shouldReloadOnResume));
 		return shouldReloadOnResume;
 	}
 
 	/**
 	 * 
-	 * @param shouldReloadOnResume Whether or not this view should load a new ad if the user resumes use of the app from a screenlock or multitask.
+	 * @param shouldReloadOnResume
+	 *            Whether or not this view should load a new ad if the user
+	 *            resumes use of the app from a screenlock or multitask.
 	 */
 	public void setShouldReloadOnResume(boolean shouldReloadOnResume) {
-		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_should_resume, shouldReloadOnResume));
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
+				R.string.set_should_resume, shouldReloadOnResume));
 		this.shouldReloadOnResume = shouldReloadOnResume;
 	}
-	
-	private boolean requesting_visible=false;
+
+	private boolean requesting_visible = false;
+
 	@Override
 	public void onWindowVisibilityChanged(int visibility) {
 		super.onWindowVisibilityChanged(visibility);
 		if (visibility == VISIBLE) {
-			// Register a broadcast receiver to pause add refresh when the phone is
+			// Register a broadcast receiver to pause add refresh when the phone
+			// is
 			// locked
-			if(!receiversRegistered){
+			if (!receiversRegistered) {
 				setupBroadcast(getContext());
-				receiversRegistered=true;
+				receiversRegistered = true;
 			}
 			Clog.d(Clog.baseLogTag, Clog.getString(R.string.unhidden));
-			if (mAdFetcher != null && (!requesting_visible || running || shouldReloadOnResume || auto_refresh))
+			if (mAdFetcher != null
+					&& (!requesting_visible || running || shouldReloadOnResume || auto_refresh))
 				start();
-			else{
-				//Were' not displaying the adview, the system is
-				requesting_visible=false;
+			else {
+				// Were' not displaying the adview, the system is
+				requesting_visible = false;
 			}
 		} else {
-			//Unregister the receiver to prevent a leak.
-			if(receiversRegistered){
+			// Unregister the receiver to prevent a leak.
+			if (receiversRegistered) {
 				dismantleBroadcast();
-				receiversRegistered=false;
+				receiversRegistered = false;
 			}
 			Clog.d(Clog.baseLogTag, Clog.getString(R.string.hidden));
-			if (mAdFetcher != null && running){
+			if (mAdFetcher != null && running) {
 				stop();
 			}
 		}
 	}
-	private void dismantleBroadcast(){
+
+	private void dismantleBroadcast() {
 		getContext().unregisterReceiver(receiver);
 	}
-	
+
 	/**
-	 * Begins automatically reloading ads at the set period (60 seconds by default).
+	 * Begins automatically reloading ads at the set period (60 seconds by
+	 * default).
 	 */
-	public void startAutoRefresh(){
+	public void startAutoRefresh() {
 		this.setAutoRefresh(true);
 	}
-	
+
 	/**
 	 * Sets the autorefresh period and begins automatically reloading ads.
+	 * 
 	 * @param interval
 	 */
-	public void startAutoRefresh(int interval){
+	public void startAutoRefresh(int interval) {
 		this.setAutoRefreshInterval(interval);
 		this.startAutoRefresh();
 	}
-	
+
 	@Override
-	protected void unhide(){
+	protected void unhide() {
 		super.unhide();
 		this.requesting_visible = true;
 	}
-	
-	protected String getMRAIDAdType(){
+
+	protected String getMRAIDAdType() {
 		return "inline";
 	}
 }

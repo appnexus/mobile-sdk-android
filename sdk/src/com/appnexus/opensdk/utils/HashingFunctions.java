@@ -12,7 +12,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
-*/
+ */
 
 package com.appnexus.opensdk.utils;
 
@@ -30,7 +30,8 @@ public class HashingFunctions {
 
 			// Create Hex String
 			return HashingFunctions.byteToHex(messageDigest);
-		} catch (NoSuchAlgorithmException e) {}
+		} catch (NoSuchAlgorithmException e) {
+		}
 		return "";
 	}
 
@@ -44,11 +45,12 @@ public class HashingFunctions {
 
 			// Create Hex String
 			return HashingFunctions.byteToHex(messageDigest);
-		} catch (NoSuchAlgorithmException e) {}
+		} catch (NoSuchAlgorithmException e) {
+		}
 		return "";
 	}
-	
-	private static String byteToHex(byte[] messageDigest){
+
+	private static String byteToHex(byte[] messageDigest) {
 		StringBuilder buf = new StringBuilder();
 		for (byte b : messageDigest) {
 			int halfbyte = (b >>> 4) & 0x0F;

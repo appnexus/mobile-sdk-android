@@ -12,7 +12,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
-*/
+ */
 
 package com.appnexus.opensdk;
 
@@ -24,7 +24,7 @@ import com.appnexus.opensdk.utils.Settings;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color; 
+import android.graphics.Color;
 import android.net.Uri;
 import android.util.Pair;
 import android.view.Gravity;
@@ -66,7 +66,7 @@ public class AdWebView extends WebView implements Displayable {
 		this.getSettings().setSupportZoom(false);
 		this.getSettings().setUseWideViewPort(false);
 		this.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-		//this.setInitialScale(100);
+		// this.setInitialScale(100);
 
 		setHorizontalScrollbarOverlay(false);
 		setHorizontalScrollBarEnabled(false);
@@ -77,7 +77,7 @@ public class AdWebView extends WebView implements Displayable {
 		setScrollBarStyle(WebView.SCROLLBARS_INSIDE_OVERLAY);
 
 		setWebChromeClient(new AdWebChromeClient());
-		
+
 		setWebViewClient(new WebViewClient() {
 			@Override
 			public void onReceivedError(WebView view, int errorCode,
@@ -97,22 +97,27 @@ public class AdWebView extends WebView implements Displayable {
 
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
-				if(url.startsWith("javascript:") || url.startsWith("mraid:")) return false;
-				
-				//TODO add clogging
-				
-				if(destination.getOpensNativeBrowser()){
-					Clog.d(Clog.baseLogTag, Clog.getString(R.string.opening_native));
-					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+				if (url.startsWith("javascript:") || url.startsWith("mraid:"))
+					return false;
+
+				if (destination.getOpensNativeBrowser()) {
+					Clog.d(Clog.baseLogTag,
+							Clog.getString(R.string.opening_native));
+					Intent intent = new Intent(Intent.ACTION_VIEW,
+							Uri.parse(url));
 					getContext().startActivity(intent);
-				}else{
-					Clog.d(Clog.baseLogTag, Clog.getString(R.string.opening_inapp));
-					Intent intent = new Intent(destination.getContext(), BrowserActivity.class);
+				} else {
+					Clog.d(Clog.baseLogTag,
+							Clog.getString(R.string.opening_inapp));
+					Intent intent = new Intent(destination.getContext(),
+							BrowserActivity.class);
 					intent.putExtra("url", url);
-					if(destination.getBrowserStyle()!=null){
-						String i = ""+this.hashCode();
+					if (destination.getBrowserStyle() != null) {
+						String i = "" + this.hashCode();
 						intent.putExtra("bridgeid", i);
-						AdView.BrowserStyle.bridge.add(new Pair<String, BrowserStyle>(i, destination.getBrowserStyle()));
+						AdView.BrowserStyle.bridge
+								.add(new Pair<String, BrowserStyle>(i,
+										destination.getBrowserStyle()));
 					}
 					destination.getContext().startActivity(intent);
 				}
@@ -132,7 +137,8 @@ public class AdWebView extends WebView implements Displayable {
 		String body = "<html><head /><body style='margin:0;padding:0;'>"
 				+ ad.getBody() + "</body></html>";
 		Clog.v(Clog.baseLogTag, Clog.getString(R.string.webview_loading, body));
-		this.loadDataWithBaseURL("http://mobile.adnxs.com", body, "text/html", "UTF-8", null);
+		this.loadDataWithBaseURL("http://mobile.adnxs.com", body, "text/html",
+				"UTF-8", null);
 
 		final float scale = destination.getContext().getResources()
 				.getDisplayMetrics().density;
@@ -157,21 +163,22 @@ public class AdWebView extends WebView implements Displayable {
 	public boolean failed() {
 		return failed;
 	}
-	
-	class AdWebChromeClient extends WebChromeClient{
-		
+
+	class AdWebChromeClient extends WebChromeClient {
+
 		public void onShowCustomView(View view, CustomViewCallback callback) {
-		    super.onShowCustomView(view, callback);
-		    if (view instanceof FrameLayout){
-		        FrameLayout frame = (FrameLayout) view;
-		        if (frame.getFocusedChild() instanceof VideoView){
-		            VideoView video = (VideoView) frame.getFocusedChild();
-		            frame.removeView(video);
-		            ((Activity)AdWebView.this.destination.getContext()).setContentView(video);
-		            video.start();
-		        }
-		    }
-		}	
-		
+			super.onShowCustomView(view, callback);
+			if (view instanceof FrameLayout) {
+				FrameLayout frame = (FrameLayout) view;
+				if (frame.getFocusedChild() instanceof VideoView) {
+					VideoView video = (VideoView) frame.getFocusedChild();
+					frame.removeView(video);
+					((Activity) AdWebView.this.destination.getContext())
+							.setContentView(video);
+					video.start();
+				}
+			}
+		}
+
 	}
 }

@@ -12,7 +12,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
-*/
+ */
 
 package com.appnexus.opensdk;
 
@@ -24,20 +24,19 @@ import java.util.concurrent.TimeUnit;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
-
 import android.os.Handler;
 import android.os.Message;
 
-public class AdFetcher implements AdRequester{
+public class AdFetcher implements AdRequester {
 	private ScheduledExecutorService tasker;
 	protected AdView owner;
 	private int period = -1;
 	private boolean autoRefresh;
 	private RequestHandler handler;
 	private boolean shouldReset = false;
-	private long lastFetchTime=-1;
-	private long timePausedAt=-1;
-	
+	private long lastFetchTime = -1;
+	private long timePausedAt = -1;
+
 	// Fires requests whenever it receives a message
 	public AdFetcher(AdView owner) {
 		this.owner = owner;
@@ -46,7 +45,7 @@ public class AdFetcher implements AdRequester{
 
 	protected void setPeriod(int period) {
 		this.period = period;
-		if(tasker!=null)
+		if (tasker != null)
 			shouldReset = true;
 	}
 
@@ -56,35 +55,34 @@ public class AdFetcher implements AdRequester{
 
 	protected void stop() {
 		if (tasker == null)
-			return; // You can't stop the signal Mal
+			return;
 		tasker.shutdownNow();
 		try {
 			tasker.awaitTermination(period, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
-			tasker=null;
+			tasker = null;
 			return;
 		}
-		tasker=null;
+		tasker = null;
 		Clog.d(Clog.baseLogTag, Clog.getString(R.string.stop));
-		timePausedAt=System.currentTimeMillis();
-		
+		timePausedAt = System.currentTimeMillis();
+
 	}
-	
-	private void requestFailed(){
+
+	private void requestFailed() {
 		owner.fail();
 	}
 
 	protected void start() {
 		Clog.d(Clog.baseLogTag, Clog.getString(R.string.start));
-		//Better have a placement ID!
-		if(owner.getPlacementID()==null){
+		// Requests can't be made without a placement ID
+		if (owner.getPlacementID() == null) {
 			Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_placement_id));
 			requestFailed();
 			return;
 		}
 		if (tasker != null) {
-			Clog.d(Clog.baseLogTag,
-					Clog.getString(R.string.moot_restart));
+			Clog.d(Clog.baseLogTag, Clog.getString(R.string.moot_restart));
 			requestFailed();
 			return;
 		}
@@ -93,45 +91,51 @@ public class AdFetcher implements AdRequester{
 
 	private void makeTasker() {
 		// Start a Scheduler to execute recurring tasks
-		tasker = Executors.newScheduledThreadPool(Settings.getSettings().FETCH_THREAD_COUNT);
+		tasker = Executors
+				.newScheduledThreadPool(Settings.getSettings().FETCH_THREAD_COUNT);
 
 		// Get the period from the settings
 		final int msPeriod = period <= 0 ? 60 * 1000 : period;
 
 		if (!getAutoRefresh()) {
-			Clog.v(Clog.baseLogTag, Clog.getString(R.string.fetcher_start_single));
+			Clog.v(Clog.baseLogTag,
+					Clog.getString(R.string.fetcher_start_single));
 			// Request an ad once
 			tasker.schedule(new MessageRunnable(), 0, TimeUnit.SECONDS);
 		} else {
 			Clog.v(Clog.baseLogTag, Clog.getString(R.string.fetcher_start_auto));
 			// Start recurring ad requests
 			long stall_temp;
-			if(timePausedAt!=-1 && lastFetchTime!=-1){
-				stall_temp = msPeriod-(timePausedAt-lastFetchTime);
-			}else{
-				stall_temp=0;
+			if (timePausedAt != -1 && lastFetchTime != -1) {
+				stall_temp = msPeriod - (timePausedAt - lastFetchTime);
+			} else {
+				stall_temp = 0;
 			}
-			final long stall = stall_temp;//Stupid lexical scoping
-			Clog.v(Clog.baseLogTag, Clog.getString(R.string.request_delayed_by_x_ms, stall));
-			tasker.schedule(new Runnable(){
+			final long stall = stall_temp;
+			Clog.v(Clog.baseLogTag,
+					Clog.getString(R.string.request_delayed_by_x_ms, stall));
+			tasker.schedule(new Runnable() {
 				@Override
-				public void run(){
-					Clog.v(Clog.baseLogTag, Clog.getString(R.string.request_delayed_by_x_ms, stall));
-					tasker.scheduleAtFixedRate(new MessageRunnable(), 0, msPeriod, TimeUnit.MILLISECONDS);
+				public void run() {
+					Clog.v(Clog.baseLogTag, Clog.getString(
+							R.string.request_delayed_by_x_ms, stall));
+					tasker.scheduleAtFixedRate(new MessageRunnable(), 0,
+							msPeriod, TimeUnit.MILLISECONDS);
 				}
 			}, stall, TimeUnit.MILLISECONDS);
 		}
 	}
-	
-	class MessageRunnable implements Runnable{
+
+	class MessageRunnable implements Runnable {
 
 		@Override
 		public void run() {
-			Clog.v(Clog.baseLogTag, Clog.getString(R.string.handler_message_pass));
+			Clog.v(Clog.baseLogTag,
+					Clog.getString(R.string.handler_message_pass));
 			handler.sendEmptyMessage(0);
-			
+
 		}
-		
+
 	}
 
 	// Create a handler which will receive the AsyncTasks and spawn them from
@@ -145,22 +149,29 @@ public class AdFetcher implements AdRequester{
 
 		@Override
 		synchronized public void handleMessage(Message msg) {
-			// If the adfetcher, for some reason, has vanished, do nothing with this message
-			// If an MRAID ad is expanded in the owning view, do nothing with this message
-			if(mFetcher.get()==null || mFetcher.get().owner.isMRAIDExpanded()) return;
-			
-			//If we need to reset, reset.
-			if(mFetcher.get().shouldReset){
-				mFetcher.get().shouldReset=false;
+			// If the adfetcher, for some reason, has vanished, do nothing with
+			// this message
+			// If an MRAID ad is expanded in the owning view, do nothing with
+			// this message
+			if (mFetcher.get() == null
+					|| mFetcher.get().owner.isMRAIDExpanded())
+				return;
+
+			// If we need to reset, reset.
+			if (mFetcher.get().shouldReset) {
+				mFetcher.get().shouldReset = false;
 				mFetcher.get().stop();
 				mFetcher.get().start();
 				return;
 			}
-			
+
 			// Update last fetch time once
-			Clog.d(Clog.baseLogTag, Clog.getString(R.string.new_ad_since, (int)(System.currentTimeMillis()-mFetcher.get().lastFetchTime)));
+			Clog.d(Clog.baseLogTag,
+					Clog.getString(
+							R.string.new_ad_since,
+							(int) (System.currentTimeMillis() - mFetcher.get().lastFetchTime)));
 			mFetcher.get().lastFetchTime = System.currentTimeMillis();
-			
+
 			// Spawn an AdRequest
 			new AdRequest(mFetcher.get()).execute();
 		}
@@ -189,11 +200,11 @@ public class AdFetcher implements AdRequester{
 
 	@Override
 	public void onReceiveResponse(AdResponse response) {
-		if(response.isMraid){
+		if (response.isMraid) {
 			MRAIDWebView output = new MRAIDWebView(owner);
 			output.loadAd(response);
 			owner.display(output);
-		}else{
+		} else {
 			AdWebView output = new AdWebView(owner);
 			output.loadAd(response);
 			owner.display(output);
@@ -201,8 +212,8 @@ public class AdFetcher implements AdRequester{
 	}
 
 	public void clearDurations() {
-		lastFetchTime=-1;
-		timePausedAt=-1;
-		
+		lastFetchTime = -1;
+		timePausedAt = -1;
+
 	}
 }

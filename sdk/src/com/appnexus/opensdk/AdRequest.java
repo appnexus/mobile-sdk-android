@@ -12,7 +12,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
-*/
+ */
 
 package com.appnexus.opensdk;
 
@@ -160,7 +160,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 					Clog.getString(R.string.permissions_missing_location));
 		}
 
-		// Do we have ACCESS_NETWORK_STATE?
+		// Do we have permission ACCESS_NETWORK_STATE?
 		if (context
 				.checkCallingOrSelfPermission("android.permission.ACCESS_NETWORK_STATE") != PackageManager.PERMISSION_GRANTED) {
 			Clog.e(Clog.baseLogTag,
@@ -264,7 +264,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				+ Uri.encode(Settings.getSettings().app_id)
 				: "&appid=NO-APP-ID"));
 		sb.append((!isEmpty(firstlaunch) ? "&firstlaunch=" + firstlaunch : ""));
-		sb.append(!isEmpty(lat) && !isEmpty(lon) ? "&loc=" + lat + "," + lon : "");
+		sb.append(!isEmpty(lat) && !isEmpty(lon) ? "&loc=" + lat + "," + lon
+				: "");
 		sb.append((!isEmpty(locDataAge) ? "&" + "loc_age=" + locDataAge : ""));
 		sb.append((!isEmpty(locDataPrecision) ? "&loc_prec=" + locDataPrecision
 				: ""));
@@ -275,7 +276,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				: ""));
 		if (owner != null) {
 			sb.append(((maxHeight > 0 && maxWidth > 0)
-					&& !(owner instanceof InterstitialAdView) ? "&max-size="
+					&& !(owner instanceof InterstitialAdView) ? "&max_size="
 					+ maxWidth + "x" + maxHeight : ""));
 			sb.append(((maxHeight > 0 && maxWidth > 0)
 					&& (owner instanceof InterstitialAdView) ? "&size="

@@ -20,23 +20,17 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 import yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener;
 
 import com.appnexus.opensdk.AdListener;
-import com.appnexus.opensdk.AdResponse;
 import com.appnexus.opensdk.AdView;
-import com.appnexus.opensdk.AdWebView;
 import com.appnexus.opensdk.BannerAdView;
 import com.appnexus.opensdk.InterstitialAdView;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdkdemo.R;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -52,12 +46,10 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.RelativeLayout.LayoutParams;
 
 public class MainTabFragment extends Fragment implements AdListener {
 	private Button loadAdButton;
-	private Button pasteAdButton;
+	//private Button pasteAdButton;
 	private BannerAdView bannerAdView;
 	private InterstitialAdView iav;
 	private RadioGroup radioGroup;
@@ -96,8 +88,8 @@ public class MainTabFragment extends Fragment implements AdListener {
 		loadAdButton = (Button) out.findViewById(R.id.loadad);
 		loadAdButton.setOnClickListener(new LoadAdOnClickListener());
 
-		pasteAdButton = (Button) out.findViewById(R.id.pastead);
-		pasteAdButton.setOnClickListener(new PasteAdOnClickListener());
+		//pasteAdButton = (Button) out.findViewById(R.id.pastead);
+		//pasteAdButton.setOnClickListener(new PasteAdOnClickListener());
 
 		bannerAdView = (BannerAdView) out.findViewById(R.id.banner);
 
@@ -335,7 +327,7 @@ public class MainTabFragment extends Fragment implements AdListener {
 
 	}
 
-	private class PasteAdOnClickListener implements View.OnClickListener {
+	/*private class PasteAdOnClickListener implements View.OnClickListener {
 
 		@Override
 		public void onClick(View v) {
@@ -421,7 +413,7 @@ public class MainTabFragment extends Fragment implements AdListener {
 
 		}
 
-	}
+	}*/
 
 	private class RadioGroupListener implements
 			RadioGroup.OnCheckedChangeListener {

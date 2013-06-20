@@ -12,7 +12,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
-*/
+ */
 
 package com.appnexus.opensdk;
 
@@ -35,93 +35,102 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 public class AdActivity extends Activity {
-	
+
 	FrameLayout layout;
 	long now;
 	int orientation;
-	
+
 	@SuppressLint("InlinedApi")
 	@Override
-	public void onCreate(Bundle b){
+	public void onCreate(Bundle b) {
 		super.onCreate(b);
 		layout = new FrameLayout(this);
-		
-		//Lock the orientation
+
+		// Lock the orientation
 		AdActivity.lockOrientation(this);
-	
+
 		setContentView(layout);
-		
+
 		setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
 		now = getIntent().getLongExtra("Time", System.currentTimeMillis());
-		
-		//Add a close button.
+
+		// Add a close button.
 		addCloseButton(layout);
-		
+
 	}
-	
-	private void addCloseButton(FrameLayout layout){
+
+	private void addCloseButton(FrameLayout layout) {
 		final ImageButton close = new ImageButton(this);
-		close.setImageDrawable(getResources().getDrawable(android.R.drawable.ic_menu_close_clear_cancel));
-		FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.RIGHT | Gravity.TOP);
+		close.setImageDrawable(getResources().getDrawable(
+				android.R.drawable.ic_menu_close_clear_cancel));
+		FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
+				FrameLayout.LayoutParams.WRAP_CONTENT,
+				FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.RIGHT
+						| Gravity.TOP);
 		close.setLayoutParams(blp);
 		close.setBackgroundColor(Color.TRANSPARENT);
 		close.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				finish();
-				
+
 			}
 		});
 		layout.addView(close);
 	}
-	
-	private void setIAdView(InterstitialAdView av){
-		if(layout!=null){ 
+
+	private void setIAdView(InterstitialAdView av) {
+		if (layout != null) {
 			layout.setBackgroundColor(av.getBackgroundColor());
 			layout.removeAllViews();
-			if(((ViewGroup)av.getParent())!=null){
-				((ViewGroup)av.getParent()).removeAllViews();
+			if (((ViewGroup) av.getParent()) != null) {
+				((ViewGroup) av.getParent()).removeAllViews();
 			}
 			Pair<Long, Displayable> p = InterstitialAdView.q.poll();
-			while(p!=null && p.second!=null && now-p.first > InterstitialAdView.MAX_AGE){
+			while (p != null && p.second != null
+					&& now - p.first > InterstitialAdView.MAX_AGE) {
 				Clog.w(Clog.baseLogTag, Clog.getString(R.string.too_old));
-				p=InterstitialAdView.q.poll();
+				p = InterstitialAdView.q.poll();
 			}
-			if(p==null) return;
+			if (p == null)
+				return;
 			layout.addView(p.second.getView());
 		}
 	}
-	
-	@SuppressLint("InlinedApi")
-	protected static void lockOrientation(Activity a){
-		Display d = ((WindowManager)a.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-		switch (a.getResources().getConfiguration().orientation){
-	        case Configuration.ORIENTATION_PORTRAIT:
-	            if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO){
-	            	a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-	            } else {
-	                int rotation = d.getRotation();
-	            if(rotation == android.view.Surface.ROTATION_90|| rotation == android.view.Surface.ROTATION_180){
-	                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
-	                } else {
-	                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-	                }
-	            }   
-	        break;
 
-	        case Configuration.ORIENTATION_LANDSCAPE:
-	            if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO){
-	                a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-	            } else {
-	                int rotation = d.getRotation();
-	                if(rotation == android.view.Surface.ROTATION_0 || rotation == android.view.Surface.ROTATION_90){
-	                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-	                } else {
-	                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-	                }
-	            }
-	        break;
+	@SuppressLint("InlinedApi")
+	protected static void lockOrientation(Activity a) {
+		Display d = ((WindowManager) a.getSystemService(Context.WINDOW_SERVICE))
+				.getDefaultDisplay();
+		switch (a.getResources().getConfiguration().orientation) {
+		case Configuration.ORIENTATION_PORTRAIT:
+			if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO) {
+				a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+			} else {
+				int rotation = d.getRotation();
+				if (rotation == android.view.Surface.ROTATION_90
+						|| rotation == android.view.Surface.ROTATION_180) {
+					a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+				} else {
+					a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+				}
+			}
+			break;
+
+		case Configuration.ORIENTATION_LANDSCAPE:
+			if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO) {
+				a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+			} else {
+				int rotation = d.getRotation();
+				if (rotation == android.view.Surface.ROTATION_0
+						|| rotation == android.view.Surface.ROTATION_90) {
+					a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+				} else {
+					a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+				}
+			}
+			break;
 		}
 	}
 

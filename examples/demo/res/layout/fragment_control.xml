@@ -244,7 +244,7 @@
             android:layout_height="wrap_content"
             android:text="@string/load_ad_button" />
         
-        <!-- Load Ad Button -->
+        <!-- Load Ad Button 
 
         <View
             android:layout_width="fill_parent"
@@ -255,7 +255,7 @@
             android:id="@+id/pastead"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/paste_ad_button" />
+            android:text="@string/paste_ad_button" />-->
     </LinearLayout>
 
 </ScrollView>

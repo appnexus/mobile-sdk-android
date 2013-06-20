@@ -12,7 +12,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
-*/
+ */
 
 package com.appnexus.opensdk;
 
@@ -171,8 +171,7 @@ public abstract class AdView extends FrameLayout {
 
 	// If single-use mode, we must manually start the fetcher
 	protected void onFirstLayout() {
-		// If an MRAID ad is expanded here, don't fetch on resume... that's just
-		// bad
+		// If an MRAID ad is expanded here, don't fetch on resume.
 		if (isMRAIDExpanded())
 			return;
 		mAdFetcher.start();
