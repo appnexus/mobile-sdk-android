@@ -52,8 +52,8 @@ public class InterstitialAdView extends AdView {
 	 * Creates a new InterstitialAdView
 	 * 
 	 * @param context
-	 *            The context of the {@link ViewGroup} to which the
-	 *            InterstitialAdView is being added.
+	 *            The context of the ViewGroup to which the InterstitialAdView
+	 *            is being added.
 	 */
 	public InterstitialAdView(Context context) {
 		super(context);
@@ -63,8 +63,8 @@ public class InterstitialAdView extends AdView {
 	 * Creates a new InterstitialAdView
 	 * 
 	 * @param context
-	 *            The context of the {@link ViewGroup} to which the
-	 *            InterstitialAdView is being added.
+	 *            The context of the ViewGroup to which the InterstitialAdView
+	 *            is being added.
 	 * @param attrs
 	 *            The {@link AttributeSet} to use when creating the
 	 *            InterstitialAdView.
@@ -78,10 +78,10 @@ public class InterstitialAdView extends AdView {
 	 * Creates a new InterstitialAdView
 	 * 
 	 * @param context
-	 *            The context of the {@link ViewGroup} to which the
-	 *            InterstitialAdView is being added.
+	 *            The context of the ViewGroup to which the InterstitialAdView
+	 *            is being added.
 	 * @param attrs
-	 *            The {@link AttributeSet} to use when creating the
+	 *            The AttributeSet to use when creating the
 	 *            InterstitialAdView.rs
 	 * @param defStyle
 	 *            The default style to apply to this view. If 0, no style will
@@ -96,8 +96,8 @@ public class InterstitialAdView extends AdView {
 	/**
 	 * 
 	 * @param context
-	 *            The context of the {@link ViewGroup} to which the
-	 *            InterstitialAdView is being added.
+	 *            The context of the ViewGroup to which the InterstitialAdView
+	 *            is being added.
 	 * @param placement_id
 	 *            The AppNexus placement id to use for this InterstitialAdView.
 	 */
@@ -260,11 +260,9 @@ public class InterstitialAdView extends AdView {
 	}
 
 	/**
-	 * Returns an {@link ArrayList} of {@link Size}s which are allowed to be
-	 * displayed.
+	 * Returns an ArrayList of {@link Size}s which are allowed to be displayed.
 	 * 
-	 * @return The {@link ArrayList} of {@link Size}s which are allowed to be
-	 *         displayed.
+	 * @return The ArrayList of {@link Size}s which are allowed to be displayed.
 	 */
 	public ArrayList<Size> getAllowedSizes() {
 		Clog.d(Clog.publicFunctionsLogTag,
@@ -273,11 +271,10 @@ public class InterstitialAdView extends AdView {
 	}
 
 	/**
-	 * Sets the {@link ArrayList} of {@link Size}s which are allowed to be
-	 * displayed.
+	 * Sets the ArrayList of {@link Size}s which are allowed to be displayed.
 	 * 
 	 * @param allowed_sizes
-	 *            The {@link ArrayList} of {@link Size}s which are allowed to be
+	 *            The ArrayList of {@link Size}s which are allowed to be
 	 *            displayed.
 	 */
 	public void setAllowedSizes(ArrayList<Size> allowed_sizes) {
@@ -287,7 +284,7 @@ public class InterstitialAdView extends AdView {
 	}
 
 	/**
-	 * Sets the background {@link Color} to use behind the interstitial ad.
+	 * Sets the background Color to use behind the interstitial ad.
 	 */
 	public void setBackgroundColor(int color) {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_bg));
@@ -295,9 +292,9 @@ public class InterstitialAdView extends AdView {
 	}
 
 	/**
-	 * Gets the background {@link Color} to use behind the interstitial ad.
+	 * Gets the background Color to use behind the interstitial ad.
 	 * 
-	 * @return The background {@link Color} to use behind the interstitial ad.
+	 * @return The background Color to use behind the interstitial ad.
 	 */
 	public int getBackgroundColor() {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.get_bg));

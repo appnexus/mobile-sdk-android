@@ -85,6 +85,26 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	int maxWidth = -1;
 	int maxHeight = -1;
 
+	/**
+	 * Creates a new AdRequest with the given parameters
+	 * 
+	 * @param requester
+	 * @param aid
+	 * @param lat
+	 * @param lon
+	 * @param placementId
+	 * @param orientation
+	 * @param carrier
+	 * @param width
+	 * @param height
+	 * @param maxWidth
+	 * @param maxHeight
+	 * @param mcc
+	 * @param mnc
+	 * @param connectionType
+	 * @param isNativeBrowser
+	 * @param adListener
+	 */
 	public AdRequest(AdRequester requester, String aid, String lat, String lon,
 			String placementId, String orientation, String carrier, int width,
 			int height, int maxWidth, int maxHeight, String mcc, String mnc,

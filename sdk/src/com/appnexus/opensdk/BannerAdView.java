@@ -52,7 +52,7 @@ public class BannerAdView extends AdView {
 	 * Creates a new BannerAdView
 	 * 
 	 * @param context
-	 *            The context of the {@link ViewGroup} to which the BannerAdView
+	 *            The context of the ViewGroup to which the BannerAdView
 	 *            is being added.
 	 */
 	public BannerAdView(Context context) {
@@ -63,10 +63,10 @@ public class BannerAdView extends AdView {
 	 * Creates a new BannerAdView
 	 * 
 	 * @param context
-	 *            The context of the {@link ViewGroup} to which the BannerAdView
+	 *            The context of the ViewGroup to which the BannerAdView
 	 *            is being added.
 	 * @param attrs
-	 *            The {@link AttributeSet} to use when creating the
+	 *            The AttributeSet to use when creating the
 	 *            BannerAdView.
 	 */
 	public BannerAdView(Context context, AttributeSet attrs) {
@@ -77,10 +77,10 @@ public class BannerAdView extends AdView {
 	 * Creates a new BannerAdView
 	 * 
 	 * @param context
-	 *            The context of the {@link ViewGroup} to which the BannerAdView
+	 *            The context of the ViewGroup to which the BannerAdView
 	 *            is being added.
 	 * @param attrs
-	 *            The {@link AttributeSet} to use when creating the
+	 *            The AttributeSet to use when creating the
 	 *            BannerAdView.
 	 * @param defStyle
 	 *            The default style to apply to this view. If 0, no style will
@@ -96,7 +96,7 @@ public class BannerAdView extends AdView {
 	 * Creates a new BannerAdView
 	 * 
 	 * @param context
-	 *            The context of the {@link ViewGroup} to which the BannerAdView
+	 *            The context of the ViewGroup to which the BannerAdView
 	 *            is being added.
 	 * @param placement_id
 	 *            The AppNexus placement id to use for this BannerAdView.
@@ -109,7 +109,7 @@ public class BannerAdView extends AdView {
 	 * Creates a new BannerAdView
 	 * 
 	 * @param context
-	 *            The context of the {@link ViewGroup} to which the BannerAdView
+	 *            The context of the ViewGroup to which the BannerAdView
 	 *            is being added.
 	 * @param placement_id
 	 *            The AppNexus placement id to use for this BannerAdView.

@@ -17,7 +17,17 @@
 package com.appnexus.opensdk;
 
 public interface AdRequester {
+	/**
+	 * Called when the request made by the requester fails.
+	 * 
+	 * @param request
+	 */
 	public void failed(AdRequest request);
 
+	/**
+	 * Called when a response is received
+	 * 
+	 * @param response
+	 */
 	public void onReceiveResponse(AdResponse response);
 }

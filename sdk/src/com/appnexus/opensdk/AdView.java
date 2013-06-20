@@ -436,12 +436,19 @@ public abstract class AdView extends FrameLayout {
 			});
 	}
 
+	/**
+	 * @return whether or not the native browser is used instead of the in-app browser.
+	 */
 	public boolean getOpensNativeBrowser() {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
 				R.string.get_opens_native_browser, opensNativeBrowser));
 		return opensNativeBrowser;
 	}
 
+	/**
+	 * Set this to true to disable the in-app browser.
+	 * @param opensNativeBrowser
+	 */
 	public void setOpensNativeBrowser(boolean opensNativeBrowser) {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
 				R.string.set_opens_native_browser, opensNativeBrowser));
