@@ -103,7 +103,9 @@ public class MainTabFragment extends Fragment implements AdListener {
 
 			@Override
 			public void onAdLoaded(AdView adView) {
-				FrameLayout adframe = (FrameLayout) getView().findViewById(
+				View v = getView();
+				if(v==null) return;
+				FrameLayout adframe = (FrameLayout) v.findViewById(
 						R.id.adframe);
 				LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
 						adframe.getLayoutParams());
