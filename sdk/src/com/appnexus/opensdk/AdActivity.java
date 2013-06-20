@@ -103,8 +103,9 @@ public class AdActivity extends Activity {
 	protected static void lockOrientation(Activity a) {
 		Display d = ((WindowManager) a.getSystemService(Context.WINDOW_SERVICE))
 				.getDefaultDisplay();
-		switch (a.getResources().getConfiguration().orientation) {
-		case Configuration.ORIENTATION_PORTRAIT:
+		final int orientation = a.getResources().getConfiguration().orientation;
+		
+		if (orientation == Configuration.ORIENTATION_PORTRAIT) {
 			if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO) {
 				a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 			} else {
@@ -116,9 +117,7 @@ public class AdActivity extends Activity {
 					a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 				}
 			}
-			break;
-
-		case Configuration.ORIENTATION_LANDSCAPE:
+		}else if(orientation == Configuration.ORIENTATION_LANDSCAPE){
 			if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO) {
 				a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 			} else {
@@ -130,7 +129,6 @@ public class AdActivity extends Activity {
 					a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
 				}
 			}
-			break;
 		}
 	}
 

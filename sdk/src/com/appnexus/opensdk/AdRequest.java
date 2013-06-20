@@ -295,12 +295,15 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		sb.append(((width > 0 && height > 0) ? "&size=" + width + "x" + height
 				: ""));
 		if (owner != null) {
-			sb.append(((maxHeight > 0 && maxWidth > 0)
-					&& !(owner instanceof InterstitialAdView) ? "&max_size="
-					+ maxWidth + "x" + maxHeight : ""));
-			sb.append(((maxHeight > 0 && maxWidth > 0)
-					&& (owner instanceof InterstitialAdView) ? "&size="
-					+ maxWidth + "x" + maxHeight : ""));
+			if(maxHeight>0 && maxWidth >0){
+				if(!(owner instanceof InterstitialAdView) && (width<0 || height<0)){
+					sb.append("&max_size="
+							+ maxWidth + "x" + maxHeight);
+				}else{
+					sb.append("&size="
+							+ maxWidth + "x" + maxHeight);
+				}
+			}
 		}
 		sb.append((!isEmpty(allowedSizes) ? "&promo_sizes=" + allowedSizes : ""));
 		sb.append((!isEmpty(mcc) ? "&mcc=" + Uri.encode(mcc) : ""));
