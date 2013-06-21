@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   Copyright 2013 APPNEXUS INC
+   
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<resources>
+    <attr name="placement_id" format="string" />
+    <attr name="test" format="boolean" />
+    <attr name="width" format="integer" />
+    <attr name="height" format="integer" />
+    <declare-styleable name="BannerAdView">
+        <attr name="placement_id" />
+        <attr name="test"/>
+        <attr name="width"/>
+        <attr name="height" />
+        <attr name="should_reload_on_resume" format="boolean" />
+        <attr name="auto_refresh_interval" format="integer" />
+        <attr name="auto_refresh" format="boolean" />
+        <attr name="opens_native_browser" format="boolean" />
+    </declare-styleable>
+    
+    <declare-styleable name="InterstitialAdView">
+        <attr name="placement_id" />
+        <attr name="test"/>
+        <attr name="color" format="integer" />
+        <attr name="opens_native_browser"/>
+    </declare-styleable>
+
+</resources>
