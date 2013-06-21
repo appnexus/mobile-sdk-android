@@ -175,7 +175,10 @@ public class InterstitialAdView extends AdView {
 	}
 
 	/**
-	 * Requests a new add from the server and stores it in a local queue.
+	 * Requests a new interstitial ad from the server and stores it in a local
+	 * queue. Please note, that interstitials have a timeout of 60 seconds. You
+	 * must show the interstitial (call 'show()') within 60 seconds of getting a
+	 * response, otherwise, the ad will not show. Don't load two ads.
 	 */
 	@Override
 	public void loadAd() {
@@ -219,9 +222,9 @@ public class InterstitialAdView extends AdView {
 	}
 
 	/**
-	 * Pops ads from the queue until it finds one that does not exceed the
-	 * timeout, and displays it in a new activity. All ads in the queue which do
-	 * exceed the timeout are removed.
+	 * Pops ads from the queue until it finds one that has not exceeded the
+	 * timeout of 60 seconds, and displays it in a new activity. All ads in the
+	 * queue which have exceeded the timeout are removed.
 	 * 
 	 * @return The number of remaining ads in the queue that do not exceed the
 	 *         timeout.
