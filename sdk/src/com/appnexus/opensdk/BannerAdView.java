@@ -43,7 +43,7 @@ public class BannerAdView extends AdView {
 
 	private void setDefaultsBeforeXML() {
 		running = false;
-		auto_refresh = false;
+		auto_refresh = true;
 		shouldReloadOnResume = false;
 		receiversRegistered = false;
 	}
@@ -382,7 +382,7 @@ public class BannerAdView extends AdView {
 	 * @param interval
 	 */
 	public void startAutoRefresh(int interval) {
-		this.setAutoRefreshInterval(interval);
+		this.setAutoRefreshInterval(Math.max(interval,15));
 		this.startAutoRefresh();
 	}
 
