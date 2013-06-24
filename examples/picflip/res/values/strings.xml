@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">PicFlip</string>
+    <string name="menu_settings">Settings</string>
+    <string name="empty_waiting_for_sync">Waiting For Sync</string>
+    <string name="menu_about">About PicFlip</string>
+
+    <string name="copy_right"><![CDATA[
+        <b>Copyright 2013 AppNexus Inc.</b><br>
+        Version %s<br>
+        <b>Please visit us on the web at:</b><br>
+        <a href="http://www.appnexus.com">www.appnexus.com</a><br><br>
+    ]]></string>
+
+    <string name="alert_ok_button">@android:string/ok</string>
+
+</resources>
