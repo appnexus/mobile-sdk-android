@@ -46,6 +46,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainTabFragment extends Fragment implements AdListener {
 	private Button loadAdButton;
@@ -115,6 +116,24 @@ public class MainTabFragment extends Fragment implements AdListener {
 				}
 				bannerText.setVisibility(TextView.INVISIBLE);
 
+			}
+
+			@Override
+			public void onAdExpanded(AdView adView) {
+				Toast.makeText(MainTabFragment.this.getActivity(), "Ad Expanded", Toast.LENGTH_SHORT).show();
+				
+			}
+
+			@Override
+			public void onAdCollapsed(AdView adView) {
+				Toast.makeText(MainTabFragment.this.getActivity(), "Ad Collapsed", Toast.LENGTH_SHORT).show();
+				
+			}
+
+			@Override
+			public void onAdClicked(AdView adView) {
+				Toast.makeText(MainTabFragment.this.getActivity(), "Opening Browser", Toast.LENGTH_SHORT).show();
+				
 			}
 		});
 
@@ -469,8 +488,26 @@ public class MainTabFragment extends Fragment implements AdListener {
 
 	@Override
 	public void onAdRequestFailed(AdView adView) {
-		// TODO Auto-generated method stub
+		Toast.makeText(this.getActivity(), "Ad request failed", Toast.LENGTH_SHORT).show();
 
+	}
+
+	@Override
+	public void onAdExpanded(AdView adView) {
+		Toast.makeText(this.getActivity(), "Ad expanded", Toast.LENGTH_SHORT).show();
+		
+	}
+
+	@Override
+	public void onAdCollapsed(AdView adView) {
+		Toast.makeText(this.getActivity(), "Ad collapsed", Toast.LENGTH_SHORT).show();
+		
+	}
+
+	@Override
+	public void onAdClicked(AdView adView) {
+		Toast.makeText(this.getActivity(), "Opening browser", Toast.LENGTH_SHORT).show();
+		
 	}
 
 }

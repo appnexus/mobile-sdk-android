@@ -69,4 +69,22 @@ public class TestVisibility extends
 		notify();
 	}
 
+	@Override
+	public void onAdExpanded(AdView adView) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAdCollapsed(AdView adView) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAdClicked(AdView adView) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

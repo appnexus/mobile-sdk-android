@@ -86,4 +86,22 @@ public class TestFailingAdRequest extends TestCase implements AdRequester, AdLis
 		notify();
 	}
 
+	@Override
+	public void onAdExpanded(AdView adView) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAdCollapsed(AdView adView) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAdClicked(AdView adView) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

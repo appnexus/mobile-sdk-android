@@ -85,4 +85,22 @@ public class AdMobMediationInterstitial implements CustomEventInterstitial,
 		onFailedToReceiveAd(null, null);
 	}
 
+	@Override
+	public void onAdExpanded(AdView adView) {
+		onPresentScreen(null);
+		
+	}
+
+	@Override
+	public void onAdCollapsed(AdView adView) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAdClicked(AdView adView) {
+		onLeaveApplication(null);
+		
+	}
+
 }
