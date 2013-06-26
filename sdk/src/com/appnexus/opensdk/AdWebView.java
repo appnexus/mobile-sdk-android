@@ -121,6 +121,9 @@ public class AdWebView extends WebView implements Displayable {
 					}
 					destination.getContext().startActivity(intent);
 				}
+				
+				AdWebView.this.destination.adListener.onAdClicked(AdWebView.this.destination);
+				
 				return true;
 			}
 

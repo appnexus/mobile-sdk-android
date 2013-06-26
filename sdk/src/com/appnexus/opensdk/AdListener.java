@@ -26,16 +26,40 @@ public interface AdListener {
 	/**
 	 * Called when an ad has successfully been loaded from the server.
 	 * 
-	 * @param iAdView
+	 * @param adView
 	 *            The {@link AdView} that loaded the ad.
 	 */
 	public void onAdLoaded(AdView adView);
 
 	/**
-	 * Called when ad ad request fails.
+	 * Called when an ad request fails.
 	 * 
-	 * @param iAdView
+	 * @param adView
 	 *            The {@link AdView} that loaded the ad.
 	 */
 	public void onAdRequestFailed(AdView adView);
+	
+	/**
+	 * Called when an ad expands due to interaction.
+	 * 
+	 * @param adView
+	 *            The {@link AdView} that loaded the ad.
+	 */
+	public void onAdExpanded(AdView adView);
+	
+	/**
+	 * Called when an ad is closed/unexpanded.
+	 * 
+	 * @param adView
+	 *            The {@link AdView} that loaded the ad.
+	 */
+	public void onAdCollapsed(AdView adView);
+	
+	/**
+	 * Called when an ad is clicked, and the user is directed to the landing page.
+	 * 
+	 * @param adView
+	 *            The {@link AdView} that loaded the ad.
+	 */
+	public void onAdClicked(AdView adView);
 }
