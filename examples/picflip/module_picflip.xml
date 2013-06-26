@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_picflip" default="compile.module.picflip">
+  <dirname property="module.picflip.basedir" file="${ant.file.module_picflip}"/>
+  
+  <property name="module.jdk.home.picflip" value="${jdk.home.android_4.2.2}"/>
+  <property name="module.jdk.bin.picflip" value="${jdk.bin.android_4.2.2}"/>
+  <property name="module.jdk.classpath.picflip" value="jdk.classpath.android_4.2.2"/>
+  
+  <property name="compiler.args.picflip" value="${compiler.args}"/>
+  
+  <property name="picflip.output.dir" value="${module.picflip.basedir}/out/production/PicFlip"/>
+  <property name="picflip.testoutput.dir" value="${module.picflip.basedir}/out/test/PicFlip"/>
+  
+  <path id="picflip.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="picflip.module.production.classpath">
+    <path refid="${module.jdk.classpath.picflip}"/>
+    <pathelement location="${sdk.output.dir}"/>
+    <pathelement location="${admob.output.dir}"/>
+    <path refid="library.googleadmobadssdk-6.3.11.classpath"/>
+  </path>
+  
+  <path id="picflip.runtime.production.module.classpath">
+    <pathelement location="${picflip.output.dir}"/>
+    <path refid="sdk.runtime.production.module.classpath"/>
+    <path refid="admob.runtime.production.module.classpath"/>
+    <path refid="library.googleadmobadssdk-6.3.11.classpath"/>
+  </path>
+  
+  <path id="picflip.module.classpath">
+    <path refid="${module.jdk.classpath.picflip}"/>
+    <pathelement location="${picflip.output.dir}"/>
+    <pathelement location="${sdk.testoutput.dir}"/>
+    <pathelement location="${sdk.output.dir}"/>
+    <pathelement location="${admob.testoutput.dir}"/>
+    <pathelement location="${admob.output.dir}"/>
+    <path refid="library.googleadmobadssdk-6.3.11.classpath"/>
+  </path>
+  
+  <path id="picflip.runtime.module.classpath">
+    <pathelement location="${picflip.testoutput.dir}"/>
+    <pathelement location="${picflip.output.dir}"/>
+    <path refid="sdk.runtime.module.classpath"/>
+    <path refid="admob.runtime.module.classpath"/>
+    <path refid="library.googleadmobadssdk-6.3.11.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.picflip">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.picflip">
+    <patternset refid="excluded.from.module.picflip"/>
+  </patternset>
+  
+  <path id="picflip.module.sourcepath">
+    <dirset dir="${module.picflip.basedir}">
+      <include name="gen"/>
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.picflip" depends="compile.module.picflip.production,compile.module.picflip.tests" description="Compile module PicFlip"/>
+  
+  <target name="compile.module.picflip.production" depends="register.custom.compilers,compile.module.sdk,compile.module.admob" description="Compile module PicFlip; production classes">
+    <mkdir dir="${picflip.output.dir}"/>
+    <javac2 destdir="${picflip.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.picflip}/javac">
+      <compilerarg line="${compiler.args.picflip}"/>
+      <bootclasspath refid="picflip.module.bootclasspath"/>
+      <classpath refid="picflip.module.production.classpath"/>
+      <src refid="picflip.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.picflip"/>
+    </javac2>
+    
+    <copy todir="${picflip.output.dir}">
+      <fileset dir="${module.picflip.basedir}/gen">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.picflip.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.picflip.tests" depends="register.custom.compilers,compile.module.picflip.production" description="compile module PicFlip; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.picflip" description="cleanup module">
+    <delete dir="${picflip.output.dir}"/>
+    <delete dir="${picflip.testoutput.dir}"/>
+  </target>
+</project>

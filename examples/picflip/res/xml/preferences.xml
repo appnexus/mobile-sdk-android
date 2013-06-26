@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="Display Preferences">
+
+        <CheckBoxPreference
+            android:key="show_overlay"
+            android:title="Show Information Overlay"
+            android:summary="Turn this on if you want to display information about the Flickr group"
+            android:defaultValue="false"
+            />
+
+        <CheckBoxPreference
+            android:key="interstitial_use_extern"
+            android:title="Use External Browser for Interstitial\'s"
+            android:summary="Set this if you want Interstitial Ad\'s to open in a external browser"
+            android:defaultValue="false"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Ad View Settings">
+
+        <ListPreference
+            android:key="mediation_server"
+            android:title="Ad Type"
+            android:summary="Choose the type of Ad"
+            android:entryValues="@array/values_mediation_service"
+            android:entries="@array/entries_mediation_service"
+            android:defaultValue="0"
+            />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
