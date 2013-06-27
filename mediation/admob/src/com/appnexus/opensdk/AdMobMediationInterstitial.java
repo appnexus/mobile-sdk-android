@@ -64,7 +64,8 @@ public class AdMobMediationInterstitial implements CustomEventInterstitial,
 	public void requestInterstitialAd(CustomEventInterstitialListener listener,
 			Activity activity, String label, String placement_id, MediationAdRequest adRequest,
 			Object extra) {
-		iav=new InterstitialAdView(activity, placement_id);
+		iav=new InterstitialAdView(activity);
+		iav.setPlacementID(placement_id);
 		iav.setAdListener(this);
 		this.listener=listener;
 		iav.loadAd();

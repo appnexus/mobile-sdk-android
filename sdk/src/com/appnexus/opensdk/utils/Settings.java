@@ -46,10 +46,13 @@ public class Settings {
 
 	public final int FETCH_THREAD_COUNT = 4;
 	
-	public final int MIN_REFRESH_MILLISECONDS = 15*1000;
+	public final int MIN_REFRESH_MILLISECONDS = 15000;
+	public final int DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY=10000;
+	public final int DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME=15000;
 
 	public final String BASE_URL = "http://mobile.adnxs.com/mob?";
 	public final String INSTALL_BASE_URL = "http://mobile.adnxs.com/install?";
+	
 
 	// STATICS
 	private static Settings settings_instance = null;

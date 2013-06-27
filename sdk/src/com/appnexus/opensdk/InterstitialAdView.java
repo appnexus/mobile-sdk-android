@@ -45,6 +45,9 @@ public class InterstitialAdView extends AdView {
 	protected static final long MAX_AGE = 60000;
 	protected ArrayList<Size> allowedSizes;
 	protected int backgroundColor = Color.BLACK;
+	protected int closeButtonDelay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
+	protected int interstitialAutoDismissTime = Settings.getSettings().DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME;
+	protected boolean interacted = false;
 	protected static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
 	protected static Queue<Pair<Long, Displayable>> q = new LinkedList<Pair<Long, Displayable>>();
 
@@ -241,6 +244,8 @@ public class InterstitialAdView extends AdView {
 			i.putExtra("Time", now);
 			i.putExtra("Orientation", getContext().getResources()
 					.getConfiguration().orientation);
+			i.putExtra("close_button_delay", closeButtonDelay);
+			i.putExtra("auto_dismiss_time", interstitialAutoDismissTime);
 			getContext().startActivity(i);
 			return InterstitialAdView.q.size() - 1; // Return the number of ads
 													// remaining, less the one
@@ -305,6 +310,38 @@ public class InterstitialAdView extends AdView {
 
 	protected String getMRAIDAdType() {
 		return "interstitial";
+	}
+
+	/**
+	 * @return the time in milliseconds after an interstitial is displayed until
+	 *         the close button appears. Default is 10 seconds. 0 is disabled
+	 */
+	public int getCloseButtonDelay() {
+		return closeButtonDelay;
+	}
+
+	/**
+	 * @param closeButtonDelay
+	 *            The time in milliseconds after an interstitial is displayed
+	 *            until the close button appears. Default is 10 seconds. Maximum
+	 *            is 15 seconds. Set to 0 to disable.
+	 */
+	public void setCloseButtonDelay(int closeButtonDelay) {
+		this.closeButtonDelay = Math.min(closeButtonDelay, 15000);
+	}
+
+	/**
+	 * @return the duration of display for an interstitial ad before it is automatically dismissed.
+	 */
+	public int getInterstitialAutoDismissTime() {
+		return interstitialAutoDismissTime;
+	}
+
+	/**
+	 * @param interstitialAutoDismissTime The duration of display for an interstitial ad before it is automatically dismissed. Set to 0 to disable. Default is 15 seconds. 
+	 */
+	public void setInterstitialAutoDismissTime(int interstitialAutoDismissTime) {
+		this.interstitialAutoDismissTime = interstitialAutoDismissTime;
 	}
 
 	/**

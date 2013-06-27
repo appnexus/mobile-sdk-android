@@ -123,6 +123,10 @@ public class AdWebView extends WebView implements Displayable {
 				}
 				
 				AdWebView.this.destination.adListener.onAdClicked(AdWebView.this.destination);
+				InterstitialAdView iav = (InterstitialAdView)AdWebView.this.destination;
+				if(iav!=null){
+					iav.interacted=true;
+				}
 				
 				return true;
 			}
