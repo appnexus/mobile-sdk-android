@@ -52,6 +52,7 @@ public abstract class AdView extends FrameLayout {
 	private boolean measured = false;
 	protected int width = -1;
 	protected int height = -1;
+	protected boolean shouldServePSAs = true;
 	private boolean mraid_expand = false;
 	protected AdListener adListener;
 	private BrowserStyle browserStyle;
@@ -463,6 +464,20 @@ public abstract class AdView extends FrameLayout {
 
 	protected void setBrowserStyle(BrowserStyle browserStyle) {
 		this.browserStyle = browserStyle;
+	}
+
+	/**
+	 * @return Whether this placement accepts PSAs if no ad is served.
+	 */
+	public boolean getShouldServePSAs() {
+		return shouldServePSAs;
+	}
+
+	/**
+	 * @param shouldServePSAs Whether this placement accepts PSAs if no ad is served.
+	 */
+	public void setShouldServePSAs(boolean shouldServePSAs) {
+		this.shouldServePSAs = shouldServePSAs;
 	}
 
 	static class BrowserStyle {
