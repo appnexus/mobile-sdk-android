@@ -95,7 +95,7 @@ public class AdFetcher implements AdRequester {
 				.newScheduledThreadPool(Settings.getSettings().FETCH_THREAD_COUNT);
 
 		// Get the period from the settings
-		final int msPeriod = period <= 0 ? 60 * 1000 : period;
+		final int msPeriod = period <= 0 ? 30 * 1000 : period;
 
 		if (!getAutoRefresh()) {
 			Clog.v(Clog.baseLogTag,

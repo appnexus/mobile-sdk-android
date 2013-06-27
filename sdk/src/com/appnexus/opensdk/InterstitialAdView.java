@@ -93,18 +93,6 @@ public class InterstitialAdView extends AdView {
 		super(context, attrs, defStyle);
 	}
 
-	/**
-	 * 
-	 * @param context
-	 *            The context of the ViewGroup to which the InterstitialAdView
-	 *            is being added.
-	 * @param placement_id
-	 *            The AppNexus placement id to use for this InterstitialAdView.
-	 */
-	public InterstitialAdView(Context context, String placement_id) {
-		super(context, placement_id);
-	}
-
 	@Override
 	protected void setup(Context context, AttributeSet attrs) {
 		super.setup(context, attrs);
