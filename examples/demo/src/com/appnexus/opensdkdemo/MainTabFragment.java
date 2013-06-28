@@ -247,7 +247,7 @@ public class MainTabFragment extends Fragment implements AdListener {
 			String setting = str_array[position];
 
 			if (setting.equals("Off")) {
-				bannerAdView.setAutoRefresh(false);
+				bannerAdView.setAutoRefreshInterval(0);
 				return;
 			}
 			int refresh;
@@ -257,7 +257,6 @@ public class MainTabFragment extends Fragment implements AdListener {
 			} catch (NumberFormatException e) {
 				return;
 			}
-			bannerAdView.setAutoRefresh(true);
 			bannerAdView.setAutoRefreshInterval(refresh * 1000);
 
 		}
