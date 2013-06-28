@@ -262,6 +262,11 @@ public class BannerAdView extends AdView {
 				Clog.getString(R.string.set_period, period));
 		this.period = Math.max(Settings.getSettings().MIN_REFRESH_MILLISECONDS,
 				period);
+		if (period > 0) {
+			setAutoRefresh(true);
+		} else {
+			setAutoRefresh(false);
+		}
 		if (mAdFetcher != null)
 			mAdFetcher.setPeriod(this.period);
 	}
@@ -270,7 +275,7 @@ public class BannerAdView extends AdView {
 	 * 
 	 * @return Whether this view should periodically request new ads.
 	 */
-	public boolean getAutoRefresh() {
+	private boolean getAutoRefresh() {
 		Clog.d(Clog.publicFunctionsLogTag,
 				Clog.getString(R.string.get_auto_refresh, auto_refresh));
 		return auto_refresh;
@@ -281,7 +286,7 @@ public class BannerAdView extends AdView {
 	 * @param auto_refresh
 	 *            Whether this view should periodically request new ads.
 	 */
-	public void setAutoRefresh(boolean auto_refresh) {
+	private void setAutoRefresh(boolean auto_refresh) {
 		Clog.d(Clog.publicFunctionsLogTag,
 				Clog.getString(R.string.set_auto_refresh, auto_refresh));
 		this.auto_refresh = auto_refresh;
