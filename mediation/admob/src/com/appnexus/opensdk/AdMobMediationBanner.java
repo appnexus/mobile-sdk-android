@@ -76,7 +76,7 @@ public class AdMobMediationBanner implements CustomEventBanner, AdListener {
 		appNexusAdView.setPlacementID(serverParameter);
 		appNexusAdView.setAdHeight(adSize.getHeight());
 		appNexusAdView.setAdWidth(adSize.getWidth());
-
+		appNexusAdView.setShouldServePSAs(false);
 		listener.onReceivedAd(appNexusAdView);
 
 	}
