@@ -57,9 +57,12 @@ public class AdActivity extends Activity {
 		setContentView(layout);
 
 		setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
-		now = getIntent().getLongExtra("Time", System.currentTimeMillis());
-		close_button_delay = getIntent().getIntExtra("close_button_delay", Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
-		auto_dismiss_time = getIntent().getIntExtra("auto_dismiss_time", Settings.getSettings().DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME);
+		now = getIntent().getLongExtra(InterstitialAdView.INTENT_KEY_TIME, System.currentTimeMillis());
+		close_button_delay = getIntent().getIntExtra(InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY, Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
+		auto_dismiss_time = getIntent().getIntExtra(InterstitialAdView.INTENT_KEY_AUTO_DISMISS_TIME, Settings.getSettings().DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME);
+		if(auto_dismiss_time<close_button_delay){
+			auto_dismiss_time=close_button_delay;
+		}
 		
 		// Add a close button after a 10 second delay.
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){

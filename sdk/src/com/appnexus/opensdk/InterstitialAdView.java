@@ -51,6 +51,11 @@ public class InterstitialAdView extends AdView {
 	protected static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
 	protected static Queue<Pair<Long, Displayable>> q = new LinkedList<Pair<Long, Displayable>>();
 
+	//Intent Keys
+	protected static String INTENT_KEY_TIME = "TIME";
+	protected static String INTENT_KEY_ORIENTATION = "ORIENTATION";
+	protected static String INTENT_KEY_CLOSE_BUTTON_DELAY = "CLOSE_BUTTON_DELAY";
+	protected static String INTENT_KEY_AUTO_DISMISS_TIME = "AUTO_DISMISS_TIME";
 	/**
 	 * Creates a new InterstitialAdView
 	 * 
@@ -169,7 +174,7 @@ public class InterstitialAdView extends AdView {
 	 * Requests a new interstitial ad from the server and stores it in a local
 	 * queue. Please note, that interstitials have a timeout of 60 seconds. You
 	 * must show the interstitial (call 'show()') within 60 seconds of getting a
-	 * response, otherwise, the ad will not show. Don't load two ads.
+	 * response, otherwise, the ad will not show.
 	 */
 	@Override
 	public void loadAd() {
@@ -241,11 +246,11 @@ public class InterstitialAdView extends AdView {
 		}
 		if (!InterstitialAdView.q.isEmpty()) {
 			Intent i = new Intent(getContext(), AdActivity.class);
-			i.putExtra("Time", now);
-			i.putExtra("Orientation", getContext().getResources()
+			i.putExtra(InterstitialAdView.INTENT_KEY_TIME, now);
+			i.putExtra(InterstitialAdView.INTENT_KEY_ORIENTATION, getContext().getResources()
 					.getConfiguration().orientation);
-			i.putExtra("close_button_delay", closeButtonDelay);
-			i.putExtra("auto_dismiss_time", interstitialAutoDismissTime);
+			i.putExtra(InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY, closeButtonDelay);
+			i.putExtra(InterstitialAdView.INTENT_KEY_AUTO_DISMISS_TIME, interstitialAutoDismissTime);
 			getContext().startActivity(i);
 			return InterstitialAdView.q.size() - 1; // Return the number of ads
 													// remaining, less the one
@@ -327,7 +332,7 @@ public class InterstitialAdView extends AdView {
 	 *            is 15 seconds. Set to 0 to disable.
 	 */
 	public void setCloseButtonDelay(int closeButtonDelay) {
-		this.closeButtonDelay = Math.min(closeButtonDelay, 15000);
+		this.closeButtonDelay = Math.min(closeButtonDelay, Settings.getSettings().DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME);
 	}
 
 	/**
