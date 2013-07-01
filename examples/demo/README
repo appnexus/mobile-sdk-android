@@ -1,0 +1,17 @@
+This directory contains a demo app that allows the user
+to specify the placement ID, ad size in app vs external browser. 
+
+The app includes eclipse project files. 
+
+To build from the command line you must have your android sdk in the path and 
+the ANDROID_SDK_DIR environment variable set. 
+First time you build the app you will need to do the following
+In the examples/demo directory execute the following commands
+	android update lib-project -p ../../sdk/
+	android update lib-project -p ../libs/AmbilWarna/
+	android update project -p .
+
+To build the demo app execute the following in the demo/example directory 
+	ant debug 
+To install the application onto a phone 
+	ant installd
