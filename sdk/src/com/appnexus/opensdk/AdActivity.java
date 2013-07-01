@@ -16,6 +16,8 @@
 
 package com.appnexus.opensdk;
 
+import java.util.Locale;
+
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
@@ -170,6 +172,13 @@ public class AdActivity extends Activity {
 
 	@SuppressLint("InlinedApi")
 	protected static void lockOrientation(Activity a) {
+		// Fix an accelerometer bug with kindle fire HDs
+		boolean isKindleFireHD = false;
+		String device = Settings.getSettings().deviceModel.toUpperCase(Locale.US);
+		String make = Settings.getSettings().deviceMake.toUpperCase(Locale.US);
+		if(make.equals("AMAZON") && (device.equals("KFTT") || device.equals("KFJWI") || device.equals("KFJWA"))){
+			isKindleFireHD=true;
+		}
 		Display d = ((WindowManager) a.getSystemService(Context.WINDOW_SERVICE))
 				.getDefaultDisplay();
 		final int orientation = a.getResources().getConfiguration().orientation;
@@ -191,11 +200,20 @@ public class AdActivity extends Activity {
 				a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 			} else {
 				int rotation = d.getRotation();
+				if(!isKindleFireHD){
 				if (rotation == android.view.Surface.ROTATION_0
 						|| rotation == android.view.Surface.ROTATION_90) {
 					a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 				} else {
 					a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+				}
+				}else{
+					if (rotation == android.view.Surface.ROTATION_0
+							|| rotation == android.view.Surface.ROTATION_90) {
+						a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+					} else {
+						a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+					}
 				}
 			}
 		}
