@@ -59,25 +59,33 @@ public class AdActivity extends Activity {
 		setContentView(layout);
 
 		setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
-		now = getIntent().getLongExtra(InterstitialAdView.INTENT_KEY_TIME, System.currentTimeMillis());
-		close_button_delay = getIntent().getIntExtra(InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY, Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
-		auto_dismiss_time = getIntent().getIntExtra(InterstitialAdView.INTENT_KEY_AUTO_DISMISS_TIME, Settings.getSettings().DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME);
-		if(auto_dismiss_time<close_button_delay){
-			auto_dismiss_time=close_button_delay;
+		now = getIntent().getLongExtra(InterstitialAdView.INTENT_KEY_TIME,
+				System.currentTimeMillis());
+		close_button_delay = getIntent().getIntExtra(
+				InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY,
+				Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
+		auto_dismiss_time = getIntent().getIntExtra(
+				InterstitialAdView.INTENT_KEY_AUTO_DISMISS_TIME,
+				Settings.getSettings().DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME);
+		if (auto_dismiss_time < close_button_delay) {
+			auto_dismiss_time = close_button_delay;
 		}
-		
+
 		// Add a close button after a 10 second delay.
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
-			new ButtonAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, layout);
-		}else{
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			new ButtonAsyncTask().executeOnExecutor(
+					AsyncTask.THREAD_POOL_EXECUTOR, layout);
+		} else {
 			new ButtonAsyncTask().execute(layout);
 		}
-		
-		//If autodismiss is set, dismiss after the assigned delay, unless someone has interacted with the ad.
-		if(auto_dismiss_time>0){
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
-				new DismissAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, this);
-			}else{
+
+		// If autodismiss is set, dismiss after the assigned delay, unless
+		// someone has interacted with the ad.
+		if (auto_dismiss_time > 0) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+				new DismissAsyncTask().executeOnExecutor(
+						AsyncTask.THREAD_POOL_EXECUTOR, this);
+			} else {
 				new DismissAsyncTask().execute(this);
 			}
 		}
@@ -85,10 +93,10 @@ public class AdActivity extends Activity {
 	}
 
 	protected void finishIfNoInteraction() {
-		if(!InterstitialAdView.INTERSTITIALADVIEW_TO_USE.interacted){
+		if (!InterstitialAdView.INTERSTITIALADVIEW_TO_USE.interacted) {
 			finish();
 		}
-		
+
 	}
 
 	private void addCloseButton(FrameLayout layout) {
@@ -130,12 +138,13 @@ public class AdActivity extends Activity {
 			layout.addView(p.second.getView());
 		}
 	}
-	
-	class ButtonAsyncTask extends AsyncTask<FrameLayout, Integer, FrameLayout>{
+
+	class ButtonAsyncTask extends AsyncTask<FrameLayout, Integer, FrameLayout> {
 
 		@Override
 		protected FrameLayout doInBackground(FrameLayout... params) {
-			if(params.length<1) return null;
+			if (params.length < 1)
+				return null;
 			try {
 				Thread.sleep(close_button_delay);
 			} catch (InterruptedException e) {
@@ -150,14 +159,14 @@ public class AdActivity extends Activity {
 				addCloseButton(result);
 			}
 		}
-		
+
 	}
-	
-	class DismissAsyncTask extends AsyncTask<AdActivity, Integer, Void>{
+
+	class DismissAsyncTask extends AsyncTask<AdActivity, Integer, Void> {
 		@Override
 		protected Void doInBackground(AdActivity... params) {
-			if(params.length<1){
-				return null;	
+			if (params.length < 1) {
+				return null;
 			}
 			try {
 				Thread.sleep(auto_dismiss_time);
@@ -165,19 +174,22 @@ public class AdActivity extends Activity {
 				return null;
 			}
 			params[0].finishIfNoInteraction();
-			return null;		
-			
+			return null;
+
 		}
 	}
 
-	@SuppressLint("InlinedApi")
+	@SuppressLint({ "InlinedApi", "DefaultLocale" })
 	protected static void lockOrientation(Activity a) {
 		// Fix an accelerometer bug with kindle fire HDs
 		boolean isKindleFireHD = false;
-		String device = Settings.getSettings().deviceModel.toUpperCase(Locale.US);
+		String device = Settings.getSettings().deviceModel
+				.toUpperCase(Locale.US);
 		String make = Settings.getSettings().deviceMake.toUpperCase(Locale.US);
-		if(make.equals("AMAZON") && (device.equals("KFTT") || device.equals("KFJWI") || device.equals("KFJWA"))){
-			isKindleFireHD=true;
+		if (make.equals("AMAZON")
+				&& (device.equals("KFTT") || device.equals("KFJWI") || device
+						.equals("KFJWA"))) {
+			isKindleFireHD = true;
 		}
 		Display d = ((WindowManager) a.getSystemService(Context.WINDOW_SERVICE))
 				.getDefaultDisplay();
@@ -200,14 +212,14 @@ public class AdActivity extends Activity {
 				a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 			} else {
 				int rotation = d.getRotation();
-				if(!isKindleFireHD){
-				if (rotation == android.view.Surface.ROTATION_0
-						|| rotation == android.view.Surface.ROTATION_90) {
-					a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+				if (!isKindleFireHD) {
+					if (rotation == android.view.Surface.ROTATION_0
+							|| rotation == android.view.Surface.ROTATION_90) {
+						a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+					} else {
+						a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+					}
 				} else {
-					a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-				}
-				}else{
 					if (rotation == android.view.Surface.ROTATION_0
 							|| rotation == android.view.Surface.ROTATION_90) {
 						a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
