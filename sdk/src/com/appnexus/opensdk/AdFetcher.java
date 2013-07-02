@@ -36,6 +36,7 @@ public class AdFetcher implements AdRequester {
 	private boolean shouldReset = false;
 	private long lastFetchTime = -1;
 	private long timePausedAt = -1;
+	private boolean shouldShowTrueTime=false;
 
 	// Fires requests whenever it receives a message
 	public AdFetcher(AdView owner) {
@@ -109,6 +110,9 @@ public class AdFetcher implements AdRequester {
 			if (timePausedAt != -1 && lastFetchTime != -1) {
 				stall_temp = msPeriod - (timePausedAt - lastFetchTime);
 			} else {
+				stall_temp = 0;
+			}
+			if(!shouldShowTrueTime){
 				stall_temp = 0;
 			}
 			final long stall = stall_temp;
