@@ -85,6 +85,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	int height = -1;
 	int maxWidth = -1;
 	int maxHeight = -1;
+	
+	private static final AdResponse SHOULD_RETRY = new AdResponse(null, "RETRY", null);
 
 	/**
 	 * Creates a new AdRequest with the given parameters
@@ -285,6 +287,10 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		os = Settings.getSettings().os;
 		language = Settings.getSettings().language;
 	}
+	
+	private AdRequest(AdRequester a){
+		this((a instanceof AdFetcher ? (AdFetcher)a : null));
+	}
 
 	private void fail() {
 		if (requester != null)
@@ -387,22 +393,22 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		} catch (ClientProtocolException e) {
 			Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unknown));
 			fail();
-			return null;
+			return AdRequest.SHOULD_RETRY;
 		} catch (ConnectTimeoutException e) {
 			Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_timeout));
 			fail();
-			return null;
+			return AdRequest.SHOULD_RETRY;
 		} catch (HttpHostConnectException e) {
 			HttpHostConnectException he = (HttpHostConnectException) e;
 			Clog.e(Clog.httpReqLogTag, Clog.getString(
 					R.string.http_unreachable, he.getHost().getHostName(), he
 							.getHost().getPort()));
 			fail();
-			return null;
+			return AdRequest.SHOULD_RETRY;
 		} catch (IOException e) {
 			Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_io));
 			fail();
-			return null;
+			return AdRequest.SHOULD_RETRY;
 		} catch (SecurityException se) {
 			fail();
 			Clog.e(Clog.baseLogTag,
@@ -412,11 +418,11 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			e.printStackTrace();
 			Clog.e(Clog.baseLogTag, Clog.getString(R.string.unknown_exception));
 			fail();
-			return null;
+			return AdRequest.SHOULD_RETRY;
 		}
 		if (out.equals("")) {
 			fail();
-			return null;
+			return AdRequest.SHOULD_RETRY;
 		}
 		return new AdResponse(requester, out, r.getAllHeaders());
 	}
@@ -440,6 +446,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			Clog.v(Clog.httpRespLogTag, Clog.getString(R.string.no_response));
 			// Don't call fail again!
 			return; // http request failed
+		}else if(result.equals(AdRequest.SHOULD_RETRY)){
+			new RetryAdRequest(this).execute();
 		}
 		if (requester != null)
 			requester.onReceiveResponse(result);
@@ -454,5 +462,13 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			return true;
 		return false;
 	}
-
+	
+	private class RetryAdRequest extends AdRequest{
+		protected RetryAdRequest(AdRequest adRequest){
+			super(adRequest.requester);
+		}
+		protected RetryAdRequest(AdRequest adRequest, int moreTimes){
+			super(adRequest.requester);
+		}
+	}
 }
