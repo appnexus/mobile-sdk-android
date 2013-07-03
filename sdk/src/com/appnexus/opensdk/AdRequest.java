@@ -85,8 +85,11 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	int height = -1;
 	int maxWidth = -1;
 	int maxHeight = -1;
-	
-	private static final AdResponse SHOULD_RETRY = new AdResponse(null, "RETRY", null);
+
+	private static final AdResponse SHOULD_RETRY = new AdResponse(null,
+			"RETRY", null);
+	private static final AdResponse SHOULD_RETRY_DO_NOT_COUNT = new AdResponse(
+			null, "RETRY2", null);
 
 	/**
 	 * Creates a new AdRequest with the given parameters
@@ -287,9 +290,9 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		os = Settings.getSettings().os;
 		language = Settings.getSettings().language;
 	}
-	
-	private AdRequest(AdRequester a){
-		this((a instanceof AdFetcher ? (AdFetcher)a : null));
+
+	private AdRequest(AdRequester a) {
+		this((a instanceof AdFetcher ? (AdFetcher) a : null));
 	}
 
 	private void fail() {
@@ -356,17 +359,18 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
 	@Override
 	protected AdResponse doInBackground(Void... params) {
-		if (context != null) {
-			NetworkInfo ninfo = ((ConnectivityManager) context
-					.getSystemService(Context.CONNECTIVITY_SERVICE))
-					.getActiveNetworkInfo();
-			if (ninfo == null || !ninfo.isConnectedOrConnecting()) {
-				Clog.d(Clog.httpReqLogTag,
-						Clog.getString(R.string.no_connectivity));
-				fail();
-				return null;
-			}
+		if(!hasNetwork(context)){
+			Clog.d(Clog.httpReqLogTag,
+					Clog.getString(R.string.no_connectivity));
+			fail();
+			return SHOULD_RETRY_DO_NOT_COUNT;
 		}
+		
+		return doRequest();
+
+	}
+	
+	private AdResponse doRequest(){
 		String query_string = getRequestUrl();
 
 		Clog.setLastRequest(query_string);
@@ -426,6 +430,20 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		}
 		return new AdResponse(requester, out, r.getAllHeaders());
 	}
+	
+	private boolean hasNetwork(Context context){
+		if (context != null) {
+			NetworkInfo ninfo = ((ConnectivityManager) context
+					.getSystemService(Context.CONNECTIVITY_SERVICE))
+					.getActiveNetworkInfo();
+			if (ninfo == null || !ninfo.isConnectedOrConnecting()) {
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+	
 
 	private boolean httpShouldContinue(StatusLine statusLine) {
 		int http_error_code = statusLine.getStatusCode();
@@ -446,8 +464,10 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			Clog.v(Clog.httpRespLogTag, Clog.getString(R.string.no_response));
 			// Don't call fail again!
 			return; // http request failed
-		}else if(result.equals(AdRequest.SHOULD_RETRY)){
+		} else if (result.equals(AdRequest.SHOULD_RETRY)
+				|| result.equals(AdRequest.SHOULD_RETRY_DO_NOT_COUNT)) {
 			new RetryAdRequest(this).execute();
+			return; // The request failed and should be retried.
 		}
 		if (requester != null)
 			requester.onReceiveResponse(result);
@@ -462,13 +482,49 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			return true;
 		return false;
 	}
-	
-	private class RetryAdRequest extends AdRequest{
-		protected RetryAdRequest(AdRequest adRequest){
+
+	private class RetryAdRequest extends AdRequest {
+		int tryMoreTimes = 0;
+		AdRequest adRequest = null;
+
+		protected RetryAdRequest(AdRequest adRequest) {
 			super(adRequest.requester);
+			this.adRequest=adRequest;
 		}
-		protected RetryAdRequest(AdRequest adRequest, int moreTimes){
+
+		protected RetryAdRequest(AdRequest adRequest, int moreTimes) {
 			super(adRequest.requester);
+			tryMoreTimes = moreTimes;
+		}
+		
+		@Override
+		protected AdResponse doInBackground(Void... params) {
+			if(!hasNetwork(context)){
+				Clog.d(Clog.httpReqLogTag,
+						Clog.getString(R.string.no_connectivity));
+				fail();
+				try {
+					Thread.sleep(Settings.getSettings().HTTP_RETRY_INTERVAL);
+				} catch (InterruptedException e) {
+					//Do nothing, just retry
+				}
+				return SHOULD_RETRY_DO_NOT_COUNT;
+			}
+			
+			return doRequest();
+
+		}
+		
+
+		@Override
+		protected void onPostExecute(AdResponse result) {
+			if(result.equals(AdRequest.SHOULD_RETRY) && tryMoreTimes > 0){
+				new RetryAdRequest(adRequest, tryMoreTimes-1).execute();
+			}else if(result.equals(AdRequest.SHOULD_RETRY_DO_NOT_COUNT)){
+				new RetryAdRequest(adRequest, tryMoreTimes).execute();
+			}else{
+				super.onPostExecute(result);
+			}
 		}
 	}
 }
