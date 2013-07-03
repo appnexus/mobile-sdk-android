@@ -90,21 +90,41 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	 * Creates a new AdRequest with the given parameters
 	 * 
 	 * @param requester
+	 *            The instance of AdRequester which is filing this request.
 	 * @param aid
+	 *            The ANDROID_ID to hash and pass.
 	 * @param lat
+	 *            The lattitude to pass.
 	 * @param lon
+	 *            The longistude to pass.
 	 * @param placementId
+	 *            The AppNexus placement id to use
 	 * @param orientation
+	 *            The device orientation to pass, 'portrait' or 'landscape'
 	 * @param carrier
+	 *            The carrier to pass, such as 'AT&T'
 	 * @param width
+	 *            The width to request, in pixels. -1 for none.
 	 * @param height
+	 *            The height to request, in pixels. -1 for none.
 	 * @param maxWidth
+	 *            The maximum width, if no width is specified.
 	 * @param maxHeight
+	 *            The maximum height, if no height is specified.
 	 * @param mcc
+	 *            The MCC to pass.
 	 * @param mnc
+	 *            The MNC to pass
 	 * @param connectionType
+	 *            The type of connection, 'wifi' or 'wan'
 	 * @param isNativeBrowser
+	 *            Whether this ad space will open the landing page in the native
+	 *            browser ('1') or the in-app browser ('0').
 	 * @param adListener
+	 *            The instance of AdListener to use.
+	 * @param shouldServePSAs
+	 *            Whether this ad space accepts PSAs ('1') or only wants ads
+	 *            ('0')
 	 */
 	public AdRequest(AdRequester requester, String aid, String lat, String lon,
 			String placementId, String orientation, String carrier, int width,
@@ -224,8 +244,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
 		maxHeight = owner.getContainerHeight();
 		maxWidth = owner.getContainerWidth();
-		
-		this.psa = owner.shouldServePSAs ? "1" : "0";  
+
+		this.psa = owner.shouldServePSAs ? "1" : "0";
 
 		if (Settings.getSettings().mcc == null
 				|| Settings.getSettings().mnc == null) {
@@ -299,13 +319,12 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		sb.append(((width > 0 && height > 0) ? "&size=" + width + "x" + height
 				: ""));
 		if (owner != null) {
-			if(maxHeight>0 && maxWidth >0){
-				if(!(owner instanceof InterstitialAdView) && (width<0 || height<0)){
-					sb.append("&max_size="
-							+ maxWidth + "x" + maxHeight);
-				}else{
-					sb.append("&size="
-							+ maxWidth + "x" + maxHeight);
+			if (maxHeight > 0 && maxWidth > 0) {
+				if (!(owner instanceof InterstitialAdView)
+						&& (width < 0 || height < 0)) {
+					sb.append("&max_size=" + maxWidth + "x" + maxHeight);
+				} else {
+					sb.append("&size=" + maxWidth + "x" + maxHeight);
 				}
 			}
 		}
@@ -322,7 +341,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				+ Uri.encode(connection_type) : ""));
 		sb.append((!isEmpty(nativeBrowser) ? "&native_browser=" + nativeBrowser
 				: ""));
-		sb.append((!isEmpty(psa) ? "&psa="+psa : ""));
+		sb.append((!isEmpty(psa) ? "&psa=" + psa : ""));
 		sb.append("&format=json");
 		sb.append("&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion));
 
