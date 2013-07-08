@@ -131,7 +131,7 @@ public class MRAIDWebView extends WebView implements Displayable {
 		
 		//If it's an IAV, prevent it from closing
 		if(owner instanceof InterstitialAdView){
-			((InterstitialAdView)owner).interacted=true;
+			((InterstitialAdView)owner).interacted();
 		}
 
 		this.setLayoutParams(lp);
