@@ -43,6 +43,7 @@ public class AdActivity extends Activity {
 
 	FrameLayout layout;
 	long now;
+	boolean close_added=false;
 	int close_button_delay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
 	int auto_dismiss_time = Settings.getSettings().DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME;
 
@@ -99,7 +100,11 @@ public class AdActivity extends Activity {
 
 	}
 
-	private void addCloseButton(FrameLayout layout) {
+	protected void addCloseButton(FrameLayout layout) {
+		if(close_added){
+			return;
+		}
+		close_added=true;
 		final ImageButton close = new ImageButton(this);
 		close.setImageDrawable(getResources().getDrawable(
 				android.R.drawable.ic_menu_close_clear_cancel));
@@ -136,6 +141,10 @@ public class AdActivity extends Activity {
 			if (p == null)
 				return;
 			layout.addView(p.second.getView());
+		}
+		
+		if(av!=null){
+			av.adActivity=this;
 		}
 	}
 

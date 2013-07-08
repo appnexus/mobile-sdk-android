@@ -56,6 +56,9 @@ public class InterstitialAdView extends AdView {
 	protected static String INTENT_KEY_ORIENTATION = "ORIENTATION";
 	protected static String INTENT_KEY_CLOSE_BUTTON_DELAY = "CLOSE_BUTTON_DELAY";
 	protected static String INTENT_KEY_AUTO_DISMISS_TIME = "AUTO_DISMISS_TIME";
+	
+	//To let the activity show the button.
+	AdActivity adActivity = null;
 	/**
 	 * Creates a new InterstitialAdView
 	 * 
@@ -198,6 +201,13 @@ public class InterstitialAdView extends AdView {
 			adListener.onAdLoaded(this);
 	}
 
+	protected void interacted(){
+		interacted=true;
+		if(adActivity!=null){
+			adActivity.addCloseButton(adActivity.layout);
+		}
+	}
+	
 	@Override
 	public void onLayout(boolean changed, int left, int top, int right,
 			int bottom) {
