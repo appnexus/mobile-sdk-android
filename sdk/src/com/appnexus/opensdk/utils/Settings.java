@@ -52,6 +52,7 @@ public class Settings {
 	public final long HTTP_RETRY_INTERVAL = 30000;
 
 	public final int MAX_HTTP_RETRIES = 3;
+	public final int MAX_FAILED_HTTP_RETRIES = 5;
 	
 	public final String BASE_URL = "http://mobile.adnxs.com/mob?";
 	public final String INSTALL_BASE_URL = "http://mobile.adnxs.com/install?";

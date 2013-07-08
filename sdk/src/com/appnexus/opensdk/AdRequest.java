@@ -466,7 +466,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			return; // http request failed
 		} else if (result.equals(AdRequest.SHOULD_RETRY)
 				|| result.equals(AdRequest.SHOULD_RETRY_DO_NOT_COUNT)) {
-			new RetryAdRequest(this).execute();
+			new RetryAdRequest(this, Settings.getSettings().MAX_FAILED_HTTP_RETRIES).execute();
 			return; // The request failed and should be retried.
 		}
 		if (requester != null)
@@ -485,16 +485,19 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
 	private class RetryAdRequest extends AdRequest {
 		int tryMoreTimes = 0;
+		int tryMoreMaxTimes = 0;
 		AdRequest adRequest = null;
 
-		protected RetryAdRequest(AdRequest adRequest) {
+		protected RetryAdRequest(AdRequest adRequest, int maxFailedTries) {
 			super(adRequest.requester);
+			this.tryMoreMaxTimes=maxFailedTries;
 			this.adRequest=adRequest;
 		}
 
-		protected RetryAdRequest(AdRequest adRequest, int moreTimes) {
+		protected RetryAdRequest(AdRequest adRequest, int moreTimes, int maxTimesLeft) {
 			super(adRequest.requester);
 			tryMoreTimes = moreTimes;
+			tryMoreMaxTimes = maxTimesLeft; 
 		}
 		
 		@Override
@@ -518,10 +521,10 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
 		@Override
 		protected void onPostExecute(AdResponse result) {
-			if(result.equals(AdRequest.SHOULD_RETRY) && tryMoreTimes > 0){
-				new RetryAdRequest(adRequest, tryMoreTimes-1).execute();
+			if(result.equals(AdRequest.SHOULD_RETRY) && tryMoreTimes > 0 && tryMoreMaxTimes > 0){
+				new RetryAdRequest(adRequest, tryMoreTimes-1, tryMoreMaxTimes-1).execute();
 			}else if(result.equals(AdRequest.SHOULD_RETRY_DO_NOT_COUNT)){
-				new RetryAdRequest(adRequest, tryMoreTimes).execute();
+				new RetryAdRequest(adRequest, tryMoreTimes, tryMoreMaxTimes-1).execute();
 			}else{
 				super.onPostExecute(result);
 			}
