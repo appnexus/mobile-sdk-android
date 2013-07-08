@@ -249,8 +249,6 @@ public abstract class AdView extends FrameLayout {
 		this.addView(d.getView());
 		if (this.adListener != null)
 			adListener.onAdLoaded(this);
-		Clog.d("MRAID", "Adding view: w:" + d.getView().getLayoutParams().width
-				+ " h:" + d.getView().getLayoutParams().height);
 		unhide();
 	}
 
