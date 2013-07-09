@@ -144,7 +144,7 @@ public class AdActivity extends Activity {
 		}
 		
 		if(av!=null){
-			av.adActivity=this;
+			av.setAdActivity(this);
 		}
 	}
 

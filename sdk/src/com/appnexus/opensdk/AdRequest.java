@@ -521,6 +521,9 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
 		@Override
 		protected void onPostExecute(AdResponse result) {
+			if(tryMoreTimes == 0 || tryMoreMaxTimes == 0){
+				return;
+			}
 			if(result.equals(AdRequest.SHOULD_RETRY) && tryMoreTimes > 0 && tryMoreMaxTimes > 0){
 				new RetryAdRequest(adRequest, tryMoreTimes-1, tryMoreMaxTimes-1).execute();
 			}else if(result.equals(AdRequest.SHOULD_RETRY_DO_NOT_COUNT)){

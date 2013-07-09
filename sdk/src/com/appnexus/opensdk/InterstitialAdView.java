@@ -58,7 +58,7 @@ public class InterstitialAdView extends AdView {
 	protected static String INTENT_KEY_AUTO_DISMISS_TIME = "AUTO_DISMISS_TIME";
 	
 	//To let the activity show the button.
-	AdActivity adActivity = null;
+	private AdActivity adActivity = null;
 	/**
 	 * Creates a new InterstitialAdView
 	 * 
@@ -203,8 +203,8 @@ public class InterstitialAdView extends AdView {
 
 	protected void interacted(){
 		interacted=true;
-		if(adActivity!=null){
-			adActivity.addCloseButton(adActivity.layout);
+		if(getAdActivity()!=null){
+			getAdActivity().addCloseButton(getAdActivity().layout);
 		}
 	}
 	
@@ -357,6 +357,14 @@ public class InterstitialAdView extends AdView {
 	 */
 	public void setInterstitialAutoDismissTime(int interstitialAutoDismissTime) {
 		this.interstitialAutoDismissTime = interstitialAutoDismissTime;
+	}
+
+	AdActivity getAdActivity() {
+		return adActivity;
+	}
+
+	void setAdActivity(AdActivity adActivity) {
+		this.adActivity = adActivity;
 	}
 
 	/**
