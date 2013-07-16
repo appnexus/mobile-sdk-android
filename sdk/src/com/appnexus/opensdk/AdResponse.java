@@ -32,6 +32,9 @@ public class AdResponse {
 	boolean fail = false;
 	final static String http_error = "HTTP_ERROR";
 	boolean isMraid = false;
+	private boolean isMediated = false;
+	private String mediatedViewClassName;
+	private String mediatedUID;
 
 	public AdResponse(AdRequester requester, String body, Header[] headers) {
 		this.requester = requester;
@@ -83,22 +86,28 @@ public class AdResponse {
 			JSONArray mediated = response.getJSONArray("mediated");
 			// is the array empty? if so, no ads were returned, and we need to
 			// fail gracefully
-			if (ads.length() == 0 && mediated.length()==0) {
-					Clog.w(Clog.httpRespLogTag,
-							Clog.getString(R.string.response_no_ads));
-					return;
-			}else if(ads.length()>0){
-			// for now, just take the first ad
-			JSONObject firstAd = ads.getJSONObject(0);
-			// assume there's content
-			height = firstAd.getInt("height");
-			width = firstAd.getInt("width");
-			this.body = firstAd.getString("content");
-			type = firstAd.getString("type");
-			if (this.body.equals("") || this.body == null)
-				Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.blank_ad));
-			}else if(mediated.length()>0){
-				
+			if (ads.length() == 0 && mediated.length() == 0) {
+				Clog.w(Clog.httpRespLogTag,
+						Clog.getString(R.string.response_no_ads));
+				return;
+			} else if (ads.length() > 0) {
+				// for now, just take the first ad
+				JSONObject firstAd = ads.getJSONObject(0);
+				// assume there's content
+				height = firstAd.getInt("height");
+				width = firstAd.getInt("width");
+				this.body = firstAd.getString("content");
+				type = firstAd.getString("type");
+				if (this.body.equals("") || this.body == null)
+					Clog.e(Clog.httpRespLogTag,
+							Clog.getString(R.string.blank_ad));
+			} else if (mediated.length() > 0) {
+				JSONObject mediated_response = mediated.getJSONObject(0);
+				mediatedViewClassName = mediated_response
+						.getString("android_class");
+				height = mediated_response.getInt("height");
+				width = mediated_response.getInt("width");
+				mediatedUID = mediated_response.getString("id");
 			}
 		} catch (JSONException e) {
 			Clog.e(Clog.httpRespLogTag,
@@ -127,4 +136,21 @@ public class AdResponse {
 	public String getType() {
 		return type;
 	}
+
+	public boolean isMediated() {
+		return isMediated;
+	}
+
+	public void setMediated(boolean isMediated) {
+		this.isMediated = isMediated;
+	}
+
+	public String getMediatedUID() {
+		return mediatedUID;
+	}
+
+	public String getMediatedViewClassName() {
+		return mediatedViewClassName;
+	}
+
 }
