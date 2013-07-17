@@ -15,6 +15,7 @@
  */
 package com.appnexus.opensdk;
 
+import android.app.Activity;
 import android.view.View;
 
 public class MediatedBannerAdViewController implements Displayable {
@@ -23,6 +24,7 @@ public class MediatedBannerAdViewController implements Displayable {
 	int height;
 	String uid;
 	String className;
+	String param;
 
 	Class<?> c;
 	MediatedBannerAdView mAV;
@@ -32,6 +34,7 @@ public class MediatedBannerAdViewController implements Displayable {
 		height = response.getHeight();
 		uid = response.getMediatedUID();
 		className = response.getMediatedViewClassName();
+		param = response.getParameter();
 
 		try {
 			c = Class.forName(className);
@@ -44,9 +47,12 @@ public class MediatedBannerAdViewController implements Displayable {
 			mAV = (MediatedBannerAdView) c.newInstance();
 		} catch (InstantiationException e) {
 			// TODO error message
+			return;
 		} catch (IllegalAccessException e) {
 			// TODO error message
+			return;
 		}
+		mAV.requestAd((Activity)owner.getContext(), param, uid, width, height, owner);
 	}
 
 	@Override

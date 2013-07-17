@@ -32,9 +32,11 @@ public class AdResponse {
 	boolean fail = false;
 	final static String http_error = "HTTP_ERROR";
 	boolean isMraid = false;
+
 	private boolean isMediated = false;
 	private String mediatedViewClassName;
 	private String mediatedUID;
+	private String mediatedParameter;
 
 	public AdResponse(AdRequester requester, String body, Header[] headers) {
 		this.requester = requester;
@@ -108,6 +110,7 @@ public class AdResponse {
 				height = mediated_response.getInt("height");
 				width = mediated_response.getInt("width");
 				mediatedUID = mediated_response.getString("id");
+				mediatedParameter = mediated_response.getString("param");
 			}
 		} catch (JSONException e) {
 			Clog.e(Clog.httpRespLogTag,
@@ -151,6 +154,10 @@ public class AdResponse {
 
 	public String getMediatedViewClassName() {
 		return mediatedViewClassName;
+	}
+
+	public String getParameter() {
+		return mediatedParameter;
 	}
 
 }
