@@ -215,7 +215,7 @@ public class AdFetcher implements AdRequester {
 	@Override
 	public void onReceiveResponse(AdResponse response) {
 		if (response.isMediated()) {
-			MediatedAdView output = new MediatedAdView(owner, response);
+			MediatedAdViewController output = new MediatedAdViewController(owner, response);
 			owner.display(output);
 		} else if (response.isMraid) {
 			MRAIDWebView output = new MRAIDWebView(owner);
