@@ -28,6 +28,8 @@ public class MediatedBannerAdViewController implements Displayable {
 
 	Class<?> c;
 	MediatedBannerAdView mAV;
+	
+	View placeableView;
 
 	public MediatedBannerAdViewController(AdView owner, AdResponse response) {
 		width = response.getWidth();
@@ -52,13 +54,12 @@ public class MediatedBannerAdViewController implements Displayable {
 			// TODO error message
 			return;
 		}
-		mAV.requestAd((Activity)owner.getContext(), param, uid, width, height, owner);
+		placeableView = mAV.requestAd((Activity)owner.getContext(), param, uid, width, height, owner);
 	}
 
 	@Override
 	public View getView() {
-		// TODO Auto-generated method stub
-		return null;
+		return placeableView;
 	}
 
 	@Override

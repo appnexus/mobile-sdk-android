@@ -13,6 +13,8 @@ public class MediatedInterstitialAdViewController implements Displayable {
 
 	Class<?> c;
 	MediatedInterstitialAdView mAV;
+	
+	View placeableView;
 
 	public MediatedInterstitialAdViewController(AdView owner, AdResponse response) {
 		width = response.getWidth();
@@ -37,13 +39,12 @@ public class MediatedInterstitialAdViewController implements Displayable {
 			// TODO error message
 			return;
 		}
-		mAV.requestAd((Activity)owner.getContext(), param, uid, width, height);
+		placeableView=mAV.requestAd((Activity)owner.getContext(), param, uid, width, height);
 	}
 
 	@Override
 	public View getView() {
-		// TODO Auto-generated method stub
-		return null;
+		return placeableView;
 	}
 
 	@Override
