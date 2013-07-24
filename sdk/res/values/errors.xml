@@ -92,4 +92,6 @@
 	<string formatted="false" name="opening_native">Opening landing page in native browser</string>
 	<string formatted="false" name="opening_native_current">Opening current page in native browser</string>
 	<string formatted="false" name="opening_url">Opening %s in in-app browser</string>
+	<string formatted="false" name="instantiation_exception">InstantiationException caught while instantiating a Mediated Ad View</string>
+	<string formatted="false" name="illegal_access_exception">IllegalAccessException caught while instantiating a Mediated Ad View</string>
 </resources>

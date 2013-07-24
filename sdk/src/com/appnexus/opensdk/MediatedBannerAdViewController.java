@@ -15,6 +15,8 @@
  */
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.utils.Clog;
+
 import android.app.Activity;
 import android.view.View;
 
@@ -48,10 +50,10 @@ public class MediatedBannerAdViewController implements Displayable {
 		try {
 			mAV = (MediatedBannerAdView) c.newInstance();
 		} catch (InstantiationException e) {
-			// TODO error message
+			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instantiation_exception));
 			return;
 		} catch (IllegalAccessException e) {
-			// TODO error message
+			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception));
 			return;
 		}
 		placeableView = mAV.requestAd((Activity)owner.getContext(), param, uid, width, height, owner);
