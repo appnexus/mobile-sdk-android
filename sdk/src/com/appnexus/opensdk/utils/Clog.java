@@ -73,6 +73,7 @@ public class Clog {
 	}
 
 	public static String baseLogTag = "OPENSDK";
+	public static String mediationLogTag = baseLogTag + "-MEDIATION";
 	public static String publicFunctionsLogTag = baseLogTag + "-INTERFACE";
 	public static String httpReqLogTag = baseLogTag + "-REQUEST";
 	public static String httpRespLogTag = baseLogTag + "-RESPONSE";
