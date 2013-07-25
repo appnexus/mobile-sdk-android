@@ -330,7 +330,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		if (owner != null) {
 			if (maxHeight > 0 && maxWidth > 0) {
 				if (!(owner instanceof InterstitialAdView)
-						&& (width < 0 || height < 0)) {
+						&& (width < 0 && height < 0)) {
 					sb.append("&max_size=" + maxWidth + "x" + maxHeight);
 				} else {
 					sb.append("&size=" + maxWidth + "x" + maxHeight);
