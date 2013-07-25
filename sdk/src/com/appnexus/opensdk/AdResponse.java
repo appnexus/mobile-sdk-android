@@ -70,6 +70,10 @@ public class AdResponse {
 
 	private void parseResponse(String body) {
 		JSONObject response;
+		
+		if(body.equals("RETRY")||body.equals("RETRY2")){
+			return;
+		}
 		try {
 			response = new JSONObject(body);
 			String status = response.getString("status");
