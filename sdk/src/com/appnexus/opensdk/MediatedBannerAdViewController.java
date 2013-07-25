@@ -44,7 +44,7 @@ public class MediatedBannerAdViewController implements Displayable {
 			c = Class.forName(className);
 
 		} catch (ClassNotFoundException e) {
-			// TODO error message
+			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.class_not_found_exception));
 		}
 
 		try {
