@@ -133,7 +133,7 @@ public abstract class AdView extends FrameLayout {
 			float density = getContext().getResources().getDisplayMetrics().density;
 			measuredWidth = (int) ((right - left) / density + 0.5f);
 			measuredHeight = (int) ((bottom - top) / density + 0.5f);
-			if (measuredHeight < height || measuredWidth < width) {
+			if ((measuredHeight < height || measuredWidth < width) && measuredHeight>0 && measuredWidth > 0) {
 				Clog.e(Clog.baseLogTag, Clog.getString(R.string.adsize_too_big,
 						measuredWidth, measuredHeight, width, height));
 				// Hide the space, since no ad will be loaded due to error
@@ -147,11 +147,13 @@ public abstract class AdView extends FrameLayout {
 			}
 
 			// Hide the adview
-			if (!measured)
+			if (!measured){
 				hide();
+				onFirstLayout();
+			}
 
 			measured = true;
-			onFirstLayout();
+			
 
 		}
 	}

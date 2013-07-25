@@ -425,6 +425,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			return AdRequest.SHOULD_RETRY;
 		}
 		if (out.equals("")) {
+			Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
 			fail();
 			return AdRequest.SHOULD_RETRY;
 		}
@@ -528,7 +529,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				new RetryAdRequest(adRequest, tryMoreTimes-1, tryMoreMaxTimes-1).execute();
 			}else if(result.equals(AdRequest.SHOULD_RETRY_DO_NOT_COUNT)){
 				new RetryAdRequest(adRequest, tryMoreTimes, tryMoreMaxTimes-1).execute();
-			}else{
+			}else if(!result.equals(AdRequest.SHOULD_RETRY) && !result.equals(AdRequest.SHOULD_RETRY_DO_NOT_COUNT)){
 				super.onPostExecute(result);
 			}
 		}

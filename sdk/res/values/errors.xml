@@ -22,7 +22,7 @@
 	<string formatted="false" name="no_response">Request received no response from the server.</string>
 	<string formatted="false" name="response_body">Response body: %s</string>
 	<string formatted="false" name="response_header">Header: %s Value: %s</string>
-	<string formatted="false" name="response_blank">The server returned a blank 200 OK HTTP response.</string>
+	<string formatted="false" name="response_blank">The server returned a blank 200 OK HTTP response. Unless the maximum retries have been reached, this request will be retried shortly.</string>
 	<string formatted="false" name="response_error">E301: The server replied with an error: %s</string>
 	<string formatted="false" name="response_no_ads">The server responded, but didn\'t return any ads.</string>
 	<string formatted="false" name="response_json_error">E300: There was an error parsing the JSON response: %s</string>
