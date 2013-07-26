@@ -473,7 +473,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		if (requester != null)
 			requester.onReceiveResponse(result);
 		if (adListener != null)
-			adListener.onAdLoaded(null);
+			adListener.onAdLoaded(owner);
 	}
 
 	private boolean isEmpty(String str) {

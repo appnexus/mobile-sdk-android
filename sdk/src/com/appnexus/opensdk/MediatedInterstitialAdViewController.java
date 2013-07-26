@@ -30,6 +30,7 @@ public class MediatedInterstitialAdViewController implements Displayable {
 
 		} catch (ClassNotFoundException e) {
 			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.class_not_found_exception));
+			return;
 		}
 
 		try {
@@ -52,6 +53,7 @@ public class MediatedInterstitialAdViewController implements Displayable {
 	@Override
 	public boolean failed() {
 		// TODO Auto-generated method stub
+		// Will spawn an ad request with the fail url and await further instruction
 		return false;
 	}
 

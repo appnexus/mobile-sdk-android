@@ -115,6 +115,7 @@ public class AdResponse {
 				width = mediated_response.getInt("width");
 				mediatedUID = mediated_response.getString("id");
 				mediatedParameter = mediated_response.getString("param");
+				isMediated=true;
 			}
 		} catch (JSONException e) {
 			Clog.e(Clog.httpRespLogTag,
