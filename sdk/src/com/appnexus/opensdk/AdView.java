@@ -248,6 +248,9 @@ public abstract class AdView extends FrameLayout {
 					// View.
 		}
 		this.removeAllViews();
+		if(d.getView()==null){
+			return;
+		}
 		this.addView(d.getView());
 		if (this.adListener != null)
 			adListener.onAdLoaded(this);
