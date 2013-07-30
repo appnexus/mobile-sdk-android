@@ -16,8 +16,6 @@ public class MediatedInterstitialAdViewController implements Displayable {
 	Class<?> c;
 	MediatedInterstitialAdView mAV;
 	
-	View placeableView;
-
 	public MediatedInterstitialAdViewController(AdView owner, AdResponse response) {
 		width = response.getWidth();
 		height = response.getHeight();
@@ -42,12 +40,11 @@ public class MediatedInterstitialAdViewController implements Displayable {
 			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception));
 			return;
 		}
-		placeableView=mAV.requestAd((Activity)owner.getContext(), param, uid, width, height);
 	}
 
 	@Override
 	public View getView() {
-		return placeableView;
+		return mAV.requestAd((Activity)owner.getContext(), param, uid);
 	}
 
 	@Override
