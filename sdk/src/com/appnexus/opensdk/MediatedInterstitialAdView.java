@@ -5,5 +5,4 @@ import android.view.View;
 
 public interface MediatedInterstitialAdView {
 	public View requestAd(Activity activity, String parameter, String uid);
-	public void show();
 }
