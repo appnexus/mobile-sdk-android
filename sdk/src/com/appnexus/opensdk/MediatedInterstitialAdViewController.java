@@ -22,6 +22,7 @@ public class MediatedInterstitialAdViewController implements Displayable {
 		uid = response.getMediatedUID();
 		className = response.getMediatedViewClassName();
 		param = response.getParameter();
+		this.owner = owner;
 		
 		try {
 			c = Class.forName(className);

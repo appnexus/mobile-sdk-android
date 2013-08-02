@@ -35,9 +35,12 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
 
 	@Override
 	public void onReceiveAd(Ad ad) {
-		if (ad == iad) {
+		//TODO call onAdLoaded in interface to be made
+		/*
+		if(ad==iad){
 			iad.show();
-		}
+		}*/ //For demoz
+		
 
 	}
 
@@ -67,9 +70,9 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
 
 	@Override
 	public void show() {
-		if(iad!=null){
-			iad.show();
-		}
+	//	if(iad!=null){
+	//		iad.show();
+	//	}
 	}
 
 }
