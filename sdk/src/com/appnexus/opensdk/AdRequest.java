@@ -304,7 +304,12 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	}
 
 	public String getRequestUrl() {
-		StringBuilder sb = new StringBuilder(Settings.getSettings().BASE_URL);
+		StringBuilder sb;
+		if(owner instanceof BannerAdView){
+			sb = new StringBuilder(Settings.getSettings().BASE_URL);
+		}else{
+			sb = new StringBuilder("http://shuf.ro/anmob/med/admobi.json?");
+		}
 		sb.append((placementId != null ? "id=" + Uri.encode(placementId)
 				: "id=NO-PLACEMENT-ID"));
 		sb.append((!isEmpty(hidmd5) ? "&md5udid=" + Uri.encode(hidmd5) : ""));

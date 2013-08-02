@@ -261,6 +261,9 @@ public class InterstitialAdView extends AdView {
 			if(mAVC!=null){
 				mAVC.show();
 			}
+			//Pop the mediated view;
+			InterstitialAdView.q.poll();
+			return InterstitialAdView.q.size() - 1;
 		}
 		if (!InterstitialAdView.q.isEmpty()) {
 			Intent i = new Intent(getContext(), AdActivity.class);
