@@ -254,6 +254,14 @@ public class InterstitialAdView extends AdView {
 		for (Pair<Long, Displayable> p : to_remove) {
 			InterstitialAdView.q.remove(p);
 		}
+		
+		//If the head of the queue is interstitial mediation, show that instead of our adactivity
+		if(InterstitialAdView.q.peek().second instanceof MediatedInterstitialAdViewController){
+			MediatedInterstitialAdViewController mAVC = (MediatedInterstitialAdViewController) InterstitialAdView.q.peek().second;
+			if(mAVC!=null){
+				mAVC.show();
+			}
+		}
 		if (!InterstitialAdView.q.isEmpty()) {
 			Intent i = new Intent(getContext(), AdActivity.class);
 			i.putExtra(InterstitialAdView.INTENT_KEY_TIME, now);

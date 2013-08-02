@@ -41,6 +41,12 @@ public class MediatedInterstitialAdViewController implements Displayable {
 			return;
 		}
 	}
+	
+	protected void show(){
+		if(mAV!=null){
+			mAV.show();
+		}
+	}
 
 	@Override
 	public View getView() {

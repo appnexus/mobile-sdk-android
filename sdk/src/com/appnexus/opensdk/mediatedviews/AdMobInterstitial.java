@@ -65,4 +65,11 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
 		
 	}
 
+	@Override
+	public void show() {
+		if(iad!=null){
+			iad.show();
+		}
+	}
+
 }
