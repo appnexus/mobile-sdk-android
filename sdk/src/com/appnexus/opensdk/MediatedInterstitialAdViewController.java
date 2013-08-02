@@ -5,7 +5,7 @@ import com.appnexus.opensdk.utils.Clog;
 import android.app.Activity;
 import android.view.View;
 
-public class MediatedInterstitialAdViewController implements Displayable {
+public class MediatedInterstitialAdViewController {
 	AdView owner;
 	int width;
 	int height;
@@ -41,17 +41,11 @@ public class MediatedInterstitialAdViewController implements Displayable {
 			return;
 		}
 	}
-
-	@Override
-	public View getView() {
-		return mAV.requestAd((Activity)owner.getContext(), param, uid);
-	}
-
-	@Override
-	public boolean failed() {
-		// TODO Auto-generated method stub
-		// Will spawn an ad request with the fail url and await further instruction
-		return false;
+	
+	protected void show(){
+		if(mAV!=null){
+			mAV.show();
+		}
 	}
 
 }

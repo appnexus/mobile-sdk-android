@@ -33,12 +33,9 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
 		return null;
 	}
 
+	
 	@Override
 	public void onReceiveAd(Ad ad) {
-		if (ad == iad) {
-			iad.show();
-		}
-
 	}
 
 	@Override
@@ -62,6 +59,14 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
 	@Override
 	public void onPresentScreen(Ad arg0) {
 		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void show() {
+		if(iad!=null){
+			iad.show();
+		}
 		
 	}
 
