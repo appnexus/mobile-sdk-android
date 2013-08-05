@@ -6,7 +6,7 @@ import android.app.Activity;
 import android.view.View;
 
 public class MediatedInterstitialAdViewController implements Displayable {
-	AdView owner;
+	InterstitialAdView owner;
 	int width;
 	int height;
 	String uid;
@@ -16,7 +16,7 @@ public class MediatedInterstitialAdViewController implements Displayable {
 	Class<?> c;
 	MediatedInterstitialAdView mAV;
 	
-	public MediatedInterstitialAdViewController(AdView owner, AdResponse response) {
+	public MediatedInterstitialAdViewController(InterstitialAdView owner, AdResponse response) {
 		width = response.getWidth();
 		height = response.getHeight();
 		uid = response.getMediatedUID();
@@ -52,6 +52,12 @@ public class MediatedInterstitialAdViewController implements Displayable {
 	@Override
 	public View getView() {
 		return mAV.requestAd((Activity)owner.getContext(), param, uid);
+	}
+	
+	protected void onAdLoaded(){
+		if(owner.getAdListener()!=null){
+			owner.getAdListener().onAdLoaded(owner);
+		}
 	}
 
 	@Override

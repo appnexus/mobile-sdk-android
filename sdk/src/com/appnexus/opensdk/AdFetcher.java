@@ -221,7 +221,7 @@ public class AdFetcher implements AdRequester {
 		} else if (response.isMediated()
 				&& owner.getMRAIDAdType().equals("interstitial")) {
 			MediatedInterstitialAdViewController output = new MediatedInterstitialAdViewController(
-					owner, response);
+					(InterstitialAdView)owner, response);
 			owner.display(output);
 			// TODO Mediated interstitial controller here
 		} else if (response.isMraid) {
