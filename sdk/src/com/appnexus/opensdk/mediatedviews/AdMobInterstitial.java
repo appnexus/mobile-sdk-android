@@ -6,6 +6,7 @@ import android.telephony.TelephonyManager;
 import android.view.View;
 
 import com.appnexus.opensdk.MediatedInterstitialAdView;
+import com.appnexus.opensdk.MediatedInterstitialAdViewController;
 import com.google.ads.Ad;
 import com.google.ads.AdListener;
 import com.google.ads.AdRequest;
@@ -15,11 +16,13 @@ import com.google.ads.InterstitialAd;
 public class AdMobInterstitial implements MediatedInterstitialAdView,
 		AdListener {
 	InterstitialAd iad;
+	MediatedInterstitialAdViewController mMediatedInterstitialAdViewController;
+	
 	public AdMobInterstitial() {
 	}
 
 	@Override
-	public View requestAd(Activity activity, String parameter, String uid) {
+	public View requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid) {
 		 iad = new InterstitialAd(activity, uid);
 
 		AdRequest ar = new AdRequest();
@@ -30,18 +33,13 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
 		iad.setAdListener(this);
 		
 		iad.loadAd(ar);
+		mMediatedInterstitialAdViewController=mIC;
 		return null;
 	}
 
 	@Override
 	public void onReceiveAd(Ad ad) {
-		//TODO call onAdLoaded in interface to be made
-		/*
-		if(ad==iad){
-			iad.show();
-		}*/ //For demoz
-		
-
+		mMediatedInterstitialAdViewController.onAdLoaded();
 	}
 
 	@Override
