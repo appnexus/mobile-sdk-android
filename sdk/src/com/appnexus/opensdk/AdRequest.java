@@ -305,6 +305,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
 	public String getRequestUrl() {
 		StringBuilder sb;
+		//TODO oh god don't forget to remove this
 		if(owner instanceof BannerAdView){
 			sb = new StringBuilder(Settings.getSettings().BASE_URL);
 		}else{
