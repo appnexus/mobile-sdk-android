@@ -37,9 +37,11 @@ public class MediatedInterstitialAdViewController implements Displayable {
 			mAV = (MediatedInterstitialAdView) c.newInstance();
 		} catch (InstantiationException e) {
 			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instantiation_exception));
+			failed=true;
 			return;
 		} catch (IllegalAccessException e) {
 			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception));
+			failed=true;
 			return;
 		}
 	}

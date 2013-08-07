@@ -53,9 +53,11 @@ public class MediatedBannerAdViewController implements Displayable {
 			mAV = (MediatedBannerAdView) c.newInstance();
 		} catch (InstantiationException e) {
 			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instantiation_exception));
+			failed=true;
 			return;
 		} catch (IllegalAccessException e) {
 			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception));
+			failed=true;
 			return;
 		}
 		placeableView = mAV.requestAd(this, (Activity)owner.getContext(), param, uid, width, height, owner);
