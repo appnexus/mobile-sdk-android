@@ -218,12 +218,13 @@ public class AdFetcher implements AdRequester {
 			MediatedBannerAdViewController output = new MediatedBannerAdViewController(
 					owner, response);
 			owner.display(output);
+			return;
 		} else if (response.isMediated()
 				&& owner.getMRAIDAdType().equals("interstitial")) {
 			MediatedInterstitialAdViewController output = new MediatedInterstitialAdViewController(
 					(InterstitialAdView)owner, response);
 			owner.display(output);
-			// TODO Mediated interstitial controller here
+			return;
 		} else if (response.isMraid) {
 			MRAIDWebView output = new MRAIDWebView(owner);
 			output.loadAd(response);
@@ -232,6 +233,9 @@ public class AdFetcher implements AdRequester {
 			AdWebView output = new AdWebView(owner);
 			output.loadAd(response);
 			owner.display(output);
+		}
+		if(owner.adListener != null){
+			owner.adListener.onAdLoaded(owner);
 		}
 	}
 

@@ -198,8 +198,6 @@ public class InterstitialAdView extends AdView {
 		InterstitialAdView.q.add(new Pair<Long, Displayable>(System
 				.currentTimeMillis(), d));
 		d.getView();
-		if (adListener != null)
-			adListener.onAdLoaded(this);
 	}
 
 	protected void interacted(){
@@ -257,7 +255,7 @@ public class InterstitialAdView extends AdView {
 		}
 		
 		//If the head of the queue is interstitial mediation, show that instead of our adactivity
-		if(InterstitialAdView.q.peek().second instanceof MediatedInterstitialAdViewController){
+		if(InterstitialAdView.q.peek() !=null && InterstitialAdView.q.peek().second instanceof MediatedInterstitialAdViewController){
 			MediatedInterstitialAdViewController mAVC = (MediatedInterstitialAdViewController) InterstitialAdView.q.peek().second;
 			if(mAVC!=null){
 				mAVC.show();
