@@ -19,5 +19,5 @@ import android.app.Activity;
 import android.view.View;
 
 public interface MediatedBannerAdView {
-	public View requestAd(Activity activity, String parameter, String uid, int width, int height, View adSpace);
+	public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace);
 }

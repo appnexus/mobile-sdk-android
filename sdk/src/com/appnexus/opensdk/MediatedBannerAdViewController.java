@@ -27,6 +27,7 @@ public class MediatedBannerAdViewController implements Displayable {
 	String uid;
 	String className;
 	String param;
+	boolean failed=false;
 
 	Class<?> c;
 	MediatedBannerAdView mAV;
@@ -57,7 +58,7 @@ public class MediatedBannerAdViewController implements Displayable {
 			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception));
 			return;
 		}
-		placeableView = mAV.requestAd((Activity)owner.getContext(), param, uid, width, height, owner);
+		placeableView = mAV.requestAd(this, (Activity)owner.getContext(), param, uid, width, height, owner);
 	}
 
 	@Override
@@ -67,9 +68,19 @@ public class MediatedBannerAdViewController implements Displayable {
 
 	@Override
 	public boolean failed() {
-		// TODO Auto-generated method stub
-		// Will spawn an ad request with the fail url and await further instruction
-		return false;
+		return failed;
 	}
 
+	public void onAdLoad() {
+		if(owner.getAdListener()!=null){
+			owner.getAdListener().onAdLoaded(owner);
+		}
+	}
+
+	public void onAdFailed() {
+		if(owner.getAdListener()!=null){
+			owner.getAdListener().onAdRequestFailed(owner);
+		}
+		this.failed=true;
+	}
 }

@@ -9,6 +9,7 @@ public class MediatedInterstitialAdViewController implements Displayable {
 	InterstitialAdView owner;
 	int width;
 	int height;
+	boolean failed = false;
 	String uid;
 	String className;
 	String param;
@@ -59,12 +60,17 @@ public class MediatedInterstitialAdViewController implements Displayable {
 			owner.getAdListener().onAdLoaded(owner);
 		}
 	}
+	
+	public void onAdFailed(){
+		if(owner.getAdListener()!=null){
+			owner.getAdListener().onAdRequestFailed(owner);
+		}
+		failed=true;
+	}
 
 	@Override
 	public boolean failed() {
-		// TODO Auto-generated method stub
-		// Will spawn an ad request with the fail url and await further instruction
-		return false;
+		return failed;
 	}
 
 }
