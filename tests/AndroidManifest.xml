@@ -9,7 +9,7 @@
 
     <instrumentation
         android:name="android.test.InstrumentationTestRunner"
-        android:targetPackage="com.example.helloworld" />
+        android:targetPackage="com.appnexus.opensdkdemo" />
 
     <application
         android:icon="@drawable/ic_launcher"

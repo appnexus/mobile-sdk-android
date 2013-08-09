@@ -305,12 +305,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
 	public String getRequestUrl() {
 		StringBuilder sb;
-		//TODO oh god don't forget to remove this
-		if(owner instanceof BannerAdView){
-			sb = new StringBuilder(Settings.getSettings().BASE_URL);
-		}else{
-			sb = new StringBuilder("http://shuf.ro/anmob/med/admobi.json?");
-		}
+        sb = new StringBuilder(Settings.getSettings().BASE_URL);
 		sb.append((placementId != null ? "id=" + Uri.encode(placementId)
 				: "id=NO-PLACEMENT-ID"));
 		sb.append((!isEmpty(hidmd5) ? "&md5udid=" + Uri.encode(hidmd5) : ""));
@@ -357,7 +352,10 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		sb.append((!isEmpty(nativeBrowser) ? "&native_browser=" + nativeBrowser
 				: ""));
 		sb.append((!isEmpty(psa) ? "&psa=" + psa : ""));
-		sb.append("&format=json");
+        //TODO: UNCOMMENT THE FUCK OUT OF THIS NEXT LINE
+		//sb.append("&format=json");
+        //TODO: Remove the fuck out of this next line
+        sb.append("&dnt=1");
 		sb.append("&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion));
 
 		return sb.toString();
