@@ -34,7 +34,18 @@ public class MediatedBannerAdViewController implements Displayable {
 	
 	View placeableView;
 
-	public MediatedBannerAdViewController(AdView owner, AdResponse response) {
+    static public MediatedBannerAdViewController create(AdView owner, AdResponse response){
+        MediatedBannerAdViewController out;
+        try{
+            out = new MediatedBannerAdViewController(owner, response);
+        }catch(Exception e){
+            return null;
+        }
+        return out;
+
+    }
+
+	private MediatedBannerAdViewController(AdView owner, AdResponse response) throws Exception{
 		width = response.getWidth();
 		height = response.getHeight();
 		uid = response.getMediatedUID();
@@ -46,7 +57,7 @@ public class MediatedBannerAdViewController implements Displayable {
 
 		} catch (ClassNotFoundException e) {
 			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.class_not_found_exception));
-			return;
+			throw e;
 		}
 
 		try {
@@ -54,11 +65,11 @@ public class MediatedBannerAdViewController implements Displayable {
 		} catch (InstantiationException e) {
 			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instantiation_exception));
 			failed=true;
-			return;
+			throw e;
 		} catch (IllegalAccessException e) {
 			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception));
 			failed=true;
-			return;
+			throw e;
 		}
 		placeableView = mAV.requestAd(this, (Activity)owner.getContext(), param, uid, width, height, owner);
 	}

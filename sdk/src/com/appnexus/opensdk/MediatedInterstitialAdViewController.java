@@ -16,8 +16,19 @@ public class MediatedInterstitialAdViewController implements Displayable {
 
 	Class<?> c;
 	MediatedInterstitialAdView mAV;
-	
-	public MediatedInterstitialAdViewController(InterstitialAdView owner, AdResponse response) {
+
+    static public MediatedInterstitialAdViewController create(InterstitialAdView owner, AdResponse response){
+        MediatedInterstitialAdViewController out;
+        try{
+            out = new MediatedInterstitialAdViewController(owner, response);
+        }catch(Exception e){
+            return null;
+        }
+        return out;
+
+    }
+
+	private MediatedInterstitialAdViewController(InterstitialAdView owner, AdResponse response) throws Exception{
 		width = response.getWidth();
 		height = response.getHeight();
 		uid = response.getMediatedUID();
@@ -30,7 +41,7 @@ public class MediatedInterstitialAdViewController implements Displayable {
 
 		} catch (ClassNotFoundException e) {
 			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.class_not_found_exception));
-			return;
+			throw e;
 		}
 
 		try {
@@ -38,11 +49,11 @@ public class MediatedInterstitialAdViewController implements Displayable {
 		} catch (InstantiationException e) {
 			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instantiation_exception));
 			failed=true;
-			return;
+			throw e;
 		} catch (IllegalAccessException e) {
 			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception));
 			failed=true;
-			return;
+			throw e;
 		}
 	}
 	

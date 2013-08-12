@@ -215,15 +215,19 @@ public class AdFetcher implements AdRequester {
 	@Override
 	public void onReceiveResponse(AdResponse response) {
 		if (response.isMediated() && owner.getMRAIDAdType().equals("inline")) {
-			MediatedBannerAdViewController output = new MediatedBannerAdViewController(
+			MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
 					owner, response);
-			owner.display(output);
+            if(output!=null){
+			    owner.display(output);
+            }
 			return;
 		} else if (response.isMediated()
 				&& owner.getMRAIDAdType().equals("interstitial")) {
-			MediatedInterstitialAdViewController output = new MediatedInterstitialAdViewController(
+			MediatedInterstitialAdViewController output = MediatedInterstitialAdViewController.create(
 					(InterstitialAdView)owner, response);
-			owner.display(output);
+            if(output!=null){
+			    owner.display(output);
+            }
 			return;
 		} else if (response.isMraid) {
 			MRAIDWebView output = new MRAIDWebView(owner);
