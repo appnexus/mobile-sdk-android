@@ -85,7 +85,7 @@ public class MediatedBannerAdViewController implements Displayable {
 		return failed;
 	}
 
-	public void onAdLoad() {
+	public void onAdLoaded() {
 		if(owner.getAdListener()!=null){
 			owner.getAdListener().onAdLoaded(owner);
 		}
@@ -97,4 +97,22 @@ public class MediatedBannerAdViewController implements Displayable {
 		}
 		this.failed=true;
 	}
+
+    public void onAdExpanded(){
+        if(owner.getAdListener()!=null){
+            owner.getAdListener().onAdExpanded(owner);
+        }
+    }
+
+    public void onAdCollapsed(){
+        if(owner.getAdListener()!=null){
+            owner.getAdListener().onAdCollapsed(owner);
+        }
+    }
+
+    public void onAdClicked(){
+        if(owner.getAdListener()!=null){
+            owner.getAdListener().onAdClicked(owner);
+        }
+    }
 }

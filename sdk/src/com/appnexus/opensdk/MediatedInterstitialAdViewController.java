@@ -67,19 +67,37 @@ public class MediatedInterstitialAdViewController implements Displayable {
 	public View getView() {
 		return mAV.requestAd(this, (Activity)owner.getContext(), param, uid);
 	}
-	
-	public void onAdLoaded(){
-		if(owner.getAdListener()!=null){
-			owner.getAdListener().onAdLoaded(owner);
-		}
-	}
-	
-	public void onAdFailed(){
-		if(owner.getAdListener()!=null){
-			owner.getAdListener().onAdRequestFailed(owner);
-		}
-		failed=true;
-	}
+
+    public void onAdLoaded() {
+        if(owner.getAdListener()!=null){
+            owner.getAdListener().onAdLoaded(owner);
+        }
+    }
+
+    public void onAdFailed() {
+        if(owner.getAdListener()!=null){
+            owner.getAdListener().onAdRequestFailed(owner);
+        }
+        this.failed=true;
+    }
+
+    public void onAdExpanded(){
+        if(owner.getAdListener()!=null){
+            owner.getAdListener().onAdExpanded(owner);
+        }
+    }
+
+    public void onAdCollapsed(){
+        if(owner.getAdListener()!=null){
+            owner.getAdListener().onAdCollapsed(owner);
+        }
+    }
+
+    public void onAdClicked(){
+        if(owner.getAdListener()!=null){
+            owner.getAdListener().onAdClicked(owner);
+        }
+    }
 
 	@Override
 	public boolean failed() {

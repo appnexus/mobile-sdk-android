@@ -51,7 +51,9 @@ public class AdMobBanner implements MediatedBannerAdView, AdListener {
 
 	@Override
 	public void onLeaveApplication(Ad arg0) {
-		// TODO Auto-generated method stub
+        if(mMediatedBannerAdViewController!=null){
+            mMediatedBannerAdViewController.onAdClicked();
+        }
 		
 	}
 
@@ -64,7 +66,7 @@ public class AdMobBanner implements MediatedBannerAdView, AdListener {
 	@Override
 	public void onReceiveAd(Ad arg0) {
 		if(mMediatedBannerAdViewController!=null){
-			mMediatedBannerAdViewController.onAdLoad();
+			mMediatedBannerAdViewController.onAdLoaded();
 		}
 	}
 
