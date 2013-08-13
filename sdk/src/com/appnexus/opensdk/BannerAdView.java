@@ -310,7 +310,7 @@ public class BannerAdView extends AdView {
     public void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
         if (visibility == VISIBLE) {
-            // Register a broadcast receiver to pause add refresh when the phone
+            // Register a broadcast receiver to pause and refresh when the phone
             // is
             // locked
             if (!receiversRegistered) {
