@@ -21,101 +21,101 @@ import android.app.Activity;
 import android.view.View;
 
 public class MediatedBannerAdViewController implements Displayable {
-	AdView owner;
-	int width;
-	int height;
-	String uid;
-	String className;
-	String param;
-	boolean failed=false;
+    AdView owner;
+    int width;
+    int height;
+    String uid;
+    String className;
+    String param;
+    boolean failed = false;
 
-	Class<?> c;
-	MediatedBannerAdView mAV;
+    Class<?> c;
+    MediatedBannerAdView mAV;
 
-	View placeableView;
+    View placeableView;
 
-    static public MediatedBannerAdViewController create(AdView owner, AdResponse response){
+    static public MediatedBannerAdViewController create(AdView owner, AdResponse response) {
         MediatedBannerAdViewController out;
-        try{
+        try {
             out = new MediatedBannerAdViewController(owner, response);
-        }catch(Exception e){
+        } catch (Exception e) {
             return null;
         }
         return out;
 
     }
 
-	private MediatedBannerAdViewController(AdView owner, AdResponse response) throws Exception{
-		width = response.getWidth();
-		height = response.getHeight();
-		uid = response.getMediatedUID();
-		className = response.getMediatedViewClassName();
-		param = response.getParameter();
+    private MediatedBannerAdViewController(AdView owner, AdResponse response) throws Exception {
+        width = response.getWidth();
+        height = response.getHeight();
+        uid = response.getMediatedUID();
+        className = response.getMediatedViewClassName();
+        param = response.getParameter();
         this.owner = owner;
 
-		try {
-			c = Class.forName(className);
+        try {
+            c = Class.forName(className);
 
-		} catch (ClassNotFoundException e) {
-			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.class_not_found_exception));
-			throw e;
-		}
+        } catch (ClassNotFoundException e) {
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.class_not_found_exception));
+            throw e;
+        }
 
-		try {
-			mAV = (MediatedBannerAdView) c.newInstance();
-		} catch (InstantiationException e) {
-			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instantiation_exception));
-			failed=true;
-			throw e;
-		} catch (IllegalAccessException e) {
-			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception));
-			failed=true;
-			throw e;
-		}
-		placeableView = mAV.requestAd(this, (Activity)owner.getContext(), param, uid, width, height, owner);
-	}
+        try {
+            mAV = (MediatedBannerAdView) c.newInstance();
+        } catch (InstantiationException e) {
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instantiation_exception));
+            failed = true;
+            throw e;
+        } catch (IllegalAccessException e) {
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception));
+            failed = true;
+            throw e;
+        }
+        placeableView = mAV.requestAd(this, (Activity) owner.getContext(), param, uid, width, height, owner);
+    }
 
-	@Override
-	public View getView() {
-		return placeableView;
-	}
+    @Override
+    public View getView() {
+        return placeableView;
+    }
 
-	@Override
-	public boolean failed() {
-		return failed;
-	}
+    @Override
+    public boolean failed() {
+        return failed;
+    }
 
-	public void onAdLoaded() {
-		if(owner.getAdListener()!=null){
-			owner.getAdListener().onAdLoaded(owner);
-		}
+    public void onAdLoaded() {
+        if (owner.getAdListener() != null) {
+            owner.getAdListener().onAdLoaded(owner);
+        }
 
         //TODO http get on success_ib? new ad request with success_ib as root url?
-	}
+    }
 
-	public void onAdFailed() {
-		if(owner.getAdListener()!=null){
-			owner.getAdListener().onAdRequestFailed(owner);
-		}
-		this.failed=true;
+    public void onAdFailed() {
+        if (owner.getAdListener() != null) {
+            owner.getAdListener().onAdRequestFailed(owner);
+        }
+        this.failed = true;
 
         //TODO http get on fail_ib? new ad request with fail_ib as root url?
-	}
+    }
 
-    public void onAdExpanded(){
-        if(owner.getAdListener()!=null){
+    public void onAdExpanded() {
+        if (owner.getAdListener() != null) {
             owner.getAdListener().onAdExpanded(owner);
         }
     }
 
-    public void onAdCollapsed(){
-        if(owner.getAdListener()!=null){
+    public void onAdCollapsed() {
+        if (owner.getAdListener() != null) {
             owner.getAdListener().onAdCollapsed(owner);
         }
     }
 
-    public void onAdClicked(){
-        if(owner.getAdListener()!=null){
+    public void onAdClicked() {
+        if (owner.getAdListener() != null) {
             owner.getAdListener().onAdClicked(owner);
         }
     }

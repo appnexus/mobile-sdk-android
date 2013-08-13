@@ -14,67 +14,67 @@ import com.google.ads.AdRequest.ErrorCode;
 import com.google.ads.InterstitialAd;
 
 public class AdMobInterstitial implements MediatedInterstitialAdView,
-		AdListener {
-	InterstitialAd iad;
-	MediatedInterstitialAdViewController mMediatedInterstitialAdViewController;
-	
-	public AdMobInterstitial() {
-	}
+        AdListener {
+    InterstitialAd iad;
+    MediatedInterstitialAdViewController mMediatedInterstitialAdViewController;
 
-	@Override
-	public View requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid) {
-		 iad = new InterstitialAd(activity, uid);
+    public AdMobInterstitial() {
+    }
 
-		AdRequest ar = new AdRequest();
+    @Override
+    public View requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid) {
+        iad = new InterstitialAd(activity, uid);
 
-		ar.addTestDevice(((TelephonyManager) activity.getBaseContext()
-				.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
+        AdRequest ar = new AdRequest();
 
-		iad.setAdListener(this);
-		
-		iad.loadAd(ar);
-		mMediatedInterstitialAdViewController=mIC;
-		return null;
-	}
+        ar.addTestDevice(((TelephonyManager) activity.getBaseContext()
+                .getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
 
-	@Override
-	public void onReceiveAd(Ad ad) {
-		mMediatedInterstitialAdViewController.onAdLoaded();
-	}
+        iad.setAdListener(this);
 
-	@Override
-	public void onDismissScreen(Ad arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+        iad.loadAd(ar);
+        mMediatedInterstitialAdViewController = mIC;
+        return null;
+    }
 
-	@Override
-	public void onFailedToReceiveAd(Ad arg0, ErrorCode arg1) {
-        if(mMediatedInterstitialAdViewController!=null){
-		    mMediatedInterstitialAdViewController.onAdFailed();
+    @Override
+    public void onReceiveAd(Ad ad) {
+        mMediatedInterstitialAdViewController.onAdLoaded();
+    }
+
+    @Override
+    public void onDismissScreen(Ad arg0) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onFailedToReceiveAd(Ad arg0, ErrorCode arg1) {
+        if (mMediatedInterstitialAdViewController != null) {
+            mMediatedInterstitialAdViewController.onAdFailed();
         }
-		
-	}
 
-	@Override
-	public void onLeaveApplication(Ad arg0) {
-        if(mMediatedInterstitialAdViewController!=null){
+    }
+
+    @Override
+    public void onLeaveApplication(Ad arg0) {
+        if (mMediatedInterstitialAdViewController != null) {
             mMediatedInterstitialAdViewController.onAdClicked();
         }
-		
-	}
 
-	@Override
-	public void onPresentScreen(Ad arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
-	public void show() {
-		if(iad!=null){
-			iad.show();
-		}
-	}
+    @Override
+    public void onPresentScreen(Ad arg0) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void show() {
+        if (iad != null) {
+            iad.show();
+        }
+    }
 
 }
