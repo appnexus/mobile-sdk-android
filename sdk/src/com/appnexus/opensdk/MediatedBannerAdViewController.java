@@ -1,12 +1,12 @@
 /*
  *    Copyright 2013 APPNEXUS INC
- *    
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
  *        http://www.apache.org/licenses/LICENSE-2.0
- *    
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,7 @@ public class MediatedBannerAdViewController implements Displayable {
 
 	Class<?> c;
 	MediatedBannerAdView mAV;
-	
+
 	View placeableView;
 
     static public MediatedBannerAdViewController create(AdView owner, AdResponse response){
@@ -89,6 +89,8 @@ public class MediatedBannerAdViewController implements Displayable {
 		if(owner.getAdListener()!=null){
 			owner.getAdListener().onAdLoaded(owner);
 		}
+
+        //TODO http get on success_ib? new ad request with success_ib as root url?
 	}
 
 	public void onAdFailed() {
@@ -96,6 +98,8 @@ public class MediatedBannerAdViewController implements Displayable {
 			owner.getAdListener().onAdRequestFailed(owner);
 		}
 		this.failed=true;
+
+        //TODO http get on fail_ib? new ad request with fail_ib as root url?
 	}
 
     public void onAdExpanded(){
