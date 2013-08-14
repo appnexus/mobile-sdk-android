@@ -92,14 +92,9 @@ public class AdResponse {
                 return;
             }
             JSONArray ads = response.getJSONArray("ads");
-            JSONArray mediated = response.getJSONArray("mediated");
-            // is the array empty? if so, no ads were returned, and we need to
-            // fail gracefully
-            if (ads.length() == 0 && mediated.length() == 0) {
-                Clog.w(Clog.httpRespLogTag,
-                        Clog.getString(R.string.response_no_ads));
-                return;
-            } else if (ads.length() > 0) {
+
+
+            if (ads.length() > 0) {
                 // for now, just take the first ad
                 JSONObject firstAd = ads.getJSONObject(0);
                 // assume there's content
@@ -107,10 +102,22 @@ public class AdResponse {
                 width = firstAd.getInt("width");
                 this.body = firstAd.getString("content");
                 type = firstAd.getString("type");
-                if (this.body.equals("") || this.body == null)
+                if (this.body.equals("") || this.body == null){
                     Clog.e(Clog.httpRespLogTag,
                             Clog.getString(R.string.blank_ad));
-            } else if (mediated.length() > 0) {
+                }
+                return;
+            }
+        } catch (JSONException e) {
+            Clog.e(Clog.httpRespLogTag,
+                    Clog.getString(R.string.response_json_error, body));
+            e.printStackTrace();
+            return;
+        }
+
+        try {
+            JSONArray mediated = response.getJSONArray("mediated");
+            if (mediated.length() > 0) {
                 JSONObject mediated_response = mediated.getJSONObject(0);
                 mediatedViewClassName = mediated_response
                         .getString("android_class");
@@ -121,6 +128,7 @@ public class AdResponse {
                 mediatedFailURL = mediated_response.getString("fail_ib");
                 mediatedSuccessURL = mediated_response.getString("success_ib");
                 isMediated = true;
+                return;
             }
         } catch (JSONException e) {
             Clog.e(Clog.httpRespLogTag,
@@ -128,7 +136,8 @@ public class AdResponse {
             e.printStackTrace();
             return;
         }
-
+        Clog.w(Clog.httpRespLogTag,
+                Clog.getString(R.string.response_no_ads));
     }
 
     public String getBody() {
