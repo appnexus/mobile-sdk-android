@@ -39,7 +39,7 @@
         <item>300x250</item>
         <item>320x50</item>
         <item>321x50</item> <!-- For mediation testing TODO: remove -->
-        <item>320x320</item> <!-- For iframe testing TODO: remove -->
+        <!-- <item>320x320</item> -->
         <item>320x480</item>
         <item>600x300</item>
         <item>640x50</item>

@@ -335,7 +335,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                 : ""));
         sb.append((!isEmpty(psa) ? "&psa=" + psa : ""));
         //TODO: UNCOMMENT THE FUCK OUT OF THIS NEXT LINE
-        sb.append("&format=json");
+        //sb.append("&format=json");
         //TODO: Remove the fuck out of this next line
         sb.append("&dnt=1");
         sb.append("&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion));
