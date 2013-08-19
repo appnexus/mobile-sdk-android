@@ -307,7 +307,9 @@ public class MRAIDImplementation {
             expanded = true;
 
             // Fire the AdListener event
-            this.owner.owner.adListener.onAdExpanded(this.owner.owner);
+            if(this.owner.owner.adListener!=null){
+                this.owner.owner.adListener.onAdExpanded(this.owner.owner);
+            }
 
             // Lock the orientation
             AdActivity.lockOrientation((Activity) this.owner.getContext());
