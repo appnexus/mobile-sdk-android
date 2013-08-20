@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 
+<!--
    Copyright 2013 APPNEXUS INC
    
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
- -->
+-->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:opensdk="http://schemas.android.com/apk/res/com.appnexus.opensdkdemo"
     android:layout_width="match_parent"
@@ -49,39 +49,40 @@
                 opensdk:placement_id="1281482"
                 opensdk:width="320" />
         </FrameLayout>
-        
+
         <!-- Color Picker -->
+
         <View
             android:layout_width="fill_parent"
             android:layout_height="4dp"
             android:background="@android:color/darker_gray" />
-        
-        <LinearLayout 
+
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingLeft="20dp"
-            >
+            android:orientation="horizontal"
+            android:paddingLeft="20dp" >
+
             <View
                 android:id="@+id/color"
-                android:background="@android:color/black"
                 android:layout_width="50dp"
-                android:layout_height="50dp" 
-                />
+                android:layout_height="50dp"
+                android:background="@android:color/black" />
+
             <View
                 android:layout_width="15dp"
                 android:layout_height="0dp" />
+
             <Button
                 android:id="@+id/color_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/color_button_text"
-                />
-            
+                android:text="@string/color_button_text" />
         </LinearLayout>
 
         <!-- Buttons -->
+
         <View
             android:layout_width="fill_parent"
             android:layout_height="4dp"
@@ -101,6 +102,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:padding="3dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
                 android:padding="3dp"
                 android:text="@string/banner_button" />
 
@@ -110,6 +117,12 @@
 
             <RadioButton
                 android:id="@+id/radio_interstitial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="3dp" />
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -124,6 +137,12 @@
                 android:layout_weight="1"
                 android:text="MRAID" />
             -->
+
+            <TextView>
+            </TextView>
+
+            <TextView>
+            </TextView>
         </RadioGroup>
 
         <View
@@ -145,6 +164,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:padding="3dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
                 android:padding="3dp"
                 android:text="@string/inapp_button" />
 
@@ -157,8 +182,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:padding="3dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
                 android:padding="3dp"
                 android:text="@string/native_button" />
+
+            <TextView>
+            </TextView>
         </RadioGroup>
 
         <!-- Size Selector, Refresh Rate Selector -->
@@ -243,8 +277,9 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/load_ad_button" />
-        
-        <!-- Load Ad Button 
+
+        <!--
+        Load Ad Button 
 
         <View
             android:layout_width="fill_parent"
@@ -255,7 +290,8 @@
             android:id="@+id/pastead"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/paste_ad_button" />-->
+            android:text="@string/paste_ad_button" />
+        -->
     </LinearLayout>
 
 </ScrollView>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.appnexus.picflip"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="17" />
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <!-- Optional permissions for AppNexus -->
+    <uses-permission android:name='android.permission.ACCESS_COARSE_LOCATION' />
+    <uses-permission android:name='android.permission.ACCESS_FINE_LOCATION' />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".activities.MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.ImageViewActivity" >
+        </activity>
+        <activity
+            android:name=".activities.PrefActivity" >
+        </activity>
+
+        <!-- The Google AdMob SDK needs the following activitie to be added -->
+        <activity android:name="com.google.ads.AdActivity"
+              android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize">
+        </activity>
+
+        <!-- The AppNexus SDK needs the following activities to be added -->
+        <activity android:name="com.appnexus.opensdk.AdActivity" />
+        <activity android:name="com.appnexus.opensdk.BrowserActivity" />
+
+    </application>
+
+
+</manifest>

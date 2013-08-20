@@ -64,8 +64,10 @@ public class AdMobMediationInterstitial implements CustomEventInterstitial,
 	public void requestInterstitialAd(CustomEventInterstitialListener listener,
 			Activity activity, String label, String placement_id, MediationAdRequest adRequest,
 			Object extra) {
-		iav=new InterstitialAdView(activity, placement_id);
+		iav=new InterstitialAdView(activity);
+		iav.setPlacementID(placement_id);
 		iav.setAdListener(this);
+		iav.setShouldServePSAs(false);
 		this.listener=listener;
 		iav.loadAd();
 	}
@@ -83,6 +85,24 @@ public class AdMobMediationInterstitial implements CustomEventInterstitial,
 	@Override
 	public void onAdRequestFailed(AdView adView) {
 		onFailedToReceiveAd(null, null);
+	}
+
+	@Override
+	public void onAdExpanded(AdView adView) {
+		onPresentScreen(null);
+		
+	}
+
+	@Override
+	public void onAdCollapsed(AdView adView) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAdClicked(AdView adView) {
+		onLeaveApplication(null);
+		
 	}
 
 }

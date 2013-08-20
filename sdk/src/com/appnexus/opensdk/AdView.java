@@ -52,12 +52,14 @@ public abstract class AdView extends FrameLayout {
 	private boolean measured = false;
 	protected int width = -1;
 	protected int height = -1;
+	protected boolean shouldServePSAs = true;
 	private boolean mraid_expand = false;
 	protected AdListener adListener;
 	private BrowserStyle browserStyle;
 
 	/** Begin Construction **/
 
+	@SuppressWarnings("javadoc")
 	public AdView(Context context) {
 		super(context, null);
 		setup(context, null);
@@ -72,21 +74,6 @@ public abstract class AdView extends FrameLayout {
 	public AdView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		setup(context, attrs);
-	}
-
-	public AdView(Context context, String placement_id) {
-		super(context);
-		setup(context, null);
-		this.setPlacementID(placement_id);
-	}
-
-	public AdView(Context context, String placement_id, int ad_width,
-			int ad_height) {
-		super(context);
-		setup(context, null);
-		this.setPlacementID(placement_id);
-		this.setAdHeight(ad_height);
-		this.setAdWidth(ad_width);
 	}
 
 	protected void setup(Context context, AttributeSet attrs) {
@@ -146,7 +133,7 @@ public abstract class AdView extends FrameLayout {
 			float density = getContext().getResources().getDisplayMetrics().density;
 			measuredWidth = (int) ((right - left) / density + 0.5f);
 			measuredHeight = (int) ((bottom - top) / density + 0.5f);
-			if (measuredHeight < height || measuredWidth < width) {
+			if ((measuredHeight < height || measuredWidth < width) && measuredHeight>0 && measuredWidth > 0) {
 				Clog.e(Clog.baseLogTag, Clog.getString(R.string.adsize_too_big,
 						measuredWidth, measuredHeight, width, height));
 				// Hide the space, since no ad will be loaded due to error
@@ -160,11 +147,13 @@ public abstract class AdView extends FrameLayout {
 			}
 
 			// Hide the adview
-			if (!measured)
+			if (!measured){
 				hide();
+				onFirstLayout();
+			}
 
 			measured = true;
-			onFirstLayout();
+			
 
 		}
 	}
@@ -242,9 +231,11 @@ public abstract class AdView extends FrameLayout {
 	protected abstract void loadVariablesFromXML(Context context,
 			AttributeSet attrs);
 
-	/** End Construction **/
+	/*
+	 * End Construction
+	 */
 
-	public void display(Displayable d) {
+	protected void display(Displayable d) {
 		if (d == null) {
 			if (this.adListener != null)
 				adListener.onAdRequestFailed(this);
@@ -260,8 +251,6 @@ public abstract class AdView extends FrameLayout {
 		this.addView(d.getView());
 		if (this.adListener != null)
 			adListener.onAdLoaded(this);
-		Clog.d("MRAID", "Adding view: w:" + d.getView().getLayoutParams().width
-				+ " h:" + d.getView().getLayoutParams().height);
 		unhide();
 	}
 
@@ -397,7 +386,7 @@ public abstract class AdView extends FrameLayout {
 		} else if (!custom_close && close != null) {
 			this.removeView(close);
 			close.setVisibility(VISIBLE);
-			this.addView(close);//Re-add to send to top
+			this.addView(close);// Re-add to send to top
 		}
 	}
 
@@ -439,7 +428,8 @@ public abstract class AdView extends FrameLayout {
 	}
 
 	/**
-	 * @return whether or not the native browser is used instead of the in-app browser.
+	 * @return whether or not the native browser is used instead of the in-app
+	 *         browser.
 	 */
 	public boolean getOpensNativeBrowser() {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
@@ -449,6 +439,7 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 * Set this to true to disable the in-app browser.
+	 * 
 	 * @param opensNativeBrowser
 	 */
 	public void setOpensNativeBrowser(boolean opensNativeBrowser) {
@@ -463,6 +454,21 @@ public abstract class AdView extends FrameLayout {
 
 	protected void setBrowserStyle(BrowserStyle browserStyle) {
 		this.browserStyle = browserStyle;
+	}
+
+	/**
+	 * @return Whether this placement accepts PSAs if no ad is served.
+	 */
+	public boolean getShouldServePSAs() {
+		return shouldServePSAs;
+	}
+
+	/**
+	 * @param shouldServePSAs
+	 *            Whether this placement accepts PSAs if no ad is served.
+	 */
+	public void setShouldServePSAs(boolean shouldServePSAs) {
+		this.shouldServePSAs = shouldServePSAs;
 	}
 
 	static class BrowserStyle {

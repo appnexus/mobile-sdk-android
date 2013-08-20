@@ -35,7 +35,10 @@ public class TestConstructor extends
 		setActivityInitialTouchMode(false);
 		activity=getActivity();
 		
-		bav = new BannerAdView(activity, "1281482", 320, 50);
+		bav = new BannerAdView(activity);
+		bav.setPlacementID("1281482");
+		bav.setAdHeight(320);
+		bav.setAdWidth(50);
 	}
 
 	public void testConstruction() {

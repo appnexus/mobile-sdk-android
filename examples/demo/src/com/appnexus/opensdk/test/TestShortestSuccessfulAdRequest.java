@@ -32,9 +32,9 @@ public class TestShortestSuccessfulAdRequest extends TestCase implements AdReque
 	
 	protected void setUp() {
 		shouldWork = new AdRequest(this, null, null, null, "1281482",
-				null, null, 320, 50, -1, -1, null, null, null, false, null);
+				null, null, 320, 50, -1, -1, null, null, null, false, null, false);
 		shouldWork2 = new AdRequest(null, null, null, null, "1281482",
-				null, null, 320, 50, -1, -1, null, null, null, false, this);
+				null, null, 320, 50, -1, -1, null, null, null, false, this, false);
 	}
 
 	public void testSucceedingRequest() {
@@ -86,6 +86,24 @@ public class TestShortestSuccessfulAdRequest extends TestCase implements AdReque
 	synchronized public void onAdRequestFailed(AdView adView) {
 		shouldWorkDidWork2=false;
 		notify();		
+	}
+
+	@Override
+	public void onAdExpanded(AdView adView) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAdCollapsed(AdView adView) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAdClicked(AdView adView) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

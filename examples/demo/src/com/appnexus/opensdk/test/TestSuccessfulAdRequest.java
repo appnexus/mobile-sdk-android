@@ -32,9 +32,9 @@ public class TestSuccessfulAdRequest extends TestCase implements AdRequester, Ad
 
 	protected void setUp() {
 		shouldWork = new AdRequest(this, "123456", null, null, "1281482",
-				"portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, null);
+				"portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, null, true);
 		shouldWork2 = new AdRequest(null, "123456", null, null, "1281482",
-				"portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, this);
+				"portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, this, true);
 	}
 
 	public void testSucceedingRequest() {
@@ -85,6 +85,24 @@ public class TestSuccessfulAdRequest extends TestCase implements AdRequester, Ad
 	synchronized public void onAdRequestFailed(AdView adView) {
 		shouldWorkDidWork2=false;
 		notify();
+	}
+
+	@Override
+	public void onAdExpanded(AdView adView) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAdCollapsed(AdView adView) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAdClicked(AdView adView) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

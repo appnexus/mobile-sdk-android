@@ -52,8 +52,8 @@ public class BannerAdView extends AdView {
 	 * Creates a new BannerAdView
 	 * 
 	 * @param context
-	 *            The context of the ViewGroup to which the BannerAdView
-	 *            is being added.
+	 *            The context of the ViewGroup to which the BannerAdView is
+	 *            being added.
 	 */
 	public BannerAdView(Context context) {
 		super(context);
@@ -63,11 +63,10 @@ public class BannerAdView extends AdView {
 	 * Creates a new BannerAdView
 	 * 
 	 * @param context
-	 *            The context of the ViewGroup to which the BannerAdView
-	 *            is being added.
+	 *            The context of the ViewGroup to which the BannerAdView is
+	 *            being added.
 	 * @param attrs
-	 *            The AttributeSet to use when creating the
-	 *            BannerAdView.
+	 *            The AttributeSet to use when creating the BannerAdView.
 	 */
 	public BannerAdView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -77,11 +76,10 @@ public class BannerAdView extends AdView {
 	 * Creates a new BannerAdView
 	 * 
 	 * @param context
-	 *            The context of the ViewGroup to which the BannerAdView
-	 *            is being added.
+	 *            The context of the ViewGroup to which the BannerAdView is
+	 *            being added.
 	 * @param attrs
-	 *            The AttributeSet to use when creating the
-	 *            BannerAdView.
+	 *            The AttributeSet to use when creating the BannerAdView.
 	 * @param defStyle
 	 *            The default style to apply to this view. If 0, no style will
 	 *            be applied (beyond what is included in the theme). This may
@@ -96,33 +94,20 @@ public class BannerAdView extends AdView {
 	 * Creates a new BannerAdView
 	 * 
 	 * @param context
-	 *            The context of the ViewGroup to which the BannerAdView
-	 *            is being added.
-	 * @param placement_id
-	 *            The AppNexus placement id to use for this BannerAdView.
+	 *            The context of the ViewGroup to which the BannerAdView is
+	 *            being added.
+	 * @param refresh_interval
+	 *            The desired refresh rate, in milliseconds. By default, 30
+	 *            seconds. Minimum is 15 seconds. 0 turns auto-refresh off.
 	 */
-	public BannerAdView(Context context, String placement_id) {
-		super(context, placement_id);
-	}
-
-	/**
-	 * Creates a new BannerAdView
-	 * 
-	 * @param context
-	 *            The context of the ViewGroup to which the BannerAdView
-	 *            is being added.
-	 * @param placement_id
-	 *            The AppNexus placement id to use for this BannerAdView.
-	 * @param ad_width
-	 *            The height of the ad to request. Note: This is not the same as
-	 *            layout_width.
-	 * @param ad_height
-	 *            Thewidth of the ad to request. Note: This is not the same as
-	 *            layout_height.
-	 */
-	public BannerAdView(Context context, String placement_id, int ad_width,
-			int ad_height) {
-		super(context, placement_id, ad_width, ad_height);
+	public BannerAdView(Context context, int refresh_interval) {
+		super(context);
+		if (refresh_interval == 0) {
+			this.setAutoRefresh(false);
+		} else {
+			this.setAutoRefresh(true);
+			this.setAutoRefreshInterval(refresh_interval);
+		}
 	}
 
 	@Override
@@ -218,7 +203,7 @@ public class BannerAdView extends AdView {
 				Clog.d(Clog.xmlLogTag, Clog.getString(R.string.placement_id,
 						a.getString(attr)));
 			} else if (attr == R.styleable.BannerAdView_auto_refresh_interval) {
-				setAutoRefreshInterval(a.getInt(attr, 60 * 1000));
+				setAutoRefreshInterval(a.getInt(attr, 30 * 1000));
 				Clog.d(Clog.xmlLogTag,
 						Clog.getString(R.string.xml_set_period, period));
 			} else if (attr == R.styleable.BannerAdView_test) {
@@ -269,21 +254,28 @@ public class BannerAdView extends AdView {
 	 * 
 	 * @param period
 	 *            The interval, in milliseconds, at which the BannerAdView will
-	 *            request new ads, if autorefresh is enabled.
+	 *            request new ads, if autorefresh is enabled. The minimum period
+	 *            is 15 seconds. The default period is 30 seconds.
 	 */
 	public void setAutoRefreshInterval(int period) {
 		Clog.d(Clog.publicFunctionsLogTag,
 				Clog.getString(R.string.set_period, period));
-		this.period = period;
+		this.period = Math.max(Settings.getSettings().MIN_REFRESH_MILLISECONDS,
+				period);
+		if (period > 0) {
+			setAutoRefresh(true);
+		} else {
+			setAutoRefresh(false);
+		}
 		if (mAdFetcher != null)
-			mAdFetcher.setPeriod(period);
+			mAdFetcher.setPeriod(this.period);
 	}
 
 	/**
 	 * 
 	 * @return Whether this view should periodically request new ads.
 	 */
-	public boolean getAutoRefresh() {
+	private boolean getAutoRefresh() {
 		Clog.d(Clog.publicFunctionsLogTag,
 				Clog.getString(R.string.get_auto_refresh, auto_refresh));
 		return auto_refresh;
@@ -294,7 +286,7 @@ public class BannerAdView extends AdView {
 	 * @param auto_refresh
 	 *            Whether this view should periodically request new ads.
 	 */
-	public void setAutoRefresh(boolean auto_refresh) {
+	private void setAutoRefresh(boolean auto_refresh) {
 		Clog.d(Clog.publicFunctionsLogTag,
 				Clog.getString(R.string.set_auto_refresh, auto_refresh));
 		this.auto_refresh = auto_refresh;
@@ -366,24 +358,6 @@ public class BannerAdView extends AdView {
 
 	private void dismantleBroadcast() {
 		getContext().unregisterReceiver(receiver);
-	}
-
-	/**
-	 * Begins automatically reloading ads at the set period (60 seconds by
-	 * default).
-	 */
-	public void startAutoRefresh() {
-		this.setAutoRefresh(true);
-	}
-
-	/**
-	 * Sets the autorefresh period and begins automatically reloading ads.
-	 * 
-	 * @param interval
-	 */
-	public void startAutoRefresh(int interval) {
-		this.setAutoRefreshInterval(Math.max(interval,15));
-		this.startAutoRefresh();
 	}
 
 	@Override

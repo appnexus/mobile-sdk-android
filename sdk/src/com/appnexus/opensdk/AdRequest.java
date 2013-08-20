@@ -80,36 +80,62 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	String language;
 	String placementId;
 	String nativeBrowser;
+	String psa;
 	int width = -1;
 	int height = -1;
 	int maxWidth = -1;
 	int maxHeight = -1;
 
+	private static final AdResponse SHOULD_RETRY = new AdResponse(null,
+			"RETRY", null);
+	private static final AdResponse SHOULD_RETRY_DO_NOT_COUNT = new AdResponse(
+			null, "RETRY2", null);
+
 	/**
 	 * Creates a new AdRequest with the given parameters
 	 * 
 	 * @param requester
+	 *            The instance of AdRequester which is filing this request.
 	 * @param aid
+	 *            The ANDROID_ID to hash and pass.
 	 * @param lat
+	 *            The lattitude to pass.
 	 * @param lon
+	 *            The longistude to pass.
 	 * @param placementId
+	 *            The AppNexus placement id to use
 	 * @param orientation
+	 *            The device orientation to pass, 'portrait' or 'landscape'
 	 * @param carrier
+	 *            The carrier to pass, such as 'AT&T'
 	 * @param width
+	 *            The width to request, in pixels. -1 for none.
 	 * @param height
+	 *            The height to request, in pixels. -1 for none.
 	 * @param maxWidth
+	 *            The maximum width, if no width is specified.
 	 * @param maxHeight
+	 *            The maximum height, if no height is specified.
 	 * @param mcc
+	 *            The MCC to pass.
 	 * @param mnc
+	 *            The MNC to pass
 	 * @param connectionType
+	 *            The type of connection, 'wifi' or 'wan'
 	 * @param isNativeBrowser
+	 *            Whether this ad space will open the landing page in the native
+	 *            browser ('1') or the in-app browser ('0').
 	 * @param adListener
+	 *            The instance of AdListener to use.
+	 * @param shouldServePSAs
+	 *            Whether this ad space accepts PSAs ('1') or only wants ads
+	 *            ('0')
 	 */
 	public AdRequest(AdRequester requester, String aid, String lat, String lon,
 			String placementId, String orientation, String carrier, int width,
 			int height, int maxWidth, int maxHeight, String mcc, String mnc,
 			String connectionType, boolean isNativeBrowser,
-			AdListener adListener) {
+			AdListener adListener, boolean shouldServePSAs) {
 		this.adListener = adListener;
 		this.requester = requester;
 		if (aid != null) {
@@ -145,6 +171,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		this.language = Settings.getSettings().language;
 
 		this.placementId = placementId;
+		this.psa = shouldServePSAs ? "1" : "0";
 
 		this.nativeBrowser = isNativeBrowser ? "1" : "0";
 	}
@@ -223,6 +250,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		maxHeight = owner.getContainerHeight();
 		maxWidth = owner.getContainerWidth();
 
+		this.psa = owner.shouldServePSAs ? "1" : "0";
+
 		if (Settings.getSettings().mcc == null
 				|| Settings.getSettings().mnc == null) {
 			TelephonyManager tm = (TelephonyManager) context
@@ -262,6 +291,10 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		language = Settings.getSettings().language;
 	}
 
+	private AdRequest(AdRequester a) {
+		this((a instanceof AdFetcher ? (AdFetcher) a : null));
+	}
+
 	private void fail() {
 		if (requester != null)
 			requester.failed(this);
@@ -295,13 +328,12 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		sb.append(((width > 0 && height > 0) ? "&size=" + width + "x" + height
 				: ""));
 		if (owner != null) {
-			if(maxHeight>0 && maxWidth >0){
-				if(!(owner instanceof InterstitialAdView) && (width<0 || height<0)){
-					sb.append("&max_size="
-							+ maxWidth + "x" + maxHeight);
-				}else{
-					sb.append("&size="
-							+ maxWidth + "x" + maxHeight);
+			if (maxHeight > 0 && maxWidth > 0) {
+				if (!(owner instanceof InterstitialAdView)
+						&& (width < 0 && height < 0)) {
+					sb.append("&max_size=" + maxWidth + "x" + maxHeight);
+				} else {
+					sb.append("&size=" + maxWidth + "x" + maxHeight);
 				}
 			}
 		}
@@ -318,6 +350,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				+ Uri.encode(connection_type) : ""));
 		sb.append((!isEmpty(nativeBrowser) ? "&native_browser=" + nativeBrowser
 				: ""));
+		sb.append((!isEmpty(psa) ? "&psa=" + psa : ""));
 		sb.append("&format=json");
 		sb.append("&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion));
 
@@ -326,17 +359,18 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
 	@Override
 	protected AdResponse doInBackground(Void... params) {
-		if (context != null) {
-			NetworkInfo ninfo = ((ConnectivityManager) context
-					.getSystemService(Context.CONNECTIVITY_SERVICE))
-					.getActiveNetworkInfo();
-			if (ninfo == null || !ninfo.isConnectedOrConnecting()) {
-				Clog.d(Clog.httpReqLogTag,
-						Clog.getString(R.string.no_connectivity));
-				fail();
-				return null;
-			}
+		if(!hasNetwork(context)){
+			Clog.d(Clog.httpReqLogTag,
+					Clog.getString(R.string.no_connectivity));
+			fail();
+			return SHOULD_RETRY_DO_NOT_COUNT;
 		}
+		
+		return doRequest();
+
+	}
+	
+	private AdResponse doRequest(){
 		String query_string = getRequestUrl();
 
 		Clog.setLastRequest(query_string);
@@ -363,22 +397,22 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		} catch (ClientProtocolException e) {
 			Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unknown));
 			fail();
-			return null;
+			return AdRequest.SHOULD_RETRY;
 		} catch (ConnectTimeoutException e) {
 			Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_timeout));
 			fail();
-			return null;
+			return AdRequest.SHOULD_RETRY;
 		} catch (HttpHostConnectException e) {
 			HttpHostConnectException he = (HttpHostConnectException) e;
 			Clog.e(Clog.httpReqLogTag, Clog.getString(
 					R.string.http_unreachable, he.getHost().getHostName(), he
 							.getHost().getPort()));
 			fail();
-			return null;
+			return AdRequest.SHOULD_RETRY;
 		} catch (IOException e) {
 			Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_io));
 			fail();
-			return null;
+			return AdRequest.SHOULD_RETRY;
 		} catch (SecurityException se) {
 			fail();
 			Clog.e(Clog.baseLogTag,
@@ -388,14 +422,29 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			e.printStackTrace();
 			Clog.e(Clog.baseLogTag, Clog.getString(R.string.unknown_exception));
 			fail();
-			return null;
+			return AdRequest.SHOULD_RETRY;
 		}
 		if (out.equals("")) {
+			Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
 			fail();
-			return null;
+			return AdRequest.SHOULD_RETRY;
 		}
 		return new AdResponse(requester, out, r.getAllHeaders());
 	}
+	
+	private boolean hasNetwork(Context context){
+		if (context != null) {
+			NetworkInfo ninfo = ((ConnectivityManager) context
+					.getSystemService(Context.CONNECTIVITY_SERVICE))
+					.getActiveNetworkInfo();
+			if (ninfo == null || !ninfo.isConnectedOrConnecting()) {
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+	
 
 	private boolean httpShouldContinue(StatusLine statusLine) {
 		int http_error_code = statusLine.getStatusCode();
@@ -416,6 +465,10 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			Clog.v(Clog.httpRespLogTag, Clog.getString(R.string.no_response));
 			// Don't call fail again!
 			return; // http request failed
+		} else if (result.equals(AdRequest.SHOULD_RETRY)
+				|| result.equals(AdRequest.SHOULD_RETRY_DO_NOT_COUNT)) {
+			new RetryAdRequest(this, Settings.getSettings().MAX_FAILED_HTTP_RETRIES).execute();
+			return; // The request failed and should be retried.
 		}
 		if (requester != null)
 			requester.onReceiveResponse(result);
@@ -431,4 +484,54 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		return false;
 	}
 
+	private class RetryAdRequest extends AdRequest {
+		int tryMoreTimes = 0;
+		int tryMoreMaxTimes = 0;
+		AdRequest adRequest = null;
+
+		protected RetryAdRequest(AdRequest adRequest, int maxFailedTries) {
+			super(adRequest.requester);
+			this.tryMoreMaxTimes=maxFailedTries;
+			this.adRequest=adRequest;
+		}
+
+		protected RetryAdRequest(AdRequest adRequest, int moreTimes, int maxTimesLeft) {
+			super(adRequest.requester);
+			tryMoreTimes = moreTimes;
+			tryMoreMaxTimes = maxTimesLeft; 
+		}
+		
+		@Override
+		protected AdResponse doInBackground(Void... params) {
+			if(!hasNetwork(context)){
+				Clog.d(Clog.httpReqLogTag,
+						Clog.getString(R.string.no_connectivity));
+				fail();
+				try {
+					Thread.sleep(Settings.getSettings().HTTP_RETRY_INTERVAL);
+				} catch (InterruptedException e) {
+					//Do nothing, just retry
+				}
+				return SHOULD_RETRY_DO_NOT_COUNT;
+			}
+			
+			return doRequest();
+
+		}
+		
+
+		@Override
+		protected void onPostExecute(AdResponse result) {
+			if(tryMoreTimes == 0 || tryMoreMaxTimes == 0){
+				return;
+			}
+			if(result.equals(AdRequest.SHOULD_RETRY) && tryMoreTimes > 0 && tryMoreMaxTimes > 0){
+				new RetryAdRequest(adRequest, tryMoreTimes-1, tryMoreMaxTimes-1).execute();
+			}else if(result.equals(AdRequest.SHOULD_RETRY_DO_NOT_COUNT)){
+				new RetryAdRequest(adRequest, tryMoreTimes, tryMoreMaxTimes-1).execute();
+			}else if(!result.equals(AdRequest.SHOULD_RETRY) && !result.equals(AdRequest.SHOULD_RETRY_DO_NOT_COUNT)){
+				super.onPostExecute(result);
+			}
+		}
+	}
 }

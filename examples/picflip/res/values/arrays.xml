@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Used in View/Spinner1.java -->
+    <string-array name="entries_mediation_service">
+        <item>AdMob Direct</item>
+        <item>AppNexus Direct</item>
+        <item>AdMob Mediation to AppNexus</item>
+    </string-array>
+
+    <string-array name="values_mediation_service">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+</resources>

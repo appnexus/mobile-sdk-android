@@ -24,6 +24,9 @@ import java.util.concurrent.TimeUnit;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
+import android.annotation.SuppressLint;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 
@@ -36,6 +39,7 @@ public class AdFetcher implements AdRequester {
 	private boolean shouldReset = false;
 	private long lastFetchTime = -1;
 	private long timePausedAt = -1;
+	private boolean shouldShowTrueTime = false;
 
 	// Fires requests whenever it receives a message
 	public AdFetcher(AdView owner) {
@@ -95,7 +99,7 @@ public class AdFetcher implements AdRequester {
 				.newScheduledThreadPool(Settings.getSettings().FETCH_THREAD_COUNT);
 
 		// Get the period from the settings
-		final int msPeriod = period <= 0 ? 60 * 1000 : period;
+		final int msPeriod = period <= 0 ? 30 * 1000 : period;
 
 		if (!getAutoRefresh()) {
 			Clog.v(Clog.baseLogTag,
@@ -109,6 +113,9 @@ public class AdFetcher implements AdRequester {
 			if (timePausedAt != -1 && lastFetchTime != -1) {
 				stall_temp = msPeriod - (timePausedAt - lastFetchTime);
 			} else {
+				stall_temp = 0;
+			}
+			if (!shouldShowTrueTime) {
 				stall_temp = 0;
 			}
 			final long stall = stall_temp;
@@ -147,6 +154,7 @@ public class AdFetcher implements AdRequester {
 			mFetcher = new WeakReference<AdFetcher>(f);
 		}
 
+		@SuppressLint("NewApi")
 		@Override
 		synchronized public void handleMessage(Message msg) {
 			// If the adfetcher, for some reason, has vanished, do nothing with
@@ -173,7 +181,13 @@ public class AdFetcher implements AdRequester {
 			mFetcher.get().lastFetchTime = System.currentTimeMillis();
 
 			// Spawn an AdRequest
-			new AdRequest(mFetcher.get()).execute();
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+				new AdRequest(mFetcher.get())
+						.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			} else {
+				new AdRequest(mFetcher.get()).execute();
+			}
+
 		}
 	}
 

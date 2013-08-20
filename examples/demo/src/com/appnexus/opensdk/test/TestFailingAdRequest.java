@@ -31,8 +31,8 @@ public class TestFailingAdRequest extends TestCase implements AdRequester, AdLis
 	boolean shouldPass=false;
 	boolean shouldPass2=false;
 	protected void setUp(){
-		shouldNotWork=new AdRequest(this, "123456", null, null, null, "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, null);
-		shouldNotWork2=new AdRequest(null, "123456", null, null, null, "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, this);
+		shouldNotWork=new AdRequest(this, "123456", null, null, null, "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, null, true);
+		shouldNotWork2=new AdRequest(null, "123456", null, null, null, "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, this, true);
 	}
 
 	public void testFailingRequest(){
@@ -84,6 +84,24 @@ public class TestFailingAdRequest extends TestCase implements AdRequester, AdLis
 	synchronized public void onAdRequestFailed(AdView adView) {
 		shouldPass2=true;
 		notify();
+	}
+
+	@Override
+	public void onAdExpanded(AdView adView) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAdCollapsed(AdView adView) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAdClicked(AdView adView) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

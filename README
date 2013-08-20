@@ -1,0 +1,18 @@
+Thu Jan 24 17:25:16 EST 2013
+
+Files
+=====
+
+.
+├── CHANGELOG - Log og significant changes
+├── LICENSE   - License for using this code
+├── README    - This file
+├── docs      - Documentation
+├── examples  - Example apps
+├── sdk       - The SDK itself
+└── tests     - Tests to verify SDK
+
+Getting Started
+===============
+
+Step 1 - 

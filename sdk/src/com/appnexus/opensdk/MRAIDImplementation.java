@@ -123,6 +123,10 @@ public class MRAIDImplementation {
 				try {
 					owner.getContext().startActivity(
 							new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+					// If it's an IAV, prevent it from closing
+					if (owner.owner instanceof InterstitialAdView) {
+						((InterstitialAdView) (owner.owner)).interacted();
+					}
 					return true;
 				} catch (ActivityNotFoundException e) {
 					return false;
@@ -258,6 +262,7 @@ public class MRAIDImplementation {
 			owner.close();
 			this.owner
 					.loadUrl("javascript:window.mraid.util.stateChangeEvent('default');");
+			this.owner.owner.adListener.onAdCollapsed(this.owner.owner);
 
 			// Allow orientation changes
 			Activity a = ((Activity) this.owner.getContext());
@@ -296,10 +301,14 @@ public class MRAIDImplementation {
 			}
 
 			owner.expand(width, height, useCustomClose, this);
-			// Fire the stateChange
+			// Fire the stateChange to MRAID
 			this.owner
 					.loadUrl("javascript:window.mraid.util.stateChangeEvent('expanded');");
 			expanded = true;
+
+			// Fire the AdListener event
+			this.owner.owner.adListener.onAdExpanded(this.owner.owner);
+
 			// Lock the orientation
 			AdActivity.lockOrientation((Activity) this.owner.getContext());
 

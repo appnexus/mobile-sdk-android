@@ -121,6 +121,16 @@ public class AdWebView extends WebView implements Displayable {
 					}
 					destination.getContext().startActivity(intent);
 				}
+				
+				AdWebView.this.destination.adListener.onAdClicked(AdWebView.this.destination);
+				//If it's an IAV, prevent it from closing
+		                if (AdWebView.this.destination instanceof InterstitialAdView) {
+					InterstitialAdView iav = (InterstitialAdView)AdWebView.this.destination;
+					if(iav!=null){
+						iav.interacted();
+					}
+				}
+				
 				return true;
 			}
 

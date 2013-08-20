@@ -111,8 +111,6 @@ public class MRAIDWebView extends WebView implements Displayable {
 	// w,h in dips. this function converts to pixels
 	protected void expand(int w, int h, boolean cust_close,
 			MRAIDImplementation caller) {
-		// TODO change these to FrameLayout.LayoutParams, since this gets added
-		// to an AdView
 		DisplayMetrics metrics = new DisplayMetrics();
 		((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE))
 				.getDefaultDisplay().getMetrics(metrics);
@@ -129,6 +127,11 @@ public class MRAIDWebView extends WebView implements Displayable {
 
 		if (owner != null) {
 			owner.expand(w, h, cust_close, caller);
+		}
+		
+		//If it's an IAV, prevent it from closing
+		if(owner instanceof InterstitialAdView){
+			((InterstitialAdView)owner).interacted();
 		}
 
 		this.setLayoutParams(lp);

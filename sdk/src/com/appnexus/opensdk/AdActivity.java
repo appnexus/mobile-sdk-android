@@ -16,7 +16,10 @@
 
 package com.appnexus.opensdk;
 
+import java.util.Locale;
+
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Settings;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -24,6 +27,8 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.Display;
@@ -38,12 +43,15 @@ public class AdActivity extends Activity {
 
 	FrameLayout layout;
 	long now;
-	int orientation;
+	boolean close_added=false;
+	int close_button_delay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
+	int auto_dismiss_time = Settings.getSettings().DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME;
 
-	@SuppressLint("InlinedApi")
+	@SuppressLint({ "InlinedApi", "NewApi" })
 	@Override
 	public void onCreate(Bundle b) {
 		super.onCreate(b);
+
 		layout = new FrameLayout(this);
 
 		// Lock the orientation
@@ -52,14 +60,51 @@ public class AdActivity extends Activity {
 		setContentView(layout);
 
 		setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
-		now = getIntent().getLongExtra("Time", System.currentTimeMillis());
+		now = getIntent().getLongExtra(InterstitialAdView.INTENT_KEY_TIME,
+				System.currentTimeMillis());
+		close_button_delay = getIntent().getIntExtra(
+				InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY,
+				Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
+		auto_dismiss_time = getIntent().getIntExtra(
+				InterstitialAdView.INTENT_KEY_AUTO_DISMISS_TIME,
+				Settings.getSettings().DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME);
+		if (auto_dismiss_time < close_button_delay) {
+			auto_dismiss_time = close_button_delay;
+		}
 
-		// Add a close button.
-		addCloseButton(layout);
+		// Add a close button after a 10 second delay.
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			new ButtonAsyncTask().executeOnExecutor(
+					AsyncTask.THREAD_POOL_EXECUTOR, layout);
+		} else {
+			new ButtonAsyncTask().execute(layout);
+		}
+
+		// If autodismiss is set, dismiss after the assigned delay, unless
+		// someone has interacted with the ad.
+		if (auto_dismiss_time > 0) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+				new DismissAsyncTask().executeOnExecutor(
+						AsyncTask.THREAD_POOL_EXECUTOR, this);
+			} else {
+				new DismissAsyncTask().execute(this);
+			}
+		}
 
 	}
 
-	private void addCloseButton(FrameLayout layout) {
+	protected void finishIfNoInteraction() {
+		if (!InterstitialAdView.INTERSTITIALADVIEW_TO_USE.interacted) {
+			finish();
+		}
+
+	}
+
+	protected void addCloseButton(FrameLayout layout) {
+		if(close_added){
+			return;
+		}
+		close_added=true;
 		final ImageButton close = new ImageButton(this);
 		close.setImageDrawable(getResources().getDrawable(
 				android.R.drawable.ic_menu_close_clear_cancel));
@@ -97,14 +142,68 @@ public class AdActivity extends Activity {
 				return;
 			layout.addView(p.second.getView());
 		}
+		
+		if(av!=null){
+			av.setAdActivity(this);
+		}
 	}
 
-	@SuppressLint("InlinedApi")
+	class ButtonAsyncTask extends AsyncTask<FrameLayout, Integer, FrameLayout> {
+
+		@Override
+		protected FrameLayout doInBackground(FrameLayout... params) {
+			if (params.length < 1)
+				return null;
+			try {
+				Thread.sleep(close_button_delay);
+			} catch (InterruptedException e) {
+				return null;
+			}
+			return params[0];
+		}
+
+		@Override
+		protected void onPostExecute(FrameLayout result) {
+			if (result != null) {
+				addCloseButton(result);
+			}
+		}
+
+	}
+
+	class DismissAsyncTask extends AsyncTask<AdActivity, Integer, Void> {
+		@Override
+		protected Void doInBackground(AdActivity... params) {
+			if (params.length < 1) {
+				return null;
+			}
+			try {
+				Thread.sleep(auto_dismiss_time);
+			} catch (InterruptedException e) {
+				return null;
+			}
+			params[0].finishIfNoInteraction();
+			return null;
+
+		}
+	}
+
+	@SuppressLint({ "InlinedApi", "DefaultLocale" })
 	protected static void lockOrientation(Activity a) {
+		// Fix an accelerometer bug with kindle fire HDs
+		boolean isKindleFireHD = false;
+		String device = Settings.getSettings().deviceModel
+				.toUpperCase(Locale.US);
+		String make = Settings.getSettings().deviceMake.toUpperCase(Locale.US);
+		if (make.equals("AMAZON")
+				&& (device.equals("KFTT") || device.equals("KFJWI") || device
+						.equals("KFJWA"))) {
+			isKindleFireHD = true;
+		}
 		Display d = ((WindowManager) a.getSystemService(Context.WINDOW_SERVICE))
 				.getDefaultDisplay();
 		final int orientation = a.getResources().getConfiguration().orientation;
-		
+
 		if (orientation == Configuration.ORIENTATION_PORTRAIT) {
 			if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO) {
 				a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -117,16 +216,25 @@ public class AdActivity extends Activity {
 					a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 				}
 			}
-		}else if(orientation == Configuration.ORIENTATION_LANDSCAPE){
+		} else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO) {
 				a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 			} else {
 				int rotation = d.getRotation();
-				if (rotation == android.view.Surface.ROTATION_0
-						|| rotation == android.view.Surface.ROTATION_90) {
-					a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+				if (!isKindleFireHD) {
+					if (rotation == android.view.Surface.ROTATION_0
+							|| rotation == android.view.Surface.ROTATION_90) {
+						a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+					} else {
+						a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+					}
 				} else {
-					a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+					if (rotation == android.view.Surface.ROTATION_0
+							|| rotation == android.view.Surface.ROTATION_90) {
+						a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+					} else {
+						a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+					}
 				}
 			}
 		}
