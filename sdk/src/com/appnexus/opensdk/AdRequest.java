@@ -281,7 +281,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (requester != null)
             requester.failed(this);
         if (adListener != null)
-            adListener.onAdRequestFailed(null);
+            adListener.onAdRequestFailed(this.owner);
         Clog.clearLastResponse();
     }
 
