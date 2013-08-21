@@ -85,10 +85,10 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     int maxWidth = -1;
     int maxHeight = -1;
 
-    private static final AdResponse SHOULD_RETRY = new AdResponse(null,
+    private static final AdResponse CONNECTIVITY_RETRY = new AdResponse(null,
             "RETRY", null);
-    private static final AdResponse SHOULD_RETRY_DO_NOT_COUNT = new AdResponse(
-            null, "RETRY2", null);
+    private static final AdResponse BLANK_RETRY = new AdResponse(
+            null, "BLANK", null);
 
     /**
      * Creates a new AdRequest with the given parameters
@@ -334,10 +334,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         sb.append((!isEmpty(nativeBrowser) ? "&native_browser=" + nativeBrowser
                 : ""));
         sb.append((!isEmpty(psa) ? "&psa=" + psa : ""));
-        //TODO: UNCOMMENT THE FUCK OUT OF THIS NEXT LINE
-        //sb.append("&format=json");
-        //TODO: Remove the fuck out of this next line
-        sb.append("&dnt=1");
+        sb.append("&format=json");
         sb.append("&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion));
 
         return sb.toString();
@@ -349,7 +346,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             Clog.d(Clog.httpReqLogTag,
                     Clog.getString(R.string.no_connectivity));
             fail();
-            return SHOULD_RETRY_DO_NOT_COUNT;
+            return AdRequest.CONNECTIVITY_RETRY;
         }
 
         return doRequest();
@@ -383,22 +380,22 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         } catch (ClientProtocolException e) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unknown));
             fail();
-            return AdRequest.SHOULD_RETRY;
+            return AdRequest.CONNECTIVITY_RETRY;
         } catch (ConnectTimeoutException e) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_timeout));
             fail();
-            return AdRequest.SHOULD_RETRY;
+            return AdRequest.CONNECTIVITY_RETRY;
         } catch (HttpHostConnectException e) {
             HttpHostConnectException he = (HttpHostConnectException) e;
             Clog.e(Clog.httpReqLogTag, Clog.getString(
                     R.string.http_unreachable, he.getHost().getHostName(), he
                     .getHost().getPort()));
             fail();
-            return AdRequest.SHOULD_RETRY;
+            return AdRequest.CONNECTIVITY_RETRY;
         } catch (IOException e) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_io));
             fail();
-            return AdRequest.SHOULD_RETRY;
+            return AdRequest.CONNECTIVITY_RETRY;
         } catch (SecurityException se) {
             fail();
             Clog.e(Clog.baseLogTag,
@@ -408,12 +405,12 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             e.printStackTrace();
             Clog.e(Clog.baseLogTag, Clog.getString(R.string.unknown_exception));
             fail();
-            return AdRequest.SHOULD_RETRY;
+            return AdRequest.CONNECTIVITY_RETRY;
         }
         if (out.equals("")) {
             Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
             fail();
-            return AdRequest.SHOULD_RETRY;
+            return AdRequest.BLANK_RETRY;
         }
         return new AdResponse(requester, out, r.getAllHeaders());
     }
@@ -451,9 +448,9 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             Clog.v(Clog.httpRespLogTag, Clog.getString(R.string.no_response));
             // Don't call fail again!
             return; // http request failed
-        } else if (result.equals(AdRequest.SHOULD_RETRY)
-                || result.equals(AdRequest.SHOULD_RETRY_DO_NOT_COUNT)) {
-            new RetryAdRequest(this, Settings.getSettings().MAX_FAILED_HTTP_RETRIES).execute();
+        } else if (result.equals(AdRequest.CONNECTIVITY_RETRY)
+                || result.equals(AdRequest.BLANK_RETRY)) {
+            new RetryAdRequest(this, Settings.getSettings().MAX_FAILED_HTTP_RETRIES, Settings.getSettings().MAX_HTTP_RETRIES).execute();
             return; // The request failed and should be retried.
         }
         if (requester != null)
@@ -471,20 +468,14 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     }
 
     private class RetryAdRequest extends AdRequest {
-        int tryMoreTimes = 0;
-        int tryMoreMaxTimes = 0;
+        int tryMoreTimesHTTP = 0;
+        int tryMoreMaxTimesBlanks = 0;
         AdRequest adRequest = null;
 
-        protected RetryAdRequest(AdRequest adRequest, int maxFailedTries) {
+        protected RetryAdRequest(AdRequest adRequest, int moreTimesHttp, int moreTimesBlanks) {
             super(adRequest.requester);
-            this.tryMoreMaxTimes = maxFailedTries;
-            this.adRequest = adRequest;
-        }
-
-        protected RetryAdRequest(AdRequest adRequest, int moreTimes, int maxTimesLeft) {
-            super(adRequest.requester);
-            tryMoreTimes = moreTimes;
-            tryMoreMaxTimes = maxTimesLeft;
+            tryMoreTimesHTTP = moreTimesHttp;
+            tryMoreMaxTimesBlanks = moreTimesBlanks;
         }
 
         @Override
@@ -498,7 +489,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                 } catch (InterruptedException e) {
                     //Do nothing, just retry
                 }
-                return SHOULD_RETRY_DO_NOT_COUNT;
+                return AdRequest.CONNECTIVITY_RETRY;
             }
 
             return doRequest();
@@ -508,14 +499,14 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
         @Override
         protected void onPostExecute(AdResponse result) {
-            if (tryMoreTimes == 0 || tryMoreMaxTimes == 0) {
+            if (tryMoreTimesHTTP == 0 || tryMoreMaxTimesBlanks == 0) {
                 return;
             }
-            if (result.equals(AdRequest.SHOULD_RETRY) && tryMoreTimes > 0 && tryMoreMaxTimes > 0) {
-                new RetryAdRequest(adRequest, tryMoreTimes - 1, tryMoreMaxTimes - 1).execute();
-            } else if (result.equals(AdRequest.SHOULD_RETRY_DO_NOT_COUNT)) {
-                new RetryAdRequest(adRequest, tryMoreTimes, tryMoreMaxTimes - 1).execute();
-            } else if (!result.equals(AdRequest.SHOULD_RETRY) && !result.equals(AdRequest.SHOULD_RETRY_DO_NOT_COUNT)) {
+            if (result.equals(AdRequest.CONNECTIVITY_RETRY) && tryMoreTimesHTTP > 0){
+                new RetryAdRequest(adRequest, tryMoreTimesHTTP - 1, tryMoreMaxTimesBlanks).execute();
+            } else if (result.equals(AdRequest.BLANK_RETRY)  && tryMoreMaxTimesBlanks > 0) {
+                new RetryAdRequest(adRequest, tryMoreTimesHTTP, tryMoreMaxTimesBlanks - 1).execute();
+            } else if (!result.equals(AdRequest.CONNECTIVITY_RETRY) && !result.equals(AdRequest.BLANK_RETRY)) {
                 super.onPostExecute(result);
             }
         }
