@@ -17,7 +17,6 @@
 package com.appnexus.opensdk;
 
 import com.appnexus.opensdk.AdView.BrowserStyle;
-import com.appnexus.opensdk.R;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
@@ -29,13 +28,10 @@ import android.net.Uri;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
-import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.SslErrorHandler;
-import android.widget.FrameLayout;
-import android.widget.VideoView;
 import android.net.http.SslError;
 
 /**
@@ -76,7 +72,7 @@ public class AdWebView extends WebView implements Displayable {
 		setBackgroundColor(Color.TRANSPARENT);
 		setScrollBarStyle(WebView.SCROLLBARS_INSIDE_OVERLAY);
 
-		setWebChromeClient(new AdWebChromeClient());
+		setWebChromeClient(new VideoEnabledWebChromeClient((Activity) destination.getContext()));
 
 		setWebViewClient(new WebViewClient() {
 			@Override
@@ -172,23 +168,5 @@ public class AdWebView extends WebView implements Displayable {
 	@Override
 	public boolean failed() {
 		return failed;
-	}
-
-	class AdWebChromeClient extends WebChromeClient {
-
-		public void onShowCustomView(View view, CustomViewCallback callback) {
-			super.onShowCustomView(view, callback);
-			if (view instanceof FrameLayout) {
-				FrameLayout frame = (FrameLayout) view;
-				if (frame.getFocusedChild() instanceof VideoView) {
-					VideoView video = (VideoView) frame.getFocusedChild();
-					frame.removeView(video);
-					((Activity) AdWebView.this.destination.getContext())
-							.setContentView(video);
-					video.start();
-				}
-			}
-		}
-
 	}
 }
