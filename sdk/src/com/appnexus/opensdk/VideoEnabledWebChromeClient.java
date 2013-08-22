@@ -20,7 +20,6 @@ public class VideoEnabledWebChromeClient extends WebChromeClient {
     CustomViewCallback c;
     FrameLayout frame;
     Activity context;
-    ArrayList<View> childViews;
 
 
     public VideoEnabledWebChromeClient(Activity context) {
@@ -36,11 +35,9 @@ public class VideoEnabledWebChromeClient extends WebChromeClient {
             frame = (FrameLayout) view;
 
             ViewGroup root = (ViewGroup) context.findViewById(R.id.content);
-            childViews = new ArrayList<View>(root.getChildCount());
 
-            while (root.getChildAt(0) != null) {
-                childViews.add(root.getChildAt(0));
-                root.removeViewAt(0);
+            for (int i = 0; i < root.getChildCount(); i++) {
+                root.getChildAt(i).setVisibility(View.GONE);
             }
 
             try {
@@ -67,8 +64,8 @@ public class VideoEnabledWebChromeClient extends WebChromeClient {
         ViewGroup root = ((ViewGroup) context.findViewById(R.id.content));
         root.removeView(frame);
 
-        for (View child : childViews) {
-            root.addView(child);
+        for (int i = 0; i < root.getChildCount(); i++) {
+            root.getChildAt(i).setVisibility(View.VISIBLE);
         }
 
         c.onCustomViewHidden();
