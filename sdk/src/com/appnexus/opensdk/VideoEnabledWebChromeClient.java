@@ -1,21 +1,26 @@
 package com.appnexus.opensdk;
 
+import android.*;
+import android.R;
 import android.app.Activity;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.VideoView;
 import com.appnexus.opensdk.utils.Clog;
+
+import java.util.ArrayList;
 
 public class VideoEnabledWebChromeClient extends WebChromeClient {
     CustomViewCallback c;
-    View oldView;
     FrameLayout frame;
-    View video;
     Activity context;
+    ArrayList<View> childViews;
 
 
     public VideoEnabledWebChromeClient(Activity context) {
@@ -24,35 +29,49 @@ public class VideoEnabledWebChromeClient extends WebChromeClient {
 
     @Override
     public void onShowCustomView(View view, CustomViewCallback callback) {
-        c = callback;
         super.onShowCustomView(view, callback);
+        c = callback;
+//        Clog.d(Clog.baseLogTag, "Showing custom view");
         if (view instanceof FrameLayout) {
             frame = (FrameLayout) view;
-//				if (frame.getFocusedChild() instanceof VideoView) {
-//					VideoView video = (VideoView) frame.getFocusedChild();
-//					frame.removeView(video);
-//					((Activity) AdWebView.this.destination.getContext())
-//							.setContentView(video);
-//					video.start();
-//				}
 
-            oldView = ((ViewGroup) context.findViewById(android.R.id.content)).getChildAt(0);
+            ViewGroup root = (ViewGroup) context.findViewById(R.id.content);
+            childViews = new ArrayList<View>(root.getChildCount());
+
+            while (root.getChildAt(0) != null) {
+                childViews.add(root.getChildAt(0));
+                root.removeViewAt(0);
+            }
+
             try {
-                video = frame.getFocusedChild();
                 addCloseButton(frame);
-                context.setContentView(frame);
+                context.addContentView(frame, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             } catch (Exception e) {
                 Clog.d(Clog.baseLogTag, e.toString());
             }
+
+//            if (frame.getFocusedChild() instanceof VideoView) {
+//                videoView = (VideoView) frame.getFocusedChild();
+//                videoView.start();
+////                videoView.setOnCompletionListener(this);
+////                videoView.setOnErrorListener(this);
+//            }
         }
     }
 
     @Override
     public void onHideCustomView() {
         super.onHideCustomView();
-//            video.stopPlayback();
+//        Clog.d(Clog.baseLogTag, "Hiding custom view");
+//        if (videoView != null) videoView.stopPlayback();
+        ViewGroup root = ((ViewGroup) context.findViewById(R.id.content));
+        root.removeView(frame);
+
+        for (View child : childViews) {
+            root.addView(child);
+        }
+
         c.onCustomViewHidden();
-        context.setContentView(oldView);
     }
 
     private void addCloseButton(FrameLayout layout) {
@@ -74,4 +93,17 @@ public class VideoEnabledWebChromeClient extends WebChromeClient {
         });
         layout.addView(close);
     }
+//
+//    @Override
+//    public void onCompletion(MediaPlayer mediaPlayer) {
+//        Clog.d(Clog.baseLogTag, "onCompletion");
+////        onHideCustomView();
+//    }
+//
+//    @Override
+//    public boolean onError(MediaPlayer mediaPlayer, int i, int i2) {
+//        Clog.d(Clog.baseLogTag, "onError");
+////        onHideCustomView();
+//        return false;
+//    }
 }

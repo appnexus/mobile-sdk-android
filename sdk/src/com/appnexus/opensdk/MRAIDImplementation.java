@@ -167,8 +167,7 @@ public class MRAIDImplementation {
 		return new MRAIDWebChromeClient((Activity) owner.getContext());
 	}
 
-	class MRAIDWebChromeClient extends VideoEnabledWebChromeClient implements
-			MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
+	class MRAIDWebChromeClient extends VideoEnabledWebChromeClient {
 
         public MRAIDWebChromeClient(Activity context) {
             super(context);
@@ -193,17 +192,6 @@ public class MRAIDImplementation {
 					Clog.getString(R.string.js_alert, message, url));
 			result.confirm();
 			return true;
-		}
-
-        @Override
-		public boolean onError(MediaPlayer mp, int what, int extra) {
-            super.onHideCustomView();
-			return false;
-		}
-
-		@Override
-		public void onCompletion(MediaPlayer mp) {
-            super.onHideCustomView();
 		}
     }
 
