@@ -16,12 +16,15 @@
 
 package com.appnexus.opensdk;
 
+import android.*;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -34,6 +37,8 @@ public class MRAIDWebView extends WebView implements Displayable {
     protected AdView owner;
     private int default_width;
     private int default_height;
+    private boolean isFullScreen = false;
+    private View oldView = null;
 
     public MRAIDWebView(AdView owner) {
         super(owner.getContext());
@@ -114,13 +119,31 @@ public class MRAIDWebView extends WebView implements Displayable {
         DisplayMetrics metrics = new DisplayMetrics();
         ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE))
                 .getDefaultDisplay().getMetrics(metrics);
-        h = (int) (h * metrics.density + 0.5);
-        w = (int) (w * metrics.density + 0.5);
 
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 this.getLayoutParams());
         default_width = lp.width;
         default_height = lp.height;
+        
+        if(h==-1 || w==-1){
+            if(owner!=null){
+                Activity a = (Activity) owner.getContext();
+                if(a!=null){
+                    oldView=((ViewGroup)a.findViewById(android.R.id.content)).getChildAt(0);
+                    owner.removeView(this);
+                    a.setContentView(this);
+                    isFullScreen=true;
+                }
+            }
+        }
+        if(h!=-1){
+            h = (int) (h * metrics.density + 0.5);
+        }
+        if(w!=-1){
+            w = (int) (w * metrics.density + 0.5);
+        }
+
+
         lp.height = h;
         lp.width = w;
         lp.gravity = Gravity.CENTER;
@@ -156,6 +179,16 @@ public class MRAIDWebView extends WebView implements Displayable {
 
         if (owner != null) {
             owner.expand(default_width, default_height, true, null);
+        }
+
+        //For closing
+        if(owner!=null && isFullScreen){
+            Activity a = (Activity) owner.getContext();
+            if(a!=null){
+                a.setContentView(oldView);
+                owner.addView(this);
+                isFullScreen=false;
+            }
         }
 
         this.setLayoutParams(lp);

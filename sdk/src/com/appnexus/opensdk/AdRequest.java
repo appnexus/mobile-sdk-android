@@ -315,7 +315,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                 if (!(owner instanceof InterstitialAdView)
                         && (width < 0 && height < 0)) {
                     sb.append("&max_size=" + maxWidth + "x" + maxHeight);
-                } else {
+                } else if (owner instanceof InterstitialAdView) {
                     sb.append("&size=" + maxWidth + "x" + maxHeight);
                 }
             }
@@ -476,6 +476,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             super(adRequest.requester);
             tryMoreTimesHTTP = moreTimesHttp;
             tryMoreMaxTimesBlanks = moreTimesBlanks;
+            this.adRequest = adRequest;
         }
 
         @Override
@@ -484,12 +485,13 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                 Clog.d(Clog.httpReqLogTag,
                         Clog.getString(R.string.no_connectivity));
                 fail();
-                try {
-                    Thread.sleep(Settings.getSettings().HTTP_RETRY_INTERVAL);
-                } catch (InterruptedException e) {
-                    //Do nothing, just retry
-                }
                 return AdRequest.CONNECTIVITY_RETRY;
+            }
+
+            try {
+                Thread.sleep(Settings.getSettings().HTTP_RETRY_INTERVAL);
+            } catch (InterruptedException e) {
+                //Do nothing, just retry
             }
 
             return doRequest();
@@ -502,9 +504,9 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             if (tryMoreTimesHTTP == 0 || tryMoreMaxTimesBlanks == 0) {
                 return;
             }
-            if (result.equals(AdRequest.CONNECTIVITY_RETRY) && tryMoreTimesHTTP > 0){
+            if (result.equals(AdRequest.CONNECTIVITY_RETRY) && tryMoreTimesHTTP > 0) {
                 new RetryAdRequest(adRequest, tryMoreTimesHTTP - 1, tryMoreMaxTimesBlanks).execute();
-            } else if (result.equals(AdRequest.BLANK_RETRY)  && tryMoreMaxTimesBlanks > 0) {
+            } else if (result.equals(AdRequest.BLANK_RETRY) && tryMoreMaxTimesBlanks > 0) {
                 new RetryAdRequest(adRequest, tryMoreTimesHTTP, tryMoreMaxTimesBlanks - 1).execute();
             } else if (!result.equals(AdRequest.CONNECTIVITY_RETRY) && !result.equals(AdRequest.BLANK_RETRY)) {
                 super.onPostExecute(result);
