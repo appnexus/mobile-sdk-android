@@ -23,8 +23,6 @@
         android:minSdkVersion="8"
         android:targetSdkVersion="17" />
 
-    <uses-feature android:name="android.hardware.microphone" android:required="false" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" /> 
