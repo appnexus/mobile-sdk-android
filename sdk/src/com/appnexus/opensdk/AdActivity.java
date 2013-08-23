@@ -46,14 +46,22 @@ public class AdActivity extends Activity {
     boolean close_added = false;
     int close_button_delay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
     int auto_dismiss_time = Settings.getSettings().DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME;
-    protected static Activity CURRENT_AD_ACTIVITY=null;
+    private static Activity current_ad_activity =null;
+
+    protected static Activity getCurrent_ad_activity() {
+        return current_ad_activity;
+    }
+
+    protected static void setCurrent_ad_activity(Activity current_ad_activity) {
+        AdActivity.current_ad_activity = current_ad_activity;
+    }
 
     @SuppressLint({"InlinedApi", "NewApi"})
     @Override
     public void onCreate(Bundle b) {
         super.onCreate(b);
 
-        CURRENT_AD_ACTIVITY=this;
+        setCurrent_ad_activity(this);
 
         layout = new FrameLayout(this);
 

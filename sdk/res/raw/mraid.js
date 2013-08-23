@@ -45,6 +45,11 @@
 
 	// Removes a listener from the registry
 	mraid.removeEventListener=function(event_name, method){
+	    //If no method name is given, remove all listeners from event
+	    if(method == null){
+	        listeners[event_name].length=0;
+	    }
+
 		var method_index = listeners[event_name].indexOf(method);
 		if(method_index > -1) //Don't try to remove unregistered listeners
 			listeners[event_name].splice(method_index,1);

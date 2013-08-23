@@ -16,7 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import android.*;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -134,7 +133,7 @@ public class MRAIDWebView extends WebView implements Displayable {
             if(owner!=null){
                 Activity a;
                 if(owner instanceof InterstitialAdView){
-                    a =   AdActivity.CURRENT_AD_ACTIVITY;
+                    a = AdActivity.getCurrent_ad_activity();
                 }else{
                     a = (Activity) this.getView().getContext();
                 }
@@ -197,7 +196,7 @@ public class MRAIDWebView extends WebView implements Displayable {
             Activity a;
             if(owner instanceof InterstitialAdView){
                 isInterstitial=true;
-                a = AdActivity.CURRENT_AD_ACTIVITY;
+                a = AdActivity.getCurrent_ad_activity();
             }else{
                 a = (Activity) owner.getContext();
             }
