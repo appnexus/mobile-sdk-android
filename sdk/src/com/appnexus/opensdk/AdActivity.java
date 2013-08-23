@@ -46,11 +46,14 @@ public class AdActivity extends Activity {
     boolean close_added = false;
     int close_button_delay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
     int auto_dismiss_time = Settings.getSettings().DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME;
+    protected static Activity CURRENT_AD_ACTIVITY=null;
 
     @SuppressLint({"InlinedApi", "NewApi"})
     @Override
     public void onCreate(Bundle b) {
         super.onCreate(b);
+
+        CURRENT_AD_ACTIVITY=this;
 
         layout = new FrameLayout(this);
 
@@ -98,6 +101,10 @@ public class AdActivity extends Activity {
             finish();
         }
 
+    }
+
+    protected void handleMRAIDCollapse(MRAIDWebView m){
+        layout.addView(m);
     }
 
     protected void addCloseButton(FrameLayout layout) {

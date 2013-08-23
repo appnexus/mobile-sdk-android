@@ -113,6 +113,11 @@ public class MRAIDWebView extends WebView implements Displayable {
         }
     }
 
+    @Override
+    public void scrollTo(int x, int y){
+        super.scrollTo(0,0);
+    }
+
     // w,h in dips. this function converts to pixels
     protected void expand(int w, int h, boolean cust_close,
                           MRAIDImplementation caller) {
@@ -124,13 +129,18 @@ public class MRAIDWebView extends WebView implements Displayable {
                 this.getLayoutParams());
         default_width = lp.width;
         default_height = lp.height;
-        
+
         if(h==-1 || w==-1){
             if(owner!=null){
-                Activity a = (Activity) owner.getContext();
+                Activity a;
+                if(owner instanceof InterstitialAdView){
+                    a =   AdActivity.CURRENT_AD_ACTIVITY;
+                }else{
+                    a = (Activity) this.getView().getContext();
+                }
                 if(a!=null){
                     oldView=((ViewGroup)a.findViewById(android.R.id.content)).getChildAt(0);
-                    owner.removeView(this);
+                    ((ViewGroup) this.getParent()).removeView(this);
                     a.setContentView(this);
                     isFullScreen=true;
                 }
@@ -171,6 +181,7 @@ public class MRAIDWebView extends WebView implements Displayable {
     }
 
     protected void close() {
+        boolean isInterstitial=false;
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 this.getLayoutParams());
         lp.height = default_height;
@@ -183,11 +194,21 @@ public class MRAIDWebView extends WebView implements Displayable {
 
         //For closing
         if(owner!=null && isFullScreen){
-            Activity a = (Activity) owner.getContext();
-            if(a!=null){
+            Activity a;
+            if(owner instanceof InterstitialAdView){
+                isInterstitial=true;
+                a = AdActivity.CURRENT_AD_ACTIVITY;
+            }else{
+                a = (Activity) owner.getContext();
+            }
+            if(a!=null && !isInterstitial){
                 a.setContentView(oldView);
                 owner.addView(this);
                 isFullScreen=false;
+            }else if(a!=null && isInterstitial){
+                isFullScreen=false;
+                a.setContentView(oldView);
+                ((AdActivity)a).handleMRAIDCollapse(this);
             }
         }
 
