@@ -38,8 +38,7 @@ public class AdResponse {
     private String mediatedUID;
     private String mediatedParameter;
 
-    private String mediatedFailURL;
-    private String mediatedSuccessURL;
+    private String mediatedResultCB;
 
     public AdResponse(AdRequester requester, String body, Header[] headers) {
         this.requester = requester;
@@ -94,7 +93,7 @@ public class AdResponse {
             JSONArray ads = response.getJSONArray("ads");
 
 
-            if (ads.length() > 0) {
+            if (ads !=null && ads.length() > 0) {
                 // for now, just take the first ad
                 JSONObject firstAd = ads.getJSONObject(0);
                 // assume there's content
@@ -118,17 +117,19 @@ public class AdResponse {
         try {
             JSONArray mediated = response.getJSONArray("mediated");
             if (mediated.length() > 0) {
-                JSONObject mediated_response = mediated.getJSONObject(0);
-                mediatedViewClassName = mediated_response
-                        .getString("android_class");
-                height = mediated_response.getInt("height");
-                width = mediated_response.getInt("width");
-                mediatedUID = mediated_response.getString("id");
-                mediatedParameter = mediated_response.getString("param");
-                mediatedFailURL = mediated_response.getString("fail_ib");
-                mediatedSuccessURL = mediated_response.getString("success_ib");
-                isMediated = true;
-                return;
+                for(int i=0; i<mediated.length();i++){
+                    JSONObject handler = mediated.getJSONObject(i);
+                    if(handler.getString("type").toLowerCase().equals("android")){
+                        isMediated=true;
+                        mediatedViewClassName = handler.getString("class");
+                        height = handler.getInt("height");
+                        width = handler.getInt("width");
+                        mediatedUID = handler.getString("id");
+                        mediatedParameter = handler.getString("param");
+                        mediatedResultCB = mediated.getJSONObject(i).getString("result_cb");
+                        return;
+                    }
+                }
             }
         } catch (JSONException e) {
             Clog.e(Clog.httpRespLogTag,
@@ -179,19 +180,12 @@ public class AdResponse {
         return mediatedParameter;
     }
 
-    public String getMediatedFailURL() {
-        return mediatedFailURL;
+    public String getMediatedResultCB() {
+        return mediatedResultCB;
     }
 
-    public void setMediatedFailURL(String mediatedFailURL) {
-        this.mediatedFailURL = mediatedFailURL;
+    public void setMediatedResultCB(String mediatedResultCB) {
+        this.mediatedResultCB = mediatedResultCB;
     }
 
-    public String getMediatedSuccessURL() {
-        return mediatedSuccessURL;
-    }
-
-    public void setMediatedSuccessURL(String mediatedSuccessURL) {
-        this.mediatedSuccessURL = mediatedSuccessURL;
-    }
 }
