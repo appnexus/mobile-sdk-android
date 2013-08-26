@@ -65,7 +65,8 @@ public class MediatedInterstitialAdViewController implements Displayable {
 
     @Override
     public View getView() {
-        return mAV.requestAd(this, (Activity) owner.getContext(), param, uid);
+        mAV.requestAd(this, (Activity) owner.getContext(), param, uid);
+        return null;
     }
 
     public void onAdLoaded() {

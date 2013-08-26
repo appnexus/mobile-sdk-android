@@ -28,7 +28,7 @@ public class MillenialMediaInterstitial implements MediatedInterstitialAdView, R
 
 
     @Override
-    public View requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid) {
+    public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid) {
         mMediatedInterstitialAdViewController = mIC;
 
         MMSDK.initialize(activity);
@@ -38,7 +38,7 @@ public class MillenialMediaInterstitial implements MediatedInterstitialAdView, R
         iad.setListener(this);
         iad.fetch();
 
-        return null;
+        return;
     }
 
     @Override

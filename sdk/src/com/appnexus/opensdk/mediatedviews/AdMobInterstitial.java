@@ -22,7 +22,7 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
     }
 
     @Override
-    public View requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid) {
+    public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid) {
         iad = new InterstitialAd(activity, uid);
 
         AdRequest ar = new AdRequest();
@@ -34,7 +34,7 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
 
         iad.loadAd(ar);
         mMediatedInterstitialAdViewController = mIC;
-        return null;
+        return;
     }
 
     @Override
