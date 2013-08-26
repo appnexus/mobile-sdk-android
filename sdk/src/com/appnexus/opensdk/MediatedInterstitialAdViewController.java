@@ -50,6 +50,8 @@ public class MediatedInterstitialAdViewController implements Displayable {
         resultCB = response.getMediatedResultCB();
         this.owner = owner;
 
+        Clog.d(Clog.mediationLogTag, Clog.getString(R.string.instantiating_class, className));
+
         try {
             c = Class.forName(className);
 
@@ -79,6 +81,7 @@ public class MediatedInterstitialAdViewController implements Displayable {
 
     @Override
     public View getView() {
+        Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediated_request));
         mAV.requestAd(this, (Activity) owner.getContext(), param, uid);
         return null;
     }

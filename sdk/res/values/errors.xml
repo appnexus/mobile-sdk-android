@@ -95,4 +95,6 @@
 	<string formatted="false" name="instantiation_exception">InstantiationException caught while instantiating a Mediated Ad View</string>
 	<string formatted="false" name="illegal_access_exception">IllegalAccessException caught while instantiating a Mediated Ad View</string>
 	<string formatted="false" name="class_not_found_exception">ClassNotFoundException caught while instantiating a Mediated Ad View</string>
+	<string formatted="false" name="instantiating_class">Instantiating %s</string>
+	<string formatted="false" name="mediated_request">Requesting a mediated ad.</string>
 </resources>

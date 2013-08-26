@@ -68,6 +68,8 @@ public class MediatedBannerAdViewController implements Displayable {
 
         resultCB = response.getMediatedResultCB();
 
+        Clog.d(Clog.mediationLogTag, Clog.getString(R.string.instantiating_class, className));
+
         try {
             c = Class.forName(className);
 
@@ -87,6 +89,8 @@ public class MediatedBannerAdViewController implements Displayable {
             failed = true;
             throw e;
         }
+        Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediated_request));
+
         placeableView = mAV.requestAd(this, (Activity) owner.getContext(), param, uid, width, height, owner);
     }
 
