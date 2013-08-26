@@ -481,11 +481,12 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
         @Override
         protected AdResponse doInBackground(Void... params) {
+            boolean connectivity_problem = false;
             if (!hasNetwork(context)) {
                 Clog.d(Clog.httpReqLogTag,
                         Clog.getString(R.string.no_connectivity));
                 fail();
-                return AdRequest.CONNECTIVITY_RETRY;
+                connectivity_problem = true;
             }
 
             try {
@@ -494,7 +495,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                 //Do nothing, just retry
             }
 
-            return doRequest();
+            return connectivity_problem ? AdRequest.CONNECTIVITY_RETRY : doRequest();
 
         }
 
