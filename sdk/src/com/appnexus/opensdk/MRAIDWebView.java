@@ -101,20 +101,18 @@ public class MRAIDWebView extends WebView implements Displayable {
 
     @Override
     public void onVisibilityChanged(View view, int visibility) {
-        if (visibility == View.VISIBLE) {
-            if (implementation != null) {
+        if (implementation != null) {
+            if (visibility == View.VISIBLE) {
                 implementation.onVisible();
-            }
-        } else {
-            if (implementation != null) {
+            } else {
                 implementation.onInvisible();
             }
         }
     }
 
     @Override
-    public void scrollTo(int x, int y){
-        super.scrollTo(0,0);
+    public void scrollTo(int x, int y) {
+        super.scrollTo(0, 0);
     }
 
     // w,h in dips. this function converts to pixels
@@ -129,26 +127,26 @@ public class MRAIDWebView extends WebView implements Displayable {
         default_width = lp.width;
         default_height = lp.height;
 
-        if(h==-1 || w==-1){
-            if(owner!=null){
+        if (h == -1 || w == -1) {
+            if (owner != null) {
                 Activity a;
-                if(owner instanceof InterstitialAdView){
+                if (owner instanceof InterstitialAdView) {
                     a = AdActivity.getCurrent_ad_activity();
-                }else{
+                } else {
                     a = (Activity) this.getView().getContext();
                 }
-                if(a!=null){
-                    oldView=((ViewGroup)a.findViewById(android.R.id.content)).getChildAt(0);
+                if (a != null) {
+                    oldView = ((ViewGroup) a.findViewById(android.R.id.content)).getChildAt(0);
                     ((ViewGroup) this.getParent()).removeView(this);
                     a.setContentView(this);
-                    isFullScreen=true;
+                    isFullScreen = true;
                 }
             }
         }
-        if(h!=-1){
+        if (h != -1) {
             h = (int) (h * metrics.density + 0.5);
         }
-        if(w!=-1){
+        if (w != -1) {
             w = (int) (w * metrics.density + 0.5);
         }
 
@@ -180,7 +178,7 @@ public class MRAIDWebView extends WebView implements Displayable {
     }
 
     protected void close() {
-        boolean isInterstitial=false;
+        boolean isInterstitial = false;
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 this.getLayoutParams());
         lp.height = default_height;
@@ -192,22 +190,22 @@ public class MRAIDWebView extends WebView implements Displayable {
         }
 
         //For closing
-        if(owner!=null && isFullScreen){
+        if (owner != null && isFullScreen) {
             Activity a;
-            if(owner instanceof InterstitialAdView){
-                isInterstitial=true;
+            if (owner instanceof InterstitialAdView) {
+                isInterstitial = true;
                 a = AdActivity.getCurrent_ad_activity();
-            }else{
+            } else {
                 a = (Activity) owner.getContext();
             }
-            if(a!=null && !isInterstitial){
+            if (a != null && !isInterstitial) {
                 a.setContentView(oldView);
                 owner.addView(this);
-                isFullScreen=false;
-            }else if(a!=null && isInterstitial){
-                isFullScreen=false;
+                isFullScreen = false;
+            } else if (a != null && isInterstitial) {
+                isFullScreen = false;
                 a.setContentView(oldView);
-                ((AdActivity)a).handleMRAIDCollapse(this);
+                ((AdActivity) a).handleMRAIDCollapse(this);
             }
         }
 
