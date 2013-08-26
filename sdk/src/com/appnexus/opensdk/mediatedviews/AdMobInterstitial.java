@@ -51,7 +51,7 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
     @Override
     public void onFailedToReceiveAd(Ad arg0, ErrorCode arg1) {
         if (mMediatedInterstitialAdViewController != null) {
-            mMediatedInterstitialAdViewController.onAdFailed();
+            mMediatedInterstitialAdViewController.onAdFailed(MediatedInterstitialAdViewController.RESULT.INTERNAL_ERROR);
         }
 
     }

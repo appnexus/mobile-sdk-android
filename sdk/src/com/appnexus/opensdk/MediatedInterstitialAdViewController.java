@@ -4,8 +4,20 @@ import com.appnexus.opensdk.utils.Clog;
 
 import android.app.Activity;
 import android.view.View;
+import com.appnexus.opensdk.utils.HTTPResponse;
+import com.appnexus.opensdk.utils.HTTPGet;
 
 public class MediatedInterstitialAdViewController implements Displayable {
+
+    public static enum RESULT{
+        SUCCESS,
+        INVALID_REQUEST,
+        UNABLE_TO_FILL,
+        MEDIATED_SDK_UNAVAILABLE,
+        NETWORK_ERROR,
+        INTERNAL_ERROR
+    }
+
     InterstitialAdView owner;
     int width;
     int height;
@@ -13,6 +25,7 @@ public class MediatedInterstitialAdViewController implements Displayable {
     String uid;
     String className;
     String param;
+    String resultCB;
 
     Class<?> c;
     MediatedInterstitialAdView mAV;
@@ -34,6 +47,7 @@ public class MediatedInterstitialAdViewController implements Displayable {
         uid = response.getMediatedUID();
         className = response.getMediatedViewClassName();
         param = response.getParameter();
+        resultCB = response.getMediatedResultCB();
         this.owner = owner;
 
         try {
@@ -73,13 +87,18 @@ public class MediatedInterstitialAdViewController implements Displayable {
         if (owner.getAdListener() != null) {
             owner.getAdListener().onAdLoaded(owner);
         }
+
+        fireResultCB(RESULT.SUCCESS);
     }
 
-    public void onAdFailed() {
+    public void onAdFailed(MediatedInterstitialAdViewController.RESULT reason) {
         if (owner.getAdListener() != null) {
             owner.getAdListener().onAdRequestFailed(owner);
         }
         this.failed = true;
+
+        fireResultCB(reason);
+
     }
 
     public void onAdExpanded() {
@@ -103,6 +122,25 @@ public class MediatedInterstitialAdViewController implements Displayable {
     @Override
     public boolean failed() {
         return failed;
+    }
+
+    private void fireResultCB(final MediatedInterstitialAdViewController.RESULT result){
+
+        //fire call to result cb url
+        HTTPGet<Void, Void, HTTPResponse> cb = new HTTPGet<Void, Void, HTTPResponse>() {
+            @Override
+            protected void onPostExecute(HTTPResponse response) {
+                AdFetcher f = MediatedInterstitialAdViewController.this.owner.mAdFetcher;
+                f.dispatchResponse(new AdResponse(f, response.getResponseBody(), response.getHeaders()));
+            }
+
+            @Override
+            protected String getUrl() {
+                return resultCB+"&reason="+result;
+            }
+        };
+
+        cb.execute();
     }
 
 }

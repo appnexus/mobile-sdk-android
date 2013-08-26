@@ -212,8 +212,7 @@ public class AdFetcher implements AdRequester {
         owner.fail();
     }
 
-    @Override
-    public void onReceiveResponse(AdResponse response) {
+    public void dispatchResponse(AdResponse response){
         if (response.isMediated() && owner.getMRAIDAdType().equals("inline")) {
             MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
                     owner, response);
@@ -238,6 +237,11 @@ public class AdFetcher implements AdRequester {
             output.loadAd(response);
             owner.display(output);
         }
+    }
+
+    @Override
+    public void onReceiveResponse(AdResponse response) {
+        dispatchResponse(response);
         if (owner.adListener != null) {
             owner.adListener.onAdLoaded(owner);
         }

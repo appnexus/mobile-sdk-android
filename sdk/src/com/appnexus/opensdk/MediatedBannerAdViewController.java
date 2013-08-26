@@ -19,8 +19,20 @@ import com.appnexus.opensdk.utils.Clog;
 
 import android.app.Activity;
 import android.view.View;
+import com.appnexus.opensdk.utils.HTTPGet;
+import com.appnexus.opensdk.utils.HTTPResponse;
 
 public class MediatedBannerAdViewController implements Displayable {
+
+    public static enum RESULT{
+        SUCCESS,
+        INVALID_REQUEST,
+        UNABLE_TO_FILL,
+        MEDIATED_SDK_UNAVAILABLE,
+        NETWORK_ERROR,
+        INTERNAL_ERROR
+    }
+
     AdView owner;
     int width;
     int height;
@@ -28,6 +40,7 @@ public class MediatedBannerAdViewController implements Displayable {
     String className;
     String param;
     boolean failed = false;
+    String resultCB;
 
     Class<?> c;
     MediatedBannerAdView mAV;
@@ -52,6 +65,8 @@ public class MediatedBannerAdViewController implements Displayable {
         className = response.getMediatedViewClassName();
         param = response.getParameter();
         this.owner = owner;
+
+        resultCB = response.getMediatedResultCB();
 
         try {
             c = Class.forName(className);
@@ -90,16 +105,16 @@ public class MediatedBannerAdViewController implements Displayable {
             owner.getAdListener().onAdLoaded(owner);
         }
 
-        //TODO http get on success_ib? new ad request with success_ib as root url?
+        fireResultCB(RESULT.SUCCESS);
     }
 
-    public void onAdFailed() {
+    public void onAdFailed(MediatedBannerAdViewController.RESULT reason) {
         if (owner.getAdListener() != null) {
             owner.getAdListener().onAdRequestFailed(owner);
         }
         this.failed = true;
 
-        //TODO http get on fail_ib? new ad request with fail_ib as root url?
+        fireResultCB(reason);
     }
 
     public void onAdExpanded() {
@@ -118,5 +133,24 @@ public class MediatedBannerAdViewController implements Displayable {
         if (owner.getAdListener() != null) {
             owner.getAdListener().onAdClicked(owner);
         }
+    }
+
+    private void fireResultCB(final MediatedBannerAdViewController.RESULT result){
+
+        //fire call to result cb url
+        HTTPGet<Void, Void, HTTPResponse> cb = new HTTPGet<Void, Void, HTTPResponse>() {
+            @Override
+            protected void onPostExecute(HTTPResponse response) {
+                AdFetcher f = MediatedBannerAdViewController.this.owner.mAdFetcher;
+                f.dispatchResponse(new AdResponse(f, response.getResponseBody(), response.getHeaders()));
+            }
+
+            @Override
+            protected String getUrl() {
+                return resultCB+"&reason="+result;
+            }
+        };
+
+        cb.execute();
     }
 }

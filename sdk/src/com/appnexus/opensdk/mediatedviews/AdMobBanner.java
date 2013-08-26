@@ -45,7 +45,7 @@ public class AdMobBanner implements MediatedBannerAdView, AdListener {
     @Override
     public void onFailedToReceiveAd(Ad arg0, ErrorCode arg1) {
         if (mMediatedBannerAdViewController != null) {
-            mMediatedBannerAdViewController.onAdFailed();
+            mMediatedBannerAdViewController.onAdFailed(MediatedBannerAdViewController.RESULT.INTERNAL_ERROR);
         }
 
     }

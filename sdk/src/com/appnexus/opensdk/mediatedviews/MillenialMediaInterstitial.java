@@ -17,7 +17,6 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
-import android.view.View;
 import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
 import com.millennialmedia.android.*;
@@ -74,7 +73,7 @@ public class MillenialMediaInterstitial implements MediatedInterstitialAdView, R
     @Override
     public void requestFailed(MMAd mmAd, MMException e) {
         if (mMediatedInterstitialAdViewController != null)
-            mMediatedInterstitialAdViewController.onAdFailed();
+            mMediatedInterstitialAdViewController.onAdFailed(MediatedInterstitialAdViewController.RESULT.INTERNAL_ERROR);
     }
 
     // this also doesn't work..

@@ -74,7 +74,7 @@ public class MillenialMediaBanner implements MediatedBannerAdView, RequestListen
     @Override
     public void requestFailed(MMAd mmAd, MMException e) {
         if (mMediatedBannerAdViewController != null)
-            mMediatedBannerAdViewController.onAdFailed();
+            mMediatedBannerAdViewController.onAdFailed(MediatedBannerAdViewController.RESULT.INTERNAL_ERROR);
     }
 
     @Override
