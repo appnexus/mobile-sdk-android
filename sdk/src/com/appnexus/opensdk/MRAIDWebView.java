@@ -168,7 +168,9 @@ public class MRAIDWebView extends WebView implements Displayable {
     }
 
     protected void hide() {
-        owner.hide();
+        if (owner != null) {
+            owner.hide();
+        }
     }
 
     protected void show() {
