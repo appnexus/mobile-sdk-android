@@ -41,6 +41,7 @@ public class MediatedBannerAdViewController implements Displayable {
     String param;
     boolean failed = false;
     String resultCB;
+    protected boolean errorCBMade=false;
 
     Class<?> c;
     MediatedBannerAdView mAV;
@@ -118,7 +119,10 @@ public class MediatedBannerAdViewController implements Displayable {
         }
         this.failed = true;
 
-        fireResultCB(reason);
+        if(!errorCBMade){
+            fireResultCB(reason);
+            errorCBMade=true;
+        }
     }
 
     public void onAdExpanded() {

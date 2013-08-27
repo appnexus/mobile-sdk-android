@@ -26,6 +26,7 @@ public class MediatedInterstitialAdViewController implements Displayable {
     String className;
     String param;
     String resultCB;
+    protected boolean errorCBMade=false;
 
     Class<?> c;
     MediatedInterstitialAdView mAV;
@@ -100,7 +101,10 @@ public class MediatedInterstitialAdViewController implements Displayable {
         }
         this.failed = true;
 
-        fireResultCB(reason);
+        if(!errorCBMade){
+            fireResultCB(reason);
+            errorCBMade=true;
+        }
 
     }
 

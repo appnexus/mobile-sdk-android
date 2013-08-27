@@ -219,6 +219,7 @@ public class AdFetcher implements AdRequester {
                     MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
                             owner, response);
                     if (output != null) {
+                        output.errorCBMade=false;
                         owner.display(output);
                     }
                     return;
@@ -227,6 +228,7 @@ public class AdFetcher implements AdRequester {
                     MediatedInterstitialAdViewController output = MediatedInterstitialAdViewController.create(
                             (InterstitialAdView) owner, response);
                     if (output != null) {
+                        output.errorCBMade=false;
                         owner.display(output);
                     }
                     return;
