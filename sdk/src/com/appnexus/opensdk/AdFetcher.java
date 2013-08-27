@@ -212,31 +212,35 @@ public class AdFetcher implements AdRequester {
         owner.fail();
     }
 
-    public void dispatchResponse(AdResponse response){
-        if (response.isMediated() && owner.getMRAIDAdType().equals("inline")) {
-            MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                    owner, response);
-            if (output != null) {
-                owner.display(output);
+    public void dispatchResponse(final AdResponse response){
+        this.owner.post(new Runnable(){
+            public void run(){
+                if (response.isMediated() && owner.getMRAIDAdType().equals("inline")) {
+                    MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
+                            owner, response);
+                    if (output != null) {
+                        owner.display(output);
+                    }
+                    return;
+                } else if (response.isMediated()
+                        && owner.getMRAIDAdType().equals("interstitial")) {
+                    MediatedInterstitialAdViewController output = MediatedInterstitialAdViewController.create(
+                            (InterstitialAdView) owner, response);
+                    if (output != null) {
+                        owner.display(output);
+                    }
+                    return;
+                } else if (response.isMraid) {
+                    MRAIDWebView output = new MRAIDWebView(owner);
+                    output.loadAd(response);
+                    owner.display(output);
+                } else {
+                    AdWebView output = new AdWebView(owner);
+                    output.loadAd(response);
+                    owner.display(output);
+                }
             }
-            return;
-        } else if (response.isMediated()
-                && owner.getMRAIDAdType().equals("interstitial")) {
-            MediatedInterstitialAdViewController output = MediatedInterstitialAdViewController.create(
-                    (InterstitialAdView) owner, response);
-            if (output != null) {
-                owner.display(output);
-            }
-            return;
-        } else if (response.isMraid) {
-            MRAIDWebView output = new MRAIDWebView(owner);
-            output.loadAd(response);
-            owner.display(output);
-        } else {
-            AdWebView output = new AdWebView(owner);
-            output.loadAd(response);
-            owner.display(output);
-        }
+        });
     }
 
     @Override
