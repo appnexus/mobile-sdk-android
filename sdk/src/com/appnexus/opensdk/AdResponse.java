@@ -76,7 +76,7 @@ public class AdResponse {
     }
 
     private void parseResponse(String body) {
-        JSONObject response;
+        JSONObject response=null;
 
         if (body.equals("RETRY") || body.equals("RETRY2")) {
             return;
@@ -90,10 +90,9 @@ public class AdResponse {
                         Clog.getString(R.string.response_error, error));
                 return;
             }
-            JSONArray ads = response.getJSONArray("ads");
 
-
-            if (ads !=null && ads.length() > 0) {
+            if (!response.isNull("ads") && response.getJSONArray("ads").length() > 0) {
+                JSONArray ads = response.getJSONArray("ads");
                 // for now, just take the first ad
                 JSONObject firstAd = ads.getJSONObject(0);
                 // assume there's content
@@ -101,7 +100,7 @@ public class AdResponse {
                 width = firstAd.getInt("width");
                 this.body = firstAd.getString("content");
                 type = firstAd.getString("type");
-                if (this.body.equals("") || this.body == null){
+                if (this.body == null || this.body.equals("")){
                     Clog.e(Clog.httpRespLogTag,
                             Clog.getString(R.string.blank_ad));
                 }
@@ -111,6 +110,10 @@ public class AdResponse {
             Clog.e(Clog.httpRespLogTag,
                     Clog.getString(R.string.response_json_error, body));
             e.printStackTrace();
+            //return;
+        }
+
+        if(response==null){
             return;
         }
 
@@ -118,7 +121,7 @@ public class AdResponse {
             JSONArray mediated = response.getJSONArray("mediated");
             if (mediated.length() > 0) {
                 for(int i=0; i<mediated.length();i++){
-                    JSONObject handler = mediated.getJSONObject(i);
+                    JSONObject handler = mediated.getJSONObject(i).getJSONObject("handler");
                     if(handler.getString("type").toLowerCase().equals("android")){
                         isMediated=true;
                         mediatedViewClassName = handler.getString("class");
