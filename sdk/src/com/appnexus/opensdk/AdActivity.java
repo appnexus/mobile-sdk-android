@@ -16,11 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import java.util.Locale;
-
-import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.Settings;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -31,13 +26,13 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.view.*;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Settings;
+
+import java.util.Locale;
 
 public class AdActivity extends Activity {
 
@@ -46,7 +41,7 @@ public class AdActivity extends Activity {
     boolean close_added = false;
     int close_button_delay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
     int auto_dismiss_time = Settings.getSettings().DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME;
-    private static Activity current_ad_activity =null;
+    private static Activity current_ad_activity = null;
 
     protected static Activity getCurrent_ad_activity() {
         return current_ad_activity;
@@ -111,7 +106,7 @@ public class AdActivity extends Activity {
 
     }
 
-    protected void handleMRAIDCollapse(MRAIDWebView m){
+    protected void handleMRAIDCollapse(MRAIDWebView m) {
         layout.addView(m);
     }
 

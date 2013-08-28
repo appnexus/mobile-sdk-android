@@ -18,6 +18,6 @@ package com.appnexus.opensdk;
 import android.app.Activity;
 import android.view.View;
 
-public interface MediatedBannerAdView extends MediatedAdView{
+public interface MediatedBannerAdView extends MediatedAdView {
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace);
 }

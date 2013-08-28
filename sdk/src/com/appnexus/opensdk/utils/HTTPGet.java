@@ -39,7 +39,7 @@ public abstract class HTTPGet<Params extends Void, Progress extends Void, Result
     protected HTTPResponse doInBackground(Void... params) {
         HTTPResponse out = new HTTPResponse();
 
-        try{
+        try {
             HttpClient httpc = new DefaultHttpClient();
             URI uri = new URI(getUrl());
             HttpGet request = new HttpGet();
@@ -49,11 +49,11 @@ public abstract class HTTPGet<Params extends Void, Progress extends Void, Result
             out.setHeaders(r.getAllHeaders());
             out.setResponseBody(r.toString());
             out.setSucceeded(true);
-        }catch(URISyntaxException e){
+        } catch (URISyntaxException e) {
             out.setSucceeded(false);
-        }catch(ClientProtocolException e){
+        } catch (ClientProtocolException e) {
             out.setSucceeded(false);
-        }catch(IOException e){
+        } catch (IOException e) {
             out.setSucceeded(false);
         }
 

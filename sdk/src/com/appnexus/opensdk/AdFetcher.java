@@ -16,19 +16,18 @@
 
 package com.appnexus.opensdk;
 
-import java.lang.ref.WeakReference;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.Settings;
-
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Settings;
+
+import java.lang.ref.WeakReference;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class AdFetcher implements AdRequester {
     private ScheduledExecutorService tasker;
@@ -212,14 +211,14 @@ public class AdFetcher implements AdRequester {
         owner.fail();
     }
 
-    public void dispatchResponse(final AdResponse response){
-        this.owner.post(new Runnable(){
-            public void run(){
+    public void dispatchResponse(final AdResponse response) {
+        this.owner.post(new Runnable() {
+            public void run() {
                 if (response.isMediated() && owner.getMRAIDAdType().equals("inline")) {
                     MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
                             owner, response);
                     if (output != null) {
-                        output.errorCBMade=false;
+                        output.errorCBMade = false;
                         owner.display(output);
                     }
                     return;
@@ -228,7 +227,7 @@ public class AdFetcher implements AdRequester {
                     MediatedInterstitialAdViewController output = MediatedInterstitialAdViewController.create(
                             (InterstitialAdView) owner, response);
                     if (output != null) {
-                        output.errorCBMade=false;
+                        output.errorCBMade = false;
                         owner.display(output);
                     }
                     return;
