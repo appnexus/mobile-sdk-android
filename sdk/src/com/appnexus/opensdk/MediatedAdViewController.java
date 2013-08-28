@@ -64,6 +64,7 @@ public class MediatedAdViewController {
 
         } catch (ClassNotFoundException e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.class_not_found_exception));
+            fireResultCB(RESULT.MEDIATED_SDK_UNAVAILABLE);
             throw e;
         }
 
@@ -72,10 +73,12 @@ public class MediatedAdViewController {
         } catch (InstantiationException e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instantiation_exception));
             failed = true;
+            fireResultCB(RESULT.MEDIATED_SDK_UNAVAILABLE);
             throw e;
         } catch (IllegalAccessException e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception));
             failed = true;
+            fireResultCB(RESULT.MEDIATED_SDK_UNAVAILABLE);
             throw e;
         }
     }
