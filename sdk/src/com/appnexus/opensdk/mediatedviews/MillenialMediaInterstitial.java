@@ -20,9 +20,11 @@ import android.app.Activity;
 import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
 import com.appnexus.opensdk.utils.Clog;
-import com.millennialmedia.android.*;
+import com.millennialmedia.android.MMInterstitial;
+import com.millennialmedia.android.MMSDK;
 
-public class MillenialMediaInterstitial implements MediatedInterstitialAdView, RequestListener {
+public class MillenialMediaInterstitial implements MediatedInterstitialAdView {
+
     MMInterstitial iad;
     MediatedInterstitialAdViewController mMediatedInterstitialAdViewController;
 
@@ -43,7 +45,7 @@ public class MillenialMediaInterstitial implements MediatedInterstitialAdView, R
 
         iad = new MMInterstitial(activity);
         iad.setApid(uid);
-        iad.setListener(this);
+        iad.setListener(new MillenialMediaListener(mMediatedInterstitialAdViewController, getClass().getSimpleName()));
         iad.fetch();
     }
 
@@ -63,46 +65,5 @@ public class MillenialMediaInterstitial implements MediatedInterstitialAdView, R
             Clog.d(Clog.mediationLogTag, "MillenialMediaInterstitial - display called successfully");
         else
             Clog.e(Clog.mediationLogTag, "MillenialMediaInterstitial - display failed");
-    }
-
-    @Override
-    public void MMAdOverlayLaunched(MMAd mmAd) {
-        Clog.d(Clog.mediationLogTag, "MillenialMediaInterstitial - MMAdOverlayLaunched: " + mmAd.toString());
-        if (mMediatedInterstitialAdViewController != null)
-            mMediatedInterstitialAdViewController.onAdExpanded();
-    }
-
-    @Override
-    public void MMAdOverlayClosed(MMAd mmAd) {
-        Clog.d(Clog.mediationLogTag, "MillenialMediaInterstitial - MMAdOverlayClosed: " + mmAd.toString());
-        if (mMediatedInterstitialAdViewController != null)
-            mMediatedInterstitialAdViewController.onAdCollapsed();
-    }
-
-    @Override
-    public void MMAdRequestIsCaching(MMAd mmAd) {
-        Clog.d(Clog.mediationLogTag, "MillenialMediaInterstitial - MMAdRequestIsCaching: " + mmAd.toString());
-    }
-
-    @Override
-    public void requestCompleted(MMAd mmAd) {
-        Clog.d(Clog.mediationLogTag, "MillenialMediaInterstitial - requestCompleted: " + mmAd.toString());
-        if (mMediatedInterstitialAdViewController != null)
-            mMediatedInterstitialAdViewController.onAdLoaded();
-    }
-
-    @Override
-    public void requestFailed(MMAd mmAd, MMException e) {
-        Clog.d(Clog.mediationLogTag, String.format("MillenialMediaInterstitial - requestFailed: %s with error %s", mmAd.toString(), e));
-        if (mMediatedInterstitialAdViewController != null)
-            mMediatedInterstitialAdViewController.onAdFailed(MediatedInterstitialAdViewController.RESULT.INTERNAL_ERROR);
-    }
-
-    // this also doesn't work..
-    @Override
-    public void onSingleTap(MMAd mmAd) {
-        Clog.d(Clog.mediationLogTag, "MillenialMediaInterstitial - onSingleTap: " + mmAd.toString());
-        if (mMediatedInterstitialAdViewController != null)
-            mMediatedInterstitialAdViewController.onAdClicked();
     }
 }

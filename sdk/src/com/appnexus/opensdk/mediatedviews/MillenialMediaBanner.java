@@ -20,15 +20,14 @@ import android.app.Activity;
 import android.view.View;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
-import com.appnexus.opensdk.MediatedInterstitialAdViewController;
 import com.appnexus.opensdk.utils.Clog;
-import com.millennialmedia.android.*;
+import com.millennialmedia.android.MMAdView;
+import com.millennialmedia.android.MMRequest;
+import com.millennialmedia.android.MMSDK;
 
-public class MillenialMediaBanner implements MediatedBannerAdView, RequestListener {
+public class MillenialMediaBanner implements MediatedBannerAdView {
+
     MediatedBannerAdViewController mMediatedBannerAdViewController;
-
-    public MillenialMediaBanner() {
-    }
 
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
@@ -53,51 +52,9 @@ public class MillenialMediaBanner implements MediatedBannerAdView, RequestListen
 
         MMRequest mmRequest = new MMRequest();
         adView.setMMRequest(mmRequest);
-        adView.setListener(this);
+        adView.setListener(new MillenialMediaListener(mMediatedBannerAdViewController, getClass().getSimpleName()));
         adView.getAd();
 
         return adView;
     }
-
-    // occurs when ad is clicked and browser is launched.
-    @Override
-    public void MMAdOverlayLaunched(MMAd mmAd) {
-        Clog.d(Clog.mediationLogTag, "MillenialMediaBanner - MMAdOverlayLaunched: " + mmAd.toString());
-        if (mMediatedBannerAdViewController != null)
-            mMediatedBannerAdViewController.onAdExpanded();
-    }
-
-    @Override
-    public void MMAdOverlayClosed(MMAd mmAd) {
-        Clog.d(Clog.mediationLogTag, "MillenialMediaBanner - MMAdOverlayClosed: " + mmAd.toString());
-        if (mMediatedBannerAdViewController != null)
-            mMediatedBannerAdViewController.onAdCollapsed();
-    }
-
-    @Override
-    public void MMAdRequestIsCaching(MMAd mmAd) {
-        Clog.d(Clog.mediationLogTag, "MillenialMediaBanner - MMAdRequestIsCaching: " + mmAd.toString());
-    }
-
-    @Override
-    public void requestCompleted(MMAd mmAd) {
-        Clog.d(Clog.mediationLogTag, "MillenialMediaBanner - requestCompleted: " + mmAd.toString());
-        if (mMediatedBannerAdViewController != null)
-            mMediatedBannerAdViewController.onAdLoaded();
-    }
-
-    @Override
-    public void requestFailed(MMAd mmAd, MMException e) {
-        Clog.d(Clog.mediationLogTag, String.format("MillenialMediaBanner - requestFailed: %s with error %s", mmAd.toString(), e));
-        if (mMediatedBannerAdViewController != null)
-            mMediatedBannerAdViewController.onAdFailed(MediatedInterstitialAdViewController.RESULT.INTERNAL_ERROR);
-    }
-
-    @Override
-    public void onSingleTap(MMAd mmAd) {
-        Clog.d(Clog.mediationLogTag, "MillenialMediaBanner - onSingleTap: " + mmAd.toString());
-        if (mMediatedBannerAdViewController != null)
-            mMediatedBannerAdViewController.onAdClicked();
-    }
-
 }
