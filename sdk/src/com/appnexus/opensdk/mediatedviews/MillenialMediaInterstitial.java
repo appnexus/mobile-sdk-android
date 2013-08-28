@@ -19,15 +19,20 @@ package com.appnexus.opensdk.mediatedviews;
 import android.app.Activity;
 import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
+import com.appnexus.opensdk.utils.Clog;
 import com.millennialmedia.android.*;
 
 public class MillenialMediaInterstitial implements MediatedInterstitialAdView, RequestListener {
     MMInterstitial iad;
     MediatedInterstitialAdViewController mMediatedInterstitialAdViewController;
 
+    public MillenialMediaInterstitial() {
+        Clog.d(Clog.mediationLogTag, "New MillenialMediaInterstitial instance being created");
+    }
 
     @Override
     public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid) {
+        Clog.d(Clog.mediationLogTag, String.format("Millenial Media - requesting an interstitial ad: %s, %s, %s, %s", mIC.toString(), activity.toString(), parameter, uid));
         mMediatedInterstitialAdViewController = mIC;
 
         MMSDK.initialize(activity);
@@ -36,14 +41,21 @@ public class MillenialMediaInterstitial implements MediatedInterstitialAdView, R
         iad.setApid(uid);
         iad.setListener(this);
         iad.fetch();
-
-        return;
     }
 
     @Override
     public void show() {
-        if (iad != null && iad.isAdAvailable())
-            iad.display();
+        if (iad != null) {
+            if (iad.isAdAvailable()) {
+                if (!iad.display(true))
+                    Clog.d(Clog.mediationLogTag, "Millenial Media - show called while interstitial ad was unavailable");
+            }
+            else
+                Clog.d(Clog.mediationLogTag, "Millenial Media - show called while interstitial ad was unavailable");
+        }
+        else {
+            Clog.d(Clog.mediationLogTag, "Millenial Media - show called while interstitial ad view was null");
+        }
     }
 
     @Override
