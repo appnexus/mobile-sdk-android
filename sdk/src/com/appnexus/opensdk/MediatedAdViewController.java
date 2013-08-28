@@ -21,7 +21,7 @@ import com.appnexus.opensdk.utils.HTTPResponse;
 
 public class MediatedAdViewController {
 
-    public static enum RESULT{
+    public static enum RESULT {
         SUCCESS,
         INVALID_REQUEST,
         UNABLE_TO_FILL,
@@ -41,9 +41,9 @@ public class MediatedAdViewController {
     AdView owner;
     MediatedAdView mAV;
 
-    protected boolean errorCBMade=false;
+    protected boolean errorCBMade = false;
 
-    protected MediatedAdViewController(){
+    protected MediatedAdViewController() {
 
     }
 
@@ -54,6 +54,7 @@ public class MediatedAdViewController {
         className = response.getMediatedViewClassName();
         param = response.getParameter();
         resultCB = response.getMediatedResultCB();
+        this.owner = owner;
 
         Clog.d(Clog.mediationLogTag, Clog.getString(R.string.instantiating_class, className));
 
@@ -92,9 +93,9 @@ public class MediatedAdViewController {
         }
         this.failed = true;
 
-        if(!errorCBMade){
+        if (!errorCBMade) {
             fireResultCB(reason);
-            errorCBMade=true;
+            errorCBMade = true;
         }
 
     }
@@ -121,7 +122,7 @@ public class MediatedAdViewController {
         return failed;
     }
 
-    private void fireResultCB(final MediatedAdViewController.RESULT result){
+    private void fireResultCB(final MediatedAdViewController.RESULT result) {
 
         //fire call to result cb url
         HTTPGet<Void, Void, HTTPResponse> cb = new HTTPGet<Void, Void, HTTPResponse>() {
@@ -133,7 +134,7 @@ public class MediatedAdViewController {
 
             @Override
             protected String getUrl() {
-                return resultCB+"&reason="+result;
+                return resultCB + "&reason=" + result;
             }
         };
 
