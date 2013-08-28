@@ -35,7 +35,16 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
     @Override
     public View getView() {
         Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediated_request));
-        ((MediatedInterstitialAdView) mAV).requestAd(this, (Activity) owner.getContext(), param, uid);
+        if (mAV == null) {
+            Clog.e(Clog.mediationLogTag, "getView: MediatedAdView was null");
+            return null;
+        }
+        if (owner == null) {
+            Clog.e(Clog.mediationLogTag, "getView: owner was null");
+            return null;
+        }
+
+        ((MediatedInterstitialAdView)mAV).requestAd(this, (Activity) owner.getContext(), param, uid);
         return null;
     }
 
