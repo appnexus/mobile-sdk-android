@@ -1,23 +1,18 @@
 package com.appnexus.opensdk;
 
-import android.*;
 import android.R;
 import android.app.Activity;
 import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.VideoView;
 import com.appnexus.opensdk.utils.Clog;
 
-import java.util.ArrayList;
-
 public class VideoEnabledWebChromeClient extends WebChromeClient {
-    CustomViewCallback c;
+    CustomViewCallback customViewCallback;
     FrameLayout frame;
     Activity context;
 
@@ -29,16 +24,26 @@ public class VideoEnabledWebChromeClient extends WebChromeClient {
     @Override
     public void onShowCustomView(View view, CustomViewCallback callback) {
         super.onShowCustomView(view, callback);
-        c = callback;
-//        Clog.d(Clog.baseLogTag, "Showing custom view");
+        Clog.d(Clog.baseLogTag, "Entering onShowCustomView");
+
+        if (context == null) {
+            Clog.e(Clog.baseLogTag, "onShowCustomView: context was null");
+            return;
+        }
+
+        customViewCallback = callback;
         if (view instanceof FrameLayout) {
             frame = (FrameLayout) view;
 
             ViewGroup root = (ViewGroup) context.findViewById(R.id.content);
-
-            for (int i = 0; i < root.getChildCount(); i++) {
-                root.getChildAt(i).setVisibility(View.GONE);
+            if (root == null) {
+                Clog.e(Clog.baseLogTag, "onShowCustomView: could not find root view");
+                return;
             }
+
+            // hide other children so that the only view shown is the custom view
+            for (int i = 0; i < root.getChildCount(); i++)
+                root.getChildAt(i).setVisibility(View.GONE);
 
             try {
                 addCloseButton(frame);
@@ -46,29 +51,41 @@ public class VideoEnabledWebChromeClient extends WebChromeClient {
             } catch (Exception e) {
                 Clog.d(Clog.baseLogTag, e.toString());
             }
-
-//            if (frame.getFocusedChild() instanceof VideoView) {
-//                videoView = (VideoView) frame.getFocusedChild();
-//                videoView.start();
-////                videoView.setOnCompletionListener(this);
-////                videoView.setOnErrorListener(this);
-//            }
         }
+        else
+            frame = null;
     }
 
     @Override
     public void onHideCustomView() {
         super.onHideCustomView();
-//        Clog.d(Clog.baseLogTag, "Hiding custom view");
-//        if (videoView != null) videoView.stopPlayback();
+        Clog.d(Clog.baseLogTag, "Entering onHideCustomView");
+
+        if (context == null) {
+            Clog.e(Clog.baseLogTag, "onHideCustomView: context was null");
+            return;
+        }
+
         ViewGroup root = ((ViewGroup) context.findViewById(R.id.content));
+        if (root == null) {
+            Clog.e(Clog.baseLogTag, "onHideCustomView: could not find root view");
+            return;
+        }
+
+        if (frame == null) {
+            Clog.e(Clog.baseLogTag, "onHideCustomView: frame was null");
+            return;
+        }
+
         root.removeView(frame);
 
+        // restore the views that were originally there
         for (int i = 0; i < root.getChildCount(); i++) {
             root.getChildAt(i).setVisibility(View.VISIBLE);
         }
 
-        c.onCustomViewHidden();
+        if (customViewCallback != null)
+            customViewCallback.onCustomViewHidden();
     }
 
     private void addCloseButton(FrameLayout layout) {
