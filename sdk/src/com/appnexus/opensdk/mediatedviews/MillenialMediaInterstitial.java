@@ -26,13 +26,17 @@ public class MillenialMediaInterstitial implements MediatedInterstitialAdView, R
     MMInterstitial iad;
     MediatedInterstitialAdViewController mMediatedInterstitialAdViewController;
 
-    public MillenialMediaInterstitial() {
-        Clog.d(Clog.mediationLogTag, "New MillenialMediaInterstitial instance being created");
-    }
-
     @Override
     public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid) {
-        Clog.d(Clog.mediationLogTag, String.format("Millenial Media - requesting an interstitial ad: %s, %s, %s, %s", mIC.toString(), activity.toString(), parameter, uid));
+        if (mIC == null) {
+            Clog.e(Clog.mediationLogTag, "MillenialMediaInterstitial - requestAd called with null controller");
+            return;
+        } else if (activity == null) {
+            Clog.e(Clog.mediationLogTag, "MillenialMediaInterstitial - requestAd called with null activity");
+            return;
+        }
+        Clog.d(Clog.mediationLogTag, String.format("MillenialMediaInterstitial - requesting an interstitial ad: %s, %s, %s, %s", mIC.toString(), activity.toString(), parameter, uid));
+
         mMediatedInterstitialAdViewController = mIC;
 
         MMSDK.initialize(activity);
@@ -45,45 +49,51 @@ public class MillenialMediaInterstitial implements MediatedInterstitialAdView, R
 
     @Override
     public void show() {
-        if (iad != null) {
-            if (iad.isAdAvailable()) {
-                if (!iad.display(true))
-                    Clog.d(Clog.mediationLogTag, "Millenial Media - show called while interstitial ad was unavailable");
-            }
-            else
-                Clog.d(Clog.mediationLogTag, "Millenial Media - show called while interstitial ad was unavailable");
+        Clog.d(Clog.mediationLogTag, "MillenialMediaInterstitial - show called");
+        if (iad == null) {
+            Clog.e(Clog.mediationLogTag, "MillenialMediaInterstitial - show called while interstitial ad view was null");
+            return;
         }
-        else {
-            Clog.d(Clog.mediationLogTag, "Millenial Media - show called while interstitial ad view was null");
+        if (!iad.isAdAvailable()) {
+            Clog.e(Clog.mediationLogTag, "MillenialMediaInterstitial - show called while interstitial ad was unavailable");
+            return;
         }
+
+        if (iad.display(true))
+            Clog.d(Clog.mediationLogTag, "MillenialMediaInterstitial - display called successfully");
+        else
+            Clog.e(Clog.mediationLogTag, "MillenialMediaInterstitial - display failed");
     }
 
     @Override
     public void MMAdOverlayLaunched(MMAd mmAd) {
+        Clog.d(Clog.mediationLogTag, "MillenialMediaInterstitial - MMAdOverlayLaunched: " + mmAd.toString());
         if (mMediatedInterstitialAdViewController != null)
             mMediatedInterstitialAdViewController.onAdExpanded();
     }
 
-    // this callback doesn't seem to work (MM's fault)
     @Override
     public void MMAdOverlayClosed(MMAd mmAd) {
+        Clog.d(Clog.mediationLogTag, "MillenialMediaInterstitial - MMAdOverlayClosed: " + mmAd.toString());
         if (mMediatedInterstitialAdViewController != null)
             mMediatedInterstitialAdViewController.onAdCollapsed();
     }
 
-    // equivalent to a "interstitial is loading" state
     @Override
     public void MMAdRequestIsCaching(MMAd mmAd) {
+        Clog.d(Clog.mediationLogTag, "MillenialMediaInterstitial - MMAdRequestIsCaching: " + mmAd.toString());
     }
 
     @Override
     public void requestCompleted(MMAd mmAd) {
+        Clog.d(Clog.mediationLogTag, "MillenialMediaInterstitial - requestCompleted: " + mmAd.toString());
         if (mMediatedInterstitialAdViewController != null)
             mMediatedInterstitialAdViewController.onAdLoaded();
     }
 
     @Override
     public void requestFailed(MMAd mmAd, MMException e) {
+        Clog.d(Clog.mediationLogTag, String.format("MillenialMediaInterstitial - requestFailed: %s with error %s", mmAd.toString(), e));
         if (mMediatedInterstitialAdViewController != null)
             mMediatedInterstitialAdViewController.onAdFailed(MediatedInterstitialAdViewController.RESULT.INTERNAL_ERROR);
     }
@@ -91,6 +101,7 @@ public class MillenialMediaInterstitial implements MediatedInterstitialAdView, R
     // this also doesn't work..
     @Override
     public void onSingleTap(MMAd mmAd) {
+        Clog.d(Clog.mediationLogTag, "MillenialMediaInterstitial - onSingleTap: " + mmAd.toString());
         if (mMediatedInterstitialAdViewController != null)
             mMediatedInterstitialAdViewController.onAdClicked();
     }

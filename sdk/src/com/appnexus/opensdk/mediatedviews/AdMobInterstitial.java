@@ -5,6 +5,7 @@ import android.content.Context;
 import android.telephony.TelephonyManager;
 import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
+import com.appnexus.opensdk.utils.Clog;
 import com.google.ads.Ad;
 import com.google.ads.AdListener;
 import com.google.ads.AdRequest;
@@ -21,6 +22,15 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
 
     @Override
     public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid) {
+        if (mIC == null) {
+            Clog.e(Clog.mediationLogTag, "AdMobInterstitial - requestAd called with null controller");
+            return;
+        } else if (activity == null) {
+            Clog.e(Clog.mediationLogTag, "AdMobInterstitial - requestAd called with null activity");
+            return;
+        }
+        Clog.d(Clog.mediationLogTag, String.format("AdMobInterstitial - requesting an ad: %s, %s, %s, %s", mIC.toString(), activity.toString(), parameter, uid));
+
         iad = new InterstitialAd(activity, uid);
 
         AdRequest ar = new AdRequest();
@@ -32,47 +42,54 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
 
         iad.loadAd(ar);
         mMediatedInterstitialAdViewController = mIC;
-        return;
     }
 
     @Override
     public void onReceiveAd(Ad ad) {
+        Clog.d(Clog.mediationLogTag, "AdMobInterstitial - onReceiveAd: " + ad.toString());
         mMediatedInterstitialAdViewController.onAdLoaded();
     }
 
     @Override
     public void onDismissScreen(Ad arg0) {
-        // TODO Auto-generated method stub
-
+        Clog.d(Clog.mediationLogTag, "AdMobInterstitial - onDismissScreen: " + arg0.toString());
     }
 
     @Override
     public void onFailedToReceiveAd(Ad arg0, ErrorCode arg1) {
+        Clog.d(Clog.mediationLogTag, String.format("AdMobInterstitial - onFailedToReceiveAd: %s with error: %s", arg0.toString(), arg1));
         if (mMediatedInterstitialAdViewController != null) {
             mMediatedInterstitialAdViewController.onAdFailed(MediatedInterstitialAdViewController.RESULT.INTERNAL_ERROR);
         }
-
     }
 
     @Override
     public void onLeaveApplication(Ad arg0) {
+        Clog.d(Clog.mediationLogTag, "AdMobInterstitial - onLeaveApplication: " + arg0.toString());
         if (mMediatedInterstitialAdViewController != null) {
             mMediatedInterstitialAdViewController.onAdClicked();
         }
-
     }
 
     @Override
     public void onPresentScreen(Ad arg0) {
-        // TODO Auto-generated method stub
-
+        Clog.d(Clog.mediationLogTag, "AdMobInterstitial - onPresentScreen: " + arg0.toString());
     }
 
     @Override
     public void show() {
-        if (iad != null) {
-            iad.show();
+        Clog.d(Clog.mediationLogTag, "AdMobInterstitial - show called");
+        if (iad == null) {
+            Clog.e(Clog.mediationLogTag, "AdMobInterstitial - show called while interstitial ad view was null");
+            return;
         }
+        if (!iad.isReady()) {
+            Clog.e(Clog.mediationLogTag, "AdMobInterstitial - show called while interstitial ad was not ready");
+            return;
+        }
+
+        iad.show();
+        Clog.d(Clog.mediationLogTag, "AdMobInterstitial - interstitial ad shown");
     }
 
 }
