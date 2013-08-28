@@ -3,8 +3,6 @@ package com.appnexus.opensdk.mediatedviews;
 import android.app.Activity;
 import android.content.Context;
 import android.telephony.TelephonyManager;
-import android.view.View;
-
 import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
 import com.google.ads.Ad;

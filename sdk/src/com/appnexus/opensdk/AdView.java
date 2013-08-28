@@ -16,12 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import java.util.ArrayList;
-
-import com.appnexus.opensdk.R;
-import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.Settings;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -34,6 +28,10 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Settings;
+
+import java.util.ArrayList;
 
 /**
  * The parent class of InterstitialAdView and BannerAdView. This can not be

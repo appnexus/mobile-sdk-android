@@ -16,15 +16,14 @@
 
 package com.appnexus.opensdk;
 
-import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.Settings;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Settings;
 
 /**
  * This view is added to an existing layout in order to display ads.

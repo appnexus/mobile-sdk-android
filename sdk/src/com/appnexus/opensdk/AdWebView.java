@@ -16,27 +16,21 @@
 
 package com.appnexus.opensdk;
 
-import com.appnexus.opensdk.AdView.BrowserStyle;
-import com.appnexus.opensdk.R;
-import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.Settings;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.webkit.SslErrorHandler;
+import android.webkit.*;
 import android.widget.FrameLayout;
 import android.widget.VideoView;
-import android.net.http.SslError;
+import com.appnexus.opensdk.AdView.BrowserStyle;
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Settings;
 
 /**
  * @author jshufro@appnexus.com

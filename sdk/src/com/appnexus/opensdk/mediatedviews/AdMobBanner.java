@@ -4,15 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.telephony.TelephonyManager;
 import android.view.View;
-
-import com.google.ads.Ad;
-import com.google.ads.AdListener;
-import com.google.ads.AdRequest.ErrorCode;
-
-import com.google.ads.*;
-
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
+import com.google.ads.*;
+import com.google.ads.AdRequest.ErrorCode;
 
 public class AdMobBanner implements MediatedBannerAdView, AdListener {
     MediatedBannerAdViewController mMediatedBannerAdViewController;

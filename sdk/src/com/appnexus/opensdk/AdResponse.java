@@ -16,12 +16,11 @@
 
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.utils.Clog;
 import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.appnexus.opensdk.utils.Clog;
 
 public class AdResponse {
     public AdRequester requester;
@@ -76,7 +75,7 @@ public class AdResponse {
     }
 
     private void parseResponse(String body) {
-        JSONObject response=null;
+        JSONObject response = null;
 
         if (body.equals("RETRY") || body.equals("RETRY2")) {
             return;
@@ -100,7 +99,7 @@ public class AdResponse {
                 width = firstAd.getInt("width");
                 this.body = firstAd.getString("content");
                 type = firstAd.getString("type");
-                if (this.body == null || this.body.equals("")){
+                if (this.body == null || this.body.equals("")) {
                     Clog.e(Clog.httpRespLogTag,
                             Clog.getString(R.string.blank_ad));
                 }
@@ -113,17 +112,17 @@ public class AdResponse {
             //return;
         }
 
-        if(response==null){
+        if (response == null) {
             return;
         }
 
         try {
             JSONArray mediated = response.getJSONArray("mediated");
             if (mediated.length() > 0) {
-                for(int i=0; i<mediated.length();i++){
+                for (int i = 0; i < mediated.length(); i++) {
                     JSONObject handler = mediated.getJSONObject(i).getJSONObject("handler");
-                    if(handler.getString("type").toLowerCase().equals("android")){
-                        isMediated=true;
+                    if (handler.getString("type").toLowerCase().equals("android")) {
+                        isMediated = true;
                         mediatedViewClassName = handler.getString("class");
                         height = handler.getInt("height");
                         width = handler.getInt("width");

@@ -16,17 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-
-import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.HashingFunctions;
-import com.appnexus.opensdk.utils.Settings;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -34,6 +23,15 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings.Secure;
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.HashingFunctions;
+import com.appnexus.opensdk.utils.Settings;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
 public class InstallTrackerPixel extends BroadcastReceiver {
 

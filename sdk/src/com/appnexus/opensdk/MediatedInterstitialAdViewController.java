@@ -1,14 +1,10 @@
 package com.appnexus.opensdk;
 
-import com.appnexus.opensdk.utils.Clog;
-
 import android.app.Activity;
 import android.view.View;
-import com.appnexus.opensdk.utils.HTTPResponse;
-import com.appnexus.opensdk.utils.HTTPGet;
+import com.appnexus.opensdk.utils.Clog;
 
 public class MediatedInterstitialAdViewController extends MediatedAdViewController implements Displayable {
-
 
 
     static public MediatedInterstitialAdViewController create(InterstitialAdView owner, AdResponse response) {
@@ -18,7 +14,7 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
         } catch (Exception e) {
             return null;
         }
-        if(out.mAV == null || !(out.mAV instanceof MediatedInterstitialAdView)){
+        if (out.mAV == null || !(out.mAV instanceof MediatedInterstitialAdView)) {
             return null;
         }
         return out;
@@ -32,14 +28,14 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
 
     protected void show() {
         if (mAV != null) {
-            ((MediatedInterstitialAdView)mAV).show();
+            ((MediatedInterstitialAdView) mAV).show();
         }
     }
 
     @Override
     public View getView() {
         Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediated_request));
-        ((MediatedInterstitialAdView)mAV).requestAd(this, (Activity) owner.getContext(), param, uid);
+        ((MediatedInterstitialAdView) mAV).requestAd(this, (Activity) owner.getContext(), param, uid);
         return null;
     }
 

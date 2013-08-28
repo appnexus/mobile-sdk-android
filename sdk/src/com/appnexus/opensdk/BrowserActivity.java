@@ -16,9 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import com.appnexus.opensdk.AdView.BrowserStyle;
-import com.appnexus.opensdk.utils.Clog;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -30,16 +27,14 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.webkit.WebChromeClient;
+import android.webkit.*;
 import android.webkit.WebSettings.PluginState;
-import android.webkit.ConsoleMessage;
-import android.webkit.JsResult;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.VideoView;
+import com.appnexus.opensdk.AdView.BrowserStyle;
+import com.appnexus.opensdk.utils.Clog;
 
 public class BrowserActivity extends Activity {
     private WebView webview;

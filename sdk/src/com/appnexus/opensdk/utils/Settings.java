@@ -16,10 +16,10 @@
 
 package com.appnexus.opensdk.utils;
 
+import android.os.Build;
+
 import java.util.Locale;
 import java.util.TimeZone;
-
-import android.os.Build;
 
 public class Settings {
     public String hidmd5 = null;
@@ -54,7 +54,7 @@ public class Settings {
     public final int MAX_HTTP_RETRIES = 3;
     public final int MAX_FAILED_HTTP_RETRIES = 5;
 
-//    public final String BASE_URL = "http://mobile.adnxs.com/mob?";
+    //    public final String BASE_URL = "http://mobile.adnxs.com/mob?";
 //    public final String BASE_URL = "http://jshufro.adnxs.net:8112/med?";
 //    public final String BASE_URL = "http://jshufro.adnxs.net:8112/mark?";
     public final String BASE_URL = "http://rlissack.adnxs.net:8080/mobile/wr?";

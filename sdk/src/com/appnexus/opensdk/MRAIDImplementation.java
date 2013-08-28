@@ -16,15 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-
-import org.apache.http.message.BasicNameValuePair;
-
-import com.appnexus.opensdk.MRAIDWebView;
-import com.appnexus.opensdk.utils.Clog;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -37,14 +28,15 @@ import android.net.http.SslError;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.ConsoleMessage;
-import android.webkit.JsResult;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.webkit.*;
 import android.widget.FrameLayout;
 import android.widget.VideoView;
+import com.appnexus.opensdk.utils.Clog;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 @SuppressLint("InlinedApi")
 public class MRAIDImplementation {
@@ -307,7 +299,7 @@ public class MRAIDImplementation {
             expanded = true;
 
             // Fire the AdListener event
-            if(this.owner.owner.adListener!=null){
+            if (this.owner.owner.adListener != null) {
                 this.owner.owner.adListener.onAdExpanded(this.owner.owner);
             }
 

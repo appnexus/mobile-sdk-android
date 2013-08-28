@@ -15,14 +15,10 @@
  */
 package com.appnexus.opensdk;
 
-import com.appnexus.opensdk.utils.Clog;
-
 import android.app.Activity;
 import android.view.View;
-import com.appnexus.opensdk.utils.HTTPGet;
-import com.appnexus.opensdk.utils.HTTPResponse;
 
-public class MediatedBannerAdViewController extends MediatedAdViewController implements Displayable{
+public class MediatedBannerAdViewController extends MediatedAdViewController implements Displayable {
 
     View placeableView;
 
@@ -33,7 +29,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
         } catch (Exception e) {
             return null;
         }
-        if(out.mAV == null || !(out.mAV instanceof MediatedBannerAdView)){
+        if (out.mAV == null || !(out.mAV instanceof MediatedBannerAdView)) {
             return null;
         }
         return out;
@@ -43,7 +39,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
     private MediatedBannerAdViewController(AdView owner, AdResponse response) throws Exception {
         super(owner, response);
 
-        placeableView = ((MediatedBannerAdView)mAV).requestAd(this, (Activity) owner.getContext(), param, uid, width, height, owner);
+        placeableView = ((MediatedBannerAdView) mAV).requestAd(this, (Activity) owner.getContext(), param, uid, width, height, owner);
     }
 
     @Override

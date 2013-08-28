@@ -22,11 +22,11 @@ public class HTTPResponse {
     private String responseBody;
     private Header[] headers;
 
-    public HTTPResponse(){
+    public HTTPResponse() {
 
     }
 
-    public HTTPResponse(boolean succeeded, String responseBody, Header[] headers){
+    public HTTPResponse(boolean succeeded, String responseBody, Header[] headers) {
         this.succeeded = succeeded;
         this.responseBody = responseBody;
         this.headers = headers;
