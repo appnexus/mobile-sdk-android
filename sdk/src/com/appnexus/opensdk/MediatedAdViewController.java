@@ -42,6 +42,7 @@ public class MediatedAdViewController {
     MediatedAdView mAV;
 
     protected boolean errorCBMade = false;
+    protected boolean successCBMade = false;
 
     protected MediatedAdViewController() {
 
@@ -83,8 +84,10 @@ public class MediatedAdViewController {
         if (owner.getAdListener() != null) {
             owner.getAdListener().onAdLoaded(owner);
         }
-
-        fireResultCB(RESULT.SUCCESS);
+        if (!successCBMade) {
+            successCBMade = true;
+            fireResultCB(RESULT.SUCCESS);
+        }
     }
 
     public void onAdFailed(MediatedAdViewController.RESULT reason) {
