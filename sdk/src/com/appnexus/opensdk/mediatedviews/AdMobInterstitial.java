@@ -3,6 +3,7 @@ package com.appnexus.opensdk.mediatedviews;
 import android.app.Activity;
 import android.content.Context;
 import android.telephony.TelephonyManager;
+import com.appnexus.opensdk.MediatedAdViewController;
 import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
 import com.appnexus.opensdk.utils.Clog;
@@ -60,8 +61,28 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
     @Override
     public void onFailedToReceiveAd(Ad arg0, ErrorCode arg1) {
         Clog.d(Clog.mediationLogTag, String.format("AdMobInterstitial - onFailedToReceiveAd: %s with error: %s", arg0, arg1));
+
+        MediatedAdViewController.RESULT code = MediatedAdViewController.RESULT.INTERNAL_ERROR;
+
+        switch (arg1) {
+            case INTERNAL_ERROR:
+                code = MediatedAdViewController.RESULT.INTERNAL_ERROR;
+                break;
+            case INVALID_REQUEST:
+                code = MediatedAdViewController.RESULT.INVALID_REQUEST;
+                break;
+            case NETWORK_ERROR:
+                code = MediatedAdViewController.RESULT.NETWORK_ERROR;
+                break;
+            case NO_FILL:
+                code = MediatedAdViewController.RESULT.UNABLE_TO_FILL;
+                break;
+            default:
+                break;
+        }
+
         if (mMediatedInterstitialAdViewController != null) {
-            mMediatedInterstitialAdViewController.onAdFailed(MediatedInterstitialAdViewController.RESULT.INTERNAL_ERROR);
+            mMediatedInterstitialAdViewController.onAdFailed(code);
         }
     }
 

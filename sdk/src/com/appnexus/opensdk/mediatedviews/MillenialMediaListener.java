@@ -25,13 +25,13 @@ import com.millennialmedia.android.RequestListener;
 
 public class MillenialMediaListener implements RequestListener {
 
-    MediatedAdViewController mAVC;
+    MediatedAdViewController mediatedAdViewController;
     String className;
 
-    public MillenialMediaListener(MediatedAdViewController mAVC, String className) {
-        this.mAVC = mAVC;
+    public MillenialMediaListener(MediatedAdViewController mediatedAdViewController, String className) {
+        this.mediatedAdViewController = mediatedAdViewController;
         this.className = className;
-        Clog.d(Clog.mediationLogTag, String.format("New MillenialMediaListener created for [%s %s]", className, mAVC));
+        Clog.d(Clog.mediationLogTag, String.format("New MillenialMediaListener created for [%s %s]", className, mediatedAdViewController));
     }
 
     // occurs when ad is clicked and browser is launched.
@@ -39,16 +39,16 @@ public class MillenialMediaListener implements RequestListener {
     @Override
     public void MMAdOverlayLaunched(MMAd mmAd) {
         Clog.d(Clog.mediationLogTag, String.format("%s - MMAdOverlayLaunched: %s", className, mmAd));
-        if (mAVC != null)
-            mAVC.onAdExpanded();
+        if (mediatedAdViewController != null)
+            mediatedAdViewController.onAdExpanded();
     }
 
     // this callback doesn't work...
     @Override
     public void MMAdOverlayClosed(MMAd mmAd) {
         Clog.d(Clog.mediationLogTag, String.format("%s - MMAdOverlayClosed: %s", className, mmAd));
-        if (mAVC != null)
-            mAVC.onAdCollapsed();
+        if (mediatedAdViewController != null)
+            mediatedAdViewController.onAdCollapsed();
     }
 
     @Override
@@ -59,8 +59,8 @@ public class MillenialMediaListener implements RequestListener {
     @Override
     public void requestCompleted(MMAd mmAd) {
         Clog.d(Clog.mediationLogTag, String.format("%s - requestCompleted: %s", className, mmAd));
-        if (mAVC != null)
-            mAVC.onAdLoaded();
+        if (mediatedAdViewController != null)
+            mediatedAdViewController.onAdLoaded();
     }
 
     @Override
@@ -128,15 +128,15 @@ public class MillenialMediaListener implements RequestListener {
                 break;
         }
 
-        if (mAVC != null)
-            mAVC.onAdFailed(code);
+        if (mediatedAdViewController != null)
+            mediatedAdViewController.onAdFailed(code);
     }
 
     // this callback doesn't work for MMInterstitials
     @Override
     public void onSingleTap(MMAd mmAd) {
         Clog.d(Clog.mediationLogTag, String.format("%s - onSingleTap: %s", className, mmAd));
-        if (mAVC != null)
-            mAVC.onAdClicked();
+        if (mediatedAdViewController != null)
+            mediatedAdViewController.onAdClicked();
     }
 }
