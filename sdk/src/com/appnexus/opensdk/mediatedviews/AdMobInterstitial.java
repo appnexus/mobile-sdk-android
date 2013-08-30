@@ -25,11 +25,13 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
         if (mIC == null) {
             Clog.e(Clog.mediationLogTag, "AdMobInterstitial - requestAd called with null controller");
             return;
-        } else if (activity == null) {
+        }
+
+        if (activity == null) {
             Clog.e(Clog.mediationLogTag, "AdMobInterstitial - requestAd called with null activity");
             return;
         }
-        Clog.d(Clog.mediationLogTag, String.format("AdMobInterstitial - requesting an ad: %s, %s, %s, %s", mIC.toString(), activity.toString(), parameter, uid));
+        Clog.d(Clog.mediationLogTag, String.format("AdMobInterstitial - requesting an ad: [%s, %s]", parameter, uid));
 
         iad = new InterstitialAd(activity, uid);
 
@@ -46,18 +48,18 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
 
     @Override
     public void onReceiveAd(Ad ad) {
-        Clog.d(Clog.mediationLogTag, "AdMobInterstitial - onReceiveAd: " + ad.toString());
+        Clog.d(Clog.mediationLogTag, "AdMobInterstitial - onReceiveAd: " + ad);
         mMediatedInterstitialAdViewController.onAdLoaded();
     }
 
     @Override
     public void onDismissScreen(Ad arg0) {
-        Clog.d(Clog.mediationLogTag, "AdMobInterstitial - onDismissScreen: " + arg0.toString());
+        Clog.d(Clog.mediationLogTag, "AdMobInterstitial - onDismissScreen: " + arg0);
     }
 
     @Override
     public void onFailedToReceiveAd(Ad arg0, ErrorCode arg1) {
-        Clog.d(Clog.mediationLogTag, String.format("AdMobInterstitial - onFailedToReceiveAd: %s with error: %s", arg0.toString(), arg1));
+        Clog.d(Clog.mediationLogTag, String.format("AdMobInterstitial - onFailedToReceiveAd: %s with error: %s", arg0, arg1));
         if (mMediatedInterstitialAdViewController != null) {
             mMediatedInterstitialAdViewController.onAdFailed(MediatedInterstitialAdViewController.RESULT.INTERNAL_ERROR);
         }
@@ -65,7 +67,7 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
 
     @Override
     public void onLeaveApplication(Ad arg0) {
-        Clog.d(Clog.mediationLogTag, "AdMobInterstitial - onLeaveApplication: " + arg0.toString());
+        Clog.d(Clog.mediationLogTag, "AdMobInterstitial - onLeaveApplication: " + arg0);
         if (mMediatedInterstitialAdViewController != null) {
             mMediatedInterstitialAdViewController.onAdClicked();
         }
@@ -73,7 +75,7 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
 
     @Override
     public void onPresentScreen(Ad arg0) {
-        Clog.d(Clog.mediationLogTag, "AdMobInterstitial - onPresentScreen: " + arg0.toString());
+        Clog.d(Clog.mediationLogTag, "AdMobInterstitial - onPresentScreen: " + arg0);
     }
 
     @Override

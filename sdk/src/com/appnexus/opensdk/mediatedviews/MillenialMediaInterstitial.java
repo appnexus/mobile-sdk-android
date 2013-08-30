@@ -33,11 +33,13 @@ public class MillenialMediaInterstitial implements MediatedInterstitialAdView {
         if (mIC == null) {
             Clog.e(Clog.mediationLogTag, "MillenialMediaInterstitial - requestAd called with null controller");
             return;
-        } else if (activity == null) {
+        }
+
+        if (activity == null) {
             Clog.e(Clog.mediationLogTag, "MillenialMediaInterstitial - requestAd called with null activity");
             return;
         }
-        Clog.d(Clog.mediationLogTag, String.format("MillenialMediaInterstitial - requesting an interstitial ad: %s, %s, %s, %s", mIC.toString(), activity.toString(), parameter, uid));
+        Clog.d(Clog.mediationLogTag, String.format("MillenialMediaInterstitial - requesting an interstitial ad: [%s, %s]", parameter, uid));
 
         mMediatedInterstitialAdViewController = mIC;
 

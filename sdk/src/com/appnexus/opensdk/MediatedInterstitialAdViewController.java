@@ -14,15 +14,16 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
         } catch (Exception e) {
             return null;
         }
-        if (out.mAV == null || !(out.mAV instanceof MediatedInterstitialAdView)) {
-            return null;
-        }
         return out;
 
     }
 
     protected MediatedInterstitialAdViewController(InterstitialAdView owner, AdResponse response) throws Exception {
         super(owner, response);
+
+        if (this.mAV == null || !(this.mAV instanceof MediatedInterstitialAdView)) {
+            throw new Exception("Mediated view is null or not an instance of MediatedInterstitialAdView");
+        }
     }
 
 

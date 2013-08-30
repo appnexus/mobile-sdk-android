@@ -29,9 +29,6 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
         } catch (Exception e) {
             return null;
         }
-        if (out.mAV == null || !(out.mAV instanceof MediatedBannerAdView)) {
-            return null;
-        }
         return out;
 
     }
@@ -39,6 +36,9 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
     private MediatedBannerAdViewController(AdView owner, AdResponse response) throws Exception {
         super(owner, response);
 
+        if (this.mAV == null || !(this.mAV instanceof MediatedBannerAdView)) {
+            throw new Exception("Mediated view is null or not an instance of MediatedBannerAdView");
+        }
         placeableView = ((MediatedBannerAdView) mAV).requestAd(this, (Activity) owner.getContext(), param, uid, width, height, owner);
     }
 
