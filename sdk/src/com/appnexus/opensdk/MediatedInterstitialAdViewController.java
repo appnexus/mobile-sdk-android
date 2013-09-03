@@ -45,6 +45,7 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
             return null;
         }
 
+		//TODO: refactor - this also depends on owner. what if owner is null? (for testing)
         ((MediatedInterstitialAdView)mAV).requestAd(this, (Activity) owner.getContext(), param, uid);
         return null;
     }

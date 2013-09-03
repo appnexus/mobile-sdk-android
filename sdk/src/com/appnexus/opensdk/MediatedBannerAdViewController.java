@@ -17,6 +17,7 @@ package com.appnexus.opensdk;
 
 import android.app.Activity;
 import android.view.View;
+import com.appnexus.opensdk.utils.Clog;
 
 public class MediatedBannerAdViewController extends MediatedAdViewController implements Displayable {
 
@@ -39,7 +40,8 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
         if (this.mAV == null || !(this.mAV instanceof MediatedBannerAdView)) {
             throw new Exception("Mediated view is null or not an instance of MediatedBannerAdView");
         }
-        placeableView = ((MediatedBannerAdView) mAV).requestAd(this, (Activity) owner.getContext(), param, uid, width, height, owner);
+		//TODO: refactor - this also depends on owner. what if owner is null? (for testing)
+        placeableView = ((MediatedBannerAdView) mAV).requestAd(this, owner != null ? (Activity) owner.getContext() : null, param, uid, width, height, owner);
     }
 
     @Override

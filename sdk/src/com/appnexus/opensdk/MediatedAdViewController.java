@@ -15,6 +15,7 @@
  */
 package com.appnexus.opensdk;
 
+import android.util.Log;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;

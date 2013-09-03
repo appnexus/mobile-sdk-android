@@ -16,12 +16,7 @@
 
 package com.appnexus.opensdkdemo;
 
-import com.appnexus.opensdk.AdListener;
-import com.appnexus.opensdk.AdRequest;
-import com.appnexus.opensdk.AdRequester;
-import com.appnexus.opensdk.AdResponse;
-import com.appnexus.opensdk.AdView;
-
+import com.appnexus.opensdk.*;
 import junit.framework.TestCase;
 
 public class TestSuccessfulAdRequest extends TestCase implements AdRequester, AdListener {
@@ -32,9 +27,9 @@ public class TestSuccessfulAdRequest extends TestCase implements AdRequester, Ad
 
     protected void setUp() {
         shouldWork = new AdRequest(this, "123456", null, null, "1281482",
-                "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, null, true);
+                "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, null, true, false);
         shouldWork2 = new AdRequest(null, "123456", null, null, "1281482",
-                "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, this, true);
+                "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, this, true, false);
     }
 
     public void testSucceedingRequest() {
@@ -58,7 +53,12 @@ public class TestSuccessfulAdRequest extends TestCase implements AdRequester, Ad
         notify();
     }
 
-    @Override
+	@Override
+	public AdView getOwner() {
+		return null;
+	}
+
+	@Override
     synchronized public void failed(AdRequest request) {
         shouldWorkDidWork = false;
         notify();

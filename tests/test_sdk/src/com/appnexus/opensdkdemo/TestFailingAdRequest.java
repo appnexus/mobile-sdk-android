@@ -16,12 +16,7 @@
 
 package com.appnexus.opensdkdemo;
 
-import com.appnexus.opensdk.AdListener;
-import com.appnexus.opensdk.AdRequest;
-import com.appnexus.opensdk.AdRequester;
-import com.appnexus.opensdk.AdResponse;
-import com.appnexus.opensdk.AdView;
-
+import com.appnexus.opensdk.*;
 import junit.framework.TestCase;
 
 public class TestFailingAdRequest extends TestCase implements AdRequester, AdListener {
@@ -32,8 +27,8 @@ public class TestFailingAdRequest extends TestCase implements AdRequester, AdLis
     boolean shouldPass2 = false;
 
     protected void setUp() {
-        shouldNotWork = new AdRequest(this, "123456", null, null, null, "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, null, true);
-        shouldNotWork2 = new AdRequest(null, "123456", null, null, null, "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, this, true);
+        shouldNotWork = new AdRequest(this, "123456", null, null, null, "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, null, true, false);
+        shouldNotWork2 = new AdRequest(null, "123456", null, null, null, "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, this, true, false);
     }
 
     public void testFailingRequest() {
@@ -69,7 +64,12 @@ public class TestFailingAdRequest extends TestCase implements AdRequester, AdLis
         notify();
     }
 
-    @Override
+	@Override
+	public AdView getOwner() {
+		return null;
+	}
+
+	@Override
     synchronized public void failed(AdRequest request) {
         shouldPass = true;
         notify();

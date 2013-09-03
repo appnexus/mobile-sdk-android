@@ -14,25 +14,9 @@
  *    limitations under the License.
  */
 
-package com.appnexus.opensdk;
+package com.appnexus.opensdkdemo;
 
-public interface AdRequester {
-    /**
-     * Called when the request made by the requester fails.
-     *
-     * @param request
-     */
-    public void failed(AdRequest request);
-
-    /**
-     * Called when a response is received
-     *
-     * @param response
-     */
-    public void onReceiveResponse(AdResponse response);
-
-	/**
-	 * Used to get the owner adview of the request
-	 */
-	public AdView getOwner();
+public class TestUtil {
+	public static final String testLogTag = "OPENSDK-TEST";
+	public static final String MEDIATION_TEST_URL = "http://rlissack.adnxs.net:8080/mobile/utest?";
 }

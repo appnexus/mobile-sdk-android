@@ -16,80 +16,73 @@
 
 package com.appnexus.opensdkdemo;
 
-import android.app.Activity;
-import android.view.View;
-
-import com.appnexus.opensdk.AdResponse;
-import com.appnexus.opensdk.MediatedBannerAdView;
-import com.appnexus.opensdk.MediatedBannerAdViewController;
+import android.test.AndroidTestCase;
+import android.util.Log;
+import com.appnexus.opensdk.*;
+import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
-import com.appnexus.opensdk.AdRequest;
-import com.appnexus.opensdk.AdRequester;
 
-import junit.framework.TestCase;
+public class TestSuccessfulMediation extends AndroidTestCase implements AdRequester {
+	String old_base_url;
+	AdRequest shouldWork;
 
-public class TestSuccessfulMediation extends TestCase implements AdRequester {
-    String old_base_url;
-    boolean shouldPass = false;
-    AdRequest ar;
+	@Override
+	protected void setUp() {
+		old_base_url = Settings.getSettings().BASE_URL;
+		Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
+		Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
+		shouldWork = new AdRequest(this, null, null, null, "1", null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
+		SuccessfulMediationView.didPass = false;
+	}
 
-    @Override
-    protected void setUp() {
-        old_base_url = Settings.getSettings().BASE_URL;
-        Settings.getSettings().BASE_URL = "http://rlissack.adnxs.com:8080/mobile/utest?";
-        ar = new AdRequest(this, null, null, null, "1", null, null, 320, 50, -1, -1, null, null, null, true, null, false);
-    }
+	@Override
+	protected void tearDown() {
+		Settings.getSettings().BASE_URL = old_base_url;
+	}
 
-    @Override
-    protected void tearDown() {
-        Settings.getSettings().BASE_URL = old_base_url;
-    }
+	public void testSucceedingMediationCall() {
+		// Create a AdRequest which will request a mediated response to
+		// instantiate the SuccessfulMediationView
+		// Since we're just testing to see successful instantiation, interrupt
+		// the sleeping thread from the requestAd function
 
-    public void testSucceedingMediationCall() {
-        // Create a AdRequest which will request a mediated response to
-        // instantiate the SuccessfulMediationView
-        // Since we're just testing to see successful instantiation, interrupt
-        // the sleeping thread from the requestAd function
-        ar.execute();
-        pause();
-        ar.cancel(true);
-        assertEquals(shouldPass,true);
+		shouldWork.execute();
+		pause();
+		shouldWork.cancel(true);
+		assertEquals(true, SuccessfulMediationView.didPass);
+	}
 
+	@Override
+	synchronized public void failed(AdRequest request) {
+		Log.d(TestUtil.testLogTag, "request failed");
+		SuccessfulMediationView.didPass = false;
+		notify();
+	}
 
+	@Override
+	synchronized public void onReceiveResponse(AdResponse response) {
+		Log.d(TestUtil.testLogTag, "received response " + SuccessfulMediationView.class.toString());
+		Log.d(TestUtil.testLogTag, "received response " + response.getBody());
+		MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
+				null, response);
+		Log.d(TestUtil.testLogTag, "passed instantiation: " + SuccessfulMediationView.didPass);
+		notify();
+	}
 
-    }
+	@Override
+	public AdView getOwner() {
+		return null;
+	}
 
-    class SuccessfulMediationView implements MediatedBannerAdView {
-        public View requestAd(MediatedBannerAdViewController mBC,
-                              Activity activity, String parameter, String uid, int width,
-                              int height, View adSpace) {
-
-            shouldPass=true;
-
-            return null;
-        }
-    }
-
-    @Override
-    synchronized public void failed(AdRequest request) {
-        shouldPass = false;
-        notify();
-
-    }
-
-    @Override
-    synchronized public void onReceiveResponse(AdResponse response) {
-
-
-    }
-
-    synchronized void pause() {
-        try {
-            wait(10 * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            ar.cancel(true);
-            return;
-        }
-    }
+	synchronized void pause() {
+		Log.d(TestUtil.testLogTag, "pausing");
+		try {
+			wait(10 * 1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			shouldWork.cancel(true);
+			return;
+		}
+		Log.d(TestUtil.testLogTag, "call timed out");
+	}
 }

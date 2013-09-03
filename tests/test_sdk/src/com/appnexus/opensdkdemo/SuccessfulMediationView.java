@@ -14,25 +14,22 @@
  *    limitations under the License.
  */
 
-package com.appnexus.opensdk;
+package com.appnexus.opensdkdemo;
 
-public interface AdRequester {
-    /**
-     * Called when the request made by the requester fails.
-     *
-     * @param request
-     */
-    public void failed(AdRequest request);
+import android.app.Activity;
+import android.view.View;
+import com.appnexus.opensdk.MediatedBannerAdView;
+import com.appnexus.opensdk.MediatedBannerAdViewController;
+import com.appnexus.opensdk.utils.Clog;
 
-    /**
-     * Called when a response is received
-     *
-     * @param response
-     */
-    public void onReceiveResponse(AdResponse response);
+public class SuccessfulMediationView implements MediatedBannerAdView {
 
-	/**
-	 * Used to get the owner adview of the request
-	 */
-	public AdView getOwner();
+	public static boolean didPass = false;
+
+	@Override
+	public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
+		Clog.d(TestUtil.testLogTag, "set to true!");
+		didPass = true;
+		return null;
+	}
 }

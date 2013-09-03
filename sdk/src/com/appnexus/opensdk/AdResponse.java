@@ -41,6 +41,8 @@ public class AdResponse {
 
     public AdResponse(AdRequester requester, String body, Header[] headers) {
         this.requester = requester;
+		this.body = body;
+
         if (body == null) {
             this.fail = true;
             Clog.clearLastResponse();
@@ -77,9 +79,11 @@ public class AdResponse {
     private void parseResponse(String body) {
         JSONObject response = null;
 
-        if (body.equals("RETRY") || body.equals("RETRY2")) {
+        if (body.equals("RETRY") || body.equals("BLANK")) {
             return;
         }
+		Clog.d(Clog.baseLogTag, body);
+
         try {
             response = new JSONObject(body);
             String status = response.getString("status");

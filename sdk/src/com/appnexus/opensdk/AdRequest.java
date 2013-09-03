@@ -82,6 +82,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     int height = -1;
     int maxWidth = -1;
     int maxHeight = -1;
+	boolean shouldRetry = true; // true by default
 
     private static final AdResponse CONNECTIVITY_RETRY = new AdResponse(null,
             "RETRY", null);
@@ -115,7 +116,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                      String placementId, String orientation, String carrier, int width,
                      int height, int maxWidth, int maxHeight, String mcc, String mnc,
                      String connectionType, boolean isNativeBrowser,
-                     AdListener adListener, boolean shouldServePSAs) {
+                     AdListener adListener, boolean shouldServePSAs, boolean shouldRetry) {
         this.adListener = adListener;
         this.requester = requester;
         if (aid != null) {
@@ -154,11 +155,13 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         this.psa = shouldServePSAs ? "1" : "0";
 
         this.nativeBrowser = isNativeBrowser ? "1" : "0";
+
+		this.shouldRetry = shouldRetry;
     }
 
-    public AdRequest(AdFetcher fetcher) {
-        this.owner = fetcher.owner;
-        this.requester = fetcher;
+	public AdRequest(AdRequester adRequester) {
+		owner = adRequester.getOwner();
+        this.requester = adRequester;
         this.placementId = owner.getPlacementID();
         context = owner.getContext();
         String aid = android.provider.Settings.Secure.getString(
@@ -271,10 +274,6 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         language = Settings.getSettings().language;
     }
 
-    private AdRequest(AdRequester a) {
-        this((a instanceof AdFetcher ? (AdFetcher) a : null));
-    }
-
     private void fail() {
         if (requester != null)
             requester.failed(this);
@@ -343,6 +342,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (!hasNetwork(context)) {
             Clog.d(Clog.httpReqLogTag,
                     Clog.getString(R.string.no_connectivity));
+			if (!shouldRetry)
+				return doRequest();
             fail();
             return AdRequest.CONNECTIVITY_RETRY;
         }
@@ -446,8 +447,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             Clog.v(Clog.httpRespLogTag, Clog.getString(R.string.no_response));
             // Don't call fail again!
             return; // http request failed
-        } else if (result.equals(AdRequest.CONNECTIVITY_RETRY)
-                || result.equals(AdRequest.BLANK_RETRY)) {
+        } else if ((shouldRetry) && (result.equals(AdRequest.CONNECTIVITY_RETRY)
+                || result.equals(AdRequest.BLANK_RETRY))) {
             new RetryAdRequest(this, Settings.getSettings().MAX_FAILED_HTTP_RETRIES, Settings.getSettings().MAX_HTTP_RETRIES).execute();
             return; // The request failed and should be retried.
         }

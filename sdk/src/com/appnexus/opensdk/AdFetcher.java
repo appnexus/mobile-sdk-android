@@ -250,7 +250,12 @@ public class AdFetcher implements AdRequester {
         }
     }
 
-    public void clearDurations() {
+	@Override
+	public AdView getOwner() {
+		return owner;
+	}
+
+	public void clearDurations() {
         lastFetchTime = -1;
         timePausedAt = -1;
 
