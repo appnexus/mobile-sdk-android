@@ -1,12 +1,12 @@
 /*
  *    Copyright 2013 APPNEXUS INC
- *    
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
  *        http://www.apache.org/licenses/LICENSE-2.0
- *    
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,25 +14,29 @@
  *    limitations under the License.
  */
 
-package com.appnexus.opensdkdemo;
+package com.appnexus.opensdkdemo.mediationtests;
 
+import android.app.Activity;
+import android.os.Handler;
 import android.test.AndroidTestCase;
 import android.util.Log;
 import com.appnexus.opensdk.*;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdkdemo.TestUtil;
+import com.appnexus.opensdkdemo.testviews.SuccessfulMediationView;
 
-public class TestSuccessfulMediation extends AndroidTestCase implements AdRequester {
+public class TestMediationNoClass extends AndroidTestCase implements AdRequester {
 	String old_base_url;
-	AdRequest shouldWork;
+	AdRequest shouldFail;
+	String shouldFailPlacement = "2";
 
 	@Override
 	protected void setUp() {
 		old_base_url = Settings.getSettings().BASE_URL;
 		Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
 		Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
-		shouldWork = new AdRequest(this, null, null, null, "1", null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
-		SuccessfulMediationView.didPass = false;
+		shouldFail = new AdRequest(this, null, null, null, shouldFailPlacement, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
 	}
 
 	@Override
@@ -46,10 +50,10 @@ public class TestSuccessfulMediation extends AndroidTestCase implements AdReques
 		// Since we're just testing to see successful instantiation, interrupt
 		// the sleeping thread from the requestAd function
 
-		shouldWork.execute();
+		shouldFail.execute();
 		pause();
-		shouldWork.cancel(true);
-		assertEquals(true, SuccessfulMediationView.didPass);
+		shouldFail.cancel(true);
+		assertEquals(false, SuccessfulMediationView.didPass);
 	}
 
 	@Override
@@ -61,11 +65,13 @@ public class TestSuccessfulMediation extends AndroidTestCase implements AdReques
 
 	@Override
 	synchronized public void onReceiveResponse(AdResponse response) {
-		Log.d(TestUtil.testLogTag, "received response " + SuccessfulMediationView.class.toString());
 		Log.d(TestUtil.testLogTag, "received response " + response.getBody());
 		MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
 				null, response);
 		Log.d(TestUtil.testLogTag, "passed instantiation: " + SuccessfulMediationView.didPass);
+
+//		Log.d(TestUtil.testLogTag, response.getMediatedResultCB());
+
 		notify();
 	}
 
@@ -77,12 +83,27 @@ public class TestSuccessfulMediation extends AndroidTestCase implements AdReques
 	synchronized void pause() {
 		Log.d(TestUtil.testLogTag, "pausing");
 		try {
-			wait(10 * 1000);
+			wait(15 * 1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-			shouldWork.cancel(true);
+			shouldFail.cancel(true);
 			return;
 		}
 		Log.d(TestUtil.testLogTag, "call timed out");
 	}
+	@Override
+	public void dispatchResponse(final AdResponse response) {
+		Clog.d(TestUtil.testLogTag, "dispatch");
+
+		new Handler(this.getContext().getMainLooper()).post(new Runnable() {
+			public void run() {
+
+				if (response.isMediated()) {
+					MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
+							null, response);
+				}
+			}
+		});
+	}
+
 }

@@ -59,6 +59,10 @@ public class TestSuccessfulAdRequest extends TestCase implements AdRequester, Ad
 	}
 
 	@Override
+	public void dispatchResponse(AdResponse response) {
+	}
+
+	@Override
     synchronized public void failed(AdRequest request) {
         shouldWorkDidWork = false;
         notify();

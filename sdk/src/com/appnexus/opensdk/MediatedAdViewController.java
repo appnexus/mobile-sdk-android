@@ -19,6 +19,15 @@ import android.util.Log;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
+import com.appnexus.opensdk.utils.Settings;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+
+import java.io.IOException;
+import java.util.Arrays;
 
 public class MediatedAdViewController {
 
@@ -41,6 +50,7 @@ public class MediatedAdViewController {
     Class<?> c;
     AdView owner;
     MediatedAdView mAV;
+	AdRequester requester;
 
     protected boolean errorCBMade = false;
     protected boolean successCBMade = false;
@@ -50,6 +60,8 @@ public class MediatedAdViewController {
     }
 
     protected MediatedAdViewController(AdView owner, AdResponse response) throws Exception {
+		//TODO: owner - second part is for testing when owner is null
+		requester = owner != null ? owner.mAdFetcher : response.requester;
         width = response.getWidth();
         height = response.getHeight();
         uid = response.getMediatedUID();
@@ -58,14 +70,15 @@ public class MediatedAdViewController {
         resultCB = response.getMediatedResultCB();
         this.owner = owner;
 
-        Clog.d(Clog.mediationLogTag, Clog.getString(R.string.instantiating_class, className));
+		Clog.d(Clog.mediationLogTag, Clog.getString(R.string.instantiating_class, className));
+		Clog.d(Clog.mediationLogTag, "Inst " + className);
 
         try {
             c = Class.forName(className);
 
         } catch (ClassNotFoundException e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.class_not_found_exception));
-            fireResultCB(RESULT.MEDIATED_SDK_UNAVAILABLE);
+			onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
             throw e;
         }
 
@@ -74,18 +87,19 @@ public class MediatedAdViewController {
         } catch (InstantiationException e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instantiation_exception));
             failed = true;
-            fireResultCB(RESULT.MEDIATED_SDK_UNAVAILABLE);
+			onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
             throw e;
         } catch (IllegalAccessException e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception));
             failed = true;
-            fireResultCB(RESULT.MEDIATED_SDK_UNAVAILABLE);
+			onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
             throw e;
         }
     }
 
+	//TODO: owner dependency
     public void onAdLoaded() {
-        if (owner.getAdListener() != null) {
+        if ((owner != null) && owner.getAdListener() != null) {
             owner.getAdListener().onAdLoaded(owner);
         }
         if (!successCBMade) {
@@ -95,7 +109,7 @@ public class MediatedAdViewController {
     }
 
     public void onAdFailed(MediatedAdViewController.RESULT reason) {
-        if (owner.getAdListener() != null) {
+        if ((owner != null) && owner.getAdListener() != null) {
             owner.getAdListener().onAdRequestFailed(owner);
         }
         this.failed = true;
@@ -131,12 +145,16 @@ public class MediatedAdViewController {
 
     private void fireResultCB(final MediatedAdViewController.RESULT result) {
 
-        //fire call to result cb url
+		//fire call to result cb url
         HTTPGet<Void, Void, HTTPResponse> cb = new HTTPGet<Void, Void, HTTPResponse>() {
             @Override
             protected void onPostExecute(HTTPResponse response) {
-                AdFetcher f = MediatedAdViewController.this.owner.mAdFetcher;
-                f.dispatchResponse(new AdResponse(f, response.getResponseBody(), response.getHeaders()));
+				if (requester == null) {
+					Clog.e(Clog.httpRespLogTag, "Try to fire result with null requester");
+					return;
+				}
+
+				requester.dispatchResponse(new AdResponse(requester, response.getResponseBody(), response.getHeaders()));
             }
 
             @Override

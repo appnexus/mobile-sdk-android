@@ -14,32 +14,7 @@
  *    limitations under the License.
  */
 
-package com.appnexus.opensdk;
+package com.appnexus.opensdkdemo.testviews;
 
-public interface AdRequester {
-    /**
-     * Called when the request made by the requester fails.
-     *
-     * @param request
-     */
-    public void failed(AdRequest request);
-
-    /**
-     * Called when a response is received
-     *
-     * @param response
-     */
-    public void onReceiveResponse(AdResponse response);
-
-	/**
-	 * Used to get the owner adview of the request
-	 */
-	public AdView getOwner();
-
-	/**
-	 * Called when a response to the original request is received
-	 *
-	 * @param response
-	 */
-	public void dispatchResponse(final AdResponse response);
+public class DummyClass	 {
 }

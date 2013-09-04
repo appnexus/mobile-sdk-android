@@ -14,22 +14,20 @@
  *    limitations under the License.
  */
 
-package com.appnexus.opensdkdemo;
+package com.appnexus.opensdkdemo.testviews;
 
 import android.app.Activity;
 import android.view.View;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdkdemo.TestUtil;
 
-public class SuccessfulMediationView implements MediatedBannerAdView {
-
-	public static boolean didPass = false;
-
+public class NoRequestBannerView implements MediatedBannerAdView {
 	@Override
 	public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
 		Clog.d(TestUtil.testLogTag, "set to true!");
-		didPass = true;
+
 		return null;
 	}
 }

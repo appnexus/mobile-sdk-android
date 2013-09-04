@@ -22,6 +22,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.net.URI;
@@ -47,7 +48,7 @@ public abstract class HTTPGet<Params extends Void, Progress extends Void, Result
             HttpResponse r = httpc.execute(request);
 
             out.setHeaders(r.getAllHeaders());
-            out.setResponseBody(r.toString());
+            out.setResponseBody(EntityUtils.toString(r.getEntity()));
             out.setSucceeded(true);
         } catch (URISyntaxException e) {
             out.setSucceeded(false);

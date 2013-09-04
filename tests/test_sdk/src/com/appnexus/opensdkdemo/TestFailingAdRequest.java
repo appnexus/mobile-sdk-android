@@ -70,6 +70,10 @@ public class TestFailingAdRequest extends TestCase implements AdRequester, AdLis
 	}
 
 	@Override
+	public void dispatchResponse(AdResponse response) {
+	}
+
+	@Override
     synchronized public void failed(AdRequest request) {
         shouldPass = true;
         notify();

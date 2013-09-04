@@ -14,32 +14,20 @@
  *    limitations under the License.
  */
 
-package com.appnexus.opensdk;
+package com.appnexus.opensdkdemo.testviews;
 
-public interface AdRequester {
-    /**
-     * Called when the request made by the requester fails.
-     *
-     * @param request
-     */
-    public void failed(AdRequest request);
+import android.app.Activity;
+import android.view.View;
+import com.appnexus.opensdk.MediatedBannerAdView;
+import com.appnexus.opensdk.MediatedBannerAdViewController;
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdkdemo.TestUtil;
 
-    /**
-     * Called when a response is received
-     *
-     * @param response
-     */
-    public void onReceiveResponse(AdResponse response);
+public class OOMBannerView implements MediatedBannerAdView {
+	@Override
+	public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
+		Clog.d(TestUtil.testLogTag, "set to true!");
 
-	/**
-	 * Used to get the owner adview of the request
-	 */
-	public AdView getOwner();
-
-	/**
-	 * Called when a response to the original request is received
-	 *
-	 * @param response
-	 */
-	public void dispatchResponse(final AdResponse response);
+		throw new OutOfMemoryError("Out of memory!");
+	}
 }

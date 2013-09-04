@@ -82,7 +82,6 @@ public class AdResponse {
         if (body.equals("RETRY") || body.equals("BLANK")) {
             return;
         }
-		Clog.d(Clog.baseLogTag, body);
 
         try {
             response = new JSONObject(body);
