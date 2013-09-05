@@ -86,7 +86,7 @@ public class AdResponse {
         try {
             response = new JSONObject(body);
             String status = response.getString("status");
-            if (status.equals("error")) {
+            if ((status != null) && status.equals("error")) {
                 String error = response.getString("errorMessage");
                 Clog.e(Clog.httpRespLogTag,
                         Clog.getString(R.string.response_error, error));
@@ -127,6 +127,7 @@ public class AdResponse {
                     if (handler.getString("type").toLowerCase().equals("android")) {
                         isMediated = true;
                         mediatedViewClassName = handler.getString("class");
+						//TODO: if i get an error here what to do
                         height = handler.getInt("height");
                         width = handler.getInt("width");
                         mediatedUID = handler.getString("id");
@@ -193,4 +194,22 @@ public class AdResponse {
         this.mediatedResultCB = mediatedResultCB;
     }
 
+	@Override
+	public String toString() {
+		final StringBuffer sb = new StringBuffer("AdResponse{");
+		sb.append("requester=").append(requester);
+		sb.append(", body='").append(body).append('\'');
+		sb.append(", height=").append(height);
+		sb.append(", width=").append(width);
+		sb.append(", type='").append(type).append('\'');
+		sb.append(", fail=").append(fail);
+		sb.append(", isMraid=").append(isMraid);
+		sb.append(", isMediated=").append(isMediated);
+		sb.append(", mediatedViewClassName='").append(mediatedViewClassName).append('\'');
+		sb.append(", mediatedUID='").append(mediatedUID).append('\'');
+		sb.append(", mediatedParameter='").append(mediatedParameter).append('\'');
+		sb.append(", mediatedResultCB='").append(mediatedResultCB).append('\'');
+		sb.append('}');
+		return sb.toString();
+	}
 }

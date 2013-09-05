@@ -18,16 +18,25 @@ package com.appnexus.opensdkdemo.testviews;
 
 import android.app.Activity;
 import android.view.View;
+import com.appnexus.opensdk.MediatedAdViewController;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdkdemo.TestUtil;
+import com.appnexus.opensdkdemo.util.TestUtil;
 
 public class NoRequestBannerView implements MediatedBannerAdView {
+	public static boolean didInstantiate;
+
+	public NoRequestBannerView() {
+		super();
+		Clog.d(TestUtil.testLogTag, "set to true!");
+		didInstantiate = true;
+	}
+
 	@Override
 	public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
-		Clog.d(TestUtil.testLogTag, "set to true!");
-
+		//TODO: fix this
+		mBC.onAdFailed(MediatedAdViewController.RESULT.UNABLE_TO_FILL);
 		return null;
 	}
 }

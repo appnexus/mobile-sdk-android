@@ -29,7 +29,7 @@ import org.apache.http.params.HttpParams;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class MediatedAdViewController {
+public abstract class MediatedAdViewController implements Displayable {
 
     public static enum RESULT {
         SUCCESS,
@@ -83,18 +83,24 @@ public class MediatedAdViewController {
         }
 
         try {
-            mAV = (MediatedAdView) c.newInstance();
+			Object o = c.newInstance();
+            mAV = (MediatedAdView) o;
         } catch (InstantiationException e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instantiation_exception));
             failed = true;
 			onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
             throw e;
-        } catch (IllegalAccessException e) {
-            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception));
-            failed = true;
+		} catch (IllegalAccessException e) {
+			Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception));
+			failed = true;
 			onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
-            throw e;
-        }
+			throw e;
+		} catch (ClassCastException e) {
+			Clog.e(Clog.mediationLogTag, "Class cast exception", e);
+			failed = true;
+			onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
+			throw e;
+		}
     }
 
 	//TODO: owner dependency
@@ -153,16 +159,43 @@ public class MediatedAdViewController {
 					Clog.e(Clog.httpRespLogTag, "Try to fire result with null requester");
 					return;
 				}
+				Clog.d(Clog.httpRespLogTag, "fired result cb: " + getUrl());
 
 				requester.dispatchResponse(new AdResponse(requester, response.getResponseBody(), response.getHeaders()));
             }
 
             @Override
             protected String getUrl() {
+				//TODO: we're assuming resultCB has other parameters? what if "https://.../mob?&reason= happens?"
+				//TODO: also we're using strings for result, i.e. "MEDIATED_SDK_UNAVAILABLE" rather than codes (ordinal) i.e. "3"
                 return resultCB + "&reason=" + result;
             }
         };
 
         cb.execute();
     }
+
+	protected static void fireResultCB(final MediatedAdViewController.RESULT result, final AdRequester requester, final String resultCB) {
+
+		//fire call to result cb url
+		HTTPGet<Void, Void, HTTPResponse> cb = new HTTPGet<Void, Void, HTTPResponse>() {
+			@Override
+			protected void onPostExecute(HTTPResponse response) {
+				if (requester == null) {
+					Clog.e(Clog.httpRespLogTag, "Try to fire result with null requester");
+					return;
+				}
+				Clog.d(Clog.httpRespLogTag, "static fired result cb: " + getUrl());
+
+				requester.dispatchResponse(new AdResponse(requester, response.getResponseBody(), response.getHeaders()));
+			}
+
+			@Override
+			protected String getUrl() {
+				return resultCB + "&reason=" + result;
+			}
+		};
+
+		cb.execute();
+	}
 }

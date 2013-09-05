@@ -18,19 +18,21 @@ package com.appnexus.opensdkdemo.testviews;
 
 import android.app.Activity;
 import android.view.View;
-import com.appnexus.opensdk.MediatedAdViewController;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
-public class NoFillView implements MediatedBannerAdView {
+public class NoSDK implements MediatedBannerAdView {
+	public static boolean didPass = false;
+
 	@Override
 	public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
-		Clog.d(TestUtil.testLogTag, "set to true!");
+		Clog.d(TestUtil.testLogTag, "NOSDK set to true!");
+		didPass = true;
 
-		// ad request returned nothing!
-		mBC.onAdFailed(MediatedAdViewController.RESULT.UNABLE_TO_FILL);
+		// pretend that the ad request succeeded
+		mBC.onAdLoaded();
 
 		return null;
 	}

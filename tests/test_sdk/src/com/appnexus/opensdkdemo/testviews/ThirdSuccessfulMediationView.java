@@ -21,11 +21,11 @@ import android.view.View;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdkdemo.TestUtil;
-import com.appnexus.opensdkdemo.mediationtests.TestMediationSuccess;
+import com.appnexus.opensdkdemo.util.TestUtil;
 
 public class ThirdSuccessfulMediationView implements MediatedBannerAdView {
 	public static boolean didPass = false;
+	public static final Object lock = new Object();
 
 	@Override
 	public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
@@ -34,8 +34,8 @@ public class ThirdSuccessfulMediationView implements MediatedBannerAdView {
 
 		Clog.d(TestUtil.testLogTag, "notifying lock");
 
-		synchronized (TestMediationSuccess.lock) {
-			TestMediationSuccess.lock.notify();
+		synchronized (lock) {
+			lock.notify();
 		}
 
 		return null;

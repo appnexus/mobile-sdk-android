@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package com.appnexus.opensdkdemo;
+package com.appnexus.opensdkdemo.util;
 
 public class TestUtil {
 	public static final String testLogTag = "OPENSDK-TEST";

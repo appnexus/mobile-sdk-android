@@ -21,7 +21,7 @@ import android.view.View;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdkdemo.TestUtil;
+import com.appnexus.opensdkdemo.util.TestUtil;
 
 public class SuccessfulMediationView implements MediatedBannerAdView {
 
@@ -32,6 +32,7 @@ public class SuccessfulMediationView implements MediatedBannerAdView {
 		Clog.d(TestUtil.testLogTag, "1st set to true!");
 		didPass = true;
 
+		// pretend that the ad request succeeded
 		mBC.onAdLoaded();
 
 		return null;

@@ -6,7 +6,6 @@ import com.appnexus.opensdk.utils.Clog;
 
 public class MediatedInterstitialAdViewController extends MediatedAdViewController implements Displayable {
 
-
     static public MediatedInterstitialAdViewController create(InterstitialAdView owner, AdResponse response) {
         MediatedInterstitialAdViewController out;
         try {
@@ -33,6 +32,8 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
         }
     }
 
+	//TODO: how come this is inconsistent with Banner controller? in banner controller we requestAd in the constructor, but for IADs we do that in getView
+	//TODO: also we return null here; how to test if an interstitial returns an ad then?
     @Override
     public View getView() {
         Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediated_request));

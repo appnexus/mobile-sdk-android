@@ -28,8 +28,14 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
         try {
             out = new MediatedBannerAdViewController(owner, response);
         } catch (Exception e) {
+			Clog.e(Clog.mediationLogTag, "Exception in instantiating mediated view", e);
             return null;
-        }
+        } catch (Error e) {
+			Clog.e(Clog.mediationLogTag, "Error in instantiating mediated view", e);
+			//TODO: fix this hack - placed here because the request ad function is different
+			fireResultCB(RESULT.MEDIATED_SDK_UNAVAILABLE, response.requester, response.getMediatedResultCB());
+			return null;
+		}
         return out;
 
     }
@@ -41,11 +47,22 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
             throw new Exception("Mediated view is null or not an instance of MediatedBannerAdView");
         }
 		//TODO: refactor - this also depends on owner. what if owner is null? (for testing)
+		//TODO: What do we do if placeableView is null on return and they don't report it?
         placeableView = ((MediatedBannerAdView) mAV).requestAd(this, owner != null ? (Activity) owner.getContext() : null, param, uid, width, height, owner);
+//		checkView();
     }
 
     @Override
     public View getView() {
         return placeableView;
     }
+
+	private void checkView() {
+		//TODO: what to do here? should this code be here? interstitials will always "fail". need to refactor controller?
+		if (getView() == null) {
+			Clog.e(Clog.mediationLogTag, "View returned was null");
+			failed = true;
+			onAdFailed(RESULT.UNABLE_TO_FILL);
+		}
+	}
 }
