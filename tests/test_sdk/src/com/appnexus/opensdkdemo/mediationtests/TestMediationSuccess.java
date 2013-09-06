@@ -21,9 +21,11 @@ import android.util.Log;
 import com.appnexus.opensdk.*;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdkdemo.testviews.DummyView;
 import com.appnexus.opensdkdemo.testviews.SecondSuccessfulMediationView;
 import com.appnexus.opensdkdemo.testviews.SuccessfulMediationView;
 import com.appnexus.opensdkdemo.testviews.ThirdSuccessfulMediationView;
+import com.appnexus.opensdkdemo.util.Lock;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
 public class TestMediationSuccess extends AndroidTestCase implements AdRequester {
@@ -32,7 +34,8 @@ public class TestMediationSuccess extends AndroidTestCase implements AdRequester
 	String shouldWorkPlacement = "1";
 
 	@Override
-	protected void setUp() {
+	protected void setUp() throws Exception {
+		super.setUp();
 		old_base_url = Settings.getSettings().BASE_URL;
 		Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
 		Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
@@ -40,12 +43,14 @@ public class TestMediationSuccess extends AndroidTestCase implements AdRequester
 		SuccessfulMediationView.didPass = false;
 		SecondSuccessfulMediationView.didPass = false;
 		ThirdSuccessfulMediationView.didPass = false;
+		DummyView.createView(getContext());
 	}
 
 	@Override
-	protected void tearDown() {
+	protected void tearDown() throws Exception {
 		Clog.d(TestUtil.testLogTag, "tear down");
 		Settings.getSettings().BASE_URL = old_base_url;
+		super.tearDown();
 	}
 
 	public void testSucceedingMediationCall() {
@@ -55,7 +60,7 @@ public class TestMediationSuccess extends AndroidTestCase implements AdRequester
 		// the sleeping thread from the requestAd function
 
 		shouldWork.execute();
-		pause();
+		Lock.pause(10000);
 		shouldWork.cancel(true);
 
 		assertEquals(true, SuccessfulMediationView.didPass);
@@ -67,9 +72,7 @@ public class TestMediationSuccess extends AndroidTestCase implements AdRequester
 	public void failed(AdRequest request) {
 		Log.d(TestUtil.testLogTag, "request failed: " + request);
 		SuccessfulMediationView.didPass = false;
-		synchronized (ThirdSuccessfulMediationView.lock) {
-			ThirdSuccessfulMediationView.lock.notify();
-		}
+		Lock.unpause();
 	}
 
 	@Override
@@ -82,20 +85,6 @@ public class TestMediationSuccess extends AndroidTestCase implements AdRequester
 	@Override
 	public AdView getOwner() {
 		return null;
-	}
-
-	private void pause() {
-		Log.d(TestUtil.testLogTag, "pausing");
-		try {
-			synchronized (ThirdSuccessfulMediationView.lock) {
-				ThirdSuccessfulMediationView.lock.wait();
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			shouldWork.cancel(true);
-			return;
-		}
-		Log.d(TestUtil.testLogTag, "call timed out");
 	}
 
 	@Override

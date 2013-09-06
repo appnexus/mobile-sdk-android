@@ -16,17 +16,12 @@
 
 package com.appnexus.opensdkdemo.mediationtests;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.wifi.WifiManager;
 import android.test.AndroidTestCase;
 import android.util.Log;
 import com.appnexus.opensdk.*;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
-import com.appnexus.opensdkdemo.testviews.SecondSuccessfulMediationView;
-import com.appnexus.opensdkdemo.testviews.SuccessfulMediationView;
-import com.appnexus.opensdkdemo.testviews.ThirdSuccessfulMediationView;
+import com.appnexus.opensdkdemo.util.Lock;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
 public class TestMediationSuccessNetworkDisable extends AndroidTestCase implements AdRequester {
@@ -37,7 +32,8 @@ public class TestMediationSuccessNetworkDisable extends AndroidTestCase implemen
 	boolean didPass = true;
 
 	@Override
-	protected void setUp() {
+	protected void setUp() throws Exception {
+		super.setUp();
 		old_base_url = Settings.getSettings().BASE_URL;
 		Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
 		Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
@@ -48,9 +44,10 @@ public class TestMediationSuccessNetworkDisable extends AndroidTestCase implemen
 	}
 
 	@Override
-	protected void tearDown() {
+	protected void tearDown() throws Exception {
 		Clog.d(TestUtil.testLogTag, "tear down");
 		Settings.getSettings().BASE_URL = old_base_url;
+		super.tearDown();
 	}
 
 	public void testAdMobNetworkInterruption() {
@@ -60,7 +57,7 @@ public class TestMediationSuccessNetworkDisable extends AndroidTestCase implemen
 
 		shouldWork = new AdRequest(this, null, null, null, AdMobId, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
 		shouldWork.execute();
-		pause();
+		Lock.pause(10000);
 		shouldWork.cancel(true);
 
 		assertEquals(true, didPass);
@@ -93,21 +90,6 @@ public class TestMediationSuccessNetworkDisable extends AndroidTestCase implemen
 	@Override
 	public AdView getOwner() {
 		return null;
-	}
-
-	synchronized private void pause() {
-		Log.d(TestUtil.testLogTag, "pausing");
-		try {
-			wait(15000);
-			synchronized (ThirdSuccessfulMediationView.lock) {
-				ThirdSuccessfulMediationView.lock.wait();
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			shouldWork.cancel(true);
-			return;
-		}
-		Log.d(TestUtil.testLogTag, "call timed out");
 	}
 
 	@Override

@@ -21,6 +21,7 @@ import android.util.Log;
 import com.appnexus.opensdk.*;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdkdemo.testviews.DummyView;
 import com.appnexus.opensdkdemo.testviews.SuccessfulMediationView;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
@@ -31,19 +32,23 @@ public class TestMediationSuccessThenStd extends AndroidTestCase implements AdRe
 	String shouldWorkPlacement = "7";
 
 	@Override
-	protected void setUp() {
+	protected void setUp() throws Exception {
+		super.setUp();
 		old_base_url = Settings.getSettings().BASE_URL;
 		Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
 		Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
 		shouldWork = new AdRequest(this, null, null, null, shouldWorkPlacement, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
 		SuccessfulMediationView.didPass = false;
 		didPass = false;
+		DummyView.createView(getContext());
 	}
 
 	@Override
-	protected void tearDown() {
+	protected void tearDown() throws Exception {
 		Clog.d(TestUtil.testLogTag, "tear down");
 		Settings.getSettings().BASE_URL = old_base_url;
+
+		super.tearDown();
 	}
 
 	public void testSucceedingMediationAndStdCall() {

@@ -16,40 +16,61 @@
 
 package com.appnexus.opensdkdemo.mediationtests;
 
+import android.test.AndroidTestCase;
 import android.util.Log;
 import com.appnexus.opensdk.*;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdkdemo.testviews.DummyView;
 import com.appnexus.opensdkdemo.testviews.NoSDK;
 import com.appnexus.opensdkdemo.testviews.ThirdSuccessfulMediationView;
+import com.appnexus.opensdkdemo.util.Lock;
 import com.appnexus.opensdkdemo.util.TestUtil;
-import junit.framework.TestCase;
 
-public class TestMediationFailures extends TestCase implements AdRequester {
+public class TestMediationFailures extends AndroidTestCase implements AdRequester {
 	String old_base_url;
 	AdRequest shouldFail;
 	String shouldFailPlacement;
 
 	@Override
-	protected void setUp() {
+	protected void setUp() throws Exception {
+		super.setUp();
 		Clog.w(TestUtil.testLogTag, "NEW TEST");
 		old_base_url = Settings.getSettings().BASE_URL;
 		Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
 		Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
 		NoSDK.didPass = false;
 		ThirdSuccessfulMediationView.didPass = false;
+		DummyView.createView(getContext());
 	}
 
 	@Override
-	synchronized protected void tearDown() {
+	synchronized protected void tearDown() throws Exception {
 		try {
-			wait(5000);
+			wait(1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		if (NoSDK.didPass && ThirdSuccessfulMediationView.didPass)
 			Clog.w(TestUtil.testLogTag, "TEST PASSED #" + shouldFailPlacement);
 		Settings.getSettings().BASE_URL = old_base_url;
+		super.tearDown();
+	}
+
+	/*
+	* All of these tests follow the same pattern:
+	* Initial call directs them to a MediatedBannerView class unique to the test case
+	* the following call will go to NoSDK.
+	* the following call will go to ThirdSuccessfulMediationView to confirm success
+	 */
+	private void runStandardTest() {
+		shouldFail = new AdRequest(this, null, null, null, shouldFailPlacement, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
+
+		shouldFail.execute();
+		Lock.pause(10000);
+		shouldFail.cancel(true);
+		assertEquals(true, NoSDK.didPass);
+		assertEquals(true, ThirdSuccessfulMediationView.didPass);
 	}
 
 	public void test2NoClassMediationCall() {
@@ -58,13 +79,7 @@ public class TestMediationFailures extends TestCase implements AdRequester {
 		// then verify that the correct fail URL request was made
 
 		shouldFailPlacement = "2";
-		shouldFail = new AdRequest(this, null, null, null, shouldFailPlacement, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
-
-		shouldFail.execute();
-		pause();
-		shouldFail.cancel(true);
-		assertEquals(true, NoSDK.didPass);
-		assertEquals(true, ThirdSuccessfulMediationView.didPass);
+		runStandardTest();
 	}
 
 	public void test3BadClassMediationCall() {
@@ -73,13 +88,7 @@ public class TestMediationFailures extends TestCase implements AdRequester {
 		// then verify that the correct fail URL request was made
 
 		shouldFailPlacement = "3";
-		shouldFail = new AdRequest(this, null, null, null, shouldFailPlacement, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
-
-		shouldFail.execute();
-		pause();
-		shouldFail.cancel(true);
-		assertEquals(true, NoSDK.didPass);
-		assertEquals(true, ThirdSuccessfulMediationView.didPass);
+		runStandardTest();
 	}
 
 	public void test4NoRequestMediationCall() {
@@ -88,13 +97,7 @@ public class TestMediationFailures extends TestCase implements AdRequester {
 		// then verify that the correct fail URL request was made
 
 		shouldFailPlacement = "4";
-		shouldFail = new AdRequest(this, null, null, null, shouldFailPlacement, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
-
-		shouldFail.execute();
-		pause();
-		shouldFail.cancel(true);
-		assertEquals(true, NoSDK.didPass);
-		assertEquals(true, ThirdSuccessfulMediationView.didPass);
+		runStandardTest();
 	}
 
 	public void test5ErrorThrownMediationCall() {
@@ -102,13 +105,7 @@ public class TestMediationFailures extends TestCase implements AdRequester {
 		// that returns an class which throws an exception
 		// then verify that the correct fail URL request was made
 		shouldFailPlacement = "5";
-		shouldFail = new AdRequest(this, null, null, null, shouldFailPlacement, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
-
-		shouldFail.execute();
-		pause();
-		shouldFail.cancel(true);
-		assertEquals(true, NoSDK.didPass);
-		assertEquals(true, ThirdSuccessfulMediationView.didPass);
+		runStandardTest();
 	}
 
 	public void test6NoFillMediationCall() {
@@ -116,21 +113,13 @@ public class TestMediationFailures extends TestCase implements AdRequester {
 		// that succeeds in instantiation but fails to return an ad
 		// verify that the correct fail URL request was made
 		shouldFailPlacement = "6";
-		shouldFail = new AdRequest(this, null, null, null, shouldFailPlacement, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
-
-		shouldFail.execute();
-		pause();
-		shouldFail.cancel(true);
-		assertEquals(true, NoSDK.didPass);
-		assertEquals(true, ThirdSuccessfulMediationView.didPass);
+		runStandardTest();
 	}
 
 	@Override
 	public void failed(AdRequest request) {
 		Log.d(TestUtil.testLogTag, "request failed");
-		synchronized (ThirdSuccessfulMediationView.lock) {
-			ThirdSuccessfulMediationView.lock.notify();
-		}
+		Lock.unpause();
 	}
 
 	@Override
@@ -145,24 +134,10 @@ public class TestMediationFailures extends TestCase implements AdRequester {
 		return null;
 	}
 
-	void pause() {
-		Log.d(TestUtil.testLogTag, "pausing");
-		try {
-			synchronized (ThirdSuccessfulMediationView.lock) {
-				ThirdSuccessfulMediationView.lock.wait(15 * 1000);
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			shouldFail.cancel(true);
-			return;
-		}
-		Log.d(TestUtil.testLogTag, "unpausing");
-	}
-
 	@Override
 	public void dispatchResponse(final AdResponse response) {
 		if (response.getMediatedResultCB() == null) {
-			Log.d(TestUtil.testLogTag, "dispatching null result, return");
+			Log.d(TestUtil.testLogTag, "dispatching null result, return (end of test)");
 			return;
 		}
 		Log.d(TestUtil.testLogTag, "dispatch: " + response.toString());

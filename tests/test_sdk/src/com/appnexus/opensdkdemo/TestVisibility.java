@@ -16,14 +16,11 @@
 
 package com.appnexus.opensdkdemo;
 
+import android.test.ActivityInstrumentationTestCase2;
+import android.view.View;
 import com.appnexus.opensdk.AdListener;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.BannerAdView;
-import com.appnexus.opensdkdemo.DemoMainActivity;
-import com.appnexus.opensdkdemo.R;
-
-import android.test.ActivityInstrumentationTestCase2;
-import android.view.View;
 
 public class TestVisibility extends
         ActivityInstrumentationTestCase2<DemoMainActivity> implements AdListener {
@@ -48,9 +45,8 @@ public class TestVisibility extends
 
         bav.loadAd();
         try {
-            Thread.sleep(10000);
+            wait(10000);
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -71,20 +67,14 @@ public class TestVisibility extends
 
     @Override
     public void onAdExpanded(AdView adView) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onAdCollapsed(AdView adView) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onAdClicked(AdView adView) {
-        // TODO Auto-generated method stub
-
     }
 
 }

@@ -12,7 +12,13 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
             out = new MediatedInterstitialAdViewController(owner, response);
         } catch (Exception e) {
             return null;
-        }
+		} catch (Error e) {
+			Clog.e(Clog.mediationLogTag, "Error in instantiating mediated view", e);
+			//TODO: fix this hack - placed here because the request ad function is different
+			fireResultCB(RESULT.MEDIATED_SDK_UNAVAILABLE, response.requester, response.getMediatedResultCB());
+			return null;
+		}
+
         return out;
 
     }

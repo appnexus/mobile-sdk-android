@@ -28,7 +28,6 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
         try {
             out = new MediatedBannerAdViewController(owner, response);
         } catch (Exception e) {
-			Clog.e(Clog.mediationLogTag, "Exception in instantiating mediated view", e);
             return null;
         } catch (Error e) {
 			Clog.e(Clog.mediationLogTag, "Error in instantiating mediated view", e);
@@ -49,7 +48,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
 		//TODO: refactor - this also depends on owner. what if owner is null? (for testing)
 		//TODO: What do we do if placeableView is null on return and they don't report it?
         placeableView = ((MediatedBannerAdView) mAV).requestAd(this, owner != null ? (Activity) owner.getContext() : null, param, uid, width, height, owner);
-//		checkView();
+		checkView();
     }
 
     @Override
@@ -60,7 +59,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
 	private void checkView() {
 		//TODO: what to do here? should this code be here? interstitials will always "fail". need to refactor controller?
 		if (getView() == null) {
-			Clog.e(Clog.mediationLogTag, "View returned was null");
+			Clog.e(Clog.mediationLogTag, "request for a mediated ad returned a null view");
 			failed = true;
 			onAdFailed(RESULT.UNABLE_TO_FILL);
 		}

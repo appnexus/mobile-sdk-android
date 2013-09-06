@@ -14,10 +14,9 @@
  *    limitations under the License.
  */
 
-package com.appnexus.opensdkdemo.util;
+package com.appnexus.opensdkdemo;
 
-public class TestUtil {
-	public static final String testLogTag = "OPENSDK-TEST";
-	public static final String MEDIATION_TEST_URL = "http://rlissack.adnxs.net:8080/mobile/utest?";
-	public static final String HTTP_404_TEST_URL = "http://httpstat.us/404";
+import android.app.Activity;
+
+public class BlankActivity extends Activity {
 }

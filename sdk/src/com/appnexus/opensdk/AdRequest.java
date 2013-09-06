@@ -513,4 +513,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             }
         }
     }
+//   // Uncomment for unit tests
+//	public void setContext(Context context) {
+//		this.context = context;
+//	}
 }

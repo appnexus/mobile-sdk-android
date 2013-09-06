@@ -16,25 +16,13 @@
 
 package com.appnexus.opensdkdemo.testviews;
 
-import android.app.Activity;
+import android.content.Context;
 import android.view.View;
-import com.appnexus.opensdk.MediatedBannerAdView;
-import com.appnexus.opensdk.MediatedBannerAdViewController;
-import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdkdemo.util.TestUtil;
 
-public class SuccessfulMediationView implements MediatedBannerAdView {
+public class DummyView {
+	public static View dummyView;
 
-	public static boolean didPass = false;
-
-	@Override
-	public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
-		Clog.d(TestUtil.testLogTag, "1st set to true!");
-		didPass = true;
-
-		// pretend that the ad request succeeded
-		mBC.onAdLoaded();
-
-		return DummyView.dummyView;
+	public static void createView(Context context) {
+		dummyView = new View(context);
 	}
 }

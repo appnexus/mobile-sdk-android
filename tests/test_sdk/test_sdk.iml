@@ -14,8 +14,6 @@
     <orderEntry type="library" scope="PROVIDED" name="junit-3.8.1" level="project" />
     <orderEntry type="jdk" jdkName="Android 4.2.2 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="demo" scope="PROVIDED" />
-    <orderEntry type="module" module-name="sdk" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
@@ -25,15 +23,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="" scope="PROVIDED">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../examples/demo/libs/android-support-v4.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="module" module-name="demo" scope="PROVIDED" />
   </component>
 </module>
 

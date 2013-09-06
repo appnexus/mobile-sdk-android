@@ -46,7 +46,6 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 opensdk:height="50"
-                opensdk:placement_id="1281482"
                 opensdk:width="320" />
         </FrameLayout>
 
@@ -138,11 +137,6 @@
                 android:text="MRAID" />
             -->
 
-            <TextView>
-            </TextView>
-
-            <TextView>
-            </TextView>
         </RadioGroup>
 
         <View
@@ -191,8 +185,6 @@
                 android:padding="3dp"
                 android:text="@string/native_button" />
 
-            <TextView>
-            </TextView>
         </RadioGroup>
 
         <!-- Size Selector, Refresh Rate Selector -->

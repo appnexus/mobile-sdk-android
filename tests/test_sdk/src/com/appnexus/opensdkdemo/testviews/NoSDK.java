@@ -34,6 +34,6 @@ public class NoSDK implements MediatedBannerAdView {
 		// pretend that the ad request succeeded
 		mBC.onAdLoaded();
 
-		return null;
+		return DummyView.dummyView;
 	}
 }

@@ -15,19 +15,9 @@
  */
 package com.appnexus.opensdk;
 
-import android.util.Log;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
-import com.appnexus.opensdk.utils.Settings;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-
-import java.io.IOException;
-import java.util.Arrays;
 
 public abstract class MediatedAdViewController implements Displayable {
 
@@ -71,7 +61,6 @@ public abstract class MediatedAdViewController implements Displayable {
         this.owner = owner;
 
 		Clog.d(Clog.mediationLogTag, Clog.getString(R.string.instantiating_class, className));
-		Clog.d(Clog.mediationLogTag, "Inst " + className);
 
         try {
             c = Class.forName(className);
@@ -115,9 +104,7 @@ public abstract class MediatedAdViewController implements Displayable {
     }
 
     public void onAdFailed(MediatedAdViewController.RESULT reason) {
-        if ((owner != null) && owner.getAdListener() != null) {
-            owner.getAdListener().onAdRequestFailed(owner);
-        }
+		// callback will be called by AdView
         this.failed = true;
 
         if (!errorCBMade) {
@@ -159,6 +146,10 @@ public abstract class MediatedAdViewController implements Displayable {
 					Clog.e(Clog.httpRespLogTag, "Try to fire result with null requester");
 					return;
 				}
+				else if (response == null) {
+					Clog.e(Clog.httpRespLogTag, "Try to fire result with null response");
+					return;
+				}
 				Clog.d(Clog.httpRespLogTag, "fired result cb: " + getUrl());
 
 				requester.dispatchResponse(new AdResponse(requester, response.getResponseBody(), response.getHeaders()));
@@ -167,8 +158,7 @@ public abstract class MediatedAdViewController implements Displayable {
             @Override
             protected String getUrl() {
 				//TODO: we're assuming resultCB has other parameters? what if "https://.../mob?&reason= happens?"
-				//TODO: also we're using strings for result, i.e. "MEDIATED_SDK_UNAVAILABLE" rather than codes (ordinal) i.e. "3"
-                return resultCB + "&reason=" + result;
+                return resultCB + "&reason=" + result.ordinal();
             }
         };
 
@@ -192,7 +182,7 @@ public abstract class MediatedAdViewController implements Displayable {
 
 			@Override
 			protected String getUrl() {
-				return resultCB + "&reason=" + result;
+				return resultCB + "&reason=" + result.ordinal();
 			}
 		};
 
