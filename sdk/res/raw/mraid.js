@@ -28,11 +28,12 @@
 	var placement_type='inline';
 	var is_viewable=false;
 	var expand_properties={width:-1, height:-1, useCustomClose:false, isModal:true};
+	var orientation_properties={allowOrientationChange:true, forceOrientation:"none"};
 
 	// ----- MRAID AD API FUNCTIONS -----
 
-	// getVersion() returns string '1.0'
-	mraid.getVersion=function(){ return '1.0'};
+	// getVersion() returns string '2.0'
+	mraid.getVersion=function(){ return '2.0'};
 
 	/** Adds a listener to a specific event. For example, a function onReady might be defined, and then mraid.addEventListener('ready', onReady)
 	  * is called. When the ready event is fired, onReady will be called.
@@ -51,8 +52,11 @@
 	    }
 
 		var method_index = listeners[event_name].indexOf(method);
-		if(method_index > -1) //Don't try to remove unregistered listeners
+		if(method_index > -1){ //Don't try to remove unregistered listeners
 			listeners[event_name].splice(method_index,1);
+		}else{
+		    mraid.util.errorEvent("An unregistered listener was requested to be removed.", "mraid.removeEventListener()")
+		}
 	};
 
 	//returns 'loading', 'default', 'expanded', or 'hidden'
@@ -69,12 +73,6 @@
 	mraid.isViewable=function(){
 		return is_viewable;
 	};
-
-	//returns a json object... {width:300, height:250, useCustomClose:false, isModal:false};
-	mraid.getExpandProperties=function(){
-		return expand_properties;
-	};
-
 
 	// ----- MRAID JS TO NATIVE FUNCTIONS -----
 
@@ -107,13 +105,15 @@
 		case 'default':
 			window.open("mraid://expand/"+"?w="+mraid.getExpandProperties().width+"&h="+mraid.getExpandProperties().height+"&useCustomClose="+mraid.getExpandProperties().useCustomClose+(url!=null ? "&url="+url:""));
 			mraid.util.stateChangeEvent('expanded');
+			if(url!=null){
+			    window.open(url);
+			}
 			break;
 		case 'expanded':
 			mraid.util.errorEvent("mraid.expand() called while state is 'expanded'.", "mraid.expand()");
 			break;
 		case 'hidden':
-			window.open("mraid://expand/"+(url!=null ? "?url="+url:""));
-			mraid.util.stateChangeEvent('default');
+            mraid.util.errorEvent("mraid.expand() called while state is 'hidden'.", "mraid.expand()");
 			break;
 		}
 	};
@@ -123,6 +123,23 @@
 		properties.isModal=true; // Read only property.
 		expand_properties=properties;
 	};
+
+
+	//returns a json object... {width:300, height:250, useCustomClose:false, isModal:false};
+	mraid.getExpandProperties=function(){
+		return expand_properties;
+	};
+
+    // Takes an object... {allowOrientationChange:true, forceOrientation:"none"};
+	mraid.setOrientationProperties=function(properties){
+	    // TODO: Update native-side properties
+	    orientation_properties=properties;
+	}
+
+	//returns a json object... {allowOrientationChange:true, forceOrientation:"none"};
+	mraid.getOrientationProperties=function(){
+	    return orientation_properties;
+	}
 
 	// Takes a boolean
 	mraid.useCustomClose=function(well_is_it){
