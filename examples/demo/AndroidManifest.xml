@@ -50,7 +50,6 @@
         </activity>
         <activity android:name="com.appnexus.opensdk.AdActivity" />
         <activity android:name="com.appnexus.opensdk.BrowserActivity" />
-        <activity android:name="com.appnexus.opensdkdemo.BlankActivity" />
 
         <uses-library android:name="android.test.runner" />
         <activity android:name="com.google.ads.AdActivity"

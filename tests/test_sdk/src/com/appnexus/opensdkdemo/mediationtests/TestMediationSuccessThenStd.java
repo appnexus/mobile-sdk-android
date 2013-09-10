@@ -74,7 +74,7 @@ public class TestMediationSuccessThenStd extends AndroidTestCase implements AdRe
 
 	@Override
 	public void onReceiveResponse(AdResponse response) {
-		Log.d(TestUtil.testLogTag, "received first response");
+		Log.d(TestUtil.testLogTag, "received first response: " + response.toString());
 		MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
 				null, response);
 	}

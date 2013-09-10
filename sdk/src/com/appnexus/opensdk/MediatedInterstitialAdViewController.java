@@ -12,11 +12,6 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
             out = new MediatedInterstitialAdViewController(owner, response);
         } catch (Exception e) {
             return null;
-		} catch (Error e) {
-			Clog.e(Clog.mediationLogTag, "Error in instantiating mediated view", e);
-			//TODO: fix this hack - placed here because the request ad function is different
-			fireResultCB(RESULT.MEDIATED_SDK_UNAVAILABLE, response.requester, response.getMediatedResultCB());
-			return null;
 		}
 
         return out;
@@ -53,8 +48,18 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
         }
 
 		//TODO: refactor - this also depends on owner. what if owner is null? (for testing)
+		try {
         ((MediatedInterstitialAdView)mAV).requestAd(this, (Activity) owner.getContext(), param, uid);
-        return null;
+		} catch (Exception e) {
+			Clog.e(Clog.mediationLogTag, "Exception in requestAd from mediated view", e);
+			onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
+		} catch (Error e) {
+			// catch errors. exceptions will be caught above.
+			Clog.e(Clog.mediationLogTag, "Error in requestAd from mediated view", e);
+			onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
+		}
+
+		return null;
     }
 
 }

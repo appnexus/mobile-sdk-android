@@ -164,28 +164,4 @@ public abstract class MediatedAdViewController implements Displayable {
 
         cb.execute();
     }
-
-	protected static void fireResultCB(final MediatedAdViewController.RESULT result, final AdRequester requester, final String resultCB) {
-
-		//fire call to result cb url
-		HTTPGet<Void, Void, HTTPResponse> cb = new HTTPGet<Void, Void, HTTPResponse>() {
-			@Override
-			protected void onPostExecute(HTTPResponse response) {
-				if (requester == null) {
-					Clog.e(Clog.httpRespLogTag, "Try to fire result with null requester");
-					return;
-				}
-				Clog.d(Clog.httpRespLogTag, "static fired result cb: " + getUrl());
-
-				requester.dispatchResponse(new AdResponse(requester, response.getResponseBody(), response.getHeaders()));
-			}
-
-			@Override
-			protected String getUrl() {
-				return resultCB + "&reason=" + result.ordinal();
-			}
-		};
-
-		cb.execute();
-	}
 }
