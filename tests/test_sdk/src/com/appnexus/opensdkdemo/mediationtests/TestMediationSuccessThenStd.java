@@ -17,7 +17,6 @@
 package com.appnexus.opensdkdemo.mediationtests;
 
 import android.test.AndroidTestCase;
-import android.util.Log;
 import com.appnexus.opensdk.*;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
@@ -67,14 +66,14 @@ public class TestMediationSuccessThenStd extends AndroidTestCase implements AdRe
 
     @Override
     synchronized public void failed(AdRequest request) {
-        Log.d(TestUtil.testLogTag, "request failed: " + request);
+        Clog.d(TestUtil.testLogTag, "request failed: " + request);
         SuccessfulMediationView.didPass = false;
         notify();
     }
 
     @Override
     public void onReceiveResponse(AdResponse response) {
-        Log.d(TestUtil.testLogTag, "received first response: " + response.toString());
+        Clog.d(TestUtil.testLogTag, "received first response: " + response.toString());
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
                 null, response);
     }
@@ -85,7 +84,7 @@ public class TestMediationSuccessThenStd extends AndroidTestCase implements AdRe
     }
 
     synchronized private void pause() {
-        Log.d(TestUtil.testLogTag, "pausing");
+        Clog.d(TestUtil.testLogTag, "pausing");
         try {
             wait();
         } catch (InterruptedException e) {
@@ -93,7 +92,7 @@ public class TestMediationSuccessThenStd extends AndroidTestCase implements AdRe
             shouldWork.cancel(true);
             return;
         }
-        Log.d(TestUtil.testLogTag, "unpausing");
+        Clog.d(TestUtil.testLogTag, "unpausing");
     }
 
     @Override

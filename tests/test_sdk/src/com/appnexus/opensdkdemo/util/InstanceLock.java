@@ -16,7 +16,7 @@
 
 package com.appnexus.opensdkdemo.util;
 
-import android.util.Log;
+import com.appnexus.opensdk.utils.Clog;
 
 public class InstanceLock {
     public final Object lock = new Object();
@@ -29,23 +29,23 @@ public class InstanceLock {
     public void pause(long time) {
         try {
             synchronized (lock) {
-                Log.w(TestUtil.testLogTag, "pausing " + Thread.currentThread().getName());
+                Clog.w(TestUtil.testLogTag, "pausing " + Thread.currentThread().getName());
                 if (!notified)
                     lock.wait(time);
                 else
-                    Log.w(TestUtil.testLogTag, "pause called when notified " + Thread.currentThread().getName());
+                    Clog.w(TestUtil.testLogTag, "pause called when notified " + Thread.currentThread().getName());
                 notified = false;
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
             return;
         }
-        Log.w(TestUtil.testLogTag, "unpausing " + Thread.currentThread().getName());
+        Clog.w(TestUtil.testLogTag, "unpausing " + Thread.currentThread().getName());
     }
 
     public void unpause() {
         synchronized (lock) {
-            Log.w(TestUtil.testLogTag, "notify from " + Thread.currentThread().getName());
+            Clog.w(TestUtil.testLogTag, "notify from " + Thread.currentThread().getName());
             lock.notifyAll();
             notified = true;
         }

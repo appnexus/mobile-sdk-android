@@ -17,7 +17,6 @@
 package com.appnexus.opensdkdemo.mediationtests;
 
 import android.test.AndroidTestCase;
-import android.util.Log;
 import com.appnexus.opensdk.*;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
@@ -118,13 +117,13 @@ public class TestMediationFailures extends AndroidTestCase implements AdRequeste
 
     @Override
     public void failed(AdRequest request) {
-        Log.d(TestUtil.testLogTag, "request failed");
+        Clog.d(TestUtil.testLogTag, "request failed");
         Lock.unpause();
     }
 
     @Override
     public void onReceiveResponse(AdResponse response) {
-        Log.d(TestUtil.testLogTag, "received response: " + response.getMediatedResultCB());
+        Clog.d(TestUtil.testLogTag, "received response: " + response.getMediatedResultCB());
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
                 null, response);
     }
@@ -137,10 +136,10 @@ public class TestMediationFailures extends AndroidTestCase implements AdRequeste
     @Override
     public void dispatchResponse(final AdResponse response) {
         if (response.getMediatedResultCB() == null) {
-            Log.d(TestUtil.testLogTag, "dispatching null result, return (end of test)");
+            Clog.d(TestUtil.testLogTag, "dispatching null result, return (end of test)");
             return;
         }
-        Log.d(TestUtil.testLogTag, "dispatch: " + response.toString());
+        Clog.d(TestUtil.testLogTag, "dispatch: " + response.toString());
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
                 null, response);
 

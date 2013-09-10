@@ -20,7 +20,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.test.ActivityInstrumentationTestCase2;
-import android.util.Log;
 import com.appnexus.opensdk.*;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
@@ -127,14 +126,14 @@ public class TestActivityMediationNetwork extends ActivityInstrumentationTestCas
 
     @Override
     public void failed(AdRequest request) {
-        Log.d(TestUtil.testLogTag, "request failed: " + request);
+        Clog.d(TestUtil.testLogTag, "request failed: " + request);
         // initial call for mediated ad failed. abort test
         assertEquals(true, false);
     }
 
     @Override
     public void onReceiveResponse(AdResponse response) {
-        Log.d(TestUtil.testLogTag, "received response: " + response.toString());
+        Clog.d(TestUtil.testLogTag, "received response: " + response.toString());
 
         Clog.w(TestUtil.testLogTag, "disabling wifi");
         setWifi(false);
@@ -157,13 +156,13 @@ public class TestActivityMediationNetwork extends ActivityInstrumentationTestCas
 
     @Override
     public void onAdLoaded(AdView adView) {
-        Log.d(TestUtil.testLogTag, "loaded");
+        Clog.d(TestUtil.testLogTag, "loaded");
         didPass = true;
     }
 
     @Override
     public void onAdRequestFailed(AdView adView) {
-        Log.d(TestUtil.testLogTag, "request failed");
+        Clog.d(TestUtil.testLogTag, "request failed");
         didPass = false;
         lock.unpause();
     }

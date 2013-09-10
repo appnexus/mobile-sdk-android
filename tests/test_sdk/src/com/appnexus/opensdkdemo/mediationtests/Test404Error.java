@@ -17,7 +17,6 @@
 package com.appnexus.opensdkdemo.mediationtests;
 
 import android.test.AndroidTestCase;
-import android.util.Log;
 import com.appnexus.opensdk.*;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
@@ -66,14 +65,14 @@ public class Test404Error extends AndroidTestCase implements AdRequester {
 
     @Override
     public void failed(AdRequest request) {
-        Log.d(TestUtil.testLogTag, "request failed: " + request);
+        Clog.d(TestUtil.testLogTag, "request failed: " + request);
         SuccessfulMediationView.didPass = false;
         lock.unpause();
     }
 
     @Override
     public void onReceiveResponse(AdResponse response) {
-        Log.d(TestUtil.testLogTag, "received first response");
+        Clog.d(TestUtil.testLogTag, "received response");
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
                 null, response);
     }
