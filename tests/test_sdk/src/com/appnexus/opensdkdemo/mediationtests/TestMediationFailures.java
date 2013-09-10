@@ -28,123 +28,123 @@ import com.appnexus.opensdkdemo.util.Lock;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
 public class TestMediationFailures extends AndroidTestCase implements AdRequester {
-	String old_base_url;
-	AdRequest shouldFail;
-	String shouldFailPlacement;
+    String old_base_url;
+    AdRequest shouldFail;
+    String shouldFailPlacement;
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		Clog.w(TestUtil.testLogTag, "NEW TEST");
-		old_base_url = Settings.getSettings().BASE_URL;
-		Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
-		Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
-		NoSDK.didPass = false;
-		ThirdSuccessfulMediationView.didPass = false;
-		DummyView.createView(getContext());
-	}
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        Clog.w(TestUtil.testLogTag, "NEW TEST");
+        old_base_url = Settings.getSettings().BASE_URL;
+        Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
+        Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
+        NoSDK.didPass = false;
+        ThirdSuccessfulMediationView.didPass = false;
+        DummyView.createView(getContext());
+    }
 
-	@Override
-	synchronized protected void tearDown() throws Exception {
-		try {
-			wait(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		if (NoSDK.didPass && ThirdSuccessfulMediationView.didPass)
-			Clog.w(TestUtil.testLogTag, "TEST PASSED #" + shouldFailPlacement);
-		Settings.getSettings().BASE_URL = old_base_url;
-		super.tearDown();
-	}
+    @Override
+    synchronized protected void tearDown() throws Exception {
+        try {
+            wait(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (NoSDK.didPass && ThirdSuccessfulMediationView.didPass)
+            Clog.w(TestUtil.testLogTag, "TEST PASSED #" + shouldFailPlacement);
+        Settings.getSettings().BASE_URL = old_base_url;
+        super.tearDown();
+    }
 
-	/*
-	* All of these tests follow the same pattern:
-	* Initial call directs them to a MediatedBannerView class unique to the test case
-	* the following call will go to NoSDK.
-	* the following call will go to ThirdSuccessfulMediationView to confirm success
-	 */
-	private void runStandardTest() {
-		shouldFail = new AdRequest(this, null, null, null, shouldFailPlacement, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
+    /*
+    * All of these tests follow the same pattern:
+    * Initial call directs them to a MediatedBannerView class unique to the test case
+    * the following call will go to NoSDK.
+    * the following call will go to ThirdSuccessfulMediationView to confirm success
+     */
+    private void runStandardTest() {
+        shouldFail = new AdRequest(this, null, null, null, shouldFailPlacement, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
 
-		shouldFail.execute();
-		Lock.pause(10000);
-		shouldFail.cancel(true);
-		assertEquals(true, NoSDK.didPass);
-		assertEquals(true, ThirdSuccessfulMediationView.didPass);
-	}
+        shouldFail.execute();
+        Lock.pause(10000);
+        shouldFail.cancel(true);
+        assertEquals(true, NoSDK.didPass);
+        assertEquals(true, ThirdSuccessfulMediationView.didPass);
+    }
 
-	public void test2NoClassMediationCall() {
-		// Create an AdRequest which will request a mediated response
-		// that returns a non-exist class which cannot be instantiated
-		// then verify that the correct fail URL request was made
+    public void test2NoClassMediationCall() {
+        // Create an AdRequest which will request a mediated response
+        // that returns a non-exist class which cannot be instantiated
+        // then verify that the correct fail URL request was made
 
-		shouldFailPlacement = "2";
-		runStandardTest();
-	}
+        shouldFailPlacement = "2";
+        runStandardTest();
+    }
 
-	public void test3BadClassMediationCall() {
-		// Create an AdRequest which will request a mediated response
-		// that returns an existing but invalid class which cannot be instantiated
-		// then verify that the correct fail URL request was made
+    public void test3BadClassMediationCall() {
+        // Create an AdRequest which will request a mediated response
+        // that returns an existing but invalid class which cannot be instantiated
+        // then verify that the correct fail URL request was made
 
-		shouldFailPlacement = "3";
-		runStandardTest();
-	}
+        shouldFailPlacement = "3";
+        runStandardTest();
+    }
 
-	public void test4NoRequestMediationCall() {
-		// Create an AdRequest which will request a mediated response
-		// that returns an class which does not make an ad request
-		// then verify that the correct fail URL request was made
+    public void test4NoRequestMediationCall() {
+        // Create an AdRequest which will request a mediated response
+        // that returns an class which does not make an ad request
+        // then verify that the correct fail URL request was made
 
-		shouldFailPlacement = "4";
-		runStandardTest();
-	}
+        shouldFailPlacement = "4";
+        runStandardTest();
+    }
 
-	public void test5ErrorThrownMediationCall() {
-		// Create an AdRequest which will request a mediated response
-		// that returns an class which throws an exception
-		// then verify that the correct fail URL request was made
-		shouldFailPlacement = "5";
-		runStandardTest();
-	}
+    public void test5ErrorThrownMediationCall() {
+        // Create an AdRequest which will request a mediated response
+        // that returns an class which throws an exception
+        // then verify that the correct fail URL request was made
+        shouldFailPlacement = "5";
+        runStandardTest();
+    }
 
-	public void test6NoFillMediationCall() {
-		// Create an AdRequest which will request a mediated response
-		// that succeeds in instantiation but fails to return an ad
-		// verify that the correct fail URL request was made
-		shouldFailPlacement = "6";
-		runStandardTest();
-	}
+    public void test6NoFillMediationCall() {
+        // Create an AdRequest which will request a mediated response
+        // that succeeds in instantiation but fails to return an ad
+        // verify that the correct fail URL request was made
+        shouldFailPlacement = "6";
+        runStandardTest();
+    }
 
-	@Override
-	public void failed(AdRequest request) {
-		Log.d(TestUtil.testLogTag, "request failed");
-		Lock.unpause();
-	}
+    @Override
+    public void failed(AdRequest request) {
+        Log.d(TestUtil.testLogTag, "request failed");
+        Lock.unpause();
+    }
 
-	@Override
-	public void onReceiveResponse(AdResponse response) {
-		Log.d(TestUtil.testLogTag, "received response: " + response.getMediatedResultCB());
-		MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-				null, response);
-	}
+    @Override
+    public void onReceiveResponse(AdResponse response) {
+        Log.d(TestUtil.testLogTag, "received response: " + response.getMediatedResultCB());
+        MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
+                null, response);
+    }
 
-	@Override
-	public AdView getOwner() {
-		return null;
-	}
+    @Override
+    public AdView getOwner() {
+        return null;
+    }
 
-	@Override
-	public void dispatchResponse(final AdResponse response) {
-		if (response.getMediatedResultCB() == null) {
-			Log.d(TestUtil.testLogTag, "dispatching null result, return (end of test)");
-			return;
-		}
-		Log.d(TestUtil.testLogTag, "dispatch: " + response.toString());
-		MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-				null, response);
+    @Override
+    public void dispatchResponse(final AdResponse response) {
+        if (response.getMediatedResultCB() == null) {
+            Log.d(TestUtil.testLogTag, "dispatching null result, return (end of test)");
+            return;
+        }
+        Log.d(TestUtil.testLogTag, "dispatch: " + response.toString());
+        MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
+                null, response);
 
-		// verify fail result cb
+        // verify fail result cb
 //		Clog.d(TestUtil.testLogTag, response.getBody());
 //		try {
 //			JSONObject jsonObject = new JSONObject(response.getBody());
@@ -165,5 +165,5 @@ public class TestMediationFailures extends AndroidTestCase implements AdRequeste
 //		synchronized (NoSDK.lock) {
 //			NoSDK.lock.notify();
 //		}
-	}
+    }
 }

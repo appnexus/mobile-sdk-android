@@ -30,90 +30,90 @@ import com.appnexus.opensdkdemo.util.TestUtil;
 
 public class TestActivity404Error extends ActivityInstrumentationTestCase2<DemoMainActivity> implements AdListener {
 
-	DemoMainActivity activity;
-	BannerAdView bav;
-	InstanceLock lock;
-	boolean didPass = false;
-	String old_base_url;
+    DemoMainActivity activity;
+    BannerAdView bav;
+    InstanceLock lock;
+    boolean didPass = false;
+    String old_base_url;
 
-	public TestActivity404Error() {
-		super(DemoMainActivity.class);
-	}
+    public TestActivity404Error() {
+        super(DemoMainActivity.class);
+    }
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		old_base_url = Settings.getSettings().BASE_URL;
-		Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
-		Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
-		SuccessfulMediationView.didPass = false;
-		didPass = false;
-		lock = new InstanceLock();
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        old_base_url = Settings.getSettings().BASE_URL;
+        Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
+        Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
+        SuccessfulMediationView.didPass = false;
+        didPass = false;
+        lock = new InstanceLock();
 
-		setActivityInitialTouchMode(false);
+        setActivityInitialTouchMode(false);
 
-		activity = getActivity();
+        activity = getActivity();
 
-		DummyView.createView(activity);
+        DummyView.createView(activity);
 
-		bav = (BannerAdView) activity.findViewById(com.appnexus.opensdkdemo.R.id.banner);
-		bav.setPlacementID("9b");
-		bav.setAdListener(this);
-	}
+        bav = (BannerAdView) activity.findViewById(com.appnexus.opensdkdemo.R.id.banner);
+        bav.setPlacementID("9b");
+        bav.setAdListener(this);
+    }
 
 
-	@Override
-	protected void tearDown() throws Exception {
-		Clog.d(TestUtil.testLogTag, "tear down");
-		Settings.getSettings().BASE_URL = old_base_url;
+    @Override
+    protected void tearDown() throws Exception {
+        Clog.d(TestUtil.testLogTag, "tear down");
+        Settings.getSettings().BASE_URL = old_base_url;
 
-		super.tearDown();
-	}
+        super.tearDown();
+    }
 
-	public void test404() {
-		Clog.w(TestUtil.testLogTag, "TEST 404");
+    public void test404() {
+        Clog.w(TestUtil.testLogTag, "TEST 404");
 
-		activity.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				bav.loadAd();
-			}
-		});
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bav.loadAd();
+            }
+        });
 
-		lock.pause(10000);
+        lock.pause(10000);
 
-		// give time for the result cb to fire
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+        // give time for the result cb to fire
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-		assertEquals(true, didPass);
-	}
+        assertEquals(true, didPass);
+    }
 
-	@Override
-	public void onAdLoaded(AdView adView) {
-		didPass = true;
-		lock.unpause();
-	}
+    @Override
+    public void onAdLoaded(AdView adView) {
+        didPass = true;
+        lock.unpause();
+    }
 
-	@Override
-	public void onAdRequestFailed(AdView adView) {
-		didPass = false;
-		lock.unpause();
-	}
+    @Override
+    public void onAdRequestFailed(AdView adView) {
+        didPass = false;
+        lock.unpause();
+    }
 
-	@Override
-	public void onAdExpanded(AdView adView) {
-	}
+    @Override
+    public void onAdExpanded(AdView adView) {
+    }
 
-	@Override
-	public void onAdCollapsed(AdView adView) {
-	}
+    @Override
+    public void onAdCollapsed(AdView adView) {
+    }
 
-	@Override
-	public void onAdClicked(AdView adView) {
-	}
+    @Override
+    public void onAdClicked(AdView adView) {
+    }
 
 }

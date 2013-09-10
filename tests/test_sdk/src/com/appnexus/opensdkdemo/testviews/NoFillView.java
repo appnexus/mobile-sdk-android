@@ -25,13 +25,13 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
 public class NoFillView implements MediatedBannerAdView {
-	@Override
-	public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
-		Clog.d(TestUtil.testLogTag, "set to true!");
+    @Override
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
+        Clog.d(TestUtil.testLogTag, "set to true!");
 
-		// ad request returned nothing!
-		mBC.onAdFailed(MediatedAdViewController.RESULT.UNABLE_TO_FILL);
+        // ad request returned nothing!
+        mBC.onAdFailed(MediatedAdViewController.RESULT.UNABLE_TO_FILL);
 
-		return null;
-	}
+        return null;
+    }
 }

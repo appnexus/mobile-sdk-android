@@ -24,16 +24,16 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
 public class NoSDK implements MediatedBannerAdView {
-	public static boolean didPass = false;
+    public static boolean didPass = false;
 
-	@Override
-	public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
-		Clog.d(TestUtil.testLogTag, "NOSDK set to true!");
-		didPass = true;
+    @Override
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
+        Clog.d(TestUtil.testLogTag, "NOSDK set to true!");
+        didPass = true;
 
-		// pretend that the ad request succeeded
-		mBC.onAdLoaded();
+        // pretend that the ad request succeeded
+        mBC.onAdLoaded();
 
-		return DummyView.dummyView;
-	}
+        return DummyView.dummyView;
+    }
 }

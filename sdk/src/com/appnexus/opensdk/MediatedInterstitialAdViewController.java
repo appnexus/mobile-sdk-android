@@ -12,7 +12,7 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
             out = new MediatedInterstitialAdViewController(owner, response);
         } catch (Exception e) {
             return null;
-		}
+        }
 
         return out;
 
@@ -33,8 +33,8 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
         }
     }
 
-	//TODO: how come this is inconsistent with Banner controller? in banner controller we requestAd in the constructor, but for IADs we do that in getView
-	//TODO: also we return null here; how to test if an interstitial returns an ad then?
+    //TODO: how come this is inconsistent with Banner controller? in banner controller we requestAd in the constructor, but for IADs we do that in getView
+    //TODO: also we return null here; how to test if an interstitial returns an ad then?
     @Override
     public View getView() {
         Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediated_request));
@@ -47,19 +47,19 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
             return null;
         }
 
-		//TODO: refactor - this also depends on owner. what if owner is null? (for testing)
-		try {
-        ((MediatedInterstitialAdView)mAV).requestAd(this, (Activity) owner.getContext(), param, uid);
-		} catch (Exception e) {
-			Clog.e(Clog.mediationLogTag, "Exception in requestAd from mediated view", e);
-			onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
-		} catch (Error e) {
-			// catch errors. exceptions will be caught above.
-			Clog.e(Clog.mediationLogTag, "Error in requestAd from mediated view", e);
-			onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
-		}
+        //TODO: refactor - this also depends on owner. what if owner is null? (for testing)
+        try {
+            ((MediatedInterstitialAdView) mAV).requestAd(this, (Activity) owner.getContext(), param, uid);
+        } catch (Exception e) {
+            Clog.e(Clog.mediationLogTag, "Exception in requestAd from mediated view", e);
+            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
+        } catch (Error e) {
+            // catch errors. exceptions will be caught above.
+            Clog.e(Clog.mediationLogTag, "Error in requestAd from mediated view", e);
+            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
+        }
 
-		return null;
+        return null;
     }
 
 }

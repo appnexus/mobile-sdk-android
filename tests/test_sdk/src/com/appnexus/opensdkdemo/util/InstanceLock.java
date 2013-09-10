@@ -19,35 +19,35 @@ package com.appnexus.opensdkdemo.util;
 import android.util.Log;
 
 public class InstanceLock {
-	public final Object lock = new Object();
-	public boolean notified = false;
+    public final Object lock = new Object();
+    public boolean notified = false;
 
-	public InstanceLock() {
-		notified = false;
-	}
+    public InstanceLock() {
+        notified = false;
+    }
 
-	public void pause(long time) {
-		try {
-			synchronized (lock) {
-				Log.w(TestUtil.testLogTag, "pausing " + Thread.currentThread().getName());
-				if (!notified)
-					lock.wait(time);
-				else
-					Log.w(TestUtil.testLogTag, "pause called when notified " + Thread.currentThread().getName());
-				notified = false;
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			return;
-		}
-		Log.w(TestUtil.testLogTag, "unpausing " + Thread.currentThread().getName());
-	}
+    public void pause(long time) {
+        try {
+            synchronized (lock) {
+                Log.w(TestUtil.testLogTag, "pausing " + Thread.currentThread().getName());
+                if (!notified)
+                    lock.wait(time);
+                else
+                    Log.w(TestUtil.testLogTag, "pause called when notified " + Thread.currentThread().getName());
+                notified = false;
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return;
+        }
+        Log.w(TestUtil.testLogTag, "unpausing " + Thread.currentThread().getName());
+    }
 
-	public void unpause() {
-		synchronized (lock) {
-			Log.w(TestUtil.testLogTag, "notify from " + Thread.currentThread().getName());
-			lock.notifyAll();
-			notified = true;
-		}
-	}
+    public void unpause() {
+        synchronized (lock) {
+            Log.w(TestUtil.testLogTag, "notify from " + Thread.currentThread().getName());
+            lock.notifyAll();
+            notified = true;
+        }
+    }
 }

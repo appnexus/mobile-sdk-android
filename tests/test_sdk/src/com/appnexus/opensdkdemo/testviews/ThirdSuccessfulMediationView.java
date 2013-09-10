@@ -25,15 +25,15 @@ import com.appnexus.opensdkdemo.util.Lock;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
 public class ThirdSuccessfulMediationView implements MediatedBannerAdView {
-	public static boolean didPass = false;
+    public static boolean didPass = false;
 
-	@Override
-	public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
-		Clog.d(TestUtil.testLogTag, "3rd set to true!");
-		didPass = true;
+    @Override
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
+        Clog.d(TestUtil.testLogTag, "3rd set to true!");
+        didPass = true;
 
-		Lock.unpause();
+        Lock.unpause();
 
-		return DummyView.dummyView;
-	}
+        return DummyView.dummyView;
+    }
 }

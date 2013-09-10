@@ -24,10 +24,10 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
 public class OOMBannerView implements MediatedBannerAdView {
-	@Override
-	public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
-		Clog.d(TestUtil.testLogTag, "set to true!");
+    @Override
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
+        Clog.d(TestUtil.testLogTag, "set to true!");
 
-		throw new OutOfMemoryError("Out of memory!");
-	}
+        throw new OutOfMemoryError("Out of memory!");
+    }
 }

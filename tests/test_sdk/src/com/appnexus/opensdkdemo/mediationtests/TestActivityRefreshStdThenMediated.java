@@ -32,110 +32,110 @@ import com.appnexus.opensdkdemo.util.TestUtil;
 
 public class TestActivityRefreshStdThenMediated extends ActivityInstrumentationTestCase2<DemoMainActivity> implements AdListener {
 
-	DemoMainActivity activity;
-	BannerAdView bav;
-	boolean isLoadingMediation;
-	InstanceLock lock;
-	String old_base_url;
-	boolean didPassStd = false;
+    DemoMainActivity activity;
+    BannerAdView bav;
+    boolean isLoadingMediation;
+    InstanceLock lock;
+    String old_base_url;
+    boolean didPassStd = false;
 
 
-	public TestActivityRefreshStdThenMediated() {
-		super(DemoMainActivity.class);
-	}
+    public TestActivityRefreshStdThenMediated() {
+        super(DemoMainActivity.class);
+    }
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		old_base_url = Settings.getSettings().BASE_URL;
-		Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
-		Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
-		ThirdSuccessfulMediationView.didPass = false;
-		didPassStd = false;
-		isLoadingMediation = false;
-		lock = new InstanceLock();
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        old_base_url = Settings.getSettings().BASE_URL;
+        Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
+        Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
+        ThirdSuccessfulMediationView.didPass = false;
+        didPassStd = false;
+        isLoadingMediation = false;
+        lock = new InstanceLock();
 
-		setActivityInitialTouchMode(false);
+        setActivityInitialTouchMode(false);
 
-		activity = getActivity();
+        activity = getActivity();
 
-		DummyView.createView(activity);
+        DummyView.createView(activity);
 
-		bav = (BannerAdView) activity.findViewById(com.appnexus.opensdkdemo.R.id.banner);
-		bav.setPlacementID("8a");
-		bav.setAutoRefreshInterval(15);
-		bav.setAdListener(this);
-	}
+        bav = (BannerAdView) activity.findViewById(com.appnexus.opensdkdemo.R.id.banner);
+        bav.setPlacementID("8a");
+        bav.setAutoRefreshInterval(15);
+        bav.setAdListener(this);
+    }
 
 
-	@Override
-	protected void tearDown() throws Exception {
-		Clog.d(TestUtil.testLogTag, "tear down");
-		Settings.getSettings().BASE_URL = old_base_url;
+    @Override
+    protected void tearDown() throws Exception {
+        Clog.d(TestUtil.testLogTag, "tear down");
+        Settings.getSettings().BASE_URL = old_base_url;
 
-		super.tearDown();
-	}
+        super.tearDown();
+    }
 
-	public void testRefresh() {
-		Clog.w(TestUtil.testLogTag, "TEST REFRESH");
+    public void testRefresh() {
+        Clog.w(TestUtil.testLogTag, "TEST REFRESH");
 
-		// get a std ad
-		activity.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				bav.loadAd();
-			}
-		});
+        // get a std ad
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bav.loadAd();
+            }
+        });
 
-		lock.pause(10000);
+        lock.pause(10000);
 
-		// set up mediation properties
-		isLoadingMediation = true;
-		bav.setPlacementID("8b");
+        // set up mediation properties
+        isLoadingMediation = true;
+        bav.setPlacementID("8b");
 
-		Clog.w(TestUtil.testLogTag, "wait for refresh - 15s minimum; " + Thread.currentThread().getName());
-		try {
-			Thread.sleep(15000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+        Clog.w(TestUtil.testLogTag, "wait for refresh - 15s minimum; " + Thread.currentThread().getName());
+        try {
+            Thread.sleep(15000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-		Clog.w(TestUtil.testLogTag, "wait for refresh done " + Thread.currentThread().getName());
+        Clog.w(TestUtil.testLogTag, "wait for refresh done " + Thread.currentThread().getName());
 
-		// wait for mediation response to process and complete
-		Lock.pause(10000);
+        // wait for mediation response to process and complete
+        Lock.pause(10000);
 
-		assertEquals(true, didPassStd);
-		assertEquals(true, ThirdSuccessfulMediationView.didPass);
-		assertEquals(View.VISIBLE, bav.getVisibility());
-	}
+        assertEquals(true, didPassStd);
+        assertEquals(true, ThirdSuccessfulMediationView.didPass);
+        assertEquals(View.VISIBLE, bav.getVisibility());
+    }
 
-	@Override
-	public void onAdLoaded(AdView adView) {
-		didPassStd = true;
-		if (!isLoadingMediation) {
-			lock.unpause();
-		}
-	}
+    @Override
+    public void onAdLoaded(AdView adView) {
+        didPassStd = true;
+        if (!isLoadingMediation) {
+            lock.unpause();
+        }
+    }
 
-	@Override
-	public void onAdRequestFailed(AdView adView) {
-		didPassStd = false;
-		if (!isLoadingMediation) {
-			lock.unpause();
-		}
-	}
+    @Override
+    public void onAdRequestFailed(AdView adView) {
+        didPassStd = false;
+        if (!isLoadingMediation) {
+            lock.unpause();
+        }
+    }
 
-	@Override
-	public void onAdExpanded(AdView adView) {
-	}
+    @Override
+    public void onAdExpanded(AdView adView) {
+    }
 
-	@Override
-	public void onAdCollapsed(AdView adView) {
-	}
+    @Override
+    public void onAdCollapsed(AdView adView) {
+    }
 
-	@Override
-	public void onAdClicked(AdView adView) {
-	}
+    @Override
+    public void onAdClicked(AdView adView) {
+    }
 
 }

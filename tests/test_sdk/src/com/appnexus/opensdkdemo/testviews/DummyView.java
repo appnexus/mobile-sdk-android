@@ -20,9 +20,9 @@ import android.content.Context;
 import android.view.View;
 
 public class DummyView {
-	public static View dummyView;
+    public static View dummyView;
 
-	public static void createView(Context context) {
-		dummyView = new View(context);
-	}
+    public static void createView(Context context) {
+        dummyView = new View(context);
+    }
 }

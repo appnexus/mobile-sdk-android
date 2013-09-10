@@ -40,8 +40,8 @@ public abstract class HTTPGet<Params extends Void, Progress extends Void, Result
     protected HTTPResponse doInBackground(Void... params) {
         HTTPResponse out = new HTTPResponse();
 
+        HttpClient httpc = new DefaultHttpClient();
         try {
-            HttpClient httpc = new DefaultHttpClient();
             URI uri = new URI(getUrl());
             HttpGet request = new HttpGet();
             request.setURI(uri);
@@ -56,6 +56,8 @@ public abstract class HTTPGet<Params extends Void, Progress extends Void, Result
             out.setSucceeded(false);
         } catch (IOException e) {
             out.setSucceeded(false);
+        } finally {
+            httpc.getConnectionManager().shutdown();
         }
 
         return out;

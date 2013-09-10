@@ -29,68 +29,68 @@ import com.appnexus.opensdkdemo.util.Lock;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
 public class TestMediationSuccess extends AndroidTestCase implements AdRequester {
-	String old_base_url;
-	AdRequest shouldWork;
-	String shouldWorkPlacement = "1";
+    String old_base_url;
+    AdRequest shouldWork;
+    String shouldWorkPlacement = "1";
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		old_base_url = Settings.getSettings().BASE_URL;
-		Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
-		Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
-		shouldWork = new AdRequest(this, null, null, null, shouldWorkPlacement, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
-		SuccessfulMediationView.didPass = false;
-		SecondSuccessfulMediationView.didPass = false;
-		ThirdSuccessfulMediationView.didPass = false;
-		DummyView.createView(getContext());
-	}
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        old_base_url = Settings.getSettings().BASE_URL;
+        Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
+        Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
+        shouldWork = new AdRequest(this, null, null, null, shouldWorkPlacement, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
+        SuccessfulMediationView.didPass = false;
+        SecondSuccessfulMediationView.didPass = false;
+        ThirdSuccessfulMediationView.didPass = false;
+        DummyView.createView(getContext());
+    }
 
-	@Override
-	protected void tearDown() throws Exception {
-		Clog.d(TestUtil.testLogTag, "tear down");
-		Settings.getSettings().BASE_URL = old_base_url;
-		super.tearDown();
-	}
+    @Override
+    protected void tearDown() throws Exception {
+        Clog.d(TestUtil.testLogTag, "tear down");
+        Settings.getSettings().BASE_URL = old_base_url;
+        super.tearDown();
+    }
 
-	public void testSucceedingMediationCall() {
-		// Create a AdRequest which will request a mediated response to
-		// instantiate the SuccessfulMediationView
-		// Since we're just testing to see successful instantiation, interrupt
-		// the sleeping thread from the requestAd function
+    public void testSucceedingMediationCall() {
+        // Create a AdRequest which will request a mediated response to
+        // instantiate the SuccessfulMediationView
+        // Since we're just testing to see successful instantiation, interrupt
+        // the sleeping thread from the requestAd function
 
-		shouldWork.execute();
-		Lock.pause(10000);
-		shouldWork.cancel(true);
+        shouldWork.execute();
+        Lock.pause(10000);
+        shouldWork.cancel(true);
 
-		assertEquals(true, SuccessfulMediationView.didPass);
-		assertEquals(true, SecondSuccessfulMediationView.didPass);
-		assertEquals(true, ThirdSuccessfulMediationView.didPass);
-	}
+        assertEquals(true, SuccessfulMediationView.didPass);
+        assertEquals(true, SecondSuccessfulMediationView.didPass);
+        assertEquals(true, ThirdSuccessfulMediationView.didPass);
+    }
 
-	@Override
-	public void failed(AdRequest request) {
-		Log.d(TestUtil.testLogTag, "request failed: " + request);
-		SuccessfulMediationView.didPass = false;
-		Lock.unpause();
-	}
+    @Override
+    public void failed(AdRequest request) {
+        Log.d(TestUtil.testLogTag, "request failed: " + request);
+        SuccessfulMediationView.didPass = false;
+        Lock.unpause();
+    }
 
-	@Override
-	public void onReceiveResponse(AdResponse response) {
-		Log.d(TestUtil.testLogTag, "received first response");
-		MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-				null, response);
-	}
+    @Override
+    public void onReceiveResponse(AdResponse response) {
+        Log.d(TestUtil.testLogTag, "received first response");
+        MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
+                null, response);
+    }
 
-	@Override
-	public AdView getOwner() {
-		return null;
-	}
+    @Override
+    public AdView getOwner() {
+        return null;
+    }
 
-	@Override
-	public void dispatchResponse(final AdResponse response) {
-		Clog.d(TestUtil.testLogTag, "dispatch (for second and third responses)");
-		MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-				null, response);
-	}
+    @Override
+    public void dispatchResponse(final AdResponse response) {
+        Clog.d(TestUtil.testLogTag, "dispatch (for second and third responses)");
+        MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
+                null, response);
+    }
 }

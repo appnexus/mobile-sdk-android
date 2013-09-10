@@ -16,5 +16,5 @@
 
 package com.appnexus.opensdkdemo.testviews;
 
-public class DummyClass	 {
+public class DummyClass {
 }

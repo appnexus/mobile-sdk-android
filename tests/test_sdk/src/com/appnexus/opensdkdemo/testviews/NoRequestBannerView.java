@@ -24,16 +24,16 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
 public class NoRequestBannerView implements MediatedBannerAdView {
-	public static boolean didInstantiate;
+    public static boolean didInstantiate;
 
-	public NoRequestBannerView() {
-		super();
-		Clog.d(TestUtil.testLogTag, "set to true!");
-		didInstantiate = true;
-	}
+    public NoRequestBannerView() {
+        super();
+        Clog.d(TestUtil.testLogTag, "set to true!");
+        didInstantiate = true;
+    }
 
-	@Override
-	public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
-		return null;
-	}
+    @Override
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
+        return null;
+    }
 }
