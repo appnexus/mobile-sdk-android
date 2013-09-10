@@ -22,7 +22,7 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
         super(owner, response);
 
         if (this.mAV == null || !(this.mAV instanceof MediatedInterstitialAdView)) {
-            throw new Exception("Mediated view is null or not an instance of MediatedInterstitialAdView");
+            throw new Exception(Clog.getString(R.string.instance_exception));
         }
     }
 
@@ -39,11 +39,11 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
     public View getView() {
         Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediated_request));
         if (mAV == null) {
-            Clog.e(Clog.mediationLogTag, "getView: MediatedAdView was null");
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_view_null));
             return null;
         }
         if (owner == null) {
-            Clog.e(Clog.mediationLogTag, "getView: owner was null");
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_owner_null));
             return null;
         }
 
@@ -51,11 +51,11 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
         try {
             ((MediatedInterstitialAdView) mAV).requestAd(this, (Activity) owner.getContext(), param, uid);
         } catch (Exception e) {
-            Clog.e(Clog.mediationLogTag, "Exception in requestAd from mediated view", e);
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
             onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
         } catch (Error e) {
             // catch errors. exceptions will be caught above.
-            Clog.e(Clog.mediationLogTag, "Error in requestAd from mediated view", e);
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_error), e);
             onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
         }
 

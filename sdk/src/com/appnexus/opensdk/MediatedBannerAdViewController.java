@@ -38,22 +38,22 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
         super(owner, response);
 
         if (this.mAV == null || !(this.mAV instanceof MediatedBannerAdView)) {
-            throw new Exception("Mediated view is null or not an instance of MediatedBannerAdView");
+            throw new Exception(Clog.getString(R.string.instance_exception));
         }
         //TODO: refactor - this also depends on owner. what if owner is null? (for testing)
         try {
             placeableView = ((MediatedBannerAdView) mAV).requestAd(this, owner != null ? (Activity) owner.getContext() : null, param, uid, width, height, owner);
         } catch (Exception e) {
-            Clog.e(Clog.mediationLogTag, "Exception in requestAd from mediated view", e);
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
             throw e;
         } catch (Error e) {
             // catch errors. exceptions will be caught above.
-            Clog.e(Clog.mediationLogTag, "Error in requestAd from mediated view", e);
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_error), e);
             onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
         }
 
         if (placeableView == null) {
-            Clog.e(Clog.mediationLogTag, "request for a mediated ad returned a null view");
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_view_null));
             failed = true;
             onAdFailed(RESULT.UNABLE_TO_FILL);
         }

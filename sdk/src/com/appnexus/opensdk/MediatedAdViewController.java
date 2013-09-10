@@ -145,13 +145,12 @@ public abstract class MediatedAdViewController implements Displayable {
             @Override
             protected void onPostExecute(HTTPResponse response) {
                 if (requester == null) {
-                    Clog.e(Clog.httpRespLogTag, "Try to fire result with null requester");
+                    Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
                     return;
                 } else if (response == null) {
-                    Clog.e(Clog.httpRespLogTag, "Try to fire result with null response");
+                    Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_response_null));
                     return;
                 }
-                Clog.d(Clog.httpRespLogTag, "fired result cb: " + getUrl());
 
                 requester.dispatchResponse(new AdResponse(requester, response.getResponseBody(), response.getHeaders()));
             }
