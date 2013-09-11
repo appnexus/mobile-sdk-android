@@ -24,7 +24,8 @@
 	listeners['error']=[];
 	listeners['stateChange']=[];
 	listeners['viewableChange']=[];
-	var state='loading'; //Can be loading, default, expanded, or hidden
+	listeners['sizeChange']=[];
+	var state='loading'; //Can be loading, default, expanded, hidden, or resized
 	var placement_type='inline';
 	var is_viewable=false;
 	var expand_properties={width:-1, height:-1, useCustomClose:false, isModal:true};
@@ -94,6 +95,9 @@
 		case 'hidden':
 			mraid.util.errorEvent("mraid.close() called while ad was already hidden", "mraid.close()");
 			break;
+        case 'resized':
+            window.open("mraid://close/");
+            mraid.util.stateChangeEvent('default');
 		}
 	};
 
@@ -116,6 +120,8 @@
 		case 'hidden':
             mraid.util.errorEvent("mraid.expand() called while state is 'hidden'.", "mraid.expand()");
 			break;
+        case 'resized':
+            mraid.util.stateChangeEvent('expanded');
 		}
 	};
 
@@ -130,17 +136,6 @@
 	mraid.getExpandProperties=function(){
 		return expand_properties;
 	};
-
-    // Takes an object... {allowOrientationChange:true, forceOrientation:"none"};
-	mraid.setOrientationProperties=function(properties){
-	    // TODO: Update native-side properties
-	    orientation_properties=properties;
-	}
-
-	//returns a json object... {allowOrientationChange:true, forceOrientation:"none"};
-	mraid.getOrientationProperties=function(){
-	    return orientation_properties;
-	}
 
 	// Takes a boolean
 	mraid.useCustomClose=function(well_is_it){
@@ -160,13 +155,28 @@
             mraid.util.errorEvent("mraid.resize() called before mraid.setResizeProperties()", "mraid.resize()");
             return;
         }
+        switch(mraid.getState()){
+        case 'loading':
+            mraid.util.errorEvent("mraid.resize() called while state is 'loading'.", "mraid.resize()");
+            break;
+        case 'expanded':
+            mraid.util.errorEvent("mraid.resize() called while state is 'expanded'.", "mraid.resize()");
+            break;
+        case 'resized':
+        case 'default':
+            window.open("mraid://resize/?w="+resize_properties.width
+                       +"&h="+resize_properties.height
+                       +"&offset_x="+resize_properties.offsetX
+                       +"&offset_y="+resize_properties.offsetY
+                       +"&custom_close_position="+resize_properties.customClosePosition
+                       +"&allow_offscreen="+resize_properties.allowOffscreen); //TODO: sizechange events must be fired from native side, after successful resize
+            mraid.util.stateChangeEvent('resized');
+            break;
+        case 'hidden':
+            break;
 
-        window.open("mraid://resize/?w="+resize_properties.width
-                   +"&h="+resize_properties.heigh
-                   +"&offset_x="+resize_properties.offsetX
-                   +"&offset_y="+resize_properties.offsetY
-                   +"&custom_close_position="+resize_properties.customClosePosition
-                   +"&allow_offscreen="+resize_properties.allowOffscreen);
+        }
+
     }
 
     mraid.setResizeProperties=function(props){
@@ -177,10 +187,13 @@
         return resize_properties;
     }
 
+
+    //returns a json object... {allowOrientationChange:true, forceOrientation:"none"};
     mraid.getOrientationProperties=function(){
         return orientation_properties;
     }
 
+    // Takes an object... {allowOrientationChange:true, forceOrientation:"none"};
     mraid.setOrientationProperties=function(properties){
         orientation_properties=properties;
 
@@ -201,6 +214,11 @@
     // Stores a picture on the device
     mraid.storePicture=function(uri){
         window.open("mraid://storePicture/?uri="+encodeURIComponent(uri));
+    }
+
+    // Convenience function to modify useCustomClose attribute of expandProperties
+    mraid.useCustomClose=function(value){
+        expand_properties.useCustomClose = value;
     }
 
 
@@ -247,6 +265,12 @@
 			listeners['stateChange'][i](new_state);
 		}
 	};
+
+	mraid.util.sizeChangeEvent=function(width, height){
+        for(var i=0;i<listeners['sizeChange'].length;i++){
+            listeners['sizeChange'][i](width, height);
+        }
+	}
 
 
 
