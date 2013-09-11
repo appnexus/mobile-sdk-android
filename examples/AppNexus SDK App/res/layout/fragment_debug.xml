@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+   Copyright 2013 APPNEXUS INC
+   
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="4dp"
+            android:fillViewport="true" >
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <TextView
+                android:padding="4dp"
+                android:gravity="center"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/last_request_title"
+                android:background="#CCCCCC"
+                android:textStyle="bold" />
+
+        <TextView
+                android:id="@+id/request_text"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true" />
+
+        <TextView
+                android:layout_marginTop="12dp"
+                android:padding="4dp"
+                android:gravity="center"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/last_response_title"
+                android:background="#CCCCCC"
+                android:textStyle="bold" />
+
+        <TextView
+                android:id="@+id/response_text"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textIsSelectable="true" />
+
+        <Button
+                android:layout_marginTop="12dp"
+                android:id="@+id/btn_email_server"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/email_data" />
+
+        <LinearLayout
+                style="@style/debugParent">
+
+            <TextView
+                    android:id="@+id/memberid_text"
+                    android:text="Debug Member ID"
+                    style="@style/debugText"
+                    />
+            <EditText
+                    android:id="@+id/memberid_edit"
+                    style="@style/debugEdit"
+                    android:hint="member id"
+                    />
+
+        </LinearLayout>
+
+        <LinearLayout
+                style="@style/debugParent">
+            <TextView
+                    android:id="@+id/dongle_text"
+                    android:text="Dongle"
+                    style="@style/debugText"
+                    />
+            <EditText
+                    android:id="@+id/dongle_edit"
+                    android:hint="dongle id"
+                    style="@style/debugEdit"
+                    />
+
+        </LinearLayout>
+
+        <LinearLayout
+                style="@style/debugParent">
+            <TextView
+                    android:id="@+id/placementid_text"
+                    android:text="Debug Placement ID"
+                    style="@style/debugText"
+                    />
+            <EditText
+                    android:id="@+id/placementid_edit"
+                    android:hint="placement id"
+                    style="@style/debugEdit"
+                    />
+
+        </LinearLayout>
+
+        <Button
+                android:id="@+id/btn_run_debug"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Run Debug Auction" />
+
+    </LinearLayout>
+
+</ScrollView>

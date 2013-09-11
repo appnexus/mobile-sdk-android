@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   Copyright 2013 APPNEXUS INC
+   
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:opensdk="http://schemas.android.com/apk/res/com.appnexus.opensdkapp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true" >
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5dp" >
+
+        <!-- Banner -->
+
+        <FrameLayout
+                android:id="@+id/adframe"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="50dp" >
+
+            <TextView
+                    android:id="@+id/bannertext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/banner_space" />
+
+            <com.appnexus.opensdk.BannerAdView
+                    android:id="@+id/banner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    opensdk:height="50"
+                    opensdk:placement_id="1281482"
+                    opensdk:width="320" />
+        </FrameLayout>
+
+        <!-- Color Picker -->
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="4dp"
+                android:background="@android:color/darker_gray" />
+
+        <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="20dp" >
+
+            <View
+                    android:id="@+id/color"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@android:color/black" />
+
+            <View
+                    android:layout_width="15dp"
+                    android:layout_height="0dp" />
+
+            <Button
+                    android:id="@+id/color_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/color_button_text" />
+        </LinearLayout>
+
+        <!-- Buttons -->
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="4dp"
+                android:background="@android:color/darker_gray" />
+
+        <RadioGroup
+                android:id="@+id/radiogroup"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="20dp" >
+
+            <RadioButton
+                    android:id="@+id/radio_banner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="3dp" />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="3dp"
+                    android:text="@string/banner_button" />
+
+            <View
+                    android:layout_width="15dp"
+                    android:layout_height="0dp" />
+
+            <RadioButton
+                    android:id="@+id/radio_interstitial"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="3dp" />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="3dp"
+                    android:text="@string/interstitital_button" />
+
+            <!--
+                 <RadioButton
+                android:id="@+id/radio_mraid"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="MRAID" />
+            -->
+
+        </RadioGroup>
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="4dp"
+                android:background="@android:color/darker_gray" />
+
+        <RadioGroup
+                android:id="@+id/radiogroup2"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="20dp" >
+
+            <RadioButton
+                    android:id="@+id/radio_inapp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="3dp" />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="3dp"
+                    android:text="@string/inapp_button" />
+
+            <View
+                    android:layout_width="15dp"
+                    android:layout_height="0dp" />
+
+            <RadioButton
+                    android:id="@+id/radio_native"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="3dp" />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="3dp"
+                    android:text="@string/native_button" />
+
+        </RadioGroup>
+
+        <!-- Size Selector, Refresh Rate Selector -->
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="4dp"
+                android:background="@android:color/darker_gray" />
+
+        <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0px"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="20dp" >
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/size_spinner" />
+
+            <Spinner
+                    android:id="@+id/size_dropdown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            <View
+                    android:layout_width="30dp"
+                    android:layout_height="0dp" />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/refresh_rate_spinner" />
+
+            <Spinner
+                    android:id="@+id/refresh_dropdown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- Placement ID -->
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="4dp"
+                android:background="@android:color/darker_gray" />
+
+        <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0px"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="20dp" >
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/placement_id_edittext" />
+
+            <EditText
+                    android:id="@+id/edit_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:minWidth="100dp"
+                    android:text="@string/default_placement_id" />
+        </LinearLayout>
+
+        <!-- Load Ad Button -->
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="4dp"
+                android:background="@android:color/darker_gray" />
+
+        <Button
+                android:id="@+id/loadad"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/load_ad_button" />
+
+        <!--
+        Load Ad Button 
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="4dp"
+            android:background="@android:color/darker_gray" />
+
+        <Button
+            android:id="@+id/pastead"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/paste_ad_button" />
+        -->
+    </LinearLayout>
+
+</ScrollView>
