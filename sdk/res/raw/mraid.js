@@ -29,6 +29,7 @@
 	var is_viewable=false;
 	var expand_properties={width:-1, height:-1, useCustomClose:false, isModal:true};
 	var orientation_properties={allowOrientationChange:true, forceOrientation:"none"};
+	var resize_properties={width:-1, height:-1, offsetX: 0, offsetY: 0, customClosePosition: 'top-right', allowOffscreen: true};
 
 	// ----- MRAID AD API FUNCTIONS -----
 
@@ -154,6 +155,15 @@
 	};
 
     // MRAID 2.0 Stuff.
+    mraid.resize=function(){
+        if(resize_properties.height<0 || resize_properties.width<0){
+            mraid.util.errorEvent("mraid.resize() called before mraid.setResizeProperties()", "mraid.resize()");
+            return;
+        }
+        //TODO: Rest of this
+    }
+
+    // TODO: get/set resize properties
 
     // Creates a calendar event when passed a W3C-formatted json object
     mraid.createCalendarEvent=function(event){
@@ -163,6 +173,11 @@
     // Creates a calendar event when passed a W3C-formatted json object
     mraid.createCalendarEvent=function(uri){
         window.open("mraid://playVideo/?uri="+encodeURIComponent(uri));
+    }
+
+    // Stores a picture on the device
+    mraid.storePicture=function(uri){
+        window.open("mraid://storePicture/?uri="+encodeURIComponent(uri));
     }
 
 
