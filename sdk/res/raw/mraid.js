@@ -160,10 +160,27 @@
             mraid.util.errorEvent("mraid.resize() called before mraid.setResizeProperties()", "mraid.resize()");
             return;
         }
-        //TODO: Rest of this
+
+        window.open("mraid://resize/?w="+resize_properties.width
+                   +"&h="+resize_properties.heigh
+                   +"&offset_x="+resize_properties.offsetX
+                   +"&offset_y="+resize_properties.offsetY
+                   +"&custom_close_position="+resize_properties.customClosePosition
+                   +"&allow_offscreen="+resize_properties.allowOffscreen);
     }
 
     // TODO: get/set resize properties
+
+    mraid.getOrientationProperties=function(){
+        return orientation_properties;
+    }
+
+    mraid.setOrientationProperties=function(properties){
+        orientation_properties=properties;
+
+        window.open("mraid://setOrientationProperties/?allow_orientation_change"+properties.allowOrientationChange
+                   +"&force_orientation="+properties.forceOrientation);
+    }
 
     // Creates a calendar event when passed a W3C-formatted json object
     mraid.createCalendarEvent=function(event){
