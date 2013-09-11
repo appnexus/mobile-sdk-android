@@ -169,7 +169,13 @@
                    +"&allow_offscreen="+resize_properties.allowOffscreen);
     }
 
-    // TODO: get/set resize properties
+    mraid.setResizeProperties=function(props){
+        resize_properties=props;
+    }
+
+    mraid.getResizeProperties=function(){
+        return resize_properties;
+    }
 
     mraid.getOrientationProperties=function(){
         return orientation_properties;
