@@ -153,6 +153,20 @@
 		window.open(url);
 	};
 
+    // MRAID 2.0 Stuff.
+
+    // Creates a calendar event when passed a W3C-formatted json object
+    mraid.createCalendarEvent=function(event){
+        window.open("mraid://createCalendarEvent/?p="+encodeURIComponent(JSON.stringify(event)));
+    }
+
+    // Creates a calendar event when passed a W3C-formatted json object
+    mraid.createCalendarEvent=function(uri){
+        window.open("mraid://playVideo/?uri="+encodeURIComponent(uri));
+    }
+
+
+
 	// ----- MRAID UTILITY FUNCTIONS -----
 	// These functions are called by the native SDK to drive events and update information
 
@@ -195,5 +209,7 @@
 			listeners['stateChange'][i](new_state);
 		}
 	};
+
+
 
 }());
