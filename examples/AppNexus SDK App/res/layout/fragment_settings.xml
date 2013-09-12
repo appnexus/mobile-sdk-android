@@ -23,227 +23,445 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="5dp" >
+            >
 
-        <!-- Color Picker -->
+        <!-- General -->
 
-        <View
-                android:layout_width="fill_parent"
-                android:layout_height="4dp"
-                android:background="@android:color/darker_gray" />
+        <TextView
+                style="@style/header"
+                android:text="@string/title_settings_general"
+                />
 
-        <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingLeft="20dp" >
+        <!-- Left-Hard Column Text -->
 
-            <View
-                    android:id="@+id/color"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:background="@android:color/black" />
-
-            <View
-                    android:layout_width="15dp"
-                    android:layout_height="0dp" />
-
-            <Button
-                    android:id="@+id/color_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/color_button_text" />
-        </LinearLayout>
-
-        <!-- Buttons -->
-
-        <View
-                android:layout_width="fill_parent"
-                android:layout_height="4dp"
-                android:background="@android:color/darker_gray" />
-
-        <RadioGroup
-                android:id="@+id/radiogroup"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingLeft="20dp" >
-
-            <RadioButton
-                    android:id="@+id/radio_banner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="3dp" />
+        <RelativeLayout
+                style="@style/item">
+            <TextView
+                    android:layout_marginBottom="8dp"
+                    android:id="@+id/txt_adtype"
+                    android:text="Ad Type:"
+                    style="@style/settingsTextItem"
+                    />
 
             <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="3dp"
-                    android:text="@string/banner_button" />
-
-            <View
-                    android:layout_width="15dp"
-                    android:layout_height="0dp" />
-
-            <RadioButton
-                    android:id="@+id/radio_interstitial"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="3dp" />
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_below="@id/txt_adtype"
+                    android:id="@+id/txt_psas"
+                    android:text="Allow PSAs"
+                    style="@style/settingsTextItem"
+                    />
 
             <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_below="@id/txt_psas"
+                    android:layout_centerVertical="false"
+                    android:id="@+id/txt_browser"
+                    android:text="Browser"
+                    style="@style/settingsTextItem"
+                    />
+
+            <RelativeLayout
+                    android:id="@+id/btns_adtype"
+                    android:padding="2dp"
+                    android:layout_alignBottom="@id/txt_adtype"
+                    android:layout_alignTop="@id/txt_adtype"
+                    android:layout_toRightOf="@id/txt_adtype"
                     android:layout_height="wrap_content"
+                    android:layout_width="match_parent">
+                <View
+                        android:id="@+id/middle"
+                        android:layout_alignTop="@+id/btn_banner"
+                        android:layout_alignBottom="@+id/btn_banner"
+                        android:layout_height="wrap_content"
+                        android:background="@color/light_grey"
+                        android:layout_width="1dp"
+                        android:layout_centerInParent="true"
+                        />
+                <Button
+                        android:id="@+id/btn_banner"
+                        android:text="Banner"
+                        android:enabled="false"
+                        android:background="@drawable/btn_switch"
+                        android:textColor="@color/btn_switch_txt"
+                        android:textSize="16sp"
+                        android:layout_toLeftOf="@id/middle"
+                        android:layout_height="wrap_content"
+                        android:layout_width="fill_parent" />
+                <Button
+                        android:id="@+id/btn_interstitial"
+                        android:text="Interstitial"
+                        android:background="@drawable/btn_switch"
+                        android:textColor="@color/btn_switch_txt"
+                        android:textSize="16sp"
+                        android:layout_toRightOf="@id/middle"
+                        android:layout_height="wrap_content"
+                        android:layout_width="fill_parent" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                    android:id="@+id/btns_psa"
+                    android:orientation="horizontal"
                     android:gravity="center"
-                    android:padding="3dp"
-                    android:text="@string/interstitital_button" />
-
-            <!--
-                 <RadioButton
-                android:id="@+id/radio_mraid"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="MRAID" />
-            -->
-
-            <!--<TextView>-->
-            <!--</TextView>-->
-
-            <!--<TextView>-->
-            <!--</TextView>-->
-        </RadioGroup>
-
-        <View
-                android:layout_width="fill_parent"
-                android:layout_height="4dp"
-                android:background="@android:color/darker_gray" />
-
-        <RadioGroup
-                android:id="@+id/radiogroup2"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingLeft="20dp" >
-
-            <RadioButton
-                    android:id="@+id/radio_inapp"
-                    android:layout_width="wrap_content"
+                    android:padding="4dp"
+                    android:layout_below="@id/btns_adtype"
+                    android:layout_toRightOf="@id/txt_psas"
+                    android:layout_alignBottom="@id/txt_psas"
+                    android:layout_alignTop="@id/txt_psas"
                     android:layout_height="wrap_content"
+                    android:layout_width="match_parent">
+                <TextView
+                        android:text="Banner"
+                        android:gravity="center"
+                        android:textSize="16sp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_weight="1"/>
+                <Switch
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textOn="     "
+                        android:textOff="     "
+                        android:layout_weight="0"
+                        />
+                <TextView
+                        android:gravity="center"
+                        android:text="Interstitial"
+                        android:textSize="16sp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_weight="1"/>
+            </LinearLayout>
+
+            <LinearLayout
+                    android:orientation="horizontal"
                     android:gravity="center"
-                    android:padding="3dp" />
+                    android:padding="4dp"
+                    android:layout_below="@id/btns_psa"
+                    android:layout_alignBottom="@id/txt_browser"
+                    android:layout_alignTop="@id/txt_browser"
+                    android:layout_toRightOf="@id/txt_browser"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent">
+                <TextView
+                        android:text="Banner"
+                        android:gravity="left|center"
+                        android:textSize="16sp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_weight="1"/>
+                <Button
+                        android:id="@+id/btn_banner2"
+                        android:text=" "
+                        android:enabled="false"
+                        android:background="@drawable/btn_switch2"
+                        android:textSize="10sp"
+                        android:layout_weight="0"
+                        android:layout_height="24dp"
+                        android:layout_width="40dp" />
+                <Button
+                        android:id="@+id/btn_interstitial2"
+                        android:text=" "
+                        android:background="@drawable/btn_switch2"
+                        android:layout_weight="0"
+                        android:textSize="10sp"
+                        android:layout_toRightOf="@id/middle"
+                        android:layout_height="24dp"
+                        android:layout_width="40dp" />
+                <TextView
+                        android:text="Interstitial"
+                        android:gravity="center|right"
+                        android:textSize="16sp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_weight="1"/>
+            </LinearLayout>
+
+            <!-- Placement ID -->
 
             <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="3dp"
-                    android:text="@string/inapp_button" />
-
-            <View
-                    android:layout_width="15dp"
-                    android:layout_height="0dp" />
-
-            <RadioButton
-                    android:id="@+id/radio_native"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="3dp" />
-
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="3dp"
-                    android:text="@string/native_button" />
-
-        </RadioGroup>
-
-        <!-- Size Selector, Refresh Rate Selector -->
-
-        <View
-                android:layout_width="fill_parent"
-                android:layout_height="4dp"
-                android:background="@android:color/darker_gray" />
-
-        <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="0px"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingLeft="20dp" >
-
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/size_spinner" />
-
-            <Spinner
-                    android:id="@+id/size_dropdown"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-            <View
-                    android:layout_width="30dp"
-                    android:layout_height="0dp" />
-
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/refresh_rate_spinner" />
-
-            <Spinner
-                    android:id="@+id/refresh_dropdown"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <!-- Placement ID -->
-
-        <View
-                android:layout_width="fill_parent"
-                android:layout_height="4dp"
-                android:background="@android:color/darker_gray" />
-
-        <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="0px"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingLeft="20dp" >
-
-            <TextView
+                    android:id="@+id/txt_placementid"
+                    style="@style/settingsTextItem"
+                    android:layout_below="@id/txt_browser"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/placement_id_edittext" />
 
-            <EditText
-                    android:id="@+id/edit_text"
-                    android:layout_width="wrap_content"
+            <LinearLayout
+                    android:layout_toRightOf="@id/txt_placementid"
+                    android:layout_alignTop="@id/txt_placementid"
+                    android:layout_alignBottom="@id/txt_placementid"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    >
+            <EditText
+                    android:id="@+id/edit_placementid"
+                    style="@style/settingsEditItem"
                     android:inputType="number"
-                    android:maxLines="1"
-                    android:minWidth="100dp"
-                    android:text="@string/default_placement_id" />
-        </LinearLayout>
+                    />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <TextView
+                style="@style/header"
+                android:text="@string/title_settings_banner"
+                />
+
+        <!-- Size Selector, Refresh Rate Selector -->
+
+        <RelativeLayout
+                style="@style/item">
+            <TextView
+                    android:id="@+id/txt_size"
+                    style="@style/settingsTextItem.long"
+                    android:text="@string/size_spinner" />
+
+            <Spinner
+                    android:id="@+id/dropdown_size"
+                    style="@style/settingsEditItem"
+                    android:layout_alignTop="@id/txt_size"
+                    android:layout_alignBottom="@id/txt_size"
+                    />
+
+            <TextView
+                    android:layout_below="@id/txt_size"
+                    android:id="@+id/txt_refresh"
+                    style="@style/settingsTextItem.long"
+                    android:text="@string/refresh_rate_spinner" />
+
+            <Spinner
+                    android:id="@+id/dropdown_refresh"
+                    style="@style/settingsEditItem"
+                    android:layout_below="@id/txt_size"
+                    android:layout_alignTop="@id/txt_refresh"
+                    android:layout_alignBottom="@id/txt_refresh"
+                    />
+        </RelativeLayout>
+
+        <!-- Interstitial -->
+
+        <TextView
+                style="@style/header"
+                android:text="@string/title_settings_interstitial"
+                />
+
+        <RelativeLayout
+                style="@style/item">
+            <TextView
+                    android:id="@+id/txt_interstitial_color"
+                    style="@style/settingsTextItem.long"
+                    android:text="Background Color" />
+
+            <View
+                    android:id="@+id/color"
+                    android:layout_margin="8dp"
+                    android:layout_toRightOf="@id/txt_interstitial_color"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@android:color/black" />
+
+            <EditText
+                    android:id="@+id/edit_interstitial_color"
+                    android:gravity="center_vertical"
+                    style="@style/settingsEditItem"
+                    />
+        </RelativeLayout>
+
+        <RelativeLayout
+                style="@style/item">
+            <TextView
+                    android:id="@+id/txt_close_delay"
+                    style="@style/settingsTextItem.long"
+                    android:text="Close Delay" />
+
+            <Spinner
+                    android:id="@+id/dropdown_close_delay"
+                    style="@style/settingsEditItem"
+                    />
+        </RelativeLayout>
+
+        <!-- Debug Auction -->
+
+        <TextView
+                style="@style/header"
+                android:text="@string/title_settings_debug"
+                />
+
+        <RelativeLayout
+                style="@style/item">
+            <TextView
+                    android:id="@+id/txt_memberid"
+                    style="@style/settingsTextItem"
+                    android:text="Member Id" />
+
+            <EditText
+                    android:id="@+id/edit_memberid"
+                    android:inputType="number"
+                    style="@style/settingsEditItem"
+                    />
+        </RelativeLayout>
+
+        <RelativeLayout
+                style="@style/item">
+            <TextView
+                    android:id="@+id/txt_dongle"
+                    style="@style/settingsTextItem"
+                    android:text="Dongle" />
+
+            <EditText
+                    android:id="@+id/edit_dongle"
+                    style="@style/settingsEditItem"
+                    />
+        </RelativeLayout>
+
+        <!--&lt;!&ndash; Color Picker &ndash;&gt;-->
+
+        <!--<View-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:layout_height="4dp"-->
+                <!--android:background="@android:color/darker_gray" />-->
+
+        <!--<LinearLayout-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:gravity="center_vertical"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:paddingLeft="20dp" >-->
+
+            <!--<View-->
+                    <!--android:id="@+id/color"-->
+                    <!--android:layout_width="50dp"-->
+                    <!--android:layout_height="50dp"-->
+                    <!--android:background="@android:color/black" />-->
+
+            <!--<View-->
+                    <!--android:layout_width="15dp"-->
+                    <!--android:layout_height="0dp" />-->
+
+            <!--<Button-->
+                    <!--android:id="@+id/color_button"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="@string/color_button_text" />-->
+        <!--</LinearLayout>-->
+
+        <!--&lt;!&ndash; Buttons &ndash;&gt;-->
+
+        <!--<View-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:layout_height="4dp"-->
+                <!--android:background="@android:color/darker_gray" />-->
+
+        <!--<RadioGroup-->
+                <!--android:id="@+id/radiogroup"-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_weight="1"-->
+                <!--android:gravity="center_vertical"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:paddingLeft="20dp" >-->
+
+            <!--<RadioButton-->
+                    <!--android:id="@+id/radio_banner"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:gravity="center"-->
+                    <!--android:padding="3dp" />-->
+
+            <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:gravity="center"-->
+                    <!--android:padding="3dp"-->
+                    <!--android:text="@string/banner_button" />-->
+
+            <!--<View-->
+                    <!--android:layout_width="15dp"-->
+                    <!--android:layout_height="0dp" />-->
+
+            <!--<RadioButton-->
+                    <!--android:id="@+id/radio_interstitial"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:gravity="center"-->
+                    <!--android:padding="3dp" />-->
+
+            <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:gravity="center"-->
+                    <!--android:padding="3dp"-->
+                    <!--android:text="@string/interstitital_button" />-->
+
+            <!--&lt;!&ndash;-->
+                 <!--<RadioButton-->
+                <!--android:id="@+id/radio_mraid"-->
+                <!--android:layout_width="0dp"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_weight="1"-->
+                <!--android:text="MRAID" />-->
+            <!--&ndash;&gt;-->
+
+            <!--&lt;!&ndash;<TextView>&ndash;&gt;-->
+            <!--&lt;!&ndash;</TextView>&ndash;&gt;-->
+
+            <!--&lt;!&ndash;<TextView>&ndash;&gt;-->
+            <!--&lt;!&ndash;</TextView>&ndash;&gt;-->
+        <!--</RadioGroup>-->
+
+        <!--<View-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:layout_height="4dp"-->
+                <!--android:background="@android:color/darker_gray" />-->
+
+        <!--<RadioGroup-->
+                <!--android:id="@+id/radiogroup2"-->
+                <!--android:layout_width="fill_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_weight="1"-->
+                <!--android:gravity="center_vertical"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:paddingLeft="20dp" >-->
+
+            <!--<RadioButton-->
+                    <!--android:id="@+id/radio_inapp"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:gravity="center"-->
+                    <!--android:padding="3dp" />-->
+
+            <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:gravity="center"-->
+                    <!--android:padding="3dp"-->
+                    <!--android:text="@string/inapp_button" />-->
+
+            <!--<View-->
+                    <!--android:layout_width="15dp"-->
+                    <!--android:layout_height="0dp" />-->
+
+            <!--<RadioButton-->
+                    <!--android:id="@+id/radio_native"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:gravity="center"-->
+                    <!--android:padding="3dp" />-->
+
+            <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:gravity="center"-->
+                    <!--android:padding="3dp"-->
+                    <!--android:text="@string/native_button" />-->
+
+        <!--</RadioGroup>-->
+
 
         <!-- Load Ad Button -->
-
-        <View
-                android:layout_width="fill_parent"
-                android:layout_height="4dp"
-                android:background="@android:color/darker_gray" />
 
         <Button
                 android:id="@+id/loadad"

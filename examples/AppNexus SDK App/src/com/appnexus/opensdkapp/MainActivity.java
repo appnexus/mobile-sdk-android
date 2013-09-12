@@ -24,7 +24,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.*;
+import android.view.Menu;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.Window;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 
@@ -43,8 +46,8 @@ public class MainActivity extends FragmentActivity implements
     private HashMap<String, TabInfo> mapTabInfo = new HashMap<String, MainActivity.TabInfo>();
     private ViewPager mViewPager;
     private PagerAdapter mPagerAdapter;
-    private View logButton;
-    private View logExtension;
+    private View btnMore;
+    private View btnLog;
     private View contentView;
 
     private DebugFragment debugFrag;
@@ -67,7 +70,7 @@ public class MainActivity extends FragmentActivity implements
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 Log.d(Constants.LOG_TAG, view.toString());
                 Log.d(Constants.LOG_TAG, motionEvent.getRawX() + ", " + motionEvent.getRawY());
-                Log.d(Constants.LOG_TAG, logExtension.getLeft() + ", " + logExtension.getTop());
+                Log.d(Constants.LOG_TAG, btnLog.getLeft() + ", " + btnLog.getTop());
                 return false;
             }
         });
@@ -81,20 +84,20 @@ public class MainActivity extends FragmentActivity implements
             }
         }.sendEmptyMessage(0);
 
-        logButton = findViewById(R.id.btn_log);
-        logExtension = findViewById(R.id.log_extension);
+        btnMore = findViewById(R.id.btn_log);
+        btnLog = findViewById(R.id.log_extension);
 
-        logButton.setOnClickListener(new View.OnClickListener() {
+        btnMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (logExtension.getVisibility() == View.VISIBLE)
-                    logExtension.setVisibility(View.GONE);
+                if (btnLog.getVisibility() == View.VISIBLE)
+                    btnLog.setVisibility(View.GONE);
                 else
-                    logExtension.setVisibility(View.VISIBLE);
+                    btnLog.setVisibility(View.VISIBLE);
             }
         });
 
-        logExtension.setOnClickListener(new View.OnClickListener() {
+        btnLog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 view.setVisibility(View.GONE);
@@ -209,22 +212,22 @@ public class MainActivity extends FragmentActivity implements
     // special handling for our "native" log button
     @Override
     public boolean dispatchTouchEvent(MotionEvent motionEvent) {
-        if (logExtension.getVisibility() == View.GONE)
+        if (btnLog.getVisibility() == View.GONE)
             return super.dispatchTouchEvent(motionEvent);
 
         float x = motionEvent.getRawX() - contentView.getLeft();
         float y = motionEvent.getRawY() - contentView.getTop();
 
-        // if the user presses logButton, don't handle specially, logButton will handle it
-        if ((logButton.getTop() < y) && (logButton.getBottom() > y) &&
-                (logButton.getLeft() < x) && (x < logButton.getRight())) {
+        // if the user presses btnMore, don't handle specially, btnMore will handle it
+        if ((btnMore.getTop() < y) && (btnMore.getBottom() > y) &&
+                (btnMore.getLeft() < x) && (x < btnMore.getRight())) {
             return super.dispatchTouchEvent(motionEvent);
         }
 
-        // if the user presses outside the bounds of logExtension, "close it"
-        if (y < (logExtension.getTop()) || (logExtension.getBottom() < y) ||
-        (x < logExtension.getLeft()) || (logExtension.getRight() < x)) {
-            logExtension.setVisibility(View.GONE);
+        // if the user presses outside the bounds of btnLog, "close it"
+        if (y < (btnLog.getTop()) || (btnLog.getBottom() < y) ||
+        (x < btnLog.getLeft()) || (btnLog.getRight() < x)) {
+            btnLog.setVisibility(View.GONE);
         }
 
         return super.dispatchTouchEvent(motionEvent);

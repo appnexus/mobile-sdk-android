@@ -22,6 +22,75 @@
         <item name="android:layout_width">match_parent</item>
     </style>
 
+    <style name="header" parent="widthFillheightWrap">
+        <item name="android:padding">4dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@color/header_bg</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="item" parent="widthFillheightWrap">
+        <item name="android:padding">4dp</item>
+    </style>
+
+    <style name="switchButtonItem">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_centerHorizontal">true</item>
+    </style>
+
+    <style name="switchItem">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:checked">false</item>
+    </style>
+
+    <style name="switchText" parent="widthFillheightWrap">
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:padding">8dp</item>
+        <!--<item name="android:gravity">center</item>-->
+    </style>
+
+    <style name="settingsTextItem">
+        <item name="android:layout_width">100dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="settingsTextItem.long">
+        <item name="android:layout_width">160dp</item>
+    </style>
+
+    <style name="settingsEditItem">
+        <item name="android:layout_width">128dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:layout_alignParentRight">true</item>
+    </style>
+
+    <style name="spinnerText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="settingsSpinner">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:minWidth">80dp</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
     <style name="debugParent" parent="widthFillheightWrap">
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingBottom">4dp</item>

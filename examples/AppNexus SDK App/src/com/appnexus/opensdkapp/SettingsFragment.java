@@ -28,94 +28,90 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import com.appnexus.opensdk.utils.Clog;
 
 public class SettingsFragment extends Fragment {
     private Button loadAdButton;
     //private Button pasteAdButton;
-    private RadioGroup radioGroup;
-    private RadioGroup radioGroup2;
+//    private RadioGroup radioGroup;
+//    private RadioGroup radioGroup2;
     private TextView bannerText;
     private EditText placementEditText;
     private boolean isInterstitial = false;
-    private Button colorButton;
     private View colorView;
     private int color = 0xff000000;
-    private Spinner sizes;
-    private Spinner refresh;
+    private Spinner dropSize, dropRefresh, dropCloseDelay;
+
+    private Button btnAdTypeBanner, btnAdTypeInterstitial;
+    private Button btnAdTypeBanner2, btnAdTypeInterstitial2;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View out = inflater.inflate(R.layout.fragment_settings, null);
 
-        sizes = (Spinner) out.findViewById(R.id.size_dropdown);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                container.getContext(), R.array.sizes,
-                android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        sizes.setAdapter(adapter);
-
-        refresh = (Spinner) out.findViewById(R.id.refresh_dropdown);
-        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(
-                container.getContext(), R.array.refresh,
-                android.R.layout.simple_spinner_item);
-        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        refresh.setAdapter(adapter2);
+        dropSize = initSpinner(out, container, R.id.dropdown_size, R.array.sizes);
+        dropRefresh = initSpinner(out, container, R.id.dropdown_refresh, R.array.refresh);
+        dropCloseDelay = initSpinner(out, container, R.id.dropdown_close_delay, R.array.close_delay);
 
         // Locate member views
         loadAdButton = (Button) out.findViewById(R.id.loadad);
         loadAdButton.setOnClickListener(new LoadAdOnClickListener());
 
+        btnAdTypeBanner = (Button) out.findViewById(R.id.btn_banner);
+        btnAdTypeInterstitial = (Button) out.findViewById(R.id.btn_interstitial);
+
+        btnAdTypeBanner.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setBannerMode(true);
+            }
+        });
+
+        btnAdTypeInterstitial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setBannerMode(false);
+            }
+        });
+
+        btnAdTypeBanner2 = (Button) out.findViewById(R.id.btn_banner2);
+        btnAdTypeInterstitial2 = (Button) out.findViewById(R.id.btn_interstitial2);
+
+        btnAdTypeBanner2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setBannerMode(true);
+            }
+        });
+
+        btnAdTypeInterstitial2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setBannerMode(false);
+            }
+        });
+
+
+
         //pasteAdButton = (Button) out.findViewById(R.id.pastead);
         //pasteAdButton.setOnClickListener(new PasteAdOnClickListener());
 
-        radioGroup = (RadioGroup) out.findViewById(R.id.radiogroup);
-        radioGroup.check(R.id.radio_banner);
-        radioGroup.setOnCheckedChangeListener(new RadioGroupListener());
+//        radioGroup = (RadioGroup) out.findViewById(R.id.radiogroup);
+//        radioGroup.check(R.id.radio_banner);
+//        radioGroup.setOnCheckedChangeListener(new RadioGroupListener());
+//
+//        radioGroup2 = (RadioGroup) out.findViewById(R.id.radiogroup2);
+//        radioGroup2.check(R.id.radio_inapp);
+//        radioGroup2.setOnCheckedChangeListener(new RadioGroup2Listener());
 
-        radioGroup2 = (RadioGroup) out.findViewById(R.id.radiogroup2);
-        radioGroup2.check(R.id.radio_inapp);
-        radioGroup2.setOnCheckedChangeListener(new RadioGroup2Listener());
+        dropSize.setOnItemSelectedListener(new SizeSelectedListener(this));
+        dropSize.setSelection(3);
 
-        sizes.setOnItemSelectedListener(new SizeSelectedListener(this));
+        dropRefresh.setOnItemSelectedListener(new RefreshSelectedListener());
+        dropRefresh.setSelection(1);
 
-        refresh.setOnItemSelectedListener(new RefreshSelectedListener());
-
-        placementEditText = (EditText) out.findViewById(R.id.edit_text);
+        placementEditText = (EditText) out.findViewById(R.id.edit_placementid);
         placementEditText.addTextChangedListener(new PlacementTextWatcher());
-
-        colorButton = (Button) out.findViewById(R.id.color_button);
-        colorView = (View) out.findViewById(R.id.color);
-        colorButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-//				AmbilWarnaDialog d = new AmbilWarnaDialog(out.getContext(),
-//						color, new OnAmbilWarnaListener() {
-//
-//					@Override
-//					public void onOk(AmbilWarnaDialog dialog, int color) {
-//						SettingsFragment.this.color = color;
-//						SettingsFragment.this.colorView
-//								.setBackgroundColor(color);
-//						SettingsFragment.this.iav
-//								.setBackgroundColor(color);
-//
-//					}
-//
-//					@Override
-//					public void onCancel(AmbilWarnaDialog dialog) {
-//						// TODO Auto-generated method stub
-//
-//					}
-//				});
-//				d.show();
-            }
-
-        });
 
         // Load default placement
         SharedPreferences sp = getActivity().getSharedPreferences(
@@ -126,25 +122,43 @@ public class SettingsFragment extends Fragment {
         } else {
             placementEditText.setText("000000");
         }
-        sizes.setEnabled(true);
-        refresh.setEnabled(true);
-        colorButton.setEnabled(false);
+        dropSize.setEnabled(true);
+        dropRefresh.setEnabled(true);
         return out;
+    }
+
+    private static Spinner initSpinner(View out, ViewGroup container, int resId, int stringsId) {
+        Spinner dropdown = (Spinner) out.findViewById(resId);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                container.getContext(), stringsId,
+                android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        dropdown.setAdapter(adapter);
+        return dropdown;
+    }
+
+    private void setBannerMode(boolean isBanner) {
+        btnAdTypeBanner.setEnabled(!isBanner);
+        btnAdTypeInterstitial.setEnabled(isBanner);
+        btnAdTypeBanner2.setEnabled(!isBanner);
+        btnAdTypeInterstitial2.setEnabled(isBanner);
+
+        dropSize.setEnabled(isBanner);
+        dropRefresh.setEnabled(isBanner);
+
+        dropCloseDelay.setEnabled(!isBanner);
     }
 
     private class PlacementTextWatcher implements TextWatcher {
 
         @Override
         public void afterTextChanged(Editable s) {
-            // TODO Auto-generated method stub
-
         }
 
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count,
                                       int after) {
-            // TODO Auto-generated method stub
-
         }
 
         @Override
@@ -275,16 +289,14 @@ public class SettingsFragment extends Fragment {
             switch (checkedId) {
                 default:
                     isInterstitial = false;
-                    sizes.setEnabled(true);
-                    refresh.setEnabled(true);
-                    colorButton.setEnabled(false);
+                    dropSize.setEnabled(true);
+                    dropRefresh.setEnabled(true);
                     break;
                 case R.id.radio_interstitial:
                     isInterstitial = true;
-                    sizes.setEnabled(false);
-                    refresh.setEnabled(false);
-                    colorButton.setEnabled(true);
-                    Clog.d(Constants.LOG_TAG, "Set to load an interstitial");
+                    dropSize.setEnabled(false);
+                    dropRefresh.setEnabled(false);
+                    Log.d(Constants.LOG_TAG, "Set to load an interstitial");
                     break;
             }
         }

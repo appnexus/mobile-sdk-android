@@ -55,7 +55,7 @@ public class PreviewFragment extends Fragment implements AdListener {
                              Bundle savedInstanceState) {
         final View out = inflater.inflate(R.layout.fragment_preview, null);
 
-        sizes = (Spinner) out.findViewById(R.id.size_dropdown);
+        sizes = (Spinner) out.findViewById(R.id.dropdown_size);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 container.getContext(), R.array.sizes,
                 android.R.layout.simple_spinner_item);
@@ -63,7 +63,7 @@ public class PreviewFragment extends Fragment implements AdListener {
 
         sizes.setAdapter(adapter);
 
-        refresh = (Spinner) out.findViewById(R.id.refresh_dropdown);
+        refresh = (Spinner) out.findViewById(R.id.dropdown_refresh);
         ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(
                 container.getContext(), R.array.refresh,
                 android.R.layout.simple_spinner_item);
@@ -143,7 +143,7 @@ public class PreviewFragment extends Fragment implements AdListener {
 
         refresh.setOnItemSelectedListener(new RefreshSelectedListener());
 
-        placementEditText = (EditText) out.findViewById(R.id.edit_text);
+        placementEditText = (EditText) out.findViewById(R.id.edit_placementid);
         placementEditText.addTextChangedListener(new PlacementTextWatcher());
 
         colorButton = (Button) out.findViewById(R.id.color_button);

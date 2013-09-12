@@ -26,13 +26,9 @@
             android:orientation="vertical">
 
         <TextView
-                android:padding="4dp"
-                android:gravity="center"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                style="@style/header"
                 android:text="@string/last_request_title"
-                android:background="#CCCCCC"
-                android:textStyle="bold" />
+                />
 
         <TextView
                 android:id="@+id/request_text"
@@ -43,14 +39,10 @@
                 android:textIsSelectable="true" />
 
         <TextView
+                style="@style/header"
                 android:layout_marginTop="12dp"
-                android:padding="4dp"
-                android:gravity="center"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
                 android:text="@string/last_response_title"
-                android:background="#CCCCCC"
-                android:textStyle="bold" />
+                />
 
         <TextView
                 android:id="@+id/response_text"

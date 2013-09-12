@@ -209,7 +209,7 @@
                     android:text="@string/size_spinner" />
 
             <Spinner
-                    android:id="@+id/size_dropdown"
+                    android:id="@+id/dropdown_size"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -223,7 +223,7 @@
                     android:text="@string/refresh_rate_spinner" />
 
             <Spinner
-                    android:id="@+id/refresh_dropdown"
+                    android:id="@+id/dropdown_refresh"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
         </LinearLayout>
@@ -249,7 +249,7 @@
                     android:text="@string/placement_id_edittext" />
 
             <EditText
-                    android:id="@+id/edit_text"
+                    android:id="@+id/edit_placementid"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:inputType="number"

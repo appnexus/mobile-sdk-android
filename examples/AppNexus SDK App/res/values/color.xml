@@ -3,4 +3,5 @@
     <color name="offwhite">#ffebebeb</color>
     <color name="black">#ff000000</color>
     <color name="light_grey">#d6d6d6</color>
+    <color name="header_bg">#cccccc</color>
 </resources>
