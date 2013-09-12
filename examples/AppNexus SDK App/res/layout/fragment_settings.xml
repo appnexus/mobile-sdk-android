@@ -29,17 +29,18 @@
 
         <TextView
                 style="@style/header"
-                android:text="@string/title_settings_general"
+                android:text="@string/settings_title_general"
                 />
-
-        <!-- Left-Hard Column Text -->
 
         <RelativeLayout
                 style="@style/item">
+
+            <!-- Left-Hard Column Text -->
+
             <TextView
                     android:layout_marginBottom="8dp"
                     android:id="@+id/txt_adtype"
-                    android:text="Ad Type:"
+                    android:text="@string/settings_txt_adtype"
                     style="@style/settingsTextItem"
                     />
 
@@ -48,7 +49,7 @@
                     android:layout_marginBottom="8dp"
                     android:layout_below="@id/txt_adtype"
                     android:id="@+id/txt_psas"
-                    android:text="Allow PSAs"
+                    android:text="@string/settings_txt_psas"
                     style="@style/settingsTextItem"
                     />
 
@@ -58,9 +59,12 @@
                     android:layout_below="@id/txt_psas"
                     android:layout_centerVertical="false"
                     android:id="@+id/txt_browser"
-                    android:text="Browser"
+                    android:text="@string/settings_txt_browser"
                     style="@style/settingsTextItem"
                     />
+
+
+            <!-- AdType "Switch" -->
 
             <RelativeLayout
                     android:id="@+id/btns_adtype"
@@ -101,7 +105,9 @@
 
             </RelativeLayout>
 
-            <LinearLayout
+            <!-- PSA "Switch" -->
+
+            <RelativeLayout
                     android:id="@+id/btns_psa"
                     android:orientation="horizontal"
                     android:gravity="center"
@@ -112,28 +118,71 @@
                     android:layout_alignTop="@id/txt_psas"
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent">
+                <Switch
+                        android:id="@+id/switch_psa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_centerInParent="true"
+                        android:background="@color/light_grey"
+                        android:switchMinWidth="120dp"
+                        android:gravity="center"
+                        android:textOn=""
+                        android:textOff=""
+                        android:thumb="@drawable/switch_selector"
+                        android:textColor="@color/btn_switch_txt"
+                        />
+                <View android:id="@+id/middle_psa"
+                      android:layout_width="0dp"
+                      android:layout_height="0dp"
+                      android:layout_centerInParent="true" />
                 <TextView
                         android:text="Banner"
                         android:gravity="center"
                         android:textSize="16sp"
+                        android:layout_alignTop="@id/switch_psa"
+                        android:layout_alignBottom="@id/switch_psa"
+                        android:layout_alignLeft="@id/switch_psa"
+                        android:layout_toLeftOf="@id/middle_psa"
                         android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_weight="1"/>
-                <Switch
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textOn="     "
-                        android:textOff="     "
-                        android:layout_weight="0"
-                        />
                 <TextView
                         android:gravity="center"
                         android:text="Interstitial"
                         android:textSize="16sp"
+                        android:layout_alignTop="@id/switch_psa"
+                        android:layout_alignBottom="@id/switch_psa"
+                        android:layout_alignRight="@id/switch_psa"
+                        android:layout_toRightOf="@id/middle_psa"
+                        android:layout_alignParentRight="true"
                         android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_weight="1"/>
-            </LinearLayout>
+
+                <!--<LinearLayout-->
+                    <!--android:orientation="horizontal"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:layout_width="match_parent">-->
+
+                <!--<TextView-->
+                        <!--android:text="Banner"-->
+                        <!--android:gravity="center"-->
+                        <!--android:textSize="16sp"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_weight="1"/>-->
+                <!--<TextView-->
+                        <!--android:layout_gravity="right"-->
+                        <!--android:gravity="center"-->
+                        <!--android:text="Interstitial"-->
+                        <!--android:textSize="16sp"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_weight="1"/>-->
+                <!--</LinearLayout>-->
+            </RelativeLayout>
+
+            <!-- Browser "Switch" -->
 
             <LinearLayout
                     android:orientation="horizontal"
@@ -187,37 +236,39 @@
                     android:layout_below="@id/txt_browser"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/placement_id_edittext" />
+                    android:text="@string/settings_txt_placementid" />
 
             <LinearLayout
                     android:layout_toRightOf="@id/txt_placementid"
                     android:layout_alignTop="@id/txt_placementid"
                     android:layout_alignBottom="@id/txt_placementid"
-                    android:gravity="center"
+                    android:gravity="right"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     >
-            <EditText
-                    android:id="@+id/edit_placementid"
-                    style="@style/settingsEditItem"
-                    android:inputType="number"
-                    />
+                <EditText
+                        android:id="@+id/edit_placementid"
+                        style="@style/settingsEditItem"
+                        android:inputType="number"
+                        />
             </LinearLayout>
         </RelativeLayout>
 
+        <!-- Banner -->
+
         <TextView
                 style="@style/header"
-                android:text="@string/title_settings_banner"
+                android:text="@string/settings_title_banner"
                 />
 
-        <!-- Size Selector, Refresh Rate Selector -->
+        <!-- Size -->
 
         <RelativeLayout
                 style="@style/item">
             <TextView
                     android:id="@+id/txt_size"
                     style="@style/settingsTextItem.long"
-                    android:text="@string/size_spinner" />
+                    android:text="@string/settings_txt_size" />
 
             <Spinner
                     android:id="@+id/dropdown_size"
@@ -225,17 +276,21 @@
                     android:layout_alignTop="@id/txt_size"
                     android:layout_alignBottom="@id/txt_size"
                     />
+        </RelativeLayout>
 
+        <!-- Refresh Rate -->
+
+        <RelativeLayout
+                style="@style/item">
             <TextView
                     android:layout_below="@id/txt_size"
                     android:id="@+id/txt_refresh"
                     style="@style/settingsTextItem.long"
-                    android:text="@string/refresh_rate_spinner" />
+                    android:text="@string/settings_txt_refresh" />
 
             <Spinner
                     android:id="@+id/dropdown_refresh"
                     style="@style/settingsEditItem"
-                    android:layout_below="@id/txt_size"
                     android:layout_alignTop="@id/txt_refresh"
                     android:layout_alignBottom="@id/txt_refresh"
                     />
@@ -245,41 +300,55 @@
 
         <TextView
                 style="@style/header"
-                android:text="@string/title_settings_interstitial"
+                android:text="@string/settings_title_interstitial"
                 />
+
+        <!-- Background Color -->
 
         <RelativeLayout
                 style="@style/item">
             <TextView
                     android:id="@+id/txt_interstitial_color"
                     style="@style/settingsTextItem.long"
-                    android:text="Background Color" />
+                    android:text="@string/settings_txt_interstitial_bg_color"
+                    />
 
             <View
                     android:id="@+id/color"
                     android:layout_margin="8dp"
                     android:layout_toRightOf="@id/txt_interstitial_color"
+                    android:layout_centerVertical="true"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
+                    android:layout_alignTop="@id/txt_interstitial_color"
+                    android:layout_alignBottom="@id/txt_interstitial_color"
                     android:background="@android:color/black" />
 
             <EditText
                     android:id="@+id/edit_interstitial_color"
+                    android:maxLength="10"
                     android:gravity="center_vertical"
                     style="@style/settingsEditItem"
+                    android:layout_alignTop="@id/txt_interstitial_color"
+                    android:layout_alignBottom="@id/txt_interstitial_color"
                     />
         </RelativeLayout>
+
+        <!-- Close Delay -->
 
         <RelativeLayout
                 style="@style/item">
             <TextView
                     android:id="@+id/txt_close_delay"
                     style="@style/settingsTextItem.long"
-                    android:text="Close Delay" />
+                    android:text="@string/settings_txt_close_delay"
+                    />
 
             <Spinner
                     android:id="@+id/dropdown_close_delay"
                     style="@style/settingsEditItem"
+                    android:layout_alignTop="@id/txt_close_delay"
+                    android:layout_alignBottom="@id/txt_close_delay"
                     />
         </RelativeLayout>
 
@@ -287,202 +356,53 @@
 
         <TextView
                 style="@style/header"
-                android:text="@string/title_settings_debug"
+                android:text="@string/settings_title_debug"
                 />
+
+        <!-- Member Id -->
 
         <RelativeLayout
                 style="@style/item">
             <TextView
                     android:id="@+id/txt_memberid"
                     style="@style/settingsTextItem"
-                    android:text="Member Id" />
+                    android:text="@string/settings_txt_memberid"
+                    />
 
             <EditText
                     android:id="@+id/edit_memberid"
                     android:inputType="number"
                     style="@style/settingsEditItem"
+                    android:layout_alignTop="@id/txt_memberid"
+                    android:layout_alignBottom="@id/txt_memberid"
                     />
         </RelativeLayout>
+
+        <!-- Dongle -->
 
         <RelativeLayout
                 style="@style/item">
             <TextView
                     android:id="@+id/txt_dongle"
                     style="@style/settingsTextItem"
-                    android:text="Dongle" />
+                    android:text="@string/settings_txt_dongle"
+                    />
 
             <EditText
                     android:id="@+id/edit_dongle"
                     style="@style/settingsEditItem"
+                    android:layout_alignTop="@id/txt_dongle"
+                    android:layout_alignBottom="@id/txt_dongle"
                     />
         </RelativeLayout>
-
-        <!--&lt;!&ndash; Color Picker &ndash;&gt;-->
-
-        <!--<View-->
-                <!--android:layout_width="fill_parent"-->
-                <!--android:layout_height="4dp"-->
-                <!--android:background="@android:color/darker_gray" />-->
-
-        <!--<LinearLayout-->
-                <!--android:layout_width="fill_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:gravity="center_vertical"-->
-                <!--android:orientation="horizontal"-->
-                <!--android:paddingLeft="20dp" >-->
-
-            <!--<View-->
-                    <!--android:id="@+id/color"-->
-                    <!--android:layout_width="50dp"-->
-                    <!--android:layout_height="50dp"-->
-                    <!--android:background="@android:color/black" />-->
-
-            <!--<View-->
-                    <!--android:layout_width="15dp"-->
-                    <!--android:layout_height="0dp" />-->
-
-            <!--<Button-->
-                    <!--android:id="@+id/color_button"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="@string/color_button_text" />-->
-        <!--</LinearLayout>-->
-
-        <!--&lt;!&ndash; Buttons &ndash;&gt;-->
-
-        <!--<View-->
-                <!--android:layout_width="fill_parent"-->
-                <!--android:layout_height="4dp"-->
-                <!--android:background="@android:color/darker_gray" />-->
-
-        <!--<RadioGroup-->
-                <!--android:id="@+id/radiogroup"-->
-                <!--android:layout_width="fill_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_weight="1"-->
-                <!--android:gravity="center_vertical"-->
-                <!--android:orientation="horizontal"-->
-                <!--android:paddingLeft="20dp" >-->
-
-            <!--<RadioButton-->
-                    <!--android:id="@+id/radio_banner"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:gravity="center"-->
-                    <!--android:padding="3dp" />-->
-
-            <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:gravity="center"-->
-                    <!--android:padding="3dp"-->
-                    <!--android:text="@string/banner_button" />-->
-
-            <!--<View-->
-                    <!--android:layout_width="15dp"-->
-                    <!--android:layout_height="0dp" />-->
-
-            <!--<RadioButton-->
-                    <!--android:id="@+id/radio_interstitial"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:gravity="center"-->
-                    <!--android:padding="3dp" />-->
-
-            <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:gravity="center"-->
-                    <!--android:padding="3dp"-->
-                    <!--android:text="@string/interstitital_button" />-->
-
-            <!--&lt;!&ndash;-->
-                 <!--<RadioButton-->
-                <!--android:id="@+id/radio_mraid"-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_weight="1"-->
-                <!--android:text="MRAID" />-->
-            <!--&ndash;&gt;-->
-
-            <!--&lt;!&ndash;<TextView>&ndash;&gt;-->
-            <!--&lt;!&ndash;</TextView>&ndash;&gt;-->
-
-            <!--&lt;!&ndash;<TextView>&ndash;&gt;-->
-            <!--&lt;!&ndash;</TextView>&ndash;&gt;-->
-        <!--</RadioGroup>-->
-
-        <!--<View-->
-                <!--android:layout_width="fill_parent"-->
-                <!--android:layout_height="4dp"-->
-                <!--android:background="@android:color/darker_gray" />-->
-
-        <!--<RadioGroup-->
-                <!--android:id="@+id/radiogroup2"-->
-                <!--android:layout_width="fill_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_weight="1"-->
-                <!--android:gravity="center_vertical"-->
-                <!--android:orientation="horizontal"-->
-                <!--android:paddingLeft="20dp" >-->
-
-            <!--<RadioButton-->
-                    <!--android:id="@+id/radio_inapp"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:gravity="center"-->
-                    <!--android:padding="3dp" />-->
-
-            <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:gravity="center"-->
-                    <!--android:padding="3dp"-->
-                    <!--android:text="@string/inapp_button" />-->
-
-            <!--<View-->
-                    <!--android:layout_width="15dp"-->
-                    <!--android:layout_height="0dp" />-->
-
-            <!--<RadioButton-->
-                    <!--android:id="@+id/radio_native"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:gravity="center"-->
-                    <!--android:padding="3dp" />-->
-
-            <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:gravity="center"-->
-                    <!--android:padding="3dp"-->
-                    <!--android:text="@string/native_button" />-->
-
-        <!--</RadioGroup>-->
-
 
         <!-- Load Ad Button -->
 
         <Button
-                android:id="@+id/loadad"
+                android:id="@+id/btn_load_ad"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/load_ad_button" />
 
-        <!--
-        Load Ad Button
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="4dp"
-            android:background="@android:color/darker_gray" />
-
-        <Button
-            android:id="@+id/pastead"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/paste_ad_button" />
-        -->
     </LinearLayout>
-
 </ScrollView>

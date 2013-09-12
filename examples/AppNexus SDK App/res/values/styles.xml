@@ -65,9 +65,11 @@
     </style>
 
     <style name="settingsEditItem">
-        <item name="android:layout_width">128dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:minWidth">128dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:maxLines">1</item>
+        <item name="android:maxLength">16</item>
         <item name="android:gravity">center</item>
         <item name="android:minHeight">48dp</item>
         <item name="android:layout_alignParentRight">true</item>

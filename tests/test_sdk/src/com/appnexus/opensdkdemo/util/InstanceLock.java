@@ -32,13 +32,12 @@ public class InstanceLock {
             while (!notified) {
                 try {
                     lock.wait(time);
-                } catch (InterruptedException e) {
+                } catch (InterruptedException ignored) {
                     continue; // recheck and go back to waiting if still not notified
                 }
             }
-            notified = false;
         }
-
+        notified = false;
         Clog.w(TestUtil.testLogTag, "unpausing " + Thread.currentThread().getName());
     }
 

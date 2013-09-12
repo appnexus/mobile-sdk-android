@@ -21,24 +21,31 @@
     <string name="banner_space">Banners will load here.</string>
     <string name="banner_button">Banner</string>
     <string name="interstitital_button">Interstitial</string>
-    <string name="size_spinner">Size: </string>
-    <string name="refresh_rate_spinner">Refresh Rate: </string>
-    <string name="placement_id_edittext">Placement Id: </string>
     <string name="default_placement_id">656561</string>
     <string name="load_ad_button">Load Ad</string>
     <string name="paste_ad_button">Paste Ad</string>
     <string name="inapp_button">In-App Browser</string>
     <string name="native_button">Native Browser</string>
-    <string name="color_button_text">Select Interstitial BG Color</string>
 
     <string name="last_request_title">Last Request URL</string>
     <string name="last_response_title">Last Server Response</string>
     <string name="email_data">Email Server Request/Response</string>
 
-    <string name="title_settings_general">General</string>
-    <string name="title_settings_banner">Banner</string>
-    <string name="title_settings_interstitial">Interstitial</string>
-    <string name="title_settings_debug">Debug Auction</string>
+    <string name="settings_title_general">General</string>
+    <string name="settings_title_banner">Banner</string>
+    <string name="settings_title_interstitial">Interstitial</string>
+    <string name="settings_title_debug">Debug Auction</string>
+
+    <string name="settings_txt_adtype">Ad Type: </string>
+    <string name="settings_txt_psas">Allow PSAs: </string>
+    <string name="settings_txt_browser">Browser: </string>
+    <string name="settings_txt_placementid">Placement Id: </string>
+    <string name="settings_txt_size">Size: </string>
+    <string name="settings_txt_refresh">Refresh Rate: </string>
+    <string name="settings_txt_interstitial_bg_color">Background Color: </string>
+    <string name="settings_txt_close_delay">Close Delay: </string>
+    <string name="settings_txt_memberid">Member Id: </string>
+    <string name="settings_txt_dongle">Dongle: </string>
 
     <string-array name="sizes">
         <item>300x50</item>
@@ -52,16 +59,16 @@
 
     <string-array name="refresh">
         <item>Off</item>
-        <item>30s</item>
-        <item>60s</item>
-        <item>120s</item>
+        <item>30 seconds</item>
+        <item>60 seconds</item>
+        <item>120 seconds</item>
     </string-array>
 
     <string-array name="close_delay">
         <item>Off</item>
-        <item>5s</item>
-        <item>10s</item>
-        <item>15s</item>
+        <item>5 seconds</item>
+        <item>10 seconds</item>
+        <item>15 seconds</item>
     </string-array>
 
 </resources>

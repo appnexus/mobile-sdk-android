@@ -16,8 +16,6 @@
 
 package com.appnexus.opensdkapp;
 
-import android.app.Activity;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -30,12 +28,7 @@ import android.view.ViewGroup;
 import android.widget.*;
 
 public class SettingsFragment extends Fragment {
-    private Button loadAdButton;
-    //private Button pasteAdButton;
-//    private RadioGroup radioGroup;
-//    private RadioGroup radioGroup2;
-    private TextView bannerText;
-    private EditText placementEditText;
+    private Button btnLoadAd;
     private boolean isInterstitial = false;
     private View colorView;
     private int color = 0xff000000;
@@ -43,6 +36,13 @@ public class SettingsFragment extends Fragment {
 
     private Button btnAdTypeBanner, btnAdTypeInterstitial;
     private Button btnAdTypeBanner2, btnAdTypeInterstitial2;
+
+    private TextView txtSize, txtRefresh,
+            txtBackgroundColor, txtCloseDelay,
+            txtMemberId, txtDongle;
+    private EditText placementEditText,
+            editBackgroundColor,
+            editMemberId, editDongle;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,76 +54,65 @@ public class SettingsFragment extends Fragment {
         dropCloseDelay = initSpinner(out, container, R.id.dropdown_close_delay, R.array.close_delay);
 
         // Locate member views
-        loadAdButton = (Button) out.findViewById(R.id.loadad);
-        loadAdButton.setOnClickListener(new LoadAdOnClickListener());
+        btnLoadAd = (Button) out.findViewById(R.id.btn_load_ad);
+        btnLoadAd.setOnClickListener(new LoadAdOnClickListener());
 
         btnAdTypeBanner = (Button) out.findViewById(R.id.btn_banner);
         btnAdTypeInterstitial = (Button) out.findViewById(R.id.btn_interstitial);
 
-        btnAdTypeBanner.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setBannerMode(true);
-            }
-        });
+        btnAdTypeBanner.setOnClickListener(initBannerModeOnClickListener(true));
 
-        btnAdTypeInterstitial.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setBannerMode(false);
-            }
-        });
+        btnAdTypeInterstitial.setOnClickListener(initBannerModeOnClickListener(false));
 
         btnAdTypeBanner2 = (Button) out.findViewById(R.id.btn_banner2);
         btnAdTypeInterstitial2 = (Button) out.findViewById(R.id.btn_interstitial2);
 
-        btnAdTypeBanner2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setBannerMode(true);
-            }
-        });
+        btnAdTypeBanner2.setOnClickListener(initBannerModeOnClickListener(true));
 
-        btnAdTypeInterstitial2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setBannerMode(false);
-            }
-        });
+        btnAdTypeInterstitial2.setOnClickListener(initBannerModeOnClickListener(false));
 
-
-
-        //pasteAdButton = (Button) out.findViewById(R.id.pastead);
-        //pasteAdButton.setOnClickListener(new PasteAdOnClickListener());
-
-//        radioGroup = (RadioGroup) out.findViewById(R.id.radiogroup);
-//        radioGroup.check(R.id.radio_banner);
-//        radioGroup.setOnCheckedChangeListener(new RadioGroupListener());
-//
-//        radioGroup2 = (RadioGroup) out.findViewById(R.id.radiogroup2);
-//        radioGroup2.check(R.id.radio_inapp);
-//        radioGroup2.setOnCheckedChangeListener(new RadioGroup2Listener());
-
-        dropSize.setOnItemSelectedListener(new SizeSelectedListener(this));
-        dropSize.setSelection(3);
-
-        dropRefresh.setOnItemSelectedListener(new RefreshSelectedListener());
-        dropRefresh.setSelection(1);
+        txtSize = (TextView) out.findViewById(R.id.txt_size);
+        txtRefresh = (TextView) out.findViewById(R.id.txt_refresh);
+        txtBackgroundColor = (TextView) out.findViewById(R.id.txt_interstitial_color);
+        txtCloseDelay = (TextView) out.findViewById(R.id.txt_close_delay);
+        txtMemberId = (TextView) out.findViewById(R.id.txt_memberid);
+        txtDongle = (TextView) out.findViewById(R.id.txt_dongle);
 
         placementEditText = (EditText) out.findViewById(R.id.edit_placementid);
+        editBackgroundColor = (EditText) out.findViewById(R.id.edit_interstitial_color);
+        editMemberId = (EditText) out.findViewById(R.id.edit_memberid);
+        editDongle = (EditText) out.findViewById(R.id.edit_dongle);
+
+        /*
+         * SET LISTENERS
+         */
+
+        dropSize.setOnItemSelectedListener(new SizeSelectedListener(this));
+        dropRefresh.setOnItemSelectedListener(new RefreshSelectedListener());
+
         placementEditText.addTextChangedListener(new PlacementTextWatcher());
 
+        editBackgroundColor.addTextChangedListener(new BackgroundColorTextWatcher());
+
+        /*
+         * SET DEFAULTS
+         */
+
         // Load default placement
-        SharedPreferences sp = getActivity().getSharedPreferences(
-                "opensdkdemo", Activity.MODE_PRIVATE);
-        String saved_placement = sp.getString("placement", "NO_PLACEMENT");
-        if (!saved_placement.equals("NO_PLACEMENT")) {
-            placementEditText.setText(saved_placement);
-        } else {
-            placementEditText.setText("000000");
-        }
-        dropSize.setEnabled(true);
-        dropRefresh.setEnabled(true);
+        String savedPlacement = Prefs.getString(getActivity(), Prefs.KEY_PLACEMENT, Prefs.DEF_PLACEMENT);
+        if (!savedPlacement.equals(Prefs.DEF_PLACEMENT))
+            placementEditText.setText(savedPlacement);
+        else
+            placementEditText.setText(Prefs.DEF_PLACEMENT);
+
+        // set default ad type to banner
+        setBannerMode(true);
+
+        // select 320x480
+        dropSize.setSelection(3);
+        // select 30 seconds
+        dropRefresh.setSelection(1);
+
         return out;
     }
 
@@ -138,15 +127,32 @@ public class SettingsFragment extends Fragment {
         return dropdown;
     }
 
+    private View.OnClickListener initBannerModeOnClickListener(final boolean isBanner) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setBannerMode(isBanner);
+            }
+        };
+    }
+
     private void setBannerMode(boolean isBanner) {
+        // ad type buttons
         btnAdTypeBanner.setEnabled(!isBanner);
         btnAdTypeInterstitial.setEnabled(isBanner);
         btnAdTypeBanner2.setEnabled(!isBanner);
         btnAdTypeInterstitial2.setEnabled(isBanner);
 
+        //banner-only settings
+        txtSize.setEnabled(isBanner);
         dropSize.setEnabled(isBanner);
+        txtRefresh.setEnabled(isBanner);
         dropRefresh.setEnabled(isBanner);
 
+        // interstitial-only settings
+        txtBackgroundColor.setEnabled(!isBanner);
+        editBackgroundColor.setEnabled(!isBanner);
+        txtCloseDelay.setEnabled(!isBanner);
         dropCloseDelay.setEnabled(!isBanner);
     }
 
@@ -164,16 +170,35 @@ public class SettingsFragment extends Fragment {
         @Override
         public void onTextChanged(CharSequence s, int start, int before,
                                   int count) {
-            SharedPreferences sp = getActivity().getSharedPreferences(
-                    "opensdkdemo", Activity.MODE_PRIVATE);
-            String saved_placement = sp.getString("placement", "NO_PLACEMENT");
-            if (!saved_placement.equals(s.toString())) {
-                sp.edit().putString("placement", s.toString()).commit();
-            }
+            String savedPlacement = Prefs.getString(getActivity(),
+                    Prefs.KEY_PLACEMENT, Prefs.DEF_PLACEMENT);
+            if (!savedPlacement.equals(s.toString()))
+                Prefs.writeString(getActivity(),
+                        Prefs.KEY_PLACEMENT, savedPlacement);
         }
 
     }
 
+    private class BackgroundColorTextWatcher implements TextWatcher {
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before,
+                                  int count) {
+            String savedColor = Prefs.getString(getActivity(),
+                    Prefs.KEY_COLOR_HEX, Prefs.DEF_COLOR_HEX);
+            if (!savedColor.equals(s.toString()))
+                Prefs.writeString(getActivity(),
+                        Prefs.KEY_COLOR_HEX, savedColor);
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+        }
+    }
     private class RefreshSelectedListener implements
             AdapterView.OnItemSelectedListener {
 

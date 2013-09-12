@@ -72,7 +72,7 @@ public class PreviewFragment extends Fragment implements AdListener {
         refresh.setAdapter(adapter2);
 
         // Locate member views
-        loadAdButton = (Button) out.findViewById(R.id.loadad);
+        loadAdButton = (Button) out.findViewById(R.id.btn_load_ad);
         loadAdButton.setOnClickListener(new LoadAdOnClickListener());
 
         //pasteAdButton = (Button) out.findViewById(R.id.pastead);

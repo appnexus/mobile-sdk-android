@@ -78,7 +78,7 @@
                     android:id="@+id/color_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/color_button_text" />
+                    android:text="@string/settings_txt_interstitial_bg_color" />
         </LinearLayout>
 
         <!-- Buttons -->
@@ -206,7 +206,7 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/size_spinner" />
+                    android:text="@string/settings_txt_size" />
 
             <Spinner
                     android:id="@+id/dropdown_size"
@@ -220,7 +220,7 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/refresh_rate_spinner" />
+                    android:text="@string/settings_txt_refresh" />
 
             <Spinner
                     android:id="@+id/dropdown_refresh"
@@ -246,7 +246,7 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/placement_id_edittext" />
+                    android:text="@string/settings_txt_placementid" />
 
             <EditText
                     android:id="@+id/edit_placementid"
@@ -266,7 +266,7 @@
                 android:background="@android:color/darker_gray" />
 
         <Button
-                android:id="@+id/loadad"
+                android:id="@+id/btn_load_ad"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/load_ad_button" />
