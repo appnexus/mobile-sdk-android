@@ -157,7 +157,6 @@ public abstract class MediatedAdViewController implements Displayable {
 
             @Override
             protected String getUrl() {
-                //TODO: we're assuming resultCB has other parameters? what if "https://.../mob?&reason= happens?"
                 return resultCB + "&reason=" + result.ordinal();
             }
         };
