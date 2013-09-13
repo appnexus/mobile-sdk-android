@@ -18,7 +18,7 @@ package com.appnexus.opensdkapp;
 
 public class Constants {
     public final static String LOG_TAG = "OPENSDK-APP";
-    public final static String DEBUG_AUCTION_URL = "http://ib.adnxs.com/mob?";
+    public final static String DEBUG_AUCTION_URL = "http://mobile.adnxs.com/mob?";
     public final static String PREFERENCES = "AppNexus SDK App";
 
 }
