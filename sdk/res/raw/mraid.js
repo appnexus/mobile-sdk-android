@@ -32,6 +32,7 @@
 	var orientation_properties={allowOrientationChange:true, forceOrientation:"none"};
 	var resize_properties={width:-1, height:-1, offsetX: 0, offsetY: 0, customClosePosition: 'top-right', allowOffscreen: true};
 	var screen_size={};
+	var max_size={};
 
 	// ----- MRAID AD API FUNCTIONS -----
 
@@ -253,6 +254,16 @@
         }
     }
 
+    // Gets the max size of the ad if expanded (so it won't obscure the app's title bar)
+    mraid.getMaxSize(){
+        if(mraid.getState()=="loading"){
+            mraid.util.errorEvent("Method 'mraid.getMaxSize()' called during loading state.", "mraid.getMaxSize()");
+            return;
+        }else{
+            return max_size;
+        }
+    }
+
 
 
 	// ----- MRAID UTILITY FUNCTIONS -----
@@ -333,6 +344,11 @@
 	    screen_size={"width":width,
 	                 "height": height};
 	}
+
+    mraid.util.setMaxSize(width, height){
+        max_size={"width":width,
+                  "height": height};
+    }
 
 
 
