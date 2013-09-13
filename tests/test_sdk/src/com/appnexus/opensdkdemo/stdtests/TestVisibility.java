@@ -14,18 +14,23 @@
  *    limitations under the License.
 */
 
-package com.appnexus.opensdkdemo;
+package com.appnexus.opensdkdemo.stdtests;
 
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;
 import com.appnexus.opensdk.AdListener;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.BannerAdView;
+import com.appnexus.opensdkdemo.DemoMainActivity;
+import com.appnexus.opensdkdemo.R;
+import com.appnexus.opensdkdemo.util.InstanceLock;
 
 public class TestVisibility extends
         ActivityInstrumentationTestCase2<DemoMainActivity> implements AdListener {
     DemoMainActivity activity;
-    boolean visible = false;
+    BannerAdView bav;
+    int bavVisibility;
+    InstanceLock lock1, lock2;
 
     public TestVisibility() {
         super(DemoMainActivity.class);
@@ -36,33 +41,48 @@ public class TestVisibility extends
         super.setUp();
         setActivityInitialTouchMode(false);
         activity = getActivity();
+        bavVisibility = View.GONE;
+        lock1 = new InstanceLock();
+        lock2 = new InstanceLock();
     }
 
-    synchronized public void testVisibility() {
-        BannerAdView bav = (BannerAdView) activity.findViewById(R.id.banner);
+    public void testVisibility() {
+        bav = (BannerAdView) activity.findViewById(R.id.banner);
+        bav.setAutoRefreshInterval(0);
         bav.setPlacementID("1281482");
         bav.setAdListener(this);
 
-        bav.loadAd();
-        try {
-            wait(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bav.loadAd();
+            }
+        });
 
-        assertEquals(View.VISIBLE, bav.getVisibility());
+        lock1.pause(10000);
+
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bavVisibility = bav.getVisibility();
+                lock2.unpause();
+            }
+        });
+
+        lock2.pause(10000);
+
+        assertEquals(View.VISIBLE, bavVisibility);
     }
 
     @Override
-    synchronized public void onAdLoaded(AdView adView) {
-        notify();
-
+    public void onAdLoaded(AdView adView) {
+        lock1.unpause();
     }
 
     @Override
-    synchronized public void onAdRequestFailed(AdView adView) {
+    public void onAdRequestFailed(AdView adView) {
         assertEquals(false, true);
-        notify();
+        lock1.unpause();
     }
 
     @Override
