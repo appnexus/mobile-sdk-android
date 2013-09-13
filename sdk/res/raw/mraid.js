@@ -33,6 +33,8 @@
 	var resize_properties={width:-1, height:-1, offsetX: 0, offsetY: 0, customClosePosition: 'top-right', allowOffscreen: true};
 	var screen_size={};
 	var max_size={};
+	var default_position={};
+	var current_position={};
 
 	// ----- MRAID AD API FUNCTIONS -----
 
@@ -264,7 +266,26 @@
         }
     }
 
+    // Gets the default position of the ad view, in dips offset from top left.
+    mraid.getDefaultPosition(){
+        if(mraid.getState()=="loading"){
+            mraid.util.errorEvent("Method 'mraid.getDefaultPosition()' called during loading state.", "mraid.getDefaultPosition()");
+            return;
+        }else{
+            return default_position;
+        }
+    }
 
+
+    // Gets the current position of the ad view, in dips offset from top left.
+    mraid.getCurrentPosition(){
+        if(mraid.getState()=="loading"){
+            mraid.util.errorEvent("Method 'mraid.getCurrentPosition()' called during loading state.", "mraid.getCurrentPosition()");
+            return;
+        }else{
+            return current_position;
+        }
+    }
 
 	// ----- MRAID UTILITY FUNCTIONS -----
 	// These functions are called by the native SDK to drive events and update information
@@ -348,6 +369,20 @@
     mraid.util.setMaxSize(width, height){
         max_size={"width":width,
                   "height": height};
+    }
+
+    mraid.util.setDefaultPosition(x, y, width, height){
+        default_position={"x": x,
+                          "y": y,
+                          "width":width,
+                          "height": height};
+    }
+
+    mraid.util.setCurrentPosition(x, y, width, height){
+        current_position={"x": x,
+                          "y": y,
+                          "width":width,
+                          "height": height};
     }
 
 
