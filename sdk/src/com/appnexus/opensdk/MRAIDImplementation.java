@@ -16,34 +16,18 @@
 
 package com.appnexus.opensdk;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-
-import org.apache.http.message.BasicNameValuePair;
-
-import com.appnexus.opensdk.utils.Clog;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.webkit.ConsoleMessage;
-import android.webkit.JsResult;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
-import android.widget.VideoView;
+import android.webkit.*;
+import com.appnexus.opensdk.utils.Clog;
+import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.io.InputStream;
