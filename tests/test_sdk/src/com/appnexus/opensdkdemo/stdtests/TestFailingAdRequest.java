@@ -14,7 +14,7 @@
  *    limitations under the License.
 */
 
-package com.appnexus.opensdkdemo;
+package com.appnexus.opensdkdemo.stdtests;
 
 import com.appnexus.opensdk.*;
 import junit.framework.TestCase;

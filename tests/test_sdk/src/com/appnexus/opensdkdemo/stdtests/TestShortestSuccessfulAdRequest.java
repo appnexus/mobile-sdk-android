@@ -14,22 +14,22 @@
  *    limitations under the License.
 */
 
-package com.appnexus.opensdkdemo;
+package com.appnexus.opensdkdemo.stdtests;
 
 import com.appnexus.opensdk.*;
 import junit.framework.TestCase;
 
-public class TestSuccessfulAdRequest extends TestCase implements AdRequester, AdListener {
+public class TestShortestSuccessfulAdRequest extends TestCase implements AdRequester, AdListener {
     AdRequest shouldWork;
     AdRequest shouldWork2;
     boolean shouldWorkDidWork = false;
     boolean shouldWorkDidWork2 = false;
 
     protected void setUp() {
-        shouldWork = new AdRequest(this, "123456", null, null, "1281482",
-                "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, null, true, false);
-        shouldWork2 = new AdRequest(null, "123456", null, null, "1281482",
-                "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, this, true, false);
+        shouldWork = new AdRequest(this, null, null, null, "1281482",
+                null, null, 320, 50, -1, -1, null, null, null, false, null, false, false);
+        shouldWork2 = new AdRequest(null, null, null, null, "1281482",
+                null, null, 320, 50, -1, -1, null, null, null, false, this, false, false);
     }
 
     public void testSucceedingRequest() {
@@ -39,7 +39,7 @@ public class TestSuccessfulAdRequest extends TestCase implements AdRequester, Ad
         assertEquals(true, shouldWorkDidWork);
     }
 
-    public void testSucceedingRequest2() {
+    public void testSucceedingRequestListener() {
         shouldWork2.execute();
         pause();
         shouldWork2.cancel(true);
@@ -48,8 +48,8 @@ public class TestSuccessfulAdRequest extends TestCase implements AdRequester, Ad
 
     @Override
     synchronized public void onReceiveResponse(AdResponse response) {
-        shouldWorkDidWork = true;
         assertEquals(true, response.getBody().length() > 0);
+        shouldWorkDidWork = true;
         notify();
     }
 
@@ -83,6 +83,7 @@ public class TestSuccessfulAdRequest extends TestCase implements AdRequester, Ad
     synchronized public void onAdLoaded(AdView adView) {
         shouldWorkDidWork2 = true;
         notify();
+
     }
 
     @Override

@@ -87,6 +87,7 @@ public class Test404Error extends AndroidTestCase implements AdRequester {
         Clog.d(TestUtil.testLogTag, "dispatch " + response.toString());
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
                 null, response);
-//		lock.unpause();
+
+        assertNull(output);
     }
 }

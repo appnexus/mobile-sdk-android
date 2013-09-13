@@ -16,6 +16,14 @@
 
 package com.appnexus.opensdk;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+
+import org.apache.http.message.BasicNameValuePair;
+
+import com.appnexus.opensdk.utils.Clog;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -28,11 +36,14 @@ import android.net.http.SslError;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.*;
+import android.webkit.ConsoleMessage;
+import android.webkit.JsResult;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.VideoView;
-import com.appnexus.opensdk.utils.Clog;
-import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -160,76 +171,36 @@ public class MRAIDImplementation {
         };
     }
 
-    protected WebChromeClient getWebChromeClient() {
-        return new MRAIDWebChromeClient();
-    }
+	protected WebChromeClient getWebChromeClient() {
+		return new MRAIDWebChromeClient((Activity) owner.getContext());
+	}
 
-    class MRAIDWebChromeClient extends WebChromeClient implements
-            MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
-        ViewGroup old_content;
-        CustomViewCallback c;
-        VideoView video;
-        public WebView webView;
+	class MRAIDWebChromeClient extends VideoEnabledWebChromeClient {
 
-        @Override
-        public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-            // super.onConsoleMessage(consoleMessage);
-            Clog.w(Clog.mraidLogTag,
-                    Clog.getString(R.string.console_message,
-                            consoleMessage.message(),
-                            consoleMessage.lineNumber(),
-                            consoleMessage.sourceId()));
-            return true;
+        public MRAIDWebChromeClient(Activity context) {
+            super(context);
         }
 
         @Override
-        public boolean onJsAlert(WebView view, String url, String message,
-                                 JsResult result) {
-            // /super.onJsAlert(view, url, message, result);
-            Clog.w(Clog.mraidLogTag,
-                    Clog.getString(R.string.js_alert, message, url));
-            result.confirm();
-            return true;
-        }
+		public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+			// super.onConsoleMessage(consoleMessage);
+			Clog.w(Clog.mraidLogTag,
+					Clog.getString(R.string.console_message,
+							consoleMessage.message(),
+							consoleMessage.lineNumber(),
+							consoleMessage.sourceId()));
+			return true;
+		}
 
-        @Override
-        public void onShowCustomView(View view, CustomViewCallback callback) {
-            super.onShowCustomView(view, callback);
-            c = callback;
-            if (view instanceof FrameLayout) {
-                FrameLayout frame = (FrameLayout) view;
-                if (frame.getFocusedChild() instanceof VideoView) {
-                    video = (VideoView) frame.getFocusedChild();
-                    frame.removeView(video);
-                    old_content = (ViewGroup) ((Activity) MRAIDImplementation.this.owner
-                            .getContext()).findViewById(android.R.id.content);
-                    ((Activity) MRAIDImplementation.this.owner.getContext())
-                            .setContentView(video);
-                    video.setOnCompletionListener(this);
-                    video.setOnErrorListener(this);
-                    video.start();
-                }
-            }
-        }
-
-        @Override
-        public boolean onError(MediaPlayer mp, int what, int extra) {
-            video.stopPlayback();
-            c.onCustomViewHidden();
-            ((Activity) MRAIDImplementation.this.owner.getContext())
-                    .setContentView(old_content);
-            return false;
-        }
-
-        @Override
-        public void onCompletion(MediaPlayer mp) {
-            video.stopPlayback();
-            c.onCustomViewHidden();
-            ((Activity) MRAIDImplementation.this.owner.getContext())
-                    .setContentView(old_content);
-
-        }
-
+		@Override
+		public boolean onJsAlert(WebView view, String url, String message,
+				JsResult result) {
+			// /super.onJsAlert(view, url, message, result);
+			Clog.w(Clog.mraidLogTag,
+					Clog.getString(R.string.js_alert, message, url));
+			result.confirm();
+			return true;
+		}
     }
 
     protected void onVisible() {
