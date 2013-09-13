@@ -221,6 +221,27 @@
         expand_properties.useCustomClose = value;
     }
 
+    // Checks if a feature is supported by this device
+    mraid.supports=function(feature){
+        if(mraid.getState()=="loading"){
+            mraid.util.errorEvent("Method 'mraid.supports()' called during loading state.", "mraid.supports()");
+            return;
+        }
+        switch(feature){
+        case 'sms':
+            return supports_sms;
+        case 'tel':
+            return supports_tel;
+        case 'calendar':
+            return supports_calendar;
+        case 'storePicture':
+            return supports_storePicture;
+        case 'inlineVideo':
+            return supports_inlineVideo;
+        }
+        mraid.util.errorEvent("Unknown feature to check for support: "+feature, "mraid.supports()");
+    }
+
 
 
 	// ----- MRAID UTILITY FUNCTIONS -----
@@ -270,6 +291,31 @@
         for(var i=0;i<listeners['sizeChange'].length;i++){
             listeners['sizeChange'][i](width, height);
         }
+	}
+
+	var supports_sms = false;
+	var supports_tel = false;
+	var supports_calendar = false;
+	var supports_storePicture = false;
+	var supports_inlineVideo = false;
+	mraid.util.setSupportsSMS=function(val){
+	    supports_sms = val;
+	}
+
+	mraid.util.setSupportsTel=function(val){
+	    supports_tel=val;
+	}
+
+	mraid.util.setSupportsCalendar=function(val){
+	    supports_calendar=val;
+	}
+
+	mraid.util.setSupportsStorePicture=function(val){
+	    supports_storePicture=val;
+	}
+
+	mraid.util.setSupportsInlineVideo=function(val){
+	    supports_inlineVideo=val;
 	}
 
 
