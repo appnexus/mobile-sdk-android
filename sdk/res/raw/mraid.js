@@ -31,6 +31,7 @@
 	var expand_properties={width:-1, height:-1, useCustomClose:false, isModal:true};
 	var orientation_properties={allowOrientationChange:true, forceOrientation:"none"};
 	var resize_properties={width:-1, height:-1, offsetX: 0, offsetY: 0, customClosePosition: 'top-right', allowOffscreen: true};
+	var screen_size={};
 
 	// ----- MRAID AD API FUNCTIONS -----
 
@@ -242,6 +243,16 @@
         mraid.util.errorEvent("Unknown feature to check for support: "+feature, "mraid.supports()");
     }
 
+    // Gets the screen size of the device
+    mraid.getScreenSize(){
+        if(mraid.getState()=="loading"){
+            mraid.util.errorEvent("Method 'mraid.getScreenSize()' called during loading state.", "mraid.getScreenSize()");
+            return;
+        }else{
+            return screen_size;
+        }
+    }
+
 
 
 	// ----- MRAID UTILITY FUNCTIONS -----
@@ -316,6 +327,11 @@
 
 	mraid.util.setSupportsInlineVideo=function(val){
 	    supports_inlineVideo=val;
+	}
+
+	mraid.util.setScreenSize(width, height){
+	    screen_size={"width":width,
+	                 "height": height};
 	}
 
 
