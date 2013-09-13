@@ -1,12 +1,12 @@
 /*
  *    Copyright 2013 APPNEXUS INC
- *    
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
  *        http://www.apache.org/licenses/LICENSE-2.0
- *    
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,18 +25,19 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.webkit.SslErrorHandler;
-import android.net.http.SslError;
+import android.webkit.*;
+import android.widget.FrameLayout;
+import android.widget.VideoView;
+import com.appnexus.opensdk.AdView.BrowserStyle;
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Settings;
 
 /**
  * @author jshufro@appnexus.com
- * 
  */
 @SuppressLint("ViewConstructor")
 // This will only be constructed by AdFetcher.
@@ -82,91 +83,114 @@ public class AdWebView extends WebView implements Displayable {
 						R.string.webclient_error, errorCode, description));
 			}
 
-			@Override
-			public void onReceivedSslError(WebView view,
-					SslErrorHandler handler, SslError error) {
-				AdWebView.this.fail();
-				Clog.e(Clog.httpRespLogTag,
-						Clog.getString(R.string.webclient_error,
-								error.getPrimaryError(), error.toString()));
-			}
+            @Override
+            public void onReceivedSslError(WebView view,
+                                           SslErrorHandler handler, SslError error) {
+                AdWebView.this.fail();
+                Clog.e(Clog.httpRespLogTag,
+                        Clog.getString(R.string.webclient_error,
+                                error.getPrimaryError(), error.toString()));
+            }
 
-			@Override
-			public boolean shouldOverrideUrlLoading(WebView view, String url) {
-				if (url.startsWith("javascript:") || url.startsWith("mraid:"))
-					return false;
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if (url.startsWith("javascript:") || url.startsWith("mraid:"))
+                    return false;
 
-				if (destination.getOpensNativeBrowser()) {
-					Clog.d(Clog.baseLogTag,
-							Clog.getString(R.string.opening_native));
-					Intent intent = new Intent(Intent.ACTION_VIEW,
-							Uri.parse(url));
-					getContext().startActivity(intent);
-				} else {
-					Clog.d(Clog.baseLogTag,
-							Clog.getString(R.string.opening_inapp));
-					Intent intent = new Intent(destination.getContext(),
-							BrowserActivity.class);
-					intent.putExtra("url", url);
-					if (destination.getBrowserStyle() != null) {
-						String i = "" + this.hashCode();
-						intent.putExtra("bridgeid", i);
-						AdView.BrowserStyle.bridge
-								.add(new Pair<String, BrowserStyle>(i,
-										destination.getBrowserStyle()));
-					}
-					destination.getContext().startActivity(intent);
-				}
-				
-				AdWebView.this.destination.adListener.onAdClicked(AdWebView.this.destination);
-				//If it's an IAV, prevent it from closing
-		                if (AdWebView.this.destination instanceof InterstitialAdView) {
-					InterstitialAdView iav = (InterstitialAdView)AdWebView.this.destination;
-					if(iav!=null){
-						iav.interacted();
-					}
-				}
-				
-				return true;
-			}
+                if (destination.getOpensNativeBrowser()) {
+                    Clog.d(Clog.baseLogTag,
+                            Clog.getString(R.string.opening_native));
+                    Intent intent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(url));
+                    getContext().startActivity(intent);
+                } else {
+                    Clog.d(Clog.baseLogTag,
+                            Clog.getString(R.string.opening_inapp));
+                    Intent intent = new Intent(destination.getContext(),
+                            BrowserActivity.class);
+                    intent.putExtra("url", url);
+                    if (destination.getBrowserStyle() != null) {
+                        String i = "" + this.hashCode();
+                        intent.putExtra("bridgeid", i);
+                        AdView.BrowserStyle.bridge
+                                .add(new Pair<String, BrowserStyle>(i,
+                                        destination.getBrowserStyle()));
+                    }
+                    destination.getContext().startActivity(intent);
+                }
 
-		});
+                // If a listener is defined, call its onClicked
+                if (AdWebView.this.destination.adListener != null) {
+                    AdWebView.this.destination.adListener
+                            .onAdClicked(AdWebView.this.destination);
+                }
 
-	}
+                // If it's an IAV, prevent it from closing
+                if (AdWebView.this.destination instanceof InterstitialAdView) {
+                    InterstitialAdView iav = (InterstitialAdView) AdWebView.this.destination;
+                    if (iav != null) {
+                        iav.interacted();
+                    }
+                }
 
-	public void loadAd(AdResponse ad) {
-		if (ad.getBody().equals("")) {
-			fail();
-			return;
-		}
+                return true;
+            }
 
-		String body = "<html><head /><body style='margin:0;padding:0;'>"
-				+ ad.getBody() + "</body></html>";
-		Clog.v(Clog.baseLogTag, Clog.getString(R.string.webview_loading, body));
-		this.loadDataWithBaseURL("http://mobile.adnxs.com", body, "text/html",
-				"UTF-8", null);
+        });
 
-		final float scale = destination.getContext().getResources()
-				.getDisplayMetrics().density;
-		int rheight = (int) (ad.getHeight() * scale + 0.5f);
-		int rwidth = (int) (ad.getWidth() * scale + 0.5f);
-		int rgravity = Gravity.CENTER;
-		AdView.LayoutParams resize = new AdView.LayoutParams(rwidth, rheight,
-				rgravity);
-		this.setLayoutParams(resize);
-	}
+    }
 
-	@Override
-	public View getView() {
-		return this;
-	}
+    public void loadAd(AdResponse ad) {
+        if (ad.getBody().equals("")) {
+            fail();
+            return;
+        }
 
-	private void fail() {
-		failed = true;
-	}
+        String body = "<html><head /><body style='margin:0;padding:0;'>"
+                + ad.getBody() + "</body></html>";
+        Clog.v(Clog.baseLogTag, Clog.getString(R.string.webview_loading, body));
+        this.loadDataWithBaseURL("http://mobile.adnxs.com", body, "text/html",
+                "UTF-8", null);
 
-	@Override
-	public boolean failed() {
-		return failed;
-	}
+        final float scale = destination.getContext().getResources()
+                .getDisplayMetrics().density;
+        int rheight = (int) (ad.getHeight() * scale + 0.5f);
+        int rwidth = (int) (ad.getWidth() * scale + 0.5f);
+        int rgravity = Gravity.CENTER;
+        AdView.LayoutParams resize = new AdView.LayoutParams(rwidth, rheight,
+                rgravity);
+        this.setLayoutParams(resize);
+    }
+
+    @Override
+    public View getView() {
+        return this;
+    }
+
+    private void fail() {
+        failed = true;
+    }
+
+    @Override
+    public boolean failed() {
+        return failed;
+    }
+
+    class AdWebChromeClient extends WebChromeClient {
+
+        public void onShowCustomView(View view, CustomViewCallback callback) {
+            super.onShowCustomView(view, callback);
+            if (view instanceof FrameLayout) {
+                FrameLayout frame = (FrameLayout) view;
+                if (frame.getFocusedChild() instanceof VideoView) {
+                    VideoView video = (VideoView) frame.getFocusedChild();
+                    frame.removeView(video);
+                    ((Activity) AdWebView.this.destination.getContext())
+                            .setContentView(video);
+                    video.start();
+                }
+            }
+        }
+
+    }
 }

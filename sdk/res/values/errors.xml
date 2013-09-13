@@ -95,4 +95,14 @@
 	<string formatted="false" name="instantiation_exception">InstantiationException caught while instantiating a Mediated Ad View</string>
 	<string formatted="false" name="illegal_access_exception">IllegalAccessException caught while instantiating a Mediated Ad View</string>
 	<string formatted="false" name="class_not_found_exception">ClassNotFoundException caught while instantiating a Mediated Ad View</string>
+	<string formatted="false" name="class_cast_exception">ClassCastException caught while instantiating a Mediated Ad View</string>
+	<string formatted="false" name="instantiating_class">Instantiating %s</string>
+	<string formatted="false" name="instance_exception">MediatedAdView is null or not an instance of %s</string>
+	<string formatted="false" name="mediated_request">Requesting a mediated ad.</string>
+	<string formatted="false" name="mediated_view_null">MediatedAdView was null</string>
+	<string formatted="false" name="mediated_owner_null">AdView was null</string>
+	<string formatted="false" name="mediated_request_exception">requestAd threw an exception</string>
+	<string formatted="false" name="mediated_request_error">requestAd threw an error</string>
+	<string formatted="false" name="fire_cb_requester_null">firing result cb with null requester</string>
+	<string formatted="false" name="fire_cb_response_null">firing result cb with null response</string>
 </resources>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 
+<!--
    Copyright 2013 APPNEXUS INC
-   
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
@@ -30,7 +30,7 @@
     <string name="inapp_button">In-App Browser</string>
     <string name="native_button">Native Browser</string>
     <string name="color_button_text">Select Interstitial BG Color</string>
-    
+
     <string name="last_request_title">Last Request URL:</string>
     <string name="last_response_title">Last Server Response:</string>
     <string name="email_data">Email This Information</string>
@@ -38,15 +38,16 @@
         <item>300x50</item>
         <item>300x250</item>
         <item>320x50</item>
-        <!-- <item>320x320</item> -->
+        <item>321x50</item> <!-- For mediation testing TODO: remove -->
+        <item>320x320</item> <!-- For iframe testing TODO: remove-->
         <item>320x480</item>
-        <!-- <item>600x300</item> -->
+        <item>600x300</item>
         <item>640x50</item>
         <!-- <item>640x264</item> -->
         <!-- <item>640x480</item> -->
         <!-- <item>728x90</item> -->
     </string-array>
-    
+
     <string-array name="refresh">
         <item>Off</item>
         <item>20s</item>

@@ -93,6 +93,8 @@ public class MainTabFragment extends Fragment implements AdListener {
 		//pasteAdButton.setOnClickListener(new PasteAdOnClickListener());
 
 		bannerAdView = (BannerAdView) out.findViewById(R.id.banner);
+		
+		bannerAdView.setShouldServePSAs(false);
 
 		bannerAdView.setAdListener(new AdListener() {
 
