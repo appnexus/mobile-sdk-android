@@ -247,7 +247,7 @@
     }
 
     // Gets the screen size of the device
-    mraid.getScreenSize(){
+    mraid.getScreenSize=function(){
         if(mraid.getState()=="loading"){
             mraid.util.errorEvent("Method 'mraid.getScreenSize()' called during loading state.", "mraid.getScreenSize()");
             return;
@@ -257,7 +257,7 @@
     }
 
     // Gets the max size of the ad if expanded (so it won't obscure the app's title bar)
-    mraid.getMaxSize(){
+    mraid.getMaxSize=function(){
         if(mraid.getState()=="loading"){
             mraid.util.errorEvent("Method 'mraid.getMaxSize()' called during loading state.", "mraid.getMaxSize()");
             return;
@@ -267,7 +267,7 @@
     }
 
     // Gets the default position of the ad view, in dips offset from top left.
-    mraid.getDefaultPosition(){
+    mraid.getDefaultPosition=function(){
         if(mraid.getState()=="loading"){
             mraid.util.errorEvent("Method 'mraid.getDefaultPosition()' called during loading state.", "mraid.getDefaultPosition()");
             return;
@@ -278,7 +278,7 @@
 
 
     // Gets the current position of the ad view, in dips offset from top left.
-    mraid.getCurrentPosition(){
+    mraid.getCurrentPosition=function(){
         if(mraid.getState()=="loading"){
             mraid.util.errorEvent("Method 'mraid.getCurrentPosition()' called during loading state.", "mraid.getCurrentPosition()");
             return;
@@ -341,7 +341,7 @@
 	var supports_calendar = false;
 	var supports_storePicture = false;
 	var supports_inlineVideo = false;
-	mraid.util.setSupportsSMS=function(val){
+	mraid.util.setSupportsTel=function(val){
 	    supports_sms = val;
 	}
 
@@ -361,24 +361,24 @@
 	    supports_inlineVideo=val;
 	}
 
-	mraid.util.setScreenSize(width, height){
+	mraid.util.setScreenSize=function(width, height){
 	    screen_size={"width":width,
 	                 "height": height};
 	}
 
-    mraid.util.setMaxSize(width, height){
+    mraid.util.setMaxSize=function(width, height){
         max_size={"width":width,
                   "height": height};
     }
 
-    mraid.util.setDefaultPosition(x, y, width, height){
+    mraid.util.setDefaultPosition=function(x, y, width, height){
         default_position={"x": x,
                           "y": y,
                           "width":width,
                           "height": height};
     }
 
-    mraid.util.setCurrentPosition(x, y, width, height){
+    mraid.util.setCurrentPosition=function(x, y, width, height){
         current_position={"x": x,
                           "y": y,
                           "width":width,
