@@ -17,6 +17,7 @@
 package com.appnexus.opensdkapp;
 
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -29,7 +30,7 @@ import com.appnexus.opensdk.utils.Clog;
 
 public class SettingsFragment extends Fragment {
     private Button btnLoadAd;
-    private View colorView;
+    private GradientDrawable colorViewBackground;
     private Spinner dropSize, dropRefresh, dropCloseDelay;
 
     private Button btnAdTypeBanner, btnAdTypeInterstitial,
@@ -66,7 +67,7 @@ public class SettingsFragment extends Fragment {
         txtMemberId = (TextView) out.findViewById(R.id.txt_memberid);
         txtDongle = (TextView) out.findViewById(R.id.txt_dongle);
 
-        colorView = out.findViewById(R.id.view_color);
+        colorViewBackground = (GradientDrawable) out.findViewById(R.id.view_color).getBackground();
 
         editPlacementId = (EditText) out.findViewById(R.id.edit_placementid);
         editBackgroundColor = (EditText) out.findViewById(R.id.edit_interstitial_color);
@@ -389,7 +390,7 @@ public class SettingsFragment extends Fragment {
 
             if (s.length() == 8) {
                 try {
-                    colorView.setBackgroundColor(Color.parseColor("#" + s.toString()));
+                    colorViewBackground.setColor(Color.parseColor("#" + s.toString()));
                 } catch (IllegalArgumentException e) {
                     Clog.d(Constants.LOG_TAG, "Invalid hex color");
                 }
