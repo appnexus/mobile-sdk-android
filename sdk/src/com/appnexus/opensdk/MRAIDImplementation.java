@@ -392,6 +392,16 @@ public class MRAIDImplementation {
             expand(parameters);
         } else if (func.equals("close")) {
             close();
+        } else if (func.equals("resize")){
+            //TODO
+        } else if (func.equals("setOrientationProperties")){
+            //TODO
+        } else if (func.equals("createCalendarEvent")){
+            //TODO
+        } else if (func.equals("playVideo")){
+            //TODO
+        } else if (func.equals("storePicture")){
+            
         }
     }
 }
