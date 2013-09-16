@@ -286,6 +286,16 @@ public class MRAIDImplementation {
             owner.loadUrl("javascript:window.mraid.util.setIsViewable(false)");
     }
 
+    private void setCurrentPosition(WebView view){ //TODO find somewhere convenient to call this
+        int[] location = new int[2];
+        owner.getLocationOnScreen(location);
+
+        int height = owner.getMeasuredHeight();
+        int width = owner.getMeasuredWidth();
+
+        view.loadUrl("javascript:window.mraid.util.setCurrentPosition(x:"+location[0]+", y:"+location[1]+", width:"+width+", height:"+height+")");
+    }
+
     protected void close() {
         if (expanded) {
             AdView.LayoutParams lp = new AdView.LayoutParams(
