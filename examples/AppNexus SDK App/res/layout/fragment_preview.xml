@@ -109,7 +109,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="@string/banner_button" />
+                    android:text="@string/settings_btn_banner" />
 
             <View
                     android:layout_width="15dp"
@@ -127,7 +127,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="@string/interstitital_button" />
+                    android:text="@string/settings_btn_interstitial" />
 
             <!--
                  <RadioButton
@@ -166,7 +166,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="@string/inapp_button" />
+                    android:text="@string/settings_btn_browser_inapp" />
 
             <View
                     android:layout_width="15dp"
@@ -184,7 +184,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="@string/native_button" />
+                    android:text="native" />
 
         </RadioGroup>
 

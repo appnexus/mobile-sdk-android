@@ -38,9 +38,15 @@ import java.util.Vector;
 public class MainActivity extends FragmentActivity implements
         TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener {
 
-    private static final String PREVIEW_ID = "Preview";
     private static final String SETTINGS_ID = "Settings";
+    private static final String PREVIEW_ID = "Preview";
     private static final String DEBUG_ID = "Debug";
+
+    public static enum TABS {
+        SETTINGS,
+        PREVIEW,
+        DEBUG
+    }
 
     private TabHost tabHost;
     private HashMap<String, TabInfo> mapTabInfo = new HashMap<String, MainActivity.TabInfo>();
@@ -79,7 +85,7 @@ public class MainActivity extends FragmentActivity implements
         new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                onPageSelected(1);
+                onPageSelected(TABS.PREVIEW.ordinal());
 //                MainActivity.this.onTabChanged(PREVIEW_ID);
             }
         }.sendEmptyMessage(0);
@@ -200,7 +206,6 @@ public class MainActivity extends FragmentActivity implements
 
         if (debugFrag != null)
             debugFrag.refresh();
-
     }
 
     @Override

@@ -16,7 +16,6 @@
 
 package com.appnexus.opensdkapp;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -24,12 +23,17 @@ public class Prefs {
 
     public static final String KEY_PLACEMENT = "PLACEMENT";
     public static final String KEY_COLOR_HEX = "COLOR";
+    public static final String KEY_MEMBERID = "MEMBERID";
+    public static final String KEY_DONGLE = "DONGLE";
+
     public static final String DEF_PLACEMENT = "000000";
-    public static final String DEF_COLOR_HEX = "0xFFFFFFFF";
+    public static final String DEF_COLOR_HEX = "FF000000";
+    public static final String DEF_MEMBERID = "";
+    public static final String DEF_DONGLE = "";
 
     private static SharedPreferences getPreferences(Context context) {
         return context.getSharedPreferences(
-                Constants.PREFERENCES, Activity.MODE_PRIVATE);
+                Constants.PREFERENCES, Context.MODE_PRIVATE);
     }
 
     public static String getString(Context context, String key, String def) {

@@ -35,23 +35,84 @@
         <RelativeLayout
                 style="@style/item">
 
-            <!-- Left-Hard Column Text -->
+            <!-- AdType "Switch" -->
 
             <TextView
                     android:layout_marginBottom="8dp"
                     android:id="@+id/txt_adtype"
                     android:text="@string/settings_txt_adtype"
+                    android:layout_alignBottom="@+id/btns_adtype"
+                    android:layout_alignTop="@+id/btns_adtype"
                     style="@style/settingsTextItem"
                     />
+
+            <RelativeLayout
+                    style="@style/switchContainer"
+                    android:id="@+id/btns_adtype"
+                    android:layout_toRightOf="@id/txt_adtype"
+                    >
+                <View
+                        android:id="@+id/mid_adtype"
+                        android:layout_alignTop="@+id/btn_banner"
+                        android:layout_alignBottom="@+id/btn_banner"
+                        style="@style/switchButtonMiddle"
+                        />
+                <Button
+                        android:id="@+id/btn_banner"
+                        android:text="@string/settings_btn_banner"
+                        android:enabled="false"
+                        android:layout_toLeftOf="@id/mid_adtype"
+                        style="@style/switchButtonItem"
+                        />
+                <Button
+                        android:id="@+id/btn_interstitial"
+                        android:text="@string/settings_btn_interstitial"
+                        style="@style/switchButtonItem"
+                        android:layout_toRightOf="@id/mid_adtype"
+                        />
+            </RelativeLayout>
+
+            <!-- PSA "Switch" -->
 
             <TextView
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:layout_below="@id/txt_adtype"
+                    android:layout_alignBottom="@+id/btns_psas"
+                    android:layout_alignTop="@+id/btns_psas"
                     android:id="@+id/txt_psas"
                     android:text="@string/settings_txt_psas"
                     style="@style/settingsTextItem"
                     />
+
+            <RelativeLayout
+                    style="@style/switchContainer"
+                    android:layout_below="@id/txt_adtype"
+                    android:id="@+id/btns_psas"
+                    android:layout_toRightOf="@id/txt_psas"
+                    >
+                <View
+                        android:id="@+id/mid_psas"
+                        android:layout_alignTop="@+id/btn_psa_yes"
+                        android:layout_alignBottom="@+id/btn_psa_yes"
+                        style="@style/switchButtonMiddle"
+                        />
+                <Button
+                        android:id="@+id/btn_psa_yes"
+                        android:text="@string/settings_btn_psas_yes"
+                        android:enabled="false"
+                        android:layout_toLeftOf="@id/mid_psas"
+                        style="@style/switchButtonItem"
+                        />
+                <Button
+                        android:id="@+id/btn_psa_no"
+                        android:text="@string/settings_btn_psas_no"
+                        style="@style/switchButtonItem"
+                        android:layout_toRightOf="@id/mid_psas"
+                        />
+            </RelativeLayout>
+
+            <!-- Browser "Switch" -->
 
             <TextView
                     android:layout_marginTop="8dp"
@@ -59,178 +120,44 @@
                     android:layout_below="@id/txt_psas"
                     android:layout_centerVertical="false"
                     android:id="@+id/txt_browser"
+                    android:layout_alignBottom="@+id/btns_browser"
+                    android:layout_alignTop="@+id/btns_browser"
                     android:text="@string/settings_txt_browser"
                     style="@style/settingsTextItem"
                     />
 
-
-            <!-- AdType "Switch" -->
-
             <RelativeLayout
-                    android:id="@+id/btns_adtype"
-                    android:padding="2dp"
-                    android:layout_alignBottom="@id/txt_adtype"
-                    android:layout_alignTop="@id/txt_adtype"
-                    android:layout_toRightOf="@id/txt_adtype"
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent">
-                <View
-                        android:id="@+id/middle"
-                        android:layout_alignTop="@+id/btn_banner"
-                        android:layout_alignBottom="@+id/btn_banner"
-                        android:layout_height="wrap_content"
-                        android:background="@color/light_grey"
-                        android:layout_width="1dp"
-                        android:layout_centerInParent="true"
-                        />
-                <Button
-                        android:id="@+id/btn_banner"
-                        android:text="Banner"
-                        android:enabled="false"
-                        android:background="@drawable/btn_switch"
-                        android:textColor="@color/btn_switch_txt"
-                        android:textSize="16sp"
-                        android:layout_toLeftOf="@id/middle"
-                        android:layout_height="wrap_content"
-                        android:layout_width="fill_parent" />
-                <Button
-                        android:id="@+id/btn_interstitial"
-                        android:text="Interstitial"
-                        android:background="@drawable/btn_switch"
-                        android:textColor="@color/btn_switch_txt"
-                        android:textSize="16sp"
-                        android:layout_toRightOf="@id/middle"
-                        android:layout_height="wrap_content"
-                        android:layout_width="fill_parent" />
-
-            </RelativeLayout>
-
-            <!-- PSA "Switch" -->
-
-            <RelativeLayout
-                    android:id="@+id/btns_psa"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:padding="4dp"
-                    android:layout_below="@id/btns_adtype"
-                    android:layout_toRightOf="@id/txt_psas"
-                    android:layout_alignBottom="@id/txt_psas"
-                    android:layout_alignTop="@id/txt_psas"
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent">
-                <Switch
-                        android:id="@+id/switch_psa"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_centerInParent="true"
-                        android:background="@color/light_grey"
-                        android:switchMinWidth="120dp"
-                        android:gravity="center"
-                        android:textOn=""
-                        android:textOff=""
-                        android:thumb="@drawable/switch_selector"
-                        android:textColor="@color/btn_switch_txt"
-                        />
-                <View android:id="@+id/middle_psa"
-                      android:layout_width="0dp"
-                      android:layout_height="0dp"
-                      android:layout_centerInParent="true" />
-                <TextView
-                        android:text="Banner"
-                        android:gravity="center"
-                        android:textSize="16sp"
-                        android:layout_alignTop="@id/switch_psa"
-                        android:layout_alignBottom="@id/switch_psa"
-                        android:layout_alignLeft="@id/switch_psa"
-                        android:layout_toLeftOf="@id/middle_psa"
-                        android:layout_height="wrap_content"
-                        android:layout_width="match_parent"
-                        android:layout_weight="1"/>
-                <TextView
-                        android:gravity="center"
-                        android:text="Interstitial"
-                        android:textSize="16sp"
-                        android:layout_alignTop="@id/switch_psa"
-                        android:layout_alignBottom="@id/switch_psa"
-                        android:layout_alignRight="@id/switch_psa"
-                        android:layout_toRightOf="@id/middle_psa"
-                        android:layout_alignParentRight="true"
-                        android:layout_height="wrap_content"
-                        android:layout_width="match_parent"
-                        android:layout_weight="1"/>
-
-                <!--<LinearLayout-->
-                    <!--android:orientation="horizontal"-->
-                    <!--android:layout_height="match_parent"-->
-                    <!--android:layout_width="match_parent">-->
-
-                <!--<TextView-->
-                        <!--android:text="Banner"-->
-                        <!--android:gravity="center"-->
-                        <!--android:textSize="16sp"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_weight="1"/>-->
-                <!--<TextView-->
-                        <!--android:layout_gravity="right"-->
-                        <!--android:gravity="center"-->
-                        <!--android:text="Interstitial"-->
-                        <!--android:textSize="16sp"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_weight="1"/>-->
-                <!--</LinearLayout>-->
-            </RelativeLayout>
-
-            <!-- Browser "Switch" -->
-
-            <LinearLayout
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:padding="4dp"
-                    android:layout_below="@id/btns_psa"
-                    android:layout_alignBottom="@id/txt_browser"
-                    android:layout_alignTop="@id/txt_browser"
+                    style="@style/switchContainer"
+                    android:id="@+id/btns_browser"
+                    android:layout_below="@id/txt_psas"
                     android:layout_toRightOf="@id/txt_browser"
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent">
-                <TextView
-                        android:text="Banner"
-                        android:gravity="left|center"
-                        android:textSize="16sp"
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"
-                        android:layout_weight="1"/>
+                    >
+                <View
+                        android:id="@+id/mid_browser"
+                        android:layout_alignTop="@+id/btn_browser_inapp"
+                        android:layout_alignBottom="@+id/btn_browser_inapp"
+                        style="@style/switchButtonMiddle"
+                        />
                 <Button
-                        android:id="@+id/btn_banner2"
-                        android:text=" "
+                        android:id="@+id/btn_browser_inapp"
+                        android:text="@string/settings_btn_browser_inapp"
                         android:enabled="false"
-                        android:background="@drawable/btn_switch2"
-                        android:textSize="10sp"
-                        android:layout_weight="0"
-                        android:layout_height="24dp"
-                        android:layout_width="40dp" />
+                        android:layout_toLeftOf="@id/mid_browser"
+                        style="@style/switchButtonItem"
+                        />
                 <Button
-                        android:id="@+id/btn_interstitial2"
-                        android:text=" "
-                        android:background="@drawable/btn_switch2"
-                        android:layout_weight="0"
-                        android:textSize="10sp"
-                        android:layout_toRightOf="@id/middle"
-                        android:layout_height="24dp"
-                        android:layout_width="40dp" />
-                <TextView
-                        android:text="Interstitial"
-                        android:gravity="center|right"
-                        android:textSize="16sp"
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"
-                        android:layout_weight="1"/>
-            </LinearLayout>
+                        android:id="@+id/btn_browser_native"
+                        android:text="@string/settings_btn_browser_native"
+                        style="@style/switchButtonItem"
+                        android:layout_toRightOf="@id/mid_browser"
+                        />
+            </RelativeLayout>
 
             <!-- Placement ID -->
 
             <TextView
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
                     android:id="@+id/txt_placementid"
                     style="@style/settingsTextItem"
                     android:layout_below="@id/txt_browser"
@@ -314,12 +241,12 @@
                     />
 
             <View
-                    android:id="@+id/color"
-                    android:layout_margin="8dp"
-                    android:layout_toRightOf="@id/txt_interstitial_color"
-                    android:layout_centerVertical="true"
+                    android:id="@+id/view_color"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_centerInParent="true"
                     android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignTop="@id/txt_interstitial_color"
                     android:layout_alignBottom="@id/txt_interstitial_color"
                     android:background="@android:color/black" />
@@ -327,11 +254,22 @@
             <EditText
                     android:id="@+id/edit_interstitial_color"
                     android:maxLength="10"
-                    android:gravity="center_vertical"
+                    android:gravity="center"
                     style="@style/settingsEditItem"
                     android:layout_alignTop="@id/txt_interstitial_color"
                     android:layout_alignBottom="@id/txt_interstitial_color"
+                    android:hint="@string/settings_hint_color"
                     />
+
+            <!--<TextView-->
+                    <!--style="@style/settingsEditItem.prefix"-->
+                    <!--android:layout_toLeftOf="@id/edit_interstitial_color"-->
+                    <!--android:layout_alignTop="@id/txt_interstitial_color"-->
+                    <!--android:layout_alignBaseline="@id/edit_interstitial_color"-->
+                    <!--android:textSize="18sp"-->
+                    <!--android:background="@color/light_grey"-->
+                    <!--android:text="0x"-->
+                    <!--/>-->
         </RelativeLayout>
 
         <!-- Close Delay -->
@@ -400,8 +338,8 @@
 
         <Button
                 android:id="@+id/btn_load_ad"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                style="@style/widthFillheightWrap"
+                android:textStyle="bold"
                 android:text="@string/load_ad_button" />
 
     </LinearLayout>

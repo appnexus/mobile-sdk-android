@@ -33,11 +33,22 @@
         <item name="android:padding">4dp</item>
     </style>
 
-    <style name="switchButtonItem">
+    <style name="switchContainer" parent="widthFillheightWrap">
+        <item name="android:padding">2dp</item>
+    </style>
+
+    <style name="switchButtonMiddle">
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_centerVertical">true</item>
-        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_width">1dp</item>
+        <!--<item name="android:background">@color/light_grey</item>-->
+        <item name="android:layout_centerInParent">true</item>
+    </style>
+
+    <style name="switchButtonItem" parent="widthFillheightWrap">
+        <!--<item name="android:background">@drawable/btn_switch</item>-->
+        <item name="android:background">@drawable/btn_holo</item>
+        <item name="android:textColor">@color/btn_switch_txt</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="switchItem">
@@ -55,24 +66,31 @@
     </style>
 
     <style name="settingsTextItem">
-        <item name="android:layout_width">100dp</item>
+        <item name="android:layout_width">108dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">8dp</item>
+        <item name="android:gravity">center_vertical|right</item>
     </style>
 
     <style name="settingsTextItem.long">
-        <item name="android:layout_width">160dp</item>
+        <item name="android:layout_width">136dp</item>
     </style>
 
     <style name="settingsEditItem">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:minWidth">128dp</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:minWidth">128dp</item>
+        <item name="android:minHeight">48dp</item>
         <item name="android:maxLines">1</item>
         <item name="android:maxLength">16</item>
         <item name="android:gravity">center</item>
-        <item name="android:minHeight">48dp</item>
         <item name="android:layout_alignParentRight">true</item>
+    </style>
+
+    <style name="settingsEditItem.prefix">
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:layout_alignParentRight">false</item>
     </style>
 
     <style name="spinnerText">
