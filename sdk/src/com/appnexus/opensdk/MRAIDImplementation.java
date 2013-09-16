@@ -24,9 +24,13 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.net.http.SslError;
+import android.view.Display;
 import android.view.Gravity;
+import android.view.Window;
 import android.webkit.*;
 import com.appnexus.opensdk.utils.Clog;
 import org.apache.http.message.BasicNameValuePair;
@@ -147,6 +151,9 @@ public class MRAIDImplementation {
                     view.loadUrl("javascript:window.mraid.util.setIsViewable(true)");
 
                     setSupportsValues(view);
+                    setScreenSize(view);
+                    setMaxSize(view);
+                    setDefaultPosition(view);
 
                     view.loadUrl("javascript:window.mraid.util.stateChangeEvent('default')");
                     view.loadUrl("javascript:window.mraid.util.readyEvent();");
@@ -158,40 +165,83 @@ public class MRAIDImplementation {
                     readyFired = true;
                 }
             }
+
+            private void setDefaultPosition(WebView view) {
+                int[] location = new int[2];
+                owner.getLocationOnScreen(location);
+
+                int height = owner.getMeasuredHeight();
+                int width = owner.getMeasuredWidth();
+                view.loadUrl("javascript:window.mraid.util.setDefaultPosition(x:"+location[0]+", y:"+location[1]+", width:"+width+", height:"+height+")");
+            }
+
+            private void setMaxSize(WebView view) {
+                if(owner.getContext() instanceof Activity){
+                    Activity a = ((Activity) owner.getContext());
+                    Display d = a.getWindowManager().getDefaultDisplay();
+                    Point p = new Point();
+                    d.getSize(p);
+                    int width = p.x;
+                    int height = p.y;
+
+                    Rect r = new Rect();
+                    a.getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
+                    int contentViewTop = a.getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
+                    height-=contentViewTop;
+
+
+                    view.loadUrl("javascript:window.mraid.util.setMaxSize({width: "+width+", height:"+height+")");
+                }
+
+
+
+            }
+
+            private void setScreenSize(WebView view) {
+                if(owner.getContext() instanceof Activity){
+                    Display d = ((Activity) owner.getContext()).getWindowManager().getDefaultDisplay();
+                    Point p = new Point();
+                    d.getSize(p);
+                    int width = p.x;
+                    int height = p.y;
+
+                    view.loadUrl("javascript:window.mraid.util.setScreenSize({width: "+width+", height:"+height+")");
+                }
+            }
+
+            private void setSupportsValues(WebView view) {
+                PackageManager pm = owner.getContext().getPackageManager();
+                Intent i;
+
+                //SMS
+                i = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:5555555555"));
+                if(pm.queryIntentActivities(i, 0).size()>0){
+                    view.loadUrl("javascript:window.mraid.util.setSupportsSMS(true)");
+                }
+
+                //Tel
+                i = new Intent(Intent.ACTION_CALL, Uri.parse("tel:5555555555"));
+                if(pm.queryIntentActivities(i, 0).size()>0){
+                    view.loadUrl("javascript:window.mraid.util.setSupportsTel(true)");
+                }
+
+                //Calendar
+                i = new Intent(Intent.ACTION_EDIT);
+                i.setType("vnd.android.cursor.item/event");
+                if(pm.queryIntentActivities(i, 0).size()>0){
+                    view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
+                }
+
+                //Store Picture
+                //TODO: This isn't done by an intent. Do we want to make a custom dialog box for this, or just not support it?
+
+                //Video should always work inline.
+                view.loadUrl("javascript:window.mraid.util.setSupportsInlineVideo(true)");
+
+            }
         };
     }
 
-    private void setSupportsValues(WebView view) {
-        PackageManager pm = owner.getContext().getPackageManager();
-        List<ResolveInfo> activities;
-        Intent i;
-
-        //SMS
-        i = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:5555555555"));
-        if(pm.queryIntentActivities(i, 0).size()>0){
-            view.loadUrl("javascript:window.mraid.util.setSupportsSMS(true)");
-        }
-
-        //Tel
-        i = new Intent(Intent.ACTION_CALL, Uri.parse("tel:5555555555"));
-        if(pm.queryIntentActivities(i, 0).size()>0){
-            view.loadUrl("javascript:window.mraid.util.setSupportsTel(true)");
-        }
-
-        //Calendar
-        i = new Intent(Intent.ACTION_EDIT);
-        i.setType("vnd.android.cursor.item/event");
-        if(pm.queryIntentActivities(i, 0).size()>0){
-            view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
-        }
-
-        //Store Picture
-        //TODO: This isn't done by an intent. Do we want to make a custom dialog box for this, or just not support it?
-
-        //Video should always work inline.
-        view.loadUrl("javascript:window.mraid.util.setSupportsInlineVideo(true)");
-
-    }
 
     protected WebChromeClient getWebChromeClient() {
 		return new MRAIDWebChromeClient((Activity) owner.getContext());
