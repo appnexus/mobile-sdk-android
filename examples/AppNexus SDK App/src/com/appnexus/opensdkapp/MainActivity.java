@@ -28,8 +28,10 @@ import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
+import com.appnexus.opensdk.utils.Clog;
 
 import java.util.HashMap;
 import java.util.List;
@@ -202,10 +204,14 @@ public class MainActivity extends FragmentActivity implements
 
     @Override
     public void onPageSelected(int arg0) {
+        Clog.d(Constants.LOG_TAG, "page selected: " + arg0);
         this.tabHost.setCurrentTab(arg0);
 
         if (debugFrag != null)
             debugFrag.refresh();
+
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(tabHost.getApplicationWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     @Override

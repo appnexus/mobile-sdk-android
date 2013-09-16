@@ -21,13 +21,26 @@ import android.content.SharedPreferences;
 
 public class Prefs {
 
+    public static final String KEY_ADTYPE_IS_BANNER = "ADTYPE";
+    public static final String KEY_ALLOW_PSAS = "ALLOW_PSAS";
+    public static final String KEY_BROWSER_IS_INAPP = "BROWSER";
     public static final String KEY_PLACEMENT = "PLACEMENT";
+    public static final String KEY_SIZE = "SIZE";
+    public static final String KEY_REFRESH = "REFRESH";
     public static final String KEY_COLOR_HEX = "COLOR";
+    public static final String KEY_CLOSE_DELAY = "DELAY";
     public static final String KEY_MEMBERID = "MEMBERID";
     public static final String KEY_DONGLE = "DONGLE";
 
+    // default values for all the settings
+    public static final boolean DEF_ADTYPE_IS_BANNER = true;
+    public static final boolean DEF_ALLOW_PSAS = true;
+    public static final boolean DEF_BROWSER_IS_INAPP = true;
     public static final String DEF_PLACEMENT = "000000";
+    public static final String DEF_SIZE = "320x480";
+    public static final String DEF_REFRESH = "30 seconds";
     public static final String DEF_COLOR_HEX = "FF000000";
+    public static final String DEF_CLOSE_DELAY = "10 seconds";
     public static final String DEF_MEMBERID = "";
     public static final String DEF_DONGLE = "";
 
@@ -37,12 +50,71 @@ public class Prefs {
     }
 
     public static String getString(Context context, String key, String def) {
-        SharedPreferences prefs = getPreferences(context);
-        return prefs.getString(key, def);
+        return getPreferences(context).getString(key, def);
     }
 
     public static boolean writeString(Context context, String key, String value) {
-        SharedPreferences prefs = getPreferences(context);
-        return prefs.edit().putString(key, value).commit();
+        return getPreferences(context).edit().putString(key, value).commit();
+    }
+
+    public static int getInt(Context context, String key, int def) {
+        return getPreferences(context).getInt(key, def);
+    }
+
+    public static boolean writeInt(Context context, String key, int value) {
+        return getPreferences(context).edit().putInt(key, value).commit();
+    }
+
+    public static boolean getBoolean(Context context, String key, boolean def) {
+        return getPreferences(context).getBoolean(key, def);
+    }
+
+    public static boolean writeBoolean(Context context, String key, boolean value) {
+        return getPreferences(context).edit().putBoolean(key, value).commit();
+    }
+
+
+    /**
+     * Convenience methods
+     */
+
+    public static boolean getAdType(Context context) {
+        return getBoolean(context, Prefs.KEY_ADTYPE_IS_BANNER, Prefs.DEF_ADTYPE_IS_BANNER);
+    }
+
+    public static boolean getAllowPSAs(Context context) {
+        return getBoolean(context, Prefs.KEY_ALLOW_PSAS, Prefs.DEF_ALLOW_PSAS);
+    }
+
+    public static boolean getBrowserInApp(Context context) {
+        return getBoolean(context, Prefs.KEY_BROWSER_IS_INAPP, Prefs.DEF_BROWSER_IS_INAPP);
+    }
+
+    public static String getPlacementId(Context context) {
+        return getString(context, Prefs.KEY_PLACEMENT, Prefs.DEF_PLACEMENT);
+    }
+
+    public static String getSize(Context context) {
+        return getString(context, Prefs.KEY_SIZE, Prefs.DEF_SIZE);
+    }
+
+    public static String getRefresh(Context context) {
+        return getString(context, Prefs.KEY_REFRESH, Prefs.DEF_REFRESH);
+    }
+
+    public static String getColor(Context context) {
+        return getString(context, Prefs.KEY_COLOR_HEX, Prefs.DEF_COLOR_HEX);
+    }
+
+    public static String getCloseDelay(Context context) {
+        return getString(context, Prefs.KEY_CLOSE_DELAY, Prefs.DEF_CLOSE_DELAY);
+    }
+
+    public static String getMemberId(Context context) {
+        return getString(context, Prefs.KEY_MEMBERID, Prefs.DEF_MEMBERID);
+    }
+
+    public static String getDongle(Context context) {
+        return getString(context, Prefs.KEY_DONGLE, Prefs.DEF_DONGLE);
     }
 }

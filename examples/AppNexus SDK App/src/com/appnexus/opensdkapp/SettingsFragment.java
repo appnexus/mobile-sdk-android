@@ -44,9 +44,6 @@ public class SettingsFragment extends Fragment {
             editBackgroundColor,
             editMemberId, editDongle;
 
-    private static final int SIZE_INDEX_320x480 = 3;
-    private static final int REFRESH_INDEX_30s = 1;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -109,8 +106,8 @@ public class SettingsFragment extends Fragment {
         editMemberId.addTextChangedListener(new SaveToPrefsTextWatcher(Prefs.KEY_MEMBERID, Prefs.DEF_MEMBERID));
         editDongle.addTextChangedListener(new SaveToPrefsTextWatcher(Prefs.KEY_DONGLE, Prefs.DEF_DONGLE));
 
-        // set defaults
-        setDefaultSettings();
+        // load saved or default settings
+        loadSettings();
 
         return out;
     }
@@ -119,28 +116,73 @@ public class SettingsFragment extends Fragment {
      * SET DEFAULTS
      */
 
-    private void setDefaultSettings() {
-        // Load default placement id
-        String savedPlacement = Prefs.getString(getActivity(), Prefs.KEY_PLACEMENT, Prefs.DEF_PLACEMENT);
-        if (!savedPlacement.equals(Prefs.DEF_PLACEMENT))
-            editPlacementId.setText(savedPlacement);
-        else
-            editPlacementId.setText(Prefs.DEF_PLACEMENT);
+    private void loadSettings() {
+        // Buttons: Banner mode, Allow PSAs, and In-App Browser
+        boolean isBanner = Prefs.getAdType(getActivity());
+        boolean isAllowedPSAs = Prefs.getAllowPSAs(getActivity());
+        boolean isBrowserInApp = Prefs.getBrowserInApp(getActivity());
 
-        // Load default background color
-        String savedColor = Prefs.getString(getActivity(), Prefs.KEY_COLOR_HEX, Prefs.DEF_COLOR_HEX);
-        Clog.d(Constants.LOG_TAG, "saved c: " + savedColor);
+        if (isBanner)
+            btnAdTypeBanner.performClick();
+        else
+            btnAdTypeInterstitial.performClick();
+
+        if (isAllowedPSAs)
+            btnPSAsYes.performClick();
+        else
+            btnPSAsNo.performClick();
+
+        if (isBrowserInApp)
+            btnBrowserInApp.performClick();
+        else
+            btnBrowserNative.performClick();
+
+        // Load default placement id
+        String savedPlacement = Prefs.getPlacementId(getActivity());
+        editPlacementId.setText(savedPlacement);
+
+        // Load size
+        String savedSize = Prefs.getSize(getActivity());
+
+        String[] sizeStrings = getResources().getStringArray(R.array.sizes);
+        for (int i = 0; i < sizeStrings.length; i++) {
+            if (sizeStrings[i].equals(savedSize)) {
+                dropSize.setSelection(i);
+            }
+        }
+
+        // Load refresh
+        String savedRefresh = Prefs.getRefresh(getActivity());
+
+        String[] refreshStrings = getResources().getStringArray(R.array.refresh);
+        for (int i = 0; i < refreshStrings.length; i++) {
+            if (refreshStrings[i].equals(savedRefresh)) {
+                dropRefresh.setSelection(i);
+            }
+        }
+
+        // Load background color
+        String savedColor = Prefs.getColor(getActivity());
         editBackgroundColor.setText(savedColor);
 
-        // Buttons: Banner mode, Allow PSAs, and In-App Browser
-        btnAdTypeBanner.performClick();
-        btnPSAsYes.performClick();
-        btnBrowserInApp.performClick();
+        // Load close delay
+        String savedCloseDelay = Prefs.getCloseDelay(getActivity());
 
-        // Size: select 320x480
-        dropSize.setSelection(SIZE_INDEX_320x480);
-        // Refresh: select 30 seconds
-        dropRefresh.setSelection(REFRESH_INDEX_30s);
+        String[] closeDelayStrings = getResources().getStringArray(R.array.close_delay);
+        for (int i = 0; i < closeDelayStrings.length; i++) {
+            if (closeDelayStrings[i].equals(savedCloseDelay)) {
+                dropCloseDelay.setSelection(i);
+            }
+        }
+
+        // Load member id
+        String savedMemberId = Prefs.getMemberId(getActivity());
+        editMemberId.setText(savedMemberId);
+
+        // Load dongle
+        String savedDongle = Prefs.getDongle(getActivity());
+        editDongle.setText(savedDongle);
+
     }
 
     // generic function to create dropdown views
@@ -174,7 +216,10 @@ public class SettingsFragment extends Fragment {
                 return;
             String setting = sizeStrings[position];
 
-            //TODO: parse and persist
+            Clog.d(Constants.LOG_TAG, "Size set to: " + setting);
+
+            Prefs.writeString(getActivity(), Prefs.KEY_SIZE, setting);
+
 
 //			bannerAdView.setAdWidth(getSizeFromPosition(position)[0]);
 //			bannerAdView.setAdHeight(getSizeFromPosition(position)[1]);
@@ -188,9 +233,6 @@ public class SettingsFragment extends Fragment {
 //			if(lp.width!=-1) lp.width = (int) (bannerAdView.getAdWidth()*d+0.5f);
 //			if(lp.height!=-1) lp.height = (int) (bannerAdView.getAdHeight()*d+0.5f);
 //			bannerAdView.setLayoutParams(lp);
-
-            Clog.d(Constants.LOG_TAG, "Size selected to: " + setting);
-
         }
 
         int[] getSizeFromString(String size_string) {
@@ -226,19 +268,10 @@ public class SettingsFragment extends Fragment {
                                    int position, long id) {
             if (position >= refreshStrings.length)
                 return;
-            String setting = refreshStrings[position];
 
-            //TODO: parse and persist
-//            if (setting.equals("Off")) {
-//                return;
-//            }
-//            int refresh;
-//            try {
-//                setting = setting.replace(" seconds", "");
-//                refresh = Integer.parseInt(setting);
-//            } catch (NumberFormatException ignored) {
-//            }
+            Clog.d(Constants.LOG_TAG, "Refresh set to: " + refreshStrings[position]);
 
+            Prefs.writeString(getActivity(), Prefs.KEY_REFRESH, refreshStrings[position]);
         }
 
         @Override
@@ -259,17 +292,21 @@ public class SettingsFragment extends Fragment {
                                    int position, long id) {
             if (position >= closeDelayStrings.length)
                 return;
-            String setting = closeDelayStrings[position];
 
-            //TODO: parse and persist
+            Clog.d(Constants.LOG_TAG, "Close Delay set to: " + closeDelayStrings[position]);
+
+            Prefs.writeString(getActivity(), Prefs.KEY_CLOSE_DELAY, closeDelayStrings[position]);
+//
+//            int closeDelay = 0;
+//
 //            if (setting.equals("Off")) {
-//                return;
-//            }
-//            int closeDelay;
-//            try {
-//                setting = setting.replace(" seconds", "");
-//                closeDelay = Integer.parseInt(setting);
-//            } catch (NumberFormatException ignored) {
+//                closeDelay = 0;
+//            } else {
+//                try {
+//                    setting = setting.replace(" seconds", "");
+//                    closeDelay = Integer.parseInt(setting);
+//                } catch (NumberFormatException ignored) {
+//                }
 //            }
         }
 
@@ -315,7 +352,10 @@ public class SettingsFragment extends Fragment {
         }
 
         private void handleAdType(boolean isBanner) {
-            Clog.d(Constants.LOG_TAG, "Set to load an interstitial");
+            Clog.d(Constants.LOG_TAG, "AdType set isBanner to: " + isBanner);
+
+            Prefs.writeBoolean(getActivity(), Prefs.KEY_ADTYPE_IS_BANNER, isBanner);
+
             // ad type buttons - opposite because we disable the option
             // that is selected
             btnAdTypeBanner.setEnabled(!isBanner);
@@ -348,6 +388,10 @@ public class SettingsFragment extends Fragment {
         }
 
         private void handlePSAs(boolean isAllowed) {
+            Clog.d(Constants.LOG_TAG, "PSAs set isAllowed to: " + isAllowed);
+
+            Prefs.writeBoolean(getActivity(), Prefs.KEY_ALLOW_PSAS, isAllowed);
+
             // PSA buttons. disable selected option
             btnPSAsYes.setEnabled(!isAllowed);
             btnPSAsNo.setEnabled(isAllowed);
@@ -367,6 +411,10 @@ public class SettingsFragment extends Fragment {
         }
 
         private void handleBrowser(boolean isInApp) {
+            Clog.d(Constants.LOG_TAG, "Browser type set isInApp to: " + isInApp);
+
+            Prefs.writeBoolean(getActivity(), Prefs.KEY_BROWSER_IS_INAPP, isInApp);
+
             // Browser buttons. disable selected option
             btnBrowserInApp.setEnabled(!isInApp);
             btnBrowserNative.setEnabled(isInApp);

@@ -49,11 +49,14 @@ public class PreviewFragment extends Fragment implements AdListener {
     private int color = 0xff000000;
     private Spinner sizes;
     private Spinner refresh;
+    private SettingsWrapper settingsWrapper;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View out = inflater.inflate(R.layout.fragment_preview, null);
+
+        settingsWrapper = SettingsWrapper.getSettingsWrapperFromPrefs(getActivity());
 
         sizes = (Spinner) out.findViewById(R.id.dropdown_size);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(

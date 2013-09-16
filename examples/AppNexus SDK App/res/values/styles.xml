@@ -94,6 +94,7 @@
         <item name="android:textSize">14sp</item>
         <item name="android:layout_weight">1</item>
         <item name="android:editable">false</item>
+        <item name="android:enabled">false</item>
     </style>
 
 </resources>

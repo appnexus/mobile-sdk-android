@@ -43,10 +43,10 @@
     <string name="settings_txt_memberid">Member Id: </string>
     <string name="settings_txt_dongle">Dongle: </string>
 
-    <!--<string name="settings_hint_placementid">placement id</string>-->
+    <string name="settings_hint_placementid">placement id</string>
     <string name="settings_hint_color">00000000</string>
-    <!--<string name="settings_hint_memberid">member id</string>-->
-    <!--<string name="settings_hint_dongle">dongle</string>-->
+    <string name="settings_hint_memberid">member id</string>
+    <string name="settings_hint_dongle">dongle</string>
 
     <string name="settings_btn_banner">Banner</string>
     <string name="settings_btn_interstitial">Interstitial</string>

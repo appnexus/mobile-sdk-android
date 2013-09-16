@@ -42,6 +42,8 @@ public class DebugFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         final View out = inflater.inflate(R.layout.fragment_debug, null);
 
+        Clog.d(Constants.LOG_TAG, "Switched to DebugFragment tab");
+
         txtRequest = (TextView) out.findViewById(R.id.request_text);
         txtResponse = (TextView) out.findViewById(R.id.response_text);
         editMemberId = (EditText) out.findViewById(R.id.memberid_edit);
@@ -68,8 +70,7 @@ public class DebugFragment extends Fragment {
 
         });
 
-        //TODO: get these Strings from SharedPreferences/Settings screen once that is implemented
-        webView = new DebugAuctionWebView("1281482", "958", "test", "300x50");
+        webView = new DebugAuctionWebView(SettingsWrapper.getSettingsWrapperFromPrefs(getActivity()));
 
         createDebugAuctionDialog();
 
@@ -111,6 +112,9 @@ public class DebugFragment extends Fragment {
     protected void refresh() {
         if (txtRequest != null) txtRequest.setText(Clog.getLastRequest());
         if (txtResponse != null) txtResponse.setText(Clog.getLastResponse());
+        if (editMemberId != null) editMemberId.setText(Prefs.getMemberId(getActivity()));
+        if (editDongle != null) editDongle.setText(Prefs.getDongle(getActivity()));
+        if (editPlacementId != null) editPlacementId.setText(Prefs.getPlacementId(getActivity()));
     }
 
     @Override
@@ -124,28 +128,21 @@ public class DebugFragment extends Fragment {
     }
 
     private class DebugAuctionWebView extends WebView {
-        private String placementId;
-        private String memberId;
-        private String dongle;
-        private String size;
+        SettingsWrapper settingsWrapper;
 
         public String getUrl() {
             StringBuilder params = new StringBuilder();
-            params.append("&id=").append(placementId);
-            params.append("&debug_member=").append(memberId);
-            params.append("&dongle=").append(dongle);
-            params.append("&size=").append(size);
+            params.append("&id=").append(settingsWrapper.getPlacementId());
+            params.append("&debug_member=").append(settingsWrapper.getMemberId());
+            params.append("&dongle=").append(settingsWrapper.getDongle());
+            params.append("&size=").append(settingsWrapper.getSize());
             return Constants.DEBUG_AUCTION_URL + params.toString();
         }
 
-        private DebugAuctionWebView(String placementId, String memberId, String dongle, String size) {
+        private DebugAuctionWebView(SettingsWrapper settingsWrapper) {
             super(getActivity().getApplicationContext());
 
-            this.placementId = placementId;
-            this.memberId = memberId;
-            this.dongle = dongle;
-            this.size = size;
-
+            this.settingsWrapper = settingsWrapper;
             setWebViewSettings();
         }
 
