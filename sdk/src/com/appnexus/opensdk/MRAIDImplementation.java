@@ -21,6 +21,8 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.net.http.SslError;
@@ -32,6 +34,7 @@ import org.apache.http.message.BasicNameValuePair;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 @SuppressLint("InlinedApi")
 public class MRAIDImplementation {
@@ -142,6 +145,9 @@ public class MRAIDImplementation {
                     view.loadUrl("javascript:window.mraid.util.setPlacementType('"
                             + owner.owner.getMRAIDAdType() + "')");
                     view.loadUrl("javascript:window.mraid.util.setIsViewable(true)");
+
+                    setSupportsValues(view);
+
                     view.loadUrl("javascript:window.mraid.util.stateChangeEvent('default')");
                     view.loadUrl("javascript:window.mraid.util.readyEvent();");
 
@@ -155,7 +161,39 @@ public class MRAIDImplementation {
         };
     }
 
-	protected WebChromeClient getWebChromeClient() {
+    private void setSupportsValues(WebView view) {
+        PackageManager pm = owner.getContext().getPackageManager();
+        List<ResolveInfo> activities;
+        Intent i;
+
+        //SMS
+        i = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:5555555555"));
+        if(pm.queryIntentActivities(i, 0).size()>0){
+            view.loadUrl("javascript:window.mraid.util.setSupportsSMS(true)");
+        }
+
+        //Tel
+        i = new Intent(Intent.ACTION_CALL, Uri.parse("tel:5555555555"));
+        if(pm.queryIntentActivities(i, 0).size()>0){
+            view.loadUrl("javascript:window.mraid.util.setSupportsTel(true)");
+        }
+
+        //Calendar
+        i = new Intent(Intent.ACTION_EDIT);
+        i.setType("vnd.android.cursor.item/event");
+        if(pm.queryIntentActivities(i, 0).size()>0){
+            view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
+        }
+
+        //Store Picture
+        //TODO: This isn't done by an intent. Do we want to make a custom dialog box for this, or just not support it?
+
+        //Video should always work inline.
+        view.loadUrl("javascript:window.mraid.util.setSupportsInlineVideo(true)");
+
+    }
+
+    protected WebChromeClient getWebChromeClient() {
 		return new MRAIDWebChromeClient((Activity) owner.getContext());
 	}
 
