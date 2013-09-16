@@ -33,7 +33,7 @@
                 />
 
         <RelativeLayout
-                style="@style/item">
+                style="@style/itemContainer">
 
             <!-- AdType "Switch" -->
 
@@ -191,7 +191,7 @@
         <!-- Size -->
 
         <RelativeLayout
-                style="@style/item">
+                style="@style/itemContainer">
             <TextView
                     android:id="@+id/txt_size"
                     style="@style/settingsTextItem.long"
@@ -208,7 +208,7 @@
         <!-- Refresh Rate -->
 
         <RelativeLayout
-                style="@style/item">
+                style="@style/itemContainer">
             <TextView
                     android:layout_below="@id/txt_size"
                     android:id="@+id/txt_refresh"
@@ -233,7 +233,7 @@
         <!-- Background Color -->
 
         <RelativeLayout
-                style="@style/item">
+                style="@style/itemContainer">
             <TextView
                     android:id="@+id/txt_interstitial_color"
                     style="@style/settingsTextItem.long"
@@ -273,7 +273,7 @@
         <!-- Close Delay -->
 
         <RelativeLayout
-                style="@style/item">
+                style="@style/itemContainer">
             <TextView
                     android:id="@+id/txt_close_delay"
                     style="@style/settingsTextItem.long"
@@ -298,7 +298,7 @@
         <!-- Member Id -->
 
         <RelativeLayout
-                style="@style/item">
+                style="@style/itemContainer">
             <TextView
                     android:id="@+id/txt_memberid"
                     style="@style/settingsTextItem"
@@ -317,7 +317,7 @@
         <!-- Dongle -->
 
         <RelativeLayout
-                style="@style/item">
+                style="@style/itemContainer">
             <TextView
                     android:id="@+id/txt_dongle"
                     style="@style/settingsTextItem"
