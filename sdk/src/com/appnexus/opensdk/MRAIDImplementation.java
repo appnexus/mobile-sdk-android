@@ -295,6 +295,7 @@ public class MRAIDImplementation {
             lp.gravity = Gravity.CENTER;
             owner.setLayoutParams(lp);
             owner.close();
+            owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent("+default_width+","+default_height+")");
             this.owner
                     .loadUrl("javascript:window.mraid.util.stateChangeEvent('default');");
             this.owner.owner.adListener.onAdCollapsed(this.owner.owner);
@@ -337,6 +338,7 @@ public class MRAIDImplementation {
 
             owner.expand(width, height, useCustomClose, this);
             // Fire the stateChange to MRAID
+            owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent("+width+","+height+")");
             this.owner
                     .loadUrl("javascript:window.mraid.util.stateChangeEvent('expanded');");
             expanded = true;
