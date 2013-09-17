@@ -27,7 +27,7 @@
 
         <TextView
                 style="@style/header"
-                android:text="@string/last_request_title"
+                android:text="@string/debug_title_request"
                 />
 
         <TextView
@@ -41,7 +41,7 @@
         <TextView
                 style="@style/header"
                 android:layout_marginTop="12dp"
-                android:text="@string/last_response_title"
+                android:text="@string/debug_title_response"
                 />
 
         <TextView
@@ -57,20 +57,20 @@
                 android:id="@+id/btn_email_server"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/email_data" />
+                android:text="@string/debug_btn_email_server" />
 
         <LinearLayout
                 style="@style/debugParent">
 
             <TextView
                     android:id="@+id/memberid_text"
-                    android:text="Debug Member ID"
+                    android:text="@string/debug_txt_memberid"
                     style="@style/debugText"
                     />
             <EditText
                     android:id="@+id/memberid_edit"
                     style="@style/debugEdit"
-                    android:hint="member id"
+                    android:text="@string/settings_hint_memberid"
                     />
 
         </LinearLayout>
@@ -79,12 +79,12 @@
                 style="@style/debugParent">
             <TextView
                     android:id="@+id/dongle_text"
-                    android:text="Dongle"
+                    android:text="@string/debug_txt_dongle"
                     style="@style/debugText"
                     />
             <EditText
                     android:id="@+id/dongle_edit"
-                    android:hint="dongle id"
+                    android:text="@string/settings_hint_dongle"
                     style="@style/debugEdit"
                     />
 
@@ -94,12 +94,12 @@
                 style="@style/debugParent">
             <TextView
                     android:id="@+id/placementid_text"
-                    android:text="Debug Placement ID"
+                    android:text="@string/debug_txt_placementid"
                     style="@style/debugText"
                     />
             <EditText
                     android:id="@+id/placementid_edit"
-                    android:hint="placement id"
+                    android:hint="@string/settings_hint_placementid"
                     style="@style/debugEdit"
                     />
 
@@ -109,7 +109,7 @@
                 android:id="@+id/btn_run_debug"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Run Debug Auction" />
+                android:text="@string/debug_btn_debugauction" />
 
     </LinearLayout>
 
