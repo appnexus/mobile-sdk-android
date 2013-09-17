@@ -60,6 +60,7 @@
 
     <string name="debug_btn_debugauction">Run Debug Auction</string>
     <string name="debug_btn_email_server">Email Server Request/Response</string>
+    <string name="debug_btn_auction_email">Email Debug Auction Results</string>
 
     <string-array name="sizes">
         <item>300x50</item>

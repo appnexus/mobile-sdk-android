@@ -19,15 +19,21 @@ package com.appnexus.opensdkapp;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.*;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.HTTPGet;
+import com.appnexus.opensdk.utils.HTTPResponse;
 
 public class DebugFragment extends Fragment {
 
@@ -52,23 +58,7 @@ public class DebugFragment extends Fragment {
         btnEmailServer = (Button) out.findViewById(R.id.btn_email_server);
         btnRunDebugAuction = (Button) out.findViewById(R.id.btn_run_debug);
 
-        btnEmailServer.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                try {
-                    Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                    emailIntent.setType("message/rfc822");
-                    emailIntent.putExtra(Intent.EXTRA_TEXT, "Request:\n" + Clog.getLastRequest() + "\n\n" + "Response:\n" + Clog.getLastResponse());
-
-
-                    startActivity(Intent.createChooser(emailIntent, "Select an app with which to send the debug information"));
-                } catch (ActivityNotFoundException e) {
-                    Toast.makeText(out.getContext(), "No E-Mail App Installed!", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-        });
+        btnEmailServer.setOnClickListener(emailServerOnClickListener);
 
         webView = new DebugAuctionWebView();
 
@@ -88,7 +78,7 @@ public class DebugFragment extends Fragment {
 
     private void createDebugAuctionDialog() {
         // hacked to be fullscreen with minHeight. see xml
-        FrameLayout frame  = (FrameLayout) getActivity().getLayoutInflater().inflate(R.layout.dialog_debug, null, false);
+        RelativeLayout frame  = (RelativeLayout) getActivity().getLayoutInflater().inflate(R.layout.dialog_debug, null, false);
         View placeholderView = frame.findViewById(R.id.debug_auction_view);
         webView.setLayoutParams(placeholderView.getLayoutParams());
         // make sure the close button is on top of the webView
@@ -98,7 +88,7 @@ public class DebugFragment extends Fragment {
                 .setView(frame)
                 .create();
 
-        ImageButton close = (ImageButton) frame.findViewById(R.id.btn_close);
+        ImageButton close = (ImageButton) frame.findViewById(R.id.debug_btn_close);
         close.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -107,6 +97,8 @@ public class DebugFragment extends Fragment {
             }
         });
 
+        Button email = (Button) frame.findViewById(R.id.debug_btn_email);
+        email.setOnClickListener(emailDebugAuctionOnClickListener);
     }
 
     protected void refresh() {
@@ -127,7 +119,39 @@ public class DebugFragment extends Fragment {
 
     }
 
+    final private OnClickListener emailServerOnClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            try {
+                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                emailIntent.setType("message/rfc822");
+                emailIntent.putExtra(Intent.EXTRA_TEXT, "Request:\n" + Clog.getLastRequest() + "\n\n" + "Response:\n" + Clog.getLastResponse());
+
+                startActivity(Intent.createChooser(emailIntent, "Select an app with which to send the debug information"));
+            } catch (ActivityNotFoundException e) {
+                Toast.makeText(getActivity(), "No E-Mail App Installed!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    final private OnClickListener emailDebugAuctionOnClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            try {
+                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                emailIntent.setType("message/rfc822");
+                emailIntent.putExtra(Intent.EXTRA_TEXT, webView.getResult());
+
+                getActivity().startActivity(Intent.createChooser(emailIntent, "Select an app with which to send the debug information"));
+            } catch (ActivityNotFoundException e) {
+                Toast.makeText(getActivity(), "No E-Mail App Installed!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
     private class DebugAuctionWebView extends WebView {
+
+        String result;
 
         public String getUrl() {
             StringBuilder params = new StringBuilder();
@@ -151,20 +175,53 @@ public class DebugFragment extends Fragment {
             setVerticalScrollbarOverlay(true);
             setVerticalScrollBarEnabled(true);
 
+            WebSettings settings = getSettings();
             // for zooming
-            getSettings().setBuiltInZoomControls(true);
-            getSettings().setSupportZoom(true);
-            getSettings().setUseWideViewPort(true);
+            settings.setBuiltInZoomControls(true);
+            settings.setSupportZoom(true);
+            settings.setUseWideViewPort(true);
 
             // for no reason
-            getSettings().setJavaScriptEnabled(true);
-            getSettings().setDomStorageEnabled(true);
+            settings.setJavaScriptEnabled(true);
+            settings.setDomStorageEnabled(true);
+
+            settings.setDefaultTextEncodingName("utf-8");
         }
 
         public void runAuction() {
-            String debugAuctionUrl = getUrl();
-            Clog.d(Constants.LOG_TAG, "Running a debug auction: " + debugAuctionUrl);
-            loadUrl(debugAuctionUrl);
+            final String debugAuctionUrl = getUrl();
+            Clog.d(Constants.LOG_TAG, "Running a Debug Auction: " + debugAuctionUrl);
+//            loadUrl(debugAuctionUrl);
+
+            final HTTPGet<Void, Void, HTTPResponse> auctionGet = new HTTPGet<Void, Void, HTTPResponse>() {
+                @Override
+                protected void onPostExecute(HTTPResponse response) {
+                    result = response.getResponseBody();
+                    if (result != null) {
+                        Clog.d(Constants.LOG_TAG, Html.fromHtml(result).toString());
+                        loadDataWithBaseURL(null, result, "text/html", "UTF-8", null);
+                    }
+                    else {
+                        result = "Connection failed. Try again later.";
+                        loadDataWithBaseURL(null, result, "text/html", "UTF-8", null);
+                    }
+                }
+
+                @Override
+                protected String getUrl() {
+                    return debugAuctionUrl;
+                }
+            };
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                auctionGet.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                auctionGet.execute();
+            }
+        }
+
+        public String getResult() {
+            return result;
         }
 
     }
