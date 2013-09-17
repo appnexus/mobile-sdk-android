@@ -16,499 +16,171 @@
 
 package com.appnexus.opensdkapp;
 
-import android.app.Activity;
-import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.FrameLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
 import com.appnexus.opensdk.AdListener;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.BannerAdView;
 import com.appnexus.opensdk.InterstitialAdView;
 import com.appnexus.opensdk.utils.Clog;
 
-public class PreviewFragment extends Fragment implements AdListener {
-    private Button loadAdButton;
-    //private Button pasteAdButton;
-    private BannerAdView bannerAdView;
+public class PreviewFragment extends Fragment {
+    private BannerAdView bav;
     private InterstitialAdView iav;
-    private RadioGroup radioGroup;
-    private RadioGroup radioGroup2;
     private TextView bannerText;
-    private EditText placementEditText;
-    private boolean isInterstitial = false;
-    private Button colorButton;
-    private View colorView;
-    private int color = 0xff000000;
-    private Spinner sizes;
-    private Spinner refresh;
-    private SettingsWrapper settingsWrapper;
+
+    private static final int DEF_COLOR = Color.BLACK;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View out = inflater.inflate(R.layout.fragment_preview, null);
 
-        settingsWrapper = SettingsWrapper.getSettingsWrapperFromPrefs(getActivity());
+        // locate members and set listeners
+        bav = (BannerAdView) out.findViewById(R.id.banner);
+        bav.setAdListener(bannerAdListener);
 
-        sizes = (Spinner) out.findViewById(R.id.dropdown_size);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                container.getContext(), R.array.sizes,
-                android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        bannerText = (TextView) out.findViewById(R.id.bannertext);
 
-        sizes.setAdapter(adapter);
+        iav = new InterstitialAdView(getActivity());
+        iav.setAdListener(interstitialAdListener);
 
-        refresh = (Spinner) out.findViewById(R.id.dropdown_refresh);
-        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(
-                container.getContext(), R.array.refresh,
-                android.R.layout.simple_spinner_item);
-        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        loadNewAd();
 
-        refresh.setAdapter(adapter2);
+        return out;
+    }
 
-        // Locate member views
-        loadAdButton = (Button) out.findViewById(R.id.btn_load_ad);
-        loadAdButton.setOnClickListener(new LoadAdOnClickListener());
+    public void loadNewAd() {
+        Log.d(Constants.LOG_TAG, "Loading new ad");
 
-        //pasteAdButton = (Button) out.findViewById(R.id.pastead);
-        //pasteAdButton.setOnClickListener(new PasteAdOnClickListener());
+        SettingsWrapper settingsWrapper = SettingsWrapper.getSettingsWrapperFromPrefs(getActivity());
+        Clog.d(Constants.LOG_TAG, settingsWrapper.toString());
 
-        bannerAdView = (BannerAdView) out.findViewById(R.id.banner);
+        if (settingsWrapper.isAdTypeBanner()) {
+            // Load and display a banner
+            bav.setAutoRefreshInterval(settingsWrapper.getRefreshPeriod());
+            bav.setAdWidth(settingsWrapper.getWidth());
+            bav.setAdHeight(settingsWrapper.getHeight());
 
-        bannerAdView.setShouldServePSAs(false);
+            DisplayMetrics m = new DisplayMetrics();
+            getActivity().getWindowManager().getDefaultDisplay().getMetrics(m);
+            float d = m.density;
 
-        bannerAdView.setAdListener(new AdListener() {
+            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(bav.getLayoutParams());
+            if (lp.width != -1) lp.width = (int) (bav.getAdWidth() * d + 0.5f);
+            if (lp.height != -1) lp.height = (int) (bav.getAdHeight() * d + 0.5f);
+            bav.setLayoutParams(lp);
 
-            @Override
-            public void onAdRequestFailed(AdView adView) {
-                // TODO Auto-generated method stub
+            bav.setShouldServePSAs(settingsWrapper.isAllowPsas());
+            bav.setOpensNativeBrowser(!settingsWrapper.isBrowserInApp());
+            bav.setPlacementID(settingsWrapper.getPlacementId());
+            bav.loadAd();
+        }
+        else {
+            // Load and display an interstitial
+            iav.setShouldServePSAs(settingsWrapper.isAllowPsas());
+            iav.setOpensNativeBrowser(!settingsWrapper.isBrowserInApp());
+            iav.setPlacementID(settingsWrapper.getPlacementId());
+            int color = DEF_COLOR;
 
+            // try to retrieve background color. default if not
+            String backgroundHex = settingsWrapper.getBackgroundColor();
+            if (backgroundHex.length() == 8) {
+                try {
+                    color = Color.parseColor("#" + backgroundHex);
+                } catch (IllegalArgumentException e) {
+                    Clog.d(Constants.LOG_TAG, "Invalid hex color");
+                }
             }
+            iav.setBackgroundColor(color);
+            iav.setCloseButtonDelay(settingsWrapper.getCloseDelayPeriod());
+            iav.loadAd();
+        }
+    }
 
-            @Override
-            public void onAdLoaded(AdView adView) {
+    final private AdListener bannerAdListener = new AdListener() {
+        @Override
+        public void onAdRequestFailed(AdView adView) {
+            toast("Ad request failed");
+        }
+
+        @Override
+        public void onAdLoaded(AdView adView) {
                 View v = getView();
                 if (v == null) return;
                 FrameLayout adframe = (FrameLayout) v.findViewById(
                         R.id.adframe);
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                ScrollView.LayoutParams lp = new ScrollView.LayoutParams(
                         adframe.getLayoutParams());
                 if (lp != null && adframe != null) {
-                    lp.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+                    lp.height = ScrollView.LayoutParams.WRAP_CONTENT;
                     adframe.setLayoutParams(lp);
                 }
-                bannerText.setVisibility(TextView.INVISIBLE);
-
-            }
-
-            @Override
-            public void onAdExpanded(AdView adView) {
-                Toast.makeText(PreviewFragment.this.getActivity(), "Ad Expanded", Toast.LENGTH_SHORT).show();
-
-            }
-
-            @Override
-            public void onAdCollapsed(AdView adView) {
-                Toast.makeText(PreviewFragment.this.getActivity(), "Ad Collapsed", Toast.LENGTH_SHORT).show();
-
-            }
-
-            @Override
-            public void onAdClicked(AdView adView) {
-                Toast.makeText(PreviewFragment.this.getActivity(), "Opening Browser", Toast.LENGTH_SHORT).show();
-
-            }
-        });
-
-        bannerText = (TextView) out.findViewById(R.id.bannertext);
-
-        radioGroup = (RadioGroup) out.findViewById(R.id.radiogroup);
-        radioGroup.check(R.id.radio_banner);
-        radioGroup.setOnCheckedChangeListener(new RadioGroupListener());
-
-        radioGroup2 = (RadioGroup) out.findViewById(R.id.radiogroup2);
-        radioGroup2.check(R.id.radio_inapp);
-        radioGroup2.setOnCheckedChangeListener(new RadioGroup2Listener());
-
-        iav = new InterstitialAdView(out.getContext());
-        // iav.setPlacementID("1281482");
-        iav.setAdListener(this);
-
-        sizes.setOnItemSelectedListener(new SizeSelectedListener(this));
-
-        refresh.setOnItemSelectedListener(new RefreshSelectedListener());
-
-        placementEditText = (EditText) out.findViewById(R.id.edit_placementid);
-
-        colorButton = (Button) out.findViewById(R.id.color_button);
-        colorView = (View) out.findViewById(R.id.color);
-        colorButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-//				AmbilWarnaDialog d = new AmbilWarnaDialog(out.getContext(),
-//						color, new OnAmbilWarnaListener() {
-//
-//					@Override
-//					public void onOk(AmbilWarnaDialog dialog, int color) {
-//						SettingsFragment.this.color = color;
-//						SettingsFragment.this.colorView
-//								.setBackgroundColor(color);
-//						SettingsFragment.this.iav
-//								.setBackgroundColor(color);
-//
-//					}
-//
-//					@Override
-//					public void onCancel(AmbilWarnaDialog dialog) {
-//						// TODO Auto-generated method stub
-//
-//					}
-//				});
-//				d.show();
-            }
-
-        });
-
-        // Load default placement
-        SharedPreferences sp = getActivity().getSharedPreferences(
-                "opensdkdemo", Activity.MODE_PRIVATE);
-        String saved_placement = sp.getString("placement", "NO_PLACEMENT");
-        if (!saved_placement.equals("NO_PLACEMENT")) {
-            placementEditText.setText(saved_placement);
-        } else {
-            placementEditText.setText("000000");
-        }
-        sizes.setEnabled(true);
-        refresh.setEnabled(true);
-        colorButton.setEnabled(false);
-        return out;
-    }
-
-    private class PlacementTextWatcher implements TextWatcher {
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            // TODO Auto-generated method stub
-
+            bannerText.setVisibility(TextView.INVISIBLE);
+            toast("Ad loaded");
         }
 
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count,
-                                      int after) {
-            // TODO Auto-generated method stub
-
+        public void onAdExpanded(AdView adView) {
+            toast("Ad expanded");
         }
 
         @Override
-        public void onTextChanged(CharSequence s, int start, int before,
-                                  int count) {
-            bannerAdView.setPlacementID(s.toString());
-            iav.setPlacementID(s.toString());
-
-            SharedPreferences sp = getActivity().getSharedPreferences(
-                    "opensdkdemo", Activity.MODE_PRIVATE);
-            String saved_placement = sp.getString("placement", "NO_PLACEMENT");
-            if (!saved_placement.equals(s.toString())) {
-                sp.edit().putString("placement", s.toString()).commit();
-            }
-        }
-
-    }
-
-    private class RefreshSelectedListener implements
-            AdapterView.OnItemSelectedListener {
-
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view,
-                                   int position, long id) {
-            String[] str_array = parent.getResources().getStringArray(
-                    R.array.refresh);
-            if (position >= str_array.length)
-                return;
-            String setting = str_array[position];
-
-            if (setting.equals("Off")) {
-                bannerAdView.setAutoRefreshInterval(0);
-                return;
-            }
-            int refresh;
-            try {
-                setting = setting.replace("s", "");
-                refresh = Integer.parseInt(setting);
-            } catch (NumberFormatException e) {
-                return;
-            }
-            bannerAdView.setAutoRefreshInterval(refresh * 1000);
-
+        public void onAdCollapsed(AdView adView) {
+            toast("Ad collapsed");
         }
 
         @Override
-        public void onNothingSelected(AdapterView<?> arg0) {
-            // TODO Auto-generated method stub
-
+        public void onAdClicked(AdView adView) {
+            toast("Ad clicked; opening browser");
         }
 
-    }
+        private void toast(String message) {
+            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+            Clog.d(Constants.LOG_TAG, message);
+        }
+    };
 
-    private class SizeSelectedListener implements
-            AdapterView.OnItemSelectedListener {
-        PreviewFragment p;
-
-        public SizeSelectedListener(PreviewFragment parent) {
-            p = parent;
+    final private AdListener interstitialAdListener = new AdListener() {
+        @Override
+        public void onAdLoaded(AdView adView) {
+            toast("Ad loaded");
+            iav.show();
         }
 
         @Override
-        public void onItemSelected(AdapterView<?> parent, View view,
-                                   int position, long id) {
-            // Get size from array based on position parameter
-            String[] str_array = parent.getResources().getStringArray(
-                    R.array.sizes);
-            if (position >= str_array.length)
-                return;
-            String size_string = str_array[position];
-
-            bannerAdView.setAdWidth(getSizeFromPosition(position)[0]);
-            bannerAdView.setAdHeight(getSizeFromPosition(position)[1]);
-
-
-            Log.d(Constants.LOG_TAG, "Size selected to: " + size_string);
-
-        }
-
-        int[] getSizeFromString(String size_string) {
-            int out[] = new int[2];
-            out[0] = Integer.parseInt(size_string.split("x")[0]);
-            out[1] = Integer.parseInt(size_string.split("x")[1]);
-
-            return out;
-        }
-
-        int[] getSizeFromPosition(int position) {
-            String[] str_array = p.getResources().getStringArray(
-                    R.array.sizes);
-
-            String size_str = str_array[position];
-
-
-            return getSizeFromString(size_str);
+        public void onAdRequestFailed(AdView adView) {
+            toast("Ad request failed");
         }
 
         @Override
-        public void onNothingSelected(AdapterView<?> arg0) {
-            // TODO Auto-generated method stub
-
+        public void onAdExpanded(AdView adView) {
+            toast("Ad expanded");
         }
-
-    }
-
-    private class LoadAdOnClickListener implements View.OnClickListener {
 
         @Override
-        public void onClick(View v) {
-            Log.d(Constants.LOG_TAG, "Load ad pressed.");
-
-            if (settingsWrapper.isAdTypeBanner()) {
-                // Load and display a banner
-                bannerAdView.setAutoRefreshInterval(settingsWrapper.getRefreshPeriod());
-                bannerAdView.setAdWidth(settingsWrapper.getWidth());
-                bannerAdView.setAdHeight(settingsWrapper.getHeight());
-
-                DisplayMetrics m = new DisplayMetrics();
-                PreviewFragment.this.getActivity().getWindowManager().getDefaultDisplay().getMetrics(m);
-                float d = m.density;
-
-                FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(bannerAdView.getLayoutParams());
-                if (lp.width != -1) lp.width = (int) (bannerAdView.getAdWidth() * d + 0.5f);
-                if (lp.height != -1) lp.height = (int) (bannerAdView.getAdHeight() * d + 0.5f);
-                bannerAdView.setLayoutParams(lp);
-
-                bannerAdView.setShouldServePSAs(settingsWrapper.isAllowPsas());
-                bannerAdView.setOpensNativeBrowser(!settingsWrapper.isBrowserInApp());
-                bannerAdView.setPlacementID(settingsWrapper.getPlacementId());
-                bannerAdView.loadAd();
-            }
-            else {
-                // Load and display an interstitial
-                iav.setShouldServePSAs(settingsWrapper.isAllowPsas());
-                iav.setOpensNativeBrowser(!settingsWrapper.isBrowserInApp());
-                iav.setPlacementID(settingsWrapper.getPlacementId());
-                iav.loadAd();
-
-            }
+        public void onAdCollapsed(AdView adView) {
+            toast("Ad collapsed");
         }
-
-    }
-
-	/*private class PasteAdOnClickListener implements View.OnClickListener {
-
-		@Override
-		public void onClick(View v) {
-			Log.d(Constants.LOG_TAG, "Paste ad pressed.");
-
-			// Set up an alert
-			AlertDialog.Builder alert = new AlertDialog.Builder(getView()
-					.getContext());
-
-			alert.setTitle("Enter HTML");
-			alert.setMessage("Paste or enter HTML ad tag here: ");
-
-			final LinearLayout view = new LinearLayout(getView().getContext());
-			view.setOrientation(LinearLayout.VERTICAL);
-			final EditText input = new EditText(getView().getContext());
-			final EditText width = new EditText(getView().getContext());
-			final EditText height = new EditText(getView().getContext());
-			TextView h = new TextView(getView().getContext());
-			TextView w = new TextView(getView().getContext());
-
-			h.setText("H: ");
-			w.setText("W: ");
-			LinearLayout hll = new LinearLayout(getView().getContext());
-			LinearLayout wll = new LinearLayout(getView().getContext());
-			hll.addView(h);
-			hll.addView(height);
-			wll.addView(w);
-			wll.addView(width);
-			width.setInputType(InputType.TYPE_CLASS_NUMBER);
-			height.setInputType(InputType.TYPE_CLASS_NUMBER);
-
-			view.addView(input);
-			view.addView(wll);
-			view.addView(hll);
-			alert.setView(view);
-
-			alert.setPositiveButton("Load", new OnClickListener() {
-
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					String value = input.getText().toString();
-
-					DisplayMetrics metrics = new DisplayMetrics();
-					MainTabFragment.this.getActivity().getWindowManager()
-							.getDefaultDisplay().getMetrics(metrics);
-					float d = metrics.density;
-					int h = -1;
-					int w = -1;
-					try {
-						h = (int) ((Integer.parseInt(height.getText()
-								.toString()) - 0.5f) / (d));
-						w = (int) ((Integer
-								.parseInt(width.getText().toString()) - 0.5f) / (d));
-					} catch (NumberFormatException e) {
-						Toast.makeText(getActivity(),
-								"Invalid Number in Width/Height",
-								Toast.LENGTH_SHORT).show();
-						return;
-					}
-					AdResponse fakeResponse = new AdResponse(null, null, null);
-					fakeResponse.body = value;
-					fakeResponse.height = h;
-					fakeResponse.width = w;
-					if (isInterstitial) {
-						AdWebView awv = new AdWebView(iav);
-						awv.loadAd(fakeResponse);
-						iav.display(awv);
-					} else {
-						AdWebView awv = new AdWebView(bannerAdView);
-						awv.loadAd(fakeResponse);
-						bannerAdView.setAutoRefresh(false);
-						bannerAdView.setShouldReloadOnResume(false);
-						bannerAdView.removeAllViews();
-						bannerAdView.display(awv);
-					}
-				}
-
-			});
-
-			alert.setNegativeButton("Cancel", null);
-
-			alert.show();
-
-		}
-
-	}*/
-
-    private class RadioGroupListener implements
-            RadioGroup.OnCheckedChangeListener {
 
         @Override
-        public void onCheckedChanged(RadioGroup group, int checkedId) {
-            switch (checkedId) {
-                default:
-                    isInterstitial = false;
-                    sizes.setEnabled(true);
-                    refresh.setEnabled(true);
-                    colorButton.setEnabled(false);
-                    break;
-                case R.id.radio_interstitial:
-                    isInterstitial = true;
-                    sizes.setEnabled(false);
-                    refresh.setEnabled(false);
-                    colorButton.setEnabled(true);
-                    Clog.d(Constants.LOG_TAG, "Set to load an interstitial");
-                    break;
-            }
+        public void onAdClicked(AdView adView) {
+            toast("Ad clicked; opening browser");
         }
 
-    }
-
-    private class RadioGroup2Listener implements
-            RadioGroup.OnCheckedChangeListener {
-
-        @Override
-        public void onCheckedChanged(RadioGroup group, int checkedId) {
-            switch (checkedId) {
-                default:
-                    bannerAdView.setOpensNativeBrowser(false);
-                    iav.setOpensNativeBrowser(false);
-                    break;
-                case R.id.radio_native:
-                    bannerAdView.setOpensNativeBrowser(true);
-                    iav.setOpensNativeBrowser(true);
-                    break;
-            }
-
+        private void toast(String message) {
+            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+            Clog.d(Constants.LOG_TAG, message);
         }
-
-    }
-
-    @Override
-    public void onAdLoaded(AdView adView) {
-        iav.show();
-
-    }
-
-    @Override
-    public void onAdRequestFailed(AdView adView) {
-        Toast.makeText(this.getActivity(), "Ad request failed", Toast.LENGTH_SHORT).show();
-
-    }
-
-    @Override
-    public void onAdExpanded(AdView adView) {
-        Toast.makeText(this.getActivity(), "Ad expanded", Toast.LENGTH_SHORT).show();
-
-    }
-
-    @Override
-    public void onAdCollapsed(AdView adView) {
-        Toast.makeText(this.getActivity(), "Ad collapsed", Toast.LENGTH_SHORT).show();
-
-    }
-
-    @Override
-    public void onAdClicked(AdView adView) {
-        Toast.makeText(this.getActivity(), "Opening browser", Toast.LENGTH_SHORT).show();
-
-    }
-
+    };
 }

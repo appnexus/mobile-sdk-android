@@ -134,7 +134,7 @@ public class SettingsWrapper {
      */
 
     public int getRefreshPeriod() {
-        if (refresh.equals("off"))
+        if (refresh.equals("Off"))
             return 0;
         else {
             return (1000 * Integer.parseInt(refresh.replace(" seconds", "")));
@@ -142,7 +142,7 @@ public class SettingsWrapper {
     }
 
     public int getCloseDelayPeriod() {
-        if (closeDelay.equals("off"))
+        if (closeDelay.equals("Off"))
             return 0;
         else {
             try {
@@ -169,5 +169,24 @@ public class SettingsWrapper {
 
     public int getHeight() {
         return height;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("SettingsWrapper{");
+        sb.append("isAdTypeBanner=").append(isAdTypeBanner);
+        sb.append(", isAllowPsas=").append(isAllowPsas);
+        sb.append(", isBrowserInApp=").append(isBrowserInApp);
+        sb.append(", placementId='").append(placementId).append('\'');
+        sb.append(", size='").append(size).append('\'');
+        sb.append(", refresh='").append(refresh).append('\'');
+        sb.append(", backgroundColor='").append(backgroundColor).append('\'');
+        sb.append(", closeDelay='").append(closeDelay).append('\'');
+        sb.append(", memberId='").append(memberId).append('\'');
+        sb.append(", dongle='").append(dongle).append('\'');
+        sb.append(", width=").append(width);
+        sb.append(", height=").append(height);
+        sb.append('}');
+        return sb.toString();
     }
 }

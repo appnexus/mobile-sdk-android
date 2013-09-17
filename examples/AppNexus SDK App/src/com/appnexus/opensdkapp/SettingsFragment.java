@@ -16,12 +16,14 @@
 
 package com.appnexus.opensdkapp;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +45,8 @@ public class SettingsFragment extends Fragment {
     private EditText editPlacementId,
             editBackgroundColor,
             editMemberId, editDongle;
+
+    private OnLoadAdClickedListener callback;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -315,22 +319,34 @@ public class SettingsFragment extends Fragment {
         }
     }
 
+    public interface OnLoadAdClickedListener {
+        public void onLoadAdClicked();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+        try {
+            callback = (OnLoadAdClickedListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnLoadAdClickedListener");
+        }
+    }
     private class LoadAdOnClickListener implements View.OnClickListener {
 
         @Override
         public void onClick(View v) {
             Clog.d(Constants.LOG_TAG, "Load ad pressed.");
 
-            // in banner mode, the button will be disabled
-            if (!btnAdTypeBanner.isEnabled()) {
-//                bannerAdView.loadAd();
-                return;
-            }
-
-            // Load and display an interstitial
-//			iav.loadAd();
+            if (callback != null)
+                callback.onLoadAdClicked();
 
             ((MainActivity) getActivity()).onPageSelected(MainActivity.TABS.PREVIEW.ordinal());
+
         }
 
     }
@@ -467,8 +483,10 @@ public class SettingsFragment extends Fragment {
         public void onTextChanged(CharSequence s, int start, int before,
                                   int count) {
             String savedValue = Prefs.getString(getActivity(), key, defValue);
-            if (!savedValue.equals(s.toString()))
+            if (!savedValue.equals(s.toString())) {
                 Prefs.writeString(getActivity(), key, s.toString());
+                Log.d(Constants.LOG_TAG, key + " set to " + s.toString());
+            }
         }
 
         @Override

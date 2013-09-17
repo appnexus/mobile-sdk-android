@@ -48,8 +48,6 @@ public class DebugFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         final View out = inflater.inflate(R.layout.fragment_debug, null);
 
-        Clog.d(Constants.LOG_TAG, "Switched to DebugFragment tab");
-
         txtRequest = (TextView) out.findViewById(R.id.request_text);
         txtResponse = (TextView) out.findViewById(R.id.response_text);
         editMemberId = (EditText) out.findViewById(R.id.memberid_edit);

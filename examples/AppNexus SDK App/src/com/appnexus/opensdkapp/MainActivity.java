@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Vector;
 
 public class MainActivity extends FragmentActivity implements
-        TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener {
+        TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener, SettingsFragment.OnLoadAdClickedListener {
 
     private static final String SETTINGS_ID = "Settings";
     private static final String PREVIEW_ID = "Preview";
@@ -52,12 +52,13 @@ public class MainActivity extends FragmentActivity implements
 
     private TabHost tabHost;
     private HashMap<String, TabInfo> mapTabInfo = new HashMap<String, MainActivity.TabInfo>();
-    private ViewPager mViewPager;
-    private PagerAdapter mPagerAdapter;
+    private ViewPager viewPager;
+    private PagerAdapter pagerAdapter;
     private View btnMore;
     private View btnLog;
     private View contentView;
 
+    private PreviewFragment previewFrag;
     private DebugFragment debugFrag;
 
     @Override
@@ -83,7 +84,7 @@ public class MainActivity extends FragmentActivity implements
             }
         });
 
-        // Default to Settings tab
+        // Default to Preview tab
         new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -146,18 +147,19 @@ public class MainActivity extends FragmentActivity implements
         List<Fragment> fragments = new Vector<Fragment>();
         fragments.add(Fragment.instantiate(this,
                 SettingsFragment.class.getName()));
-        fragments.add(Fragment.instantiate(this,
-                PreviewFragment.class.getName()));
+        previewFrag = (PreviewFragment) Fragment.instantiate(this,
+                PreviewFragment.class.getName());
+        fragments.add(previewFrag);
         debugFrag = (DebugFragment) Fragment.instantiate(this,
                 DebugFragment.class.getName());
         fragments.add(debugFrag);
 
-        this.mPagerAdapter = new PagerAdapter(
+        this.pagerAdapter = new PagerAdapter(
                 super.getSupportFragmentManager(), fragments);
 
-        this.mViewPager = (ViewPager) findViewById(R.id.viewpager);
-        this.mViewPager.setAdapter(this.mPagerAdapter);
-        this.mViewPager.setOnPageChangeListener(this);
+        this.viewPager = (ViewPager) findViewById(R.id.viewpager);
+        this.viewPager.setAdapter(this.pagerAdapter);
+        this.viewPager.setOnPageChangeListener(this);
 
     }
 
@@ -217,7 +219,7 @@ public class MainActivity extends FragmentActivity implements
     @Override
     public void onTabChanged(String tabId) {
         int pos = this.tabHost.getCurrentTab();
-        this.mViewPager.setCurrentItem(pos);
+        this.viewPager.setCurrentItem(pos);
     }
 
     // special handling for our "native" log button
@@ -242,5 +244,10 @@ public class MainActivity extends FragmentActivity implements
         }
 
         return super.dispatchTouchEvent(motionEvent);
+    }
+
+    @Override
+    public void onLoadAdClicked() {
+        previewFrag.loadNewAd();
     }
 }

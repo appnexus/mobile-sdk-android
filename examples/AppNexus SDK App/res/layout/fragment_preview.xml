@@ -15,276 +15,30 @@
    limitations under the License.
 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:opensdk="http://schemas.android.com/apk/res/com.appnexus.opensdkapp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true" >
+            android:fillViewport="true">
 
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="5dp" >
+    <FrameLayout
+            android:id="@+id/adframe"
+            style="@style/itemContainer"
+            android:layout_gravity="top"
+            android:minHeight="50dp" >
 
-        <!-- Banner -->
+        <TextView
+                android:id="@+id/bannertext"
+                android:padding="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_gravity="top|center_horizontal"
+                android:text="@string/banner_space" />
 
-        <FrameLayout
-                android:id="@+id/adframe"
+        <com.appnexus.opensdk.BannerAdView
+                android:id="@+id/banner"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="50dp" >
-
-            <TextView
-                    android:id="@+id/bannertext"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/banner_space" />
-
-            <com.appnexus.opensdk.BannerAdView
-                    android:id="@+id/banner"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    opensdk:height="50"
-                    opensdk:placement_id="1281482"
-                    opensdk:width="320" />
-        </FrameLayout>
-
-        <!-- Color Picker -->
-
-        <View
-                android:layout_width="fill_parent"
-                android:layout_height="4dp"
-                android:background="@android:color/darker_gray" />
-
-        <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingLeft="20dp" >
-
-            <View
-                    android:id="@+id/color"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:background="@android:color/black" />
-
-            <View
-                    android:layout_width="15dp"
-                    android:layout_height="0dp" />
-
-            <Button
-                    android:id="@+id/color_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_txt_interstitial_bg_color" />
-        </LinearLayout>
-
-        <!-- Buttons -->
-
-        <View
-                android:layout_width="fill_parent"
-                android:layout_height="4dp"
-                android:background="@android:color/darker_gray" />
-
-        <RadioGroup
-                android:id="@+id/radiogroup"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingLeft="20dp" >
-
-            <RadioButton
-                    android:id="@+id/radio_banner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="3dp" />
-
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="3dp"
-                    android:text="@string/settings_btn_banner" />
-
-            <View
-                    android:layout_width="15dp"
-                    android:layout_height="0dp" />
-
-            <RadioButton
-                    android:id="@+id/radio_interstitial"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="3dp" />
-
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="3dp"
-                    android:text="@string/settings_btn_interstitial" />
-
-            <!--
-                 <RadioButton
-                android:id="@+id/radio_mraid"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="MRAID" />
-            -->
-
-        </RadioGroup>
-
-        <View
-                android:layout_width="fill_parent"
-                android:layout_height="4dp"
-                android:background="@android:color/darker_gray" />
-
-        <RadioGroup
-                android:id="@+id/radiogroup2"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingLeft="20dp" >
-
-            <RadioButton
-                    android:id="@+id/radio_inapp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="3dp" />
-
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="3dp"
-                    android:text="@string/settings_btn_browser_inapp" />
-
-            <View
-                    android:layout_width="15dp"
-                    android:layout_height="0dp" />
-
-            <RadioButton
-                    android:id="@+id/radio_native"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="3dp" />
-
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="3dp"
-                    android:text="native" />
-
-        </RadioGroup>
-
-        <!-- Size Selector, Refresh Rate Selector -->
-
-        <View
-                android:layout_width="fill_parent"
-                android:layout_height="4dp"
-                android:background="@android:color/darker_gray" />
-
-        <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="0px"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingLeft="20dp" >
-
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_txt_size" />
-
-            <Spinner
-                    android:id="@+id/dropdown_size"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-            <View
-                    android:layout_width="30dp"
-                    android:layout_height="0dp" />
-
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_txt_refresh" />
-
-            <Spinner
-                    android:id="@+id/dropdown_refresh"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <!-- Placement ID -->
-
-        <View
-                android:layout_width="fill_parent"
-                android:layout_height="4dp"
-                android:background="@android:color/darker_gray" />
-
-        <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="0px"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingLeft="20dp" >
-
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_txt_placementid" />
-
-            <EditText
-                    android:id="@+id/edit_placementid"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:maxLines="1"
-                    android:minWidth="100dp"
-                    android:text="@string/default_placement_id" />
-        </LinearLayout>
-
-        <!-- Load Ad Button -->
-
-        <View
-                android:layout_width="fill_parent"
-                android:layout_height="4dp"
-                android:background="@android:color/darker_gray" />
-
-        <Button
-                android:id="@+id/btn_load_ad"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/load_ad_button" />
-
-        <!--
-        Load Ad Button 
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="4dp"
-            android:background="@android:color/darker_gray" />
-
-        <Button
-            android:id="@+id/pastead"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/paste_ad_button" />
-        -->
-    </LinearLayout>
+                />
+    </FrameLayout>
 
 </ScrollView>
