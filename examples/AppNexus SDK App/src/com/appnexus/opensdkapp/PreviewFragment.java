@@ -33,18 +33,21 @@ import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.BannerAdView;
 import com.appnexus.opensdk.InterstitialAdView;
 import com.appnexus.opensdk.utils.Clog;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
 
 public class PreviewFragment extends Fragment {
     private BannerAdView bav;
     private InterstitialAdView iav;
     private TextView bannerText;
+    PullToRefreshScrollView pullToRefreshView;
 
     private static final int DEF_COLOR = Color.BLACK;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View out = inflater.inflate(R.layout.fragment_preview, null);
+        final View out = inflater.inflate(R.layout.fragment_preview2, null);
 
         // locate members and set listeners
         bav = (BannerAdView) out.findViewById(R.id.banner);
@@ -56,6 +59,14 @@ public class PreviewFragment extends Fragment {
         iav.setAdListener(interstitialAdListener);
 
         loadNewAd();
+
+        pullToRefreshView = (PullToRefreshScrollView) out.findViewById(R.id.pull_to_refresh);
+        pullToRefreshView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ScrollView>() {
+            @Override
+            public void onRefresh(PullToRefreshBase<ScrollView> refreshView) {
+                loadNewAd();
+            }
+        });
 
         return out;
     }
@@ -112,6 +123,7 @@ public class PreviewFragment extends Fragment {
         @Override
         public void onAdRequestFailed(AdView adView) {
             toast("Ad request failed");
+            pullToRefreshView.onRefreshComplete();
         }
 
         @Override
@@ -127,6 +139,7 @@ public class PreviewFragment extends Fragment {
                     adframe.setLayoutParams(lp);
                 }
             bannerText.setVisibility(TextView.INVISIBLE);
+            pullToRefreshView.onRefreshComplete();
             toast("Ad loaded");
         }
 
