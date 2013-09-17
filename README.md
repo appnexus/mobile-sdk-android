@@ -1,4 +1,4 @@
-mobile-sdk-android
+Appnexus Android SDK 
 ==================
 
 See our documentation on our wiki at 
