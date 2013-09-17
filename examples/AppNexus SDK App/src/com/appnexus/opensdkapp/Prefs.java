@@ -18,6 +18,7 @@ package com.appnexus.opensdkapp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import com.appnexus.opensdk.utils.Clog;
 
 public class Prefs {
 
@@ -50,27 +51,42 @@ public class Prefs {
     }
 
     public static String getString(Context context, String key, String def) {
-        return getPreferences(context).getString(key, def);
+        try {
+            return getPreferences(context).getString(key, def);
+        } catch (ClassCastException e) {
+            Clog.e(Constants.LOG_TAG, "Prefs failed to getString", e);
+            return def;
+        }
     }
 
-    public static boolean writeString(Context context, String key, String value) {
-        return getPreferences(context).edit().putString(key, value).commit();
+    public static void writeString(Context context, String key, String value) {
+        getPreferences(context).edit().putString(key, value).apply();
     }
 
     public static int getInt(Context context, String key, int def) {
-        return getPreferences(context).getInt(key, def);
+        try {
+            return getPreferences(context).getInt(key, def);
+        } catch (ClassCastException e) {
+            Clog.e(Constants.LOG_TAG, "Prefs failed to getInt", e);
+            return def;
+        }
     }
 
-    public static boolean writeInt(Context context, String key, int value) {
-        return getPreferences(context).edit().putInt(key, value).commit();
+    public static void writeInt(Context context, String key, int value) {
+        getPreferences(context).edit().putInt(key, value).apply();
     }
 
     public static boolean getBoolean(Context context, String key, boolean def) {
-        return getPreferences(context).getBoolean(key, def);
+        try {
+            return getPreferences(context).getBoolean(key, def);
+        } catch (ClassCastException e) {
+            Clog.e(Constants.LOG_TAG, "Prefs failed to getBoolean", e);
+            return def;
+        }
     }
 
-    public static boolean writeBoolean(Context context, String key, boolean value) {
-        return getPreferences(context).edit().putBoolean(key, value).commit();
+    public static void writeBoolean(Context context, String key, boolean value) {
+        getPreferences(context).edit().putBoolean(key, value).apply();
     }
 
 
