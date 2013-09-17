@@ -147,7 +147,6 @@ public class PreviewFragment extends Fragment implements AdListener {
         refresh.setOnItemSelectedListener(new RefreshSelectedListener());
 
         placementEditText = (EditText) out.findViewById(R.id.edit_placementid);
-        placementEditText.addTextChangedListener(new PlacementTextWatcher());
 
         colorButton = (Button) out.findViewById(R.id.color_button);
         colorView = (View) out.findViewById(R.id.color);
@@ -281,15 +280,6 @@ public class PreviewFragment extends Fragment implements AdListener {
             bannerAdView.setAdWidth(getSizeFromPosition(position)[0]);
             bannerAdView.setAdHeight(getSizeFromPosition(position)[1]);
 
-            DisplayMetrics m = new DisplayMetrics();
-            PreviewFragment.this.getActivity().getWindowManager().getDefaultDisplay().getMetrics(m);
-            float d = m.density;
-
-
-            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(bannerAdView.getLayoutParams());
-            if (lp.width != -1) lp.width = (int) (bannerAdView.getAdWidth() * d + 0.5f);
-            if (lp.height != -1) lp.height = (int) (bannerAdView.getAdHeight() * d + 0.5f);
-            bannerAdView.setLayoutParams(lp);
 
             Log.d(Constants.LOG_TAG, "Size selected to: " + size_string);
 
@@ -327,13 +317,34 @@ public class PreviewFragment extends Fragment implements AdListener {
         public void onClick(View v) {
             Log.d(Constants.LOG_TAG, "Load ad pressed.");
 
-            if (!isInterstitial) {
-                bannerAdView.loadAd();
-                return;
-            }
+            if (settingsWrapper.isAdTypeBanner()) {
+                // Load and display a banner
+                bannerAdView.setAutoRefreshInterval(settingsWrapper.getRefreshPeriod());
+                bannerAdView.setAdWidth(settingsWrapper.getWidth());
+                bannerAdView.setAdHeight(settingsWrapper.getHeight());
 
-            // Load and display an interstitial
-            iav.loadAd();
+                DisplayMetrics m = new DisplayMetrics();
+                PreviewFragment.this.getActivity().getWindowManager().getDefaultDisplay().getMetrics(m);
+                float d = m.density;
+
+                FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(bannerAdView.getLayoutParams());
+                if (lp.width != -1) lp.width = (int) (bannerAdView.getAdWidth() * d + 0.5f);
+                if (lp.height != -1) lp.height = (int) (bannerAdView.getAdHeight() * d + 0.5f);
+                bannerAdView.setLayoutParams(lp);
+
+                bannerAdView.setShouldServePSAs(settingsWrapper.isAllowPsas());
+                bannerAdView.setOpensNativeBrowser(!settingsWrapper.isBrowserInApp());
+                bannerAdView.setPlacementID(settingsWrapper.getPlacementId());
+                bannerAdView.loadAd();
+            }
+            else {
+                // Load and display an interstitial
+                iav.setShouldServePSAs(settingsWrapper.isAllowPsas());
+                iav.setOpensNativeBrowser(!settingsWrapper.isBrowserInApp());
+                iav.setPlacementID(settingsWrapper.getPlacementId());
+                iav.loadAd();
+
+            }
         }
 
     }

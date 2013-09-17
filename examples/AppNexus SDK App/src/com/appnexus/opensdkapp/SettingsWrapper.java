@@ -30,6 +30,8 @@ public class SettingsWrapper {
     private String memberId;
     private String dongle;
 
+    private int width, height;
+
     public boolean isAdTypeBanner() {
         return isAdTypeBanner;
     }
@@ -68,6 +70,7 @@ public class SettingsWrapper {
 
     public void setSize(String size) {
         this.size = size;
+        parseSize();
     }
 
     public String getRefresh() {
@@ -117,11 +120,54 @@ public class SettingsWrapper {
         settingsWrapper.isBrowserInApp = Prefs.getBrowserInApp(context);
         settingsWrapper.placementId = Prefs.getPlacementId(context);
         settingsWrapper.size = Prefs.getSize(context);
+        settingsWrapper.parseSize();
         settingsWrapper.refresh = Prefs.getRefresh(context);
         settingsWrapper.backgroundColor = Prefs.getColor(context);
         settingsWrapper.closeDelay = Prefs.getCloseDelay(context);
         settingsWrapper.dongle = Prefs.getDongle(context);
 
         return settingsWrapper;
+    }
+
+    /**
+     * format converters
+     */
+
+    public int getRefreshPeriod() {
+        if (refresh.equals("off"))
+            return 0;
+        else {
+            return (1000 * Integer.parseInt(refresh.replace(" seconds", "")));
+        }
+    }
+
+    public int getCloseDelayPeriod() {
+        if (closeDelay.equals("off"))
+            return 0;
+        else {
+            try {
+                return (1000 * Integer.parseInt(closeDelay.replace(" seconds", "")));
+            } catch (NumberFormatException e) {
+                return 0;
+            }
+        }
+    }
+
+    private void parseSize() {
+        String[] dimens = size.split("x");
+        try {
+            width = Integer.parseInt(dimens[0]);
+            height = Integer.parseInt(dimens[1]);
+        } catch (NumberFormatException e) {
+            width = 0;
+            height = 0;
+        }
+    }
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }

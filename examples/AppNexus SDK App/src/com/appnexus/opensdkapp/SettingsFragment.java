@@ -113,7 +113,7 @@ public class SettingsFragment extends Fragment {
     }
 
     /*
-     * SET DEFAULTS
+     * Load saved settings from Prefs
      */
 
     private void loadSettings() {

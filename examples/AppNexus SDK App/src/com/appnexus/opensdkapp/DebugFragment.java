@@ -70,7 +70,7 @@ public class DebugFragment extends Fragment {
 
         });
 
-        webView = new DebugAuctionWebView(SettingsWrapper.getSettingsWrapperFromPrefs(getActivity()));
+        webView = new DebugAuctionWebView();
 
         createDebugAuctionDialog();
 
@@ -128,21 +128,19 @@ public class DebugFragment extends Fragment {
     }
 
     private class DebugAuctionWebView extends WebView {
-        SettingsWrapper settingsWrapper;
 
         public String getUrl() {
             StringBuilder params = new StringBuilder();
-            params.append("&id=").append(settingsWrapper.getPlacementId());
-            params.append("&debug_member=").append(settingsWrapper.getMemberId());
-            params.append("&dongle=").append(settingsWrapper.getDongle());
-            params.append("&size=").append(settingsWrapper.getSize());
+            params.append("&id=").append(Prefs.getPlacementId(getActivity()));
+            params.append("&debug_member=").append(Prefs.getMemberId(getActivity()));
+            params.append("&dongle=").append(Prefs.getDongle(getActivity()));
+            params.append("&size=").append(Prefs.getSize(getActivity()));
             return Constants.DEBUG_AUCTION_URL + params.toString();
         }
 
-        private DebugAuctionWebView(SettingsWrapper settingsWrapper) {
+        private DebugAuctionWebView() {
             super(getActivity().getApplicationContext());
 
-            this.settingsWrapper = settingsWrapper;
             setWebViewSettings();
         }
 
@@ -164,7 +162,9 @@ public class DebugFragment extends Fragment {
         }
 
         public void runAuction() {
-            loadUrl(getUrl());
+            String debugAuctionUrl = getUrl();
+            Clog.d(Constants.LOG_TAG, "Running a debug auction: " + debugAuctionUrl);
+            loadUrl(debugAuctionUrl);
         }
 
     }
