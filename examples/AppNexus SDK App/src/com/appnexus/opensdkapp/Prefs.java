@@ -45,8 +45,16 @@ public class Prefs {
     public static final String DEF_MEMBERID = "";
     public static final String DEF_DONGLE = "";
 
+    private SharedPreferences.Editor editor;
+
+    private static final String editorError = "Call startEditing() before trying to write to preferences!";
+
+    public Prefs(Context context) {
+        editor = getPreferences(context).edit();
+    }
+
     private static SharedPreferences getPreferences(Context context) {
-        return context.getSharedPreferences(
+        return context.getApplicationContext().getSharedPreferences(
                 Constants.PREFERENCES, Context.MODE_PRIVATE);
     }
 
@@ -59,9 +67,13 @@ public class Prefs {
         }
     }
 
-    public static void writeString(Context context, String key, String value) {
+    public void writeString(String key, String value) {
         Clog.d(Constants.PREFS_TAG, key + ", " + value);
-        getPreferences(context).edit().putString(key, value).apply();
+        if (editor == null) {
+            Clog.e(Constants.PREFS_TAG, editorError);
+            return;
+        }
+        editor.putString(key, value);
     }
 
     public static int getInt(Context context, String key, int def) {
@@ -73,9 +85,13 @@ public class Prefs {
         }
     }
 
-    public static void writeInt(Context context, String key, int value) {
+    public void writeInt(String key, int value) {
         Clog.d(Constants.PREFS_TAG, key + ", " + value);
-        getPreferences(context).edit().putInt(key, value).apply();
+        if (editor == null) {
+            Clog.e(Constants.PREFS_TAG, editorError);
+            return;
+        }
+        editor.putInt(key, value);
     }
 
     public static boolean getBoolean(Context context, String key, boolean def) {
@@ -87,11 +103,18 @@ public class Prefs {
         }
     }
 
-    public static void writeBoolean(Context context, String key, boolean value) {
+    public void writeBoolean(String key, boolean value) {
         Clog.d(Constants.PREFS_TAG, key + ", " + value);
-        getPreferences(context).edit().putBoolean(key, value).apply();
+        if (editor == null) {
+            Clog.e(Constants.PREFS_TAG, editorError);
+            return;
+        }
+        editor.putBoolean(key, value);
     }
 
+    public void applyChanges() {
+        editor.apply();
+    }
 
     /**
      * Convenience methods

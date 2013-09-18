@@ -340,52 +340,55 @@ public class SettingsFragment extends Fragment {
             Clog.d(Constants.BASE_LOG_TAG, "Load Ad button pressed.");
 
             // only write if something has changed
+            Prefs prefs = new Prefs(getActivity());
 
             // counterintuitive, but if banner mode is selected, the button will be DISabled.
             // but we persist the field as "isBanner"
             if (savedAdType == btnAdTypeBanner.isEnabled()) {
                 savedAdType = !btnAdTypeBanner.isEnabled();
-                Prefs.writeBoolean(getActivity(), Prefs.KEY_ADTYPE_IS_BANNER, savedAdType);
+                prefs.writeBoolean(Prefs.KEY_ADTYPE_IS_BANNER, savedAdType);
             }
             if (savedPSAs == btnPSAsYes.isEnabled()) {
                 savedPSAs = !btnPSAsYes.isEnabled();
-                Prefs.writeBoolean(getActivity(), Prefs.KEY_ALLOW_PSAS, savedPSAs);
+                prefs.writeBoolean(Prefs.KEY_ALLOW_PSAS, savedPSAs);
             }
             if (savedBrowser == btnBrowserInApp.isEnabled()) {
                 savedBrowser = !btnBrowserInApp.isEnabled();
-                Prefs.writeBoolean(getActivity(), Prefs.KEY_BROWSER_IS_INAPP, savedBrowser);
+                prefs.writeBoolean(Prefs.KEY_BROWSER_IS_INAPP, savedBrowser);
             }
             if  (!savedPlacement.equals(editPlacementId.getText().toString())) {
                 savedPlacement = editPlacementId.getText().toString();
-                Prefs.writeString(getActivity(), Prefs.KEY_PLACEMENT, savedPlacement);
+                prefs.writeString(Prefs.KEY_PLACEMENT, savedPlacement);
             }
 
             if (!savedSize.equals(dropSize.getSelectedItem())) {
                 savedSize = (String) dropSize.getSelectedItem();
-                Prefs.writeString(getActivity(), Prefs.KEY_SIZE, savedSize);
+                prefs.writeString(Prefs.KEY_SIZE, savedSize);
             }
             if (!savedRefresh.equals(dropRefresh.getSelectedItem())) {
                 savedRefresh = (String) dropRefresh.getSelectedItem();
-                Prefs.writeString(getActivity(), Prefs.KEY_REFRESH, savedRefresh);
+                prefs.writeString(Prefs.KEY_REFRESH, savedRefresh);
             }
 
             if (!savedColor.equals(currentValidColor)) {
                 savedColor = currentValidColor;
-                Prefs.writeString(getActivity(), Prefs.KEY_COLOR_HEX, savedColor);
+                prefs.writeString(Prefs.KEY_COLOR_HEX, savedColor);
             }
             if (!savedCloseDelay.equals(dropCloseDelay.getSelectedItem())) {
                 savedCloseDelay = (String) dropCloseDelay.getSelectedItem();
-                Prefs.writeString(getActivity(), Prefs.KEY_CLOSE_DELAY, savedCloseDelay);
+                prefs.writeString(Prefs.KEY_CLOSE_DELAY, savedCloseDelay);
             }
 
             if  (!savedMemberId.equals(editMemberId.getText().toString())) {
                 savedMemberId = editPlacementId.getText().toString();
-                Prefs.writeString(getActivity(), Prefs.KEY_MEMBERID, savedMemberId);
+                prefs.writeString(Prefs.KEY_MEMBERID, savedMemberId);
             }
             if  (!savedDongle.equals(editDongle.getText().toString())) {
                 savedDongle = editDongle.getText().toString();
-                Prefs.writeString(getActivity(), Prefs.KEY_DONGLE, savedDongle);
+                prefs.writeString(Prefs.KEY_DONGLE, savedDongle);
             }
+
+            prefs.applyChanges();
 
             if (callback != null)
                 callback.onLoadAdClicked();
