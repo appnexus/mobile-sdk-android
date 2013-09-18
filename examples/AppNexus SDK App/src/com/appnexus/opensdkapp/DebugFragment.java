@@ -34,6 +34,8 @@ import android.widget.*;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
 
 public class DebugFragment extends Fragment {
 
@@ -42,6 +44,7 @@ public class DebugFragment extends Fragment {
     Button btnEmailServer, btnRunDebugAuction;
     DebugAuctionWebView webView;
     AlertDialog debugDialog;
+    PullToRefreshScrollView pullToRefreshView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -66,6 +69,7 @@ public class DebugFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 webView.runAuction();
+
                 if (debugDialog != null)
                     debugDialog.show();
             }
@@ -76,14 +80,21 @@ public class DebugFragment extends Fragment {
 
     private void createDebugAuctionDialog() {
         // hacked to be fullscreen with minHeight. see xml
-        RelativeLayout frame  = (RelativeLayout) getActivity().getLayoutInflater().inflate(R.layout.dialog_debug, null, false);
+        pullToRefreshView = (PullToRefreshScrollView) getActivity().getLayoutInflater().inflate(R.layout.dialog_debug, null, false);
+        pullToRefreshView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ScrollView>() {
+            @Override
+            public void onRefresh(PullToRefreshBase<ScrollView> refreshView) {
+                webView.runAuction();
+            }
+        });
+        RelativeLayout frame  = (RelativeLayout) pullToRefreshView.findViewById(R.id.frame);
         View placeholderView = frame.findViewById(R.id.debug_auction_view);
         webView.setLayoutParams(placeholderView.getLayoutParams());
         // make sure the close button is on top of the webView
         frame.addView(webView, 1);
 
         debugDialog = new AlertDialog.Builder(getActivity())
-                .setView(frame)
+                .setView(pullToRefreshView)
                 .create();
 
         ImageButton close = (ImageButton) frame.findViewById(R.id.debug_btn_close);
@@ -195,6 +206,7 @@ public class DebugFragment extends Fragment {
             final HTTPGet<Void, Void, HTTPResponse> auctionGet = new HTTPGet<Void, Void, HTTPResponse>() {
                 @Override
                 protected void onPostExecute(HTTPResponse response) {
+                    pullToRefreshView.onRefreshComplete();
                     String body = response.getResponseBody();
                     if (body != null) {
                         result = Html.fromHtml(body).toString();
