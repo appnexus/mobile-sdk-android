@@ -168,11 +168,13 @@ public class PreviewFragment extends Fragment {
         @Override
         public void onAdLoaded(AdView adView) {
             toast("Ad loaded");
+            pullToRefreshView.onRefreshComplete();
             iav.show();
         }
 
         @Override
         public void onAdRequestFailed(AdView adView) {
+            pullToRefreshView.onRefreshComplete();
             toast("Ad request failed");
         }
 
