@@ -72,10 +72,10 @@ public class PreviewFragment extends Fragment {
     }
 
     public void loadNewAd() {
-        Log.d(Constants.LOG_TAG, "Loading new ad");
+        Log.d(Constants.BASE_LOG_TAG, "Loading new ad");
 
         SettingsWrapper settingsWrapper = SettingsWrapper.getSettingsWrapperFromPrefs(getActivity());
-        Clog.d(Constants.LOG_TAG, settingsWrapper.toString());
+        Clog.d(Constants.BASE_LOG_TAG, settingsWrapper.toString());
 
         if (settingsWrapper.isAdTypeBanner()) {
             // Load and display a banner
@@ -110,7 +110,7 @@ public class PreviewFragment extends Fragment {
                 try {
                     color = Color.parseColor("#" + backgroundHex);
                 } catch (IllegalArgumentException e) {
-                    Clog.d(Constants.LOG_TAG, "Invalid hex color");
+                    Clog.d(Constants.BASE_LOG_TAG, "Invalid hex color");
                 }
             }
             iav.setBackgroundColor(color);
@@ -160,7 +160,7 @@ public class PreviewFragment extends Fragment {
 
         private void toast(String message) {
             Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-            Clog.d(Constants.LOG_TAG, message);
+            Clog.d(Constants.BASE_LOG_TAG, message);
         }
     };
 
@@ -193,7 +193,7 @@ public class PreviewFragment extends Fragment {
 
         private void toast(String message) {
             Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-            Clog.d(Constants.LOG_TAG, message);
+            Clog.d(Constants.BASE_LOG_TAG, message);
         }
     };
 }

@@ -54,12 +54,13 @@ public class Prefs {
         try {
             return getPreferences(context).getString(key, def);
         } catch (ClassCastException e) {
-            Clog.e(Constants.LOG_TAG, "Prefs failed to getString", e);
+            Clog.e(Constants.PREFS_TAG, "Prefs failed to getString", e);
             return def;
         }
     }
 
     public static void writeString(Context context, String key, String value) {
+        Clog.d(Constants.PREFS_TAG, key + ", " + value);
         getPreferences(context).edit().putString(key, value).apply();
     }
 
@@ -67,12 +68,13 @@ public class Prefs {
         try {
             return getPreferences(context).getInt(key, def);
         } catch (ClassCastException e) {
-            Clog.e(Constants.LOG_TAG, "Prefs failed to getInt", e);
+            Clog.e(Constants.PREFS_TAG, "Prefs failed to getInt", e);
             return def;
         }
     }
 
     public static void writeInt(Context context, String key, int value) {
+        Clog.d(Constants.PREFS_TAG, key + ", " + value);
         getPreferences(context).edit().putInt(key, value).apply();
     }
 
@@ -80,12 +82,13 @@ public class Prefs {
         try {
             return getPreferences(context).getBoolean(key, def);
         } catch (ClassCastException e) {
-            Clog.e(Constants.LOG_TAG, "Prefs failed to getBoolean", e);
+            Clog.e(Constants.PREFS_TAG, "Prefs failed to getBoolean", e);
             return def;
         }
     }
 
     public static void writeBoolean(Context context, String key, boolean value) {
+        Clog.d(Constants.PREFS_TAG, key + ", " + value);
         getPreferences(context).edit().putBoolean(key, value).apply();
     }
 

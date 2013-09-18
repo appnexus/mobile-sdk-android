@@ -189,7 +189,7 @@ public class DebugFragment extends Fragment {
 
         public void runAuction() {
             final String debugAuctionUrl = getUrl();
-            Clog.d(Constants.LOG_TAG, "Running a Debug Auction: " + debugAuctionUrl);
+            Clog.d(Constants.BASE_LOG_TAG, "Running a Debug Auction: " + debugAuctionUrl);
 //            loadUrl(debugAuctionUrl);
 
             final HTTPGet<Void, Void, HTTPResponse> auctionGet = new HTTPGet<Void, Void, HTTPResponse>() {
@@ -197,7 +197,7 @@ public class DebugFragment extends Fragment {
                 protected void onPostExecute(HTTPResponse response) {
                     result = response.getResponseBody();
                     if (result != null) {
-                        Clog.d(Constants.LOG_TAG, Html.fromHtml(result).toString());
+                        Clog.d(Constants.BASE_LOG_TAG, Html.fromHtml(result).toString());
                         loadDataWithBaseURL(null, result, "text/html", "UTF-8", null);
                     }
                     else {
