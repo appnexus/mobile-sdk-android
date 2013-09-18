@@ -77,9 +77,9 @@ public class MainActivity extends FragmentActivity implements
         tabHost.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                Log.d(Constants.LOG_TAG, view.toString());
-                Log.d(Constants.LOG_TAG, motionEvent.getRawX() + ", " + motionEvent.getRawY());
-                Log.d(Constants.LOG_TAG, btnLog.getLeft() + ", " + btnLog.getTop());
+                Log.d(Constants.BASE_LOG_TAG, view.toString());
+                Log.d(Constants.BASE_LOG_TAG, motionEvent.getRawX() + ", " + motionEvent.getRawY());
+                Log.d(Constants.BASE_LOG_TAG, btnLog.getLeft() + ", " + btnLog.getTop());
                 return false;
             }
         });
@@ -206,7 +206,7 @@ public class MainActivity extends FragmentActivity implements
 
     @Override
     public void onPageSelected(int arg0) {
-        Clog.d(Constants.LOG_TAG, "page selected: " + arg0);
+        Clog.d(Constants.BASE_LOG_TAG, "page selected: " + arg0);
         this.tabHost.setCurrentTab(arg0);
 
         if (debugFrag != null)
