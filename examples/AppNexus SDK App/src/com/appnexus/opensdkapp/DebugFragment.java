@@ -199,7 +199,7 @@ public class DebugFragment extends Fragment {
                     if (body != null) {
                         result = Html.fromHtml(body).toString();
                         Clog.d(Constants.BASE_LOG_TAG, result);
-                        loadDataWithBaseURL(null, result, "text/html", "UTF-8", null);
+                        loadDataWithBaseURL(null, body, "text/html", "UTF-8", null);
                     }
                     else {
                         result = getString(R.string.debug_msg_debugauction_failed);
