@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
+<!-- 
    Copyright 2013 APPNEXUS INC
    
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,18 +13,26 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
--->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true">
+ -->
+
+
+<com.handmark.pulltorefresh.library.PullToRefreshScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/pull_to_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <FrameLayout
             android:id="@+id/adframe"
+            android:padding="24dp"
             style="@style/itemContainer"
             android:layout_gravity="top"
             android:minHeight="50dp" >
-
+        <com.appnexus.opensdk.BannerAdView
+                android:id="@+id/banner"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                />
         <TextView
                 android:id="@+id/bannertext"
                 android:padding="8dp"
@@ -33,12 +41,5 @@
                 android:gravity="center"
                 android:layout_gravity="top|center_horizontal"
                 android:text="@string/banner_space" />
-
-        <com.appnexus.opensdk.BannerAdView
-                android:id="@+id/banner"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                />
     </FrameLayout>
-
-</ScrollView>
+</com.handmark.pulltorefresh.library.PullToRefreshScrollView>

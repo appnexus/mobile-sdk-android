@@ -47,7 +47,7 @@ public class PreviewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View out = inflater.inflate(R.layout.fragment_preview2, null);
+        final View out = inflater.inflate(R.layout.fragment_preview, null);
 
         // locate members and set listeners
         bav = (BannerAdView) out.findViewById(R.id.banner);
@@ -83,15 +83,6 @@ public class PreviewFragment extends Fragment {
             bav.setAdWidth(settingsWrapper.getWidth());
             bav.setAdHeight(settingsWrapper.getHeight());
 
-            DisplayMetrics m = new DisplayMetrics();
-            getActivity().getWindowManager().getDefaultDisplay().getMetrics(m);
-            float d = m.density;
-
-            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(bav.getLayoutParams());
-            if (lp.width != -1) lp.width = (int) (bav.getAdWidth() * d + 0.5f);
-            if (lp.height != -1) lp.height = (int) (bav.getAdHeight() * d + 0.5f);
-            bav.setLayoutParams(lp);
-
             bav.setShouldServePSAs(settingsWrapper.isAllowPsas());
             bav.setOpensNativeBrowser(!settingsWrapper.isBrowserInApp());
             bav.setPlacementID(settingsWrapper.getPlacementId());
@@ -102,6 +93,7 @@ public class PreviewFragment extends Fragment {
             iav.setShouldServePSAs(settingsWrapper.isAllowPsas());
             iav.setOpensNativeBrowser(!settingsWrapper.isBrowserInApp());
             iav.setPlacementID(settingsWrapper.getPlacementId());
+
             int color = DEF_COLOR;
 
             // try to retrieve background color. default if not
@@ -128,16 +120,26 @@ public class PreviewFragment extends Fragment {
 
         @Override
         public void onAdLoaded(AdView adView) {
-                View v = getView();
-                if (v == null) return;
-                FrameLayout adframe = (FrameLayout) v.findViewById(
-                        R.id.adframe);
-                ScrollView.LayoutParams lp = new ScrollView.LayoutParams(
-                        adframe.getLayoutParams());
-                if (lp != null && adframe != null) {
-                    lp.height = ScrollView.LayoutParams.WRAP_CONTENT;
-                    adframe.setLayoutParams(lp);
-                }
+            View v = getView();
+            if (v == null) return;
+            FrameLayout adframe = (FrameLayout) v.findViewById(
+                    R.id.adframe);
+            ScrollView.LayoutParams lp = new ScrollView.LayoutParams(
+                    adframe.getLayoutParams());
+            if (lp != null && adframe != null) {
+                lp.height = ScrollView.LayoutParams.WRAP_CONTENT;
+                adframe.setLayoutParams(lp);
+            }
+
+            DisplayMetrics m = new DisplayMetrics();
+            getActivity().getWindowManager().getDefaultDisplay().getMetrics(m);
+            float d = m.density;
+
+            FrameLayout.LayoutParams bannerlp = new FrameLayout.LayoutParams(bav.getLayoutParams());
+            if (bannerlp.width != -1) bannerlp.width = (int) (bav.getAdWidth() * d + 0.5f);
+            if (bannerlp.height != -1) bannerlp.height = (int) (bav.getAdHeight() * d + 0.5f);
+            bav.setLayoutParams(bannerlp);
+
             bannerText.setVisibility(TextView.INVISIBLE);
             pullToRefreshView.onRefreshComplete();
             toast("Ad loaded");
