@@ -195,9 +195,10 @@ public class DebugFragment extends Fragment {
             final HTTPGet<Void, Void, HTTPResponse> auctionGet = new HTTPGet<Void, Void, HTTPResponse>() {
                 @Override
                 protected void onPostExecute(HTTPResponse response) {
-                    result = response.getResponseBody();
-                    if (result != null) {
-                        Clog.d(Constants.BASE_LOG_TAG, Html.fromHtml(result).toString());
+                    String body = response.getResponseBody();
+                    if (body != null) {
+                        result = Html.fromHtml(body).toString();
+                        Clog.d(Constants.BASE_LOG_TAG, result);
                         loadDataWithBaseURL(null, result, "text/html", "UTF-8", null);
                     }
                     else {
