@@ -47,8 +47,6 @@ public class Prefs {
 
     private SharedPreferences.Editor editor;
 
-    private static final String editorError = "Call startEditing() before trying to write to preferences!";
-
     public Prefs(Context context) {
         editor = getPreferences(context).edit();
     }
@@ -69,10 +67,6 @@ public class Prefs {
 
     public void writeString(String key, String value) {
         Clog.d(Constants.PREFS_TAG, key + ", " + value);
-        if (editor == null) {
-            Clog.e(Constants.PREFS_TAG, editorError);
-            return;
-        }
         editor.putString(key, value);
     }
 
@@ -87,10 +81,6 @@ public class Prefs {
 
     public void writeInt(String key, int value) {
         Clog.d(Constants.PREFS_TAG, key + ", " + value);
-        if (editor == null) {
-            Clog.e(Constants.PREFS_TAG, editorError);
-            return;
-        }
         editor.putInt(key, value);
     }
 
@@ -105,10 +95,6 @@ public class Prefs {
 
     public void writeBoolean(String key, boolean value) {
         Clog.d(Constants.PREFS_TAG, key + ", " + value);
-        if (editor == null) {
-            Clog.e(Constants.PREFS_TAG, editorError);
-            return;
-        }
         editor.putBoolean(key, value);
     }
 
