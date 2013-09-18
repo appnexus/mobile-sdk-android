@@ -124,6 +124,7 @@ public class SettingsWrapper {
         settingsWrapper.refresh = Prefs.getRefresh(context);
         settingsWrapper.backgroundColor = Prefs.getColor(context);
         settingsWrapper.closeDelay = Prefs.getCloseDelay(context);
+        settingsWrapper.memberId = Prefs.getMemberId(context);
         settingsWrapper.dongle = Prefs.getDongle(context);
 
         return settingsWrapper;

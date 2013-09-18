@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +44,7 @@ public class SettingsFragment extends Fragment {
     private EditText editPlacementId,
             editBackgroundColor,
             editMemberId, editDongle;
+    private String currentValidColor;
 
     private OnLoadAdClickedListener callback;
 
@@ -105,10 +105,10 @@ public class SettingsFragment extends Fragment {
                 getResources().getStringArray(R.array.close_delay)));
 
         // listeners for editText
-        editPlacementId.addTextChangedListener(new SaveToPrefsTextWatcher(Prefs.KEY_PLACEMENT, Prefs.DEF_PLACEMENT));
+//        editPlacementId.addTextChangedListener(new SaveToPrefsTextWatcher(Prefs.KEY_PLACEMENT, Prefs.DEF_PLACEMENT));
         editBackgroundColor.addTextChangedListener(new BackgroundColorTextWatcher());
-        editMemberId.addTextChangedListener(new SaveToPrefsTextWatcher(Prefs.KEY_MEMBERID, Prefs.DEF_MEMBERID));
-        editDongle.addTextChangedListener(new SaveToPrefsTextWatcher(Prefs.KEY_DONGLE, Prefs.DEF_DONGLE));
+//        editMemberId.addTextChangedListener(new SaveToPrefsTextWatcher(Prefs.KEY_MEMBERID, Prefs.DEF_MEMBERID));
+//        editDongle.addTextChangedListener(new SaveToPrefsTextWatcher(Prefs.KEY_DONGLE, Prefs.DEF_DONGLE));
 
         // load saved or default settings
         loadSettings();
@@ -222,9 +222,6 @@ public class SettingsFragment extends Fragment {
 
             Clog.d(Constants.LOG_TAG, "Size set to: " + setting);
 
-            Prefs.writeString(getActivity(), Prefs.KEY_SIZE, setting);
-
-
 //			bannerAdView.setAdWidth(getSizeFromPosition(position)[0]);
 //			bannerAdView.setAdHeight(getSizeFromPosition(position)[1]);
 
@@ -274,8 +271,6 @@ public class SettingsFragment extends Fragment {
                 return;
 
             Clog.d(Constants.LOG_TAG, "Refresh set to: " + refreshStrings[position]);
-
-            Prefs.writeString(getActivity(), Prefs.KEY_REFRESH, refreshStrings[position]);
         }
 
         @Override
@@ -298,8 +293,6 @@ public class SettingsFragment extends Fragment {
                 return;
 
             Clog.d(Constants.LOG_TAG, "Close Delay set to: " + closeDelayStrings[position]);
-
-            Prefs.writeString(getActivity(), Prefs.KEY_CLOSE_DELAY, closeDelayStrings[position]);
 //
 //            int closeDelay = 0;
 //
@@ -340,7 +333,20 @@ public class SettingsFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            Clog.d(Constants.LOG_TAG, "Load ad pressed.");
+            Clog.d(Constants.LOG_TAG, "Load Ad button pressed.");
+
+            Prefs.writeBoolean(getActivity(), Prefs.KEY_ADTYPE_IS_BANNER, !btnAdTypeBanner.isEnabled());
+            Prefs.writeBoolean(getActivity(), Prefs.KEY_ALLOW_PSAS, !btnPSAsYes.isEnabled());
+            Prefs.writeBoolean(getActivity(), Prefs.KEY_BROWSER_IS_INAPP, !btnBrowserInApp.isEnabled());
+            Prefs.writeString(getActivity(), Prefs.KEY_PLACEMENT, editPlacementId.getText().toString());
+            Prefs.writeString(getActivity(), Prefs.KEY_SIZE, (String) dropSize.getSelectedItem());
+            Prefs.writeString(getActivity(), Prefs.KEY_REFRESH, (String) dropRefresh.getSelectedItem());
+            Prefs.writeString(getActivity(), Prefs.KEY_COLOR_HEX, currentValidColor);
+            Prefs.writeString(getActivity(), Prefs.KEY_CLOSE_DELAY, (String) dropCloseDelay.getSelectedItem());
+            Prefs.writeString(getActivity(), Prefs.KEY_MEMBERID, editMemberId.getText().toString());
+            Prefs.writeString(getActivity(), Prefs.KEY_DONGLE, editDongle.getText().toString());
+
+            Clog.d(Constants.LOG_TAG, "Persisted settings: " + SettingsWrapper.getSettingsWrapperFromPrefs(getActivity()));
 
             if (callback != null)
                 callback.onLoadAdClicked();
@@ -369,8 +375,6 @@ public class SettingsFragment extends Fragment {
 
         private void handleAdType(boolean isBanner) {
             Clog.d(Constants.LOG_TAG, "AdType set isBanner to: " + isBanner);
-
-            Prefs.writeBoolean(getActivity(), Prefs.KEY_ADTYPE_IS_BANNER, isBanner);
 
             // ad type buttons - opposite because we disable the option
             // that is selected
@@ -406,8 +410,6 @@ public class SettingsFragment extends Fragment {
         private void handlePSAs(boolean isAllowed) {
             Clog.d(Constants.LOG_TAG, "PSAs set isAllowed to: " + isAllowed);
 
-            Prefs.writeBoolean(getActivity(), Prefs.KEY_ALLOW_PSAS, isAllowed);
-
             // PSA buttons. disable selected option
             btnPSAsYes.setEnabled(!isAllowed);
             btnPSAsNo.setEnabled(isAllowed);
@@ -429,8 +431,6 @@ public class SettingsFragment extends Fragment {
         private void handleBrowser(boolean isInApp) {
             Clog.d(Constants.LOG_TAG, "Browser type set isInApp to: " + isInApp);
 
-            Prefs.writeBoolean(getActivity(), Prefs.KEY_BROWSER_IS_INAPP, isInApp);
-
             // Browser buttons. disable selected option
             btnBrowserInApp.setEnabled(!isInApp);
             btnBrowserNative.setEnabled(isInApp);
@@ -446,15 +446,11 @@ public class SettingsFragment extends Fragment {
         @Override
         public void onTextChanged(CharSequence s, int start, int before,
                                   int count) {
-            String savedColor = Prefs.getString(getActivity(),
-                    Prefs.KEY_COLOR_HEX, Prefs.DEF_COLOR_HEX);
-            if (!savedColor.equals(s.toString()))
-                Prefs.writeString(getActivity(),
-                        Prefs.KEY_COLOR_HEX, s.toString());
-
             if (s.length() == 8) {
                 try {
                     colorViewBackground.setColor(Color.parseColor("#" + s.toString()));
+                    // only set this if the color is valid
+                    currentValidColor = s.toString();
                 } catch (IllegalArgumentException e) {
                     Clog.d(Constants.LOG_TAG, "Invalid hex color");
                 }
@@ -485,7 +481,6 @@ public class SettingsFragment extends Fragment {
             String savedValue = Prefs.getString(getActivity(), key, defValue);
             if (!savedValue.equals(s.toString())) {
                 Prefs.writeString(getActivity(), key, s.toString());
-                Log.d(Constants.LOG_TAG, key + " set to " + s.toString());
             }
         }
 
