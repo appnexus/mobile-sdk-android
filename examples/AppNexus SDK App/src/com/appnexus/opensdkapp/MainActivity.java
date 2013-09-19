@@ -32,7 +32,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.ClogListener;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
@@ -114,6 +120,14 @@ public class MainActivity extends FragmentActivity implements
         });
 
         contentView = getWindow().findViewById(Window.ID_ANDROID_CONTENT);
+
+        Clog.registerListener(logTabClogListener);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Clog.unregisterListener(logTabClogListener);
     }
 
     @Override
@@ -248,6 +262,88 @@ public class MainActivity extends FragmentActivity implements
 
     @Override
     public void onLoadAdClicked() {
+        readFromFile();
+        clearLogFile();
         previewFrag.loadNewAd();
+    }
+
+    /**
+     * for managing the log file
+     */
+
+    final ClogListener logTabClogListener = new ClogListener() {
+
+        @Override
+        public void onReceiveMessage(LOG_LEVEL level, String LogTag, String message) {
+            writeToFile(buildBasicLogMessage(level, LogTag, message));
+        }
+
+
+        @Override
+        public void onReceiveMessage(LOG_LEVEL level, String LogTag, String message, Throwable tr) {
+            String messageWithTr = buildBasicLogMessage(level, LogTag, message);
+            StringBuilder trSb = new StringBuilder();
+            StackTraceElement[] trElements = tr.getStackTrace();
+
+            for (StackTraceElement e : trElements) {
+                trSb.append(e.toString()).append("\n");
+            }
+
+            messageWithTr = messageWithTr + trSb.toString();
+            writeToFile(messageWithTr);
+        }
+
+        private String buildBasicLogMessage(LOG_LEVEL level, String LogTag, String message) {
+            int pid = android.os.Process.myPid();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS:");
+            String dateString = formatter.format(new Date());
+
+            String messageFormat = "%s    (%d) %s/%s    %s\n";
+
+            return String.format(messageFormat, dateString, pid, level, LogTag, message);
+        }
+    };
+
+    public void clearLogFile() {
+        try {
+            DataOutputStream dos = new DataOutputStream(openFileOutput(Constants.LOG_FILENAME, Context.MODE_PRIVATE));
+            dos.writeUTF("");
+            dos.close();
+        } catch (IOException e) {
+            Clog.e(Constants.BASE_LOG_TAG, "IOException when clearing log file", e);
+        }
+    }
+
+    public void writeToFile(String message) {
+        try {
+            DataOutputStream dos = new DataOutputStream(openFileOutput(Constants.LOG_FILENAME, Context.MODE_APPEND));
+            dos.writeUTF(message);
+            dos.close();
+        } catch (IOException e) {
+            Clog.e(Constants.BASE_LOG_TAG, "IOException when writing to log file", e);
+        }
+    }
+
+    public String readFromFile() {
+        StringBuilder inputSb =  new StringBuilder();
+
+        try {
+            DataInputStream din = new DataInputStream(openFileInput(Constants.LOG_FILENAME));
+
+            String storedMessages;
+
+            while ((storedMessages = din.readUTF()) != null) {
+                inputSb.append(storedMessages);
+            }
+            din.close();
+        } catch (IOException e) {
+            Clog.e(Constants.BASE_LOG_TAG, "IOException when reading from log file", e);
+        }
+
+        return inputSb.toString();
+    }
+
+    public ClogListener getClogListener() {
+        return logTabClogListener;
     }
 }

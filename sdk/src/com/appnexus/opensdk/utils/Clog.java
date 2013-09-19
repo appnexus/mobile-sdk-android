@@ -19,57 +19,81 @@ package com.appnexus.opensdk.utils;
 import android.content.Context;
 import android.util.Log;
 
+import java.util.ArrayList;
+
+import static com.appnexus.opensdk.utils.ClogListener.LOG_LEVEL;
+
 public class Clog {
     public static boolean clogged = false;
 
     public static void v(String LogTag, String message) {
-        if (!clogged && message != null)
+        if (!clogged && message != null) {
+            notifyListener(LOG_LEVEL.V, LogTag, message);
             Log.v(LogTag, message);
+        }
     }
 
     public static void v(String LogTag, String message, Throwable tr) {
-        if (!clogged && message != null)
+        if (!clogged && message != null) {
+            notifyListener(LOG_LEVEL.V, LogTag, message, tr);
             Log.v(LogTag, message, tr);
+        }
     }
 
     public static void d(String LogTag, String message) {
-        if (!clogged && message != null)
+        if (!clogged && message != null) {
+            notifyListener(LOG_LEVEL.D, LogTag, message);
             Log.d(LogTag, message);
+        }
     }
 
     public static void d(String LogTag, String message, Throwable tr) {
-        if (!clogged && message != null)
+        if (!clogged && message != null) {
+            notifyListener(LOG_LEVEL.D, LogTag, message, tr);
             Log.d(LogTag, message, tr);
+        }
     }
 
     public static void i(String LogTag, String message) {
-        if (!clogged && message != null)
+        if (!clogged && message != null) {
+            notifyListener(LOG_LEVEL.I, LogTag, message);
             Log.i(LogTag, message);
+        }
     }
 
     public static void i(String LogTag, String message, Throwable tr) {
-        if (!clogged && message != null)
+        if (!clogged && message != null) {
+            notifyListener(LOG_LEVEL.I, LogTag, message, tr);
             Log.i(LogTag, message, tr);
+        }
     }
 
     public static void w(String LogTag, String message) {
-        if (!clogged && message != null)
+        if (!clogged && message != null) {
+            notifyListener(LOG_LEVEL.W, LogTag, message);
             Log.w(LogTag, message);
+        }
     }
 
     public static void w(String LogTag, String message, Throwable tr) {
-        if (!clogged && message != null)
+        if (!clogged && message != null) {
+            notifyListener(LOG_LEVEL.W, LogTag, message, tr);
             Log.w(LogTag, message, tr);
+        }
     }
 
     public static void e(String LogTag, String message) {
-        if (!clogged && message != null)
+        if (!clogged && message != null) {
+            notifyListener(LOG_LEVEL.E, LogTag, message);
             Log.e(LogTag, message);
+        }
     }
 
     public static void e(String LogTag, String message, Throwable tr) {
-        if (!clogged && message != null)
+        if (!clogged && message != null) {
+            notifyListener(LOG_LEVEL.E, LogTag, message, tr);
             Log.e(LogTag, message, tr);
+        }
     }
 
     public static String baseLogTag = "OPENSDK";
@@ -164,5 +188,27 @@ public class Clog {
 
     synchronized public static String getLastResponse() {
         return lastResponse;
+    }
+
+    private static ArrayList<ClogListener> listeners = new ArrayList<ClogListener>();
+
+    synchronized public static boolean registerListener(ClogListener listener) {
+        return listener != null && listeners.add(listener);
+    }
+
+    synchronized public static boolean unregisterListener(ClogListener listener) {
+        return listener != null && listeners.remove(listener);
+    }
+
+    synchronized public static void notifyListener(LOG_LEVEL level, String LogTag, String message) {
+        for (ClogListener listener: listeners) {
+            listener.onReceiveMessage(level, LogTag, message);
+        }
+    }
+
+    synchronized public static void notifyListener(LOG_LEVEL level, String LogTag, String message, Throwable tr) {
+        for (ClogListener listener: listeners) {
+            listener.onReceiveMessage(level, LogTag, message, tr);
+        }
     }
 }

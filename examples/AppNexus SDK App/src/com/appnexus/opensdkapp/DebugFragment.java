@@ -117,19 +117,22 @@ public class DebugFragment extends Fragment {
 
         if (txtRequest != null) txtRequest.setText(Clog.getLastRequest());
 
-        String jsonString = null;
-        try {
-            JSONObject responseObject = new JSONObject(Clog.getLastResponse());
-            jsonString = responseObject.toString(4);
-        } catch (JSONException e) {
-            Clog.e(Constants.BASE_LOG_TAG, "JSONException in response", e);
-        }
         if (txtResponse != null) {
-            if (jsonString != null)
-                txtResponse.setText(jsonString);
+            if (!Clog.getLastResponse().isEmpty()) {
+                String jsonString = null;
+                try {
+                    JSONObject responseObject = new JSONObject(Clog.getLastResponse());
+                    jsonString = responseObject.toString(4);
+                } catch (JSONException e) {
+                    Clog.e(Constants.BASE_LOG_TAG, "JSONException in response", e);
+                }
+                txtResponse.setText(jsonString != null ? jsonString : Clog.getLastResponse());
+            }
             else
                 txtResponse.setText(Clog.getLastResponse());
         }
+
+
 
         if (editMemberId != null) editMemberId.setText(Prefs.getMemberId(getActivity()));
         if (editDongle != null) editDongle.setText(Prefs.getDongle(getActivity()));
