@@ -174,7 +174,7 @@ public class SettingsWrapper {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("SettingsWrapper{");
+        final StringBuilder sb = new StringBuilder("Settings: [");
         sb.append("isAdTypeBanner=").append(isAdTypeBanner);
         sb.append(", isAllowPsas=").append(isAllowPsas);
         sb.append(", isBrowserInApp=").append(isBrowserInApp);
@@ -187,7 +187,7 @@ public class SettingsWrapper {
         sb.append(", dongle='").append(dongle).append('\'');
         sb.append(", width=").append(width);
         sb.append(", height=").append(height);
-        sb.append('}');
+        sb.append(']');
         return sb.toString();
     }
 }
