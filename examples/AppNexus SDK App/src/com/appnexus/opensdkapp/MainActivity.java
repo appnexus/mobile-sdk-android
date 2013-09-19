@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdkapp;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,8 +30,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
+import android.widget.TextView;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ClogListener;
 
@@ -60,12 +63,12 @@ public class MainActivity extends FragmentActivity implements
     private HashMap<String, TabInfo> mapTabInfo = new HashMap<String, MainActivity.TabInfo>();
     private ViewPager viewPager;
     private PagerAdapter pagerAdapter;
-    private View btnMore;
-    private View btnLog;
+    private View btnMore, btnLog;
     private View contentView;
 
     private PreviewFragment previewFrag;
     private DebugFragment debugFrag;
+    private AlertDialog logDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +119,14 @@ public class MainActivity extends FragmentActivity implements
             @Override
             public void onClick(View view) {
                 view.setVisibility(View.GONE);
+                ScrollView dialogLayout = (ScrollView) getLayoutInflater().inflate(R.layout.dialog_log, null);
+                View frame = dialogLayout.findViewById(R.id.frame);
+                TextView txtAppLogs = (TextView) frame.findViewById(R.id.log_txt_applogs);
+                txtAppLogs.setText(readFromFile());
+
+                logDialog = new AlertDialog.Builder(MainActivity.this)
+                        .setView(dialogLayout)
+                        .show();
             }
         });
 
@@ -127,6 +138,8 @@ public class MainActivity extends FragmentActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (logDialog != null)
+            logDialog.dismiss();
         Clog.unregisterListener(logTabClogListener);
     }
 
