@@ -18,6 +18,8 @@ package com.appnexus.opensdkapp;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -58,8 +60,6 @@ public class PreviewFragment extends Fragment {
         iav = new InterstitialAdView(getActivity());
         iav.setAdListener(interstitialAdListener);
 
-        loadNewAd();
-
         pullToRefreshView = (PullToRefreshScrollView) out.findViewById(R.id.pull_to_refresh);
         pullToRefreshView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ScrollView>() {
             @Override
@@ -67,6 +67,15 @@ public class PreviewFragment extends Fragment {
                 loadNewAd();
             }
         });
+
+        pullToRefreshView.setPullToRefreshOverScrollEnabled(true);
+        // try to load an ad on start
+        new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                loadNewAd();
+            }
+        }.sendEmptyMessage(0);
 
         return out;
     }
@@ -86,7 +95,8 @@ public class PreviewFragment extends Fragment {
             bav.setShouldServePSAs(settingsWrapper.isAllowPsas());
             bav.setOpensNativeBrowser(!settingsWrapper.isBrowserInApp());
             bav.setPlacementID(settingsWrapper.getPlacementId());
-            bav.loadAd();
+            if (!bav.loadAd())
+                pullToRefreshView.onRefreshComplete();
         }
         else {
             // Load and display an interstitial
@@ -107,7 +117,8 @@ public class PreviewFragment extends Fragment {
             }
             iav.setBackgroundColor(color);
             iav.setCloseButtonDelay(settingsWrapper.getCloseDelayPeriod());
-            iav.loadAd();
+            if (!iav.loadAd())
+                pullToRefreshView.onRefreshComplete();
         }
     }
 

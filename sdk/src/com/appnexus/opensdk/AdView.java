@@ -180,7 +180,7 @@ public abstract class AdView extends FrameLayout {
     public boolean loadAd() {
         if (isMRAIDExpanded())
             return false;
-        if (placementID == null)
+        if (placementID == null || placementID.isEmpty())
             return false;
         if (this.getWindowVisibility() == VISIBLE && mAdFetcher != null) {
             // Reload Ad Fetcher to get new ad at user's request
