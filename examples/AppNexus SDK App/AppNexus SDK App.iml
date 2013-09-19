@@ -25,7 +25,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="pulltorefresh-library" />
+    <orderEntry type="module" module-name="pulltorefresh" />
   </component>
 </module>
 

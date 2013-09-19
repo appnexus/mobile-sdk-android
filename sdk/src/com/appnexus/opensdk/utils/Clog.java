@@ -211,22 +211,27 @@ public class Clog {
                     if (listener.isVerboseLevelEnabled()) {
                         notifyHelper(listener, level, LogTag, message, tr);
                     }
+                    break;
                 case D:
                     if (listener.isDebugLevelEnabled()) {
                         notifyHelper(listener, level, LogTag, message, tr);
                     }
+                    break;
                 case I:
                     if (listener.isInfoLevelEnabled()) {
                         notifyHelper(listener, level, LogTag, message, tr);
                     }
+                    break;
                 case W:
                     if (listener.isWarningLevelEnabled()) {
                         notifyHelper(listener, level, LogTag, message, tr);
                     }
+                    break;
                 case E:
                     if (listener.isErrorLevelEnabled()) {
                         notifyHelper(listener, level, LogTag, message, tr);
                     }
+                    break;
                 default:
                     break;
             }

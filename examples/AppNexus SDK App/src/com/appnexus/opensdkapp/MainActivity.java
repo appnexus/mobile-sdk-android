@@ -295,17 +295,17 @@ public class MainActivity extends FragmentActivity implements
 
         @Override
         public boolean isVerboseLevelEnabled() {
-            return true;
+            return false;
         }
 
         @Override
         public boolean isDebugLevelEnabled() {
-            return true;
+            return false;
         }
 
         @Override
         public boolean isInfoLevelEnabled() {
-            return true;
+            return false;
         }
 
         @Override
@@ -329,42 +329,71 @@ public class MainActivity extends FragmentActivity implements
         }
     };
 
-    public void clearLogFile() {
+    /* TODO: what if we have errors in these functions? using Clog will create a perpetual loop,
+    although we could have a special function that doesn't alert listeners. doesn't help us watching from the server though */
+    synchronized public void clearLogFile() {
+        Log.d(Constants.BASE_LOG_TAG, "Clearing log file");
+        DataOutputStream out = null;
         try {
-            DataOutputStream dos = new DataOutputStream(openFileOutput(Constants.LOG_FILENAME, Context.MODE_PRIVATE));
-            dos.writeUTF("");
-            dos.close();
+            out = new DataOutputStream(openFileOutput(Constants.LOG_FILENAME, Context.MODE_PRIVATE));
+            out.writeUTF("");
+            out.close();
         } catch (IOException e) {
-            Clog.e(Constants.BASE_LOG_TAG, "IOException when clearing log file", e);
+            Log.e(Constants.BASE_LOG_TAG, "IOException when clearing log file", e);
+        } finally {
+            if (out != null)
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    Clog.e(Constants.BASE_LOG_TAG, "IOException when closing log file output stream in clear", e);
+                }
         }
     }
 
-    public void writeToFile(String message) {
+    synchronized public void writeToFile(String message) {
+        Log.d(Constants.BASE_LOG_TAG, "Writing to log file");
+        DataOutputStream out = null;
         try {
-            DataOutputStream dos = new DataOutputStream(openFileOutput(Constants.LOG_FILENAME, Context.MODE_APPEND));
-            dos.writeUTF(message);
-            dos.close();
+            out = new DataOutputStream(openFileOutput(Constants.LOG_FILENAME, Context.MODE_APPEND));
+            out.writeUTF(message);
+            out.close();
         } catch (IOException e) {
-            Clog.e(Constants.BASE_LOG_TAG, "IOException when writing to log file", e);
+            Log.e(Constants.BASE_LOG_TAG, "IOException when writing to log file", e);
+        } finally {
+            if (out != null)
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    Clog.e(Constants.BASE_LOG_TAG, "IOException when closing log file output stream", e);
+                }
         }
     }
 
-    public String readFromFile() {
+    synchronized public String readFromFile() {
+        Clog.d(Constants.BASE_LOG_TAG, "Reading log file");
         StringBuilder inputSb =  new StringBuilder();
 
+        DataInputStream in = null;
+
         try {
-            DataInputStream din = new DataInputStream(openFileInput(Constants.LOG_FILENAME));
+            in = new DataInputStream(openFileInput(Constants.LOG_FILENAME));
 
             String storedMessages;
 
-            while ((storedMessages = din.readUTF()) != null) {
+            while ((in.available() > 0) && ((storedMessages = in.readUTF()) != null)) {
                 inputSb.append(storedMessages);
             }
-            din.close();
+            in.close();
         } catch (IOException e) {
             Clog.e(Constants.BASE_LOG_TAG, "IOException when reading from log file", e);
+        } finally {
+            if (in != null)
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    Clog.e(Constants.BASE_LOG_TAG, "IOException when closing log file input stream", e);
+                }
         }
-
         return inputSb.toString();
     }
 
