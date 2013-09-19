@@ -293,6 +293,31 @@ public class MainActivity extends FragmentActivity implements
             writeToFile(messageWithTr);
         }
 
+        @Override
+        public boolean isVerboseLevelEnabled() {
+            return true;
+        }
+
+        @Override
+        public boolean isDebugLevelEnabled() {
+            return true;
+        }
+
+        @Override
+        public boolean isInfoLevelEnabled() {
+            return true;
+        }
+
+        @Override
+        public boolean isWarningLevelEnabled() {
+            return true;
+        }
+
+        @Override
+        public boolean isErrorLevelEnabled() {
+            return true;
+        }
+
         private String buildBasicLogMessage(LOG_LEVEL level, String LogTag, String message) {
             int pid = android.os.Process.myPid();
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS:");

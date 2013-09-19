@@ -28,4 +28,15 @@ public abstract class ClogListener {
     public abstract void onReceiveMessage(LOG_LEVEL level, String LogTag, String message);
 
     public abstract void onReceiveMessage(LOG_LEVEL level, String LogTag, String message, Throwable tr);
+
+    public abstract boolean isVerboseLevelEnabled();
+
+    public abstract boolean isDebugLevelEnabled();
+
+    public abstract boolean isInfoLevelEnabled();
+
+    public abstract boolean isWarningLevelEnabled();
+
+    public abstract boolean isErrorLevelEnabled();
+
 }
