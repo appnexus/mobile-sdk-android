@@ -177,13 +177,19 @@ public abstract class AdView extends FrameLayout {
     /**
      * Loads a new ad, if the ad space is visible.
      */
-    public void loadAd() {
+    public boolean loadAd() {
+        if (isMRAIDExpanded())
+            return false;
+        if (placementID == null)
+            return false;
         if (this.getWindowVisibility() == VISIBLE && mAdFetcher != null) {
             // Reload Ad Fetcher to get new ad at user's request
             mAdFetcher.stop();
             mAdFetcher.clearDurations();
             mAdFetcher.start();
+            return true;
         }
+        return false;
     }
 
     /**
@@ -192,9 +198,9 @@ public abstract class AdView extends FrameLayout {
      *
      * @param placementID The new placement id to use.
      */
-    public void loadAd(String placementID) {
+    public boolean loadAd(String placementID) {
         this.setPlacementID(placementID);
-        loadAd();
+        return loadAd();
     }
 
     /**
@@ -205,11 +211,11 @@ public abstract class AdView extends FrameLayout {
      * @param width       The new width to use.
      * @param height      The new height to use.
      */
-    public void loadAd(String placementID, int width, int height) {
+    public boolean loadAd(String placementID, int width, int height) {
         this.setAdHeight(height);
         this.setAdWidth(width);
         this.setPlacementID(placementID);
-        loadAd();
+        return loadAd();
     }
 
     public void loadHtml(String content, int width, int height) {
