@@ -36,6 +36,8 @@ import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class DebugFragment extends Fragment {
 
@@ -111,8 +113,24 @@ public class DebugFragment extends Fragment {
     }
 
     protected void refresh() {
+        Clog.d(Constants.BASE_LOG_TAG, "refreshing DebugFragment");
+
         if (txtRequest != null) txtRequest.setText(Clog.getLastRequest());
-        if (txtResponse != null) txtResponse.setText(Clog.getLastResponse());
+
+        String jsonString = null;
+        try {
+            JSONObject responseObject = new JSONObject(Clog.getLastResponse());
+            jsonString = responseObject.toString(4);
+        } catch (JSONException e) {
+            Clog.e(Constants.BASE_LOG_TAG, "JSONException in response", e);
+        }
+        if (txtResponse != null) {
+            if (jsonString != null)
+                txtResponse.setText(jsonString);
+            else
+                txtResponse.setText(Clog.getLastResponse());
+        }
+
         if (editMemberId != null) editMemberId.setText(Prefs.getMemberId(getActivity()));
         if (editDongle != null) editDongle.setText(Prefs.getDongle(getActivity()));
         if (editPlacementId != null) editPlacementId.setText(Prefs.getPlacementId(getActivity()));
