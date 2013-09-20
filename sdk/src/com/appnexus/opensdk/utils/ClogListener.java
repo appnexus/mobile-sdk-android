@@ -27,7 +27,7 @@ public abstract class ClogListener {
         D,
         I,
         W,
-        E
+        E,
     }
 
     /**
@@ -59,32 +59,7 @@ public abstract class ClogListener {
 
     /**
      *
-     * @return true to receive VERBOSE level messages, false to ignore.
+     * @return level of verbosity to receive messages from
      */
-    public abstract boolean isVerboseLevelEnabled();
-
-    /**
-     *
-     * @return true to receive DEBUG level messages, false to ignore.
-     */
-    public abstract boolean isDebugLevelEnabled();
-
-    /**
-     *
-     * @return true to receive INFO level messages, false to ignore.
-     */
-    public abstract boolean isInfoLevelEnabled();
-
-    /**
-     *
-     * @return true to receive WARNING level messages, false to ignore.
-     */
-    public abstract boolean isWarningLevelEnabled();
-
-    /**
-     *
-     * @return true to receive ERROR level messages, false to ignore.
-     */
-    public abstract boolean isErrorLevelEnabled();
-
+    public abstract LOG_LEVEL getLogLevel();
 }
