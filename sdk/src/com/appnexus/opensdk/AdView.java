@@ -42,7 +42,7 @@ import java.util.ArrayList;
 public abstract class AdView extends FrameLayout {
 
     protected AdFetcher mAdFetcher;
-    private String placementID;
+    protected String placementID;
     protected boolean opensNativeBrowser = false;
     protected int measuredWidth;
     protected int measuredHeight;
@@ -176,14 +176,23 @@ public abstract class AdView extends FrameLayout {
 
     /**
      * Loads a new ad, if the ad space is visible.
+     *
+     * @return true is ad will begin loading, false if ad cannot be loaded
+     * at this time given the current settings
      */
-    public void loadAd() {
+    public boolean loadAd() {
+        if (isMRAIDExpanded())
+            return false;
+        if (placementID == null || placementID.isEmpty())
+            return false;
         if (this.getWindowVisibility() == VISIBLE && mAdFetcher != null) {
             // Reload Ad Fetcher to get new ad at user's request
             mAdFetcher.stop();
             mAdFetcher.clearDurations();
             mAdFetcher.start();
+            return true;
         }
+        return false;
     }
 
     /**
@@ -191,10 +200,13 @@ public abstract class AdView extends FrameLayout {
      * attribute of the AdView to the supplied parameter.
      *
      * @param placementID The new placement id to use.
+     *
+     * @return true is ad will begin loading, false if ad cannot be loaded
+     * at this time given the current settings
      */
-    public void loadAd(String placementID) {
+    public boolean loadAd(String placementID) {
         this.setPlacementID(placementID);
-        loadAd();
+        return loadAd();
     }
 
     /**
@@ -204,12 +216,15 @@ public abstract class AdView extends FrameLayout {
      * @param placementID The new placement id to use.
      * @param width       The new width to use.
      * @param height      The new height to use.
+     *
+     * @return true is ad will begin loading, false if ad cannot be loaded
+     * at this time given the current settings
      */
-    public void loadAd(String placementID, int width, int height) {
+    public boolean loadAd(String placementID, int width, int height) {
         this.setAdHeight(height);
         this.setAdWidth(width);
         this.setPlacementID(placementID);
-        loadAd();
+        return loadAd();
     }
 
     public void loadHtml(String content, int width, int height) {
