@@ -31,7 +31,6 @@ public abstract class ClogListener {
     }
 
     /**
-     *
      * Callback for all messages set to Clog after listener is registered.
      * Implement special handling of Clog messages here.
      * Make sure not to print to Clog in this method, or else
@@ -44,7 +43,6 @@ public abstract class ClogListener {
     public abstract void onReceiveMessage(LOG_LEVEL level, String LogTag, String message);
 
     /**
-     *
      * Callback for all messages set to Clog after listener is registered.
      * Implement special handling of Clog messages here.
      * Make sure not to print to Clog in this method, or else
@@ -58,8 +56,11 @@ public abstract class ClogListener {
     public abstract void onReceiveMessage(LOG_LEVEL level, String LogTag, String message, Throwable tr);
 
     /**
+     * Specify filtering level for Clog messages
      *
-     * @return level of verbosity to receive messages from
+     * @return minimum level of verbosity to filter messages at.
+     * For example, returning V (Verbose) will receive all messages.
+     * Returning E (Error) will receive only E-level messages
      */
     public abstract LOG_LEVEL getLogLevel();
 }
