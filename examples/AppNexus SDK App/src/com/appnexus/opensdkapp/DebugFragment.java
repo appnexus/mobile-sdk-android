@@ -30,12 +30,13 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.*;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
+import com.handmark.pulltorefresh.library.PullToRefreshWebView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -44,9 +45,9 @@ public class DebugFragment extends Fragment {
     TextView txtRequest, txtResponse;
     EditText editMemberId, editDongle, editPlacementId;
     Button btnEmailServer, btnRunDebugAuction;
-    DebugAuctionWebView webView;
+    DebugAuctionWebViewClient webViewClient;
     AlertDialog debugDialog;
-    PullToRefreshScrollView pullToRefreshView;
+    PullToRefreshWebView pullToRefreshView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -63,14 +64,12 @@ public class DebugFragment extends Fragment {
 
         btnEmailServer.setOnClickListener(emailServerOnClickListener);
 
-        webView = new DebugAuctionWebView();
-
         createDebugAuctionDialog();
 
         btnRunDebugAuction.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                webView.runAuction();
+                webViewClient.runAuction();
 
                 if (debugDialog != null)
                     debugDialog.show();
@@ -82,21 +81,27 @@ public class DebugFragment extends Fragment {
 
     private void createDebugAuctionDialog() {
         // hacked to be fullscreen with minHeight. see xml
-        pullToRefreshView = (PullToRefreshScrollView) getActivity().getLayoutInflater().inflate(R.layout.dialog_debug, null, false);
-        pullToRefreshView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ScrollView>() {
+        RelativeLayout frame  = (RelativeLayout) getActivity().getLayoutInflater().inflate(R.layout.dialog_debug, null, false);
+        View placeholderView = frame.findViewById(R.id.debug_auction_view);
+
+        pullToRefreshView = new PullToRefreshWebView(getActivity().getApplicationContext());
+        WebView webView = pullToRefreshView.getRefreshableView();
+        webViewClient = new DebugAuctionWebViewClient(webView);
+        webView.setWebViewClient(webViewClient);
+
+        pullToRefreshView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<WebView>() {
             @Override
-            public void onRefresh(PullToRefreshBase<ScrollView> refreshView) {
-                webView.runAuction();
+            public void onRefresh(PullToRefreshBase<WebView> refreshView) {
+                webViewClient.runAuction();
             }
         });
-        RelativeLayout frame  = (RelativeLayout) pullToRefreshView.findViewById(R.id.frame);
-        View placeholderView = frame.findViewById(R.id.debug_auction_view);
-        webView.setLayoutParams(placeholderView.getLayoutParams());
+
+        pullToRefreshView.setLayoutParams(placeholderView.getLayoutParams());
         // make sure the close button is on top of the webView
-        frame.addView(webView, 1);
+        frame.addView(pullToRefreshView, 1);
 
         debugDialog = new AlertDialog.Builder(getActivity())
-                .setView(pullToRefreshView)
+                .setView(frame)
                 .create();
 
         ImageButton close = (ImageButton) frame.findViewById(R.id.debug_btn_close);
@@ -140,8 +145,6 @@ public class DebugFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (webView != null)
-            webView.destroy();
         if (debugDialog != null)
             debugDialog.dismiss();
 
@@ -168,7 +171,7 @@ public class DebugFragment extends Fragment {
             try {
                 Intent emailIntent = new Intent(Intent.ACTION_SEND);
                 emailIntent.setType("message/rfc822");
-                emailIntent.putExtra(Intent.EXTRA_TEXT, webView.getResult());
+                emailIntent.putExtra(Intent.EXTRA_TEXT, webViewClient.getResult());
 
                 getActivity().startActivity(Intent.createChooser(emailIntent, "Select an app with which to send the debug information"));
             } catch (ActivityNotFoundException e) {
@@ -177,33 +180,23 @@ public class DebugFragment extends Fragment {
         }
     };
 
-    private class DebugAuctionWebView extends WebView {
+    private class DebugAuctionWebViewClient extends WebViewClient {
+        WebView webView;
 
-        String result;
+        private DebugAuctionWebViewClient(WebView view) {
+            this.webView = view;
 
-        public String getUrl() {
-            StringBuilder params = new StringBuilder();
-            params.append("&id=").append(Prefs.getPlacementId(getActivity()));
-            params.append("&debug_member=").append(Prefs.getMemberId(getActivity()));
-            params.append("&dongle=").append(Prefs.getDongle(getActivity()));
-            params.append("&size=").append(Prefs.getSize(getActivity()));
-            return Constants.DEBUG_AUCTION_URL + params.toString();
-        }
+            /**
+             * change web view settings
+             */
 
-        private DebugAuctionWebView() {
-            super(getActivity().getApplicationContext());
-
-            setWebViewSettings();
-        }
-
-        private void setWebViewSettings() {
             // for scrolling
-            setHorizontalScrollbarOverlay(true);
-            setHorizontalScrollBarEnabled(true);
-            setVerticalScrollbarOverlay(true);
-            setVerticalScrollBarEnabled(true);
+            webView.setHorizontalScrollbarOverlay(true);
+            webView.setHorizontalScrollBarEnabled(true);
+            webView.setVerticalScrollbarOverlay(true);
+            webView.setVerticalScrollBarEnabled(true);
 
-            WebSettings settings = getSettings();
+            WebSettings settings = webView.getSettings();
             // for zooming
             settings.setBuiltInZoomControls(true);
             settings.setSupportZoom(true);
@@ -215,6 +208,23 @@ public class DebugFragment extends Fragment {
 
             // for loading html
             settings.setDefaultTextEncodingName("utf-8");
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            runAuction();
+            return true;
+        }
+
+        String result;
+
+        public String getUrl() {
+            StringBuilder params = new StringBuilder();
+            params.append("&id=").append(Prefs.getPlacementId(getActivity()));
+            params.append("&debug_member=").append(Prefs.getMemberId(getActivity()));
+            params.append("&dongle=").append(Prefs.getDongle(getActivity()));
+            params.append("&size=").append(Prefs.getSize(getActivity()));
+            return Constants.DEBUG_AUCTION_URL + params.toString();
         }
 
         public void runAuction() {
@@ -229,11 +239,11 @@ public class DebugFragment extends Fragment {
                     String body = response.getResponseBody();
                     if (body != null) {
                         result = Html.fromHtml(body).toString();
-                        loadDataWithBaseURL(null, body, "text/html", "UTF-8", null);
+                        webView.loadDataWithBaseURL(null, body, "text/html", "UTF-8", null);
                     }
                     else {
                         result = getString(R.string.debug_msg_debugauction_failed);
-                        loadDataWithBaseURL(null, result, "text/html", "UTF-8", null);
+                        webView.loadDataWithBaseURL(null, result, "text/html", "UTF-8", null);
                     }
                 }
 
@@ -253,6 +263,5 @@ public class DebugFragment extends Fragment {
         public String getResult() {
             return result;
         }
-
     }
 }
