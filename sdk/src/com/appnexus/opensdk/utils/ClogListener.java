@@ -27,7 +27,7 @@ public abstract class ClogListener {
         D,
         I,
         W,
-        E,
+        E
     }
 
     /**
