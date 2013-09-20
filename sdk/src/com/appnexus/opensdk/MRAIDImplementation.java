@@ -36,6 +36,8 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 
 @SuppressLint("InlinedApi")
@@ -402,7 +404,22 @@ public class MRAIDImplementation {
     }
 
     private void playVideo(ArrayList<BasicNameValuePair> parameters) {
-
+        String uri = null;
+        for (BasicNameValuePair bnvp : parameters) {
+            if(bnvp.getName().equals("uri")){
+                uri = bnvp.getValue();
+            }
+        }
+        if(uri==null){
+            //TODO: Clogging, error here.
+        }
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        try {
+            i.setDataAndType(Uri.parse(URLDecoder.decode(uri, "UTF-8")), "video/mp4");
+        } catch (UnsupportedEncodingException e) {
+            //TODO: Clogging, error here.
+        }
+        owner.getContext().startActivity(i);
     }
 
     private void createCalendarEvent(ArrayList<BasicNameValuePair> parameters) {

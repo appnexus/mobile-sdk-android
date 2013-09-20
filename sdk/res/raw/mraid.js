@@ -210,8 +210,8 @@
         window.open("mraid://createCalendarEvent/?p="+encodeURIComponent(JSON.stringify(event)));
     }
 
-    // Creates a calendar event when passed a W3C-formatted json object
-    mraid.createCalendarEvent=function(uri){
+    // Plays a video in the native player
+    mraid.playVideo=function(uri){
         window.open("mraid://playVideo/?uri="+encodeURIComponent(uri));
     }
 
