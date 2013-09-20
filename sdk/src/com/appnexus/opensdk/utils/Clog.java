@@ -96,6 +96,10 @@ public class Clog {
         }
     }
 
+    /**
+     * Logging helper functions for SDK
+     */
+
     public static String baseLogTag = "OPENSDK";
     public static String mediationLogTag = baseLogTag + "-MEDIATION";
     public static String publicFunctionsLogTag = baseLogTag + "-INTERFACE";
@@ -167,6 +171,10 @@ public class Clog {
         return String.format(error_context.getString(id), i, s);
     }
 
+    /**
+     * lastRequest/lastResponse helper methods
+     */
+
     private static String lastRequest = "";
     private static String lastResponse = "";
 
@@ -189,6 +197,10 @@ public class Clog {
     synchronized public static String getLastResponse() {
         return lastResponse;
     }
+
+    /**
+     * ClogListener helper methods
+     */
 
     private static ArrayList<ClogListener> listeners = new ArrayList<ClogListener>();
 

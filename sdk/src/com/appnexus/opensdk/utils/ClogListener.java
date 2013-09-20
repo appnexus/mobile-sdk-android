@@ -17,6 +17,11 @@
 package com.appnexus.opensdk.utils;
 
 public abstract class ClogListener {
+
+    /**
+     * Log level options correspond to Android Logcat options:
+     * Verbose, Debug, Info, Warning, Error
+     */
     public enum LOG_LEVEL {
         V,
         D,
@@ -25,18 +30,61 @@ public abstract class ClogListener {
         E
     }
 
+    /**
+     *
+     * Callback for all messages set to Clog after listener is registered.
+     * Implement special handling of Clog messages here.
+     * Make sure not to print to Clog in this method, or else
+     * the program will deadlock.
+     *
+     * @param level the level of verbosity
+     * @param LogTag the log tag associated with the message
+     * @param message the String message passed to Clog
+     */
     public abstract void onReceiveMessage(LOG_LEVEL level, String LogTag, String message);
 
+    /**
+     *
+     * Callback for all messages set to Clog after listener is registered.
+     * Implement special handling of Clog messages here.
+     * Make sure not to print to Clog in this method, or else
+     * the program will deadlock.
+     *
+     * @param level the level of verbosity
+     * @param LogTag the log tag associated with the message
+     * @param message the String message passed to Clog
+     * @param tr the throwable associated with the Clog message
+     */
     public abstract void onReceiveMessage(LOG_LEVEL level, String LogTag, String message, Throwable tr);
 
+    /**
+     *
+     * @return true to receive VERBOSE level messages, false to ignore.
+     */
     public abstract boolean isVerboseLevelEnabled();
 
+    /**
+     *
+     * @return true to receive DEBUG level messages, false to ignore.
+     */
     public abstract boolean isDebugLevelEnabled();
 
+    /**
+     *
+     * @return true to receive INFO level messages, false to ignore.
+     */
     public abstract boolean isInfoLevelEnabled();
 
+    /**
+     *
+     * @return true to receive WARNING level messages, false to ignore.
+     */
     public abstract boolean isWarningLevelEnabled();
 
+    /**
+     *
+     * @return true to receive ERROR level messages, false to ignore.
+     */
     public abstract boolean isErrorLevelEnabled();
 
 }
