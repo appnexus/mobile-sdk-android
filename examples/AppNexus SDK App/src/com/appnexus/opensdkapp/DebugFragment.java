@@ -132,8 +132,6 @@ public class DebugFragment extends Fragment {
                 txtResponse.setText(Clog.getLastResponse());
         }
 
-
-
         if (editMemberId != null) editMemberId.setText(Prefs.getMemberId(getActivity()));
         if (editDongle != null) editDongle.setText(Prefs.getDongle(getActivity()));
         if (editPlacementId != null) editPlacementId.setText(Prefs.getPlacementId(getActivity()));

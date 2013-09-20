@@ -308,17 +308,17 @@ public class MainActivity extends FragmentActivity implements
 
         @Override
         public boolean isVerboseLevelEnabled() {
-            return false;
+            return true;
         }
 
         @Override
         public boolean isDebugLevelEnabled() {
-            return false;
+            return true;
         }
 
         @Override
         public boolean isInfoLevelEnabled() {
-            return false;
+            return true;
         }
 
         @Override
@@ -358,13 +358,12 @@ public class MainActivity extends FragmentActivity implements
                 try {
                     out.close();
                 } catch (IOException e) {
-                    Clog.e(Constants.BASE_LOG_TAG, "IOException when closing log file output stream in clear", e);
+                    Log.e(Constants.BASE_LOG_TAG, "IOException when closing log file output stream in clear", e);
                 }
         }
     }
 
     synchronized public void writeToFile(String message) {
-        Log.d(Constants.BASE_LOG_TAG, "Writing to log file");
         DataOutputStream out = null;
         try {
             out = new DataOutputStream(openFileOutput(Constants.LOG_FILENAME, Context.MODE_APPEND));
@@ -377,7 +376,7 @@ public class MainActivity extends FragmentActivity implements
                 try {
                     out.close();
                 } catch (IOException e) {
-                    Clog.e(Constants.BASE_LOG_TAG, "IOException when closing log file output stream", e);
+                    Log.e(Constants.BASE_LOG_TAG, "IOException when closing log file output stream", e);
                 }
         }
     }
@@ -398,13 +397,13 @@ public class MainActivity extends FragmentActivity implements
             }
             in.close();
         } catch (IOException e) {
-            Clog.e(Constants.BASE_LOG_TAG, "IOException when reading from log file", e);
+            Log.e(Constants.BASE_LOG_TAG, "IOException when reading from log file", e);
         } finally {
             if (in != null)
                 try {
                     in.close();
                 } catch (IOException e) {
-                    Clog.e(Constants.BASE_LOG_TAG, "IOException when closing log file input stream", e);
+                    Log.e(Constants.BASE_LOG_TAG, "IOException when closing log file input stream", e);
                 }
         }
         return inputSb.toString();
