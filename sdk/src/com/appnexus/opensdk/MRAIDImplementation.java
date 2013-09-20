@@ -22,7 +22,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -38,7 +37,6 @@ import org.apache.http.message.BasicNameValuePair;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 @SuppressLint("InlinedApi")
 public class MRAIDImplementation {
@@ -81,12 +79,6 @@ public class MRAIDImplementation {
         } catch (IOException e) {
             return null;
         }
-    }
-
-    protected void onReceivedError(WebView view, int errorCode, String desc,
-                                   String failingUrl) {
-        Clog.w(Clog.mraidLogTag, Clog.getString(
-                R.string.webview_received_error, errorCode, desc, failingUrl));
     }
 
     protected WebViewClient getWebViewClient() {
@@ -286,7 +278,7 @@ public class MRAIDImplementation {
             owner.loadUrl("javascript:window.mraid.util.setIsViewable(false)");
     }
 
-    private void setCurrentPosition(WebView view){ //TODO find somewhere convenient to call this
+    protected void setCurrentPosition(WebView view){ //TODO find somewhere convenient to call this
         int[] location = new int[2];
         owner.getLocationOnScreen(location);
 
@@ -393,15 +385,35 @@ public class MRAIDImplementation {
         } else if (func.equals("close")) {
             close();
         } else if (func.equals("resize")){
-            //TODO
+            resize(parameters);
         } else if (func.equals("setOrientationProperties")){
-            //TODO
+            setOrientationProperties(parameters);
         } else if (func.equals("createCalendarEvent")){
-            //TODO
+            createCalendarEvent(parameters);
         } else if (func.equals("playVideo")){
-            //TODO
+            playVideo(parameters);
         } else if (func.equals("storePicture")){
-            
+            storePicture(parameters);
         }
+    }
+
+    private void storePicture(ArrayList<BasicNameValuePair> parameters) {
+
+    }
+
+    private void playVideo(ArrayList<BasicNameValuePair> parameters) {
+
+    }
+
+    private void createCalendarEvent(ArrayList<BasicNameValuePair> parameters) {
+
+    }
+
+    private void setOrientationProperties(ArrayList<BasicNameValuePair> parameters) {
+
+    }
+
+    private void resize(ArrayList<BasicNameValuePair> parameters) {
+
     }
 }

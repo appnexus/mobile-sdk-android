@@ -224,4 +224,12 @@ public class MRAIDWebView extends WebView implements Displayable {
         return failed;
     }
 
+    @Override
+    public void onLayout(boolean changed, int left, int top, int right,
+                         int bottom) {
+        if(changed){
+            implementation.setCurrentPosition(this);
+        }
+    }
+
 }
