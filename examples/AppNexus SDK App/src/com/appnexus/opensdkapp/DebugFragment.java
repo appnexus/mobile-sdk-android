@@ -231,7 +231,6 @@ public class DebugFragment extends Fragment {
                     String body = response.getResponseBody();
                     if (body != null) {
                         result = Html.fromHtml(body).toString();
-                        Clog.d(Constants.BASE_LOG_TAG, result);
                         loadDataWithBaseURL(null, body, "text/html", "UTF-8", null);
                     }
                     else {
