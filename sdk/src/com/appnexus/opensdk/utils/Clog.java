@@ -218,7 +218,7 @@ public class Clog {
 
     synchronized public static void notifyListener(LOG_LEVEL level, String LogTag, String message, Throwable tr) {
         for (ClogListener listener: listeners) {
-            if (level.ordinal() <= listener.getLogLevel().ordinal()) {
+            if (level.ordinal() >= listener.getLogLevel().ordinal()) {
                 if (tr != null)
                     listener.onReceiveMessage(level, LogTag, message, tr);
                 else
