@@ -400,7 +400,7 @@ public class MRAIDImplementation {
     }
 
     private void storePicture(ArrayList<BasicNameValuePair> parameters) {
-
+        //TODO: Make our own dialog box? shit, tom is gone
     }
 
     private void playVideo(ArrayList<BasicNameValuePair> parameters) {
@@ -426,7 +426,29 @@ public class MRAIDImplementation {
 
     }
 
+
+
     private void setOrientationProperties(ArrayList<BasicNameValuePair> parameters) {
+        boolean allow_orientation_change=true;
+        AdActivity.OrientationEnum orientation=AdActivity.OrientationEnum.none;
+
+        for (BasicNameValuePair bnvp : parameters) {
+            if(bnvp.getName().equals("allow_orientation_change")){
+                allow_orientation_change = Boolean.parseBoolean(bnvp.getValue());
+            }else if(bnvp.getName().equals("force_orientation")){
+                orientation=AdActivity.OrientationEnum.valueOf(bnvp.getValue());
+            }
+        }
+
+        if(allow_orientation_change == false){
+            AdActivity.setOrientation((Activity)owner.getContext(), orientation);
+        }else{
+            AdActivity.setOrientation((Activity)owner.getContext(), AdActivity.OrientationEnum.none);
+        }
+
+        //TODO: Clogging
+
+
 
     }
 
