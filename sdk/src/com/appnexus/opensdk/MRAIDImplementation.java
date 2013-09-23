@@ -208,18 +208,21 @@ public class MRAIDImplementation {
                 Intent i;
 
                 //SMS
+                //TODO Check for permissions
                 i = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:5555555555"));
                 if(pm.queryIntentActivities(i, 0).size()>0){
                     view.loadUrl("javascript:window.mraid.util.setSupportsSMS(true)");
                 }
 
                 //Tel
+                //TODO Check for permissions
                 i = new Intent(Intent.ACTION_CALL, Uri.parse("tel:5555555555"));
                 if(pm.queryIntentActivities(i, 0).size()>0){
                     view.loadUrl("javascript:window.mraid.util.setSupportsTel(true)");
                 }
 
                 //Calendar
+                //TODO Check for permissions
                 i = new Intent(Intent.ACTION_EDIT);
                 i.setType("vnd.android.cursor.item/event");
                 if(pm.queryIntentActivities(i, 0).size()>0){
@@ -227,6 +230,7 @@ public class MRAIDImplementation {
                 }
 
                 //Store Picture
+                //TODO Check for permissions
                 //TODO: This isn't done by an intent. Do we want to make a custom dialog box for this, or just not support it?
 
                 //Video should always work inline.
@@ -423,6 +427,18 @@ public class MRAIDImplementation {
     }
 
     private void createCalendarEvent(ArrayList<BasicNameValuePair> parameters) {
+        //TODO: This is going to take a loooong time. We need to parse the JSON (formatted
+        //TODO: following the W3C spec. See http://developer.android.com/guide/topics/providers/calendar-provider.html#intent-insert
+        String id;
+        String decription;
+        String location;
+        String summary;
+        String start;
+        String end;
+        String status;
+        String transparency;
+        //TODO: CalendarRepeatRule
+        String reminder;
 
     }
 
