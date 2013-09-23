@@ -64,7 +64,6 @@
 
     <string name="debug_msg_debugauction_failed">No Response from Server</string>
 
-    <string name="log_title_webkit">Webkit Console</string>
     <string name="log_title_applogs">App Logs</string>
 
     <string-array name="sizes">

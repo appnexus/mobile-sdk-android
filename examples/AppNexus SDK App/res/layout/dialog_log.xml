@@ -21,15 +21,8 @@
             android:layout_height="match_parent">
     <LinearLayout
             android:id="@+id/frame"
-            android:minHeight="1000dp"
-            android:minWidth="1000dp"
             android:orientation="vertical"
             style="@style/itemContainer">
-
-        <TextView
-                style="@style/header"
-                android:text="@string/log_title_webkit"
-                />
 
         <TextView
                 style="@style/header"
