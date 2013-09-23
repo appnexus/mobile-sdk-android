@@ -204,30 +204,27 @@ public class MRAIDImplementation {
             }
 
             private void setSupportsValues(WebView view) {
-                PackageManager pm = owner.getContext().getPackageManager();
-                Intent i;
-
                 //SMS
                 //TODO Check for permissions
-                i = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:5555555555"));
-                if(pm.queryIntentActivities(i, 0).size()>0){
+                if(hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("sms:5555555555")))){
                     view.loadUrl("javascript:window.mraid.util.setSupportsSMS(true)");
                 }
 
                 //Tel
                 //TODO Check for permissions
-                i = new Intent(Intent.ACTION_CALL, Uri.parse("tel:5555555555"));
-                if(pm.queryIntentActivities(i, 0).size()>0){
+                if(hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("tel:5555555555")))){
                     view.loadUrl("javascript:window.mraid.util.setSupportsTel(true)");
                 }
 
                 //Calendar
                 //TODO Check for permissions
+                Intent i;
                 i = new Intent(Intent.ACTION_EDIT);
                 i.setType("vnd.android.cursor.item/event");
-                if(pm.queryIntentActivities(i, 0).size()>0){
+                if(hasIntent(i)){
                     view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
                 }
+                i=null;
 
                 //Store Picture
                 //TODO Check for permissions
@@ -236,6 +233,11 @@ public class MRAIDImplementation {
                 //Video should always work inline.
                 view.loadUrl("javascript:window.mraid.util.setSupportsInlineVideo(true)");
 
+            }
+
+            boolean hasIntent(Intent i){
+                PackageManager pm = owner.getContext().getPackageManager();
+                return pm.queryIntentActivities(i, 0).size()>0;
             }
         };
     }
