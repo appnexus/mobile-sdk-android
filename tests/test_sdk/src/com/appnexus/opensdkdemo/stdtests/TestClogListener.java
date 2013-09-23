@@ -24,6 +24,8 @@ import junit.framework.TestCase;
 
 public class TestClogListener extends TestCase {
 
+    boolean didReceiveMessage;
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -34,9 +36,60 @@ public class TestClogListener extends TestCase {
         super.tearDown();
     }
 
-    // use Clog instead of Log during testing to prevent deadlock
+    // use Log instead of Clog during testing to prevent deadlock
 
-    public void testFilters() throws Exception {
+    public void test1Register() throws Exception {
+        didReceiveMessage = false;
+
+        Clog.registerListener(new ClogListener() {
+            @Override
+            public void onReceiveMessage(LOG_LEVEL level, String LogTag, String message) {
+                didReceiveMessage = true;
+            }
+
+            @Override
+            public void onReceiveMessage(LOG_LEVEL level, String LogTag, String message, Throwable tr) {
+            }
+
+            @Override
+            public LOG_LEVEL getLogLevel() {
+                return LOG_LEVEL.V;
+            }
+        });
+
+        clogStuff();
+
+        assertTrue(didReceiveMessage);
+    }
+
+    public void test2Unregister() throws Exception {
+        didReceiveMessage = false;
+
+        ClogListener listener = new ClogListener() {
+            @Override
+            public void onReceiveMessage(LOG_LEVEL level, String LogTag, String message) {
+                didReceiveMessage = true;
+            }
+
+            @Override
+            public void onReceiveMessage(LOG_LEVEL level, String LogTag, String message, Throwable tr) {
+            }
+
+            @Override
+            public LOG_LEVEL getLogLevel() {
+                return LOG_LEVEL.V;
+            }
+        };
+
+        Clog.registerListener(listener);
+        Clog.unregisterListener(listener);
+
+        clogStuff();
+
+        assertFalse(didReceiveMessage);
+    }
+
+    public void test3Filters() throws Exception {
         FilterClogListener vLevel = new FilterClogListener(ClogListener.LOG_LEVEL.V);
         FilterClogListener dLevel = new FilterClogListener(ClogListener.LOG_LEVEL.D);
         FilterClogListener iLevel = new FilterClogListener(ClogListener.LOG_LEVEL.I);
@@ -92,6 +145,15 @@ public class TestClogListener extends TestCase {
         assertEquals(false, eLevel.didReceiveI);
         assertEquals(false, eLevel.didReceiveW);
         assertEquals(true, eLevel.didReceiveE);
+    }
+
+    public void test4HandleNullListeners() throws Exception {
+        Clog.registerListener(null);
+        Clog.unregisterListener(null);
+
+        clogStuff();
+
+        assertTrue(true);
     }
 
     private void clogStuff() {
