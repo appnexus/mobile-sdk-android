@@ -48,7 +48,9 @@ public class Settings {
 	
 	public final int MIN_REFRESH_MILLISECONDS = 15000;
 	public final int DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY=10000;
-	public final int DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME=15000;
+    // disable auto close
+    public final int DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME = Integer.MAX_VALUE;
+//    public final int DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME = 15000;
 	public final long HTTP_RETRY_INTERVAL = 30000;
 
 	public final int MAX_HTTP_RETRIES = 3;
