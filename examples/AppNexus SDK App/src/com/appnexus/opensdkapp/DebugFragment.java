@@ -23,7 +23,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -171,6 +170,12 @@ public class DebugFragment extends Fragment {
             try {
                 Intent emailIntent = new Intent(Intent.ACTION_SEND);
                 emailIntent.setType("message/rfc822");
+
+                // do nothing if there is no result yet
+                if (webViewClient.getResult() == null)
+                    return;
+
+                //TODO: figure out email output
                 emailIntent.putExtra(Intent.EXTRA_TEXT, webViewClient.getResult());
 
                 getActivity().startActivity(Intent.createChooser(emailIntent, "Select an app with which to send the debug information"));
@@ -238,7 +243,9 @@ public class DebugFragment extends Fragment {
                     pullToRefreshView.onRefreshComplete();
                     String body = response.getResponseBody();
                     if (body != null) {
-                        result = Html.fromHtml(body).toString();
+                        // fromHtml output is ugly
+//                        result = Html.fromHtml(body).toString();
+                        result = body;
                         webView.loadDataWithBaseURL(null, body, "text/html", "UTF-8", null);
                     }
                     else {
