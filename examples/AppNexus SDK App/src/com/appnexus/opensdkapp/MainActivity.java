@@ -428,7 +428,8 @@ public class MainActivity extends FragmentActivity implements
 
             String storedMessages;
 
-            while ((count < LOG_LINE_LIMIT) && (in.available() > 0)
+            //TODO: optimize this to only read what we want
+            while ((in.available() > 0)
                     && ((storedMessages = in.readUTF()) != null)) {
                 logs.add(storedMessages);
                 count++;
@@ -445,7 +446,8 @@ public class MainActivity extends FragmentActivity implements
                 }
         }
 
-        for (int i = logs.size() - 1; i > -1; i--) {
+        int endIndex = logs.size() - LOG_LINE_LIMIT - 1;
+        for (int i = logs.size() - 1; i > endIndex; i--) {
             inputSb.append(logs.get(i));
         }
 
