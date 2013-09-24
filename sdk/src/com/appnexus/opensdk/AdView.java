@@ -1,12 +1,12 @@
 /*
  *    Copyright 2013 APPNEXUS INC
- *    
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
  *        http://www.apache.org/licenses/LICENSE-2.0
- *    
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,12 +38,12 @@ import android.widget.ImageButton;
 /**
  * The parent class of InterstitialAdView and BannerAdView. This can not be
  * instantiated.
- * 
+ *
  * @author jacob
- * 
+ *
  */
 public abstract class AdView extends FrameLayout {
-
+    
 	protected AdFetcher mAdFetcher;
 	private String placementID;
 	protected boolean opensNativeBrowser = false;
@@ -53,6 +53,7 @@ public abstract class AdView extends FrameLayout {
 	protected int width = -1;
 	protected int height = -1;
 	protected boolean shouldServePSAs = true;
+    protected float reserve = 0.00f;
 	private boolean mraid_expand = false;
 	protected AdListener adListener;
 	private BrowserStyle browserStyle;
@@ -153,7 +154,7 @@ public abstract class AdView extends FrameLayout {
 			}
 
 			measured = true;
-			
+
 
 		}
 	}
@@ -190,7 +191,7 @@ public abstract class AdView extends FrameLayout {
 	/**
 	 * Loads a new ad, if the ad space is visible, and sets the placement id
 	 * attribute of the AdView to the supplied parameter.
-	 * 
+	 *
 	 * @param placementID
 	 *            The new placement id to use.
 	 */
@@ -202,7 +203,7 @@ public abstract class AdView extends FrameLayout {
 	/**
 	 * Loads a new ad, if the ad space is visible, and sets the placement id, ad
 	 * width, and ad height attribute of the AdView to the supplied parameters.
-	 * 
+	 *
 	 * @param placementID
 	 *            The new placement id to use.
 	 * @param width
@@ -266,7 +267,7 @@ public abstract class AdView extends FrameLayout {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return The current placement id.
 	 */
 	public String getPlacementID() {
@@ -277,7 +278,7 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 * Sets the placement id of the AdView.
-	 * 
+	 *
 	 * @param placementID
 	 *            The placement id to use
 	 */
@@ -300,7 +301,7 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 * Sets the height of the ad to request.
-	 * 
+	 *
 	 * @param h
 	 *            The height, in pixels, to use.
 	 */
@@ -311,7 +312,7 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 * Sets the width of the ad to request.
-	 * 
+	 *
 	 * @param w
 	 *            The width, in pixels, to use.
 	 */
@@ -329,7 +330,7 @@ public abstract class AdView extends FrameLayout {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return The width of the ad to be requested.
 	 */
 	public int getAdWidth() {
@@ -394,7 +395,7 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 * Sets the listener that the InterstitialAdView will call events in.
-	 * 
+	 *
 	 * @param listener
 	 *            The {@link AdListener} object to use.
 	 */
@@ -406,7 +407,7 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 * Gets the listener that the InterstitialAdView will call events in.
-	 * 
+	 *
 	 * @return The {@link AdListener} object in use.
 	 */
 	public AdListener getAdListener() {
@@ -439,7 +440,7 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 * Set this to true to disable the in-app browser.
-	 * 
+	 *
 	 * @param opensNativeBrowser
 	 */
 	public void setOpensNativeBrowser(boolean opensNativeBrowser) {
@@ -470,6 +471,14 @@ public abstract class AdView extends FrameLayout {
 	public void setShouldServePSAs(boolean shouldServePSAs) {
 		this.shouldServePSAs = shouldServePSAs;
 	}
+
+    public float getReserve() {
+        return reserve;
+    }
+
+    public void setReserve(float reserve) {
+        this.reserve = reserve;
+    }
 
 	static class BrowserStyle {
 

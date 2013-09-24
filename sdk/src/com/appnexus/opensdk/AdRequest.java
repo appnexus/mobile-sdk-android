@@ -1,12 +1,12 @@
 /*
  *    Copyright 2013 APPNEXUS INC
- *    
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
  *        http://www.apache.org/licenses/LICENSE-2.0
- *    
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -50,7 +50,7 @@ import android.telephony.TelephonyManager;
 
 /**
  * @author jacob
- * 
+ *
  */
 public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
@@ -85,6 +85,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 	int height = -1;
 	int maxWidth = -1;
 	int maxHeight = -1;
+    float reserve = 0.00f;
 
 	private static final AdResponse SHOULD_RETRY = new AdResponse(null,
 			"RETRY", null);
@@ -93,7 +94,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
 	/**
 	 * Creates a new AdRequest with the given parameters
-	 * 
+	 *
 	 * @param requester
 	 *            The instance of AdRequester which is filing this request.
 	 * @param aid
@@ -250,7 +251,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		maxHeight = owner.getContainerHeight();
 		maxWidth = owner.getContainerWidth();
 
-		this.psa = owner.shouldServePSAs ? "1" : "0";
+
 
 		if (Settings.getSettings().mcc == null
 				|| Settings.getSettings().mnc == null) {
@@ -285,7 +286,17 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
 		nativeBrowser = owner.getOpensNativeBrowser() ? "1" : "0";
 
-		mcc = Settings.getSettings().mcc;
+        //Reserve price
+        reserve = owner.getReserve();
+        if(reserve<=0){
+            this.psa = owner.shouldServePSAs ? "1" : "0";
+        }else{
+            this.psa = "0";
+        }
+
+
+
+                mcc = Settings.getSettings().mcc;
 		mnc = Settings.getSettings().mnc;
 		os = Settings.getSettings().os;
 		language = Settings.getSettings().language;
@@ -351,7 +362,9 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		sb.append((!isEmpty(nativeBrowser) ? "&native_browser=" + nativeBrowser
 				: ""));
 		sb.append((!isEmpty(psa) ? "&psa=" + psa : ""));
-		sb.append("&format=json");
+        sb.append("&reserve=" + (reserve>0 ? Uri.encode(reserve+""):""));
+
+        sb.append("&format=json");
 		sb.append("&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion));
 
 		return sb.toString();
@@ -365,11 +378,11 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 			fail();
 			return SHOULD_RETRY_DO_NOT_COUNT;
 		}
-		
+
 		return doRequest();
 
 	}
-	
+
 	private AdResponse doRequest(){
 		String query_string = getRequestUrl();
 
@@ -431,7 +444,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		}
 		return new AdResponse(requester, out, r.getAllHeaders());
 	}
-	
+
 	private boolean hasNetwork(Context context){
 		if (context != null) {
 			NetworkInfo ninfo = ((ConnectivityManager) context
@@ -444,7 +457,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		}
 		return false;
 	}
-	
+
 
 	private boolean httpShouldContinue(StatusLine statusLine) {
 		int http_error_code = statusLine.getStatusCode();
@@ -498,9 +511,9 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 		protected RetryAdRequest(AdRequest adRequest, int moreTimes, int maxTimesLeft) {
 			super(adRequest.requester);
 			tryMoreTimes = moreTimes;
-			tryMoreMaxTimes = maxTimesLeft; 
+			tryMoreMaxTimes = maxTimesLeft;
 		}
-		
+
 		@Override
 		protected AdResponse doInBackground(Void... params) {
 			if(!hasNetwork(context)){
@@ -514,11 +527,11 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 				}
 				return SHOULD_RETRY_DO_NOT_COUNT;
 			}
-			
+
 			return doRequest();
 
 		}
-		
+
 
 		@Override
 		protected void onPostExecute(AdResponse result) {
