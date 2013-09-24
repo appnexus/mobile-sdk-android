@@ -1,12 +1,12 @@
 /*
  *    Copyright 2013 APPNEXUS INC
- *    
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
  *        http://www.apache.org/licenses/LICENSE-2.0
- *    
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -93,8 +93,10 @@ public class MainTabFragment extends Fragment implements AdListener {
 		//pasteAdButton.setOnClickListener(new PasteAdOnClickListener());
 
 		bannerAdView = (BannerAdView) out.findViewById(R.id.banner);
-		
+
 		bannerAdView.setShouldServePSAs(false);
+
+        bannerAdView.setReserve(5.00f);
 
 		bannerAdView.setAdListener(new AdListener() {
 
@@ -123,19 +125,19 @@ public class MainTabFragment extends Fragment implements AdListener {
 			@Override
 			public void onAdExpanded(AdView adView) {
 				Toast.makeText(MainTabFragment.this.getActivity(), "Ad Expanded", Toast.LENGTH_SHORT).show();
-				
+
 			}
 
 			@Override
 			public void onAdCollapsed(AdView adView) {
 				Toast.makeText(MainTabFragment.this.getActivity(), "Ad Collapsed", Toast.LENGTH_SHORT).show();
-				
+
 			}
 
 			@Override
 			public void onAdClicked(AdView adView) {
 				Toast.makeText(MainTabFragment.this.getActivity(), "Opening Browser", Toast.LENGTH_SHORT).show();
-				
+
 			}
 		});
 
@@ -274,11 +276,11 @@ public class MainTabFragment extends Fragment implements AdListener {
 	private class SizeSelectedListener implements
 			AdapterView.OnItemSelectedListener {
 		MainTabFragment p;
-		
+
 		public SizeSelectedListener(MainTabFragment parent){
 			p=parent;
 		}
-		
+
 		@Override
 		public void onItemSelected(AdapterView<?> parent, View view,
 				int position, long id) {
@@ -291,36 +293,36 @@ public class MainTabFragment extends Fragment implements AdListener {
 
 			bannerAdView.setAdWidth(getSizeFromPosition(position)[0]);
 			bannerAdView.setAdHeight(getSizeFromPosition(position)[1]);
-			
+
 			DisplayMetrics m = new DisplayMetrics();
 			MainTabFragment.this.getActivity().getWindowManager().getDefaultDisplay().getMetrics(m);
 			float d = m.density;
-			
-			
+
+
 			FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(bannerAdView.getLayoutParams());
 			if(lp.width!=-1) lp.width = (int) (bannerAdView.getAdWidth()*d+0.5f);
 			if(lp.height!=-1) lp.height = (int) (bannerAdView.getAdHeight()*d+0.5f);
 			bannerAdView.setLayoutParams(lp);
-			
+
 			Log.d(Constants.logTag, "Size selected to: " + size_string);
 
 		}
-		
+
 		int[] getSizeFromString(String size_string){
 			int out[] = new int[2];
 			out[0]=Integer.parseInt(size_string.split("x")[0]);
 			out[1]=Integer.parseInt(size_string.split("x")[1]);
-			
+
 			return out;
 		}
-		
+
 		int[] getSizeFromPosition(int position){
 			String[] str_array = p.getResources().getStringArray(
 					R.array.sizes);
-			
+
 			String size_str = str_array[position];
 
-			
+
 			return getSizeFromString(size_str);
 		}
 
@@ -496,19 +498,19 @@ public class MainTabFragment extends Fragment implements AdListener {
 	@Override
 	public void onAdExpanded(AdView adView) {
 		Toast.makeText(this.getActivity(), "Ad expanded", Toast.LENGTH_SHORT).show();
-		
+
 	}
 
 	@Override
 	public void onAdCollapsed(AdView adView) {
 		Toast.makeText(this.getActivity(), "Ad collapsed", Toast.LENGTH_SHORT).show();
-		
+
 	}
 
 	@Override
 	public void onAdClicked(AdView adView) {
 		Toast.makeText(this.getActivity(), "Opening browser", Toast.LENGTH_SHORT).show();
-		
+
 	}
 
 }
