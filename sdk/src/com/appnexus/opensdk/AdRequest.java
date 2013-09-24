@@ -83,6 +83,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     int maxWidth = -1;
     int maxHeight = -1;
     boolean shouldRetry = true; // true by default
+    float reserve = 0.00f;
 
     private static final AdResponse CONNECTIVITY_RETRY = new AdResponse(null,
             "RETRY", null);
@@ -233,7 +234,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         maxHeight = owner.getContainerHeight();
         maxWidth = owner.getContainerWidth();
 
-        this.psa = owner.shouldServePSAs ? "1" : "0";
+
 
         if (Settings.getSettings().mcc == null
                 || Settings.getSettings().mnc == null) {
@@ -267,6 +268,14 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         }
 
         nativeBrowser = owner.getOpensNativeBrowser() ? "1" : "0";
+
+        //Reserve price
+        reserve = owner.getReserve();
+        if(reserve<=0){
+            this.psa = owner.shouldServePSAs ? "1" : "0";
+        }else{
+            this.psa = "0";
+        }
 
         mcc = Settings.getSettings().mcc;
         mnc = Settings.getSettings().mnc;
@@ -331,6 +340,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         sb.append((!isEmpty(nativeBrowser) ? "&native_browser=" + nativeBrowser
                 : ""));
         sb.append((!isEmpty(psa) ? "&psa=" + psa : ""));
+        sb.append("&reserve=" + (reserve>0 ? Uri.encode(reserve+""):""));
         sb.append("&format=json");
         sb.append("&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion));
 
