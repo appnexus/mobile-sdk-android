@@ -33,6 +33,8 @@ public class Prefs {
     public static final String KEY_MEMBERID = "MEMBERID";
     public static final String KEY_DONGLE = "DONGLE";
 
+    public static final String KEY_LAST_LOG_UPLOAD = "LAST_LOG_UPLOAD";
+
     // default values for all the settings
     public static final boolean DEF_ADTYPE_IS_BANNER = true;
     public static final boolean DEF_ALLOW_PSAS = true;
@@ -44,6 +46,8 @@ public class Prefs {
     public static final String DEF_CLOSE_DELAY = "10 seconds";
     public static final String DEF_MEMBERID = "";
     public static final String DEF_DONGLE = "";
+
+    public static final long DEF_LAST_LOG_UPLOAD = 0;
 
     private SharedPreferences.Editor editor;
 
@@ -98,6 +102,20 @@ public class Prefs {
         editor.putBoolean(key, value);
     }
 
+    public static long getLong(Context context, String key, long def) {
+        try {
+            return getPreferences(context).getLong(key, def);
+        } catch (ClassCastException e) {
+            Clog.e(Constants.PREFS_TAG, "Prefs failed to getLong", e);
+            return def;
+        }
+    }
+
+    public void writeLong(String key, long value) {
+        Clog.d(Constants.PREFS_TAG, key + ", " + value);
+        editor.putLong(key, value);
+    }
+
     public void applyChanges() {
         editor.apply();
     }
@@ -144,5 +162,9 @@ public class Prefs {
 
     public static String getDongle(Context context) {
         return getString(context, Prefs.KEY_DONGLE, Prefs.DEF_DONGLE);
+    }
+
+    public static long getLastLogUpload(Context context) {
+        return getLong(context, Prefs.KEY_LAST_LOG_UPLOAD, Prefs.DEF_LAST_LOG_UPLOAD);
     }
 }

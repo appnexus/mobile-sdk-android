@@ -15,24 +15,32 @@
    limitations under the License.
  -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:background="@android:color/white"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-    <LinearLayout
-            android:id="@+id/frame"
-            android:orientation="vertical"
-            style="@style/itemContainer">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:background="@android:color/white"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-        <TextView
-                style="@style/header"
-                android:text="@string/log_title_applogs"
-                />
+    <TextView
+            android:id="@+id/log_header"
+            style="@style/header"
+            android:text="@string/log_title_applogs"
+            />
+
+    <Button android:id="@+id/log_btn_email"
+            android:text="@string/log_btn_email"
+            android:layout_alignParentBottom="true"
+            style="@style/widthFillheightWrap" />
+
+    <ScrollView
+            android:id="@+id/frame"
+            android:layout_above="@id/log_btn_email"
+            android:layout_below="@id/log_header"
+            style="@style/itemContainer">
 
         <TextView android:id="@+id/log_txt_applogs"
                   android:textSize="10sp"
                   android:layout_width="match_parent"
-                  android:layout_height="match_parent" />
+                  android:layout_height="wrap_content" />
+    </ScrollView>
 
-    </LinearLayout>
-</ScrollView>
+</RelativeLayout>

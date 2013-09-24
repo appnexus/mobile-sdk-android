@@ -17,7 +17,10 @@
 package com.appnexus.opensdkapp;
 
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -30,10 +33,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ScrollView;
-import android.widget.TabHost;
+import android.widget.*;
 import android.widget.TabHost.TabContentFactory;
-import android.widget.TextView;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ClogListener;
 
@@ -41,10 +42,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 public class MainActivity extends FragmentActivity implements
         TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener, SettingsFragment.OnLoadAdClickedListener {
@@ -52,6 +50,8 @@ public class MainActivity extends FragmentActivity implements
     private static final String SETTINGS_ID = "Settings";
     private static final String PREVIEW_ID = "Preview";
     private static final String DEBUG_ID = "Debug";
+
+    private static final int LOG_LINE_LIMIT = 500;
 
     public static enum TABS {
         SETTINGS,
@@ -73,6 +73,9 @@ public class MainActivity extends FragmentActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.v(Constants.BASE_LOG_TAG, "App created");
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         this.initialiseTabHost(savedInstanceState);
@@ -119,14 +122,7 @@ public class MainActivity extends FragmentActivity implements
             @Override
             public void onClick(View view) {
                 view.setVisibility(View.GONE);
-                ScrollView dialogLayout = (ScrollView) getLayoutInflater().inflate(R.layout.dialog_log, null);
-                View frame = dialogLayout.findViewById(R.id.frame);
-                TextView txtAppLogs = (TextView) frame.findViewById(R.id.log_txt_applogs);
-                txtAppLogs.setText(readFromFile());
-
-                logDialog = new AlertDialog.Builder(MainActivity.this)
-                        .setView(dialogLayout)
-                        .show();
+                showLogDialog();
             }
         });
 
@@ -136,11 +132,24 @@ public class MainActivity extends FragmentActivity implements
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        Log.v(Constants.BASE_LOG_TAG, "App paused");
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         if (logDialog != null)
             logDialog.dismiss();
         Clog.unregisterListener(logTabClogListener);
+        Log.v(Constants.BASE_LOG_TAG, "App destroyed");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkToUploadLogFile();
     }
 
     @Override
@@ -148,6 +157,33 @@ public class MainActivity extends FragmentActivity implements
         // Inflate the menu; this adds items to the action bar if it is present.
         // getMenuInflater().inflate(R.menu.demo_main, menu);
         return false;
+    }
+
+    public void showLogDialog() {
+        final String logs = readFromFile();
+        RelativeLayout dialogLayout = (RelativeLayout) getLayoutInflater().inflate(R.layout.dialog_log, null);
+        View frame = dialogLayout.findViewById(R.id.frame);
+        TextView txtAppLogs = (TextView) frame.findViewById(R.id.log_txt_applogs);
+        txtAppLogs.setText(logs);
+        Button btnEmailLogs = (Button) dialogLayout.findViewById(R.id.log_btn_email);
+        btnEmailLogs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                    emailIntent.setType("message/rfc822");
+                    emailIntent.putExtra(Intent.EXTRA_TEXT, logs);
+
+                    startActivity(Intent.createChooser(emailIntent, "Select an app with which to send the debug information"));
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(MainActivity.this, "No E-Mail App Installed!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        logDialog = new AlertDialog.Builder(MainActivity.this)
+                .setView(dialogLayout)
+                .show();
     }
 
     private void initialiseTabHost(Bundle args) {
@@ -233,7 +269,7 @@ public class MainActivity extends FragmentActivity implements
 
     @Override
     public void onPageSelected(int arg0) {
-        Clog.d(Constants.BASE_LOG_TAG, "page selected: " + arg0);
+        Clog.v(Constants.BASE_LOG_TAG, "page selected: " + arg0);
         this.tabHost.setCurrentTab(arg0);
 
         if (debugFrag != null)
@@ -275,7 +311,7 @@ public class MainActivity extends FragmentActivity implements
 
     @Override
     public void onLoadAdClicked() {
-        readFromFile();
+//        readFromFile();
         clearLogFile();
         previewFrag.loadNewAd();
     }
@@ -342,23 +378,21 @@ public class MainActivity extends FragmentActivity implements
         }
     };
 
-    /* TODO: what if we have errors in these functions? using Clog will create a perpetual loop,
-    although we could have a special function that doesn't alert listeners. doesn't help us watching from the server though */
     synchronized public void clearLogFile() {
-        Log.d(Constants.BASE_LOG_TAG, "Clearing log file");
         DataOutputStream out = null;
         try {
             out = new DataOutputStream(openFileOutput(Constants.LOG_FILENAME, Context.MODE_PRIVATE));
             out.writeUTF("");
             out.close();
+            Clog.d(Constants.BASE_LOG_TAG, "Log file cleared");
         } catch (IOException e) {
-            Log.e(Constants.BASE_LOG_TAG, "IOException when clearing log file", e);
+            Clog.e(Constants.BASE_LOG_TAG, "IOException when clearing log file", e);
         } finally {
             if (out != null)
                 try {
                     out.close();
                 } catch (IOException e) {
-                    Log.e(Constants.BASE_LOG_TAG, "IOException when closing log file output stream in clear", e);
+                    Clog.e(Constants.BASE_LOG_TAG, "IOException when closing log file output stream in clear", e);
                 }
         }
     }
@@ -384,6 +418,8 @@ public class MainActivity extends FragmentActivity implements
     synchronized public String readFromFile() {
         Clog.d(Constants.BASE_LOG_TAG, "Reading log file");
         StringBuilder inputSb =  new StringBuilder();
+        int count = 0;
+        ArrayList<String> logs = new ArrayList<String>(LOG_LINE_LIMIT);
 
         DataInputStream in = null;
 
@@ -392,24 +428,51 @@ public class MainActivity extends FragmentActivity implements
 
             String storedMessages;
 
-            while ((in.available() > 0) && ((storedMessages = in.readUTF()) != null)) {
-                inputSb.append(storedMessages);
+            while ((count < LOG_LINE_LIMIT) && (in.available() > 0)
+                    && ((storedMessages = in.readUTF()) != null)) {
+                logs.add(storedMessages);
+                count++;
             }
             in.close();
         } catch (IOException e) {
-            Log.e(Constants.BASE_LOG_TAG, "IOException when reading from log file", e);
+            Clog.e(Constants.BASE_LOG_TAG, "IOException when reading from log file", e);
         } finally {
             if (in != null)
                 try {
                     in.close();
                 } catch (IOException e) {
-                    Log.e(Constants.BASE_LOG_TAG, "IOException when closing log file input stream", e);
+                    Clog.e(Constants.BASE_LOG_TAG, "IOException when closing log file input stream", e);
                 }
         }
+
+        for (int i = logs.size() - 1; i > -1; i--) {
+            inputSb.append(logs.get(i));
+        }
+
         return inputSb.toString();
     }
 
     public ClogListener getClogListener() {
         return logTabClogListener;
+    }
+
+    private void checkToUploadLogFile() {
+        long lastLogUploadTime = Prefs.getLastLogUpload(getBaseContext());
+        long currentTime = System.currentTimeMillis();
+        long oneDayInMillis = 86400000;
+        if (currentTime - lastLogUploadTime > oneDayInMillis) {
+            Clog.d(Constants.BASE_LOG_TAG, "Last log upload was more than a day ago. Check wifi");
+
+            WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            if (wifiManager.getWifiState() == WifiManager.WIFI_STATE_ENABLED) {
+                Clog.d(Constants.BASE_LOG_TAG, "Wifi is available. Upload log file.");
+
+                //TODO: implement file upload
+
+                Prefs prefs = new Prefs(getBaseContext());
+                prefs.writeLong(Prefs.KEY_LAST_LOG_UPLOAD, System.currentTimeMillis());
+                prefs.applyChanges();
+            }
+        }
     }
 }

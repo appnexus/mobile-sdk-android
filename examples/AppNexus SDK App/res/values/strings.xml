@@ -65,6 +65,7 @@
     <string name="debug_msg_debugauction_failed">No Response from Server</string>
 
     <string name="log_title_applogs">App Logs</string>
+    <string name="log_btn_email">Email Logs</string>
 
     <string-array name="sizes">
         <item>300x50</item>
