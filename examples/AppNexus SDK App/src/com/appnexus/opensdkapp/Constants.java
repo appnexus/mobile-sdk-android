@@ -23,4 +23,7 @@ public class Constants {
     public final static String PREFERENCES = "AppNexus SDK App";
 
     public final static String LOG_FILENAME = "AN_LOG_FILE";
+
+    public static final int LOG_MAX_LINES = 800;
+    public static final int LOG_MAX_CHAR = 85000;
 }
