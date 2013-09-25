@@ -176,8 +176,10 @@ public class InterstitialAdView extends AdView {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.load_ad_int));
         if (isMRAIDExpanded())
             return false;
-        if (placementID == null || placementID.isEmpty())
+        if (placementID == null || placementID.isEmpty()) {
+            Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_placement_id));
             return false;
+        }
         if (mAdFetcher != null) {
             // Load an interstitial ad
             mAdFetcher.stop();

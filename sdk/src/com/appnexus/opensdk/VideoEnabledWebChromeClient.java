@@ -6,15 +6,11 @@ import android.graphics.Color;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.ConsoleMessage;
-import android.webkit.JsResult;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.Clog;
 
-public class VideoEnabledWebChromeClient extends WebChromeClient {
+public class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     CustomViewCallback customViewCallback;
     FrameLayout frame;
     Activity context;
@@ -111,26 +107,6 @@ public class VideoEnabledWebChromeClient extends WebChromeClient {
         layout.addView(close);
     }
 
-    @Override
-    public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-        // super.onConsoleMessage(consoleMessage);
-        Clog.v(Clog.jsLogTag,
-                Clog.getString(com.appnexus.opensdk.R.string.console_message,
-                        consoleMessage.message(),
-                        consoleMessage.lineNumber(),
-                        consoleMessage.sourceId()));
-        return true;
-    }
-
-    @Override
-    public boolean onJsAlert(WebView view, String url, String message,
-                             JsResult result) {
-        // /super.onJsAlert(view, url, message, result);
-        Clog.v(Clog.jsLogTag,
-                Clog.getString(com.appnexus.opensdk.R.string.js_alert, message, url));
-        result.confirm();
-        return true;
-    }
 //
 //    @Override
 //    public void onCompletion(MediaPlayer mediaPlayer) {

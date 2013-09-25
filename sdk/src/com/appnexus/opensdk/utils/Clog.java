@@ -96,6 +96,10 @@ public class Clog {
         }
     }
 
+    /**
+     * Logging helper functions for SDK
+     */
+
     public static String baseLogTag = "OPENSDK";
     public static String mediationLogTag = baseLogTag + "-MEDIATION";
     public static String publicFunctionsLogTag = baseLogTag + "-INTERFACE";
@@ -167,6 +171,10 @@ public class Clog {
         return String.format(error_context.getString(id), i, s);
     }
 
+    /**
+     * lastRequest/lastResponse helper methods
+     */
+
     private static String lastRequest = "";
     private static String lastResponse = "";
 
@@ -190,6 +198,10 @@ public class Clog {
         return lastResponse;
     }
 
+    /**
+     * ClogListener helper methods
+     */
+
     private static ArrayList<ClogListener> listeners = new ArrayList<ClogListener>();
 
     synchronized public static boolean registerListener(ClogListener listener) {
@@ -206,42 +218,12 @@ public class Clog {
 
     synchronized public static void notifyListener(LOG_LEVEL level, String LogTag, String message, Throwable tr) {
         for (ClogListener listener: listeners) {
-            switch (level) {
-                case V:
-                    if (listener.isVerboseLevelEnabled()) {
-                        notifyHelper(listener, level, LogTag, message, tr);
-                    }
-                    break;
-                case D:
-                    if (listener.isDebugLevelEnabled()) {
-                        notifyHelper(listener, level, LogTag, message, tr);
-                    }
-                    break;
-                case I:
-                    if (listener.isInfoLevelEnabled()) {
-                        notifyHelper(listener, level, LogTag, message, tr);
-                    }
-                    break;
-                case W:
-                    if (listener.isWarningLevelEnabled()) {
-                        notifyHelper(listener, level, LogTag, message, tr);
-                    }
-                    break;
-                case E:
-                    if (listener.isErrorLevelEnabled()) {
-                        notifyHelper(listener, level, LogTag, message, tr);
-                    }
-                    break;
-                default:
-                    break;
+            if (level.ordinal() >= listener.getLogLevel().ordinal()) {
+                if (tr != null)
+                    listener.onReceiveMessage(level, LogTag, message, tr);
+                else
+                    listener.onReceiveMessage(level, LogTag, message);
             }
         }
-    }
-
-    private static void notifyHelper(ClogListener listener, LOG_LEVEL level, String LogTag, String message, Throwable tr) {
-        if (tr != null)
-            listener.onReceiveMessage(level, LogTag, message, tr);
-        else
-            listener.onReceiveMessage(level, LogTag, message);
     }
 }

@@ -181,10 +181,14 @@ public abstract class AdView extends FrameLayout {
      * at this time given the current settings
      */
     public boolean loadAd() {
-        if (isMRAIDExpanded())
+        if (isMRAIDExpanded()) {
+            Clog.e(Clog.baseLogTag, Clog.getString(R.string.already_expanded));
             return false;
-        if (placementID == null || placementID.isEmpty())
+        }
+        if (placementID == null || placementID.isEmpty()) {
+            Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_placement_id));
             return false;
+        }
         if (this.getWindowVisibility() == VISIBLE && mAdFetcher != null) {
             // Reload Ad Fetcher to get new ad at user's request
             mAdFetcher.stop();
