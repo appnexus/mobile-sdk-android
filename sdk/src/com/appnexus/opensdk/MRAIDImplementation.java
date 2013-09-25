@@ -434,6 +434,8 @@ public class MRAIDImplementation {
     private void createCalendarEvent(ArrayList<BasicNameValuePair> parameters) {
         //TODO: This is going to take a loooong time. We need to parse the JSON (formatted
         //TODO: following the W3C spec. See http://developer.android.com/guide/topics/providers/calendar-provider.html#intent-insert
+
+        //TODO oh god please move this to it's own utility class
         String id;
         String decription;
         String location;//?
