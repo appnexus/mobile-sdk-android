@@ -139,6 +139,8 @@ public class MainActivity extends FragmentActivity implements
         super.onDestroy();
         if (logDialog != null)
             logDialog.dismiss();
+        if (progressDialog != null)
+            progressDialog.dismiss();
         Clog.unregisterListener(logTabClogListener);
         Log.v(Constants.BASE_LOG_TAG, "App destroyed");
     }
@@ -397,90 +399,13 @@ public class MainActivity extends FragmentActivity implements
     synchronized public void readFromFile() {
         Clog.d(Constants.BASE_LOG_TAG, "Reading log file");
 
-        AsyncTask<Void, Void, ArrayList<String>> task = new AsyncTask<Void, Void, ArrayList<String>>() {
-
-            @Override
-            protected void onPostExecute(ArrayList<String> logs) {
-                super.onPostExecute(logs);
-                final StringBuilder sb = new StringBuilder();
-
-                for (int i = logs.size() - 1;
-                     (sb.length() < Constants.LOG_MAX_CHAR) && (i > 0); i--) {
-                    sb.append(logs.get(i));
-                }
-
-                RelativeLayout dialogLayout = (RelativeLayout) getLayoutInflater().inflate(R.layout.dialog_log, null);
-                View frame = dialogLayout.findViewById(R.id.frame);
-                TextView txtAppLogs = (TextView) frame.findViewById(R.id.log_txt_applogs);
-                txtAppLogs.setText(sb.toString());
-                Button btnEmailLogs = (Button) dialogLayout.findViewById(R.id.log_btn_email);
-                btnEmailLogs.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        try {
-                            Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                            emailIntent.setType("message/rfc822");
-                            emailIntent.putExtra(Intent.EXTRA_TEXT, sb.toString());
-
-                            startActivity(Intent.createChooser(emailIntent, "Select an app with which to send the debug information"));
-                        } catch (ActivityNotFoundException e) {
-                            Toast.makeText(MainActivity.this, "No E-Mail App Installed!", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-                if (progressDialog != null)
-                    progressDialog.cancel();
-
-                logDialog = new AlertDialog.Builder(MainActivity.this)
-                        .setView(dialogLayout)
-                        .show();
-            }
-
-            @Override
-            protected ArrayList<String> doInBackground(Void... voids) {
-                int count = 0;
-                ArrayList<String> logs = new ArrayList<String>(Constants.LOG_MAX_LINES);
-
-                DataInputStream in = null;
-
-                try {
-                    in = new DataInputStream(openFileInput(Constants.LOG_FILENAME));
-
-                    String storedMessages;
-
-                    while ((count < Constants.LOG_MAX_LINES) &&
-                            (in.available() > 0)
-                            && ((storedMessages = in.readUTF()) != null)) {
-                        logs.add(storedMessages);
-                        count++;
-                    }
-                    in.close();
-                } catch (IOException e) {
-                    Clog.e(Constants.BASE_LOG_TAG, "IOException when reading from log file", e);
-                } finally {
-                    if (in != null)
-                        try {
-                            in.close();
-                        } catch (IOException e) {
-                            Clog.e(Constants.BASE_LOG_TAG, "IOException when closing log file input stream", e);
-                        }
-                }
-                return logs;
-            }
-
-        };
-
+        ReadLogFileTask task = new ReadLogFileTask();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             task.execute();
         }
 
-    }
-
-    public ClogListener getClogListener() {
-        return logTabClogListener;
     }
 
     private void checkToUploadLogFile() {
@@ -500,6 +425,78 @@ public class MainActivity extends FragmentActivity implements
                 prefs.writeLong(Prefs.KEY_LAST_LOG_UPLOAD, System.currentTimeMillis());
                 prefs.applyChanges();
             }
+        }
+    }
+
+    private class ReadLogFileTask extends AsyncTask<Void, Void, ArrayList<String>> {
+        @Override
+        protected ArrayList<String> doInBackground(Void... voids) {
+            int count = 0;
+            ArrayList<String> logs = new ArrayList<String>(Constants.LOG_MAX_LINES);
+
+            DataInputStream in = null;
+
+            try {
+                in = new DataInputStream(openFileInput(Constants.LOG_FILENAME));
+
+                String storedMessages;
+
+                while ((count < Constants.LOG_MAX_LINES) &&
+                        (in.available() > 0)
+                        && ((storedMessages = in.readUTF()) != null)) {
+                    logs.add(storedMessages);
+                    count++;
+                }
+                in.close();
+            } catch (IOException e) {
+                Clog.e(Constants.BASE_LOG_TAG, "IOException when reading from log file", e);
+            } finally {
+                if (in != null)
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        Clog.e(Constants.BASE_LOG_TAG, "IOException when closing log file input stream", e);
+                    }
+            }
+            return logs;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<String> logs) {
+            super.onPostExecute(logs);
+            final StringBuilder sb = new StringBuilder();
+
+            for (int i = logs.size() - 1;
+                 (sb.length() < Constants.LOG_MAX_CHAR) && (i > 0); i--) {
+                sb.append(logs.get(i));
+            }
+
+            RelativeLayout dialogLayout = (RelativeLayout) getLayoutInflater().inflate(R.layout.dialog_log, null);
+            View frame = dialogLayout.findViewById(R.id.frame);
+            TextView txtAppLogs = (TextView) frame.findViewById(R.id.log_txt_applogs);
+            txtAppLogs.setText(sb.toString());
+            Button btnEmailLogs = (Button) dialogLayout.findViewById(R.id.log_btn_email);
+            btnEmailLogs.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
+                        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                        emailIntent.setType("message/rfc822");
+                        emailIntent.putExtra(Intent.EXTRA_TEXT, sb.toString());
+
+                        startActivity(Intent.createChooser(emailIntent, "Select an app with which to send the debug information"));
+                    } catch (ActivityNotFoundException e) {
+                        Toast.makeText(MainActivity.this, "No E-Mail App Installed!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            if (progressDialog != null)
+                progressDialog.cancel();
+
+            logDialog = new AlertDialog.Builder(MainActivity.this)
+                    .setView(dialogLayout)
+                    .show();
         }
     }
 }
