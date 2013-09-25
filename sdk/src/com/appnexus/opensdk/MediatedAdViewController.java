@@ -49,7 +49,7 @@ public abstract class MediatedAdViewController implements Displayable {
 
     }
 
-    protected MediatedAdViewController(AdView owner, AdResponse response) throws Exception {
+    protected MediatedAdViewController(AdView owner, AdResponse response) {
         //TODO: owner - second part is for testing when owner is null
         requester = owner != null ? owner.mAdFetcher : response.requester;
         mediatedAds = response.getMediatedAds();
@@ -64,7 +64,7 @@ public abstract class MediatedAdViewController implements Displayable {
         }
     }
 
-    private void instantiateNewMediatedAd() throws Exception {
+    private void instantiateNewMediatedAd() {
         Clog.d(Clog.mediationLogTag, Clog.getString(
                 R.string.instantiating_class, currentAd.getClassName()));
 
@@ -113,13 +113,10 @@ public abstract class MediatedAdViewController implements Displayable {
             errorCBMade = true;
         }
 
+        // check for next mediated ad
         if ((mediatedAds != null) && !mediatedAds.isEmpty()) {
             currentAd = mediatedAds.pop();
-            try {
-                instantiateNewMediatedAd();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            instantiateNewMediatedAd();
         }
         else {
             Clog.e(Clog.mediationLogTag, "No more ads available");

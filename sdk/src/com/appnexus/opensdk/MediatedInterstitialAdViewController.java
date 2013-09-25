@@ -7,22 +7,16 @@ import com.appnexus.opensdk.utils.Clog;
 public class MediatedInterstitialAdViewController extends MediatedAdViewController implements Displayable {
 
     static public MediatedInterstitialAdViewController create(InterstitialAdView owner, AdResponse response) {
-        MediatedInterstitialAdViewController out;
-        try {
-            out = new MediatedInterstitialAdViewController(owner, response);
-        } catch (Exception e) {
-            return null;
-        }
-
-        return out;
-
+        MediatedInterstitialAdViewController out = new MediatedInterstitialAdViewController(owner, response);
+        return out.failed() ? null : out;
     }
 
-    protected MediatedInterstitialAdViewController(InterstitialAdView owner, AdResponse response) throws Exception {
+    protected MediatedInterstitialAdViewController(InterstitialAdView owner, AdResponse response) {
         super(owner, response);
 
         if (this.mAV == null || !(this.mAV instanceof MediatedInterstitialAdView)) {
-            throw new Exception(Clog.getString(R.string.instance_exception));
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instance_exception));
+            fail(RESULT.MEDIATED_SDK_UNAVAILABLE);
         }
     }
 

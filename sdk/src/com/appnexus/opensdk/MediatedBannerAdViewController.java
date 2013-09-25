@@ -24,22 +24,17 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
     View placeableView;
 
     static public MediatedBannerAdViewController create(AdView owner, AdResponse response) {
-        MediatedBannerAdViewController out;
-        try {
-            out = new MediatedBannerAdViewController(owner, response);
-        } catch (Exception e) {
-            //TODO: this fails silently for exceptions we don't expect..
-            return null;
-        }
-        return out;
-
+        MediatedBannerAdViewController out = new MediatedBannerAdViewController(owner, response);
+        return out.failed() ? null : out;
     }
 
-    private MediatedBannerAdViewController(AdView owner, AdResponse response) throws Exception {
+    private MediatedBannerAdViewController(AdView owner, AdResponse response) {
         super(owner, response);
 
         if (this.mAV == null || !(this.mAV instanceof MediatedBannerAdView)) {
-            throw new Exception(Clog.getString(R.string.instance_exception));
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instance_exception));
+            fail(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            return;
         }
         //TODO: refactor - this also depends on owner. what if owner is null? (for testing)
         try {
@@ -53,7 +48,6 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
         } catch (Exception e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
             fail(RESULT.INVALID_REQUEST);
-            throw e;
         } catch (Error e) {
             // catch errors. exceptions will be caught above.
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_error), e);
