@@ -123,21 +123,24 @@ public class AdResponse {
             JSONArray mediated = response.getJSONArray("mediated");
             mediatedAds = new LinkedList<MediatedAd>();
             if (mediated.length() > 0) {
+                isMediated = true;
                 for (int i = 0; i < mediated.length(); i++) {
                     JSONObject handler = mediated.getJSONObject(i).getJSONObject("handler");
                     if (handler.getString("type").toLowerCase().equals("android")) {
-                        isMediated = true;
                         //TODO: if i get an error here what to do
-                        String mediatedViewClassName = handler.getString("class");
-                        String mediatedParameter = handler.getString("param");
-                        height = handler.getInt("height");
-                        width = handler.getInt("width");
-                        String mediatedUID = handler.getString("id");
-                        String mediatedResultCB = handler.getString("result_cb");
+                        String className = handler.getString("class");
+                        String param = handler.getString("param");
+                        int height = handler.getInt("height");
+                        int width = handler.getInt("width");
+                        String adId = handler.getString("id");
+                        String resultCB = mediated.getJSONObject(i).getString("result_cb");
 
-                        mediatedAds.add(new MediatedAd(mediatedViewClassName, mediatedParameter, width, height, mediatedUID, mediatedResultCB));
+                        mediatedAds.add(new MediatedAd(className,
+                                param, width, height, adId,
+                                resultCB));
                     }
                 }
+                return;
             }
         } catch (JSONException e) {
             Clog.e(Clog.httpRespLogTag,

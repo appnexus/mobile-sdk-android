@@ -55,11 +55,11 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
                     currentAd.getId());
         } catch (Exception e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
-            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            fail(RESULT.INVALID_REQUEST);
         } catch (Error e) {
             // catch errors. exceptions will be caught above.
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_error), e);
-            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            fail(RESULT.MEDIATED_SDK_UNAVAILABLE);
         }
 
         return null;

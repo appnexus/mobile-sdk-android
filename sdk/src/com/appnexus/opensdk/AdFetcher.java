@@ -242,6 +242,7 @@ public class AdFetcher implements AdRequester {
                     output.loadAd(response);
                     owner.display(output);
                 } else {
+                    //TODO: what if there are no ads?
                     // standard
                     AdWebView output = new AdWebView(owner);
                     output.loadAd(response);

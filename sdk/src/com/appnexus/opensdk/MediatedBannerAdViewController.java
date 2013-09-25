@@ -28,6 +28,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
         try {
             out = new MediatedBannerAdViewController(owner, response);
         } catch (Exception e) {
+            //TODO: this fails silently for exceptions we don't expect..
             return null;
         }
         return out;
@@ -51,17 +52,17 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
                     owner);
         } catch (Exception e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
+            fail(RESULT.INVALID_REQUEST);
             throw e;
         } catch (Error e) {
             // catch errors. exceptions will be caught above.
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_error), e);
-            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            fail(RESULT.MEDIATED_SDK_UNAVAILABLE);
         }
 
         if (placeableView == null) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_view_null));
-            failed = true;
-            onAdFailed(RESULT.UNABLE_TO_FILL);
+            fail(RESULT.UNABLE_TO_FILL);
         }
     }
 
