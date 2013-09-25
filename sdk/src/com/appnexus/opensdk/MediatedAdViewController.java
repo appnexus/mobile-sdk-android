@@ -53,15 +53,7 @@ public abstract class MediatedAdViewController implements Displayable {
         //TODO: owner - second part is for testing when owner is null
         requester = owner != null ? owner.mAdFetcher : response.requester;
         mediatedAds = response.getMediatedAds();
-
-        if ((mediatedAds != null) && !mediatedAds.isEmpty()) {
-            currentAd = mediatedAds.pop();
-            instantiateNewMediatedAd();
-        }
-        else {
-            Clog.e(Clog.mediationLogTag, "No ads were available");
-            failed = true;
-        }
+        checkNext();
     }
 
     private void instantiateNewMediatedAd() {
@@ -93,6 +85,18 @@ public abstract class MediatedAdViewController implements Displayable {
         }
     }
 
+    // check for next mediated ad
+    private void checkNext() {
+        if ((mediatedAds != null) && !mediatedAds.isEmpty()) {
+            currentAd = mediatedAds.pop();
+            instantiateNewMediatedAd();
+        }
+        else {
+            Clog.e(Clog.mediationLogTag, "No ads were available");
+            fail(RESULT.UNABLE_TO_FILL);
+        }
+    }
+
     //TODO: owner dependency
     public void onAdLoaded() {
         if ((owner != null) && owner.getAdListener() != null) {
@@ -113,15 +117,7 @@ public abstract class MediatedAdViewController implements Displayable {
             errorCBMade = true;
         }
 
-        // check for next mediated ad
-        if ((mediatedAds != null) && !mediatedAds.isEmpty()) {
-            currentAd = mediatedAds.pop();
-            instantiateNewMediatedAd();
-        }
-        else {
-            Clog.e(Clog.mediationLogTag, "No more ads available");
-            failed = true;
-        }
+        checkNext();
     }
 
     public void onAdExpanded() {
