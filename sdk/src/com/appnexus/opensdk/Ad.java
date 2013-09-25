@@ -16,32 +16,32 @@
 
 package com.appnexus.opensdk;
 
-import java.util.LinkedList;
+public class Ad {
+    int width;
+    int height;
+    String id;
 
-public interface AdRequester {
-    /**
-     * Called when the request made by the requester fails.
-     *
-     * @param request
-     */
-    public void failed(AdRequest request);
+    public int getWidth() {
+        return width;
+    }
 
-    /**
-     * Called when a response is received
-     *
-     * @param response
-     */
-    public void onReceiveResponse(AdResponse response);
+    public void setWidth(int width) {
+        this.width = width;
+    }
 
-	/**
-	 * Used to get the owner adview of the request
-	 */
-	public AdView getOwner();
+    public int getHeight() {
+        return height;
+    }
 
-	/**
-	 * Called when a response to the original request is received
-	 *
-	 * @param response
-	 */
-	public void dispatchResponse(final AdResponse response, LinkedList<MediatedAd> oldAds);
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }

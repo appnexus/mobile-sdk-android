@@ -4,15 +4,17 @@ import android.app.Activity;
 import android.view.View;
 import com.appnexus.opensdk.utils.Clog;
 
+import java.util.LinkedList;
+
 public class MediatedInterstitialAdViewController extends MediatedAdViewController implements Displayable {
 
-    static public MediatedInterstitialAdViewController create(InterstitialAdView owner, AdResponse response) {
-        MediatedInterstitialAdViewController out = new MediatedInterstitialAdViewController(owner, response);
+    static public MediatedInterstitialAdViewController create(InterstitialAdView owner, LinkedList<MediatedAd> mediatedAds) {
+        MediatedInterstitialAdViewController out = new MediatedInterstitialAdViewController(owner, mediatedAds);
         return out.failed() ? null : out;
     }
 
-    protected MediatedInterstitialAdViewController(InterstitialAdView owner, AdResponse response) {
-        super(owner, response);
+    protected MediatedInterstitialAdViewController(InterstitialAdView owner, LinkedList<MediatedAd> mediatedAds) {
+        super(owner, mediatedAds);
 
         if (this.mAV == null || !(this.mAV instanceof MediatedInterstitialAdView)) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instance_exception, getClass().getCanonicalName()));

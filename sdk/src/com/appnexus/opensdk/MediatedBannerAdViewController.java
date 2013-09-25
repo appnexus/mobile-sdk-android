@@ -19,17 +19,19 @@ import android.app.Activity;
 import android.view.View;
 import com.appnexus.opensdk.utils.Clog;
 
+import java.util.LinkedList;
+
 public class MediatedBannerAdViewController extends MediatedAdViewController implements Displayable {
 
     View placeableView;
 
-    static public MediatedBannerAdViewController create(AdView owner, AdResponse response) {
-        MediatedBannerAdViewController out = new MediatedBannerAdViewController(owner, response);
+    static public MediatedBannerAdViewController create(AdView owner, LinkedList<MediatedAd> mediatedAds) {
+        MediatedBannerAdViewController out = new MediatedBannerAdViewController(owner, mediatedAds);
         return out.failed() ? null : out;
     }
 
-    private MediatedBannerAdViewController(AdView owner, AdResponse response) {
-        super(owner, response);
+    private MediatedBannerAdViewController(AdView owner, LinkedList<MediatedAd> mediatedAds) {
+        super(owner, mediatedAds);
 
         if (this.mAV == null || !(this.mAV instanceof MediatedBannerAdView)) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instance_exception, getClass().getCanonicalName()));

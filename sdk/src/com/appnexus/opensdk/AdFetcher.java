@@ -25,6 +25,7 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
 import java.lang.ref.WeakReference;
+import java.util.LinkedList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -206,26 +207,43 @@ public class AdFetcher implements AdRequester {
     }
 
     @Override
-    public void dispatchResponse(final AdResponse response) {
+    public void dispatchResponse(final AdResponse response, final LinkedList<MediatedAd> oldAds) {
         this.owner.post(new Runnable() {
             public void run() {
+                LinkedList<MediatedAd> mediatedAds;
+
                 if (response.getBody().equals(AdResponse.HTTP_OK)) {
                     Clog.d(Clog.httpRespLogTag, "200 OK");
+                }
+
+                // no ads in the response and no old ads means no fill
+                if (!response.containsAds()
+                        && ((oldAds == null)
+                        || oldAds.isEmpty())) {
+                    Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
                     return;
                 }
 
-                if (response.isMediated()) {
+                if (response.containsAds()) {
+                    // if non-mediated ad is overriding the list,
+                    // this will be null and skip the loop for mediation
+                    mediatedAds = response.getMediatedAds();
+                } else {
+                    mediatedAds  = oldAds;
+                }
+
+                if ((mediatedAds != null) && !mediatedAds.isEmpty()) {
                     // mediated
                     if (owner.getMRAIDAdType().equals(Settings.ADTYPE_BANNER)) {
                         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                                owner, response);
+                                owner, mediatedAds);
                         if (output != null) {
                             owner.display(output);
                         }
                     }
                     else if (owner.getMRAIDAdType().equals(Settings.ADTYPE_INTERSTITIAL)) {
                         MediatedInterstitialAdViewController output = MediatedInterstitialAdViewController.create(
-                                (InterstitialAdView) owner, response);
+                                (InterstitialAdView) owner, mediatedAds);
                         if (output != null) {
                             owner.display(output);
                         }
@@ -248,7 +266,7 @@ public class AdFetcher implements AdRequester {
 
     @Override
     public void onReceiveResponse(AdResponse response) {
-        dispatchResponse(response);
+        dispatchResponse(response, null);
         if (owner.adListener != null) {
             owner.adListener.onAdLoaded(owner);
         }
