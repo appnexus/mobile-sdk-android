@@ -156,6 +156,35 @@ public class TestClogListener extends TestCase {
         assertTrue(true);
     }
 
+    public void testThrowable() throws Exception {
+        didReceiveMessage = false;
+
+        ClogListener listener = new ClogListener() {
+            @Override
+            public void onReceiveMessage(LOG_LEVEL level, String LogTag, String message) {
+                // should not reach this callback
+                assertTrue(false);
+            }
+
+            @Override
+            public void onReceiveMessage(LOG_LEVEL level, String LogTag, String message, Throwable tr) {
+                didReceiveMessage = true;
+            }
+
+            @Override
+            public LOG_LEVEL getLogLevel() {
+                return LOG_LEVEL.V;
+            }
+        };
+
+        Clog.registerListener(listener);
+
+        Throwable tr = new Throwable("test");
+        Clog.e(TestUtil.testLogTag, "test throwable", tr);
+
+        assertTrue(didReceiveMessage);
+    }
+
     private void clogStuff() {
         Clog.v(TestUtil.testLogTag, "verbose");
         Clog.d(TestUtil.testLogTag, "debug");
@@ -177,11 +206,18 @@ public class TestClogListener extends TestCase {
 
         @Override
         public void onReceiveMessage(LOG_LEVEL level, String LogTag, String message) {
+            assertNotNull(level);
+            assertNotNull(LogTag);
+            assertNotNull(message);
             filterCheckLevel(level);
         }
 
         @Override
         public void onReceiveMessage(LOG_LEVEL level, String LogTag, String message, Throwable tr) {
+            assertNotNull(level);
+            assertNotNull(LogTag);
+            assertNotNull(message);
+            assertNotNull(tr);
             filterCheckLevel(level);
         }
 
@@ -201,6 +237,8 @@ public class TestClogListener extends TestCase {
                 this.didReceiveW = true;
             else if (level == ClogListener.LOG_LEVEL.E)
                 this.didReceiveE = true;
+            else
+                assertTrue(false);
         }
 
         @Override
