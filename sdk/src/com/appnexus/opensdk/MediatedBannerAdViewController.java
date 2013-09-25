@@ -33,7 +33,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
 
         if (this.mAV == null || !(this.mAV instanceof MediatedBannerAdView)) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instance_exception));
-            fail(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
             return;
         }
         //TODO: refactor - this also depends on owner. what if owner is null? (for testing)
@@ -47,16 +47,16 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
                     owner);
         } catch (Exception e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
-            fail(RESULT.INVALID_REQUEST);
+            onAdFailed(RESULT.INVALID_REQUEST);
         } catch (Error e) {
             // catch errors. exceptions will be caught above.
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_error), e);
-            fail(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
         }
 
         if (placeableView == null) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_view_null));
-            fail(RESULT.UNABLE_TO_FILL);
+            onAdFailed(RESULT.UNABLE_TO_FILL);
         }
     }
 

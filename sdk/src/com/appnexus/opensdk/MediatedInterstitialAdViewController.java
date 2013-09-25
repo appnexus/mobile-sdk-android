@@ -16,7 +16,7 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
 
         if (this.mAV == null || !(this.mAV instanceof MediatedInterstitialAdView)) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instance_exception));
-            fail(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
         }
     }
 
@@ -49,11 +49,11 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
                     currentAd.getId());
         } catch (Exception e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
-            fail(RESULT.INVALID_REQUEST);
+            onAdFailed(RESULT.INVALID_REQUEST);
         } catch (Error e) {
             // catch errors. exceptions will be caught above.
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_error), e);
-            fail(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
         }
 
         return null;

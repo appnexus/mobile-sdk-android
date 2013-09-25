@@ -45,6 +45,8 @@ public abstract class MediatedAdViewController implements Displayable {
     protected boolean errorCBMade = false;
     protected boolean successCBMade = false;
 
+    protected boolean noMoreAds = false;
+
     protected MediatedAdViewController() {
 
     }
@@ -59,6 +61,8 @@ public abstract class MediatedAdViewController implements Displayable {
     private void instantiateNewMediatedAd() {
         Clog.d(Clog.mediationLogTag, Clog.getString(
                 R.string.instantiating_class, currentAd.getClassName()));
+        errorCBMade = false;
+        successCBMade = false;
 
         try {
             c = Class.forName(currentAd.getClassName());
@@ -75,13 +79,13 @@ public abstract class MediatedAdViewController implements Displayable {
             failed = false;
         } catch (InstantiationException e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instantiation_exception), e);
-            fail(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
         } catch (IllegalAccessException e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception), e);
-            fail(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
         } catch (ClassCastException e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.class_cast_exception), e);
-            fail(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
         }
     }
 
@@ -93,7 +97,8 @@ public abstract class MediatedAdViewController implements Displayable {
         }
         else {
             Clog.e(Clog.mediationLogTag, "No ads were available");
-            fail(RESULT.UNABLE_TO_FILL);
+            noMoreAds = true;
+            onAdFailed(RESULT.UNABLE_TO_FILL);
         }
     }
 
@@ -117,7 +122,8 @@ public abstract class MediatedAdViewController implements Displayable {
             errorCBMade = true;
         }
 
-        checkNext();
+        if (!noMoreAds)
+            checkNext();
     }
 
     public void onAdExpanded() {
@@ -142,11 +148,6 @@ public abstract class MediatedAdViewController implements Displayable {
         return failed;
     }
 
-    protected void fail(RESULT result) {
-        failed = true;
-        onAdFailed(result);
-    }
-
     private void fireResultCB(final RESULT result) {
 
         // if resultCB is empty don't do anything
@@ -166,6 +167,7 @@ public abstract class MediatedAdViewController implements Displayable {
                     Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_response_null));
                     return;
                 }
+                Clog.d(Clog.httpRespLogTag, "fired result cb: " + getUrl());
 
                 requester.dispatchResponse(new AdResponse(requester, response.getResponseBody(), response.getHeaders()));
             }
