@@ -126,7 +126,7 @@ public class DebugFragment extends Fragment {
                 String jsonString = null;
                 try {
                     JSONObject responseObject = new JSONObject(Clog.getLastResponse());
-                    jsonString = responseObject.toString(4);
+                    jsonString = responseObject.toString(Constants.JSON_INDENT_SPACES);
                 } catch (JSONException e) {
                     Clog.e(Constants.BASE_LOG_TAG, "JSONException in response", e);
                 }

@@ -26,4 +26,6 @@ public class Constants {
 
     public static final int LOG_MAX_LINES = 800;
     public static final int LOG_MAX_CHAR = 85000;
+
+    public static final int JSON_INDENT_SPACES = 4;
 }
