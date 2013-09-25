@@ -33,6 +33,8 @@ import android.view.Window;
 import android.webkit.*;
 import com.appnexus.opensdk.utils.Clog;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -305,7 +307,7 @@ public class MRAIDImplementation {
             lp.gravity = Gravity.CENTER;
             owner.setLayoutParams(lp);
             owner.close();
-            owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent("+default_width+","+default_height+")");
+            owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent(" + default_width + "," + default_height + ")");
             this.owner
                     .loadUrl("javascript:window.mraid.util.stateChangeEvent('default');");
             this.owner.owner.adListener.onAdCollapsed(this.owner.owner);
@@ -348,7 +350,7 @@ public class MRAIDImplementation {
 
             owner.expand(width, height, useCustomClose, this);
             // Fire the stateChange to MRAID
-            owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent("+width+","+height+")");
+            owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent(" + width + "," + height + ")");
             this.owner
                     .loadUrl("javascript:window.mraid.util.stateChangeEvent('expanded');");
             expanded = true;
@@ -442,6 +444,38 @@ public class MRAIDImplementation {
         //TODO: CalendarRepeatRule
         String reminder;
 
+        try {
+            JSONObject eventj = new JSONObject(parameters.get(0).getValue());
+            if(!eventj.isNull("id")){
+                id = eventj.getString("id");
+            }
+            if(!eventj.isNull("description")){
+                decription = eventj.getString("description");
+            }
+            if(!eventj.isNull("location")){
+                location = eventj.getString("location");
+            }
+            if(!eventj.isNull("summary")){
+                summary = eventj.getString("summary");
+            }
+            if(!eventj.isNull("start")){
+                start = eventj.getString("start");
+            }
+            if(!eventj.isNull("end")){
+                end = eventj.getString("end");
+            }
+            if(!eventj.isNull("status")){
+                status = eventj.getString("status");
+            }
+            if(!eventj.isNull("transparency")){
+                transparency = eventj.getString("freebusy"); //wai, w3, wai
+            }
+            if(!eventj.isNull("reminder")){
+                reminder = eventj.getString("reminder");
+            }
+        } catch (JSONException e) {
+            //TODO: Clogging - error because of bad json
+        }
     }
 
 
