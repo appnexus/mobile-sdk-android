@@ -49,7 +49,10 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
 
         //TODO: refactor - this also depends on owner. what if owner is null? (for testing)
         try {
-            ((MediatedInterstitialAdView) mAV).requestAd(this, (Activity) owner.getContext(), param, uid);
+            ((MediatedInterstitialAdView) mAV).requestAd(this,
+                    (Activity) owner.getContext(),
+                    currentAd.getParam(),
+                    currentAd.getId());
         } catch (Exception e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
             onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);

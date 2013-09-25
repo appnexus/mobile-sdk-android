@@ -22,6 +22,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.LinkedList;
+
 public class AdResponse {
     public AdRequester requester;
     public String body;
@@ -32,12 +34,7 @@ public class AdResponse {
     boolean isMraid = false;
 
     private boolean isMediated = false;
-    private String mediatedViewClassName;
-    private String mediatedUID;
-    private String mediatedParameter;
-
-    private String mediatedResultCB;
-    private JSONArray mediatedAds;
+    private LinkedList<MediatedAd> mediatedAds;
 
     final static String http_error = "HTTP_ERROR";
     public static final String HTTP_OK = "200 OK";
@@ -124,20 +121,21 @@ public class AdResponse {
 
         try {
             JSONArray mediated = response.getJSONArray("mediated");
-            mediatedAds = mediated;
+            mediatedAds = new LinkedList<MediatedAd>();
             if (mediated.length() > 0) {
                 for (int i = 0; i < mediated.length(); i++) {
                     JSONObject handler = mediated.getJSONObject(i).getJSONObject("handler");
                     if (handler.getString("type").toLowerCase().equals("android")) {
                         isMediated = true;
-                        mediatedViewClassName = handler.getString("class");
                         //TODO: if i get an error here what to do
+                        String mediatedViewClassName = handler.getString("class");
+                        String mediatedParameter = handler.getString("param");
                         height = handler.getInt("height");
                         width = handler.getInt("width");
-                        mediatedUID = handler.getString("id");
-                        mediatedParameter = handler.getString("param");
-                        mediatedResultCB = mediated.getJSONObject(i).getString("result_cb");
-                        return;
+                        String mediatedUID = handler.getString("id");
+                        String mediatedResultCB = handler.getString("result_cb");
+
+                        mediatedAds.add(new MediatedAd(mediatedViewClassName, mediatedParameter, width, height, mediatedUID, mediatedResultCB));
                     }
                 }
             }
@@ -178,31 +176,11 @@ public class AdResponse {
         this.isMediated = isMediated;
     }
 
-    public String getMediatedUID() {
-        return mediatedUID;
-    }
-
-    public String getMediatedViewClassName() {
-        return mediatedViewClassName;
-    }
-
-    public String getParameter() {
-        return mediatedParameter;
-    }
-
-    public String getMediatedResultCB() {
-        return mediatedResultCB;
-    }
-
-    public void setMediatedResultCB(String mediatedResultCB) {
-        this.mediatedResultCB = mediatedResultCB;
-    }
-
-    public JSONArray getMediatedAds() {
+    public LinkedList<MediatedAd> getMediatedAds() {
         return mediatedAds;
     }
 
-    public void setMediatedAds(JSONArray mediatedAds) {
+    public void setMediatedAds(LinkedList<MediatedAd> mediatedAds) {
         this.mediatedAds = mediatedAds;
     }
 }

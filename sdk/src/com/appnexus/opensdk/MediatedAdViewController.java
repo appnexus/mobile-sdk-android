@@ -20,7 +20,8 @@ import android.os.Build;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
-import org.json.JSONArray;
+
+import java.util.LinkedList;
 
 public abstract class MediatedAdViewController implements Displayable {
 
@@ -33,18 +34,13 @@ public abstract class MediatedAdViewController implements Displayable {
         INTERNAL_ERROR
     }
 
-    int width;
-    int height;
     boolean failed = false;
-    String uid;
-    String className;
-    String param;
-    String resultCB;
     Class<?> c;
     AdView owner;
     MediatedAdView mAV;
     AdRequester requester;
-    JSONArray mediatedAds;
+    LinkedList<MediatedAd> mediatedAds;
+    MediatedAd currentAd;
 
     protected boolean errorCBMade = false;
     protected boolean successCBMade = false;
@@ -56,18 +52,15 @@ public abstract class MediatedAdViewController implements Displayable {
     protected MediatedAdViewController(AdView owner, AdResponse response) throws Exception {
         //TODO: owner - second part is for testing when owner is null
         requester = owner != null ? owner.mAdFetcher : response.requester;
-        width = response.getWidth();
-        height = response.getHeight();
-        uid = response.getMediatedUID();
-        className = response.getMediatedViewClassName();
-        param = response.getParameter();
-        resultCB = response.getMediatedResultCB();
+        mediatedAds = response.getMediatedAds();
+        currentAd = mediatedAds.pop();
         this.owner = owner;
 
-        Clog.d(Clog.mediationLogTag, Clog.getString(R.string.instantiating_class, className));
+        Clog.d(Clog.mediationLogTag, Clog.getString(
+                R.string.instantiating_class, currentAd.getClassName()));
 
         try {
-            c = Class.forName(className);
+            c = Class.forName(currentAd.getClassName());
 
         } catch (ClassNotFoundException e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.class_not_found_exception));
@@ -79,17 +72,17 @@ public abstract class MediatedAdViewController implements Displayable {
             Object o = c.newInstance();
             mAV = (MediatedAdView) o;
         } catch (InstantiationException e) {
-            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instantiation_exception));
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instantiation_exception), e);
             failed = true;
             onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
             throw e;
         } catch (IllegalAccessException e) {
-            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception));
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception), e);
             failed = true;
             onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
             throw e;
         } catch (ClassCastException e) {
-            Clog.e(Clog.mediationLogTag, "Class cast exception", e);
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.class_cast_exception), e);
             failed = true;
             onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
             throw e;
@@ -143,6 +136,7 @@ public abstract class MediatedAdViewController implements Displayable {
     private void fireResultCB(final MediatedAdViewController.RESULT result) {
 
         // if resultCB is empty don't do anything
+        final String resultCB = currentAd.getResultCB();
         if ((resultCB == null) || resultCB.isEmpty()) {
             return;
         }
