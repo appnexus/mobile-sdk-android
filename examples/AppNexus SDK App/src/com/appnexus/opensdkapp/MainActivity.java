@@ -41,7 +41,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Vector;
 
 public class MainActivity extends FragmentActivity implements
         TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener, SettingsFragment.OnLoadAdClickedListener {
@@ -57,7 +60,6 @@ public class MainActivity extends FragmentActivity implements
     }
 
     private TabHost tabHost;
-    private HashMap<String, TabInfo> mapTabInfo = new HashMap<String, MainActivity.TabInfo>();
     private ViewPager viewPager;
     private PagerAdapter pagerAdapter;
     private View btnMore, btnLog;
@@ -75,30 +77,17 @@ public class MainActivity extends FragmentActivity implements
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-        this.initialiseTabHost(savedInstanceState);
-        if (savedInstanceState != null) {
-            tabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
-        }
-        this.intialiseViewPager();
+
+        initTabHost();
+        initViewPager();
 
         tabHost.setOnTabChangedListener(this);
-
-        tabHost.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                Log.d(Constants.BASE_LOG_TAG, view.toString());
-                Log.d(Constants.BASE_LOG_TAG, motionEvent.getRawX() + ", " + motionEvent.getRawY());
-                Log.d(Constants.BASE_LOG_TAG, btnLog.getLeft() + ", " + btnLog.getTop());
-                return false;
-            }
-        });
 
         // Default to Preview tab
         new Handler() {
             @Override
             public void handleMessage(Message msg) {
                 onPageSelected(TABS.PREVIEW.ordinal());
-//                MainActivity.this.onTabChanged(PREVIEW_ID);
             }
         }.sendEmptyMessage(0);
 
@@ -148,6 +137,7 @@ public class MainActivity extends FragmentActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        Log.v(Constants.BASE_LOG_TAG, "App resumed");
 //        checkToUploadLogFile();
     }
 
@@ -158,35 +148,19 @@ public class MainActivity extends FragmentActivity implements
         return false;
     }
 
-    public void showLogDialog() {
-        //TODO progress dialog
-
-        progressDialog = ProgressDialog.show(MainActivity.this, null, "Loading logs", true, false);
-
-        readFromFile();
-
-    }
-
-    private void initialiseTabHost(Bundle args) {
+    private void initTabHost() {
         tabHost = (TabHost) findViewById(android.R.id.tabhost);
         tabHost.setup();
-        TabInfo tabInfo = null;
 
         MainActivity.AddTab(this, this.tabHost,
-                this.tabHost.newTabSpec(SETTINGS_ID).setIndicator(SETTINGS_ID),
-                (tabInfo = new TabInfo(SETTINGS_ID, SettingsFragment.class, args)));
-        this.mapTabInfo.put(tabInfo.tag, tabInfo);
+                this.tabHost.newTabSpec(SETTINGS_ID).setIndicator(SETTINGS_ID));
         MainActivity.AddTab(this, this.tabHost,
-                this.tabHost.newTabSpec(PREVIEW_ID).setIndicator(PREVIEW_ID),
-                (tabInfo = new TabInfo(PREVIEW_ID, PreviewFragment.class, args)));
-        this.mapTabInfo.put(tabInfo.tag, tabInfo);
+                this.tabHost.newTabSpec(PREVIEW_ID).setIndicator(PREVIEW_ID));
         MainActivity.AddTab(this, this.tabHost,
-                this.tabHost.newTabSpec(DEBUG_ID).setIndicator(DEBUG_ID),
-                (tabInfo = new TabInfo(DEBUG_ID, DebugFragment.class, args)));
-        this.mapTabInfo.put(tabInfo.tag, tabInfo);
+                this.tabHost.newTabSpec(DEBUG_ID).setIndicator(DEBUG_ID));
     }
 
-    private void intialiseViewPager() {
+    private void initViewPager() {
 
         List<Fragment> fragments = new Vector<Fragment>();
         fragments.add(Fragment.instantiate(this,
@@ -208,19 +182,10 @@ public class MainActivity extends FragmentActivity implements
     }
 
     private static void AddTab(MainActivity activity, TabHost tabHost,
-                               TabHost.TabSpec tabSpec, TabInfo tabInfo) {
+                               TabHost.TabSpec tabSpec) {
         // Attach a Tab view factory to the spec
         tabSpec.setContent(activity.new TabFactory(activity));
         tabHost.addTab(tabSpec);
-    }
-
-    private class TabInfo {
-        private String tag;
-
-        TabInfo(String tag, Class<?> clazz, Bundle args) {
-            this.tag = tag;
-        }
-
     }
 
     class TabFactory implements TabContentFactory {
@@ -239,6 +204,10 @@ public class MainActivity extends FragmentActivity implements
         }
 
     }
+
+    /**
+     * ViewPager listener
+     */
 
     @Override
     public void onPageScrollStateChanged(int arg0) {
@@ -260,15 +229,23 @@ public class MainActivity extends FragmentActivity implements
         imm.hideSoftInputFromWindow(tabHost.getApplicationWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
+    /**
+     * TabHost listener
+     */
+
     @Override
     public void onTabChanged(String tabId) {
         int pos = this.tabHost.getCurrentTab();
         this.viewPager.setCurrentItem(pos);
     }
 
-    // special handling for our "native" log button
+    /**
+     * Special handling for our "native" log button
+     */
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent motionEvent) {
+        // don't handle specially if log button is not showing
         if (btnLog.getVisibility() == View.GONE)
             return super.dispatchTouchEvent(motionEvent);
 
@@ -298,7 +275,7 @@ public class MainActivity extends FragmentActivity implements
     }
 
     /**
-     * for managing the log file
+     * ClogListener for log screen
      */
 
     final ClogListener logTabClogListener = new ClogListener() {
@@ -359,6 +336,10 @@ public class MainActivity extends FragmentActivity implements
         }
     };
 
+    /**
+     * Log file management code
+     */
+
     synchronized public void clearLogFile() {
         DataOutputStream out = null;
         try {
@@ -408,6 +389,10 @@ public class MainActivity extends FragmentActivity implements
 
     }
 
+    /**
+     * Upload log file to server every 24 hours
+     */
+
     private void checkToUploadLogFile() {
         long lastLogUploadTime = Prefs.getLastLogUpload(getBaseContext());
         long currentTime = System.currentTimeMillis();
@@ -427,6 +412,15 @@ public class MainActivity extends FragmentActivity implements
             }
         }
     }
+
+    public void showLogDialog() {
+        progressDialog = ProgressDialog.show(MainActivity.this, null, "Loading logs", true, false);
+        readFromFile();
+    }
+
+    /**
+     * Read logs asynchronously
+     */
 
     private class ReadLogFileTask extends AsyncTask<Void, Void, ArrayList<String>> {
         @Override
@@ -460,6 +454,10 @@ public class MainActivity extends FragmentActivity implements
             }
             return logs;
         }
+
+        /**
+         * create the log dialog to display the logs
+         */
 
         @Override
         protected void onPostExecute(ArrayList<String> logs) {
