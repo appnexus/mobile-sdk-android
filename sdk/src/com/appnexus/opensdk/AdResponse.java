@@ -29,7 +29,6 @@ public class AdResponse {
     public int width;
     private String type;
     boolean fail = false;
-    final static String http_error = "HTTP_ERROR";
     boolean isMraid = false;
 
     private boolean isMediated = false;
@@ -38,6 +37,10 @@ public class AdResponse {
     private String mediatedParameter;
 
     private String mediatedResultCB;
+    private JSONArray mediatedAds;
+
+    final static String http_error = "HTTP_ERROR";
+    public static final String HTTP_OK = "200 OK";
 
     public AdResponse(AdRequester requester, String body, Header[] headers) {
         this.requester = requester;
@@ -79,7 +82,7 @@ public class AdResponse {
     private void parseResponse(String body) {
         JSONObject response = null;
 
-        if (body.equals("RETRY") || body.equals("BLANK")) {
+        if (body.equals("RETRY") || body.equals("BLANK") || body.equals(HTTP_OK)) {
             return;
         }
 
@@ -121,6 +124,7 @@ public class AdResponse {
 
         try {
             JSONArray mediated = response.getJSONArray("mediated");
+            mediatedAds = mediated;
             if (mediated.length() > 0) {
                 for (int i = 0; i < mediated.length(); i++) {
                     JSONObject handler = mediated.getJSONObject(i).getJSONObject("handler");
@@ -192,5 +196,13 @@ public class AdResponse {
 
     public void setMediatedResultCB(String mediatedResultCB) {
         this.mediatedResultCB = mediatedResultCB;
+    }
+
+    public JSONArray getMediatedAds() {
+        return mediatedAds;
+    }
+
+    public void setMediatedAds(JSONArray mediatedAds) {
+        this.mediatedAds = mediatedAds;
     }
 }

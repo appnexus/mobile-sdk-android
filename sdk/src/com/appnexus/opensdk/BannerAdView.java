@@ -348,6 +348,6 @@ public class BannerAdView extends AdView {
     }
 
     protected String getMRAIDAdType() {
-        return "inline";
+        return Settings.ADTYPE_BANNER;
     }
 }

@@ -332,7 +332,7 @@ public class InterstitialAdView extends AdView {
     }
 
     protected String getMRAIDAdType() {
-        return "interstitial";
+        return Settings.ADTYPE_INTERSTITIAL;
     }
 
     /**

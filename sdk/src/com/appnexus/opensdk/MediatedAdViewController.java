@@ -20,6 +20,7 @@ import android.os.Build;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
+import org.json.JSONArray;
 
 public abstract class MediatedAdViewController implements Displayable {
 
@@ -43,6 +44,7 @@ public abstract class MediatedAdViewController implements Displayable {
     AdView owner;
     MediatedAdView mAV;
     AdRequester requester;
+    JSONArray mediatedAds;
 
     protected boolean errorCBMade = false;
     protected boolean successCBMade = false;
@@ -139,6 +141,11 @@ public abstract class MediatedAdViewController implements Displayable {
     }
 
     private void fireResultCB(final MediatedAdViewController.RESULT result) {
+
+        // if resultCB is empty don't do anything
+        if ((resultCB == null) || resultCB.isEmpty()) {
+            return;
+        }
 
         //fire call to result cb url
         HTTPGet<Void, Void, HTTPResponse> cb = new HTTPGet<Void, Void, HTTPResponse>() {

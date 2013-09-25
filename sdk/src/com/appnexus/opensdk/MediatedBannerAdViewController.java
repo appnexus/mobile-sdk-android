@@ -42,7 +42,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
         }
         //TODO: refactor - this also depends on owner. what if owner is null? (for testing)
         try {
-            placeableView = ((MediatedBannerAdView) mAV).requestAd(this, owner != null ? (Activity) owner.getContext() : null, param, uid, width, height, owner);
+            placeableView = ((MediatedBannerAdView) mAV).requestAd(this, owner != null ? (Activity) owner.getContext() : null, param, uid,   width, height, owner);
         } catch (Exception e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
             throw e;
