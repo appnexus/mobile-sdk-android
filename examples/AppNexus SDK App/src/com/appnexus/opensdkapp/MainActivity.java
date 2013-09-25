@@ -301,28 +301,8 @@ public class MainActivity extends FragmentActivity implements
         }
 
         @Override
-        public boolean isVerboseLevelEnabled() {
-            return true;
-        }
-
-        @Override
-        public boolean isDebugLevelEnabled() {
-            return true;
-        }
-
-        @Override
-        public boolean isInfoLevelEnabled() {
-            return true;
-        }
-
-        @Override
-        public boolean isWarningLevelEnabled() {
-            return true;
-        }
-
-        @Override
-        public boolean isErrorLevelEnabled() {
-            return true;
+        public LOG_LEVEL getLogLevel() {
+            return LOG_LEVEL.V;
         }
 
         private String buildBasicLogMessage(LOG_LEVEL level, String LogTag, String message) {
