@@ -78,12 +78,6 @@ public class AdFetcher implements AdRequester {
 
     protected void start() {
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.start));
-        // Requests can't be made without a placement ID
-        if (owner.getPlacementID() == null) {
-            Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_placement_id));
-            requestFailed();
-            return;
-        }
         if (tasker != null) {
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.moot_restart));
             requestFailed();
@@ -211,7 +205,7 @@ public class AdFetcher implements AdRequester {
         owner.fail();
     }
 
-	@Override
+    @Override
     public void dispatchResponse(final AdResponse response) {
         this.owner.post(new Runnable() {
             public void run() {

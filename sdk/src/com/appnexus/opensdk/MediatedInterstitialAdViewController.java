@@ -15,7 +15,7 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
         super(owner, response);
 
         if (this.mAV == null || !(this.mAV instanceof MediatedInterstitialAdView)) {
-            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instance_exception));
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instance_exception, getClass().getCanonicalName()));
             onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
         }
     }

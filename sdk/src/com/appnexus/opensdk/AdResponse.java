@@ -30,11 +30,12 @@ public class AdResponse {
     public int height;
     public int width;
     private String type;
-    boolean fail = false;
     boolean isMraid = false;
 
     private boolean isMediated = false;
     private LinkedList<MediatedAd> mediatedAds;
+
+    private boolean containsAds = false;
 
     final static String http_error = "HTTP_ERROR";
     public static final String HTTP_OK = "200 OK";
@@ -44,16 +45,13 @@ public class AdResponse {
         this.body = body;
 
         if (body == null) {
-            this.fail = true;
             Clog.clearLastResponse();
             return;
         } else if (body.equals(AdResponse.http_error)) {
-            this.fail = true;
             Clog.clearLastResponse();
             return;
         } else if (body.length() == 0) {
             Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
-            this.fail = true;
             Clog.clearLastResponse();
             return;
         }
@@ -106,6 +104,8 @@ public class AdResponse {
                     Clog.e(Clog.httpRespLogTag,
                             Clog.getString(R.string.blank_ad));
                 }
+                else
+                    containsAds = true;
                 return;
             }
         } catch (JSONException e) {
@@ -140,6 +140,8 @@ public class AdResponse {
                                 resultCB));
                     }
                 }
+                if (!mediatedAds.isEmpty())
+                    containsAds = true;
                 return;
             }
         } catch (JSONException e) {
@@ -175,15 +177,11 @@ public class AdResponse {
         return isMediated;
     }
 
-    public void setMediated(boolean isMediated) {
-        this.isMediated = isMediated;
-    }
-
     public LinkedList<MediatedAd> getMediatedAds() {
         return mediatedAds;
     }
 
-    public void setMediatedAds(LinkedList<MediatedAd> mediatedAds) {
-        this.mediatedAds = mediatedAds;
+    public boolean containsAds() {
+        return containsAds;
     }
 }

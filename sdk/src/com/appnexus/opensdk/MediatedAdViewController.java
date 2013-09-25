@@ -91,6 +91,7 @@ public abstract class MediatedAdViewController implements Displayable {
 
     // check for next mediated ad
     private void checkNext() {
+        Clog.d(Clog.mediationLogTag, "checking for next ad");
         if ((mediatedAds != null) && !mediatedAds.isEmpty()) {
             currentAd = mediatedAds.pop();
             instantiateNewMediatedAd();
@@ -121,9 +122,6 @@ public abstract class MediatedAdViewController implements Displayable {
             fireResultCB(reason);
             errorCBMade = true;
         }
-
-        if (!noMoreAds)
-            checkNext();
     }
 
     public void onAdExpanded() {
@@ -153,23 +151,33 @@ public abstract class MediatedAdViewController implements Displayable {
         // if resultCB is empty don't do anything
         final String resultCB = currentAd.getResultCB();
         if ((resultCB == null) || resultCB.isEmpty()) {
+            Clog.w(Clog.mediationLogTag, "resultCB was null or empty");
             return;
         }
 
         //fire call to result cb url
         HTTPGet<Void, Void, HTTPResponse> cb = new HTTPGet<Void, Void, HTTPResponse>() {
             @Override
-            protected void onPostExecute(HTTPResponse response) {
+            protected void onPostExecute(HTTPResponse httpResponse) {
                 if (requester == null) {
                     Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
                     return;
-                } else if (response == null) {
+                } else if (httpResponse == null) {
                     Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_response_null));
                     return;
                 }
                 Clog.d(Clog.httpRespLogTag, "fired result cb: " + getUrl());
 
-                requester.dispatchResponse(new AdResponse(requester, response.getResponseBody(), response.getHeaders()));
+                AdResponse response = new AdResponse(requester, httpResponse.getResponseBody(), httpResponse.getHeaders());
+                if (response.containsAds()) {
+                    Clog.d(Clog.mediationLogTag, "Received a response from server with new ads");
+                    mediatedAds.clear();
+                }
+
+                requester.dispatchResponse(response);
+
+                if (!noMoreAds)
+                    checkNext();
             }
 
             @Override

@@ -32,7 +32,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
         super(owner, response);
 
         if (this.mAV == null || !(this.mAV instanceof MediatedBannerAdView)) {
-            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instance_exception));
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instance_exception, getClass().getCanonicalName()));
             onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
             return;
         }
