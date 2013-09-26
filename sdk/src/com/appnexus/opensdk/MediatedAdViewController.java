@@ -56,13 +56,12 @@ public abstract class MediatedAdViewController implements Displayable {
         if (owner != null) requester = owner.mAdFetcher;
         this.mediatedAds = mediatedAds;
 
-        Clog.d(Clog.mediationLogTag, "checking for next ad");
         if ((mediatedAds != null) && !mediatedAds.isEmpty()) {
             currentAd = mediatedAds.pop();
             instantiateNewMediatedAd();
         }
         else {
-            Clog.e(Clog.mediationLogTag, "No ads were available");
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_no_ads));
             noMoreAds = true;
             onAdFailed(RESULT.UNABLE_TO_FILL);
         }
@@ -147,7 +146,7 @@ public abstract class MediatedAdViewController implements Displayable {
         // if resultCB is empty don't do anything
         final String resultCB = currentAd.getResultCB();
         if ((resultCB == null) || resultCB.isEmpty()) {
-            Clog.w(Clog.mediationLogTag, "resultCB was null or empty");
+            Clog.w(Clog.mediationLogTag, Clog.getString(R.string.fire_cb_result_null));
             return;
         }
 
@@ -162,7 +161,6 @@ public abstract class MediatedAdViewController implements Displayable {
                     Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_response_null));
                     return;
                 }
-                Clog.d(Clog.httpRespLogTag, "fired result cb: " + getUrl());
 
                 AdResponse response = new AdResponse(requester, httpResponse.getResponseBody(), httpResponse.getHeaders());
                 requester.dispatchResponse(response, mediatedAds);

@@ -212,10 +212,6 @@ public class AdFetcher implements AdRequester {
             public void run() {
                 LinkedList<MediatedAd> mediatedAds;
 
-                if (response.getBody().equals(AdResponse.HTTP_OK)) {
-                    Clog.d(Clog.httpRespLogTag, "200 OK");
-                }
-
                 // no ads in the response and no old ads means no fill
                 if (!response.containsAds()
                         && ((oldAds == null)
