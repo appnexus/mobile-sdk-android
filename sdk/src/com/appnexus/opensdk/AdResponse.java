@@ -93,11 +93,12 @@ public class AdResponse {
     }
 
     private void parseResponse(String body) {
-        JSONObject response = null;
-
+        // don't try to parse if the body is not json
         if (body.equals(AdRequest.RETRY) || body.equals(AdRequest.BLANK) || body.equals(HTTP_OK)) {
             return;
         }
+
+        JSONObject response;
 
         try {
             response = new JSONObject(body);
@@ -108,8 +109,11 @@ public class AdResponse {
         }
         // response will never be null at this point
 
+        // stop parsing if status is not valid
         if (!checkStatusIsValid(response)) return;
+        // stop parsing if we get an ad from ads[]
         if (handleStdAds(response)) return;
+        // stop parsing if we get an ad from mediated[]
         if (handleMediatedAds(response)) return;
     }
 
@@ -155,10 +159,13 @@ public class AdResponse {
         if (mediated != null) {
             mediatedAds = new LinkedList<MediatedAd>();
             for (int i = 0; i < mediated.length(); i++) {
+                // parse through the elements of the mediated array for handlers
                 JSONObject mediatedElement = getJSONObjectFromArray(mediated, i);
                 if (mediatedElement != null) {
+                    // get mediatedAd fields from handler if available
                     JSONObject handler = getJSONObject(mediatedElement, RESPONSE_KEY_HANDLER);
                     if (handler != null) {
+                        // we only care about handlers for android
                         String type = getJSONString(handler, RESPONSE_KEY_TYPE);
                         if ((type != null) && type.toLowerCase().equals(RESPONSE_VALUE_ANDROID)) {
                             String className = getJSONString(handler, RESPONSE_KEY_CLASS);
@@ -210,6 +217,10 @@ public class AdResponse {
     public boolean containsAds() {
         return containsAds;
     }
+
+    /**
+     * JSON parsing helper methods
+     */
 
     private static JSONObject getJSONObject(JSONObject object, String key) {
         try {
