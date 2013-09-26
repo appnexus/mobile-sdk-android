@@ -29,6 +29,8 @@ import com.appnexus.opensdkdemo.util.TestUtil;
 
 import java.util.LinkedList;
 
+//TODO: many of the old mediation tests (1-10) are broken because we don't allow more than one successful adview
+// comment out the return code in MAVC to allow multiple successes and make the test pass
 public class TestMediationSuccess extends AndroidTestCase implements AdRequester {
     String old_base_url;
     AdRequest shouldWork;
