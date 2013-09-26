@@ -16,9 +16,12 @@
 
 package com.appnexus.opensdk;
 
-public class MediatedAd extends Ad {
+public class MediatedAd {
     private String className;
     private String param;
+    int width;
+    int height;
+    String id;
     private String resultCB;
 
     public MediatedAd(String className, String param, int width, int height, String id, String resultCB) {
@@ -44,6 +47,30 @@ public class MediatedAd extends Ad {
 
     public void setParam(String param) {
         this.param = param;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getResultCB() {
