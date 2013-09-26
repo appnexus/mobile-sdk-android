@@ -439,86 +439,8 @@ public class MRAIDImplementation {
         //TODO: This is going to take a loooong time. We need to parse the JSON (formatted
         //TODO: following the W3C spec. See http://developer.android.com/guide/topics/providers/calendar-provider.html#intent-insert
         W3CEvent event = W3CEvent.createFromJSON(parameters.get(0).getValue());
-        ContentResolver cr = owner.getContext().getContentResolver();
-        ContentValues values = new ContentValues();
-        if(event.getDecription()!=null){
-            values.put(CalendarContract.Events.TITLE, event.getDecription());
-        }
-        if(event.getId()!=null){
-            values.put(CalendarContract.Events._ID, event.getId());
-        }
-        if(event.getLocation()!=null){
-            values.put(CalendarContract.Events.EVENT_LOCATION, event.getLocation());
-        }
-        if(event.getSummary()!=null){
-            values.put(CalendarContract.Events.DESCRIPTION, event.getSummary());
-        }
-        if(event.getStart()!=null){
-            //TODO: convert to UTC millis since epoch
-            values.put(CalendarContract.Events.DTSTART, event.getStart());
-        }
-        if(event.getEnd()!=null){
-            //TODO: convert to UTC millis since epoch
-            values.put(CalendarContract.Events.DTEND, event.getEnd());
-        }
-        if(event.getStatus()!=null){
-            values.put(CalendarContract.Events.STATUS, event.getStatus());
-        }
-        if(event.getTransparency()!=null){
-            values.put(CalendarContract.Events.VISIBLE, event.getTransparency().equals("opaque") ? false: true);
-        }
-        if(event.getReminder()!=null){
-            values.put(CalendarContract.Reminders.EVENT_ID, event.getId());
-            //TODO: Convert to a positive number of minutes before the event
-            values.put(CalendarContract.Reminders.MINUTES, event.getReminder());
-        }
-
-        //TODO: Repeat rule
-        StringBuilder repeatRuleBuilder= new StringBuilder("");
-        if(event.getRecurrence()!=null){
-            if(event.getRecurrence().getFrequency()!=null){
-                repeatRuleBuilder.append("FREQ=");
-                repeatRuleBuilder.append(event.getRecurrence().getFrequency().toUpperCase());
-                repeatRuleBuilder.append(";");
-            }
-            if(event.getRecurrence().getInterval()>0){
-                repeatRuleBuilder.append("INTERVAL=");
-                repeatRuleBuilder.append(event.getRecurrence().getInterval());
-                repeatRuleBuilder.append(";");
-            }
-            if(event.getRecurrence().getDaysInWeek().length>0){
-                repeatRuleBuilder.append("WKST=SU;BYDAY=");
-                for(int i : event.getRecurrence().getDaysInWeek()){
-                    switch(i){
-                        case 0:
-                            repeatRuleBuilder.append("SU,");
-                            break;
-                        case 1:
-                            repeatRuleBuilder.append("MO,");
-                            break;
-                        case 2:
-                            repeatRuleBuilder.append("TU,");
-                            break;
-                        case 3:
-                            repeatRuleBuilder.append("WE,");
-                            break;
-                        case 4:
-                            repeatRuleBuilder.append("TH,");
-                            break;
-                        case 5:
-                            repeatRuleBuilder.append("FR,");
-                            break;
-                        case 6:
-                            repeatRuleBuilder.append("SA,");
-                            break;
-                    }
-                }
-                if(repeatRuleBuilder.charAt(repeatRuleBuilder.length()-1)==','){
-                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length()-1);
-                }
-                repeatRuleBuilder.append(";");
-            }
-        }
+        Intent i = event.getInsertIntent();
+        owner.getContext().startActivity(i);
 
 
 

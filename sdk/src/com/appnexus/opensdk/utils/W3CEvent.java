@@ -15,6 +15,10 @@
  */
 package com.appnexus.opensdk.utils;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.provider.CalendarContract;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -192,9 +196,9 @@ public class W3CEvent {
                     if(!recurrencej.isNull("weeksInMonth")){
                         JSONArray weeksInMonthj = recurrencej.getJSONArray("weeksInMonth");
                         int len = weeksInMonthj.length();
-                        out.getRecurrence().weeksInMonth = new int[len];
+                        out.getRecurrence().setWeeksInMonth(new int[len]);
                         for(int i = 0; i<len; i++){
-                            out.getRecurrence().weeksInMonth[i]=weeksInMonthj.getInt(i);
+                            out.getRecurrence().getWeeksInMonth()[i]=weeksInMonthj.getInt(i);
                         }
                     }
                     if(!recurrencej.isNull("monthsInYear")){
@@ -216,6 +220,146 @@ public class W3CEvent {
         return out;
     }
     private W3CEvent(){
+
+    }
+
+    public Intent getInsertIntent(){
+        Intent i = new Intent(Intent.ACTION_INSERT).setData(CalendarContract.Events.CONTENT_URI);
+        if(getDecription()!=null){
+            i.putExtra(CalendarContract.Events.TITLE, getDecription());
+        }
+        if(getLocation()!=null){
+            i.putExtra(CalendarContract.Events.EVENT_LOCATION, getLocation());
+        }
+        if(getSummary()!=null){
+            i.putExtra(CalendarContract.Events.DESCRIPTION, getSummary());
+        }
+        if(getStart()!=null){
+            //TODO: convert to UTC millis since epoch
+            i.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, getStart());
+        }
+        if(getEnd()!=null){
+            //TODO: convert to UTC millis since epoch
+            i.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, getEnd());
+        }
+        if(getStatus()!=null){
+            i.putExtra(CalendarContract.Events.STATUS, getStatus());
+        }
+        if(getTransparency()!=null){
+            i.putExtra(CalendarContract.Events.VISIBLE, getTransparency().equals("opaque") ? false: true);
+        }
+        if(getReminder()!=null){
+            i.putExtra(CalendarContract.Reminders.MINUTES, getReminder());
+        }
+
+        StringBuilder repeatRuleBuilder= new StringBuilder("");
+        if(getRecurrence()!=null){
+            if(getRecurrence().getFrequency()!=null){
+                repeatRuleBuilder.append("FREQ=");
+                repeatRuleBuilder.append(getRecurrence().getFrequency().toUpperCase());
+                repeatRuleBuilder.append(";");
+            }
+            if(getRecurrence().getInterval()>0){
+                repeatRuleBuilder.append("INTERVAL=");
+                repeatRuleBuilder.append(getRecurrence().getInterval());
+                repeatRuleBuilder.append(";");
+            }
+            if(getRecurrence().getDaysInWeek().length>0){
+                repeatRuleBuilder.append("BYDAY=");
+                for(int i : getRecurrence().getDaysInWeek()){
+                    switch(i){
+                        case 0:
+                            repeatRuleBuilder.append("SU,");
+                            break;
+                        case 1:
+                            repeatRuleBuilder.append("MO,");
+                            break;
+                        case 2:
+                            repeatRuleBuilder.append("TU,");
+                            break;
+                        case 3:
+                            repeatRuleBuilder.append("WE,");
+                            break;
+                        case 4:
+                            repeatRuleBuilder.append("TH,");
+                            break;
+                        case 5:
+                            repeatRuleBuilder.append("FR,");
+                            break;
+                        case 6:
+                            repeatRuleBuilder.append("SA,");
+                            break;
+                    }
+                }
+                if(repeatRuleBuilder.charAt(repeatRuleBuilder.length()-1)==','){
+                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length()-1);
+                }
+                repeatRuleBuilder.append(";");
+            }
+            if(getRecurrence().getDaysInMonth().length>0){
+                repeatRuleBuilder.append("BYMONTHDAY=");
+                for(int j : getRecurrence().getDaysInMonth()){
+                    repeatRuleBuilder.append(getRecurrence().getDaysInMonth()[i]);
+                    repeatRuleBuilder.append(",");
+                }
+                if(repeatRuleBuilder.charAt(repeatRuleBuilder.length()-1)==','){
+                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length()-1);
+                }
+                repeatRuleBuilder.append(";");
+            }
+            if(getRecurrence().getDaysInYear().length>0){
+                repeatRuleBuilder.append("BYYEARDAY=");
+                for(int j : getRecurrence().getDaysInYear()){
+                    repeatRuleBuilder.append(getRecurrence().getDaysInYear()[i]);
+                    repeatRuleBuilder.append(",");
+                }
+                if(repeatRuleBuilder.charAt(repeatRuleBuilder.length()-1)==','){
+                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length()-1);
+                }
+                repeatRuleBuilder.append(";");
+            }
+            if(getRecurrence().getMonthsInYear().length>0){
+                repeatRuleBuilder.append("BYMONTH=");
+                for(int j : getRecurrence().getMonthsInYear()){
+                    repeatRuleBuilder.append(getRecurrence().getMonthsInYear()[i]);
+                    repeatRuleBuilder.append(",");
+                }
+                if(repeatRuleBuilder.charAt(repeatRuleBuilder.length()-1)==','){
+                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length()-1);
+                }
+                repeatRuleBuilder.append(";");
+            }
+            if(getRecurrence().getWeeksInMonth().length>0){
+                repeatRuleBuilder.append("BYWEEKNO=");
+                for(int j : getRecurrence().getWeeksInMonth()){
+                    repeatRuleBuilder.append(getRecurrence().getWeeksInMonth()[i]);
+                    repeatRuleBuilder.append(",");
+                }
+                if(repeatRuleBuilder.charAt(repeatRuleBuilder.length()-1)==','){
+                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length()-1);
+                }
+                repeatRuleBuilder.append(";");
+            }
+            if(getRecurrence().getExpires()!=null){
+                repeatRuleBuilder.append("UNTIL=");
+                repeatRuleBuilder.append(getRecurrence().getExpires());
+                repeatRuleBuilder.append(";");
+            }
+            if(getRecurrence().getExceptionDates().length>0){
+                repeatRuleBuilder.append("EXDATE=");
+                for(String s : getRecurrence().getExceptionDates()){
+                    repeatRuleBuilder.append(s);
+                    repeatRuleBuilder.append(",");
+                }
+                if(repeatRuleBuilder.charAt(repeatRuleBuilder.length()-1)==','){
+                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length()-1);
+                }
+                repeatRuleBuilder.append(";");
+            }
+            i.putExtra(CalendarContract.Events.RRULE, repeatRuleBuilder.toString());
+        }
+
+        return i;
 
     }
 }
