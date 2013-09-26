@@ -26,6 +26,7 @@ import com.appnexus.opensdkdemo.DemoMainActivity;
 import com.appnexus.opensdkdemo.testviews.DummyView;
 import com.appnexus.opensdkdemo.testviews.SecondSuccessfulMediationView;
 import com.appnexus.opensdkdemo.testviews.SuccessfulMediationView;
+import com.appnexus.opensdkdemo.testviews.ThirdSuccessfulMediationView;
 import com.appnexus.opensdkdemo.util.InstanceLock;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
@@ -49,6 +50,7 @@ public class TestActivityMediationWaterfall extends ActivityInstrumentationTestC
         Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
         SuccessfulMediationView.didPass = false;
         SecondSuccessfulMediationView.didPass = false;
+        ThirdSuccessfulMediationView.didPass = false;
         didLoad = false;
         didFailToLoad = false;
         lock = new InstanceLock();
@@ -116,6 +118,57 @@ public class TestActivityMediationWaterfall extends ActivityInstrumentationTestC
         assertEquals(true, didLoad);
         assertEquals(false, didFailToLoad);
         assertTrue(SecondSuccessfulMediationView.didPass);
+    }
+
+    public void test3FirstFailsIntoOverrideStd() {
+        bav.setPlacementID("13");
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bav.loadAd();
+            }
+        });
+
+        lock.pause(10000);
+
+        // give time for the result cb to fire
+        // and instantiate new ad
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        lock.pause(10000);
+
+        assertEquals(true, didLoad);
+        assertEquals(false, didFailToLoad);
+        assertFalse(SuccessfulMediationView.didPass);
+    }
+
+    public void test4FirstFailsIntoOverrideMediated() {
+        bav.setPlacementID("14");
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bav.loadAd();
+            }
+        });
+
+        lock.pause(10000);
+
+        // give time for the result cb to fire
+        // and instantiate new ad
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        lock.pause(10000);
+
+        assertEquals(true, didLoad);
+        assertEquals(false, didFailToLoad);
+        assertFalse(SuccessfulMediationView.didPass);
+        assertTrue(ThirdSuccessfulMediationView.didPass);
     }
 
     @Override

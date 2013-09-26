@@ -271,6 +271,7 @@ public class AdFetcher implements AdRequester {
     @Override
     public void onReceiveResponse(AdResponse response) {
         dispatchResponse(response, null);
+        //TODO: should this be here? what about the mediation case? do we call onAdLoaded too often?
         if (owner.adListener != null) {
             owner.adListener.onAdLoaded(owner);
         }
