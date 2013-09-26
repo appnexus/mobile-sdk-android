@@ -28,7 +28,7 @@ public class ThirdSuccessfulMediationView implements MediatedBannerAdView {
     public static boolean didPass = false;
 
     @Override
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height) {
         Clog.d(TestUtil.testLogTag, "3rd set to true!");
         didPass = true;
 

@@ -19,6 +19,8 @@ package com.appnexus.opensdkdemo.stdtests;
 import com.appnexus.opensdk.*;
 import junit.framework.TestCase;
 
+import java.util.LinkedList;
+
 public class TestSuccessfulAdRequest extends TestCase implements AdRequester, AdListener {
     AdRequest shouldWork;
     AdRequest shouldWork2;
@@ -53,16 +55,16 @@ public class TestSuccessfulAdRequest extends TestCase implements AdRequester, Ad
         notify();
     }
 
-	@Override
-	public AdView getOwner() {
-		return null;
-	}
+    @Override
+    public AdView getOwner() {
+        return null;
+    }
 
-	@Override
-	public void dispatchResponse(AdResponse response) {
-	}
+    @Override
+    public void dispatchResponse(AdResponse response, LinkedList<MediatedAd> oldAds) {
+    }
 
-	@Override
+    @Override
     synchronized public void failed(AdRequest request) {
         shouldWorkDidWork = false;
         notify();

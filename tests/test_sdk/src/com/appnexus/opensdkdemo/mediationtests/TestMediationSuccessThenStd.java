@@ -24,6 +24,8 @@ import com.appnexus.opensdkdemo.testviews.DummyView;
 import com.appnexus.opensdkdemo.testviews.SuccessfulMediationView;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
+import java.util.LinkedList;
+
 public class TestMediationSuccessThenStd extends AndroidTestCase implements AdRequester {
     String old_base_url;
     AdRequest shouldWork;
@@ -75,12 +77,24 @@ public class TestMediationSuccessThenStd extends AndroidTestCase implements AdRe
     public void onReceiveResponse(AdResponse response) {
         Clog.d(TestUtil.testLogTag, "received first response: " + response.toString());
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, response);
+                null, this, response.getMediatedAds(), null);
     }
 
     @Override
     public AdView getOwner() {
         return null;
+    }
+
+    @Override
+    synchronized public void dispatchResponse(AdResponse response, LinkedList<MediatedAd> oldAds) {
+        Clog.d(TestUtil.testLogTag, "dispatch " + response.toString());
+        if (response.getType() == null) {
+            Clog.d(TestUtil.testLogTag, "null type");
+            return;
+        }
+        if (response.getType().equals("banner"))
+            didPass = true;
+        notify();
     }
 
     synchronized private void pause() {
@@ -93,17 +107,5 @@ public class TestMediationSuccessThenStd extends AndroidTestCase implements AdRe
             return;
         }
         Clog.d(TestUtil.testLogTag, "unpausing");
-    }
-
-    @Override
-    synchronized public void dispatchResponse(final AdResponse response) {
-        Clog.d(TestUtil.testLogTag, "dispatch " + response.toString());
-        if (response.getType() == null) {
-            Clog.d(TestUtil.testLogTag, "null type");
-            return;
-        }
-        if (response.getType().equals("banner"))
-            didPass = true;
-        notify();
     }
 }

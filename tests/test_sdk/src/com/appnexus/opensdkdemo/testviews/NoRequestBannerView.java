@@ -33,7 +33,7 @@ public class NoRequestBannerView implements MediatedBannerAdView {
     }
 
     @Override
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height) {
         return null;
     }
 }

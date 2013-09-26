@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdkdemo.mediationtests;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
@@ -30,6 +31,7 @@ import com.appnexus.opensdkdemo.util.TestUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.LinkedList;
 
 public class TestActivityMediationNetwork extends ActivityInstrumentationTestCase2<DemoMainActivity> implements AdRequester, AdListener {
 
@@ -100,7 +102,7 @@ public class TestActivityMediationNetwork extends ActivityInstrumentationTestCas
 
         shouldWork = new AdRequest(this, null, null, null, placementId, null, null, 320, 50, -1, -1, null, null, null, true, this, false, false);
         // change AdRequest.java to have setter for this unit test
-//		shouldWork.setContext(activity);
+//        shouldWork.setContext(activity);
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -140,7 +142,7 @@ public class TestActivityMediationNetwork extends ActivityInstrumentationTestCas
         setData(false);
 
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                bav, response);
+                (Activity) bav.getContext(), this, response.getMediatedAds(), null);
     }
 
     @Override
@@ -149,7 +151,7 @@ public class TestActivityMediationNetwork extends ActivityInstrumentationTestCas
     }
 
     @Override
-    synchronized public void dispatchResponse(final AdResponse response) {
+    synchronized public void dispatchResponse(AdResponse response, LinkedList<MediatedAd> oldAds) {
         Clog.d(TestUtil.testLogTag, "dispatch: " + response.toString());
         didPass = true;
     }

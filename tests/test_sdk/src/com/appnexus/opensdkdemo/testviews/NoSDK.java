@@ -27,7 +27,7 @@ public class NoSDK implements MediatedBannerAdView {
     public static boolean didPass = false;
 
     @Override
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height) {
         Clog.d(TestUtil.testLogTag, "NOSDK set to true!");
         didPass = true;
 

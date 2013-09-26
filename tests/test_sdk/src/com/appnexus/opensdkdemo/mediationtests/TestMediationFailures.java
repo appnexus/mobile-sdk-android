@@ -26,6 +26,8 @@ import com.appnexus.opensdkdemo.testviews.ThirdSuccessfulMediationView;
 import com.appnexus.opensdkdemo.util.Lock;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
+import java.util.LinkedList;
+
 public class TestMediationFailures extends AndroidTestCase implements AdRequester {
     String old_base_url;
     AdRequest shouldFail;
@@ -123,9 +125,9 @@ public class TestMediationFailures extends AndroidTestCase implements AdRequeste
 
     @Override
     public void onReceiveResponse(AdResponse response) {
-        Clog.d(TestUtil.testLogTag, "received response: " + response.getMediatedResultCB());
+        Clog.d(TestUtil.testLogTag, "received response: " + response.getBody());
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, response);
+                null, this, response.getMediatedAds(), null);
     }
 
     @Override
@@ -134,14 +136,14 @@ public class TestMediationFailures extends AndroidTestCase implements AdRequeste
     }
 
     @Override
-    public void dispatchResponse(final AdResponse response) {
-        if (response.getMediatedResultCB() == null) {
+    public void dispatchResponse(AdResponse response, LinkedList<MediatedAd> oldAds) {
+        if (oldAds == null) {
             Clog.d(TestUtil.testLogTag, "dispatching null result, return (end of test)");
             return;
         }
         Clog.d(TestUtil.testLogTag, "dispatch: " + response.toString());
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, response);
+                null, this, response.getMediatedAds(), null);
 
         // verify fail result cb
 //		Clog.d(TestUtil.testLogTag, response.getBody());

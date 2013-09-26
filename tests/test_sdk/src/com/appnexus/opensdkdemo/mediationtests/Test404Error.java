@@ -25,6 +25,8 @@ import com.appnexus.opensdkdemo.testviews.SuccessfulMediationView;
 import com.appnexus.opensdkdemo.util.InstanceLock;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
+import java.util.LinkedList;
+
 public class Test404Error extends AndroidTestCase implements AdRequester {
     String old_base_url;
     AdRequest shouldWork;
@@ -52,9 +54,8 @@ public class Test404Error extends AndroidTestCase implements AdRequester {
 
     public void testMediationThen404() {
         // Create a AdRequest which will request a mediated response to
-        // instantiate the SuccessfulMediationView
-        // Since we're just testing to see successful instantiation, interrupt
-        // the sleeping thread from the requestAd function
+        // instantiate the SuccessfulMediationView. The result_cb
+        // should return a 404 error, which should fail instantiation
 
         shouldWork.execute();
         lock.pause(10000);
@@ -72,9 +73,10 @@ public class Test404Error extends AndroidTestCase implements AdRequester {
 
     @Override
     public void onReceiveResponse(AdResponse response) {
-        Clog.d(TestUtil.testLogTag, "received response");
+        // response should be a regular valid mediatied ad
+        Clog.d(TestUtil.testLogTag, "received response: " + response);
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, response);
+                null, this, response.getMediatedAds(), null);
     }
 
     @Override
@@ -83,11 +85,15 @@ public class Test404Error extends AndroidTestCase implements AdRequester {
     }
 
     @Override
-    public void dispatchResponse(final AdResponse response) {
+    public void dispatchResponse(AdResponse response, LinkedList<MediatedAd> oldAds) {
+        // response should be a 404
         Clog.d(TestUtil.testLogTag, "dispatch " + response.toString());
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, response);
+                null, this, response.getMediatedAds(), null);
 
+        // instantiation should fail, so this should be null
         assertNull(output);
+        lock.unpause();
     }
+
 }

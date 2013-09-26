@@ -45,8 +45,6 @@ public abstract class MediatedAdViewController implements Displayable {
     protected boolean errorCBMade = false;
     protected boolean successCBMade = false;
 
-    protected boolean noMoreAds = false;
-
     protected MediatedAdViewController() {
 
     }
@@ -62,7 +60,6 @@ public abstract class MediatedAdViewController implements Displayable {
         }
         else {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_no_ads));
-            noMoreAds = true;
             onAdFailed(RESULT.UNABLE_TO_FILL);
         }
     }
