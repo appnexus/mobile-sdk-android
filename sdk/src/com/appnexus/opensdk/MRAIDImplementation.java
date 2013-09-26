@@ -32,6 +32,7 @@ import android.view.Gravity;
 import android.view.Window;
 import android.webkit.*;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.W3CEvent;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -434,128 +435,9 @@ public class MRAIDImplementation {
     private void createCalendarEvent(ArrayList<BasicNameValuePair> parameters) {
         //TODO: This is going to take a loooong time. We need to parse the JSON (formatted
         //TODO: following the W3C spec. See http://developer.android.com/guide/topics/providers/calendar-provider.html#intent-insert
+        W3CEvent event = W3CEvent.createFromJSON(parameters.get(0).getValue());
 
-        //TODO oh god please move this to it's own utility class
-        String id;
-        String decription;
-        String location;//?
-        String summary;//?
-        String start;
-        String end;//?
-        String status;//?
-        String transparency;//?
-        String reminder;//?
 
-        //Repeat rule?
-        String frequency;//?
-        int interval;//?
-        String expires;//?
-        String[] exceptionDates;
-        int[] daysInWeek;
-        int[] daysInMonth;
-        int[] daysInYear;
-        int[] weeksInMonth;
-        int[] monthsInYear;
-
-        try {
-            JSONObject eventj = new JSONObject(parameters.get(0).getValue());
-            if(!eventj.isNull("id")){
-                id = eventj.getString("id");
-            }
-            if(!eventj.isNull("description")){
-                decription = eventj.getString("description");
-            }
-            if(!eventj.isNull("location")){
-                location = eventj.getString("location");
-            }
-            if(!eventj.isNull("summary")){
-                summary = eventj.getString("summary");
-            }
-            if(!eventj.isNull("start")){
-                start = eventj.getString("start");
-            }
-            if(!eventj.isNull("end")){
-                end = eventj.getString("end");
-            }
-            if(!eventj.isNull("status")){
-                status = eventj.getString("status");
-            }
-            if(!eventj.isNull("freebusy")){
-                transparency = eventj.getString("freebusy"); //wai, w3, wai
-            }
-            if(!eventj.isNull("reminder")){
-                reminder = eventj.getString("reminder");
-            }
-
-            //Parse the recurrence event
-            if(!eventj.isNull("recurrence")){
-                try{
-                    JSONObject recurrencej = eventj.getJSONObject("recurrence");
-                    if(!recurrencej.isNull("frequency")){
-                        frequency = recurrencej.getString("frequency");
-                    }
-                    if(!recurrencej.isNull("interval")){
-                        interval = recurrencej.getInt("interval");
-                    }
-                    if(!recurrencej.isNull("expires")){
-                        expires = recurrencej.getString("expires");
-                    }
-                    if(!recurrencej.isNull("exceptionDates")){
-                        JSONArray exceptionDatesj = recurrencej.getJSONArray("exceptionDates");
-                        int len = exceptionDatesj.length();
-                        exceptionDates = new String[len];
-                        for(int i = 0; i<len; i++){
-                            exceptionDates[i]=exceptionDatesj.getString(i);
-                        }
-                    }
-                    if(!recurrencej.isNull("daysInWeek")){
-                        JSONArray daysInWeekj = recurrencej.getJSONArray("daysInWeek");
-                        int len = daysInWeekj.length();
-                        daysInWeek = new int[len];
-                        for(int i = 0; i<len; i++){
-                            daysInWeek[i]=daysInWeekj.getInt(i);
-                        }
-                    }
-                    if(!recurrencej.isNull("daysInMonth")){
-                        JSONArray daysInMonthj = recurrencej.getJSONArray("daysInMonth");
-                        int len = daysInMonthj.length();
-                        daysInMonth = new int[len];
-                        for(int i = 0; i<len; i++){
-                            daysInMonth[i]=daysInMonthj.getInt(i);
-                        }
-                    }
-                    if(!recurrencej.isNull("daysInYear")){
-                        JSONArray daysInYearj = recurrencej.getJSONArray("daysInYear");
-                        int len = daysInYearj.length();
-                        daysInYear = new int[len];
-                        for(int i = 0; i<len; i++){
-                            daysInYear[i]=daysInYearj.getInt(i);
-                        }
-                    }
-                    if(!recurrencej.isNull("weeksInMonth")){
-                        JSONArray weeksInMonthj = recurrencej.getJSONArray("weeksInMonth");
-                        int len = weeksInMonthj.length();
-                        weeksInMonth = new int[len];
-                        for(int i = 0; i<len; i++){
-                            weeksInMonth[i]=weeksInMonthj.getInt(i);
-                        }
-                    }
-                    if(!recurrencej.isNull("monthsInYear")){
-                        JSONArray monthsInYearj = recurrencej.getJSONArray("monthsInYear");
-                        int len = monthsInYearj.length();
-                        monthsInYear = new int[len];
-                        for(int i = 0; i<len; i++){
-                            monthsInYear[i]=monthsInYearj.getInt(i);
-                        }
-                    }
-                }catch(JSONException e){
-                    // TODO: Clogging - error because of bad json in recurrence
-                }
-            }
-
-        } catch (JSONException e) {
-            //TODO: Clogging - error because of bad json
-        }
 
 
 
