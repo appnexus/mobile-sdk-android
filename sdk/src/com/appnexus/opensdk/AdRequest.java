@@ -84,10 +84,13 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     int maxHeight = -1;
     boolean shouldRetry = true; // true by default
 
+    public static final String RETRY = "RETRY";
+    public static final String BLANK = "BLANK";
+
     private static final AdResponse CONNECTIVITY_RETRY = new AdResponse(null,
-            "RETRY", null);
+            RETRY, null);
     private static final AdResponse BLANK_RETRY = new AdResponse(
-            null, "BLANK", null);
+            null, BLANK, null);
 
     /**
      * Creates a new AdRequest with the given parameters

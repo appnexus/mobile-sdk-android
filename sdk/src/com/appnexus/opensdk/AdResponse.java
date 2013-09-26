@@ -40,6 +40,24 @@ public class AdResponse {
     final static String http_error = "HTTP_ERROR";
     public static final String HTTP_OK = "200 OK";
 
+    private static final String MRAID_JS_FILENAME = "mraid.js";
+    private static final String RESPONSE_KEY_STATUS = "status";
+    private static final String RESPONSE_KEY_ERROR_MESSAGE = "errorMessage";
+    private static final String RESPONSE_KEY_ADS = "ads";
+    private static final String RESPONSE_KEY_TYPE = "type";
+    private static final String RESPONSE_KEY_WIDTH = "width";
+    private static final String RESPONSE_KEY_HEIGHT = "height";
+    private static final String RESPONSE_KEY_CONTENT = "content";
+    private static final String RESPONSE_KEY_MEDIATED_ADS = "mediated";
+    private static final String RESPONSE_KEY_HANDLER = "handler";
+    private static final String RESPONSE_KEY_CLASS = "class";
+    private static final String RESPONSE_KEY_ID = "id";
+    private static final String RESPONSE_KEY_PARAM = "param";
+    private static final String RESPONSE_KEY_RESULT_CB = "result_cb";
+
+    private static final String RESPONSE_VALUE_ERROR = "error";
+    private static final String RESPONSE_VALUE_ANDROID = "android";
+
     public AdResponse(AdRequester requester, String body, Header[] headers) {
         this.requester = requester;
         this.body = body;
@@ -70,88 +88,107 @@ public class AdResponse {
 
         parseResponse(body);
 
-        isMraid = getBody().contains("mraid.js");
+        isMraid = getBody().contains(MRAID_JS_FILENAME);
 
     }
 
     private void parseResponse(String body) {
         JSONObject response = null;
 
-        if (body.equals("RETRY") || body.equals("BLANK") || body.equals(HTTP_OK)) {
+        if (body.equals(AdRequest.RETRY) || body.equals(AdRequest.BLANK) || body.equals(HTTP_OK)) {
             return;
         }
 
         try {
             response = new JSONObject(body);
-            String status = response.getString("status");
-            if ((status != null) && status.equals("error")) {
-                String error = response.getString("errorMessage");
-                Clog.e(Clog.httpRespLogTag,
-                        Clog.getString(R.string.response_error, error));
+            if (!checkStatusIsValid(response))
                 return;
-            }
-
-            if (!response.isNull("ads") && response.getJSONArray("ads").length() > 0) {
-                JSONArray ads = response.getJSONArray("ads");
-                // for now, just take the first ad
-                JSONObject firstAd = ads.getJSONObject(0);
-                // assume there's content
-                height = firstAd.getInt("height");
-                width = firstAd.getInt("width");
-                this.body = firstAd.getString("content");
-                type = firstAd.getString("type");
-                if (this.body == null || this.body.equals("")) {
-                    Clog.e(Clog.httpRespLogTag,
-                            Clog.getString(R.string.blank_ad));
-                }
-                else
-                    containsAds = true;
-                return;
-            }
         } catch (JSONException e) {
             Clog.e(Clog.httpRespLogTag,
-                    Clog.getString(R.string.response_json_error, body));
-            e.printStackTrace();
-            //return;
-        }
-
-        if (response == null) {
-            return;
+                    Clog.getString(R.string.response_json_error, body), e);
+            if (response == null)
+                return;
         }
 
         try {
-            JSONArray mediated = response.getJSONArray("mediated");
-            mediatedAds = new LinkedList<MediatedAd>();
-            if (mediated.length() > 0) {
-                isMediated = true;
-                for (int i = 0; i < mediated.length(); i++) {
-                    JSONObject handler = mediated.getJSONObject(i).getJSONObject("handler");
-                    if (handler.getString("type").toLowerCase().equals("android")) {
-                        //TODO: if i get an error here what to do
-                        String className = handler.getString("class");
-                        String param = handler.getString("param");
-                        int height = handler.getInt("height");
-                        int width = handler.getInt("width");
-                        String adId = handler.getString("id");
-                        String resultCB = mediated.getJSONObject(i).getString("result_cb");
-
-                        mediatedAds.add(new MediatedAd(className,
-                                param, width, height, adId,
-                                resultCB));
-                    }
-                }
-                if (!mediatedAds.isEmpty())
-                    containsAds = true;
-                return;
-            }
+            if (handleStdAds(response)) return;
         } catch (JSONException e) {
             Clog.e(Clog.httpRespLogTag,
-                    Clog.getString(R.string.response_json_error, body));
-            e.printStackTrace();
-            return;
+                    Clog.getString(R.string.response_json_error, body), e);
         }
-        Clog.w(Clog.httpRespLogTag,
-                Clog.getString(R.string.response_no_ads));
+
+        try {
+            if (handleMediatedAds(response)) return;
+        } catch (JSONException e) {
+            Clog.e(Clog.httpRespLogTag,
+                    Clog.getString(R.string.response_json_error, body), e);
+        }
+    }
+
+    // returns true if no error in status. don't fail on null or missing status
+    private boolean checkStatusIsValid(JSONObject response) throws JSONException {
+        if (!response.isNull(RESPONSE_KEY_STATUS)) {
+            String status = response.getString(RESPONSE_KEY_STATUS);
+            if (status.equals(RESPONSE_VALUE_ERROR)) {
+                String error = response.getString(RESPONSE_KEY_ERROR_MESSAGE);
+                Clog.e(Clog.httpRespLogTag,
+                        Clog.getString(R.string.response_error, error));
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // returns true if response contains an ad, false if not
+    private boolean handleStdAds(JSONObject response) throws JSONException {
+        if (!response.isNull(RESPONSE_KEY_ADS) && response.getJSONArray(RESPONSE_KEY_ADS).length() > 0) {
+            JSONArray ads = response.getJSONArray(RESPONSE_KEY_ADS);
+            // for now, just take the first ad
+            JSONObject firstAd = ads.getJSONObject(0);
+            type = firstAd.getString(RESPONSE_KEY_TYPE);
+            height = firstAd.getInt(RESPONSE_KEY_HEIGHT);
+            width = firstAd.getInt(RESPONSE_KEY_WIDTH);
+            body = firstAd.getString(RESPONSE_KEY_CONTENT);
+            if (body == null || body.equals("")) {
+                Clog.e(Clog.httpRespLogTag,
+                        Clog.getString(R.string.blank_ad));
+            }
+            else {
+                containsAds = true;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // returns true if response contains an ad, false if not
+    private boolean handleMediatedAds(JSONObject response) throws JSONException {
+        if (!response.isNull(RESPONSE_KEY_MEDIATED_ADS) && response.getJSONArray(RESPONSE_KEY_MEDIATED_ADS).length() > 0) {
+            JSONArray mediated = response.getJSONArray(RESPONSE_KEY_MEDIATED_ADS);
+            mediatedAds = new LinkedList<MediatedAd>();
+            isMediated = true;
+            for (int i = 0; i < mediated.length(); i++) {
+                JSONObject handler = mediated.getJSONObject(i).getJSONObject(RESPONSE_KEY_HANDLER);
+                if (handler.getString(RESPONSE_KEY_TYPE).toLowerCase().equals(RESPONSE_VALUE_ANDROID)) {
+                    String className = handler.getString(RESPONSE_KEY_CLASS);
+                    String param = handler.getString(RESPONSE_KEY_PARAM);
+                    int height = handler.getInt(RESPONSE_KEY_HEIGHT);
+                    int width = handler.getInt(RESPONSE_KEY_WIDTH);
+                    String adId = handler.getString(RESPONSE_KEY_ID);
+                    String resultCB = mediated.getJSONObject(i).getString(RESPONSE_KEY_RESULT_CB);
+
+                    mediatedAds.add(new MediatedAd(className,
+                            param, width, height, adId,
+                            resultCB));
+                }
+            }
+
+            if (!mediatedAds.isEmpty()) {
+                containsAds = true;
+                return true;
+            }
+        }
+        return false;
     }
 
     public String getBody() {
