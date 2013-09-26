@@ -78,6 +78,7 @@ public class AdResponse {
 
         Clog.d(Clog.httpRespLogTag,
                 Clog.getString(R.string.response_body, body));
+        //TODO: review, do we really need to print this?
         if (headers != null) {
             for (Header h : headers) {
                 Clog.v(Clog.httpRespLogTag,

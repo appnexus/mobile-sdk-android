@@ -18,7 +18,7 @@ package com.appnexus.opensdk;
 
 public interface MediatedAdViewControllerListener {
     public void onAdLoaded();
-    public void onAdFailed();
+    public void onAdFailed(boolean noMoreAds);
     public void onAdExpanded();
     public void onAdCollapsed();
     public void onAdClicked();

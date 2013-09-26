@@ -502,7 +502,10 @@ public abstract class AdView extends FrameLayout implements MediatedAdViewContro
     }
 
     @Override
-    public void onAdFailed() {
+    public void onAdFailed(boolean noMoreAds) {
+        // wait until mediation waterfall is complete before calling adListener
+        if (!noMoreAds)
+            return;
         this.post(new Runnable() {
             @Override
             public void run() {

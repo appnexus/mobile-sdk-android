@@ -45,6 +45,8 @@ public abstract class MediatedAdViewController implements Displayable {
     protected boolean errorCBMade = false;
     protected boolean successCBMade = false;
 
+    private boolean noMoreAds = false;
+
     protected MediatedAdViewController() {
 
     }
@@ -60,6 +62,7 @@ public abstract class MediatedAdViewController implements Displayable {
         }
         else {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_no_ads));
+            noMoreAds = true;
             onAdFailed(RESULT.UNABLE_TO_FILL);
         }
     }
@@ -105,7 +108,7 @@ public abstract class MediatedAdViewController implements Displayable {
     public void onAdFailed(MediatedAdViewController.RESULT reason) {
         //TODO: verify that adview doesn't make the callback
         if (listener != null)
-            listener.onAdFailed();
+            listener.onAdFailed(noMoreAds);
         this.failed = true;
 
         if (!errorCBMade) {
@@ -157,6 +160,10 @@ public abstract class MediatedAdViewController implements Displayable {
                     Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_response_null));
                     return;
                 }
+
+                // if this was the result of a successful ad, stop looking for more ads
+                if (successCBMade)
+                    return;
 
                 AdResponse response = new AdResponse(requester, httpResponse.getResponseBody(), httpResponse.getHeaders());
                 requester.dispatchResponse(response, mediatedAds);
