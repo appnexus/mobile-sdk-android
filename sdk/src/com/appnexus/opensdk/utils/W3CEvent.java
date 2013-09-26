@@ -266,8 +266,8 @@ public class W3CEvent {
             }
             if(getRecurrence().getDaysInWeek().length>0){
                 repeatRuleBuilder.append("BYDAY=");
-                for(int i : getRecurrence().getDaysInWeek()){
-                    switch(i){
+                for(int j : getRecurrence().getDaysInWeek()){
+                    switch(j){
                         case 0:
                             repeatRuleBuilder.append("SU,");
                             break;
@@ -299,7 +299,7 @@ public class W3CEvent {
             if(getRecurrence().getDaysInMonth().length>0){
                 repeatRuleBuilder.append("BYMONTHDAY=");
                 for(int j : getRecurrence().getDaysInMonth()){
-                    repeatRuleBuilder.append(getRecurrence().getDaysInMonth()[i]);
+                    repeatRuleBuilder.append(getRecurrence().getDaysInMonth()[j]);
                     repeatRuleBuilder.append(",");
                 }
                 if(repeatRuleBuilder.charAt(repeatRuleBuilder.length()-1)==','){
@@ -310,7 +310,7 @@ public class W3CEvent {
             if(getRecurrence().getDaysInYear().length>0){
                 repeatRuleBuilder.append("BYYEARDAY=");
                 for(int j : getRecurrence().getDaysInYear()){
-                    repeatRuleBuilder.append(getRecurrence().getDaysInYear()[i]);
+                    repeatRuleBuilder.append(getRecurrence().getDaysInYear()[j]);
                     repeatRuleBuilder.append(",");
                 }
                 if(repeatRuleBuilder.charAt(repeatRuleBuilder.length()-1)==','){
@@ -321,7 +321,7 @@ public class W3CEvent {
             if(getRecurrence().getMonthsInYear().length>0){
                 repeatRuleBuilder.append("BYMONTH=");
                 for(int j : getRecurrence().getMonthsInYear()){
-                    repeatRuleBuilder.append(getRecurrence().getMonthsInYear()[i]);
+                    repeatRuleBuilder.append(getRecurrence().getMonthsInYear()[j]);
                     repeatRuleBuilder.append(",");
                 }
                 if(repeatRuleBuilder.charAt(repeatRuleBuilder.length()-1)==','){
@@ -332,7 +332,7 @@ public class W3CEvent {
             if(getRecurrence().getWeeksInMonth().length>0){
                 repeatRuleBuilder.append("BYWEEKNO=");
                 for(int j : getRecurrence().getWeeksInMonth()){
-                    repeatRuleBuilder.append(getRecurrence().getWeeksInMonth()[i]);
+                    repeatRuleBuilder.append(getRecurrence().getWeeksInMonth()[j]);
                     repeatRuleBuilder.append(",");
                 }
                 if(repeatRuleBuilder.charAt(repeatRuleBuilder.length()-1)==','){
