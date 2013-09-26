@@ -36,11 +36,11 @@ public abstract class MediatedAdViewController implements Displayable {
 
     boolean failed = false;
     Class<?> c;
-    AdView owner;
     MediatedAdView mAV;
     AdRequester requester;
     LinkedList<MediatedAd> mediatedAds;
     MediatedAd currentAd;
+    MediatedAdViewControllerListener listener;
 
     protected boolean errorCBMade = false;
     protected boolean successCBMade = false;
@@ -51,9 +51,9 @@ public abstract class MediatedAdViewController implements Displayable {
 
     }
 
-    protected MediatedAdViewController(AdView owner, LinkedList<MediatedAd> mediatedAds) {
-        //TODO: owner - second part is for testing when owner is null
-        if (owner != null) requester = owner.mAdFetcher;
+    protected MediatedAdViewController(AdRequester requester, LinkedList<MediatedAd> mediatedAds, MediatedAdViewControllerListener listener) {
+        this.requester = requester;
+        this.listener = listener;
         this.mediatedAds = mediatedAds;
 
         if ((mediatedAds != null) && !mediatedAds.isEmpty()) {
@@ -70,8 +70,6 @@ public abstract class MediatedAdViewController implements Displayable {
     private void instantiateNewMediatedAd() {
         Clog.d(Clog.mediationLogTag, Clog.getString(
                 R.string.instantiating_class, currentAd.getClassName()));
-        errorCBMade = false;
-        successCBMade = false;
 
         try {
             c = Class.forName(currentAd.getClassName());
@@ -98,11 +96,9 @@ public abstract class MediatedAdViewController implements Displayable {
         }
     }
 
-    //TODO: owner dependency
     public void onAdLoaded() {
-        if ((owner != null) && owner.getAdListener() != null) {
-            owner.getAdListener().onAdLoaded(owner);
-        }
+        if (listener != null)
+            listener.onAdLoaded();
         if (!successCBMade) {
             successCBMade = true;
             fireResultCB(RESULT.SUCCESS);
@@ -110,7 +106,9 @@ public abstract class MediatedAdViewController implements Displayable {
     }
 
     public void onAdFailed(MediatedAdViewController.RESULT reason) {
-        // callback will be called by AdView
+        //TODO: verify that adview doesn't make the callback
+        if (listener != null)
+            listener.onAdFailed();
         this.failed = true;
 
         if (!errorCBMade) {
@@ -120,21 +118,18 @@ public abstract class MediatedAdViewController implements Displayable {
     }
 
     public void onAdExpanded() {
-        if (owner.getAdListener() != null) {
-            owner.getAdListener().onAdExpanded(owner);
-        }
+        if (listener != null)
+            listener.onAdExpanded();
     }
 
     public void onAdCollapsed() {
-        if (owner.getAdListener() != null) {
-            owner.getAdListener().onAdCollapsed(owner);
-        }
+        if (listener != null)
+            listener.onAdCollapsed();
     }
 
     public void onAdClicked() {
-        if (owner.getAdListener() != null) {
-            owner.getAdListener().onAdClicked(owner);
-        }
+        if (listener != null)
+            listener.onAdClicked();
     }
 
     public boolean failed() {
@@ -144,6 +139,10 @@ public abstract class MediatedAdViewController implements Displayable {
     private void fireResultCB(final RESULT result) {
 
         // if resultCB is empty don't do anything
+        if (currentAd == null) {
+            Clog.w(Clog.mediationLogTag, Clog.getString(R.string.fire_cb_result_null));
+            return;
+        }
         final String resultCB = currentAd.getResultCB();
         if ((resultCB == null) || resultCB.isEmpty()) {
             Clog.w(Clog.mediationLogTag, Clog.getString(R.string.fire_cb_result_null));

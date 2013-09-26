@@ -39,7 +39,7 @@ import java.util.ArrayList;
  *
  * @author jacob
  */
-public abstract class AdView extends FrameLayout {
+public abstract class AdView extends FrameLayout implements MediatedAdViewControllerListener {
 
     protected AdFetcher mAdFetcher;
     protected String placementID;
@@ -250,19 +250,14 @@ public abstract class AdView extends FrameLayout {
 	 */
 
     protected void display(Displayable d) {
-        if (d == null) {
-            if (this.adListener != null)
-                adListener.onAdRequestFailed(this);
+        if ((d == null) || d.failed()) {
+            // The displayable has failed to be parsed or turned into a View.
+            fail();
             return;
-        }
-        if (d.failed()) {
-            if (this.adListener != null)
-                adListener.onAdRequestFailed(this);
-            return; // The displayable has failed to be parsed or turned into a
-            // View.
         }
         this.removeAllViews();
         if (d.getView() == null) {
+            //TODO: why do we fail silently here
             return;
         }
         this.addView(d.getView());
@@ -493,5 +488,60 @@ public abstract class AdView extends FrameLayout {
         Drawable refreshButton;
 
         static final ArrayList<Pair<String, BrowserStyle>> bridge = new ArrayList<Pair<String, BrowserStyle>>();
+    }
+
+    @Override
+    public void onAdLoaded() {
+        this.post(new Runnable() {
+            @Override
+            public void run() {
+                if (adListener != null)
+                    adListener.onAdLoaded(AdView.this);
+            }
+        });
+    }
+
+    @Override
+    public void onAdFailed() {
+        this.post(new Runnable() {
+            @Override
+            public void run() {
+                if (adListener != null)
+                    adListener.onAdRequestFailed(AdView.this);
+            }
+        });
+    }
+
+    @Override
+    public void onAdExpanded() {
+        this.post(new Runnable() {
+            @Override
+            public void run() {
+                if (adListener != null)
+                    adListener.onAdExpanded(AdView.this);
+            }
+        });
+    }
+
+    @Override
+    public void onAdCollapsed() {
+        this.post(new Runnable() {
+            @Override
+            public void run() {
+                if (adListener != null)
+                    adListener.onAdCollapsed(AdView.this);
+            }
+        });
+    }
+
+    @Override
+    public void onAdClicked() {
+        this.post(new Runnable() {
+            @Override
+            public void run() {
+                if (adListener != null)
+                    adListener.onAdClicked(AdView.this);
+            }
+        });
     }
 }

@@ -23,30 +23,34 @@ import java.util.LinkedList;
 
 public class MediatedBannerAdViewController extends MediatedAdViewController implements Displayable {
 
-    View placeableView;
+    private View placeableView;
 
-    static public MediatedBannerAdViewController create(AdView owner, LinkedList<MediatedAd> mediatedAds) {
-        MediatedBannerAdViewController out = new MediatedBannerAdViewController(owner, mediatedAds);
+    static public MediatedBannerAdViewController create(
+            Activity activity, AdRequester requester,
+            LinkedList<MediatedAd> mediatedAds, MediatedAdViewControllerListener listener) {
+        MediatedBannerAdViewController out = new MediatedBannerAdViewController(activity, requester, mediatedAds, listener);
         return out.failed() ? null : out;
     }
 
-    private MediatedBannerAdViewController(AdView owner, LinkedList<MediatedAd> mediatedAds) {
-        super(owner, mediatedAds);
+    protected MediatedBannerAdViewController(
+            Activity activity, AdRequester requester, LinkedList<MediatedAd> mediatedAds,
+            MediatedAdViewControllerListener listener) {
+        super(requester, mediatedAds, listener);
 
         if (this.mAV == null || !(this.mAV instanceof MediatedBannerAdView)) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instance_exception, getClass().getCanonicalName()));
             onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
             return;
         }
-        //TODO: refactor - this also depends on owner. what if owner is null? (for testing)
+
+        Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediated_request));
         try {
             placeableView = ((MediatedBannerAdView) mAV).requestAd(this,
-                    owner != null ? (Activity) owner.getContext() : null,
+                    activity,
                     currentAd.getParam(),
                     currentAd.getId(),
                     currentAd.getWidth(),
-                    currentAd.getHeight(),
-                    owner);
+                    currentAd.getHeight());
         } catch (Exception e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
             onAdFailed(RESULT.INVALID_REQUEST);

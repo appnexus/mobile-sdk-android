@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
@@ -232,14 +233,20 @@ public class AdFetcher implements AdRequester {
                     // mediated
                     if (owner.getMRAIDAdType().equals(Settings.ADTYPE_BANNER)) {
                         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                                owner, mediatedAds);
+                                (Activity) owner.getContext(),
+                                owner.mAdFetcher,
+                                mediatedAds,
+                                owner);
                         if (output != null) {
                             owner.display(output);
                         }
                     }
                     else if (owner.getMRAIDAdType().equals(Settings.ADTYPE_INTERSTITIAL)) {
                         MediatedInterstitialAdViewController output = MediatedInterstitialAdViewController.create(
-                                (InterstitialAdView) owner, mediatedAds);
+                                (Activity) owner.getContext(),
+                                owner.mAdFetcher,
+                                mediatedAds,
+                                owner);
                         if (output != null) {
                             owner.display(output);
                         }
