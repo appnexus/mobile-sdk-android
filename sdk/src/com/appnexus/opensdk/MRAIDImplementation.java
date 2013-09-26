@@ -19,6 +19,8 @@ package com.appnexus.opensdk;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -27,6 +29,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.net.http.SslError;
+import android.provider.CalendarContract;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.Window;
@@ -436,7 +439,39 @@ public class MRAIDImplementation {
         //TODO: This is going to take a loooong time. We need to parse the JSON (formatted
         //TODO: following the W3C spec. See http://developer.android.com/guide/topics/providers/calendar-provider.html#intent-insert
         W3CEvent event = W3CEvent.createFromJSON(parameters.get(0).getValue());
-
+        ContentResolver cr = owner.getContext().getContentResolver();
+        ContentValues values = new ContentValues();
+        if(event.getDecription()!=null){
+            values.put(CalendarContract.Events.TITLE, event.getDecription());
+        }
+        if(event.getId()!=null){
+            values.put(CalendarContract.Events._ID, event.getId());
+        }
+        if(event.getLocation()!=null){
+            values.put(CalendarContract.Events.EVENT_LOCATION, event.getLocation());
+        }
+        if(event.getSummary()!=null){
+            values.put(CalendarContract.Events.DESCRIPTION, event.getSummary());
+        }
+        if(event.getStart()!=null){
+            //TODO: convert to UTC millis since epoch
+            values.put(CalendarContract.Events.DTSTART, event.getStart());
+        }
+        if(event.getEnd()!=null){
+            //TODO: convert to UTC millis since epoch
+            values.put(CalendarContract.Events.DTEND, event.getEnd());
+        }
+        if(event.getStatus()!=null){
+            values.put(CalendarContract.Events.STATUS, event.getStatus());
+        }
+        if(event.getTransparency()!=null){
+            values.put(CalendarContract.Events.VISIBLE, event.getTransparency().equals("opaque") ? false: true);
+        }
+        if(event.getReminder()!=null){
+            values.put(CalendarContract.Reminders.EVENT_ID, event.getId());
+            //TODO: Convert to a positive number of minutes before the event
+            values.put(CalendarContract.Reminders.MINUTES, event.getReminder());
+        }
 
 
 
