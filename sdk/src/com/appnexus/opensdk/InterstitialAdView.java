@@ -172,13 +172,21 @@ public class InterstitialAdView extends AdView {
      * response, otherwise, the ad will not show.
      */
     @Override
-    public void loadAd() {
+    public boolean loadAd() {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.load_ad_int));
+        if (isMRAIDExpanded())
+            return false;
+        if (placementID == null || placementID.isEmpty()) {
+            Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_placement_id));
+            return false;
+        }
         if (mAdFetcher != null) {
             // Load an interstitial ad
             mAdFetcher.stop();
             mAdFetcher.start();
+            return true;
         }
+        return false;
     }
 
     @Override

@@ -25,7 +25,10 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.view.Gravity;
-import android.webkit.*;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import com.appnexus.opensdk.utils.Clog;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -156,36 +159,8 @@ public class MRAIDImplementation {
     }
 
 	protected WebChromeClient getWebChromeClient() {
-		return new MRAIDWebChromeClient((Activity) owner.getContext());
+		return new VideoEnabledWebChromeClient((Activity) owner.getContext());
 	}
-
-	class MRAIDWebChromeClient extends VideoEnabledWebChromeClient {
-
-        public MRAIDWebChromeClient(Activity context) {
-            super(context);
-        }
-
-        @Override
-		public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-			// super.onConsoleMessage(consoleMessage);
-			Clog.w(Clog.mraidLogTag,
-					Clog.getString(R.string.console_message,
-							consoleMessage.message(),
-							consoleMessage.lineNumber(),
-							consoleMessage.sourceId()));
-			return true;
-		}
-
-		@Override
-		public boolean onJsAlert(WebView view, String url, String message,
-				JsResult result) {
-			// /super.onJsAlert(view, url, message, result);
-			Clog.w(Clog.mraidLogTag,
-					Clog.getString(R.string.js_alert, message, url));
-			result.confirm();
-			return true;
-		}
-    }
 
     protected void onVisible() {
         if (readyFired)

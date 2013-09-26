@@ -6,12 +6,11 @@ import android.graphics.Color;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebChromeClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.Clog;
 
-public class VideoEnabledWebChromeClient extends WebChromeClient {
+public class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     CustomViewCallback customViewCallback;
     FrameLayout frame;
     Activity context;
@@ -107,6 +106,7 @@ public class VideoEnabledWebChromeClient extends WebChromeClient {
         });
         layout.addView(close);
     }
+
 //
 //    @Override
 //    public void onCompletion(MediaPlayer mediaPlayer) {
