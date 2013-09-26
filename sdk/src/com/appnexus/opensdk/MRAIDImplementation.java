@@ -473,7 +473,52 @@ public class MRAIDImplementation {
             values.put(CalendarContract.Reminders.MINUTES, event.getReminder());
         }
 
-
+        //TODO: Repeat rule
+        StringBuilder repeatRuleBuilder= new StringBuilder("");
+        if(event.getRecurrence()!=null){
+            if(event.getRecurrence().getFrequency()!=null){
+                repeatRuleBuilder.append("FREQ=");
+                repeatRuleBuilder.append(event.getRecurrence().getFrequency().toUpperCase());
+                repeatRuleBuilder.append(";");
+            }
+            if(event.getRecurrence().getInterval()>0){
+                repeatRuleBuilder.append("INTERVAL=");
+                repeatRuleBuilder.append(event.getRecurrence().getInterval());
+                repeatRuleBuilder.append(";");
+            }
+            if(event.getRecurrence().getDaysInWeek().length>0){
+                repeatRuleBuilder.append("WKST=SU;BYDAY=");
+                for(int i : event.getRecurrence().getDaysInWeek()){
+                    switch(i){
+                        case 0:
+                            repeatRuleBuilder.append("SU,");
+                            break;
+                        case 1:
+                            repeatRuleBuilder.append("MO,");
+                            break;
+                        case 2:
+                            repeatRuleBuilder.append("TU,");
+                            break;
+                        case 3:
+                            repeatRuleBuilder.append("WE,");
+                            break;
+                        case 4:
+                            repeatRuleBuilder.append("TH,");
+                            break;
+                        case 5:
+                            repeatRuleBuilder.append("FR,");
+                            break;
+                        case 6:
+                            repeatRuleBuilder.append("SA,");
+                            break;
+                    }
+                }
+                if(repeatRuleBuilder.charAt(repeatRuleBuilder.length()-1)==','){
+                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length()-1);
+                }
+                repeatRuleBuilder.append(";");
+            }
+        }
 
 
 

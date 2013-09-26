@@ -29,7 +29,7 @@ public class W3CEvent {
     private String status;//?
     private String transparency;//?
     private String reminder;//?
-    private RepeatRule recurrence;
+    private W3CRepeatRule recurrence;
 
     public String getId() {
         return id;
@@ -103,93 +103,12 @@ public class W3CEvent {
         this.reminder = reminder;
     }
 
-    public RepeatRule getRecurrence() {
+    public W3CRepeatRule getRecurrence() {
         return recurrence;
     }
 
-    public void setRecurrence(RepeatRule recurrence) {
+    public void setRecurrence(W3CRepeatRule recurrence) {
         this.recurrence = recurrence;
-    }
-
-    static class RepeatRule{
-        //Repeat rule?
-        private String frequency;//?
-        private int interval;//?
-        private String expires;//?
-        private String[] exceptionDates;
-        private int[] daysInWeek;
-        private int[] daysInMonth;
-        private int[] daysInYear;
-        int[] weeksInMonth;
-        private int[] monthsInYear;
-
-        private void RepeatRule(){
-
-        }
-
-        public String getFrequency() {
-            return frequency;
-        }
-
-        public void setFrequency(String frequency) {
-            this.frequency = frequency;
-        }
-
-        public int getInterval() {
-            return interval;
-        }
-
-        public void setInterval(int interval) {
-            this.interval = interval;
-        }
-
-        public String getExpires() {
-            return expires;
-        }
-
-        public void setExpires(String expires) {
-            this.expires = expires;
-        }
-
-        public String[] getExceptionDates() {
-            return exceptionDates;
-        }
-
-        public void setExceptionDates(String[] exceptionDates) {
-            this.exceptionDates = exceptionDates;
-        }
-
-        public int[] getDaysInWeek() {
-            return daysInWeek;
-        }
-
-        public void setDaysInWeek(int[] daysInWeek) {
-            this.daysInWeek = daysInWeek;
-        }
-
-        public int[] getDaysInMonth() {
-            return daysInMonth;
-        }
-
-        public void setDaysInMonth(int[] daysInMonth) {
-            this.daysInMonth = daysInMonth;
-        }
-
-        public int[] getDaysInYear() {
-            return daysInYear;
-        }
-
-        public void setDaysInYear(int[] daysInYear) {
-            this.daysInYear = daysInYear;
-        }
-
-        public int[] getMonthsInYear() {
-            return monthsInYear;
-        }
-
-        public void setMonthsInYear(int[] monthsInYear) {
-            this.monthsInYear = monthsInYear;
-        }
     }
 
     public static W3CEvent createFromJSON(String s){
@@ -226,7 +145,7 @@ public class W3CEvent {
 
             //Parse the recurrence event
             if(!eventj.isNull("recurrence")){
-                out.setRecurrence(new RepeatRule());
+                out.setRecurrence(new W3CRepeatRule());
                 try{
                     JSONObject recurrencej = eventj.getJSONObject("recurrence");
                     if(!recurrencej.isNull("frequency")){
