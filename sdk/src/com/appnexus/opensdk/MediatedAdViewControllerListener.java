@@ -16,10 +16,40 @@
 
 package com.appnexus.opensdk;
 
+/**
+ * Interface for receiving callbacks from a MediatedAdViewController
+ */
 public interface MediatedAdViewControllerListener {
+
+    /**
+     * Called when the third-party mediation network has alerted the
+     * SDK of a successful ad request
+     */
     public void onAdLoaded();
+
+    /**
+     * Called when the third-party mediation network has alerted the
+     * SDK of a failed ad request
+     * @param noMoreAds true if the response contains no more ads
+     *                  and we should call onAdRequestFailed
+     */
     public void onAdFailed(boolean noMoreAds);
+
+    /**
+     * Called when the third-party mediation network has alerted the
+     * SDK of an ad being expanded
+     */
     public void onAdExpanded();
+
+    /**
+     * Called when the third-party mediation network has alerted the
+     * SDK of an ad being collapsed
+     */
     public void onAdCollapsed();
+
+    /**
+     * Called when the third-party mediation network has alerted the
+     * SDK of an ad being clicked
+     */
     public void onAdClicked();
 }

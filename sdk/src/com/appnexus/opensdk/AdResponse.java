@@ -32,7 +32,6 @@ public class AdResponse {
     private String type;
     boolean isMraid = false;
 
-    private boolean isMediated = false;
     private LinkedList<MediatedAd> mediatedAds;
 
     private boolean containsAds = false;
@@ -167,7 +166,6 @@ public class AdResponse {
         if (!response.isNull(RESPONSE_KEY_MEDIATED_ADS) && response.getJSONArray(RESPONSE_KEY_MEDIATED_ADS).length() > 0) {
             JSONArray mediated = response.getJSONArray(RESPONSE_KEY_MEDIATED_ADS);
             mediatedAds = new LinkedList<MediatedAd>();
-            isMediated = true;
             for (int i = 0; i < mediated.length(); i++) {
                 JSONObject handler = mediated.getJSONObject(i).getJSONObject(RESPONSE_KEY_HANDLER);
                 if (handler.getString(RESPONSE_KEY_TYPE).toLowerCase().equals(RESPONSE_VALUE_ANDROID)) {
@@ -209,10 +207,6 @@ public class AdResponse {
     // banner, interstitial
     public String getType() {
         return type;
-    }
-
-    public boolean isMediated() {
-        return isMediated;
     }
 
     public LinkedList<MediatedAd> getMediatedAds() {
