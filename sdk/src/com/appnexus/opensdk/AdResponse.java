@@ -25,7 +25,6 @@ import org.json.JSONObject;
 import java.util.LinkedList;
 
 public class AdResponse {
-    public AdRequester requester;
     public String body;
     public int height;
     public int width;
@@ -57,8 +56,7 @@ public class AdResponse {
     private static final String RESPONSE_VALUE_ERROR = "error";
     private static final String RESPONSE_VALUE_ANDROID = "android";
 
-    public AdResponse(AdRequester requester, String body, Header[] headers) {
-        this.requester = requester;
+    public AdResponse(String body, Header[] headers) {
         this.body = body;
 
         if (body == null) {

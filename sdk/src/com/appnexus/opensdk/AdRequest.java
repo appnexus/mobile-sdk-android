@@ -87,10 +87,10 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     public static final String RETRY = "RETRY";
     public static final String BLANK = "BLANK";
 
-    private static final AdResponse CONNECTIVITY_RETRY = new AdResponse(null,
+    private static final AdResponse CONNECTIVITY_RETRY = new AdResponse(
             RETRY, null);
     private static final AdResponse BLANK_RETRY = new AdResponse(
-            null, BLANK, null);
+            BLANK, null);
 
     /**
      * Creates a new AdRequest with the given parameters
@@ -376,7 +376,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             r = h.execute(new HttpGet(query_string));
             if (!httpShouldContinue(r.getStatusLine())) {
                 fail();
-                return new AdResponse(null, AdResponse.http_error, null);
+                return new AdResponse(AdResponse.http_error, null);
             }
             out = EntityUtils.toString(r.getEntity());
         } catch (ClientProtocolException e) {
@@ -414,7 +414,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             fail();
             return AdRequest.BLANK_RETRY;
         }
-        return new AdResponse(requester, out, r.getAllHeaders());
+        return new AdResponse(out, r.getAllHeaders());
     }
 
     private boolean hasNetwork(Context context) {
