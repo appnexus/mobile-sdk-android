@@ -99,6 +99,9 @@ public class PreviewFragment extends Fragment {
                 pullToRefreshView.onRefreshComplete();
         }
         else {
+            bav.setAutoRefreshInterval(0);
+            bav.setVisibility(View.GONE);
+            bannerText.setVisibility(TextView.VISIBLE);
             // Load and display an interstitial
             iav.setShouldServePSAs(settingsWrapper.isAllowPsas());
             iav.setOpensNativeBrowser(!settingsWrapper.isBrowserInApp());
