@@ -38,9 +38,10 @@ import android.widget.TabHost.TabContentFactory;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ClogListener;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,6 +70,8 @@ public class MainActivity extends FragmentActivity implements
     private PreviewFragment previewFrag;
     private DebugFragment debugFrag;
     private AlertDialog logDialog, progressDialog;
+
+    private boolean isShowingLogs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -309,7 +312,7 @@ public class MainActivity extends FragmentActivity implements
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS:");
             String dateString = formatter.format(new Date());
 
-            String messageFormat = "%s    (%d) %s/%s    %s\n";
+            String messageFormat = "%s    (%d) %s/%s    %s";
 
             return String.format(messageFormat, dateString, pid, level, LogTag, message);
         }
@@ -320,37 +323,29 @@ public class MainActivity extends FragmentActivity implements
      */
 
     synchronized public void clearLogFile() {
-        DataOutputStream out = null;
+        PrintWriter out = null;
         try {
-            out = new DataOutputStream(openFileOutput(Constants.LOG_FILENAME, Context.MODE_PRIVATE));
-            out.writeUTF("");
+            out = new PrintWriter(openFileOutput(Constants.LOG_FILENAME, Context.MODE_PRIVATE));
+            out.write("");
             Clog.d(Constants.BASE_LOG_TAG, "Log file cleared");
         } catch (IOException e) {
             Clog.e(Constants.BASE_LOG_TAG, "IOException when clearing log file", e);
         } finally {
             if (out != null)
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    Clog.e(Constants.BASE_LOG_TAG, "IOException when closing log file output stream in clear", e);
-                }
+                out.close();
         }
     }
 
     synchronized public void writeToFile(String message) {
-        DataOutputStream out = null;
+        PrintWriter out = null;
         try {
-            out = new DataOutputStream(openFileOutput(Constants.LOG_FILENAME, Context.MODE_APPEND));
-            out.writeUTF(message);
+            out = new PrintWriter(openFileOutput(Constants.LOG_FILENAME, Context.MODE_APPEND));
+            out.println(message);
         } catch (IOException e) {
             Log.e(Constants.BASE_LOG_TAG, "IOException when writing to log file", e);
         } finally {
             if (out != null)
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    Log.e(Constants.BASE_LOG_TAG, "IOException when closing log file output stream", e);
-                }
+                out.close();
         }
     }
 
@@ -386,13 +381,18 @@ public class MainActivity extends FragmentActivity implements
                 Prefs prefs = new Prefs(getBaseContext());
                 prefs.writeLong(Prefs.KEY_LAST_LOG_UPLOAD, System.currentTimeMillis());
                 prefs.applyChanges();
+
+                clearLogFile();
             }
         }
     }
 
     public void showLogDialog() {
-        progressDialog = ProgressDialog.show(MainActivity.this, null, "Loading logs", true, false);
-        readFromFile();
+        if (!isShowingLogs) {
+            progressDialog = ProgressDialog.show(MainActivity.this, null, "Loading logs", true, false);
+            readFromFile();
+            isShowingLogs = true;
+        }
     }
 
     /**
@@ -405,17 +405,16 @@ public class MainActivity extends FragmentActivity implements
             int count = 0;
             ArrayList<String> logs = new ArrayList<String>(Constants.LOG_MAX_LINES);
 
-            DataInputStream in = null;
+            BufferedReader in = null;
 
             try {
-                in = new DataInputStream(openFileInput(Constants.LOG_FILENAME));
+                in = new BufferedReader(new FileReader(getFilesDir() + "/" + Constants.LOG_FILENAME));
 
                 String storedMessages;
 
-                while ((count < Constants.LOG_MAX_LINES) &&
-                        (in.available() > 0)
-                        && ((storedMessages = in.readUTF()) != null)) {
-                    logs.add(storedMessages);
+                while ((count < Constants.LOG_MAX_LINES)
+                        && ((storedMessages = in.readLine()) != null)) {
+                    logs.add(storedMessages + "\n");
                     count++;
                 }
             } catch (IOException e) {
@@ -441,7 +440,7 @@ public class MainActivity extends FragmentActivity implements
             final StringBuilder sb = new StringBuilder();
 
             for (int i = logs.size() - 1;
-                 (sb.length() < Constants.LOG_MAX_CHAR) && (i > 0); i--) {
+                 (sb.length() < Constants.LOG_MAX_CHAR) && (i > -1); i--) {
                 sb.append(logs.get(i));
             }
 
@@ -478,7 +477,7 @@ public class MainActivity extends FragmentActivity implements
     final DialogInterface.OnCancelListener logOnCancel = new DialogInterface.OnCancelListener() {
         @Override
         public void onCancel(DialogInterface dialogInterface) {
-            clearLogFile();
+            isShowingLogs = false;
         }
     };
 }
