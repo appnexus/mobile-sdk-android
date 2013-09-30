@@ -39,7 +39,7 @@ import java.util.ArrayList;
  *
  * @author jacob
  */
-public abstract class AdView extends FrameLayout implements MediatedAdViewControllerListener {
+public abstract class AdView extends FrameLayout implements AdViewListener {
 
     protected AdFetcher mAdFetcher;
     protected String placementID;
@@ -491,12 +491,13 @@ public abstract class AdView extends FrameLayout implements MediatedAdViewContro
     }
 
     @Override
-    public void onAdLoaded() {
+    public void onAdLoaded(final Displayable d) {
         this.post(new Runnable() {
             @Override
             public void run() {
                 if (adListener != null)
                     adListener.onAdLoaded(AdView.this);
+                display(d);
             }
         });
     }

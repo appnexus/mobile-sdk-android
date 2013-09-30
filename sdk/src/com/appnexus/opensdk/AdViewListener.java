@@ -19,13 +19,15 @@ package com.appnexus.opensdk;
 /**
  * Interface for receiving callbacks from a MediatedAdViewController
  */
-public interface MediatedAdViewControllerListener {
+public interface AdViewListener {
 
     /**
      * Called when the third-party mediation network has alerted the
      * SDK of a successful ad request
+     *
+     * @param d the displayable view to show for banners
      */
-    public void onAdLoaded();
+    public void onAdLoaded(Displayable d);
 
     /**
      * Called when the third-party mediation network has alerted the

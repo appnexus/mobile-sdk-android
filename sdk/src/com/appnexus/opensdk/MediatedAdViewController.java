@@ -40,7 +40,7 @@ public abstract class MediatedAdViewController implements Displayable {
     AdRequester requester;
     LinkedList<MediatedAd> mediatedAds;
     MediatedAd currentAd;
-    MediatedAdViewControllerListener listener;
+    AdViewListener listener;
 
     protected boolean errorCBMade = false;
     protected boolean successCBMade = false;
@@ -51,7 +51,7 @@ public abstract class MediatedAdViewController implements Displayable {
 
     }
 
-    protected MediatedAdViewController(AdRequester requester, LinkedList<MediatedAd> mediatedAds, MediatedAdViewControllerListener listener) {
+    protected MediatedAdViewController(AdRequester requester, LinkedList<MediatedAd> mediatedAds, AdViewListener listener) {
         this.requester = requester;
         this.listener = listener;
         this.mediatedAds = mediatedAds;
@@ -98,7 +98,7 @@ public abstract class MediatedAdViewController implements Displayable {
 
     public void onAdLoaded() {
         if (listener != null)
-            listener.onAdLoaded();
+            listener.onAdLoaded(this);
         if (!successCBMade) {
             successCBMade = true;
             fireResultCB(RESULT.SUCCESS);

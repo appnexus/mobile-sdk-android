@@ -45,6 +45,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * @author jacob
@@ -260,11 +261,11 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (owner instanceof InterstitialAdView) {
             // Make string for allowed_sizes
             allowedSizes = "";
-            for (Size s : ((InterstitialAdView) owner).getAllowedSizes()) {
+            ArrayList<Size> sizes = ((InterstitialAdView) owner).getAllowedSizes();
+            for (Size s : sizes) {
                 allowedSizes += "" + s.width() + "x" + s.height();
                 // If not last size, add a comma
-                if (((InterstitialAdView) owner).getAllowedSizes().indexOf(s) != ((InterstitialAdView) owner)
-                        .getAllowedSizes().size() - 1)
+                if (sizes.indexOf(s) != sizes.size() - 1)
                     allowedSizes += ",";
             }
         }

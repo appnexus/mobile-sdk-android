@@ -16,16 +16,6 @@
 
 package com.appnexus.opensdkdemo;
 
-import yuku.ambilwarna.AmbilWarnaDialog;
-import yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener;
-
-import com.appnexus.opensdk.AdListener;
-import com.appnexus.opensdk.AdView;
-import com.appnexus.opensdk.BannerAdView;
-import com.appnexus.opensdk.InterstitialAdView;
-import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdkdemo.R;
-
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -37,16 +27,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
+import com.appnexus.opensdk.AdListener;
+import com.appnexus.opensdk.AdView;
+import com.appnexus.opensdk.BannerAdView;
+import com.appnexus.opensdk.InterstitialAdView;
+import com.appnexus.opensdk.utils.Clog;
+import yuku.ambilwarna.AmbilWarnaDialog;
+import yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener;
 
 public class MainTabFragment extends Fragment implements AdListener {
 	private Button loadAdButton;
@@ -100,8 +88,7 @@ public class MainTabFragment extends Fragment implements AdListener {
 
 			@Override
 			public void onAdRequestFailed(AdView adView) {
-				// TODO Auto-generated method stub
-
+                Clog.d(Constants.logTag, "onAdRequestFailed");
 			}
 
 			@Override
@@ -117,6 +104,7 @@ public class MainTabFragment extends Fragment implements AdListener {
 					adframe.setLayoutParams(lp);
 				}
 				bannerText.setVisibility(TextView.INVISIBLE);
+                Clog.d(Constants.logTag, "onAdLoaded");
 
 			}
 
@@ -152,6 +140,7 @@ public class MainTabFragment extends Fragment implements AdListener {
 		iav = new InterstitialAdView(out.getContext());
 		// iav.setPlacementID("1281482");
 		iav.setAdListener(this);
+        ((ViewGroup) out.findViewById(R.id.frame)).addView(iav);
 
 		sizes.setOnItemSelectedListener(new SizeSelectedListener(this));
 
@@ -481,34 +470,56 @@ public class MainTabFragment extends Fragment implements AdListener {
 
 	}
 
-	@Override
-	public void onAdLoaded(AdView adView) {
-		iav.show();
+    @Override
+    public void onAdLoaded(AdView adView) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                iav.show();
+                Toast.makeText(getActivity(), "Ad loaded", Toast.LENGTH_SHORT).show();
+            }
+        });
 
-	}
+    }
 
-	@Override
-	public void onAdRequestFailed(AdView adView) {
-		Toast.makeText(this.getActivity(), "Ad request failed", Toast.LENGTH_SHORT).show();
+    @Override
+    public void onAdRequestFailed(AdView adView) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getActivity(), "Ad request failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
-	}
+    @Override
+    public void onAdExpanded(AdView adView) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getActivity(), "Ad expanded", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
-	@Override
-	public void onAdExpanded(AdView adView) {
-		Toast.makeText(this.getActivity(), "Ad expanded", Toast.LENGTH_SHORT).show();
-		
-	}
+    @Override
+    public void onAdCollapsed(AdView adView) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getActivity(), "Ad collapsed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
-	@Override
-	public void onAdCollapsed(AdView adView) {
-		Toast.makeText(this.getActivity(), "Ad collapsed", Toast.LENGTH_SHORT).show();
-		
-	}
-
-	@Override
-	public void onAdClicked(AdView adView) {
-		Toast.makeText(this.getActivity(), "Opening browser", Toast.LENGTH_SHORT).show();
-		
-	}
+    @Override
+    public void onAdClicked(AdView adView) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getActivity(), "Opening browser", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
 }

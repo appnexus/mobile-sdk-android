@@ -28,7 +28,7 @@ import com.appnexus.opensdkdemo.util.TestUtil;
 
 import java.util.LinkedList;
 
-public class TestMediationWaterfall extends AndroidTestCase implements AdRequester, MediatedAdViewControllerListener {
+public class TestMediationWaterfall extends AndroidTestCase implements AdRequester, AdViewListener {
     String old_base_url;
     AdRequest shouldWork;
     String testId = "11";

@@ -209,6 +209,7 @@ public class AdFetcher implements AdRequester {
 
     @Override
     public void dispatchResponse(final AdResponse response, final LinkedList<MediatedAd> oldAds) {
+        Clog.d(Clog.baseLogTag, "dispatch response: " + response);
         this.owner.post(new Runnable() {
             public void run() {
                 LinkedList<MediatedAd> mediatedAds;
@@ -218,6 +219,7 @@ public class AdFetcher implements AdRequester {
                         && ((oldAds == null)
                         || oldAds.isEmpty())) {
                     Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
+                    AdFetcher.this.requestFailed();
                     return;
                 }
 
@@ -232,35 +234,34 @@ public class AdFetcher implements AdRequester {
                 if ((mediatedAds != null) && !mediatedAds.isEmpty()) {
                     // mediated
                     if (owner.getMRAIDAdType().equals(Settings.ADTYPE_BANNER)) {
+                        Clog.d(Clog.mediationLogTag, "Loading mediated banner");
                         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
                                 (Activity) owner.getContext(),
                                 owner.mAdFetcher,
                                 mediatedAds,
                                 owner);
-                        if (output != null) {
-                            owner.display(output);
-                        }
                     }
                     else if (owner.getMRAIDAdType().equals(Settings.ADTYPE_INTERSTITIAL)) {
+                        Clog.d(Clog.mediationLogTag, "Loading mediated interstitial");
                         MediatedInterstitialAdViewController output = MediatedInterstitialAdViewController.create(
                                 (Activity) owner.getContext(),
                                 owner.mAdFetcher,
                                 mediatedAds,
                                 owner);
-                        if (output != null) {
-                            owner.display(output);
-                        }
+                        output.getView();
                     }
                 } else if (response.isMraid) {
                     // mraid
+                    Clog.d(Clog.mraidLogTag, "Loading mraid ad");
                     MRAIDWebView output = new MRAIDWebView(owner);
                     output.loadAd(response);
-                    owner.display(output);
+                    owner.onAdLoaded(output);
                 } else {
                     // standard
+                    Clog.d(Clog.baseLogTag, "Loading standard ad");
                     AdWebView output = new AdWebView(owner);
                     output.loadAd(response);
-                    owner.display(output);
+                    owner.onAdLoaded(output);
                 }
             }
         });
@@ -269,10 +270,6 @@ public class AdFetcher implements AdRequester {
     @Override
     public void onReceiveResponse(AdResponse response) {
         dispatchResponse(response, null);
-        //TODO: should this be here? what about the mediation case? do we call onAdLoaded too often?
-        if (owner.adListener != null) {
-            owner.adListener.onAdLoaded(owner);
-        }
     }
 
 	@Override

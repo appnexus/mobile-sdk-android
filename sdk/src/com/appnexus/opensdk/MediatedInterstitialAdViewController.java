@@ -27,14 +27,14 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
 
     static public MediatedInterstitialAdViewController create(
             Activity activity, AdRequester requester,
-            LinkedList<MediatedAd> mediatedAds, MediatedAdViewControllerListener listener) {
+            LinkedList<MediatedAd> mediatedAds, AdViewListener listener) {
         MediatedInterstitialAdViewController out = new MediatedInterstitialAdViewController(activity, requester, mediatedAds, listener);
         return out.failed() ? null : out;
     }
 
     protected MediatedInterstitialAdViewController(
             Activity activity, AdRequester requester, LinkedList<MediatedAd> mediatedAds,
-            MediatedAdViewControllerListener listener) {
+            AdViewListener listener) {
         super(requester, mediatedAds, listener);
 
         if (this.mAV == null || !(this.mAV instanceof MediatedInterstitialAdView)) {
