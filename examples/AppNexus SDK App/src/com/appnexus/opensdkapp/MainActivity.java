@@ -20,6 +20,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.*;
@@ -73,7 +74,7 @@ public class MainActivity extends FragmentActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.v(Constants.BASE_LOG_TAG, "App created");
+        Clog.v(Constants.BASE_LOG_TAG, "App created");
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
@@ -120,7 +121,7 @@ public class MainActivity extends FragmentActivity implements
     @Override
     protected void onPause() {
         super.onPause();
-        Log.v(Constants.BASE_LOG_TAG, "App paused");
+        Clog.v(Constants.BASE_LOG_TAG, "App paused");
     }
 
     @Override
@@ -131,13 +132,13 @@ public class MainActivity extends FragmentActivity implements
         if (progressDialog != null)
             progressDialog.dismiss();
         Clog.unregisterListener(logTabClogListener);
-        Log.v(Constants.BASE_LOG_TAG, "App destroyed");
+        Clog.v(Constants.BASE_LOG_TAG, "App destroyed");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.v(Constants.BASE_LOG_TAG, "App resumed");
+        Clog.v(Constants.BASE_LOG_TAG, "App resumed");
 //        checkToUploadLogFile();
     }
 
@@ -269,8 +270,6 @@ public class MainActivity extends FragmentActivity implements
 
     @Override
     public void onLoadAdClicked() {
-//        readFromFile();
-        clearLogFile();
         previewFrag.loadNewAd();
     }
 
@@ -325,7 +324,6 @@ public class MainActivity extends FragmentActivity implements
         try {
             out = new DataOutputStream(openFileOutput(Constants.LOG_FILENAME, Context.MODE_PRIVATE));
             out.writeUTF("");
-            out.close();
             Clog.d(Constants.BASE_LOG_TAG, "Log file cleared");
         } catch (IOException e) {
             Clog.e(Constants.BASE_LOG_TAG, "IOException when clearing log file", e);
@@ -344,7 +342,6 @@ public class MainActivity extends FragmentActivity implements
         try {
             out = new DataOutputStream(openFileOutput(Constants.LOG_FILENAME, Context.MODE_APPEND));
             out.writeUTF(message);
-            out.close();
         } catch (IOException e) {
             Log.e(Constants.BASE_LOG_TAG, "IOException when writing to log file", e);
         } finally {
@@ -421,7 +418,6 @@ public class MainActivity extends FragmentActivity implements
                     logs.add(storedMessages);
                     count++;
                 }
-                in.close();
             } catch (IOException e) {
                 Clog.e(Constants.BASE_LOG_TAG, "IOException when reading from log file", e);
             } finally {
@@ -474,7 +470,15 @@ public class MainActivity extends FragmentActivity implements
 
             logDialog = new AlertDialog.Builder(MainActivity.this)
                     .setView(dialogLayout)
+                    .setOnCancelListener(logOnCancel)
                     .show();
         }
     }
+
+    final DialogInterface.OnCancelListener logOnCancel = new DialogInterface.OnCancelListener() {
+        @Override
+        public void onCancel(DialogInterface dialogInterface) {
+            clearLogFile();
+        }
+    };
 }
