@@ -139,6 +139,22 @@ public class TestActivityMediationWaterfall extends ActivityInstrumentationTestC
         assertTrue(ThirdSuccessfulMediationView.didPass);
     }
 
+    public void test5TestNoFill() {
+        bav.setPlacementID("15");
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bav.loadAd();
+            }
+        });
+
+        lock.pause(10000);
+
+        // onAdRequestFailed should have been called
+        assertFalse(didLoad);
+        assertTrue(didFailToLoad);
+    }
+
     @Override
     public void onAdLoaded(AdView adView) {
         didLoad = true;
