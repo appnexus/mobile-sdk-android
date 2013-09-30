@@ -66,9 +66,6 @@ public class Settings {
 
 
     // STATICS
-    public static final String ADTYPE_BANNER = "inline";
-    public static final String ADTYPE_INTERSTITIAL = "interstitial";
-
     private static Settings settings_instance = null;
 
     public static Settings getSettings() {
