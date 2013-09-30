@@ -471,8 +471,8 @@ public class MainTabFragment extends Fragment implements AdListener {
 
 	@Override
 	public void onAdLoaded(AdView adView) {
+        Toast.makeText(this.getActivity(), "Ad loaded", Toast.LENGTH_SHORT).show();
 		iav.show();
-
 	}
 
 	@Override
