@@ -436,14 +436,9 @@ public class MRAIDImplementation {
     }
 
     private void createCalendarEvent(ArrayList<BasicNameValuePair> parameters) {
-        //TODO: This is going to take a loooong time. We need to parse the JSON (formatted
-        //TODO: following the W3C spec. See http://developer.android.com/guide/topics/providers/calendar-provider.html#intent-insert
         W3CEvent event = W3CEvent.createFromJSON(parameters.get(0).getValue());
         Intent i = event.getInsertIntent();
         owner.getContext().startActivity(i);
-
-
-
     }
 
 
