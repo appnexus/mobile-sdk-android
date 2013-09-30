@@ -439,6 +439,8 @@ public class MRAIDImplementation {
         W3CEvent event = W3CEvent.createFromJSON(parameters.get(0).getValue());
         Intent i = event.getInsertIntent();
         owner.getContext().startActivity(i);
+
+        //TODO: Clogging
     }
 
 
@@ -468,6 +470,26 @@ public class MRAIDImplementation {
     }
 
     private void resize(ArrayList<BasicNameValuePair> parameters) {
-
+        int w;
+        int h;
+        int offset_x;
+        int offset_y;
+        String custom_close_position;
+        boolean allow_offscrean;
+        for (BasicNameValuePair bnvp : parameters) {
+            if(bnvp.getName().equals("w")){
+                w = Integer.parseInt(bnvp.getValue());
+            }else if(bnvp.getName().equals("h")){
+                h = Integer.parseInt(bnvp.getValue());
+            }else if(bnvp.getName().equals("offset_x")){
+                offset_x = Integer.parseInt(bnvp.getValue());
+            }else if(bnvp.getName().equals("offset_y")){
+                offset_y = Integer.parseInt(bnvp.getValue());
+            }else if(bnvp.getName().equals("custom_close_position")){
+                custom_close_position = bnvp.getValue();
+            }else if(bnvp.getName().equals("allow_offscreen")){
+                allow_offscrean = Boolean.parseBoolean(bnvp.getValue());
+            }
+        }
     }
 }
