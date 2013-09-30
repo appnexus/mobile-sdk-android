@@ -36,7 +36,6 @@ public class AdResponse {
     private boolean containsAds = false;
 
     final static String http_error = "HTTP_ERROR";
-    public static final String HTTP_OK = "200 OK";
 
     private static final String MRAID_JS_FILENAME = "mraid.js";
     private static final String RESPONSE_KEY_STATUS = "status";
@@ -92,7 +91,7 @@ public class AdResponse {
 
     private void parseResponse(String body) {
         // don't try to parse if the body is not json
-        if (body.equals(AdRequest.RETRY) || body.equals(AdRequest.BLANK) || body.equals(HTTP_OK)) {
+        if (body.equals(AdRequest.RETRY) || body.equals(AdRequest.BLANK)) {
             return;
         }
 

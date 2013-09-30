@@ -217,9 +217,7 @@ public class AdFetcher implements AdRequester {
                 if (!response.containsAds()
                         && ((oldAds == null)
                         || oldAds.isEmpty())) {
-                    // no fill is ok if
-                    if (!response.getBody().equals(AdResponse.HTTP_OK))
-                        Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
+                    Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
                     return;
                 }
 
