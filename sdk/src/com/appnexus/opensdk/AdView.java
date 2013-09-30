@@ -420,15 +420,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     }
 
     protected void fail() {
-        if (adListener != null)
-            this.post(new Runnable() {
-
-                @Override
-                public void run() {
-                    AdView.this.adListener.onAdRequestFailed(AdView.this);
-                }
-
-            });
+        onAdFailed(true);
     }
 
     /**
@@ -495,9 +487,9 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         this.post(new Runnable() {
             @Override
             public void run() {
+                display(d);
                 if (adListener != null)
                     adListener.onAdLoaded(AdView.this);
-                display(d);
             }
         });
     }

@@ -84,13 +84,6 @@ public class TestActivityMediationWaterfall extends ActivityInstrumentationTestC
 
         lock.pause(10000);
 
-        // give time for the result cb to fire
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         assertEquals(true, didLoad);
         assertEquals(false, didFailToLoad);
         assertTrue(SuccessfulMediationView.didPass);
@@ -108,13 +101,6 @@ public class TestActivityMediationWaterfall extends ActivityInstrumentationTestC
 
         lock.pause(10000);
 
-        // give time for the result cb to fire
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         assertEquals(true, didLoad);
         assertEquals(false, didFailToLoad);
         assertTrue(SecondSuccessfulMediationView.didPass);
@@ -131,15 +117,6 @@ public class TestActivityMediationWaterfall extends ActivityInstrumentationTestC
 
         lock.pause(10000);
 
-        // give time for the result cb to fire
-        // and instantiate new ad
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        lock.pause(10000);
-
         assertEquals(true, didLoad);
         assertEquals(false, didFailToLoad);
         assertFalse(SuccessfulMediationView.didPass);
@@ -154,15 +131,6 @@ public class TestActivityMediationWaterfall extends ActivityInstrumentationTestC
             }
         });
 
-        lock.pause(10000);
-
-        // give time for the result cb to fire
-        // and instantiate new ad
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         lock.pause(10000);
 
         assertEquals(true, didLoad);

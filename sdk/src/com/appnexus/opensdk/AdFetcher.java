@@ -209,7 +209,6 @@ public class AdFetcher implements AdRequester {
 
     @Override
     public void dispatchResponse(final AdResponse response, final LinkedList<MediatedAd> oldAds) {
-        Clog.d(Clog.baseLogTag, "dispatch response: " + response);
         this.owner.post(new Runnable() {
             public void run() {
                 LinkedList<MediatedAd> mediatedAds;
@@ -219,7 +218,6 @@ public class AdFetcher implements AdRequester {
                         && ((oldAds == null)
                         || oldAds.isEmpty())) {
                     Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
-                    AdFetcher.this.requestFailed();
                     return;
                 }
 
@@ -234,7 +232,6 @@ public class AdFetcher implements AdRequester {
                 if ((mediatedAds != null) && !mediatedAds.isEmpty()) {
                     // mediated
                     if (owner.getMRAIDAdType().equals(Settings.ADTYPE_BANNER)) {
-                        Clog.d(Clog.mediationLogTag, "Loading mediated banner");
                         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
                                 (Activity) owner.getContext(),
                                 owner.mAdFetcher,
@@ -242,23 +239,21 @@ public class AdFetcher implements AdRequester {
                                 owner);
                     }
                     else if (owner.getMRAIDAdType().equals(Settings.ADTYPE_INTERSTITIAL)) {
-                        Clog.d(Clog.mediationLogTag, "Loading mediated interstitial");
                         MediatedInterstitialAdViewController output = MediatedInterstitialAdViewController.create(
                                 (Activity) owner.getContext(),
                                 owner.mAdFetcher,
                                 mediatedAds,
                                 owner);
-                        output.getView();
+                        if (output != null)
+                            output.getView();
                     }
                 } else if (response.isMraid) {
                     // mraid
-                    Clog.d(Clog.mraidLogTag, "Loading mraid ad");
                     MRAIDWebView output = new MRAIDWebView(owner);
                     output.loadAd(response);
                     owner.onAdLoaded(output);
                 } else {
                     // standard
-                    Clog.d(Clog.baseLogTag, "Loading standard ad");
                     AdWebView output = new AdWebView(owner);
                     output.loadAd(response);
                     owner.onAdLoaded(output);

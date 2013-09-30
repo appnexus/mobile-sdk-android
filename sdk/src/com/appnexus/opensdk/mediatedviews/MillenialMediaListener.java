@@ -100,8 +100,10 @@ public class MillenialMediaListener implements RequestListener {
                 code = MediatedAdViewController.RESULT.INVALID_REQUEST;
                 break;
             case MMException.CACHE_NOT_EMPTY:
+                Clog.d(Clog.mediationLogTag, "%s - cache not empty, show it");
                 if (mediatedAdViewController instanceof MediatedInterstitialAdViewController) {
                     mediatedAdViewController.onAdLoaded();
+                    return;
                 }
 //                code = MediatedAdViewController.RESULT.INVALID_REQUEST;
                 break;

@@ -33,6 +33,7 @@ public class ThirdSuccessfulMediationView implements MediatedBannerAdView {
         didPass = true;
 
         Lock.unpause();
+        mBC.onAdLoaded();
 
         return DummyView.dummyView;
     }

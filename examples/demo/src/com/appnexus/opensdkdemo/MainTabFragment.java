@@ -140,7 +140,6 @@ public class MainTabFragment extends Fragment implements AdListener {
 		iav = new InterstitialAdView(out.getContext());
 		// iav.setPlacementID("1281482");
 		iav.setAdListener(this);
-        ((ViewGroup) out.findViewById(R.id.frame)).addView(iav);
 
 		sizes.setOnItemSelectedListener(new SizeSelectedListener(this));
 
@@ -212,8 +211,8 @@ public class MainTabFragment extends Fragment implements AdListener {
 		@Override
 		public void onTextChanged(CharSequence s, int start, int before,
 				int count) {
-			bannerAdView.setPlacementID(s.toString());
-			iav.setPlacementID(s.toString());
+//			bannerAdView.setPlacementID(s.toString());
+//			iav.setPlacementID(s.toString());
 
 			SharedPreferences sp = getActivity().getSharedPreferences(
 					"opensdkdemo", Activity.MODE_PRIVATE);
@@ -475,8 +474,8 @@ public class MainTabFragment extends Fragment implements AdListener {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                iav.show();
                 Toast.makeText(getActivity(), "Ad loaded", Toast.LENGTH_SHORT).show();
+                iav.show();
             }
         });
 
