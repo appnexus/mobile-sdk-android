@@ -19,8 +19,6 @@ package com.appnexus.opensdk;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -29,7 +27,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.net.http.SslError;
-import android.provider.CalendarContract;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.Window;
@@ -37,9 +34,6 @@ import android.webkit.*;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.W3CEvent;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,6 +46,7 @@ public class MRAIDImplementation {
     MRAIDWebView owner;
     boolean readyFired = false;
     boolean expanded = false;
+    boolean resized = false;
     boolean hidden = false;
     int default_width, default_height;
 
@@ -355,7 +350,7 @@ public class MRAIDImplementation {
 
             owner.expand(width, height, useCustomClose, this);
             // Fire the stateChange to MRAID
-            owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent(" + width + "," + height + ")");
+            owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent(" + width + "," + height + ")"); // TODO: centralize
             this.owner
                     .loadUrl("javascript:window.mraid.util.stateChangeEvent('expanded');");
             expanded = true;
@@ -491,5 +486,11 @@ public class MRAIDImplementation {
                 allow_offscrean = Boolean.parseBoolean(bnvp.getValue());
             }
         }
+
+
+        this.owner
+                .loadUrl("javascript:window.mraid.util.stateChangeEvent('resized');");
+        resized = true;
+
     }
 }
