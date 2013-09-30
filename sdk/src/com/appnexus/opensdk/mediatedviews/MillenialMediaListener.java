@@ -105,7 +105,6 @@ public class MillenialMediaListener implements RequestListener {
                     mediatedAdViewController.onAdLoaded();
                     return;
                 }
-//                code = MediatedAdViewController.RESULT.INVALID_REQUEST;
                 break;
             case MMException.DISPLAY_AD_NOT_READY:
                 code = MediatedAdViewController.RESULT.UNABLE_TO_FILL;

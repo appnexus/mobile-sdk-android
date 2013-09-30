@@ -211,8 +211,8 @@ public class MainTabFragment extends Fragment implements AdListener {
 		@Override
 		public void onTextChanged(CharSequence s, int start, int before,
 				int count) {
-//			bannerAdView.setPlacementID(s.toString());
-//			iav.setPlacementID(s.toString());
+			bannerAdView.setPlacementID(s.toString());
+			iav.setPlacementID(s.toString());
 
 			SharedPreferences sp = getActivity().getSharedPreferences(
 					"opensdkdemo", Activity.MODE_PRIVATE);
@@ -469,56 +469,34 @@ public class MainTabFragment extends Fragment implements AdListener {
 
 	}
 
-    @Override
-    public void onAdLoaded(AdView adView) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getActivity(), "Ad loaded", Toast.LENGTH_SHORT).show();
-                iav.show();
-            }
-        });
+	@Override
+	public void onAdLoaded(AdView adView) {
+		iav.show();
 
-    }
+	}
 
-    @Override
-    public void onAdRequestFailed(AdView adView) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getActivity(), "Ad request failed", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+	@Override
+	public void onAdRequestFailed(AdView adView) {
+		Toast.makeText(this.getActivity(), "Ad request failed", Toast.LENGTH_SHORT).show();
 
-    @Override
-    public void onAdExpanded(AdView adView) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getActivity(), "Ad expanded", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+	}
 
-    @Override
-    public void onAdCollapsed(AdView adView) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getActivity(), "Ad collapsed", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+	@Override
+	public void onAdExpanded(AdView adView) {
+		Toast.makeText(this.getActivity(), "Ad expanded", Toast.LENGTH_SHORT).show();
 
-    @Override
-    public void onAdClicked(AdView adView) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getActivity(), "Opening browser", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+	}
+
+	@Override
+	public void onAdCollapsed(AdView adView) {
+		Toast.makeText(this.getActivity(), "Ad collapsed", Toast.LENGTH_SHORT).show();
+
+	}
+
+	@Override
+	public void onAdClicked(AdView adView) {
+		Toast.makeText(this.getActivity(), "Opening browser", Toast.LENGTH_SHORT).show();
+
+	}
 
 }

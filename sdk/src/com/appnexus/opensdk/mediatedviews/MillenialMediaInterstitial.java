@@ -21,7 +21,6 @@ import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
 import com.appnexus.opensdk.utils.Clog;
 import com.millennialmedia.android.MMInterstitial;
-import com.millennialmedia.android.MMRequest;
 import com.millennialmedia.android.MMSDK;
 
 public class MillenialMediaInterstitial implements MediatedInterstitialAdView {
@@ -48,7 +47,6 @@ public class MillenialMediaInterstitial implements MediatedInterstitialAdView {
 
         iad = new MMInterstitial(activity);
         iad.setApid(uid);
-        iad.setMMRequest(new MMRequest());
         iad.setListener(new MillenialMediaListener(mMediatedInterstitialAdViewController, getClass().getSimpleName()));
         iad.fetch();
     }

@@ -197,8 +197,6 @@ public class InterstitialAdView extends AdView {
         }
         InterstitialAdView.q.add(new Pair<Long, Displayable>(System
                 .currentTimeMillis(), d));
-        // for requesting mediated interstitials. in normal cases this does nothing
-//        d.getView();
     }
 
     protected void interacted() {
