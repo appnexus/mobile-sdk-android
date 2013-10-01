@@ -37,11 +37,8 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
             MediatedAdViewControllerListener listener) {
         super(requester, mediatedAds, listener);
 
-        if (this.mAV == null || !(this.mAV instanceof MediatedInterstitialAdView)) {
-            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instance_exception, getClass().getCanonicalName()));
-            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
+        if (!isValid(getClass()))
             return;
-        }
 
         this.activity = activity;
     }
@@ -54,7 +51,12 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
 
     @Override
     public View getView() {
+        // if controller is valid, request an ad.
+        // create() will never return a non-null, invalid controller
         Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediated_request));
+
+        RESULT errorCode = null;
+
         try {
             ((MediatedInterstitialAdView) mAV).requestAd(this,
                     activity,
@@ -62,12 +64,15 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
                     currentAd.getId());
         } catch (Exception e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
-            onAdFailed(RESULT.INVALID_REQUEST);
+            errorCode = RESULT.INVALID_REQUEST;
         } catch (Error e) {
             // catch errors. exceptions will be caught above.
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_error), e);
-            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            errorCode = RESULT.MEDIATED_SDK_UNAVAILABLE;
         }
+
+        if (errorCode != null)
+            onAdFailed(errorCode);
 
         return null;
     }

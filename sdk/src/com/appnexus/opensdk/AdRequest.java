@@ -33,6 +33,7 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HashingFunctions;
 import com.appnexus.opensdk.utils.Settings;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -438,7 +439,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                 Clog.d(Clog.httpRespLogTag,
                         Clog.getString(R.string.http_bad_status, http_error_code));
                 return false;
-            case 200:
+            case HttpStatus.SC_OK:
                 return true;
         }
 

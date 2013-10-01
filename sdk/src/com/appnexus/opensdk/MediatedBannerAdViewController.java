@@ -37,13 +37,14 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
             MediatedAdViewControllerListener listener) {
         super(requester, mediatedAds, listener);
 
-        if (this.mAV == null || !(this.mAV instanceof MediatedBannerAdView)) {
-            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instance_exception, getClass().getCanonicalName()));
-            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
+        if (!isValid(getClass()))
             return;
-        }
 
+        // if controller is valid, request an ad
         Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediated_request));
+
+        RESULT errorCode = null;
+
         try {
             placeableView = ((MediatedBannerAdView) mAV).requestAd(this,
                     activity,
@@ -53,16 +54,20 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
                     currentAd.getHeight());
         } catch (Exception e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
-            onAdFailed(RESULT.INVALID_REQUEST);
+            errorCode = RESULT.INVALID_REQUEST;
         } catch (Error e) {
             // catch errors. exceptions will be caught above.
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_error), e);
-            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            errorCode = RESULT.MEDIATED_SDK_UNAVAILABLE;
         }
 
         if (placeableView == null) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_view_null));
-            onAdFailed(RESULT.UNABLE_TO_FILL);
+            errorCode = RESULT.UNABLE_TO_FILL;
+        }
+
+        if (errorCode != null) {
+            onAdFailed(errorCode);
         }
     }
 
