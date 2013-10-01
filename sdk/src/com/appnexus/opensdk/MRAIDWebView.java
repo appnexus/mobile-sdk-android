@@ -232,4 +232,37 @@ public class MRAIDWebView extends WebView implements Displayable {
         }
     }
 
+    public void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE))
+                .getDefaultDisplay().getMetrics(metrics);
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                this.getLayoutParams());
+        default_width = lp.width;
+        default_height = lp.height;
+
+
+        if (h != -1) {
+            h = (int) (h * metrics.density + 0.5);
+        }
+        if (w != -1) {
+            w = (int) (w * metrics.density + 0.5);
+        }
+
+
+        lp.height = h;
+        lp.width = w;
+        lp.gravity = Gravity.CENTER;
+
+        if (owner != null) {
+            owner.resize(w, h, offset_x, offset_y, custom_close_position, allow_offscrean);
+        }
+
+        //If it's an IAV, prevent it from closing
+        if (owner instanceof InterstitialAdView) {
+            ((InterstitialAdView) owner).interacted();
+        }
+
+        this.setLayoutParams(lp);
+    }
 }

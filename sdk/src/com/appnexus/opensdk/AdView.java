@@ -460,6 +460,71 @@ public abstract class AdView extends FrameLayout {
         this.shouldServePSAs = shouldServePSAs;
     }
 
+    public void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean,
+                       final MRAIDImplementation caller) {
+        //TODO: Offsets???
+        mraid_expand = true;
+        if (getLayoutParams() != null) {
+            if (getLayoutParams().width > 0)
+                getLayoutParams().width = w;
+            if (getLayoutParams().height > 0)
+                getLayoutParams().height = h;
+        }
+        if (close == null) {
+            // Add a stock close button to the top right corner
+            close = new ImageButton(this.getContext());
+            close.setImageDrawable(getResources().getDrawable(
+                    android.R.drawable.ic_menu_close_clear_cancel));
+
+            int grav = Gravity.RIGHT | Gravity.TOP;
+            switch(custom_close_position){
+                case bottom_center:
+                    grav = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                    break;
+                case bottom_left:
+                    grav = Gravity.BOTTOM | Gravity.LEFT;
+                    break;
+                case bottom_right:
+                    grav = Gravity.BOTTOM | Gravity.RIGHT;
+                    break;
+                case center:
+                    grav = Gravity.CENTER;
+                    break;
+                case top_center:
+                    grav = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+                    break;
+                case top_left:
+                    grav = Gravity.TOP | Gravity.LEFT;
+                    break;
+                case top_right:
+                    grav = Gravity.TOP | Gravity.RIGHT;
+                    break;
+
+            }
+
+            FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT, grav);
+            blp.rightMargin = (this.getMeasuredWidth() - this.getChildAt(0)
+                    .getMeasuredWidth()) / 2;
+            close.setLayoutParams(blp);
+            close.setBackgroundColor(Color.TRANSPARENT);
+            close.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    caller.close();
+
+                }
+            });
+            this.addView(close);
+        } else if (close != null) {
+            this.removeView(close);
+            close.setVisibility(VISIBLE);
+            this.addView(close);// Re-add to send to top
+        }
+    }
+
     static class BrowserStyle {
 
         public BrowserStyle(Drawable forwardButton, Drawable backButton,
