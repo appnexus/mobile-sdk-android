@@ -434,6 +434,9 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
 
     private boolean httpShouldContinue(StatusLine statusLine) {
+        if (statusLine == null)
+            return false;
+
         int http_error_code = statusLine.getStatusCode();
         switch (http_error_code) {
             default:

@@ -50,8 +50,9 @@ public abstract class HTTPGet<Params extends Void, Progress extends Void, Result
 
             out.setHeaders(r.getAllHeaders());
             out.setResponseBody(EntityUtils.toString(r.getEntity()));
-            boolean isStatusOK = r.getStatusLine().
-                    getStatusCode() == HttpStatus.SC_OK;
+            boolean isStatusOK = (r.getStatusLine() != null)
+                    && (r.getStatusLine().getStatusCode()
+                    == HttpStatus.SC_OK);
             out.setSucceeded(isStatusOK);
         } catch (URISyntaxException e) {
             out.setSucceeded(false);
