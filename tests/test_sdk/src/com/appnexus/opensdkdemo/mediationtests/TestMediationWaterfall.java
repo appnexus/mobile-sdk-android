@@ -26,8 +26,6 @@ import com.appnexus.opensdkdemo.testviews.SuccessfulMediationView;
 import com.appnexus.opensdkdemo.util.Lock;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
-import java.util.LinkedList;
-
 public class TestMediationWaterfall extends AndroidTestCase implements AdRequester, MediatedAdViewControllerListener {
     String old_base_url;
     AdRequest shouldWork;
@@ -77,7 +75,7 @@ public class TestMediationWaterfall extends AndroidTestCase implements AdRequest
     public void onReceiveResponse(AdResponse response) {
         Clog.d(TestUtil.testLogTag, "received first response");
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, this, response.getMediatedAds(), this);
+                null, this, response.getMediatedAds().pop(), this);
     }
 
     @Override
@@ -86,10 +84,10 @@ public class TestMediationWaterfall extends AndroidTestCase implements AdRequest
     }
 
     @Override
-    public void dispatchResponse(AdResponse response, LinkedList<MediatedAd> oldAds) {
+    public void dispatchResponse(AdResponse response) {
         Clog.d(TestUtil.testLogTag, "dispatch (for second and third responses)");
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, this, response.getMediatedAds(), null);
+                null, this, response.getMediatedAds().pop(), null);
     }
 
     @Override

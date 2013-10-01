@@ -19,25 +19,23 @@ import android.app.Activity;
 import android.view.View;
 import com.appnexus.opensdk.utils.Clog;
 
-import java.util.LinkedList;
-
 public class MediatedInterstitialAdViewController extends MediatedAdViewController implements Displayable {
 
     Activity activity;
 
     static public MediatedInterstitialAdViewController create(
             Activity activity, AdRequester requester,
-            LinkedList<MediatedAd> mediatedAds, MediatedAdViewControllerListener listener) {
-        MediatedInterstitialAdViewController out = new MediatedInterstitialAdViewController(activity, requester, mediatedAds, listener);
+            MediatedAd mediatedAd, MediatedAdViewControllerListener listener) {
+        MediatedInterstitialAdViewController out = new MediatedInterstitialAdViewController(activity, requester, mediatedAd, listener);
         return out.failed() ? null : out;
     }
 
     protected MediatedInterstitialAdViewController(
-            Activity activity, AdRequester requester, LinkedList<MediatedAd> mediatedAds,
+            Activity activity, AdRequester requester, MediatedAd mediatedAd,
             MediatedAdViewControllerListener listener) {
-        super(requester, mediatedAds, listener);
+        super(requester, mediatedAd, listener);
 
-        if (!isValid(getClass()))
+        if (!isValid(MediatedInterstitialAdView.class))
             return;
 
         this.activity = activity;

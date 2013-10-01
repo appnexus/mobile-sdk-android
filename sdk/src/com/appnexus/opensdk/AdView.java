@@ -32,6 +32,7 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * The parent class of InterstitialAdView and BannerAdView. This can not be
@@ -53,6 +54,7 @@ public abstract class AdView extends FrameLayout implements MediatedAdViewContro
     private boolean mraid_expand = false;
     protected AdListener adListener;
     private BrowserStyle browserStyle;
+    LinkedList<MediatedAd> mediatedAds;
 
     /**
      * Begin Construction *
@@ -557,4 +559,18 @@ public abstract class AdView extends FrameLayout implements MediatedAdViewContro
             }
         });
     }
+
+    public LinkedList<MediatedAd> getMediatedAds() {
+        return mediatedAds;
+    }
+
+    public void setMediatedAds(LinkedList<MediatedAd> mediatedAds) {
+        this.mediatedAds = mediatedAds;
+    }
+
+    // returns the first mediated ad if available
+    public MediatedAd popMediatedAd() {
+        return mediatedAds != null ? mediatedAds.pop() : null;
+    }
+
 }

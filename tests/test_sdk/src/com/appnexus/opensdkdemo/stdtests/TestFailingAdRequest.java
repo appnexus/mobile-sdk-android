@@ -19,8 +19,6 @@ package com.appnexus.opensdkdemo.stdtests;
 import com.appnexus.opensdk.*;
 import junit.framework.TestCase;
 
-import java.util.LinkedList;
-
 public class TestFailingAdRequest extends TestCase implements AdRequester, AdListener {
     int notifyCount = 0;
     AdRequest shouldNotWork;
@@ -72,7 +70,7 @@ public class TestFailingAdRequest extends TestCase implements AdRequester, AdLis
     }
 
     @Override
-    public void dispatchResponse(AdResponse response, LinkedList<MediatedAd> oldAds) {
+    public void dispatchResponse(AdResponse response) {
     }
 
     @Override

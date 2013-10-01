@@ -25,8 +25,6 @@ import com.appnexus.opensdkdemo.testviews.SuccessfulMediationView;
 import com.appnexus.opensdkdemo.util.InstanceLock;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
-import java.util.LinkedList;
-
 public class Test404Error extends AndroidTestCase implements AdRequester {
     /**
      * NOTE: requires commenting out return code in MAVC's resultCB handler
@@ -80,7 +78,7 @@ public class Test404Error extends AndroidTestCase implements AdRequester {
         // response should be a regular valid mediatied ad
         Clog.d(TestUtil.testLogTag, "received response: " + response);
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, this, response.getMediatedAds(), null);
+                null, this, response.getMediatedAds().pop(), null);
     }
 
     @Override
@@ -89,11 +87,11 @@ public class Test404Error extends AndroidTestCase implements AdRequester {
     }
 
     @Override
-    public void dispatchResponse(AdResponse response, LinkedList<MediatedAd> oldAds) {
+    public void dispatchResponse(AdResponse response) {
         // response should be a 404
         Clog.d(TestUtil.testLogTag, "dispatch " + response.toString());
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, this, response.getMediatedAds(), null);
+                null, this, response.getMediatedAds().pop(), null);
 
         // instantiation should fail, so this should be null
         assertNull(output);
