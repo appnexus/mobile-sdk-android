@@ -28,6 +28,10 @@ import com.appnexus.opensdkdemo.util.TestUtil;
 import java.util.LinkedList;
 
 public class Test404Error extends AndroidTestCase implements AdRequester {
+    /**
+     * NOTE: requires commenting out return code in MAVC's resultCB handler
+     * to allow for multiple successes.
+     */
     String old_base_url;
     AdRequest shouldWork;
     String shouldWorkPlacement = "9a";
@@ -54,7 +58,7 @@ public class Test404Error extends AndroidTestCase implements AdRequester {
 
     public void testMediationThen404() {
         // Create a AdRequest which will request a mediated response to
-        // instantiate the SuccessfulMediationView. The result_cb
+        // instantiate the SuccessfulMediationView. The (success) result_cb
         // should return a 404 error, which should fail instantiation
 
         shouldWork.execute();

@@ -47,53 +47,77 @@ public abstract class MediatedAdViewController implements Displayable {
 
     private boolean noMoreAds = false;
 
-    protected MediatedAdViewController() {
-
-    }
-
     protected MediatedAdViewController(AdRequester requester, LinkedList<MediatedAd> mediatedAds, AdViewListener listener) {
         this.requester = requester;
         this.listener = listener;
         this.mediatedAds = mediatedAds;
 
-        if ((mediatedAds != null) && !mediatedAds.isEmpty()) {
-            currentAd = mediatedAds.pop();
-            instantiateNewMediatedAd();
-        }
-        else {
+        RESULT errorCode = null;
+
+        noMoreAds = (mediatedAds == null) || mediatedAds.isEmpty();
+
+        if (noMoreAds) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_no_ads));
-            noMoreAds = true;
-            onAdFailed(RESULT.UNABLE_TO_FILL);
+            errorCode = RESULT.UNABLE_TO_FILL;
+        } else {
+            currentAd = mediatedAds.pop();
+            boolean instantiateSuccessful = instantiateNewMediatedAd();
+            if (!instantiateSuccessful)
+                errorCode = RESULT.MEDIATED_SDK_UNAVAILABLE;
         }
+
+        if (errorCode != null)
+            onAdFailed(errorCode);
     }
 
-    private void instantiateNewMediatedAd() {
+    /**
+     * Validates all fields necessary for controller to function properly
+     *
+     * @param callerClass the calling class that mAV should be an instance of
+     * @return true if the controller is valid, false if not.
+     */
+    protected boolean isValid(Class<?> callerClass) {
+        if (failed) {
+            return false;
+        }
+        if (currentAd == null) {
+            onAdFailed(RESULT.UNABLE_TO_FILL);
+            return false;
+        }
+        if ((mAV == null) || (callerClass == null) || callerClass.isInstance(mAV)) {
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instance_exception,
+                    callerClass != null ? callerClass.getCanonicalName() : "null"));
+            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     *  Attempts to instantiate currentAd
+     *
+     * @return true if instantiation was successful, false if not.
+     */
+    private boolean instantiateNewMediatedAd() {
         Clog.d(Clog.mediationLogTag, Clog.getString(
                 R.string.instantiating_class, currentAd.getClassName()));
 
         try {
             c = Class.forName(currentAd.getClassName());
-
+            mAV = (MediatedAdView) c.newInstance();
+            // exceptions will skip down to return false
+            return true;
         } catch (ClassNotFoundException e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.class_not_found_exception));
-            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
-            return;
-        }
-
-        try {
-            Object o = c.newInstance();
-            mAV = (MediatedAdView) o;
-            failed = false;
         } catch (InstantiationException e) {
-            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instantiation_exception), e);
-            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instantiation_exception));
         } catch (IllegalAccessException e) {
-            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception), e);
-            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception));
         } catch (ClassCastException e) {
-            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.class_cast_exception), e);
-            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.class_cast_exception));
         }
+        return false;
     }
 
     public void onAdLoaded() {
@@ -106,10 +130,9 @@ public abstract class MediatedAdViewController implements Displayable {
     }
 
     public void onAdFailed(MediatedAdViewController.RESULT reason) {
-        //TODO: verify that adview doesn't make the callback
+        this.failed = true;
         if (listener != null)
             listener.onAdFailed(noMoreAds);
-        this.failed = true;
 
         if (!errorCBMade) {
             fireResultCB(reason);
@@ -132,6 +155,7 @@ public abstract class MediatedAdViewController implements Displayable {
             listener.onAdClicked();
     }
 
+    @Override
     public boolean failed() {
         return failed;
     }
@@ -156,8 +180,8 @@ public abstract class MediatedAdViewController implements Displayable {
                 if (requester == null) {
                     Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
                     return;
-                } else if (httpResponse == null) {
-                    Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_response_null));
+                } else if ((httpResponse == null) || !httpResponse.getSucceeded()) {
+                    Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_bad_response));
                     return;
                 }
 

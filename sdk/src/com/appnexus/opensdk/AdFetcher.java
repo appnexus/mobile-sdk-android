@@ -232,14 +232,14 @@ public class AdFetcher implements AdRequester {
 
                 if ((mediatedAds != null) && !mediatedAds.isEmpty()) {
                     // mediated
-                    if (owner.getMRAIDAdType().equals(Settings.ADTYPE_BANNER)) {
+                    if (owner.isBanner()) {
                         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
                                 (Activity) owner.getContext(),
                                 owner.mAdFetcher,
                                 mediatedAds,
                                 owner);
                     }
-                    else if (owner.getMRAIDAdType().equals(Settings.ADTYPE_INTERSTITIAL)) {
+                    else if (owner.isInterstitial()) {
                         MediatedInterstitialAdViewController output = MediatedInterstitialAdViewController.create(
                                 (Activity) owner.getContext(),
                                 owner.mAdFetcher,

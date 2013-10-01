@@ -347,7 +347,13 @@ public class BannerAdView extends AdView {
         this.requesting_visible = true;
     }
 
-    protected String getMRAIDAdType() {
-        return Settings.ADTYPE_BANNER;
+    @Override
+    boolean isBanner() {
+        return true;
+    }
+
+    @Override
+    boolean isInterstitial() {
+        return false;
     }
 }

@@ -395,7 +395,17 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         }
     }
 
-    abstract String getMRAIDAdType();
+    /**
+     *
+     * @return true if the AdView is a BannerAdView
+     */
+    abstract boolean isBanner();
+
+    /**
+     *
+     * @return true if the AdView is an InterstitialAdView
+     */
+    abstract boolean isInterstitial();
 
     /**
      * Sets the listener that the InterstitialAdView will call events in.

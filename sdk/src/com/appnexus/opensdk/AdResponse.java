@@ -220,6 +220,7 @@ public class AdResponse {
      */
 
     private static JSONObject getJSONObject(JSONObject object, String key) {
+        if (object == null) return null;
         try {
             return object.getJSONObject(key);
         } catch (JSONException ignored) {}
@@ -228,6 +229,7 @@ public class AdResponse {
 
     // also returns null if array is empty
     private static JSONArray getJSONArray(JSONObject object, String key) {
+        if (object == null) return null;
         try {
             JSONArray array =  object.getJSONArray(key);
             return array.length() > 0 ? array : null;
@@ -236,6 +238,7 @@ public class AdResponse {
     }
 
     private static JSONObject getJSONObjectFromArray(JSONArray array, int index) {
+        if (array == null) return null;
         try {
             return array.getJSONObject(index);
         } catch (JSONException ignored) {}
@@ -243,6 +246,7 @@ public class AdResponse {
     }
 
     private static String getJSONString(JSONObject object, String key) {
+        if (object == null) return null;
         try {
             return object.getString(key);
         } catch (JSONException ignored) {}
@@ -250,6 +254,7 @@ public class AdResponse {
     }
 
     private static int getJSONInt(JSONObject object, String key) {
+        if (object == null) return -1;
         try {
             return object.getInt(key);
         } catch (JSONException ignored) {}
