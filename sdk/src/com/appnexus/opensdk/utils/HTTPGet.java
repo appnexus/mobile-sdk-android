@@ -18,7 +18,6 @@ package com.appnexus.opensdk.utils;
 
 import android.os.AsyncTask;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -52,7 +51,7 @@ public abstract class HTTPGet<Params extends Void, Progress extends Void, Result
             out.setResponseBody(EntityUtils.toString(r.getEntity()));
             boolean isStatusOK = (r.getStatusLine() != null)
                     && (r.getStatusLine().getStatusCode()
-                    == HttpStatus.SC_OK);
+                    == 200);
             out.setSucceeded(isStatusOK);
         } catch (URISyntaxException e) {
             out.setSucceeded(false);
