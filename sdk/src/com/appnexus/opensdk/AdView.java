@@ -162,8 +162,13 @@ public abstract class AdView extends FrameLayout implements MediatedAdViewContro
     // If single-use mode, we must manually start the fetcher
     protected void onFirstLayout() {
         // If an MRAID ad is expanded here, don't fetch on resume.
-        if (isMRAIDExpanded())
+        if (isMRAIDExpanded()) {
             return;
+        }
+        // if no placement id, don't fetch on resume
+        if (placementID == null || placementID.isEmpty()) {
+            return;
+        }
         mAdFetcher.start();
     }
 
