@@ -464,13 +464,22 @@ public class MRAIDImplementation {
 
     }
 
+    public enum CUSTOM_CLOSE_POSITION{
+        top_left,
+        top_right,
+        center,
+        bottom_left,
+        bottom_right,
+        top_center,
+        bottom_center
+    }
     private void resize(ArrayList<BasicNameValuePair> parameters) {
-        int w;
-        int h;
-        int offset_x;
-        int offset_y;
-        String custom_close_position;
-        boolean allow_offscrean;
+        int w=-1;
+        int h=-1;
+        int offset_x=0;
+        int offset_y=0;
+        String custom_close_position="top-right";
+        boolean allow_offscrean=true;
         for (BasicNameValuePair bnvp : parameters) {
             if(bnvp.getName().equals("w")){
                 w = Integer.parseInt(bnvp.getValue());
@@ -487,6 +496,8 @@ public class MRAIDImplementation {
             }
         }
 
+        //TODO: Convert custom close position to type CUSTOM_CLOSE_POSITION
+        this.owner.resize(w,h,offset_x,offset_y, CUSTOM_CLOSE_POSITION.valueOf(custom_close_position.replace('_','-')), allow_offscrean);
 
         this.owner
                 .loadUrl("javascript:window.mraid.util.stateChangeEvent('resized');");
