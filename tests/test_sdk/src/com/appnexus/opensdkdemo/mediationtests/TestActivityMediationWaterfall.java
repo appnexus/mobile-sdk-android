@@ -47,7 +47,7 @@ public class TestActivityMediationWaterfall extends ActivityInstrumentationTestC
         super.setUp();
         old_base_url = Settings.getSettings().BASE_URL;
         Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
-        Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
+        Clog.w(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
         SuccessfulMediationView.didPass = false;
         SecondSuccessfulMediationView.didPass = false;
         ThirdSuccessfulMediationView.didPass = false;
@@ -67,8 +67,10 @@ public class TestActivityMediationWaterfall extends ActivityInstrumentationTestC
 
     @Override
     protected void tearDown() throws Exception {
-        Clog.d(TestUtil.testLogTag, "tear down");
+        Clog.w(TestUtil.testLogTag, "tear down");
         Settings.getSettings().BASE_URL = old_base_url;
+
+        Thread.sleep(2500);
 
         super.tearDown();
     }
@@ -174,12 +176,14 @@ public class TestActivityMediationWaterfall extends ActivityInstrumentationTestC
 
     @Override
     public void onAdLoaded(AdView adView) {
+        Clog.d(TestUtil.testLogTag, "onAdLoaded");
         didLoad = true;
         lock.unpause();
     }
 
     @Override
     public void onAdRequestFailed(AdView adView) {
+        Clog.d(TestUtil.testLogTag, "onAdFailed");
         didFailToLoad = true;
         lock.unpause();
     }
