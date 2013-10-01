@@ -31,7 +31,6 @@ import com.appnexus.opensdkdemo.util.TestUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.LinkedList;
 
 public class TestActivityMediationNetwork extends ActivityInstrumentationTestCase2<DemoMainActivity> implements AdRequester, AdListener {
 
@@ -142,7 +141,7 @@ public class TestActivityMediationNetwork extends ActivityInstrumentationTestCas
         setData(false);
 
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                (Activity) bav.getContext(), this, response.getMediatedAds(), null);
+                (Activity) bav.getContext(), this, response.getMediatedAds().pop(), null);
     }
 
     @Override
@@ -151,7 +150,7 @@ public class TestActivityMediationNetwork extends ActivityInstrumentationTestCas
     }
 
     @Override
-    synchronized public void dispatchResponse(AdResponse response, LinkedList<MediatedAd> oldAds) {
+    synchronized public void dispatchResponse(AdResponse response) {
         Clog.d(TestUtil.testLogTag, "dispatch: " + response.toString());
         didPass = true;
     }

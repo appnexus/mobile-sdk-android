@@ -21,8 +21,6 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
 
-import java.util.LinkedList;
-
 public abstract class MediatedAdViewController implements Displayable {
 
     public static enum RESULT {
@@ -38,7 +36,6 @@ public abstract class MediatedAdViewController implements Displayable {
     Class<?> c;
     MediatedAdView mAV;
     AdRequester requester;
-    LinkedList<MediatedAd> mediatedAds;
     MediatedAd currentAd;
     AdViewListener listener;
 
@@ -48,20 +45,17 @@ public abstract class MediatedAdViewController implements Displayable {
     //TODO: may be unnecessary
     private boolean noMoreAds = false;
 
-    protected MediatedAdViewController(AdRequester requester, LinkedList<MediatedAd> mediatedAds, AdViewListener listener) {
+    protected MediatedAdViewController(AdRequester requester, MediatedAd currentAd, AdViewListener listener) {
         this.requester = requester;
         this.listener = listener;
-        this.mediatedAds = mediatedAds;
+        this.currentAd = currentAd;
 
         RESULT errorCode = null;
 
-        noMoreAds = (mediatedAds == null) || mediatedAds.isEmpty();
-
-        if (noMoreAds) {
+        if (currentAd == null) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_no_ads));
             errorCode = RESULT.UNABLE_TO_FILL;
         } else {
-            currentAd = mediatedAds.pop();
             boolean instantiateSuccessful = instantiateNewMediatedAd();
             if (!instantiateSuccessful)
                 errorCode = RESULT.MEDIATED_SDK_UNAVAILABLE;
@@ -77,7 +71,7 @@ public abstract class MediatedAdViewController implements Displayable {
      * @param callerClass the calling class that mAV should be an instance of
      * @return true if the controller is valid, false if not.
      */
-    protected boolean isValid(Class<?> callerClass) {
+    protected boolean isValid(Class callerClass) {
         if (failed) {
             return false;
         }
@@ -85,7 +79,7 @@ public abstract class MediatedAdViewController implements Displayable {
             onAdFailed(RESULT.UNABLE_TO_FILL);
             return false;
         }
-        if ((mAV == null) || (callerClass == null) || callerClass.isInstance(mAV)) {
+        if ((mAV == null) || (callerClass == null) || !callerClass.isInstance(mAV)) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instance_exception,
                     callerClass != null ? callerClass.getCanonicalName() : "null"));
             onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
@@ -173,7 +167,7 @@ public abstract class MediatedAdViewController implements Displayable {
                 return;
             }
 
-            requester.dispatchResponse(null, mediatedAds);
+            requester.dispatchResponse(null);
             return;
         }
         final String resultCB = currentAd.getResultCB();
@@ -196,7 +190,7 @@ public abstract class MediatedAdViewController implements Displayable {
                     return;
 
                 AdResponse response = new AdResponse(httpResponse.getResponseBody(), httpResponse.getHeaders());
-                requester.dispatchResponse(response, mediatedAds);
+                requester.dispatchResponse(response);
             }
 
             @Override

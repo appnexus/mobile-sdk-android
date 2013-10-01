@@ -19,25 +19,23 @@ import android.app.Activity;
 import android.view.View;
 import com.appnexus.opensdk.utils.Clog;
 
-import java.util.LinkedList;
-
 public class MediatedBannerAdViewController extends MediatedAdViewController implements Displayable {
 
     private View placeableView;
 
     static public MediatedBannerAdViewController create(
             Activity activity, AdRequester requester,
-            LinkedList<MediatedAd> mediatedAds, AdViewListener listener) {
-        MediatedBannerAdViewController out = new MediatedBannerAdViewController(activity, requester, mediatedAds, listener);
+            MediatedAd mediatedAd, AdViewListener listener) {
+        MediatedBannerAdViewController out = new MediatedBannerAdViewController(activity, requester, mediatedAd, listener);
         return out.failed() ? null : out;
     }
 
     protected MediatedBannerAdViewController(
-            Activity activity, AdRequester requester, LinkedList<MediatedAd> mediatedAds,
+            Activity activity, AdRequester requester, MediatedAd mediatedAd,
             AdViewListener listener) {
-        super(requester, mediatedAds, listener);
+        super(requester, mediatedAd, listener);
 
-        if (!isValid(getClass()))
+        if (!isValid(MediatedBannerAdView.class))
             return;
 
         // if controller is valid, request an ad

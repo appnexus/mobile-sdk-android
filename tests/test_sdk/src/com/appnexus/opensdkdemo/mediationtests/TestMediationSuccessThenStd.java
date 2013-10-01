@@ -24,8 +24,6 @@ import com.appnexus.opensdkdemo.testviews.DummyView;
 import com.appnexus.opensdkdemo.testviews.SuccessfulMediationView;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
-import java.util.LinkedList;
-
 public class TestMediationSuccessThenStd extends AndroidTestCase implements AdRequester {
     String old_base_url;
     AdRequest shouldWork;
@@ -77,7 +75,7 @@ public class TestMediationSuccessThenStd extends AndroidTestCase implements AdRe
     public void onReceiveResponse(AdResponse response) {
         Clog.d(TestUtil.testLogTag, "received first response: " + response.toString());
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, this, response.getMediatedAds(), null);
+                null, this, response.getMediatedAds().pop(), null);
     }
 
     @Override
@@ -86,7 +84,7 @@ public class TestMediationSuccessThenStd extends AndroidTestCase implements AdRe
     }
 
     @Override
-    synchronized public void dispatchResponse(AdResponse response, LinkedList<MediatedAd> oldAds) {
+    synchronized public void dispatchResponse(AdResponse response) {
         Clog.d(TestUtil.testLogTag, "dispatch " + response.toString());
         if (response.getType() == null) {
             Clog.d(TestUtil.testLogTag, "null type");

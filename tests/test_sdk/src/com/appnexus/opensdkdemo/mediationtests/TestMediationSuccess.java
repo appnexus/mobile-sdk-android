@@ -27,8 +27,6 @@ import com.appnexus.opensdkdemo.testviews.ThirdSuccessfulMediationView;
 import com.appnexus.opensdkdemo.util.Lock;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
-import java.util.LinkedList;
-
 //TODO: many of the old mediation tests (1-10) are broken because we don't allow more than one successful adview
 // comment out the return code in MAVC to allow multiple successes and make the test pass
 public class TestMediationSuccess extends AndroidTestCase implements AdRequester {
@@ -82,7 +80,7 @@ public class TestMediationSuccess extends AndroidTestCase implements AdRequester
     public void onReceiveResponse(AdResponse response) {
         Clog.d(TestUtil.testLogTag, "received first response");
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, this, response.getMediatedAds(), null);
+                null, this, response.getMediatedAds().pop(), null);
     }
 
     @Override
@@ -91,9 +89,9 @@ public class TestMediationSuccess extends AndroidTestCase implements AdRequester
     }
 
     @Override
-    public void dispatchResponse(AdResponse response, LinkedList<MediatedAd> oldAds) {
+    public void dispatchResponse(AdResponse response) {
         Clog.d(TestUtil.testLogTag, "dispatch (for second and third responses)");
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, this, response.getMediatedAds(), null);
+                null, this, response.getMediatedAds().pop(), null);
     }
 }

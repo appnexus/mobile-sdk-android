@@ -16,8 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import java.util.LinkedList;
-
 public interface AdRequester {
     /**
      * Called when the request made by the requester fails.
@@ -43,5 +41,5 @@ public interface AdRequester {
 	 *
 	 * @param response
 	 */
-	public void dispatchResponse(final AdResponse response, LinkedList<MediatedAd> oldAds);
+	public void dispatchResponse(final AdResponse response);
 }
