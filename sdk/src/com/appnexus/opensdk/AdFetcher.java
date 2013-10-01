@@ -213,16 +213,17 @@ public class AdFetcher implements AdRequester {
             public void run() {
                 LinkedList<MediatedAd> mediatedAds;
 
+                boolean responseAdsExist = (response != null) && response.containsAds();
+                boolean oldAdsExist = (oldAds != null) && !oldAds.isEmpty();
+
                 // no ads in the response and no old ads means no fill
-                if (!response.containsAds()
-                        && ((oldAds == null)
-                        || oldAds.isEmpty())) {
+                if (!responseAdsExist && !oldAdsExist) {
                     Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
                     requestFailed();
                     return;
                 }
 
-                if (response.containsAds()) {
+                if (responseAdsExist) {
                     // if non-mediated ad is overriding the list,
                     // this will be null and skip the loop for mediation
                     mediatedAds = response.getMediatedAds();
@@ -248,7 +249,8 @@ public class AdFetcher implements AdRequester {
                         if (output != null)
                             output.getView();
                     }
-                } else if (response.isMraid) {
+                } else if ((response != null)
+                        && response.isMraid) {
                     // mraid
                     MRAIDWebView output = new MRAIDWebView(owner);
                     output.loadAd(response);

@@ -45,6 +45,7 @@ public abstract class MediatedAdViewController implements Displayable {
     protected boolean errorCBMade = false;
     protected boolean successCBMade = false;
 
+    //TODO: may be unnecessary
     private boolean noMoreAds = false;
 
     protected MediatedAdViewController(AdRequester requester, LinkedList<MediatedAd> mediatedAds, AdViewListener listener) {
@@ -162,16 +163,20 @@ public abstract class MediatedAdViewController implements Displayable {
 
     private void fireResultCB(final RESULT result) {
 
-        // if resultCB is empty don't do anything
-        if (currentAd == null) {
+        // if resultCB is empty don't fire resultCB, and just continue to next ad
+        if ((currentAd == null) || (currentAd.getResultCB() == null) || currentAd.getResultCB().isEmpty()) {
             Clog.w(Clog.mediationLogTag, Clog.getString(R.string.fire_cb_result_null));
+
+            // just making sure
+            if (requester == null) {
+                Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
+                return;
+            }
+
+            requester.dispatchResponse(null, mediatedAds);
             return;
         }
         final String resultCB = currentAd.getResultCB();
-        if ((resultCB == null) || resultCB.isEmpty()) {
-            Clog.w(Clog.mediationLogTag, Clog.getString(R.string.fire_cb_result_null));
-            return;
-        }
 
         //fire call to result cb url
         HTTPGet<Void, Void, HTTPResponse> cb = new HTTPGet<Void, Void, HTTPResponse>() {
@@ -180,7 +185,8 @@ public abstract class MediatedAdViewController implements Displayable {
                 if (requester == null) {
                     Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
                     return;
-                } else if ((httpResponse == null) || !httpResponse.getSucceeded()) {
+                }
+                if ((httpResponse == null) || !httpResponse.getSucceeded()) {
                     Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_bad_response));
                     return;
                 }
