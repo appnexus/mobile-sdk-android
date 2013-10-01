@@ -211,17 +211,17 @@ public class AdFetcher implements AdRequester {
         this.owner.post(new Runnable() {
             public void run() {
 
-                boolean responseAdsExist = (response != null) && response.containsAds();
+                boolean responseHasAds = (response != null) && response.containsAds();
                 boolean ownerHasAds = (owner.getMediatedAds() != null) && !owner.getMediatedAds().isEmpty();
 
                 // no ads in the response and no old ads means no fill
-                if (!responseAdsExist && !ownerHasAds) {
+                if (!responseHasAds && !ownerHasAds) {
                     Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
                     requestFailed();
                     return;
                 }
 
-                if (responseAdsExist) {
+                if (responseHasAds) {
                     // if non-mediated ad is overriding the list,
                     // this will be null and skip the loop for mediation
                     owner.setMediatedAds(response.getMediatedAds());
