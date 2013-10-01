@@ -71,7 +71,9 @@ public class TestActivity404Error extends ActivityInstrumentationTestCase2<DemoM
     }
 
     public void test404() {
-        Clog.w(TestUtil.testLogTag, "TEST 404");
+        // Create a AdRequest which will request a mediated response to
+        // instantiate the fake view. The (failure) result_cb
+        // should return a 404 error, which should fail instantiation
 
         activity.runOnUiThread(new Runnable() {
             @Override
@@ -90,6 +92,8 @@ public class TestActivity404Error extends ActivityInstrumentationTestCase2<DemoM
         }
 
         assertEquals(true, didPass);
+        // currently no way to verify the response from the resultCB
+        // use LogCat
     }
 
     @Override

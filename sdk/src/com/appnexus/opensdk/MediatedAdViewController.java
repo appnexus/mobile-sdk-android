@@ -156,8 +156,8 @@ public abstract class MediatedAdViewController implements Displayable {
                 if (requester == null) {
                     Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
                     return;
-                } else if (httpResponse == null) {
-                    Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_response_null));
+                } else if ((httpResponse == null) || !httpResponse.getSucceeded()) {
+                    Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_bad_response));
                     return;
                 }
 
