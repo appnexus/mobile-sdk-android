@@ -18,7 +18,9 @@ package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -230,7 +232,6 @@ public class MRAIDImplementation {
 
                 //Store Picture
                 //TODO Check for permissions
-                //TODO: This isn't done by an intent. Do we want to make a custom dialog box for this, or just not support it?
 
                 //Video should always work inline.
                 view.loadUrl("javascript:window.mraid.util.setSupportsInlineVideo(true)");
@@ -416,9 +417,29 @@ public class MRAIDImplementation {
         }
         if(uri==null){
             //TODO: Clogging, error here.
+            return;
         }
 
-        
+        AlertDialog.Builder builder = new AlertDialog.Builder(owner.owner.getContext());
+        builder.setTitle("Store Picture?");
+        builder.setTitle("This Ad would like permission to save a picture.");
+        builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //TODO: Save image
+            }
+        });
+
+        builder.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //Nothing needs to be done
+            }
+        });
+
+        AlertDialog d = builder.create();
+        d.show();
+
 
     }
 
@@ -431,12 +452,14 @@ public class MRAIDImplementation {
         }
         if(uri==null){
             //TODO: Clogging, error here.
+            return;
         }
         Intent i = new Intent(Intent.ACTION_VIEW);
         try {
             i.setDataAndType(Uri.parse(URLDecoder.decode(uri, "UTF-8")), "video/mp4");
         } catch (UnsupportedEncodingException e) {
             //TODO: Clogging, error here.
+            return;
         }
         owner.getContext().startActivity(i);
     }
