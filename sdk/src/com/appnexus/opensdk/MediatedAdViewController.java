@@ -177,19 +177,21 @@ public abstract class MediatedAdViewController implements Displayable {
             @Override
             protected void onPostExecute(HTTPResponse httpResponse) {
                 if (requester == null) {
-                    Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
+                    Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
                     return;
                 }
-                if ((httpResponse == null) || !httpResponse.getSucceeded()) {
-                    Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_bad_response));
-                    return;
+                AdResponse response = null;
+                if ((httpResponse != null) && httpResponse.getSucceeded()) {
+                    response = new AdResponse(httpResponse.getResponseBody(), httpResponse.getHeaders());
+                }
+                else {
+                    Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_bad_response));
                 }
 
                 // if this was the result of a successful ad, stop looking for more ads
                 if (successCBMade)
                     return;
 
-                AdResponse response = new AdResponse(httpResponse.getResponseBody(), httpResponse.getHeaders());
                 requester.dispatchResponse(response);
             }
 
