@@ -408,7 +408,18 @@ public class MRAIDImplementation {
     }
 
     private void storePicture(ArrayList<BasicNameValuePair> parameters) {
-        //TODO: Make our own dialog box? shit, tom is gone
+        String uri = null;
+        for (BasicNameValuePair bnvp : parameters) {
+            if(bnvp.getName().equals("uri")){
+                uri = bnvp.getValue();
+            }
+        }
+        if(uri==null){
+            //TODO: Clogging, error here.
+        }
+
+        
+
     }
 
     private void playVideo(ArrayList<BasicNameValuePair> parameters) {
@@ -496,7 +507,7 @@ public class MRAIDImplementation {
             }
         }
 
-        //TODO: Convert custom close position to type CUSTOM_CLOSE_POSITION
+        //TODO: Clogging
         this.owner.resize(w,h,offset_x,offset_y, CUSTOM_CLOSE_POSITION.valueOf(custom_close_position.replace('_','-')), allow_offscrean);
 
         this.owner
