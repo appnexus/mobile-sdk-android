@@ -264,8 +264,6 @@ public class AdFetcher implements AdRequester {
     @Override
     public void onReceiveResponse(AdResponse response) {
         dispatchResponse(response);
-        // until callbacks branch is merged, leave this here
-        owner.onAdLoaded();
     }
 
 	@Override
