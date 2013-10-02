@@ -28,10 +28,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.Window;
+import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import android.widget.TabHost.TabContentFactory;
@@ -378,11 +375,15 @@ public class MainActivity extends FragmentActivity implements
 
                 //TODO: implement file upload
 
-                Prefs prefs = new Prefs(getBaseContext());
-                prefs.writeLong(Prefs.KEY_LAST_LOG_UPLOAD, System.currentTimeMillis());
-                prefs.applyChanges();
+                boolean fileUploadSuccessful = false;
 
-                clearLogFile();
+                if (fileUploadSuccessful) {
+                    Prefs prefs = new Prefs(getBaseContext());
+                    prefs.writeLong(Prefs.KEY_LAST_LOG_UPLOAD, System.currentTimeMillis());
+                    prefs.applyChanges();
+
+                    clearLogFile();
+                }
             }
         }
     }
@@ -471,6 +472,13 @@ public class MainActivity extends FragmentActivity implements
                     .setView(dialogLayout)
                     .setOnCancelListener(logOnCancel)
                     .show();
+
+            // make it fullscreen
+            WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+            lp.copyFrom(logDialog.getWindow().getAttributes());
+            lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+            lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+            logDialog.getWindow().setAttributes(lp);
         }
     }
 
@@ -478,6 +486,8 @@ public class MainActivity extends FragmentActivity implements
         @Override
         public void onCancel(DialogInterface dialogInterface) {
             isShowingLogs = false;
+            //TODO: remove this
+            clearLogFile();
         }
     };
 }

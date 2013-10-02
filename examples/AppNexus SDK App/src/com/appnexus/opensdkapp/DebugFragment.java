@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -70,8 +71,16 @@ public class DebugFragment extends Fragment {
             public void onClick(View view) {
                 webViewClient.runAuction();
 
-                if (debugDialog != null)
+                if (debugDialog != null) {
+
                     debugDialog.show();
+                    //  make it fullscreen
+                    WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+                    lp.copyFrom(debugDialog.getWindow().getAttributes());
+                    lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+                    lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+                    debugDialog.getWindow().setAttributes(lp);
+                }
             }
         });
 

@@ -38,7 +38,7 @@
             style="@style/itemContainer">
 
         <TextView android:id="@+id/log_txt_applogs"
-                  android:textSize="10sp"
+                  android:textSize="11sp"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content" />
     </ScrollView>
