@@ -29,11 +29,14 @@ import com.appnexus.opensdkdemo.util.InstanceLock;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
 public class TestActivity404Error extends ActivityInstrumentationTestCase2<DemoMainActivity> implements AdListener {
-
+    /**
+     * NOTE: requires commenting out return code in MAVC's resultCB handler
+     * to allow for multiple successes.
+     */
     DemoMainActivity activity;
     BannerAdView bav;
     InstanceLock lock;
-    boolean didPass = false;
+    boolean didLoad = false, didFail = false;
     String old_base_url;
 
     public TestActivity404Error() {
@@ -47,7 +50,8 @@ public class TestActivity404Error extends ActivityInstrumentationTestCase2<DemoM
         Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
         Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
         SuccessfulMediationView.didPass = false;
-        didPass = false;
+        didLoad = false;
+        didFail = false;
         lock = new InstanceLock();
 
         setActivityInitialTouchMode(false);
@@ -57,7 +61,6 @@ public class TestActivity404Error extends ActivityInstrumentationTestCase2<DemoM
         DummyView.createView(activity);
 
         bav = (BannerAdView) activity.findViewById(com.appnexus.opensdkdemo.R.id.banner);
-        bav.setPlacementID("9b");
         bav.setAdListener(this);
     }
 
@@ -70,11 +73,12 @@ public class TestActivity404Error extends ActivityInstrumentationTestCase2<DemoM
         super.tearDown();
     }
 
-    public void test404() {
+    public void testSuccessThen404() {
         // Create a AdRequest which will request a mediated response to
-        // instantiate the fake view. The (failure) result_cb
+        // instantiate the a successful view. The (failure) result_cb
         // should return a 404 error, which should fail instantiation
 
+        bav.setPlacementID("9a");
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -84,27 +88,43 @@ public class TestActivity404Error extends ActivityInstrumentationTestCase2<DemoM
 
         lock.pause(10000);
 
-        // give time for the result cb to fire
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        assertTrue(SuccessfulMediationView.didPass);
+        assertTrue(didLoad);
+        assertFalse(didFail);
+        // no way to verify the response from the resultCB here
+        // use LogCat / Test404Error tests it
+    }
 
-        assertEquals(true, didPass);
-        // currently no way to verify the response from the resultCB
-        // use LogCat
+    public void testFailThen404() {
+        // Create a AdRequest which will request a mediated response to
+        // instantiate the fake view. The (failure) result_cb
+        // should return a 404 error, which should fail instantiation
+
+        bav.setPlacementID("9b");
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bav.loadAd();
+            }
+        });
+
+        lock.pause(10000);
+
+        assertFalse(didLoad);
+        assertTrue(didFail);
+        // no way to verify the response from the resultCB here
+        // use LogCat / Test404Error tests it
     }
 
     @Override
     public void onAdLoaded(AdView adView) {
-        didPass = true;
+        didLoad = true;
         lock.unpause();
     }
 
     @Override
     public void onAdRequestFailed(AdView adView) {
-        didPass = false;
+        didFail = true;
         lock.unpause();
     }
 

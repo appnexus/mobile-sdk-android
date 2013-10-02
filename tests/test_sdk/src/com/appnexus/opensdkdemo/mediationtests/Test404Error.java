@@ -114,8 +114,8 @@ public class Test404Error extends AndroidTestCase implements AdRequester {
         // resultCB response should have be a 404, so null
         if (response == null) {
             responseWasNull = true;
-            lock.unpause();
         }
+        lock.unpause();
     }
 
 }
