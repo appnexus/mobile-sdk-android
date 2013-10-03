@@ -64,8 +64,6 @@ public class MainActivity extends FragmentActivity implements
     private View btnMore, btnLog;
     private View contentView;
 
-    private PreviewFragment previewFrag;
-    private DebugFragment debugFrag;
     private AlertDialog logDialog, progressDialog;
 
     private boolean isShowingLogs;
@@ -166,12 +164,10 @@ public class MainActivity extends FragmentActivity implements
         List<Fragment> fragments = new Vector<Fragment>();
         fragments.add(Fragment.instantiate(this,
                 SettingsFragment.class.getName()));
-        previewFrag = (PreviewFragment) Fragment.instantiate(this,
-                PreviewFragment.class.getName());
-        fragments.add(previewFrag);
-        debugFrag = (DebugFragment) Fragment.instantiate(this,
-                DebugFragment.class.getName());
-        fragments.add(debugFrag);
+        fragments.add(Fragment.instantiate(this,
+                PreviewFragment.class.getName()));
+        fragments.add(Fragment.instantiate(this,
+                DebugFragment.class.getName()));
 
         this.pagerAdapter = new PagerAdapter(
                 super.getSupportFragmentManager(), fragments);
@@ -179,7 +175,6 @@ public class MainActivity extends FragmentActivity implements
         this.viewPager = (ViewPager) findViewById(R.id.viewpager);
         this.viewPager.setAdapter(this.pagerAdapter);
         this.viewPager.setOnPageChangeListener(this);
-
     }
 
     private static void AddTab(MainActivity activity, TabHost tabHost,
@@ -223,8 +218,11 @@ public class MainActivity extends FragmentActivity implements
         Clog.v(Constants.BASE_LOG_TAG, "page selected: " + arg0);
         this.tabHost.setCurrentTab(arg0);
 
+        DebugFragment debugFrag = (DebugFragment) pagerAdapter.getItem(TABS.DEBUG.ordinal());
         if (debugFrag != null)
             debugFrag.refresh();
+        else
+            Clog.e(Constants.BASE_LOG_TAG, "DebugFragment object was null");
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(tabHost.getApplicationWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
@@ -270,7 +268,11 @@ public class MainActivity extends FragmentActivity implements
 
     @Override
     public void onLoadAdClicked() {
-        previewFrag.loadNewAd();
+        PreviewFragment previewFrag = (PreviewFragment) pagerAdapter.getItem(TABS.PREVIEW.ordinal());
+        if (previewFrag != null)
+            previewFrag.loadNewAd();
+        else
+            Clog.e(Constants.BASE_LOG_TAG, "PreviewFragment object was null");
     }
 
     /**

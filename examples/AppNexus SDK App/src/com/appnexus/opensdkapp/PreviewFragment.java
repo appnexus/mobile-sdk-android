@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdkapp;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -83,7 +84,13 @@ public class PreviewFragment extends Fragment {
     public void loadNewAd() {
         Log.d(Constants.BASE_LOG_TAG, "Loading new ad");
 
-        SettingsWrapper settingsWrapper = SettingsWrapper.getSettingsWrapperFromPrefs(getActivity());
+        Context context = getActivity();
+        if (context == null) {
+            Clog.e(Constants.PREFS_TAG, "activity context null. don't load ad");
+            return;
+        }
+
+        SettingsWrapper settingsWrapper = SettingsWrapper.getSettingsWrapperFromPrefs(context);
         Clog.d(Constants.BASE_LOG_TAG, settingsWrapper.toString());
 
         if (settingsWrapper.isAdTypeBanner()) {
