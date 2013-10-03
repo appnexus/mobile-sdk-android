@@ -78,6 +78,7 @@ public class TestMediationSuccess extends AndroidTestCase implements AdRequester
 
     @Override
     public void onReceiveResponse(AdResponse response) {
+        if (response == null) return;
         Clog.d(TestUtil.testLogTag, "received first response");
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
                 null, this, response.getMediatedAds().pop(), null);

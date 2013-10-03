@@ -124,6 +124,7 @@ public class TestActivity404Error extends ActivityInstrumentationTestCase2<DemoM
 
     @Override
     public void onAdRequestFailed(AdView adView) {
+        if (lock == null) return;
         didFail = true;
         lock.unpause();
     }

@@ -120,6 +120,7 @@ public class TestActivityRefreshStdThenMediated extends ActivityInstrumentationT
 
     @Override
     public void onAdRequestFailed(AdView adView) {
+        if (lock == null) return;
         didPassStd = false;
         if (!isLoadingMediation) {
             lock.unpause();

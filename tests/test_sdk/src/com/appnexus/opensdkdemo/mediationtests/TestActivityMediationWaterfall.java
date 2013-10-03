@@ -176,6 +176,7 @@ public class TestActivityMediationWaterfall extends ActivityInstrumentationTestC
 
     @Override
     public void onAdLoaded(AdView adView) {
+        if (lock == null) return;
         Clog.d(TestUtil.testLogTag, "onAdLoaded");
         didLoad = true;
         lock.unpause();
@@ -183,6 +184,7 @@ public class TestActivityMediationWaterfall extends ActivityInstrumentationTestC
 
     @Override
     public void onAdRequestFailed(AdView adView) {
+        if (lock == null) return;
         Clog.d(TestUtil.testLogTag, "onAdFailed");
         didFailToLoad = true;
         lock.unpause();

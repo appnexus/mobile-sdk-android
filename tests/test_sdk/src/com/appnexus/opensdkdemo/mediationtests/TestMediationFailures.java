@@ -123,6 +123,7 @@ public class TestMediationFailures extends AndroidTestCase implements AdRequeste
 
     @Override
     public void onReceiveResponse(AdResponse response) {
+        if (response == null) return;
         Clog.d(TestUtil.testLogTag, "received response: " + response.getBody());
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
                 null, this, response.getMediatedAds().pop(), null);
