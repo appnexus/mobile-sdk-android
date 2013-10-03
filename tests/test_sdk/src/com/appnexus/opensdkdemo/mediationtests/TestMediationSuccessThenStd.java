@@ -74,25 +74,18 @@ public class TestMediationSuccessThenStd extends AndroidTestCase implements AdRe
     @Override
     public void onReceiveResponse(AdResponse response) {
         Clog.d(TestUtil.testLogTag, "received first response: " + response.toString());
-        MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, this, response.getMediatedAds().pop(), null);
+        if (response.getMediatedAds() != null) {
+            MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
+                    null, this, response.getMediatedAds().pop(), null);
+        } else if (response.getType() != null && response.getType().equals("banner")) {
+            didPass = true;
+            notify();
+        }
     }
 
     @Override
     public AdView getOwner() {
         return null;
-    }
-
-    @Override
-    synchronized public void dispatchResponse(AdResponse response) {
-        Clog.d(TestUtil.testLogTag, "dispatch " + response.toString());
-        if (response.getType() == null) {
-            Clog.d(TestUtil.testLogTag, "null type");
-            return;
-        }
-        if (response.getType().equals("banner"))
-            didPass = true;
-        notify();
     }
 
     synchronized private void pause() {

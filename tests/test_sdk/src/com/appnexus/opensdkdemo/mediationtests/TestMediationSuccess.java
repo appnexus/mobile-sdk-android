@@ -87,11 +87,4 @@ public class TestMediationSuccess extends AndroidTestCase implements AdRequester
     public AdView getOwner() {
         return null;
     }
-
-    @Override
-    public void dispatchResponse(AdResponse response) {
-        Clog.d(TestUtil.testLogTag, "dispatch (for second and third responses)");
-        MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, this, response.getMediatedAds().pop(), null);
-    }
 }

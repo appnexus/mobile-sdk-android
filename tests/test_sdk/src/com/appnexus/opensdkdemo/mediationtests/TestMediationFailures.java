@@ -132,33 +132,4 @@ public class TestMediationFailures extends AndroidTestCase implements AdRequeste
     public AdView getOwner() {
         return null;
     }
-
-    @Override
-    public void dispatchResponse(AdResponse response) {
-        Clog.d(TestUtil.testLogTag, "dispatch: " + response.toString());
-        MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, this, response.getMediatedAds().pop(), null);
-
-        // verify fail result cb
-//		Clog.d(TestUtil.testLogTag, response.getBody());
-//		try {
-//			JSONObject jsonObject = new JSONObject(response.getBody());
-//			String code = jsonObject.getString("code");
-//			if (Integer.valueOf(code) == (MediatedAdViewController.RESULT.MEDIATED_SDK_UNAVAILABLE.ordinal())) {
-//				didFail = true;
-//			} else {
-//				didFail = false;
-//				Clog.d(TestUtil.testLogTag, code);
-//				Clog.d(TestUtil.testLogTag, String.valueOf(MediatedAdViewController.RESULT.MEDIATED_SDK_UNAVAILABLE.ordinal()));
-//			}
-//		} catch (JSONException e) {
-//			Clog.d(TestUtil.testLogTag, "json parsing error", e);
-//		} catch (NumberFormatException e) {
-//			Clog.d(TestUtil.testLogTag, "error with response. make sure server implementation is correct", e);
-//		}
-//
-//		synchronized (NoSDK.lock) {
-//			NoSDK.lock.notify();
-//		}
-    }
 }

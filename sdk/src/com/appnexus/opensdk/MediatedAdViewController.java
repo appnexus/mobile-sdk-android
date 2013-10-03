@@ -167,7 +167,7 @@ public abstract class MediatedAdViewController implements Displayable {
                 return;
             }
 
-            requester.dispatchResponse(null);
+            requester.onReceiveResponse(null);
             return;
         }
         final String resultCB = currentAd.getResultCB();
@@ -192,7 +192,7 @@ public abstract class MediatedAdViewController implements Displayable {
                 if (successCBMade)
                     return;
 
-                requester.dispatchResponse(response);
+                requester.onReceiveResponse(response);
             }
 
             @Override

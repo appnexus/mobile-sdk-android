@@ -99,23 +99,20 @@ public class Test404Error extends AndroidTestCase implements AdRequester {
     public void onReceiveResponse(AdResponse response) {
         // response should be a regular valid mediatied ad
         Clog.d(TestUtil.testLogTag, "received response: " + response);
-        receivedResponse = true;
-        MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, this, response.getMediatedAds().pop(), null);
+        if (response != null && response.getMediatedAds() != null) {
+            MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
+                    null, this, response.getMediatedAds().pop(), null);
+            receivedResponse = true;
+            return;
+        } else if (response == null) {
+            // resultCB response should have be a 404, so null
+            responseWasNull = true;
+        }
+        lock.unpause();
     }
 
     @Override
     public AdView getOwner() {
         return null;
     }
-
-    @Override
-    public void dispatchResponse(AdResponse response) {
-        // resultCB response should have be a 404, so null
-        if (response == null) {
-            responseWasNull = true;
-        }
-        lock.unpause();
-    }
-
 }

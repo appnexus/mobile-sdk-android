@@ -207,7 +207,7 @@ public class AdFetcher implements AdRequester {
     }
 
     @Override
-    public void dispatchResponse(final AdResponse response) {
+    public void onReceiveResponse(final AdResponse response) {
         this.owner.post(new Runnable() {
             public void run() {
 
@@ -259,11 +259,6 @@ public class AdFetcher implements AdRequester {
                 }
             }
         });
-    }
-
-    @Override
-    public void onReceiveResponse(AdResponse response) {
-        dispatchResponse(response);
     }
 
 	@Override
