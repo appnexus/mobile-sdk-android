@@ -16,22 +16,20 @@
 
 package com.appnexus.opensdkdemo;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Vector;
-
-import android.view.Window;
-import com.appnexus.opensdkdemo.R;
-
-import android.os.Bundle;
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.View;
+import android.view.Window;
 import android.widget.TabHost;
 import android.widget.TabHost.TabContentFactory;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Vector;
 
 public class DemoMainActivity extends FragmentActivity implements
         TabHost.OnTabChangeListener, ViewPager.OnPageChangeListener {
