@@ -205,7 +205,7 @@
     mraid.setOrientationProperties=function(properties){
         orientation_properties=properties;
 
-        window.open("mraid://setOrientationProperties/?allow_orientation_change"+properties.allowOrientationChange
+        window.open("mraid://setOrientationProperties/?allow_orientation_change="+properties.allowOrientationChange
                    +"&force_orientation="+properties.forceOrientation);
     }
 
