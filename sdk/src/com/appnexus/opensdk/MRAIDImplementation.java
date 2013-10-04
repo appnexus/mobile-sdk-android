@@ -426,6 +426,7 @@ public class MRAIDImplementation {
         builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                //TODO: Test data: uri scheme
                 //TODO: Save image
             }
         });
