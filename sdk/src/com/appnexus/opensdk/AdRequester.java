@@ -31,15 +31,15 @@ public interface AdRequester {
      */
     public void onReceiveResponse(AdResponse response);
 
-	/**
-	 * Used to get the owner adview of the request
-	 */
-	public AdView getOwner();
+    /**
+     * Used to get the owner adview of the request
+     */
+    public AdView getOwner();
 
-	/**
-	 * Called when a response to the original request is received
-	 *
-	 * @param response
-	 */
-	public void dispatchResponse(final AdResponse response);
+    /**
+     * Called when a response to the original request is received
+     *
+     * @param response
+     */
+    public void dispatchResponse(final AdResponse response);
 }

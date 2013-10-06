@@ -15,8 +15,6 @@
  */
 package com.appnexus.opensdk.utils;
 
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.provider.CalendarContract;
 import org.json.JSONArray;
@@ -115,101 +113,101 @@ public class W3CEvent {
         this.recurrence = recurrence;
     }
 
-    public static W3CEvent createFromJSON(String s){
+    public static W3CEvent createFromJSON(String s) {
         W3CEvent out = new W3CEvent();
         try {
             JSONObject eventj = new JSONObject(s);
-            if(!eventj.isNull("id")){
+            if (!eventj.isNull("id")) {
                 out.setId(eventj.getString("id"));
             }
-            if(!eventj.isNull("description")){
+            if (!eventj.isNull("description")) {
                 out.setDecription(eventj.getString("description"));
             }
-            if(!eventj.isNull("location")){
+            if (!eventj.isNull("location")) {
                 out.setLocation(eventj.getString("location"));
             }
-            if(!eventj.isNull("summary")){
+            if (!eventj.isNull("summary")) {
                 out.setSummary(eventj.getString("summary"));
             }
-            if(!eventj.isNull("start")){
+            if (!eventj.isNull("start")) {
                 out.setStart(eventj.getString("start"));
             }
-            if(!eventj.isNull("end")){
+            if (!eventj.isNull("end")) {
                 out.setEnd(eventj.getString("end"));
             }
-            if(!eventj.isNull("status")){
+            if (!eventj.isNull("status")) {
                 out.setStatus(eventj.getString("status"));
             }
-            if(!eventj.isNull("freebusy")){
+            if (!eventj.isNull("freebusy")) {
                 out.setTransparency(eventj.getString("freebusy")); //wai, w3, wai
             }
-            if(!eventj.isNull("reminder")){
+            if (!eventj.isNull("reminder")) {
                 out.setReminder(eventj.getString("reminder"));
             }
 
             //Parse the recurrence event
-            if(!eventj.isNull("recurrence")){
+            if (!eventj.isNull("recurrence")) {
                 out.setRecurrence(new W3CRepeatRule());
-                try{
+                try {
                     JSONObject recurrencej = eventj.getJSONObject("recurrence");
-                    if(!recurrencej.isNull("frequency")){
+                    if (!recurrencej.isNull("frequency")) {
                         out.getRecurrence().setFrequency(recurrencej.getString("frequency"));
                     }
-                    if(!recurrencej.isNull("interval")){
+                    if (!recurrencej.isNull("interval")) {
                         out.getRecurrence().setInterval(recurrencej.getInt("interval"));
                     }
-                    if(!recurrencej.isNull("expires")){
+                    if (!recurrencej.isNull("expires")) {
                         out.getRecurrence().setExpires(recurrencej.getString("expires"));
                     }
-                    if(!recurrencej.isNull("exceptionDates")){
+                    if (!recurrencej.isNull("exceptionDates")) {
                         JSONArray exceptionDatesj = recurrencej.getJSONArray("exceptionDates");
                         int len = exceptionDatesj.length();
                         out.getRecurrence().setExceptionDates(new String[len]);
-                        for(int i = 0; i<len; i++){
-                            out.getRecurrence().getExceptionDates()[i]=exceptionDatesj.getString(i);
+                        for (int i = 0; i < len; i++) {
+                            out.getRecurrence().getExceptionDates()[i] = exceptionDatesj.getString(i);
                         }
                     }
-                    if(!recurrencej.isNull("daysInWeek")){
+                    if (!recurrencej.isNull("daysInWeek")) {
                         JSONArray daysInWeekj = recurrencej.getJSONArray("daysInWeek");
                         int len = daysInWeekj.length();
                         out.getRecurrence().setDaysInWeek(new int[len]);
-                        for(int i = 0; i<len; i++){
-                            out.getRecurrence().getDaysInWeek()[i]=daysInWeekj.getInt(i);
+                        for (int i = 0; i < len; i++) {
+                            out.getRecurrence().getDaysInWeek()[i] = daysInWeekj.getInt(i);
                         }
                     }
-                    if(!recurrencej.isNull("daysInMonth")){
+                    if (!recurrencej.isNull("daysInMonth")) {
                         JSONArray daysInMonthj = recurrencej.getJSONArray("daysInMonth");
                         int len = daysInMonthj.length();
                         out.getRecurrence().setDaysInMonth(new int[len]);
-                        for(int i = 0; i<len; i++){
-                            out.getRecurrence().getDaysInMonth()[i]=daysInMonthj.getInt(i);
+                        for (int i = 0; i < len; i++) {
+                            out.getRecurrence().getDaysInMonth()[i] = daysInMonthj.getInt(i);
                         }
                     }
-                    if(!recurrencej.isNull("daysInYear")){
+                    if (!recurrencej.isNull("daysInYear")) {
                         JSONArray daysInYearj = recurrencej.getJSONArray("daysInYear");
                         int len = daysInYearj.length();
                         out.getRecurrence().setDaysInYear(new int[len]);
-                        for(int i = 0; i<len; i++){
-                            out.getRecurrence().getDaysInYear()[i]=daysInYearj.getInt(i);
+                        for (int i = 0; i < len; i++) {
+                            out.getRecurrence().getDaysInYear()[i] = daysInYearj.getInt(i);
                         }
                     }
-                    if(!recurrencej.isNull("weeksInMonth")){
+                    if (!recurrencej.isNull("weeksInMonth")) {
                         JSONArray weeksInMonthj = recurrencej.getJSONArray("weeksInMonth");
                         int len = weeksInMonthj.length();
                         out.getRecurrence().setWeeksInMonth(new int[len]);
-                        for(int i = 0; i<len; i++){
-                            out.getRecurrence().getWeeksInMonth()[i]=weeksInMonthj.getInt(i);
+                        for (int i = 0; i < len; i++) {
+                            out.getRecurrence().getWeeksInMonth()[i] = weeksInMonthj.getInt(i);
                         }
                     }
-                    if(!recurrencej.isNull("monthsInYear")){
+                    if (!recurrencej.isNull("monthsInYear")) {
                         JSONArray monthsInYearj = recurrencej.getJSONArray("monthsInYear");
                         int len = monthsInYearj.length();
                         out.getRecurrence().setMonthsInYear(new int[len]);
-                        for(int i = 0; i<len; i++){
-                            out.getRecurrence().getMonthsInYear()[i]=monthsInYearj.getInt(i);
+                        for (int i = 0; i < len; i++) {
+                            out.getRecurrence().getMonthsInYear()[i] = monthsInYearj.getInt(i);
                         }
                     }
-                }catch(JSONException e){
+                } catch (JSONException e) {
                     // TODO: Clogging - error because of bad json in recurrence
                 }
             }
@@ -219,55 +217,56 @@ public class W3CEvent {
         }
         return out;
     }
-    private W3CEvent(){
+
+    private W3CEvent() {
 
     }
 
-    public Intent getInsertIntent(){
+    public Intent getInsertIntent() {
         Intent i = new Intent(Intent.ACTION_INSERT).setData(CalendarContract.Events.CONTENT_URI);
-        if(getDecription()!=null){
+        if (getDecription() != null) {
             i.putExtra(CalendarContract.Events.TITLE, getDecription());
         }
-        if(getLocation()!=null){
+        if (getLocation() != null) {
             i.putExtra(CalendarContract.Events.EVENT_LOCATION, getLocation());
         }
-        if(getSummary()!=null){
+        if (getSummary() != null) {
             i.putExtra(CalendarContract.Events.DESCRIPTION, getSummary());
         }
-        if(getStart()!=null){
+        if (getStart() != null) {
             //TODO: convert to UTC millis since epoch
             i.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, getStart());
         }
-        if(getEnd()!=null){
+        if (getEnd() != null) {
             //TODO: convert to UTC millis since epoch
             i.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, getEnd());
         }
-        if(getStatus()!=null){
+        if (getStatus() != null) {
             i.putExtra(CalendarContract.Events.STATUS, getStatus());
         }
-        if(getTransparency()!=null){
-            i.putExtra(CalendarContract.Events.VISIBLE, getTransparency().equals("opaque") ? false: true);
+        if (getTransparency() != null) {
+            i.putExtra(CalendarContract.Events.VISIBLE, getTransparency().equals("opaque") ? false : true);
         }
-        if(getReminder()!=null){
+        if (getReminder() != null) {
             i.putExtra(CalendarContract.Reminders.MINUTES, getReminder());
         }
 
-        StringBuilder repeatRuleBuilder= new StringBuilder("");
-        if(getRecurrence()!=null){
-            if(getRecurrence().getFrequency()!=null){
+        StringBuilder repeatRuleBuilder = new StringBuilder("");
+        if (getRecurrence() != null) {
+            if (getRecurrence().getFrequency() != null) {
                 repeatRuleBuilder.append("FREQ=");
                 repeatRuleBuilder.append(getRecurrence().getFrequency().toUpperCase());
                 repeatRuleBuilder.append(";");
             }
-            if(getRecurrence().getInterval()>0){
+            if (getRecurrence().getInterval() > 0) {
                 repeatRuleBuilder.append("INTERVAL=");
                 repeatRuleBuilder.append(getRecurrence().getInterval());
                 repeatRuleBuilder.append(";");
             }
-            if(getRecurrence().getDaysInWeek().length>0){
+            if (getRecurrence().getDaysInWeek().length > 0) {
                 repeatRuleBuilder.append("BYDAY=");
-                for(int j : getRecurrence().getDaysInWeek()){
-                    switch(j){
+                for (int j : getRecurrence().getDaysInWeek()) {
+                    switch (j) {
                         case 0:
                             repeatRuleBuilder.append("SU,");
                             break;
@@ -291,68 +290,68 @@ public class W3CEvent {
                             break;
                     }
                 }
-                if(repeatRuleBuilder.charAt(repeatRuleBuilder.length()-1)==','){
-                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length()-1);
+                if (repeatRuleBuilder.charAt(repeatRuleBuilder.length() - 1) == ',') {
+                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length() - 1);
                 }
                 repeatRuleBuilder.append(";");
             }
-            if(getRecurrence().getDaysInMonth().length>0){
+            if (getRecurrence().getDaysInMonth().length > 0) {
                 repeatRuleBuilder.append("BYMONTHDAY=");
-                for(int j : getRecurrence().getDaysInMonth()){
+                for (int j : getRecurrence().getDaysInMonth()) {
                     repeatRuleBuilder.append(getRecurrence().getDaysInMonth()[j]);
                     repeatRuleBuilder.append(",");
                 }
-                if(repeatRuleBuilder.charAt(repeatRuleBuilder.length()-1)==','){
-                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length()-1);
+                if (repeatRuleBuilder.charAt(repeatRuleBuilder.length() - 1) == ',') {
+                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length() - 1);
                 }
                 repeatRuleBuilder.append(";");
             }
-            if(getRecurrence().getDaysInYear().length>0){
+            if (getRecurrence().getDaysInYear().length > 0) {
                 repeatRuleBuilder.append("BYYEARDAY=");
-                for(int j : getRecurrence().getDaysInYear()){
+                for (int j : getRecurrence().getDaysInYear()) {
                     repeatRuleBuilder.append(getRecurrence().getDaysInYear()[j]);
                     repeatRuleBuilder.append(",");
                 }
-                if(repeatRuleBuilder.charAt(repeatRuleBuilder.length()-1)==','){
-                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length()-1);
+                if (repeatRuleBuilder.charAt(repeatRuleBuilder.length() - 1) == ',') {
+                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length() - 1);
                 }
                 repeatRuleBuilder.append(";");
             }
-            if(getRecurrence().getMonthsInYear().length>0){
+            if (getRecurrence().getMonthsInYear().length > 0) {
                 repeatRuleBuilder.append("BYMONTH=");
-                for(int j : getRecurrence().getMonthsInYear()){
+                for (int j : getRecurrence().getMonthsInYear()) {
                     repeatRuleBuilder.append(getRecurrence().getMonthsInYear()[j]);
                     repeatRuleBuilder.append(",");
                 }
-                if(repeatRuleBuilder.charAt(repeatRuleBuilder.length()-1)==','){
-                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length()-1);
+                if (repeatRuleBuilder.charAt(repeatRuleBuilder.length() - 1) == ',') {
+                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length() - 1);
                 }
                 repeatRuleBuilder.append(";");
             }
-            if(getRecurrence().getWeeksInMonth().length>0){
+            if (getRecurrence().getWeeksInMonth().length > 0) {
                 repeatRuleBuilder.append("BYWEEKNO=");
-                for(int j : getRecurrence().getWeeksInMonth()){
+                for (int j : getRecurrence().getWeeksInMonth()) {
                     repeatRuleBuilder.append(getRecurrence().getWeeksInMonth()[j]);
                     repeatRuleBuilder.append(",");
                 }
-                if(repeatRuleBuilder.charAt(repeatRuleBuilder.length()-1)==','){
-                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length()-1);
+                if (repeatRuleBuilder.charAt(repeatRuleBuilder.length() - 1) == ',') {
+                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length() - 1);
                 }
                 repeatRuleBuilder.append(";");
             }
-            if(getRecurrence().getExpires()!=null){
+            if (getRecurrence().getExpires() != null) {
                 repeatRuleBuilder.append("UNTIL=");
                 repeatRuleBuilder.append(getRecurrence().getExpires());
                 repeatRuleBuilder.append(";");
             }
-            if(getRecurrence().getExceptionDates().length>0){
+            if (getRecurrence().getExceptionDates().length > 0) {
                 repeatRuleBuilder.append("EXDATE=");
-                for(String s : getRecurrence().getExceptionDates()){
+                for (String s : getRecurrence().getExceptionDates()) {
                     repeatRuleBuilder.append(s);
                     repeatRuleBuilder.append(",");
                 }
-                if(repeatRuleBuilder.charAt(repeatRuleBuilder.length()-1)==','){
-                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length()-1);
+                if (repeatRuleBuilder.charAt(repeatRuleBuilder.length() - 1) == ',') {
+                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length() - 1);
                 }
                 repeatRuleBuilder.append(";");
             }

@@ -250,11 +250,12 @@ public class AdActivity extends Activity {
         }
     }
 
-    enum OrientationEnum{
+    enum OrientationEnum {
         portrait,
         landscape,
         none
     }
+
     @SuppressLint({"InlinedApi", "DefaultLocale"})
     protected static void setOrientation(Activity a, OrientationEnum e) {
         // Fix an accelerometer bug with kindle fire HDs
@@ -272,21 +273,21 @@ public class AdActivity extends Activity {
 
         int orientation = a.getResources().getConfiguration().orientation;
 
-        switch(e){
+        switch (e) {
             case none:
                 a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                 return;
             case landscape:
-                if(orientation == Configuration.ORIENTATION_LANDSCAPE){
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     break;
-                }else{
+                } else {
                     orientation = Configuration.ORIENTATION_LANDSCAPE;
                     break;
                 }
             case portrait:
-                if(orientation == Configuration.ORIENTATION_PORTRAIT){
+                if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                     break;
-                }else{
+                } else {
                     orientation = Configuration.ORIENTATION_PORTRAIT;
                     break;
                 }

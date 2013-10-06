@@ -39,46 +39,46 @@ import com.appnexus.opensdk.utils.Settings;
 @SuppressLint("ViewConstructor")
 // This will only be constructed by AdFetcher.
 public class AdWebView extends WebView implements Displayable {
-	private boolean failed = false;
-	private AdView destination;
+    private boolean failed = false;
+    private AdView destination;
 
-	public AdWebView(AdView owner) {
-		super(owner.getContext());
-		destination = owner;
-		setup();
-	}
+    public AdWebView(AdView owner) {
+        super(owner.getContext());
+        destination = owner;
+        setup();
+    }
 
-	@SuppressLint("SetJavaScriptEnabled")
-	private void setup() {
-		Settings.getSettings().ua = this.getSettings().getUserAgentString();
-		this.getSettings().setJavaScriptEnabled(true);
-		this.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-		this.getSettings().setPluginState(WebSettings.PluginState.ON);
-		this.getSettings().setBuiltInZoomControls(false);
-		this.getSettings().setLightTouchEnabled(false);
-		this.getSettings().setLoadsImagesAutomatically(true);
-		this.getSettings().setSupportZoom(false);
-		this.getSettings().setUseWideViewPort(false);
-		this.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-		// this.setInitialScale(100);
+    @SuppressLint("SetJavaScriptEnabled")
+    private void setup() {
+        Settings.getSettings().ua = this.getSettings().getUserAgentString();
+        this.getSettings().setJavaScriptEnabled(true);
+        this.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        this.getSettings().setPluginState(WebSettings.PluginState.ON);
+        this.getSettings().setBuiltInZoomControls(false);
+        this.getSettings().setLightTouchEnabled(false);
+        this.getSettings().setLoadsImagesAutomatically(true);
+        this.getSettings().setSupportZoom(false);
+        this.getSettings().setUseWideViewPort(false);
+        this.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        // this.setInitialScale(100);
 
-		setHorizontalScrollbarOverlay(false);
-		setHorizontalScrollBarEnabled(false);
-		setVerticalScrollbarOverlay(false);
-		setVerticalScrollBarEnabled(false);
+        setHorizontalScrollbarOverlay(false);
+        setHorizontalScrollBarEnabled(false);
+        setVerticalScrollbarOverlay(false);
+        setVerticalScrollBarEnabled(false);
 
-		setBackgroundColor(Color.TRANSPARENT);
-		setScrollBarStyle(WebView.SCROLLBARS_INSIDE_OVERLAY);
+        setBackgroundColor(Color.TRANSPARENT);
+        setScrollBarStyle(WebView.SCROLLBARS_INSIDE_OVERLAY);
 
-		setWebChromeClient(new VideoEnabledWebChromeClient((Activity) destination.getContext()));
+        setWebChromeClient(new VideoEnabledWebChromeClient((Activity) destination.getContext()));
 
-		setWebViewClient(new WebViewClient() {
-			@Override
-			public void onReceivedError(WebView view, int errorCode,
-					String description, String failingURL) {
-				Clog.e(Clog.httpRespLogTag, Clog.getString(
-						R.string.webclient_error, errorCode, description));
-			}
+        setWebViewClient(new WebViewClient() {
+            @Override
+            public void onReceivedError(WebView view, int errorCode,
+                                        String description, String failingURL) {
+                Clog.e(Clog.httpRespLogTag, Clog.getString(
+                        R.string.webclient_error, errorCode, description));
+            }
 
             @Override
             public void onReceivedSslError(WebView view,

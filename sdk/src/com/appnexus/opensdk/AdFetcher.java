@@ -211,7 +211,7 @@ public class AdFetcher implements AdRequester {
         owner.fail();
     }
 
-	@Override
+    @Override
     public void dispatchResponse(final AdResponse response) {
         this.owner.post(new Runnable() {
             public void run() {
@@ -251,12 +251,12 @@ public class AdFetcher implements AdRequester {
         }
     }
 
-	@Override
-	public AdView getOwner() {
-		return owner;
-	}
+    @Override
+    public AdView getOwner() {
+        return owner;
+    }
 
-	public void clearDurations() {
+    public void clearDurations() {
         lastFetchTime = -1;
         timePausedAt = -1;
 

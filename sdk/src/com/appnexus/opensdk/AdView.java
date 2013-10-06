@@ -477,7 +477,7 @@ public abstract class AdView extends FrameLayout {
                     android.R.drawable.ic_menu_close_clear_cancel));
 
             int grav = Gravity.RIGHT | Gravity.TOP;
-            switch(custom_close_position){
+            switch (custom_close_position) {
                 case bottom_center:
                     grav = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
                     break;

@@ -51,8 +51,7 @@ public class VideoEnabledWebChromeClient extends WebChromeClient {
             } catch (Exception e) {
                 Clog.d(Clog.baseLogTag, e.toString());
             }
-        }
-        else
+        } else
             frame = null;
     }
 
