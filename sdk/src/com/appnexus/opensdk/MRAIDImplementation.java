@@ -413,7 +413,7 @@ public class MRAIDImplementation {
             }
         }
         if (uri == null) {
-            //TODO: Clogging, error here.
+            Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
             return;
         }
 
@@ -452,9 +452,9 @@ public class MRAIDImplementation {
                         outstream = owner.owner.getContext().openFileOutput(out.getName(), Context.MODE_PRIVATE);
                         outstream.write(out_array);
                     } catch (FileNotFoundException e) {
-                        //TODO clogging
+                        Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
                     } catch (IOException e) {
-                        //TODO clogging
+                        Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
                     }
 
                 } else {
@@ -469,9 +469,9 @@ public class MRAIDImplementation {
                                 outstream = owner.owner.getContext().openFileOutput(out.getName(), Context.MODE_PRIVATE);
                                 outstream.write(out_array);
                             } catch (FileNotFoundException e) {
-                                //TODO clogging
+                                Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
                             } catch (IOException e) {
-                                //TODO clogging
+                                Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
                             }
                         }
 
@@ -505,14 +505,14 @@ public class MRAIDImplementation {
             }
         }
         if (uri == null) {
-            //TODO: Clogging, error here.
+            Clog.d(Clog.mraidLogTag, Clog.getString(R.string.play_vide_no_uri));
             return;
         }
         Intent i = new Intent(Intent.ACTION_VIEW);
         try {
             i.setDataAndType(Uri.parse(URLDecoder.decode(uri, "UTF-8")), "video/mp4");
         } catch (UnsupportedEncodingException e) {
-            //TODO: Clogging, error here.
+            Clog.d(Clog.mraidLogTag, Clog.getString(R.string.unsupported_encoding));
             return;
         }
         owner.getContext().startActivity(i);
@@ -523,7 +523,7 @@ public class MRAIDImplementation {
         Intent i = event.getInsertIntent();
         owner.getContext().startActivity(i);
 
-        //TODO: Clogging
+        Clog.d(Clog.mraidLogTag, Clog.getString(R.string.create_calendar_event));
     }
 
 
@@ -539,13 +539,13 @@ public class MRAIDImplementation {
             }
         }
 
-        if (allow_orientation_change == false) {
+        if (!allow_orientation_change) {
             AdActivity.setOrientation((Activity) owner.getContext(), orientation);
         } else {
             AdActivity.setOrientation((Activity) owner.getContext(), AdActivity.OrientationEnum.none);
         }
 
-        //TODO: Clogging
+        Clog.d(Clog.mraidLogTag, Clog.getString(R.string.set_orientation_properties, allow_orientation_change, orientation.ordinal()));
 
 
     }
@@ -583,7 +583,7 @@ public class MRAIDImplementation {
             }
         }
 
-        //TODO: Clogging
+        Clog.d(Clog.mraidLogTag, Clog.getString(R.string.resize, w, h, offset_x, offset_y, custom_close_position, allow_offscrean));
         this.owner.resize(w, h, offset_x, offset_y, CUSTOM_CLOSE_POSITION.valueOf(custom_close_position.replace('_', '-')), allow_offscrean);
 
         this.owner

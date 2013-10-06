@@ -1,6 +1,7 @@
 <resources>
 	<string formatted="false" name="fetcher_stopped">AdFetcher stopped</string>
-	<string formatted="false" name="no_placement_id">E104: No placement ID set</string>
+	<string formatted="false" name="no_placement_id">E104: No placement ID set. onAdRequestFailed will not be called</string>
+	<string formatted="false" name="already_expanded">Cannot load a new ad while the current ad is expanded. onAdRequestFailed will not be called</string>
 	<string formatted="false" name="moot_restart">AdFetcher requested to start, but tasker already instantiated</string>
 	<string formatted="false" name="fetcher_start">AdFetcher starting</string>
 	<string formatted="false" name="fetcher_start_single">AdFetcher starting in single-use mode</string>
@@ -103,6 +104,14 @@
 	<string formatted="false" name="mediated_owner_null">AdView was null</string>
 	<string formatted="false" name="mediated_request_exception">requestAd threw an exception</string>
 	<string formatted="false" name="mediated_request_error">requestAd threw an error</string>
+	<string formatted="false" name="mediated_no_ads">The server responded with ads, but none were valid</string>
 	<string formatted="false" name="fire_cb_requester_null">firing result cb with null requester</string>
-	<string formatted="false" name="fire_cb_response_null">firing result cb with null response</string>
+	<string formatted="false" name="result_cb_bad_response">result cb returned a bad response</string>
+	<string formatted="false" name="fire_cb_result_null">firing result cb with null resultCB</string>
+	<string formatted="false" name="resize">MRAID resize() called with w:%d, h:%d, offset_x:%d, offset_y:%d, cust_close_position:%s, allow_offscreen:%b</string>
+	<string formatted="false" name="set_orientation_properties">MRAID setOrientationProperties called with allow_orientation_change=%b, orientation=%d</string>
+	<string formatted="false" name="create_calendar_event">MRAID createCalendarEvent() called</string>
+	<string formatted="false" name="unsupported_encoding">Cannot play video due to unsupported encoding</string>
+	<string formatted="false" name="play_vide_no_uri">MRAID playVideo() called, but no URI given</string>
+	<string formatted="false" name="store_picture_error">There was an error while storing picture.</string>
 </resources>
