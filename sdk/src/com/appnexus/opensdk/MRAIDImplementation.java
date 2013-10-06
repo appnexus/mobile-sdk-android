@@ -20,6 +20,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -34,12 +35,12 @@ import android.view.Gravity;
 import android.view.Window;
 import android.webkit.*;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Hex;
 import com.appnexus.opensdk.utils.W3CEvent;
+import
 import org.apache.http.message.BasicNameValuePair;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 
@@ -420,14 +421,49 @@ public class MRAIDImplementation {
             return;
         }
 
+        final String uri_final = uri;
+
         AlertDialog.Builder builder = new AlertDialog.Builder(owner.owner.getContext());
         builder.setTitle("Store Picture?");
         builder.setTitle("This Ad would like permission to save a picture.");
         builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //TODO: Test data: uri scheme
-                //TODO: Save image
+                //Check URI scheme
+                if(uri_final.startsWith("data:")){
+                    //Remove 'data:(//?)' and save
+                    String ext = ".png";
+                    boolean isBase64=false;
+                    //First, find file type:
+                    if(uri_final.contains("image/gif")){
+                        ext = ".gif";
+                    }else if(uri_final.contains("image/jpeg") || uri_final.contains("image/pjpeg")){
+                        ext = ".jpg";
+                    }else if(uri_final.contains("image/png")){
+                        ext = ".png";
+                    }else if(uri_final.contains("image/tiff")){
+                        ext = ".tif";
+                    }else if(uri_final.contains("image/svg+xml")){
+                        ext = ".svg";
+                    }
+                    if(uri_final.contains("base64")){
+                        isBase64 = true;
+                    }
+                    File out = new File(owner.owner.getContext().getFilesDir(), System.currentTimeMillis()+ext);
+                    try {
+                        FileOutputStream outstream;
+                        byte[] out_array = Hex.hexStringToByteArray(uri_final.substring(uri_final.lastIndexOf(",") + 1, uri_final.length()));
+                        outstream = owner.owner.getContext().openFileOutput(out.getName(), Context.MODE_PRIVATE);
+                        outstream.write(out_array);
+                    } catch (FileNotFoundException e) {
+                        //TODO clogging
+                    } catch (IOException e) {
+                        //TODO clogging
+                    }
+
+                }else{
+                    //Treat as HTTP:// protocol
+                }
             }
         });
 
