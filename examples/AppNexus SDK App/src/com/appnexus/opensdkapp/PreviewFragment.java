@@ -104,8 +104,7 @@ public class PreviewFragment extends Fragment {
             bav.setPlacementID(settingsWrapper.getPlacementId());
             if (!bav.loadAd())
                 pullToRefreshView.onRefreshComplete();
-        }
-        else {
+        } else {
             bav.setAutoRefreshInterval(0);
             bav.setVisibility(View.GONE);
             bannerText.setVisibility(TextView.VISIBLE);

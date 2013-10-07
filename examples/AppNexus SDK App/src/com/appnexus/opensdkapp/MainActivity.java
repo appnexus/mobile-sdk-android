@@ -259,7 +259,7 @@ public class MainActivity extends FragmentActivity implements
 
         // if the user presses outside the bounds of btnLog, "close it"
         if (y < (btnLog.getTop()) || (btnLog.getBottom() < y) ||
-        (x < btnLog.getLeft()) || (btnLog.getRight() < x)) {
+                (x < btnLog.getLeft()) || (btnLog.getRight() < x)) {
             btnLog.setVisibility(View.GONE);
         }
 

@@ -20,12 +20,12 @@
          android:id="@android:id/tabhost"
          android:layout_width="match_parent"
          android:layout_height="match_parent"
-         tools:context=".MainActivity" >
+         tools:context=".MainActivity">
 
     <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
         <TabWidget
                 android:id="@android:id/tabs"
@@ -47,27 +47,27 @@
                 android:id="@android:id/tabcontent"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_weight="0" />
+                android:layout_weight="0"/>
 
         <android.support.v4.view.ViewPager
                 android:id="@+id/viewpager"
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:layout_weight="1"/>
     </LinearLayout>
 
     <ImageView
             android:padding="0dp"
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:src="@drawable/logo" />
+            android:src="@drawable/logo"/>
     <View
             android:layout_gravity="right"
             android:layout_marginRight="33dp"
             android:layout_marginTop="7dp"
             android:layout_width="1dp"
             android:layout_height="29dp"
-            android:background="@color/light_grey" />
+            android:background="@color/light_grey"/>
     <ImageView
             android:id="@+id/btn_log"
             android:src="@drawable/ic_menu_moreoverflow_normal_holo_light"
@@ -76,7 +76,7 @@
             android:layout_width="32dp"
             android:layout_height="44dp"
             android:clickable="true"
-            android:background="@drawable/btn_log" />
+            android:background="@drawable/btn_log"/>
     <LinearLayout android:layout_height="wrap_content"
                   android:layout_width="wrap_content"
                   android:layout_gravity="right"
@@ -94,6 +94,6 @@
                 android:paddingBottom="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/log_extension" />
+                android:background="@drawable/log_extension"/>
     </LinearLayout>
 </TabHost>

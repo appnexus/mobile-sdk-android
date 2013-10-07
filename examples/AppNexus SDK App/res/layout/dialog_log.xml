@@ -29,7 +29,7 @@
     <Button android:id="@+id/log_btn_email"
             android:text="@string/log_btn_email"
             android:layout_alignParentBottom="true"
-            style="@style/widthFillheightWrap" />
+            style="@style/widthFillheightWrap"/>
 
     <ScrollView
             android:id="@+id/frame"
@@ -40,7 +40,7 @@
         <TextView android:id="@+id/log_txt_applogs"
                   android:textSize="11sp"
                   android:layout_width="match_parent"
-                  android:layout_height="wrap_content" />
+                  android:layout_height="wrap_content"/>
     </ScrollView>
 
 </RelativeLayout>

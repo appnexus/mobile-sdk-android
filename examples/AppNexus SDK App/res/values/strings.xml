@@ -28,16 +28,16 @@
     <string name="settings_title_interstitial">Interstitial</string>
     <string name="settings_title_debug">Debug Auction</string>
 
-    <string name="settings_txt_adtype">Ad Type: </string>
-    <string name="settings_txt_psas">Allow PSAs: </string>
-    <string name="settings_txt_browser">Browser: </string>
-    <string name="settings_txt_placementid">Placement Id: </string>
-    <string name="settings_txt_size">Size: </string>
-    <string name="settings_txt_refresh">Refresh Rate: </string>
-    <string name="settings_txt_interstitial_bg_color">Background Color: </string>
-    <string name="settings_txt_close_delay">Close Delay: </string>
-    <string name="settings_txt_memberid">Member Id: </string>
-    <string name="settings_txt_dongle">Dongle: </string>
+    <string name="settings_txt_adtype">Ad Type:</string>
+    <string name="settings_txt_psas">Allow PSAs:</string>
+    <string name="settings_txt_browser">Browser:</string>
+    <string name="settings_txt_placementid">Placement Id:</string>
+    <string name="settings_txt_size">Size:</string>
+    <string name="settings_txt_refresh">Refresh Rate:</string>
+    <string name="settings_txt_interstitial_bg_color">Background Color:</string>
+    <string name="settings_txt_close_delay">Close Delay:</string>
+    <string name="settings_txt_memberid">Member Id:</string>
+    <string name="settings_txt_dongle">Dongle:</string>
 
     <string name="settings_hint_placementid">placement id</string>
     <string name="settings_hint_color">00000000</string>
@@ -54,9 +54,9 @@
     <string name="debug_title_request">Last Request URL</string>
     <string name="debug_title_response">Last Server Response</string>
 
-    <string name="debug_txt_memberid">Debug Member ID: </string>
-    <string name="debug_txt_dongle">Dongle: </string>
-    <string name="debug_txt_placementid">Debug Placement ID: </string>
+    <string name="debug_txt_memberid">Debug Member ID:</string>
+    <string name="debug_txt_dongle">Dongle:</string>
+    <string name="debug_txt_placementid">Debug Placement ID:</string>
 
     <string name="debug_btn_debugauction">Run Debug Auction</string>
     <string name="debug_btn_email_server">Email Server Request/Response</string>

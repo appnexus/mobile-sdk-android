@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingBottom="4dp"
-            android:fillViewport="true" >
+            android:fillViewport="true">
 
     <LinearLayout
             android:layout_width="match_parent"
@@ -36,7 +36,7 @@
                 android:paddingRight="8dp"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:textIsSelectable="true" />
+                android:textIsSelectable="true"/>
 
         <TextView
                 style="@style/header"
@@ -50,14 +50,14 @@
                 android:paddingRight="8dp"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:textIsSelectable="true" />
+                android:textIsSelectable="true"/>
 
         <Button
                 android:layout_marginTop="12dp"
                 android:id="@+id/btn_email_server"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/debug_btn_email_server" />
+                android:text="@string/debug_btn_email_server"/>
 
         <LinearLayout
                 style="@style/debugParent">
@@ -109,7 +109,7 @@
                 android:id="@+id/btn_run_debug"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/debug_btn_debugauction" />
+                android:text="@string/debug_btn_debugauction"/>
 
     </LinearLayout>
 

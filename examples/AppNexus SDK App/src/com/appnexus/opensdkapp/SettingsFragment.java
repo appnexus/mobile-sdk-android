@@ -35,8 +35,8 @@ public class SettingsFragment extends Fragment {
     private Spinner dropSize, dropRefresh, dropCloseDelay;
 
     private Button btnAdTypeBanner, btnAdTypeInterstitial,
-    btnPSAsYes, btnPSAsNo,
-    btnBrowserInApp, btnBrowserNative;
+            btnPSAsYes, btnPSAsNo,
+            btnBrowserInApp, btnBrowserNative;
 
     private TextView txtSize, txtRefresh,
             txtBackgroundColor, txtCloseDelay,
@@ -333,6 +333,7 @@ public class SettingsFragment extends Fragment {
                     + " must implement OnLoadAdClickedListener");
         }
     }
+
     private class LoadAdOnClickListener implements View.OnClickListener {
 
         @Override
@@ -356,7 +357,7 @@ public class SettingsFragment extends Fragment {
                 savedBrowser = !btnBrowserInApp.isEnabled();
                 prefs.writeBoolean(Prefs.KEY_BROWSER_IS_INAPP, savedBrowser);
             }
-            if  (!savedPlacement.equals(editPlacementId.getText().toString())) {
+            if (!savedPlacement.equals(editPlacementId.getText().toString())) {
                 savedPlacement = editPlacementId.getText().toString();
                 prefs.writeString(Prefs.KEY_PLACEMENT, savedPlacement);
             }
@@ -379,11 +380,11 @@ public class SettingsFragment extends Fragment {
                 prefs.writeString(Prefs.KEY_CLOSE_DELAY, savedCloseDelay);
             }
 
-            if  (!savedMemberId.equals(editMemberId.getText().toString())) {
+            if (!savedMemberId.equals(editMemberId.getText().toString())) {
                 savedMemberId = editPlacementId.getText().toString();
                 prefs.writeString(Prefs.KEY_MEMBERID, savedMemberId);
             }
-            if  (!savedDongle.equals(editDongle.getText().toString())) {
+            if (!savedDongle.equals(editDongle.getText().toString())) {
                 savedDongle = editDongle.getText().toString();
                 prefs.writeString(Prefs.KEY_DONGLE, savedDongle);
             }
@@ -500,6 +501,7 @@ public class SettingsFragment extends Fragment {
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
         }
+
         @Override
         public void afterTextChanged(Editable editable) {
         }

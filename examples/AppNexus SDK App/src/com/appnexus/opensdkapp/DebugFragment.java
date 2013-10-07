@@ -89,7 +89,7 @@ public class DebugFragment extends Fragment {
 
     private void createDebugAuctionDialog() {
         // hacked to be fullscreen with minHeight. see xml
-        RelativeLayout frame  = (RelativeLayout) getActivity().getLayoutInflater().inflate(R.layout.dialog_debug, null, false);
+        RelativeLayout frame = (RelativeLayout) getActivity().getLayoutInflater().inflate(R.layout.dialog_debug, null, false);
         View placeholderView = frame.findViewById(R.id.debug_auction_view);
 
         pullToRefreshView = new PullToRefreshWebView(getActivity().getApplicationContext());
@@ -140,8 +140,7 @@ public class DebugFragment extends Fragment {
                     Clog.e(Constants.BASE_LOG_TAG, "JSONException in response", e);
                 }
                 txtResponse.setText(jsonString != null ? jsonString : Clog.getLastResponse());
-            }
-            else
+            } else
                 txtResponse.setText(Clog.getLastResponse());
         }
 
@@ -256,8 +255,7 @@ public class DebugFragment extends Fragment {
 //                        result = Html.fromHtml(body).toString();
                         result = body;
                         webView.loadDataWithBaseURL(null, body, "text/html", "UTF-8", null);
-                    }
-                    else {
+                    } else {
                         result = getString(R.string.debug_msg_debugauction_failed);
                         webView.loadDataWithBaseURL(null, result, "text/html", "UTF-8", null);
                     }

@@ -17,7 +17,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true" >
+            android:fillViewport="true">
 
     <LinearLayout
             android:layout_width="match_parent"
@@ -163,7 +163,7 @@
                     android:layout_below="@id/txt_browser"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/settings_txt_placementid" />
+                    android:text="@string/settings_txt_placementid"/>
 
             <LinearLayout
                     android:layout_toRightOf="@id/txt_placementid"
@@ -195,7 +195,7 @@
             <TextView
                     android:id="@+id/txt_size"
                     style="@style/settingsTextItem.long"
-                    android:text="@string/settings_txt_size" />
+                    android:text="@string/settings_txt_size"/>
 
             <Spinner
                     android:id="@+id/dropdown_size"
@@ -213,7 +213,7 @@
                     android:layout_below="@id/txt_size"
                     android:id="@+id/txt_refresh"
                     style="@style/settingsTextItem.long"
-                    android:text="@string/settings_txt_refresh" />
+                    android:text="@string/settings_txt_refresh"/>
 
             <Spinner
                     android:id="@+id/dropdown_refresh"
@@ -247,7 +247,7 @@
                     android:layout_centerInParent="true"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
-                    android:background="@drawable/circle_color" />
+                    android:background="@drawable/circle_color"/>
 
             <EditText
                     android:id="@+id/edit_interstitial_color"
@@ -260,14 +260,14 @@
                     />
 
             <!--<TextView-->
-                    <!--style="@style/settingsEditItem.prefix"-->
-                    <!--android:layout_toLeftOf="@id/edit_interstitial_color"-->
-                    <!--android:layout_alignTop="@id/txt_interstitial_color"-->
-                    <!--android:layout_alignBaseline="@id/edit_interstitial_color"-->
-                    <!--android:textSize="18sp"-->
-                    <!--android:background="@color/light_grey"-->
-                    <!--android:text="0x"-->
-                    <!--/>-->
+            <!--style="@style/settingsEditItem.prefix"-->
+            <!--android:layout_toLeftOf="@id/edit_interstitial_color"-->
+            <!--android:layout_alignTop="@id/txt_interstitial_color"-->
+            <!--android:layout_alignBaseline="@id/edit_interstitial_color"-->
+            <!--android:textSize="18sp"-->
+            <!--android:background="@color/light_grey"-->
+            <!--android:text="0x"-->
+            <!--/>-->
         </RelativeLayout>
 
         <!-- Close Delay -->
@@ -337,7 +337,7 @@
         <Button
                 android:id="@+id/btn_load_ad"
                 style="@style/widthFillheightWrap"
-                android:text="@string/load_ad_button" />
+                android:text="@string/load_ad_button"/>
 
     </LinearLayout>
 </ScrollView>

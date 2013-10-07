@@ -164,6 +164,7 @@ public class SettingsWrapper {
             height = 0;
         }
     }
+
     public int getWidth() {
         return width;
     }
