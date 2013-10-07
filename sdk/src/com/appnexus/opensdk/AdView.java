@@ -51,6 +51,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     protected int width = -1;
     protected int height = -1;
     protected boolean shouldServePSAs = true;
+    protected float reserve = 0.00f;
     private boolean mraid_expand = false;
     protected AdListener adListener;
     private BrowserStyle browserStyle;
@@ -481,6 +482,14 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
      */
     public void setShouldServePSAs(boolean shouldServePSAs) {
         this.shouldServePSAs = shouldServePSAs;
+    }
+
+    public float getReserve() {
+        return reserve;
+    }
+
+    public void setReserve(float reserve) {
+        this.reserve = reserve;
     }
 
     static class BrowserStyle {
