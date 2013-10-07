@@ -30,6 +30,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.net.http.SslError;
+import android.util.Base64;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.Window;
@@ -448,7 +449,12 @@ public class MRAIDImplementation {
                     File out = new File(owner.owner.getContext().getFilesDir(), System.currentTimeMillis() + ext);
                     try {
                         FileOutputStream outstream;
-                        byte[] out_array = Hex.hexStringToByteArray(uri_final.substring(uri_final.lastIndexOf(",") + 1, uri_final.length()));
+                        byte[] out_array;
+                        if (!isBase64) {
+                            out_array = Hex.hexStringToByteArray(uri_final.substring(uri_final.lastIndexOf(",") + 1, uri_final.length()));
+                        }else{
+                            out_array = Base64.decode(uri_final.substring(uri_final.lastIndexOf(",") + 1, uri_final.length()), Base64.DEFAULT);
+                        }
                         outstream = owner.owner.getContext().openFileOutput(out.getName(), Context.MODE_PRIVATE);
                         outstream.write(out_array);
                     } catch (FileNotFoundException e) {
