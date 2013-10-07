@@ -39,7 +39,6 @@ public class TestActivityMediationNetwork extends ActivityInstrumentationTestCas
     String AdMobId = "10am";
     String MMId = "10mm";
     boolean didPass = true;
-    BannerAdView bav;
     InstanceLock lock;
 
     /**
@@ -67,9 +66,6 @@ public class TestActivityMediationNetwork extends ActivityInstrumentationTestCas
 
         setWifi(true);
         setData(false);
-
-        bav = (BannerAdView) activity.findViewById(com.appnexus.opensdkdemo.R.id.banner);
-        bav.setAdListener(this);
     }
 
     @Override
@@ -100,7 +96,7 @@ public class TestActivityMediationNetwork extends ActivityInstrumentationTestCas
 
         shouldWork = new AdRequest(this, null, null, null, placementId, null, null, 320, 50, -1, -1, null, null, null, true, this, false, false);
         // change AdRequest.java to have setter for this unit test
-//		shouldWork.setContext(activity);
+//        shouldWork.setContext(activity);
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -133,14 +129,20 @@ public class TestActivityMediationNetwork extends ActivityInstrumentationTestCas
 
     @Override
     public void onReceiveResponse(AdResponse response) {
+        if (response == null) return;
         Clog.d(TestUtil.testLogTag, "received response: " + response.toString());
 
         Clog.w(TestUtil.testLogTag, "disabling wifi");
         setWifi(false);
         setData(false);
 
-        MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                bav, response);
+        if (response.getMediatedAds() != null) {
+            MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
+                    activity, this, response.getMediatedAds().pop(), null);
+        }
+        else
+            didPass = true;
+
     }
 
     @Override
@@ -149,19 +151,16 @@ public class TestActivityMediationNetwork extends ActivityInstrumentationTestCas
     }
 
     @Override
-    synchronized public void dispatchResponse(final AdResponse response) {
-        Clog.d(TestUtil.testLogTag, "dispatch: " + response.toString());
-        didPass = true;
-    }
-
-    @Override
     public void onAdLoaded(AdView adView) {
-        Clog.d(TestUtil.testLogTag, "loaded");
+        if (lock == null) return;
+        Clog.d(TestUtil.testLogTag, "loaded: " + adView);
         didPass = true;
+        lock.unpause();
     }
 
     @Override
     public void onAdRequestFailed(AdView adView) {
+        if (lock == null) return;
         Clog.d(TestUtil.testLogTag, "request failed");
         didPass = false;
         lock.unpause();

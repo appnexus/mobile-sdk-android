@@ -26,10 +26,16 @@ import com.appnexus.opensdkdemo.util.InstanceLock;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
 public class Test404Error extends AndroidTestCase implements AdRequester {
+    /**
+     * NOTE: requires commenting out return code in MAVC's resultCB handler
+     * to allow for multiple successes.
+     */
     String old_base_url;
     AdRequest shouldWork;
-    String shouldWorkPlacement = "9a";
+    String shouldWorkPlacement;
     InstanceLock lock;
+    boolean responseWasNull;
+    boolean receivedResponse;
 
     @Override
     protected void setUp() throws Exception {
@@ -37,10 +43,11 @@ public class Test404Error extends AndroidTestCase implements AdRequester {
         old_base_url = Settings.getSettings().BASE_URL;
         Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
         Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
-        shouldWork = new AdRequest(this, null, null, null, shouldWorkPlacement, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
         SuccessfulMediationView.didPass = false;
         DummyView.createView(getContext());
         lock = new InstanceLock();
+        responseWasNull = false;
+        receivedResponse = false;
     }
 
     @Override
@@ -50,17 +57,35 @@ public class Test404Error extends AndroidTestCase implements AdRequester {
         super.tearDown();
     }
 
-    public void testMediationThen404() {
+    public void testSuccessWithResult404() {
         // Create a AdRequest which will request a mediated response to
-        // instantiate the SuccessfulMediationView
-        // Since we're just testing to see successful instantiation, interrupt
-        // the sleeping thread from the requestAd function
+        // instantiate the SuccessfulMediationView. The (success) result_cb
+        // should return a 404 error, which should fail instantiation
 
+        shouldWorkPlacement = "9a";
+        shouldWork = new AdRequest(this, null, null, null, shouldWorkPlacement, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
         shouldWork.execute();
         lock.pause(10000);
         shouldWork.cancel(true);
 
+        assertTrue(receivedResponse);
         assertEquals(true, SuccessfulMediationView.didPass);
+        assertTrue(responseWasNull);
+    }
+
+    public void testFailWithResult404() {
+        // Create a AdRequest which will request a mediated response to
+        // instantiate the a non-existent view. The (failure) result_cb
+        // should return a 404 error, which should fail instantiation
+
+        shouldWorkPlacement = "9b";
+        shouldWork = new AdRequest(this, null, null, null, shouldWorkPlacement, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
+        shouldWork.execute();
+        lock.pause(10000);
+        shouldWork.cancel(true);
+
+        assertTrue(receivedResponse);
+        assertTrue(responseWasNull);
     }
 
     @Override
@@ -72,22 +97,22 @@ public class Test404Error extends AndroidTestCase implements AdRequester {
 
     @Override
     public void onReceiveResponse(AdResponse response) {
-        Clog.d(TestUtil.testLogTag, "received response");
-        MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, response);
+        // response should be a regular valid mediatied ad
+        Clog.d(TestUtil.testLogTag, "received response: " + response);
+        if (response != null && response.getMediatedAds() != null) {
+            MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
+                    null, this, response.getMediatedAds().pop(), null);
+            receivedResponse = true;
+            return;
+        } else if (response == null) {
+            // resultCB response should have be a 404, so null
+            responseWasNull = true;
+        }
+        lock.unpause();
     }
 
     @Override
     public AdView getOwner() {
         return null;
-    }
-
-    @Override
-    public void dispatchResponse(final AdResponse response) {
-        Clog.d(TestUtil.testLogTag, "dispatch " + response.toString());
-        MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, response);
-
-        assertNull(output);
     }
 }

@@ -123,46 +123,14 @@ public class TestMediationFailures extends AndroidTestCase implements AdRequeste
 
     @Override
     public void onReceiveResponse(AdResponse response) {
-        Clog.d(TestUtil.testLogTag, "received response: " + response.getMediatedResultCB());
+        if (response == null) return;
+        Clog.d(TestUtil.testLogTag, "received response: " + response.getBody());
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, response);
+                null, this, response.getMediatedAds().pop(), null);
     }
 
     @Override
     public AdView getOwner() {
         return null;
-    }
-
-    @Override
-    public void dispatchResponse(final AdResponse response) {
-        if (response.getMediatedResultCB() == null) {
-            Clog.d(TestUtil.testLogTag, "dispatching null result, return (end of test)");
-            return;
-        }
-        Clog.d(TestUtil.testLogTag, "dispatch: " + response.toString());
-        MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, response);
-
-        // verify fail result cb
-//		Clog.d(TestUtil.testLogTag, response.getBody());
-//		try {
-//			JSONObject jsonObject = new JSONObject(response.getBody());
-//			String code = jsonObject.getString("code");
-//			if (Integer.valueOf(code) == (MediatedAdViewController.RESULT.MEDIATED_SDK_UNAVAILABLE.ordinal())) {
-//				didFail = true;
-//			} else {
-//				didFail = false;
-//				Clog.d(TestUtil.testLogTag, code);
-//				Clog.d(TestUtil.testLogTag, String.valueOf(MediatedAdViewController.RESULT.MEDIATED_SDK_UNAVAILABLE.ordinal()));
-//			}
-//		} catch (JSONException e) {
-//			Clog.d(TestUtil.testLogTag, "json parsing error", e);
-//		} catch (NumberFormatException e) {
-//			Clog.d(TestUtil.testLogTag, "error with response. make sure server implementation is correct", e);
-//		}
-//
-//		synchronized (NoSDK.lock) {
-//			NoSDK.lock.notify();
-//		}
     }
 }

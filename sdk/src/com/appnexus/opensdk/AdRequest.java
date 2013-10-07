@@ -45,6 +45,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * @author jacob
@@ -83,11 +84,15 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     int maxWidth = -1;
     int maxHeight = -1;
     boolean shouldRetry = true; // true by default
+    float reserve = 0.00f;
 
-    private static final AdResponse CONNECTIVITY_RETRY = new AdResponse(null,
-            "RETRY", null);
+    public static final String RETRY = "RETRY";
+    public static final String BLANK = "BLANK";
+
+    private static final AdResponse CONNECTIVITY_RETRY = new AdResponse(
+            RETRY, null);
     private static final AdResponse BLANK_RETRY = new AdResponse(
-            null, "BLANK", null);
+            BLANK, null);
 
     /**
      * Creates a new AdRequest with the given parameters
@@ -233,7 +238,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         maxHeight = owner.getContainerHeight();
         maxWidth = owner.getContainerWidth();
 
-        this.psa = owner.shouldServePSAs ? "1" : "0";
+
 
         if (Settings.getSettings().mcc == null
                 || Settings.getSettings().mnc == null) {
@@ -257,16 +262,24 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (owner instanceof InterstitialAdView) {
             // Make string for allowed_sizes
             allowedSizes = "";
-            for (Size s : ((InterstitialAdView) owner).getAllowedSizes()) {
+            ArrayList<Size> sizes = ((InterstitialAdView) owner).getAllowedSizes();
+            for (Size s : sizes) {
                 allowedSizes += "" + s.width() + "x" + s.height();
                 // If not last size, add a comma
-                if (((InterstitialAdView) owner).getAllowedSizes().indexOf(s) != ((InterstitialAdView) owner)
-                        .getAllowedSizes().size() - 1)
+                if (sizes.indexOf(s) != sizes.size() - 1)
                     allowedSizes += ",";
             }
         }
 
         nativeBrowser = owner.getOpensNativeBrowser() ? "1" : "0";
+
+        //Reserve price
+        reserve = owner.getReserve();
+        if(reserve<=0){
+            this.psa = owner.shouldServePSAs ? "1" : "0";
+        }else{
+            this.psa = "0";
+        }
 
         mcc = Settings.getSettings().mcc;
         mnc = Settings.getSettings().mnc;
@@ -331,6 +344,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         sb.append((!isEmpty(nativeBrowser) ? "&native_browser=" + nativeBrowser
                 : ""));
         sb.append((!isEmpty(psa) ? "&psa=" + psa : ""));
+        sb.append("&reserve=" + (reserve>0 ? Uri.encode(reserve+""):""));
         sb.append("&format=json");
         sb.append("&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion));
 
@@ -373,7 +387,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             r = h.execute(new HttpGet(query_string));
             if (!httpShouldContinue(r.getStatusLine())) {
                 fail();
-                return new AdResponse(null, AdResponse.http_error, null);
+                return new AdResponse(AdResponse.http_error, null);
             }
             out = EntityUtils.toString(r.getEntity());
         } catch (ClientProtocolException e) {
@@ -411,7 +425,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             fail();
             return AdRequest.BLANK_RETRY;
         }
-        return new AdResponse(requester, out, r.getAllHeaders());
+        return new AdResponse(out, r.getAllHeaders());
     }
 
     private boolean hasNetwork(Context context) {
@@ -429,6 +443,9 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
 
     private boolean httpShouldContinue(StatusLine statusLine) {
+        if (statusLine == null)
+            return false;
+
         int http_error_code = statusLine.getStatusCode();
         switch (http_error_code) {
             default:
@@ -454,6 +471,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         }
         if (requester != null)
             requester.onReceiveResponse(result);
+        // for unit testing
         if (adListener != null)
             adListener.onAdLoaded(owner);
     }
@@ -514,7 +532,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         }
     }
 //   // Uncomment for unit tests
-//   public void setContext(Context context) {
-//       this.context = context;
-//   }
+   public void setContext(Context context) {
+       this.context = context;
+   }
 }

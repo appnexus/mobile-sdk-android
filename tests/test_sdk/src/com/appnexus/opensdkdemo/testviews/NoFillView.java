@@ -26,7 +26,7 @@ import com.appnexus.opensdkdemo.util.TestUtil;
 
 public class NoFillView implements MediatedBannerAdView {
     @Override
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, View adSpace) {
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height) {
         Clog.d(TestUtil.testLogTag, "set to true!");
 
         // ad request returned nothing!

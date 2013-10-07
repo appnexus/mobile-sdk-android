@@ -32,73 +32,92 @@ public abstract class MediatedAdViewController implements Displayable {
         INTERNAL_ERROR
     }
 
-    int width;
-    int height;
     boolean failed = false;
-    String uid;
-    String className;
-    String param;
-    String resultCB;
     Class<?> c;
-    AdView owner;
     MediatedAdView mAV;
     AdRequester requester;
+    MediatedAd currentAd;
+    AdViewListener listener;
 
     protected boolean errorCBMade = false;
     protected boolean successCBMade = false;
 
-    protected MediatedAdViewController() {
+    //TODO: may be unnecessary
+    private boolean noMoreAds = false;
 
+    protected MediatedAdViewController(AdRequester requester, MediatedAd currentAd, AdViewListener listener) {
+        this.requester = requester;
+        this.listener = listener;
+        this.currentAd = currentAd;
+
+        RESULT errorCode = null;
+
+        if (currentAd == null) {
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_no_ads));
+            errorCode = RESULT.UNABLE_TO_FILL;
+        } else {
+            boolean instantiateSuccessful = instantiateNewMediatedAd();
+            if (!instantiateSuccessful)
+                errorCode = RESULT.MEDIATED_SDK_UNAVAILABLE;
+        }
+
+        if (errorCode != null)
+            onAdFailed(errorCode);
     }
 
-    protected MediatedAdViewController(AdView owner, AdResponse response) throws Exception {
-        //TODO: owner - second part is for testing when owner is null
-        requester = owner != null ? owner.mAdFetcher : response.requester;
-        width = response.getWidth();
-        height = response.getHeight();
-        uid = response.getMediatedUID();
-        className = response.getMediatedViewClassName();
-        param = response.getParameter();
-        resultCB = response.getMediatedResultCB();
-        this.owner = owner;
+    /**
+     * Validates all fields necessary for controller to function properly
+     *
+     * @param callerClass the calling class that mAV should be an instance of
+     * @return true if the controller is valid, false if not.
+     */
+    protected boolean isValid(Class callerClass) {
+        if (failed) {
+            return false;
+        }
+        if (currentAd == null) {
+            onAdFailed(RESULT.UNABLE_TO_FILL);
+            return false;
+        }
+        if ((mAV == null) || (callerClass == null) || !callerClass.isInstance(mAV)) {
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instance_exception,
+                    callerClass != null ? callerClass.getCanonicalName() : "null"));
+            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            return false;
+        }
 
-        Clog.d(Clog.mediationLogTag, Clog.getString(R.string.instantiating_class, className));
+        return true;
+    }
+
+    /**
+     *  Attempts to instantiate currentAd
+     *
+     * @return true if instantiation was successful, false if not.
+     */
+    private boolean instantiateNewMediatedAd() {
+        Clog.d(Clog.mediationLogTag, Clog.getString(
+                R.string.instantiating_class, currentAd.getClassName()));
 
         try {
-            c = Class.forName(className);
-
+            c = Class.forName(currentAd.getClassName());
+            mAV = (MediatedAdView) c.newInstance();
+            // exceptions will skip down to return false
+            return true;
         } catch (ClassNotFoundException e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.class_not_found_exception));
-            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
-            throw e;
-        }
-
-        try {
-            Object o = c.newInstance();
-            mAV = (MediatedAdView) o;
         } catch (InstantiationException e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instantiation_exception));
-            failed = true;
-            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
-            throw e;
         } catch (IllegalAccessException e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception));
-            failed = true;
-            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
-            throw e;
         } catch (ClassCastException e) {
-            Clog.e(Clog.mediationLogTag, "Class cast exception", e);
-            failed = true;
-            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
-            throw e;
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.class_cast_exception));
         }
+        return false;
     }
 
-    //TODO: owner dependency
     public void onAdLoaded() {
-        if ((owner != null) && owner.getAdListener() != null) {
-            owner.getAdListener().onAdLoaded(owner);
-        }
+        if (listener != null)
+            listener.onAdLoaded(this);
         if (!successCBMade) {
             successCBMade = true;
             fireResultCB(RESULT.SUCCESS);
@@ -106,53 +125,74 @@ public abstract class MediatedAdViewController implements Displayable {
     }
 
     public void onAdFailed(MediatedAdViewController.RESULT reason) {
-        // callback will be called by AdView
         this.failed = true;
+        if (listener != null)
+            listener.onAdFailed(noMoreAds);
 
         if (!errorCBMade) {
             fireResultCB(reason);
             errorCBMade = true;
         }
-
     }
 
     public void onAdExpanded() {
-        if (owner.getAdListener() != null) {
-            owner.getAdListener().onAdExpanded(owner);
-        }
+        if (listener != null)
+            listener.onAdExpanded();
     }
 
     public void onAdCollapsed() {
-        if (owner.getAdListener() != null) {
-            owner.getAdListener().onAdCollapsed(owner);
-        }
+        if (listener != null)
+            listener.onAdCollapsed();
     }
 
     public void onAdClicked() {
-        if (owner.getAdListener() != null) {
-            owner.getAdListener().onAdClicked(owner);
-        }
+        if (listener != null)
+            listener.onAdClicked();
     }
 
+    @Override
     public boolean failed() {
         return failed;
     }
 
-    private void fireResultCB(final MediatedAdViewController.RESULT result) {
+    private void fireResultCB(final RESULT result) {
+
+        // if resultCB is empty don't fire resultCB, and just continue to next ad
+        if ((currentAd == null) || (currentAd.getResultCB() == null) || currentAd.getResultCB().isEmpty()) {
+            Clog.w(Clog.mediationLogTag, Clog.getString(R.string.fire_cb_result_null));
+
+            // just making sure
+            if (requester == null) {
+                Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
+                return;
+            }
+
+            requester.onReceiveResponse(null);
+            return;
+        }
+        final String resultCB = currentAd.getResultCB();
 
         //fire call to result cb url
         HTTPGet<Void, Void, HTTPResponse> cb = new HTTPGet<Void, Void, HTTPResponse>() {
             @Override
-            protected void onPostExecute(HTTPResponse response) {
+            protected void onPostExecute(HTTPResponse httpResponse) {
                 if (requester == null) {
-                    Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
-                    return;
-                } else if (response == null) {
-                    Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_response_null));
+                    Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
                     return;
                 }
+                AdResponse response = null;
+                if ((httpResponse != null) && httpResponse.getSucceeded()) {
+                    response = new AdResponse(httpResponse.getResponseBody(), httpResponse.getHeaders());
+                }
+                else {
+                    Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_bad_response));
+                }
 
-                requester.dispatchResponse(new AdResponse(requester, response.getResponseBody(), response.getHeaders()));
+                // if this was the result of a successful ad, stop looking for more ads
+                if (successCBMade)
+                    return;
+
+                requester.onReceiveResponse(response);
             }
 
             @Override

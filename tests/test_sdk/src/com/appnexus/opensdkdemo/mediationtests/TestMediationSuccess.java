@@ -27,6 +27,8 @@ import com.appnexus.opensdkdemo.testviews.ThirdSuccessfulMediationView;
 import com.appnexus.opensdkdemo.util.Lock;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
+//TODO: many of the old mediation tests (1-10) are broken because we don't allow more than one successful adview
+// comment out the return code in MAVC to allow multiple successes and make the test pass
 public class TestMediationSuccess extends AndroidTestCase implements AdRequester {
     String old_base_url;
     AdRequest shouldWork;
@@ -76,20 +78,14 @@ public class TestMediationSuccess extends AndroidTestCase implements AdRequester
 
     @Override
     public void onReceiveResponse(AdResponse response) {
+        if (response == null) return;
         Clog.d(TestUtil.testLogTag, "received first response");
         MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, response);
+                null, this, response.getMediatedAds().pop(), null);
     }
 
     @Override
     public AdView getOwner() {
         return null;
-    }
-
-    @Override
-    public void dispatchResponse(final AdResponse response) {
-        Clog.d(TestUtil.testLogTag, "dispatch (for second and third responses)");
-        MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, response);
     }
 }

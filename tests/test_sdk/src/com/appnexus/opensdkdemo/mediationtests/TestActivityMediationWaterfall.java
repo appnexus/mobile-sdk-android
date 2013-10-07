@@ -24,22 +24,21 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdkdemo.DemoMainActivity;
 import com.appnexus.opensdkdemo.testviews.DummyView;
+import com.appnexus.opensdkdemo.testviews.SecondSuccessfulMediationView;
 import com.appnexus.opensdkdemo.testviews.SuccessfulMediationView;
+import com.appnexus.opensdkdemo.testviews.ThirdSuccessfulMediationView;
 import com.appnexus.opensdkdemo.util.InstanceLock;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
-public class TestActivity404Error extends ActivityInstrumentationTestCase2<DemoMainActivity> implements AdListener {
-    /**
-     * NOTE: requires commenting out return code in MAVC's resultCB handler
-     * to allow for multiple successes.
-     */
+public class TestActivityMediationWaterfall extends ActivityInstrumentationTestCase2<DemoMainActivity> implements AdListener {
+
     DemoMainActivity activity;
     BannerAdView bav;
     InstanceLock lock;
-    boolean didLoad = false, didFail = false;
+    boolean didLoad = false, didFailToLoad = false;
     String old_base_url;
 
-    public TestActivity404Error() {
+    public TestActivityMediationWaterfall() {
         super(DemoMainActivity.class);
     }
 
@@ -48,10 +47,12 @@ public class TestActivity404Error extends ActivityInstrumentationTestCase2<DemoM
         super.setUp();
         old_base_url = Settings.getSettings().BASE_URL;
         Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
-        Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
+        Clog.w(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
         SuccessfulMediationView.didPass = false;
+        SecondSuccessfulMediationView.didPass = false;
+        ThirdSuccessfulMediationView.didPass = false;
         didLoad = false;
-        didFail = false;
+        didFailToLoad = false;
         lock = new InstanceLock();
 
         setActivityInitialTouchMode(false);
@@ -64,21 +65,18 @@ public class TestActivity404Error extends ActivityInstrumentationTestCase2<DemoM
         bav.setAdListener(this);
     }
 
-
     @Override
     protected void tearDown() throws Exception {
-        Clog.d(TestUtil.testLogTag, "tear down");
+        Clog.w(TestUtil.testLogTag, "tear down");
         Settings.getSettings().BASE_URL = old_base_url;
+
+        Thread.sleep(2500);
 
         super.tearDown();
     }
 
-    public void testSuccessThen404() {
-        // Create a AdRequest which will request a mediated response to
-        // instantiate the a successful view. The (failure) result_cb
-        // should return a 404 error, which should fail instantiation
-
-        bav.setPlacementID("9a");
+    public void test1FirstSuccessfulSkipSecond() {
+        bav.setPlacementID("11");
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -88,19 +86,14 @@ public class TestActivity404Error extends ActivityInstrumentationTestCase2<DemoM
 
         lock.pause(10000);
 
+        assertEquals(true, didLoad);
+        assertEquals(false, didFailToLoad);
         assertTrue(SuccessfulMediationView.didPass);
-        assertTrue(didLoad);
-        assertFalse(didFail);
-        // no way to verify the response from the resultCB here
-        // use LogCat / Test404Error tests it
+        assertFalse(SecondSuccessfulMediationView.didPass);
     }
 
-    public void testFailThen404() {
-        // Create a AdRequest which will request a mediated response to
-        // instantiate the fake view. The (failure) result_cb
-        // should return a 404 error, which should fail instantiation
-
-        bav.setPlacementID("9b");
+    public void test2SkipFirstSuccessfulSecond() {
+        bav.setPlacementID("12");
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -110,14 +103,81 @@ public class TestActivity404Error extends ActivityInstrumentationTestCase2<DemoM
 
         lock.pause(10000);
 
+        assertEquals(true, didLoad);
+        assertEquals(false, didFailToLoad);
+        assertTrue(SecondSuccessfulMediationView.didPass);
+    }
+
+    public void test3FirstFailsIntoOverrideStd() {
+        bav.setPlacementID("13");
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bav.loadAd();
+            }
+        });
+
+        lock.pause(10000);
+
+        assertEquals(true, didLoad);
+        assertEquals(false, didFailToLoad);
+        assertFalse(SuccessfulMediationView.didPass);
+    }
+
+    public void test4FirstFailsIntoOverrideMediated() {
+        bav.setPlacementID("14");
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bav.loadAd();
+            }
+        });
+
+        lock.pause(10000);
+
+        assertEquals(true, didLoad);
+        assertEquals(false, didFailToLoad);
+        assertFalse(SuccessfulMediationView.didPass);
+        assertTrue(ThirdSuccessfulMediationView.didPass);
+    }
+
+    public void test5TestNoFill() {
+        bav.setPlacementID("15");
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bav.loadAd();
+            }
+        });
+
+        lock.pause(10000);
+
+        // onAdRequestFailed should have been called
         assertFalse(didLoad);
-        assertTrue(didFail);
-        // no way to verify the response from the resultCB here
-        // use LogCat / Test404Error tests it
+        assertTrue(didFailToLoad);
+    }
+
+    public void test6NoResultCB() {
+        bav.setPlacementID("16");
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bav.loadAd();
+            }
+        });
+
+        lock.pause(10000);
+
+        // onAdLoaded should have been called
+        assertTrue(didLoad);
+        assertFalse(didFailToLoad);
+        assertTrue(SuccessfulMediationView.didPass);
     }
 
     @Override
     public void onAdLoaded(AdView adView) {
+        if (lock == null) return;
+        Clog.d(TestUtil.testLogTag, "onAdLoaded");
         didLoad = true;
         lock.unpause();
     }
@@ -125,7 +185,8 @@ public class TestActivity404Error extends ActivityInstrumentationTestCase2<DemoM
     @Override
     public void onAdRequestFailed(AdView adView) {
         if (lock == null) return;
-        didFail = true;
+        Clog.d(TestUtil.testLogTag, "onAdFailed");
+        didFailToLoad = true;
         lock.unpause();
     }
 
@@ -140,5 +201,4 @@ public class TestActivity404Error extends ActivityInstrumentationTestCase2<DemoM
     @Override
     public void onAdClicked(AdView adView) {
     }
-
 }

@@ -72,10 +72,16 @@ public class TestMediationSuccessThenStd extends AndroidTestCase implements AdRe
     }
 
     @Override
-    public void onReceiveResponse(AdResponse response) {
+    synchronized public void onReceiveResponse(AdResponse response) {
+        if (response == null) return;
         Clog.d(TestUtil.testLogTag, "received first response: " + response.toString());
-        MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                null, response);
+        if (response.getMediatedAds() != null) {
+            MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
+                    null, this, response.getMediatedAds().pop(), null);
+        } else if (response.getType() != null && response.getType().equals("banner")) {
+            didPass = true;
+            notify();
+        }
     }
 
     @Override
@@ -93,17 +99,5 @@ public class TestMediationSuccessThenStd extends AndroidTestCase implements AdRe
             return;
         }
         Clog.d(TestUtil.testLogTag, "unpausing");
-    }
-
-    @Override
-    synchronized public void dispatchResponse(final AdResponse response) {
-        Clog.d(TestUtil.testLogTag, "dispatch " + response.toString());
-        if (response.getType() == null) {
-            Clog.d(TestUtil.testLogTag, "null type");
-            return;
-        }
-        if (response.getType().equals("banner"))
-            didPass = true;
-        notify();
     }
 }

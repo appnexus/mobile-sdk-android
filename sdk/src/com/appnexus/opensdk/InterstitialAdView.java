@@ -197,7 +197,6 @@ public class InterstitialAdView extends AdView {
         }
         InterstitialAdView.q.add(new Pair<Long, Displayable>(System
                 .currentTimeMillis(), d));
-        d.getView();
     }
 
     protected void interacted() {
@@ -331,10 +330,6 @@ public class InterstitialAdView extends AdView {
         InterstitialAdView.INTERSTITIALADVIEW_TO_USE = null;
     }
 
-    protected String getMRAIDAdType() {
-        return "interstitial";
-    }
-
     /**
      * @return the time in milliseconds after an interstitial is displayed until
      *         the close button appears. Default is 10 seconds. 0 is disabled
@@ -414,5 +409,15 @@ public class InterstitialAdView extends AdView {
         public boolean fitsIn(int width, int height) {
             return h < height && w < width;
         }
+    }
+
+    @Override
+    boolean isBanner() {
+        return false;
+    }
+
+    @Override
+    boolean isInterstitial() {
+        return true;
     }
 }

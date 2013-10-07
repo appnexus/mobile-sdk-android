@@ -32,6 +32,7 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * The parent class of InterstitialAdView and BannerAdView. This can not be
@@ -39,7 +40,7 @@ import java.util.ArrayList;
  *
  * @author jacob
  */
-public abstract class AdView extends FrameLayout {
+public abstract class AdView extends FrameLayout implements AdViewListener {
 
     protected AdFetcher mAdFetcher;
     protected String placementID;
@@ -50,9 +51,11 @@ public abstract class AdView extends FrameLayout {
     protected int width = -1;
     protected int height = -1;
     protected boolean shouldServePSAs = true;
+    protected float reserve = 0.00f;
     private boolean mraid_expand = false;
     protected AdListener adListener;
     private BrowserStyle browserStyle;
+    LinkedList<MediatedAd> mediatedAds;
 
     /**
      * Begin Construction *
@@ -160,8 +163,13 @@ public abstract class AdView extends FrameLayout {
     // If single-use mode, we must manually start the fetcher
     protected void onFirstLayout() {
         // If an MRAID ad is expanded here, don't fetch on resume.
-        if (isMRAIDExpanded())
+        if (isMRAIDExpanded()) {
             return;
+        }
+        // if no placement id, don't fetch on resume
+        if (placementID == null || placementID.isEmpty()) {
+            return;
+        }
         mAdFetcher.start();
     }
 
@@ -250,19 +258,14 @@ public abstract class AdView extends FrameLayout {
 	 */
 
     protected void display(Displayable d) {
-        if (d == null) {
-            if (this.adListener != null)
-                adListener.onAdRequestFailed(this);
+        if ((d == null) || d.failed()) {
+            // The displayable has failed to be parsed or turned into a View.
+            fail();
             return;
-        }
-        if (d.failed()) {
-            if (this.adListener != null)
-                adListener.onAdRequestFailed(this);
-            return; // The displayable has failed to be parsed or turned into a
-            // View.
         }
         this.removeAllViews();
         if (d.getView() == null) {
+            //TODO: why do we fail silently here
             return;
         }
         this.addView(d.getView());
@@ -400,7 +403,17 @@ public abstract class AdView extends FrameLayout {
         }
     }
 
-    abstract String getMRAIDAdType();
+    /**
+     *
+     * @return true if the AdView is a BannerAdView
+     */
+    abstract boolean isBanner();
+
+    /**
+     *
+     * @return true if the AdView is an InterstitialAdView
+     */
+    abstract boolean isInterstitial();
 
     /**
      * Sets the listener that the InterstitialAdView will call events in.
@@ -425,15 +438,7 @@ public abstract class AdView extends FrameLayout {
     }
 
     protected void fail() {
-        if (adListener != null)
-            this.post(new Runnable() {
-
-                @Override
-                public void run() {
-                    AdView.this.adListener.onAdRequestFailed(AdView.this);
-                }
-
-            });
+        onAdFailed(true);
     }
 
     /**
@@ -479,6 +484,14 @@ public abstract class AdView extends FrameLayout {
         this.shouldServePSAs = shouldServePSAs;
     }
 
+    public float getReserve() {
+        return reserve;
+    }
+
+    public void setReserve(float reserve) {
+        this.reserve = reserve;
+    }
+
     static class BrowserStyle {
 
         public BrowserStyle(Drawable forwardButton, Drawable backButton,
@@ -494,4 +507,77 @@ public abstract class AdView extends FrameLayout {
 
         static final ArrayList<Pair<String, BrowserStyle>> bridge = new ArrayList<Pair<String, BrowserStyle>>();
     }
+
+    @Override
+    public void onAdLoaded(final Displayable d) {
+        this.post(new Runnable() {
+            @Override
+            public void run() {
+                display(d);
+                if (adListener != null)
+                    adListener.onAdLoaded(AdView.this);
+            }
+        });
+    }
+
+    @Override
+    public void onAdFailed(boolean noMoreAds) {
+        // wait until mediation waterfall is complete before calling adListener
+        if (!noMoreAds)
+            return;
+        this.post(new Runnable() {
+            @Override
+            public void run() {
+                if (adListener != null)
+                    adListener.onAdRequestFailed(AdView.this);
+            }
+        });
+    }
+
+    @Override
+    public void onAdExpanded() {
+        this.post(new Runnable() {
+            @Override
+            public void run() {
+                if (adListener != null)
+                    adListener.onAdExpanded(AdView.this);
+            }
+        });
+    }
+
+    @Override
+    public void onAdCollapsed() {
+        this.post(new Runnable() {
+            @Override
+            public void run() {
+                if (adListener != null)
+                    adListener.onAdCollapsed(AdView.this);
+            }
+        });
+    }
+
+    @Override
+    public void onAdClicked() {
+        this.post(new Runnable() {
+            @Override
+            public void run() {
+                if (adListener != null)
+                    adListener.onAdClicked(AdView.this);
+            }
+        });
+    }
+
+    public LinkedList<MediatedAd> getMediatedAds() {
+        return mediatedAds;
+    }
+
+    public void setMediatedAds(LinkedList<MediatedAd> mediatedAds) {
+        this.mediatedAds = mediatedAds;
+    }
+
+    // returns the first mediated ad if available
+    public MediatedAd popMediatedAd() {
+        return mediatedAds != null ? mediatedAds.pop() : null;
+    }
+
 }

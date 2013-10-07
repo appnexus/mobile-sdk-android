@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
@@ -78,12 +79,6 @@ public class AdFetcher implements AdRequester {
 
     protected void start() {
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.start));
-        // Requests can't be made without a placement ID
-        if (owner.getPlacementID() == null) {
-            Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_placement_id));
-            requestFailed();
-            return;
-        }
         if (tasker != null) {
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.moot_restart));
             requestFailed();
@@ -199,7 +194,7 @@ public class AdFetcher implements AdRequester {
         // Restart with new autorefresh setting, but only if auto-refresh was
         // set to true
         if (tasker != null) {
-            if (autoRefresh == true) {
+            if (autoRefresh) {
                 stop();
                 start();
             }
@@ -211,44 +206,59 @@ public class AdFetcher implements AdRequester {
         owner.fail();
     }
 
-	@Override
-    public void dispatchResponse(final AdResponse response) {
+    @Override
+    public void onReceiveResponse(final AdResponse response) {
         this.owner.post(new Runnable() {
             public void run() {
-                if (response.isMediated() && owner.getMRAIDAdType().equals("inline")) {
-                    MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                            owner, response);
-                    if (output != null) {
-                        owner.display(output);
-                    }
+
+                boolean responseHasAds = (response != null) && response.containsAds();
+                boolean ownerHasAds = (owner.getMediatedAds() != null) && !owner.getMediatedAds().isEmpty();
+
+                // no ads in the response and no old ads means no fill
+                if (!responseHasAds && !ownerHasAds) {
+                    Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
+                    requestFailed();
                     return;
-                } else if (response.isMediated()
-                        && owner.getMRAIDAdType().equals("interstitial")) {
-                    MediatedInterstitialAdViewController output = MediatedInterstitialAdViewController.create(
-                            (InterstitialAdView) owner, response);
-                    if (output != null) {
-                        owner.display(output);
+                }
+
+                if (responseHasAds) {
+                    // if non-mediated ad is overriding the list,
+                    // this will be null and skip the loop for mediation
+                    owner.setMediatedAds(response.getMediatedAds());
+                }
+
+                if ((owner.getMediatedAds() != null) && !owner.getMediatedAds().isEmpty()) {
+                    // mediated
+                    if (owner.isBanner()) {
+                        MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
+                                (Activity) owner.getContext(),
+                                owner.mAdFetcher,
+                                owner.popMediatedAd(),
+                                owner);
                     }
-                    return;
-                } else if (response.isMraid) {
+                    else if (owner.isInterstitial()) {
+                        MediatedInterstitialAdViewController output = MediatedInterstitialAdViewController.create(
+                                (Activity) owner.getContext(),
+                                owner.mAdFetcher,
+                                owner.popMediatedAd(),
+                                owner);
+                        if (output != null)
+                            output.getView();
+                    }
+                } else if ((response != null)
+                        && response.isMraid) {
+                    // mraid
                     MRAIDWebView output = new MRAIDWebView(owner);
                     output.loadAd(response);
-                    owner.display(output);
+                    owner.onAdLoaded(output);
                 } else {
+                    // standard
                     AdWebView output = new AdWebView(owner);
                     output.loadAd(response);
-                    owner.display(output);
+                    owner.onAdLoaded(output);
                 }
             }
         });
-    }
-
-    @Override
-    public void onReceiveResponse(AdResponse response) {
-        dispatchResponse(response);
-        if (owner.adListener != null) {
-            owner.adListener.onAdLoaded(owner);
-        }
     }
 
 	@Override

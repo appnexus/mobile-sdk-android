@@ -64,16 +64,12 @@ public class TestFailingAdRequest extends TestCase implements AdRequester, AdLis
         notify();
     }
 
-	@Override
-	public AdView getOwner() {
-		return null;
-	}
+    @Override
+    public AdView getOwner() {
+        return null;
+    }
 
-	@Override
-	public void dispatchResponse(AdResponse response) {
-	}
-
-	@Override
+    @Override
     synchronized public void failed(AdRequest request) {
         shouldPass = true;
         notify();
@@ -93,20 +89,14 @@ public class TestFailingAdRequest extends TestCase implements AdRequester, AdLis
 
     @Override
     public void onAdExpanded(AdView adView) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onAdCollapsed(AdView adView) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onAdClicked(AdView adView) {
-        // TODO Auto-generated method stub
-
     }
 
 }

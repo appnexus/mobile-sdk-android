@@ -53,16 +53,12 @@ public class TestShortestSuccessfulAdRequest extends TestCase implements AdReque
         notify();
     }
 
-	@Override
-	public AdView getOwner() {
-		return null;
-	}
+    @Override
+    public AdView getOwner() {
+        return null;
+    }
 
-	@Override
-	public void dispatchResponse(AdResponse response) {
-	}
-
-	@Override
+    @Override
     synchronized public void failed(AdRequest request) {
         shouldWorkDidWork = false;
         notify();
