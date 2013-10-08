@@ -508,7 +508,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     @Override
     protected void onCancelled(AdResponse adResponse) {
         super.onCancelled(adResponse);
-        Clog.e(Clog.baseLogTag, "AdRequest cancelled");
+        Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.cancel_request));
         retryHandler.removeCallbacksAndMessages(null);
     }
 
@@ -531,7 +531,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         @Override
         public void run() {
             if (retry.isCancelled()) {
-                Clog.e(Clog.baseLogTag, "Retry was cancelled~~~");
+                Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.retry_already_cancelled));
                 return;
             }
 
