@@ -40,6 +40,7 @@ public class AdFetcher implements AdRequester {
     private long lastFetchTime = -1;
     private long timePausedAt = -1;
     private boolean shouldShowTrueTime = false;
+    protected AdRequest adRequest;
 
     // Fires requests whenever it receives a message
     public AdFetcher(AdView owner) {
@@ -58,6 +59,9 @@ public class AdFetcher implements AdRequester {
     }
 
     protected void stop() {
+        if (adRequest != null)
+            adRequest.cancel(true);
+
         if (tasker == null)
             return;
         tasker.shutdownNow();
@@ -175,13 +179,12 @@ public class AdFetcher implements AdRequester {
             mFetcher.get().lastFetchTime = System.currentTimeMillis();
 
             // Spawn an AdRequest
+            mFetcher.get().adRequest = new AdRequest(mFetcher.get(), Settings.getSettings().MAX_FAILED_HTTP_RETRIES, Settings.getSettings().MAX_HTTP_RETRIES);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                new AdRequest(mFetcher.get())
-                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                mFetcher.get().adRequest.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
-                new AdRequest(mFetcher.get()).execute();
+                mFetcher.get().adRequest.execute();
             }
-
         }
     }
 
@@ -235,8 +238,7 @@ public class AdFetcher implements AdRequester {
                                 owner.mAdFetcher,
                                 owner.popMediatedAd(),
                                 owner);
-                    }
-                    else if (owner.isInterstitial()) {
+                    } else if (owner.isInterstitial()) {
                         MediatedInterstitialAdViewController output = MediatedInterstitialAdViewController.create(
                                 (Activity) owner.getContext(),
                                 owner.mAdFetcher,
@@ -262,11 +264,16 @@ public class AdFetcher implements AdRequester {
     }
 
 	@Override
-	public AdView getOwner() {
-		return owner;
-	}
+    public AdView getOwner() {
+        return owner;
+    }
 
-	public void clearDurations() {
+    @Override
+    public void setAdRequest(AdRequest adRequest) {
+        this.adRequest = adRequest;
+    }
+
+    public void clearDurations() {
         lastFetchTime = -1;
         timePausedAt = -1;
 

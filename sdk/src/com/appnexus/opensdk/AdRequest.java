@@ -26,6 +26,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Handler;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import com.appnexus.opensdk.InterstitialAdView.Size;
@@ -86,6 +88,11 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     boolean shouldRetry = true; // true by default
     float reserve = 0.00f;
 
+    Handler retryHandler;
+
+    int httpRetriesLeft = 0;
+    int blankRetriesLeft = 0;
+
     public static final String RETRY = "RETRY";
     public static final String BLANK = "BLANK";
 
@@ -124,6 +131,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                      AdListener adListener, boolean shouldServePSAs, boolean shouldRetry) {
         this.adListener = adListener;
         this.requester = requester;
+        this.retryHandler = new Handler();
         if (aid != null) {
             hidmd5 = HashingFunctions.md5(aid);
             hidsha1 = HashingFunctions.sha1(aid);
@@ -164,9 +172,12 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         this.shouldRetry = shouldRetry;
     }
 
-    public AdRequest(AdRequester adRequester) {
+    public AdRequest(AdRequester adRequester, int httpRetriesLeft, int blankRetriesLeft) {
         owner = adRequester.getOwner();
         this.requester = adRequester;
+        this.retryHandler = new Handler();
+        this.httpRetriesLeft = httpRetriesLeft;
+        this.blankRetriesLeft = blankRetriesLeft;
         this.placementId = owner.getPlacementID();
         context = owner.getContext();
         String aid = android.provider.Settings.Secure.getString(
@@ -322,10 +333,10 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                 : ""));
         if (owner != null) {
             if (maxHeight > 0 && maxWidth > 0) {
-                if (!(owner instanceof InterstitialAdView)
+                if ((owner instanceof InterstitialAdView)
                         && (width < 0 && height < 0)) {
                     sb.append("&max_size=" + maxWidth + "x" + maxHeight);
-                } else if (owner instanceof InterstitialAdView) {
+                } else if (!(owner instanceof InterstitialAdView)) {
                     sb.append("&size=" + maxWidth + "x" + maxHeight);
                 }
             }
@@ -464,10 +475,28 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             Clog.v(Clog.httpRespLogTag, Clog.getString(R.string.no_response));
             // Don't call fail again!
             return; // http request failed
-        } else if (shouldRetry && (result.equals(AdRequest.CONNECTIVITY_RETRY)
-                || result.equals(AdRequest.BLANK_RETRY))) {
-            new RetryAdRequest(this, Settings.getSettings().MAX_FAILED_HTTP_RETRIES, Settings.getSettings().MAX_HTTP_RETRIES).execute();
-            return; // The request failed and should be retried.
+        } else if (shouldRetry) {
+            if (httpRetriesLeft < 0 || blankRetriesLeft < 0) {
+                // return if we have exceeded the max number of tries
+                return;
+            }
+            boolean resultIsRetry = false;
+
+            if (result.equals(AdRequest.CONNECTIVITY_RETRY)) {
+                httpRetriesLeft--;
+                resultIsRetry = true;
+            } else if (result.equals(AdRequest.BLANK_RETRY)) {
+                blankRetriesLeft--;
+                resultIsRetry = true;
+            }
+
+            if (resultIsRetry) {
+                final AdRequest retry = new AdRequest(requester, httpRetriesLeft, blankRetriesLeft);
+                requester.setAdRequest(retry);
+                retry.retryHandler.postDelayed(new RetryRunnable(retry), Settings.getSettings().HTTP_RETRY_INTERVAL);
+                return; // The request failed and should be retried.
+            }
+            // else let it continue to process the valid result
         }
         if (requester != null)
             requester.onReceiveResponse(result);
@@ -476,6 +505,14 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             adListener.onAdLoaded(owner);
     }
 
+    @Override
+    protected void onCancelled(AdResponse adResponse) {
+        super.onCancelled(adResponse);
+        Clog.e(Clog.baseLogTag, "AdRequest cancelled");
+        retryHandler.removeCallbacksAndMessages(null);
+    }
+
+    @SuppressWarnings("RedundantIfStatement")
     private boolean isEmpty(String str) {
         if (str == null)
             return true;
@@ -484,55 +521,31 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         return false;
     }
 
-    private class RetryAdRequest extends AdRequest {
-        int tryMoreTimesHTTP = 0;
-        int tryMoreMaxTimesBlanks = 0;
-        AdRequest adRequest = null;
+    class RetryRunnable implements Runnable {
+        AdRequest retry;
 
-        protected RetryAdRequest(AdRequest adRequest, int moreTimesHttp, int moreTimesBlanks) {
-            super(adRequest.requester);
-            tryMoreTimesHTTP = moreTimesHttp;
-            tryMoreMaxTimesBlanks = moreTimesBlanks;
-            this.adRequest = adRequest;
+        RetryRunnable(AdRequest retry) {
+            this.retry = retry;
         }
 
         @Override
-        protected AdResponse doInBackground(Void... params) {
-            boolean connectivity_problem = false;
-            if (!hasNetwork(context)) {
-                Clog.d(Clog.httpReqLogTag,
-                        Clog.getString(R.string.no_connectivity));
-                fail();
-                connectivity_problem = true;
-            }
-
-            try {
-                Thread.sleep(Settings.getSettings().HTTP_RETRY_INTERVAL);
-            } catch (InterruptedException e) {
-                //Do nothing, just retry
-            }
-
-            return connectivity_problem ? AdRequest.CONNECTIVITY_RETRY : doRequest();
-
-        }
-
-
-        @Override
-        protected void onPostExecute(AdResponse result) {
-            if (tryMoreTimesHTTP == 0 || tryMoreMaxTimesBlanks == 0) {
+        public void run() {
+            if (retry.isCancelled()) {
+                Clog.e(Clog.baseLogTag, "Retry was cancelled~~~");
                 return;
             }
-            if (result.equals(AdRequest.CONNECTIVITY_RETRY) && tryMoreTimesHTTP > 0) {
-                new RetryAdRequest(adRequest, tryMoreTimesHTTP - 1, tryMoreMaxTimesBlanks).execute();
-            } else if (result.equals(AdRequest.BLANK_RETRY) && tryMoreMaxTimesBlanks > 0) {
-                new RetryAdRequest(adRequest, tryMoreTimesHTTP, tryMoreMaxTimesBlanks - 1).execute();
-            } else if (!result.equals(AdRequest.CONNECTIVITY_RETRY) && !result.equals(AdRequest.BLANK_RETRY)) {
-                super.onPostExecute(result);
+
+            // Spawn an AdRequest
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                retry.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                retry.execute();
             }
         }
     }
+
 //   // Uncomment for unit tests
-   public void setContext(Context context) {
-       this.context = context;
-   }
+//   public void setContext(Context context) {
+//       this.context = context;
+//   }
 }
