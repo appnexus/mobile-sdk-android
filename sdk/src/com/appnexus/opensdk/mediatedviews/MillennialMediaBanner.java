@@ -25,7 +25,7 @@ import com.millennialmedia.android.MMAdView;
 import com.millennialmedia.android.MMRequest;
 import com.millennialmedia.android.MMSDK;
 
-public class MillenialMediaBanner implements MediatedBannerAdView {
+public class MillennialMediaBanner implements MediatedBannerAdView {
 
     MediatedBannerAdViewController mMediatedBannerAdViewController;
 
@@ -33,15 +33,15 @@ public class MillenialMediaBanner implements MediatedBannerAdView {
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
                           int width, int height) {
         if (mBC == null) {
-            Clog.e(Clog.mediationLogTag, "MillenialMediaBanner - requestAd called with null controller");
+            Clog.e(Clog.mediationLogTag, "MillennialMediaBanner - requestAd called with null controller");
             return null;
         }
 
         if (activity == null) {
-            Clog.e(Clog.mediationLogTag, "MillenialMediaBanner - requestAd called with null activity");
+            Clog.e(Clog.mediationLogTag, "MillennialMediaBanner - requestAd called with null activity");
             return null;
         }
-        Clog.d(Clog.mediationLogTag, String.format("MillenialMediaBanner - requesting an ad: [%s, %s, %dx%d]", parameter, uid, width, height));
+        Clog.d(Clog.mediationLogTag, String.format("MillennialMediaBanner - requesting an ad: [%s, %s, %dx%d]", parameter, uid, width, height));
 
         mMediatedBannerAdViewController = mBC;
 
@@ -54,7 +54,7 @@ public class MillenialMediaBanner implements MediatedBannerAdView {
 
         MMRequest mmRequest = new MMRequest();
         adView.setMMRequest(mmRequest);
-        adView.setListener(new MillenialMediaListener(mMediatedBannerAdViewController, getClass().getSimpleName()));
+        adView.setListener(new MillnenialMediaListener(mMediatedBannerAdViewController, getClass().getSimpleName()));
         adView.getAd();
 
         return adView;

@@ -23,7 +23,7 @@ import com.appnexus.opensdk.utils.Clog;
 import com.millennialmedia.android.MMInterstitial;
 import com.millennialmedia.android.MMSDK;
 
-public class MillenialMediaInterstitial implements MediatedInterstitialAdView {
+public class MillennialMediaInterstitial implements MediatedInterstitialAdView {
 
     MMInterstitial iad;
     MediatedInterstitialAdViewController mMediatedInterstitialAdViewController;
@@ -31,15 +31,15 @@ public class MillenialMediaInterstitial implements MediatedInterstitialAdView {
     @Override
     public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid) {
         if (mIC == null) {
-            Clog.e(Clog.mediationLogTag, "MillenialMediaInterstitial - requestAd called with null controller");
+            Clog.e(Clog.mediationLogTag, "MillennialMediaInterstitial - requestAd called with null controller");
             return;
         }
 
         if (activity == null) {
-            Clog.e(Clog.mediationLogTag, "MillenialMediaInterstitial - requestAd called with null activity");
+            Clog.e(Clog.mediationLogTag, "MillennialMediaInterstitial - requestAd called with null activity");
             return;
         }
-        Clog.d(Clog.mediationLogTag, String.format("MillenialMediaInterstitial - requesting an interstitial ad: [%s, %s]", parameter, uid));
+        Clog.d(Clog.mediationLogTag, String.format("MillennialMediaInterstitial - requesting an interstitial ad: [%s, %s]", parameter, uid));
 
         mMediatedInterstitialAdViewController = mIC;
 
@@ -47,25 +47,31 @@ public class MillenialMediaInterstitial implements MediatedInterstitialAdView {
 
         iad = new MMInterstitial(activity);
         iad.setApid(uid);
-        iad.setListener(new MillenialMediaListener(mMediatedInterstitialAdViewController, getClass().getSimpleName()));
-        iad.fetch();
+        iad.setListener(new MillnenialMediaListener(mMediatedInterstitialAdViewController, getClass().getSimpleName()));
+
+        if (!iad.isAdAvailable()) {
+            iad.fetch();
+        } else {
+            Clog.w(Clog.mediationLogTag, "MillennialMediaInterstitial - ad was available from cache. show it instead of fetching");
+            mIC.onAdLoaded();
+        }
     }
 
     @Override
     public void show() {
-        Clog.d(Clog.mediationLogTag, "MillenialMediaInterstitial - show called");
+        Clog.d(Clog.mediationLogTag, "MillennialMediaInterstitial - show called");
         if (iad == null) {
-            Clog.e(Clog.mediationLogTag, "MillenialMediaInterstitial - show called while interstitial ad view was null");
+            Clog.e(Clog.mediationLogTag, "MillennialMediaInterstitial - show called while interstitial ad view was null");
             return;
         }
         if (!iad.isAdAvailable()) {
-            Clog.e(Clog.mediationLogTag, "MillenialMediaInterstitial - show called while interstitial ad was unavailable");
+            Clog.e(Clog.mediationLogTag, "MillennialMediaInterstitial - show called while interstitial ad was unavailable");
             return;
         }
 
         if (iad.display(true))
-            Clog.d(Clog.mediationLogTag, "MillenialMediaInterstitial - display called successfully");
+            Clog.d(Clog.mediationLogTag, "MillennialMediaInterstitial - display called successfully");
         else
-            Clog.e(Clog.mediationLogTag, "MillenialMediaInterstitial - display failed");
+            Clog.e(Clog.mediationLogTag, "MillennialMediaInterstitial - display failed");
     }
 }
