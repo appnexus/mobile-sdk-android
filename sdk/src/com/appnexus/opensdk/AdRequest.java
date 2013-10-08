@@ -172,6 +172,11 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         this.shouldRetry = shouldRetry;
     }
 
+    public AdRequest(AdRequester adRequester) {
+        // add one for the initial request
+        this(adRequester, Settings.getSettings().MAX_FAILED_HTTP_RETRIES + 1, Settings.getSettings().MAX_HTTP_RETRIES + 1);
+    }
+
     public AdRequest(AdRequester adRequester, int httpRetriesLeft, int blankRetriesLeft) {
         owner = adRequester.getOwner();
         this.requester = adRequester;
@@ -476,7 +481,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             // Don't call fail again!
             return; // http request failed
         } else if (shouldRetry) {
-            if (httpRetriesLeft < 0 || blankRetriesLeft < 0) {
+            if ((httpRetriesLeft < 1) || (blankRetriesLeft < 1)) {
                 // return if we have exceeded the max number of tries
                 return;
             }

@@ -59,8 +59,10 @@ public class AdFetcher implements AdRequester {
     }
 
     protected void stop() {
-        if (adRequest != null)
+        if (adRequest != null) {
             adRequest.cancel(true);
+            adRequest = null;
+        }
 
         if (tasker == null)
             return;
@@ -179,7 +181,7 @@ public class AdFetcher implements AdRequester {
             mFetcher.get().lastFetchTime = System.currentTimeMillis();
 
             // Spawn an AdRequest
-            mFetcher.get().adRequest = new AdRequest(mFetcher.get(), Settings.getSettings().MAX_FAILED_HTTP_RETRIES, Settings.getSettings().MAX_HTTP_RETRIES);
+            mFetcher.get().adRequest = new AdRequest(mFetcher.get());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 mFetcher.get().adRequest.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
