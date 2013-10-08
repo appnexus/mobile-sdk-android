@@ -265,7 +265,7 @@ public class AdFetcher implements AdRequester {
         });
     }
 
-	@Override
+    @Override
     public AdView getOwner() {
         return owner;
     }
