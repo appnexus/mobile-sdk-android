@@ -54,7 +54,7 @@ public class MillennialMediaBanner implements MediatedBannerAdView {
 
         MMRequest mmRequest = new MMRequest();
         adView.setMMRequest(mmRequest);
-        adView.setListener(new MillnenialMediaListener(mMediatedBannerAdViewController, getClass().getSimpleName()));
+        adView.setListener(new MillennialMediaListener(mMediatedBannerAdViewController, getClass().getSimpleName()));
         adView.getAd();
 
         return adView;

@@ -47,7 +47,7 @@ public class MillennialMediaInterstitial implements MediatedInterstitialAdView {
 
         iad = new MMInterstitial(activity);
         iad.setApid(uid);
-        iad.setListener(new MillnenialMediaListener(mMediatedInterstitialAdViewController, getClass().getSimpleName()));
+        iad.setListener(new MillennialMediaListener(mMediatedInterstitialAdViewController, getClass().getSimpleName()));
 
         if (!iad.isAdAvailable()) {
             iad.fetch();

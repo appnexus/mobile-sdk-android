@@ -23,15 +23,15 @@ import com.millennialmedia.android.MMAd;
 import com.millennialmedia.android.MMException;
 import com.millennialmedia.android.RequestListener;
 
-public class MillnenialMediaListener implements RequestListener {
+public class MillennialMediaListener implements RequestListener {
 
     MediatedAdViewController mediatedAdViewController;
     String className;
 
-    public MillnenialMediaListener(MediatedAdViewController mediatedAdViewController, String className) {
+    public MillennialMediaListener(MediatedAdViewController mediatedAdViewController, String className) {
         this.mediatedAdViewController = mediatedAdViewController;
         this.className = className;
-        Clog.d(Clog.mediationLogTag, String.format("New MillnenialMediaListener created for [%s %s]", className, mediatedAdViewController));
+        Clog.d(Clog.mediationLogTag, String.format("New MillennialMediaListener created for [%s %s]", className, mediatedAdViewController));
     }
 
     // occurs when ad is clicked and browser is launched.
