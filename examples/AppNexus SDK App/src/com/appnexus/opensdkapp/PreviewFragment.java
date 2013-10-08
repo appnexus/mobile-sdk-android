@@ -125,7 +125,6 @@ public class PreviewFragment extends Fragment {
                 }
             }
             iav.setBackgroundColor(color);
-            iav.setCloseButtonDelay(settingsWrapper.getCloseDelayPeriod());
             if (!iav.loadAd())
                 pullToRefreshView.onRefreshComplete();
         }

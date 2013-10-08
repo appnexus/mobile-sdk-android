@@ -32,14 +32,14 @@ import com.appnexus.opensdk.utils.Clog;
 public class SettingsFragment extends Fragment {
     private Button btnLoadAd;
     private GradientDrawable colorViewBackground;
-    private Spinner dropSize, dropRefresh, dropCloseDelay;
+    private Spinner dropSize, dropRefresh;
 
     private Button btnAdTypeBanner, btnAdTypeInterstitial,
             btnPSAsYes, btnPSAsNo,
             btnBrowserInApp, btnBrowserNative;
 
     private TextView txtSize, txtRefresh,
-            txtBackgroundColor, txtCloseDelay,
+            txtBackgroundColor,
             txtMemberId, txtDongle;
     private EditText editPlacementId,
             editBackgroundColor,
@@ -50,7 +50,7 @@ public class SettingsFragment extends Fragment {
 
     // keep saved settings in memory in order to optimize writes
     boolean savedAdType, savedPSAs, savedBrowser;
-    String savedPlacement, savedSize, savedRefresh, savedColor, savedCloseDelay, savedMemberId, savedDongle;
+    String savedPlacement, savedSize, savedRefresh, savedColor, savedMemberId, savedDongle;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -68,7 +68,6 @@ public class SettingsFragment extends Fragment {
         txtSize = (TextView) out.findViewById(R.id.txt_size);
         txtRefresh = (TextView) out.findViewById(R.id.txt_refresh);
         txtBackgroundColor = (TextView) out.findViewById(R.id.txt_interstitial_color);
-        txtCloseDelay = (TextView) out.findViewById(R.id.txt_close_delay);
         txtMemberId = (TextView) out.findViewById(R.id.txt_memberid);
         txtDongle = (TextView) out.findViewById(R.id.txt_dongle);
 
@@ -84,7 +83,6 @@ public class SettingsFragment extends Fragment {
         // create dropdowns
         dropSize = initDropdown(out, container, R.id.dropdown_size, R.array.sizes);
         dropRefresh = initDropdown(out, container, R.id.dropdown_refresh, R.array.refresh);
-        dropCloseDelay = initDropdown(out, container, R.id.dropdown_close_delay, R.array.close_delay);
 
         /*
          * SET LISTENERS
@@ -105,8 +103,6 @@ public class SettingsFragment extends Fragment {
                 getResources().getStringArray(R.array.sizes)));
         dropRefresh.setOnItemSelectedListener(new RefreshSelectedListener(
                 getResources().getStringArray(R.array.refresh)));
-        dropCloseDelay.setOnItemSelectedListener(new CloseDelaySelectedListener(
-                getResources().getStringArray(R.array.close_delay)));
 
         // listeners for editText
 //        editPlacementId.addTextChangedListener(new SaveToPrefsTextWatcher(Prefs.KEY_PLACEMENT, Prefs.DEF_PLACEMENT));
@@ -172,16 +168,6 @@ public class SettingsFragment extends Fragment {
         // Load background color
         savedColor = Prefs.getColor(getActivity());
         editBackgroundColor.setText(savedColor);
-
-        // Load close delay
-        savedCloseDelay = Prefs.getCloseDelay(getActivity());
-
-        String[] closeDelayStrings = getResources().getStringArray(R.array.close_delay);
-        for (int i = 0; i < closeDelayStrings.length; i++) {
-            if (closeDelayStrings[i].equals(savedCloseDelay)) {
-                dropCloseDelay.setSelection(i);
-            }
-        }
 
         // Load member id
         savedMemberId = Prefs.getMemberId(getActivity());
@@ -282,40 +268,6 @@ public class SettingsFragment extends Fragment {
         }
     }
 
-    private class CloseDelaySelectedListener implements
-            AdapterView.OnItemSelectedListener {
-        String[] closeDelayStrings;
-
-        private CloseDelaySelectedListener(String[] closeDelayStrings) {
-            this.closeDelayStrings = closeDelayStrings;
-        }
-
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view,
-                                   int position, long id) {
-            if (position >= closeDelayStrings.length)
-                return;
-
-            Clog.d(Constants.BASE_LOG_TAG, "Close Delay set to: " + closeDelayStrings[position]);
-//
-//            int closeDelay = 0;
-//
-//            if (setting.equals("Off")) {
-//                closeDelay = 0;
-//            } else {
-//                try {
-//                    setting = setting.replace(" seconds", "");
-//                    closeDelay = Integer.parseInt(setting);
-//                } catch (NumberFormatException ignored) {
-//                }
-//            }
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> arg0) {
-        }
-    }
-
     public interface OnLoadAdClickedListener {
         public void onLoadAdClicked();
     }
@@ -375,10 +327,6 @@ public class SettingsFragment extends Fragment {
                 savedColor = currentValidColor;
                 prefs.writeString(Prefs.KEY_COLOR_HEX, savedColor);
             }
-            if (!savedCloseDelay.equals(dropCloseDelay.getSelectedItem())) {
-                savedCloseDelay = (String) dropCloseDelay.getSelectedItem();
-                prefs.writeString(Prefs.KEY_CLOSE_DELAY, savedCloseDelay);
-            }
 
             if (!savedMemberId.equals(editMemberId.getText().toString())) {
                 savedMemberId = editPlacementId.getText().toString();
@@ -431,8 +379,6 @@ public class SettingsFragment extends Fragment {
             // interstitial-only settings
             txtBackgroundColor.setEnabled(!isBanner);
             editBackgroundColor.setEnabled(!isBanner);
-            txtCloseDelay.setEnabled(!isBanner);
-            dropCloseDelay.setEnabled(!isBanner);
         }
     }
 

@@ -26,7 +26,6 @@ public class SettingsWrapper {
     private String size;
     private String refresh;
     private String backgroundColor;
-    private String closeDelay;
     private String memberId;
     private String dongle;
 
@@ -89,14 +88,6 @@ public class SettingsWrapper {
         this.backgroundColor = backgroundColor;
     }
 
-    public String getCloseDelay() {
-        return closeDelay;
-    }
-
-    public void setCloseDelay(String closeDelay) {
-        this.closeDelay = closeDelay;
-    }
-
     public String getMemberId() {
         return memberId;
     }
@@ -123,7 +114,6 @@ public class SettingsWrapper {
         settingsWrapper.parseSize();
         settingsWrapper.refresh = Prefs.getRefresh(context);
         settingsWrapper.backgroundColor = Prefs.getColor(context);
-        settingsWrapper.closeDelay = Prefs.getCloseDelay(context);
         settingsWrapper.memberId = Prefs.getMemberId(context);
         settingsWrapper.dongle = Prefs.getDongle(context);
 
@@ -139,18 +129,6 @@ public class SettingsWrapper {
             return 0;
         else {
             return (1000 * Integer.parseInt(refresh.replace(" seconds", "")));
-        }
-    }
-
-    public int getCloseDelayPeriod() {
-        if (closeDelay.equals("Off"))
-            return 0;
-        else {
-            try {
-                return (1000 * Integer.parseInt(closeDelay.replace(" seconds", "")));
-            } catch (NumberFormatException e) {
-                return 0;
-            }
         }
     }
 
@@ -183,7 +161,6 @@ public class SettingsWrapper {
         sb.append(", size='").append(size).append('\'');
         sb.append(", refresh='").append(refresh).append('\'');
         sb.append(", backgroundColor='").append(backgroundColor).append('\'');
-        sb.append(", closeDelay='").append(closeDelay).append('\'');
         sb.append(", memberId='").append(memberId).append('\'');
         sb.append(", dongle='").append(dongle).append('\'');
         sb.append(", width=").append(width);

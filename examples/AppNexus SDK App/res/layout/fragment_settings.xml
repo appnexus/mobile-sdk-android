@@ -270,24 +270,6 @@
             <!--/>-->
         </RelativeLayout>
 
-        <!-- Close Delay -->
-
-        <RelativeLayout
-                style="@style/itemContainer">
-            <TextView
-                    android:id="@+id/txt_close_delay"
-                    style="@style/settingsTextItem.long"
-                    android:text="@string/settings_txt_close_delay"
-                    />
-
-            <Spinner
-                    android:id="@+id/dropdown_close_delay"
-                    style="@style/settingsEditItem"
-                    android:layout_alignTop="@id/txt_close_delay"
-                    android:layout_alignBottom="@id/txt_close_delay"
-                    />
-        </RelativeLayout>
-
         <!-- Debug Auction -->
 
         <TextView

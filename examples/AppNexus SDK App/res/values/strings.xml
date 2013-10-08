@@ -17,9 +17,7 @@
 <resources>
 
     <string name="app_name">AppNexus SDK App</string>
-    <string name="action_settings">Settings</string>
     <string name="banner_space">Banners will load here.</string>
-    <string name="default_placement_id">656561</string>
     <string name="load_ad_button">Load Ad</string>
     <string name="paste_ad_button">Paste Ad</string>
 
@@ -35,7 +33,6 @@
     <string name="settings_txt_size">Size:</string>
     <string name="settings_txt_refresh">Refresh Rate:</string>
     <string name="settings_txt_interstitial_bg_color">Background Color:</string>
-    <string name="settings_txt_close_delay">Close Delay:</string>
     <string name="settings_txt_memberid">Member Id:</string>
     <string name="settings_txt_dongle">Dongle:</string>
 
@@ -82,13 +79,6 @@
         <item>30 seconds</item>
         <item>60 seconds</item>
         <item>120 seconds</item>
-    </string-array>
-
-    <string-array name="close_delay">
-        <item>Off</item>
-        <item>5 seconds</item>
-        <item>10 seconds</item>
-        <item>15 seconds</item>
     </string-array>
 
 </resources>

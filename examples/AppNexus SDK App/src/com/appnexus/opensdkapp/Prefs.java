@@ -29,7 +29,6 @@ public class Prefs {
     public static final String KEY_SIZE = "SIZE";
     public static final String KEY_REFRESH = "REFRESH";
     public static final String KEY_COLOR_HEX = "COLOR";
-    public static final String KEY_CLOSE_DELAY = "DELAY";
     public static final String KEY_MEMBERID = "MEMBERID";
     public static final String KEY_DONGLE = "DONGLE";
 
@@ -43,7 +42,6 @@ public class Prefs {
     public static final String DEF_SIZE = "320x480";
     public static final String DEF_REFRESH = "30 seconds";
     public static final String DEF_COLOR_HEX = "FF000000";
-    public static final String DEF_CLOSE_DELAY = "10 seconds";
     public static final String DEF_MEMBERID = "";
     public static final String DEF_DONGLE = "";
 
@@ -150,10 +148,6 @@ public class Prefs {
 
     public static String getColor(Context context) {
         return getString(context, Prefs.KEY_COLOR_HEX, Prefs.DEF_COLOR_HEX);
-    }
-
-    public static String getCloseDelay(Context context) {
-        return getString(context, Prefs.KEY_CLOSE_DELAY, Prefs.DEF_CLOSE_DELAY);
     }
 
     public static String getMemberId(Context context) {
