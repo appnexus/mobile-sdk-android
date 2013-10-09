@@ -113,7 +113,7 @@
 			break;
 		case 'default':
             if(expand_properties.height < current_position.height || expand_properites.width < current_position.width){
-                mraid.util.errorEvent("Can't expand to a size smaller than the default size.". "mraid.expand()");
+                mraid.util.errorEvent("Can't expand to a size smaller than the default size.", "mraid.expand()");
                 return;
             }
 			window.open("mraid://expand/"+"?w="+mraid.getExpandProperties().width+"&h="+mraid.getExpandProperties().height+"&useCustomClose="+mraid.getExpandProperties().useCustomClose+(url!=null ? "&url="+url:""));
