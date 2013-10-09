@@ -516,6 +516,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     protected void onCancelled(AdResponse adResponse) {
         super.onCancelled(adResponse);
         Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.cancel_request));
+        if (requester != null)
+            requester.setAdRequest(null);
         // remove pending retry requests if the requester cancels the ad request
         retryHandler.removeCallbacksAndMessages(null);
     }
