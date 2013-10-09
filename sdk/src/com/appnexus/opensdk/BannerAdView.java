@@ -103,6 +103,7 @@ public class BannerAdView extends AdView {
     @Override
     protected void setup(Context context, AttributeSet attrs) {
         super.setup(context, attrs);
+        onFirstLayout();
         mAdFetcher.setPeriod(period);
         mAdFetcher.setAutoRefresh(getAutoRefresh());
     }
@@ -153,9 +154,7 @@ public class BannerAdView extends AdView {
     }
 
     // Make sure receiver is registered.
-    @Override
-    protected void onFirstLayout() {
-        super.onFirstLayout();
+    private void onFirstLayout() {
         if (this.auto_refresh) {
             if (!receiversRegistered) {
                 setupBroadcast(getContext());

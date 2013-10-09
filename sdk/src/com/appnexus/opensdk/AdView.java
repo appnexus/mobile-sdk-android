@@ -151,26 +151,12 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
             // Hide the adview
             if (!measured) {
                 hide();
-                onFirstLayout();
             }
 
             measured = true;
 
 
         }
-    }
-
-    // If single-use mode, we must manually start the fetcher
-    protected void onFirstLayout() {
-        // If an MRAID ad is expanded here, don't fetch on resume.
-        if (isMRAIDExpanded()) {
-            return;
-        }
-        // if no placement id, don't fetch on resume
-        if (placementID == null || placementID.isEmpty()) {
-            return;
-        }
-        mAdFetcher.start();
     }
 
     protected boolean isMRAIDExpanded() {

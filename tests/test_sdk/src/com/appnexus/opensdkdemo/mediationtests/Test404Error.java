@@ -115,4 +115,8 @@ public class Test404Error extends AndroidTestCase implements AdRequester {
     public AdView getOwner() {
         return null;
     }
+
+    @Override
+    public void setAdRequest(AdRequest adRequest) {
+    }
 }

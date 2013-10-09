@@ -25,15 +25,18 @@ import org.json.JSONObject;
 import java.util.LinkedList;
 
 public class AdResponse {
-    public String body;
-    public int height;
-    public int width;
+    private String body;
+    private int height;
+    private int width;
     private String type;
-    boolean isMraid = false;
+    private boolean isMraid = false;
 
     private LinkedList<MediatedAd> mediatedAds;
 
     private boolean containsAds = false;
+
+    private boolean isConnectivityRetry = false;
+    private boolean isBlankRetry = false;
 
     final static String http_error = "HTTP_ERROR";
 
@@ -74,7 +77,6 @@ public class AdResponse {
 
         Clog.d(Clog.httpRespLogTag,
                 Clog.getString(R.string.response_body, body));
-        //TODO: review, do we really need to print this?
         if (headers != null) {
             for (Header h : headers) {
                 Clog.v(Clog.httpRespLogTag,
@@ -89,12 +91,12 @@ public class AdResponse {
 
     }
 
-    private void parseResponse(String body) {
-        // don't try to parse if the body is not json
-        if (body.equals(AdRequest.RETRY) || body.equals(AdRequest.BLANK)) {
-            return;
-        }
+    public AdResponse(boolean isConnectivityRetry, boolean isBlankRetry) {
+        this.isConnectivityRetry = isConnectivityRetry;
+        this.isBlankRetry = isBlankRetry;
+    }
 
+    private void parseResponse(String body) {
         JSONObject response;
 
         try {
@@ -213,6 +215,18 @@ public class AdResponse {
 
     public boolean containsAds() {
         return containsAds;
+    }
+
+    public boolean isMraid() {
+        return isMraid;
+    }
+
+    public boolean isConnectivityRetry() {
+        return isConnectivityRetry;
+    }
+
+    public boolean isBlankRetry() {
+        return isBlankRetry;
     }
 
     /**

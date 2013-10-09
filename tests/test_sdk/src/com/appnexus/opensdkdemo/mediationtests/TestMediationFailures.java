@@ -133,4 +133,8 @@ public class TestMediationFailures extends AndroidTestCase implements AdRequeste
     public AdView getOwner() {
         return null;
     }
+
+    @Override
+    public void setAdRequest(AdRequest adRequest) {
+    }
 }

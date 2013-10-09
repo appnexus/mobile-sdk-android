@@ -16,7 +16,52 @@
 
 package com.appnexus.opensdkdemo.util;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 public class TestUtil {
     public static final String testLogTag = "OPENSDK-TEST";
     public static final String MEDIATION_TEST_URL = "http://rlissack.adnxs.net:8080/mobile/utest?";
+
+    public static final long SHORT_RETRY_INTERVAL = 2000;
+
+
+    public static void setWifi(boolean state, Context context) {
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        wifiManager.setWifiEnabled(state);
+
+        // let the change process
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void setData(boolean state, Context context) {
+        ConnectivityManager dataManager;
+        dataManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        Method dataMtd = null;
+        try {
+            dataMtd = ConnectivityManager.class.getDeclaredMethod("setMobileDataEnabled", boolean.class);
+            dataMtd.setAccessible(true);
+            dataMtd.invoke(dataManager, state);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        // let the change process
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }

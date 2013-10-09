@@ -16,9 +16,6 @@
 
 package com.appnexus.opensdkdemo.mediationtests;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.wifi.WifiManager;
 import android.test.ActivityInstrumentationTestCase2;
 import com.appnexus.opensdk.*;
 import com.appnexus.opensdk.utils.Clog;
@@ -27,9 +24,6 @@ import com.appnexus.opensdkdemo.DemoMainActivity;
 import com.appnexus.opensdkdemo.testviews.DummyView;
 import com.appnexus.opensdkdemo.util.InstanceLock;
 import com.appnexus.opensdkdemo.util.TestUtil;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 public class TestActivityMediationNetwork extends ActivityInstrumentationTestCase2<DemoMainActivity> implements AdRequester, AdListener {
 
@@ -64,16 +58,16 @@ public class TestActivityMediationNetwork extends ActivityInstrumentationTestCas
         activity = getActivity();
         DummyView.createView(activity);
 
-        setWifi(true);
-        setData(false);
+        TestUtil.setWifi(true, activity);
+        TestUtil.setData(false, activity);
     }
 
     @Override
     protected void tearDown() throws Exception {
         Clog.d(TestUtil.testLogTag, "tear down");
         Settings.getSettings().BASE_URL = old_base_url;
-        setWifi(true);
-        setData(true);
+        TestUtil.setWifi(true, activity);
+        TestUtil.setData(true, activity);
 
         super.tearDown();
     }
@@ -133,8 +127,8 @@ public class TestActivityMediationNetwork extends ActivityInstrumentationTestCas
         Clog.d(TestUtil.testLogTag, "received response: " + response.toString());
 
         Clog.w(TestUtil.testLogTag, "disabling wifi");
-        setWifi(false);
-        setData(false);
+        TestUtil.setWifi(false, activity);
+        TestUtil.setData(false, activity);
 
         if (response.getMediatedAds() != null) {
             MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
@@ -148,6 +142,10 @@ public class TestActivityMediationNetwork extends ActivityInstrumentationTestCas
     @Override
     public AdView getOwner() {
         return null;
+    }
+
+    @Override
+    public void setAdRequest(AdRequest adRequest) {
     }
 
     @Override
@@ -176,40 +174,5 @@ public class TestActivityMediationNetwork extends ActivityInstrumentationTestCas
 
     @Override
     public void onAdClicked(AdView adView) {
-    }
-
-    private void setWifi(boolean state) {
-        WifiManager wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
-        wifiManager.setWifiEnabled(state);
-
-        // let the change process
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void setData(boolean state) {
-        ConnectivityManager dataManager;
-        dataManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-        Method dataMtd = null;
-        try {
-            dataMtd = ConnectivityManager.class.getDeclaredMethod("setMobileDataEnabled", boolean.class);
-            dataMtd.setAccessible(true);
-            dataMtd.invoke(dataManager, state);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        // let the change process
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 }

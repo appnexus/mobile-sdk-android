@@ -51,10 +51,10 @@ public class Settings {
     // disable auto close
     public final int DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME = Integer.MAX_VALUE;
 //    public final int DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME = 15000;
-	public final long HTTP_RETRY_INTERVAL = 30000;
+	public /*final*/ long HTTP_RETRY_INTERVAL = 30000;
 
-	public final int MAX_HTTP_RETRIES = 3;
-	public final int MAX_FAILED_HTTP_RETRIES = 5;
+	public final int MAX_BLANK_RETRIES = 3;
+	public final int MAX_CONNECTIVITY_RETRIES = 5;
 	
     public /*final*/ String BASE_URL = "http://mobile.adnxs.com/mob?";
 //    public final String BASE_URL = "http://jshufro.adnxs.net:8112/med?";

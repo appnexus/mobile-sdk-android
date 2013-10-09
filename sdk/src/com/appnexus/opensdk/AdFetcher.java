@@ -40,6 +40,7 @@ public class AdFetcher implements AdRequester {
     private long lastFetchTime = -1;
     private long timePausedAt = -1;
     private boolean shouldShowTrueTime = false;
+    protected AdRequest adRequest;
 
     // Fires requests whenever it receives a message
     public AdFetcher(AdView owner) {
@@ -58,6 +59,11 @@ public class AdFetcher implements AdRequester {
     }
 
     protected void stop() {
+        if (adRequest != null) {
+            adRequest.cancel(true);
+            adRequest = null;
+        }
+
         if (tasker == null)
             return;
         tasker.shutdownNow();
@@ -175,13 +181,12 @@ public class AdFetcher implements AdRequester {
             mFetcher.get().lastFetchTime = System.currentTimeMillis();
 
             // Spawn an AdRequest
+            mFetcher.get().adRequest = new AdRequest(mFetcher.get());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                new AdRequest(mFetcher.get())
-                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                mFetcher.get().adRequest.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
-                new AdRequest(mFetcher.get()).execute();
+                mFetcher.get().adRequest.execute();
             }
-
         }
     }
 
@@ -235,8 +240,7 @@ public class AdFetcher implements AdRequester {
                                 owner.mAdFetcher,
                                 owner.popMediatedAd(),
                                 owner);
-                    }
-                    else if (owner.isInterstitial()) {
+                    } else if (owner.isInterstitial()) {
                         MediatedInterstitialAdViewController output = MediatedInterstitialAdViewController.create(
                                 (Activity) owner.getContext(),
                                 owner.mAdFetcher,
@@ -246,7 +250,7 @@ public class AdFetcher implements AdRequester {
                             output.getView();
                     }
                 } else if ((response != null)
-                        && response.isMraid) {
+                        && response.isMraid()) {
                     // mraid
                     MRAIDWebView output = new MRAIDWebView(owner);
                     output.loadAd(response);
@@ -261,12 +265,17 @@ public class AdFetcher implements AdRequester {
         });
     }
 
-	@Override
-	public AdView getOwner() {
-		return owner;
-	}
+    @Override
+    public AdView getOwner() {
+        return owner;
+    }
 
-	public void clearDurations() {
+    @Override
+    public void setAdRequest(AdRequest adRequest) {
+        this.adRequest = adRequest;
+    }
+
+    public void clearDurations() {
         lastFetchTime = -1;
         timePausedAt = -1;
 

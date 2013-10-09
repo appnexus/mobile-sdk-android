@@ -108,4 +108,6 @@
 	<string formatted="false" name="fire_cb_requester_null">firing result cb with null requester</string>
 	<string formatted="false" name="result_cb_bad_response">result cb returned a bad response</string>
 	<string formatted="false" name="fire_cb_result_null">firing result cb with null resultCB</string>
+	<string formatted="false" name="cancel_request">Cancelling scheduled request</string>
+	<string formatted="false" name="retry_already_cancelled">Tried to execute a retry request that was cancelled</string>
 </resources>

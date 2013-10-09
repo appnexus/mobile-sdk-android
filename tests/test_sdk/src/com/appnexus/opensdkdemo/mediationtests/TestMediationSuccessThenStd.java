@@ -89,6 +89,10 @@ public class TestMediationSuccessThenStd extends AndroidTestCase implements AdRe
         return null;
     }
 
+    @Override
+    public void setAdRequest(AdRequest adRequest) {
+    }
+
     synchronized private void pause() {
         Clog.d(TestUtil.testLogTag, "pausing");
         try {
