@@ -26,14 +26,29 @@ public class InstanceLock {
         notified = false;
     }
 
-    public void pause(long time) {
+    public void pause() {
         synchronized (lock) {
             Clog.w(TestUtil.testLogTag, "pausing " + Thread.currentThread().getName());
             while (!notified) {
                 try {
-                    lock.wait(time);
+                    lock.wait();
                 } catch (InterruptedException ignored) {
                     continue; // recheck and go back to waiting if still not notified
+                }
+            }
+        }
+        notified = false;
+        Clog.w(TestUtil.testLogTag, "unpausing " + Thread.currentThread().getName());
+    }
+
+    public void pause(long time) {
+        synchronized (lock) {
+            Clog.w(TestUtil.testLogTag, "pausing " + Thread.currentThread().getName());
+            if (!notified) {
+                try {
+                    lock.wait(time);
+                } catch (InterruptedException ignored) {
+                    // wake up
                 }
             }
         }

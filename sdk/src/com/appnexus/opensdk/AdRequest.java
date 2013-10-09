@@ -128,6 +128,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                      AdListener adListener, boolean shouldServePSAs, boolean shouldRetry) {
         this.adListener = adListener;
         this.requester = requester;
+        this.httpRetriesLeft = Settings.getSettings().MAX_CONNECTIVITY_RETRIES;
+        this.blankRetriesLeft = Settings.getSettings().MAX_BLANK_RETRIES;
         if (aid != null) {
             hidmd5 = HashingFunctions.md5(aid);
             hidsha1 = HashingFunctions.sha1(aid);
