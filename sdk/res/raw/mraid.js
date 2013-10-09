@@ -112,7 +112,7 @@
 			mraid.util.errorEvent("mraid.expand() called while state is 'loading'.", "mraid.expand()");
 			break;
 		case 'default':
-            if(expand_properties.height < current_position.height || expand_properites.width < current_position.width){
+            if(expand_properties.height < current_position.height || expand_properties.width < current_position.width){
                 mraid.util.errorEvent("Can't expand to a size smaller than the default size.", "mraid.expand()");
                 return;
             }
