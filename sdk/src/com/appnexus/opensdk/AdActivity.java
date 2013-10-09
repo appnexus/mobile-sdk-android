@@ -40,7 +40,6 @@ public class AdActivity extends Activity {
     long now;
     boolean close_added = false;
     int close_button_delay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
-    int auto_dismiss_time = Settings.getSettings().DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME;
     private static Activity current_ad_activity = null;
 
     protected static Activity getCurrent_ad_activity() {
@@ -71,12 +70,6 @@ public class AdActivity extends Activity {
         close_button_delay = getIntent().getIntExtra(
                 InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY,
                 Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
-        auto_dismiss_time = getIntent().getIntExtra(
-                InterstitialAdView.INTENT_KEY_AUTO_DISMISS_TIME,
-                Settings.getSettings().DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME);
-        if (auto_dismiss_time < close_button_delay) {
-            auto_dismiss_time = close_button_delay;
-        }
 
         // Add a close button after a 10 second delay.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -85,18 +78,6 @@ public class AdActivity extends Activity {
         } else {
             new ButtonAsyncTask().execute(layout);
         }
-
-        // If autodismiss is set, dismiss after the assigned delay, unless
-        // someone has interacted with the ad.
-        if (auto_dismiss_time > 0) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                new DismissAsyncTask().executeOnExecutor(
-                        AsyncTask.THREAD_POOL_EXECUTOR, this);
-            } else {
-                new DismissAsyncTask().execute(this);
-            }
-        }
-
     }
 
     protected void finishIfNoInteraction() {
@@ -179,23 +160,6 @@ public class AdActivity extends Activity {
             }
         }
 
-    }
-
-    class DismissAsyncTask extends AsyncTask<AdActivity, Integer, Void> {
-        @Override
-        protected Void doInBackground(AdActivity... params) {
-            if (params.length < 1) {
-                return null;
-            }
-            try {
-                Thread.sleep(auto_dismiss_time);
-            } catch (InterruptedException e) {
-                return null;
-            }
-            params[0].finishIfNoInteraction();
-            return null;
-
-        }
     }
 
     @SuppressLint({"InlinedApi", "DefaultLocale"})
