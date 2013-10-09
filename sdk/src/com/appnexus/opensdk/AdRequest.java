@@ -368,7 +368,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     @Override
     protected AdResponse doInBackground(Void... params) {
         if (!hasNetwork(context)) {
-            Clog.d(Clog.httpReqLogTag,
+            Clog.e(Clog.httpReqLogTag,
                     Clog.getString(R.string.no_connectivity));
             if (!shouldRetry)
                 return doRequest();
