@@ -161,15 +161,16 @@ public class AdFetcher implements AdRequester {
             // this message
             // If an MRAID ad is expanded in the owning view, do nothing with
             // this message
-            if (mFetcher.get() == null
-                    || mFetcher.get().owner.isMRAIDExpanded())
+            AdFetcher fetcher = mFetcher.get();
+            if (fetcher == null
+                    || fetcher.owner.isMRAIDExpanded())
                 return;
 
             // If we need to reset, reset.
-            if (mFetcher.get().shouldReset) {
-                mFetcher.get().shouldReset = false;
-                mFetcher.get().stop();
-                mFetcher.get().start();
+            if (fetcher.shouldReset) {
+                fetcher.shouldReset = false;
+                fetcher.stop();
+                fetcher.start();
                 return;
             }
 
@@ -177,15 +178,15 @@ public class AdFetcher implements AdRequester {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(
                             R.string.new_ad_since,
-                            (int) (System.currentTimeMillis() - mFetcher.get().lastFetchTime)));
-            mFetcher.get().lastFetchTime = System.currentTimeMillis();
+                            (int) (System.currentTimeMillis() - fetcher.lastFetchTime)));
+            fetcher.lastFetchTime = System.currentTimeMillis();
 
             // Spawn an AdRequest
-            mFetcher.get().adRequest = new AdRequest(mFetcher.get());
+            fetcher.adRequest = new AdRequest(mFetcher.get());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                mFetcher.get().adRequest.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                fetcher.adRequest.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
-                mFetcher.get().adRequest.execute();
+                fetcher.adRequest.execute();
             }
         }
     }
