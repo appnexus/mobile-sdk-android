@@ -209,7 +209,7 @@ public class InterstitialAdView extends AdView {
     @Override
     public void onLayout(boolean changed, int left, int top, int right,
                          int bottom) {
-        onFirstLayout();
+        // leave empty so that we don't call super
     }
 
     // No javadoc since these just print errors
