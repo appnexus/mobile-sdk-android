@@ -88,18 +88,15 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     boolean shouldRetry = true; // true by default
     float reserve = 0.00f;
 
-    Handler retryHandler;
+    private final Handler retryHandler = new Handler();
 
     int httpRetriesLeft = 0;
     int blankRetriesLeft = 0;
 
-    public static final String RETRY = "RETRY";
-    public static final String BLANK = "BLANK";
-
-    private static final AdResponse CONNECTIVITY_RETRY = new AdResponse(
-            RETRY, null);
-    private static final AdResponse BLANK_RETRY = new AdResponse(
-            BLANK, null);
+    private static final AdResponse CONNECTIVITY_RETRY
+            = new AdResponse(true, false);
+    private static final AdResponse BLANK_RETRY
+            = new AdResponse(false, true);
 
     /**
      * Creates a new AdRequest with the given parameters
@@ -131,7 +128,6 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                      AdListener adListener, boolean shouldServePSAs, boolean shouldRetry) {
         this.adListener = adListener;
         this.requester = requester;
-        this.retryHandler = new Handler();
         if (aid != null) {
             hidmd5 = HashingFunctions.md5(aid);
             hidsha1 = HashingFunctions.sha1(aid);
@@ -174,13 +170,12 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
     public AdRequest(AdRequester adRequester) {
         // add one for the initial request
-        this(adRequester, Settings.getSettings().MAX_FAILED_HTTP_RETRIES + 1, Settings.getSettings().MAX_HTTP_RETRIES + 1);
+        this(adRequester, Settings.getSettings().MAX_CONNECTIVITY_RETRIES, Settings.getSettings().MAX_BLANK_RETRIES);
     }
 
     public AdRequest(AdRequester adRequester, int httpRetriesLeft, int blankRetriesLeft) {
         owner = adRequester.getOwner();
         this.requester = adRequester;
-        this.retryHandler = new Handler();
         this.httpRetriesLeft = httpRetriesLeft;
         this.blankRetriesLeft = blankRetriesLeft;
         this.placementId = owner.getPlacementID();
@@ -336,6 +331,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         sb.append((!isEmpty(orientation) ? "&orientation=" + orientation : ""));
         sb.append(((width > 0 && height > 0) ? "&size=" + width + "x" + height
                 : ""));
+        // complicated, don't change
         if (owner != null) {
             if (maxHeight > 0 && maxWidth > 0) {
                 if (!(owner instanceof InterstitialAdView)
@@ -487,10 +483,10 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             }
             boolean resultIsRetry = false;
 
-            if (result.equals(AdRequest.CONNECTIVITY_RETRY)) {
+            if (result.isConnectivityRetry()) {
                 httpRetriesLeft--;
                 resultIsRetry = true;
-            } else if (result.equals(AdRequest.BLANK_RETRY)) {
+            } else if (result.isBlankRetry()) {
                 blankRetriesLeft--;
                 resultIsRetry = true;
             }

@@ -250,7 +250,7 @@ public class AdFetcher implements AdRequester {
                             output.getView();
                     }
                 } else if ((response != null)
-                        && response.isMraid) {
+                        && response.isMraid()) {
                     // mraid
                     MRAIDWebView output = new MRAIDWebView(owner);
                     output.loadAd(response);
