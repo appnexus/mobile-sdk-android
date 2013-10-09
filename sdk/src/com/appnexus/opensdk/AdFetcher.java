@@ -213,7 +213,7 @@ public class AdFetcher implements AdRequester {
 
     @Override
     public void onReceiveResponse(final AdResponse response) {
-        this.owner.post(new Runnable() {
+        this.owner.handler.post(new Runnable() {
             public void run() {
 
                 boolean responseHasAds = (response != null) && response.containsAds();

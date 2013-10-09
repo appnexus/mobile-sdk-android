@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Pair;
@@ -56,6 +57,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     protected AdListener adListener;
     private BrowserStyle browserStyle;
     LinkedList<MediatedAd> mediatedAds;
+    protected final Handler handler = new Handler();
 
     /**
      * Begin Construction *
@@ -511,7 +513,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         // wait until mediation waterfall is complete before calling adListener
         if (!noMoreAds)
             return;
-        this.post(new Runnable() {
+        handler.post(new Runnable() {
             @Override
             public void run() {
                 if (adListener != null)
@@ -522,7 +524,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
 
     @Override
     public void onAdExpanded() {
-        this.post(new Runnable() {
+        handler.post(new Runnable() {
             @Override
             public void run() {
                 if (adListener != null)
@@ -533,7 +535,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
 
     @Override
     public void onAdCollapsed() {
-        this.post(new Runnable() {
+        handler.post(new Runnable() {
             @Override
             public void run() {
                 if (adListener != null)
@@ -544,7 +546,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
 
     @Override
     public void onAdClicked() {
-        this.post(new Runnable() {
+        handler.post(new Runnable() {
             @Override
             public void run() {
                 if (adListener != null)

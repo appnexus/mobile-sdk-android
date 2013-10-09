@@ -68,7 +68,6 @@ public class AdResponse {
             Clog.clearLastResponse();
             return;
         } else if (body.length() == 0) {
-            Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
             Clog.clearLastResponse();
             return;
         }
