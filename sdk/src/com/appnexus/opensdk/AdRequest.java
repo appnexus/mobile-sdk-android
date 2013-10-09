@@ -171,7 +171,6 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     }
 
     public AdRequest(AdRequester adRequester) {
-        // add one for the initial request
         this(adRequester, Settings.getSettings().MAX_CONNECTIVITY_RETRIES, Settings.getSettings().MAX_BLANK_RETRIES);
     }
 
@@ -301,6 +300,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     }
 
     private void fail() {
+        // only alert callbacks if no more retries left
         if ((httpRetriesLeft < 1) || (blankRetriesLeft < 1)) {
             if (requester != null)
                 requester.failed(this);
@@ -514,6 +514,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     protected void onCancelled(AdResponse adResponse) {
         super.onCancelled(adResponse);
         Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.cancel_request));
+        // remove pending retry requests if the requester cancels the ad request
         retryHandler.removeCallbacksAndMessages(null);
     }
 
