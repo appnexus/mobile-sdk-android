@@ -421,9 +421,9 @@ public class MRAIDImplementation {
         final String uri_final = uri;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(owner.owner.getContext());
-        builder.setTitle("Store Picture?");
-        builder.setTitle("This Ad would like permission to save a picture.");
-        builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+        builder.setTitle(R.string.store_picture_title);
+        builder.setMessage(R.string.store_picture_message);
+        builder.setPositiveButton(R.string.store_picture_accept, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //Check URI scheme
@@ -490,7 +490,7 @@ public class MRAIDImplementation {
             }
         });
 
-        builder.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.store_picture_decline, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //Nothing needs to be done
