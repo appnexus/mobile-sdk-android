@@ -44,6 +44,7 @@ public abstract class HTTPGet<Params extends Void, Progress extends Void, Result
         try {
             URI uri = new URI(getUrl());
             HttpGet request = new HttpGet();
+            request.setHeader("User-Agent", Settings.getSettings().ua);
             request.setURI(uri);
             HttpResponse r = httpc.execute(request);
 

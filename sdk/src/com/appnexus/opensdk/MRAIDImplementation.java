@@ -447,20 +447,31 @@ public class MRAIDImplementation {
                         isBase64 = true;
                     }
                     File out = new File(owner.owner.getContext().getFilesDir(), System.currentTimeMillis() + ext);
+                    FileOutputStream outstream=null;
                     try {
-                        FileOutputStream outstream;
                         byte[] out_array;
-                        if (!isBase64) {
-                            out_array = Hex.hexStringToByteArray(uri_final.substring(uri_final.lastIndexOf(",") + 1, uri_final.length()));
-                        }else{
-                            out_array = Base64.decode(uri_final.substring(uri_final.lastIndexOf(",") + 1, uri_final.length()), Base64.DEFAULT);
-                        }
                         outstream = owner.owner.getContext().openFileOutput(out.getName(), Context.MODE_PRIVATE);
-                        outstream.write(out_array);
+                        if(out.canWrite()){
+                            if (!isBase64) {
+                                out_array = Hex.hexStringToByteArray(uri_final.substring(uri_final.lastIndexOf(",") + 1, uri_final.length()));
+                            }else{
+                                out_array = Base64.decode(uri_final.substring(uri_final.lastIndexOf(",") + 1, uri_final.length()), Base64.DEFAULT);
+                            }
+
+                            outstream.write(out_array);
+                        }
                     } catch (FileNotFoundException e) {
                         Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
                     } catch (IOException e) {
                         Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
+                    }finally{
+                        if(outstream!=null){
+                            try {
+                                outstream.close();
+                            } catch (IOException e) {
+                                Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
+                            }
+                        }
                     }
 
                 } else {
@@ -469,15 +480,23 @@ public class MRAIDImplementation {
                         protected void onPostExecute(HTTPResponse response) {
                             String ext = uri_final.substring(uri_final.lastIndexOf("."), uri_final.length());
                             File out = new File(owner.owner.getContext().getFilesDir(), System.currentTimeMillis() + ext);
+                            FileOutputStream outstream = null;
                             try {
-                                FileOutputStream outstream;
-                                byte[] out_array = response.getResponseBody().getBytes();
-                                outstream = owner.owner.getContext().openFileOutput(out.getName(), Context.MODE_PRIVATE);
-                                outstream.write(out_array);
+                                if(out.canWrite()){
+                                    byte[] out_array = response.getResponseBody().getBytes();
+                                    outstream = owner.owner.getContext().openFileOutput(out.getName(), Context.MODE_PRIVATE);
+                                    outstream.write(out_array);
+                                }
                             } catch (FileNotFoundException e) {
                                 Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
                             } catch (IOException e) {
                                 Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
+                            }finally{
+                                try {
+                                    outstream.close();
+                                } catch (IOException e) {
+                                    Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
+                                }
                             }
                         }
 
@@ -486,6 +505,7 @@ public class MRAIDImplementation {
                             return uri_final;  //To change body of implemented methods use File | Settings | File Templates.
                         }
                     };
+                    dl.execute();
                 }
             }
         });
@@ -574,18 +594,23 @@ public class MRAIDImplementation {
         String custom_close_position = "top-right";
         boolean allow_offscrean = true;
         for (BasicNameValuePair bnvp : parameters) {
-            if (bnvp.getName().equals("w")) {
-                w = Integer.parseInt(bnvp.getValue());
-            } else if (bnvp.getName().equals("h")) {
-                h = Integer.parseInt(bnvp.getValue());
-            } else if (bnvp.getName().equals("offset_x")) {
-                offset_x = Integer.parseInt(bnvp.getValue());
-            } else if (bnvp.getName().equals("offset_y")) {
-                offset_y = Integer.parseInt(bnvp.getValue());
-            } else if (bnvp.getName().equals("custom_close_position")) {
-                custom_close_position = bnvp.getValue();
-            } else if (bnvp.getName().equals("allow_offscreen")) {
-                allow_offscrean = Boolean.parseBoolean(bnvp.getValue());
+            try{
+                if (bnvp.getName().equals("w")) {
+                    w = Integer.parseInt(bnvp.getValue());
+                } else if (bnvp.getName().equals("h")) {
+                    h = Integer.parseInt(bnvp.getValue());
+                } else if (bnvp.getName().equals("offset_x")) {
+                    offset_x = Integer.parseInt(bnvp.getValue());
+                } else if (bnvp.getName().equals("offset_y")) {
+                    offset_y = Integer.parseInt(bnvp.getValue());
+                } else if (bnvp.getName().equals("custom_close_position")) {
+                    custom_close_position = bnvp.getValue();
+                } else if (bnvp.getName().equals("allow_offscreen")) {
+                    allow_offscrean = Boolean.parseBoolean(bnvp.getValue());
+                }
+            }catch(NumberFormatException e){
+                Clog.d(Clog.mraidLogTag, Clog.getString(R.string.number_format));
+                return;
             }
         }
 
