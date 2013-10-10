@@ -41,6 +41,9 @@
 	// getVersion() returns string '2.0'
 	mraid.getVersion=function(){ return '2.0'};
 
+	// getVendor() returns string 'appnexus'
+	mraid.getVendor=function(){ return 'appnexus'};
+
 	/** Adds a listener to a specific event. For example, a function onReady might be defined, and then mraid.addEventListener('ready', onReady)
 	  * is called. When the ready event is fired, onReady will be called.
 	  * Events 'error', 'viewableChange', 'stateChange', have parameters.
@@ -55,6 +58,7 @@
 	    //If no method name is given, remove all listeners from event
 	    if(method == null){
 	        listeners[event_name].length=0;
+	        return;
 	    }
 
 		var method_index = listeners[event_name].indexOf(method);
@@ -205,6 +209,10 @@
     mraid.setOrientationProperties=function(properties){
         orientation_properties=properties;
 
+        if(typeof orientation_properties.forceOrientation != "boolean"){
+            orientation_properties.forceOrientation = false;
+        }
+
         window.open("mraid://setOrientationProperties/?allow_orientation_change="+properties.allowOrientationChange
                    +"&force_orientation="+properties.forceOrientation);
     }
@@ -248,6 +256,7 @@
             return supports_inlineVideo;
         }
         mraid.util.errorEvent("Unknown feature to check for support: "+feature, "mraid.supports()");
+        return false;
     }
 
     // Gets the screen size of the device
