@@ -182,7 +182,7 @@ public class AdFetcher implements AdRequester {
             fetcher.lastFetchTime = System.currentTimeMillis();
 
             // Spawn an AdRequest
-            fetcher.adRequest = new AdRequest(mFetcher.get());
+            fetcher.adRequest = new AdRequest(fetcher);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 fetcher.adRequest.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
