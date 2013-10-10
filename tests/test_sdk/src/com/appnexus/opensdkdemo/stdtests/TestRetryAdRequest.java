@@ -106,7 +106,9 @@ public class TestRetryAdRequest extends AndroidTestCase implements AdRequester {
 
     @Override
     public void setAdRequest(AdRequest adRequest) {
-        timesRetried++;
+        // ignore deallocation calls
+        if (adRequest != null)
+            timesRetried++;
     }
 
     @Override

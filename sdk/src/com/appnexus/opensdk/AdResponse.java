@@ -35,10 +35,9 @@ public class AdResponse {
 
     private boolean containsAds = false;
 
+    private boolean isHttpError = false;
     private boolean isConnectivityRetry = false;
     private boolean isBlankRetry = false;
-
-    final static String http_error = "HTTP_ERROR";
 
     private static final String MRAID_JS_FILENAME = "mraid.js";
     private static final String RESPONSE_KEY_STATUS = "status";
@@ -64,9 +63,6 @@ public class AdResponse {
         if (body == null) {
             Clog.clearLastResponse();
             return;
-        } else if (body.equals(AdResponse.http_error)) {
-            Clog.clearLastResponse();
-            return;
         } else if (body.length() == 0) {
             Clog.clearLastResponse();
             return;
@@ -90,7 +86,8 @@ public class AdResponse {
 
     }
 
-    public AdResponse(boolean isConnectivityRetry, boolean isBlankRetry) {
+    public AdResponse(boolean isHttpError, boolean isConnectivityRetry, boolean isBlankRetry) {
+        this.isHttpError = isHttpError;
         this.isConnectivityRetry = isConnectivityRetry;
         this.isBlankRetry = isBlankRetry;
     }
@@ -226,6 +223,10 @@ public class AdResponse {
 
     public boolean isBlankRetry() {
         return isBlankRetry;
+    }
+
+    public boolean isHttpError() {
+        return isHttpError;
     }
 
     /**
