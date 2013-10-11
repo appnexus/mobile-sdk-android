@@ -337,7 +337,7 @@ public abstract class AdView extends FrameLayout {
     }
 
     // Used only by MRAID
-    private ImageButton close;
+    private ImageButton close_button;
 
     protected void expand(int w, int h, boolean custom_close,
                           final MRAIDImplementation caller) {
@@ -350,10 +350,10 @@ public abstract class AdView extends FrameLayout {
             if (getLayoutParams().height > 0)
                 getLayoutParams().height = h;
         }
-        if (!custom_close && close == null) {
-            // Add a stock close button to the top right corner
-            close = new ImageButton(this.getContext());
-            close.setImageDrawable(getResources().getDrawable(
+        if (!custom_close && close_button == null) {
+            // Add a stock close_button button to the top right corner
+            close_button = new ImageButton(this.getContext());
+            close_button.setImageDrawable(getResources().getDrawable(
                     android.R.drawable.ic_menu_close_clear_cancel));
             FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.WRAP_CONTENT,
@@ -361,9 +361,9 @@ public abstract class AdView extends FrameLayout {
                     | Gravity.TOP);
             blp.rightMargin = (this.getMeasuredWidth() - this.getChildAt(0)
                     .getMeasuredWidth()) / 2;
-            close.setLayoutParams(blp);
-            close.setBackgroundColor(Color.TRANSPARENT);
-            close.setOnClickListener(new View.OnClickListener() {
+            close_button.setLayoutParams(blp);
+            close_button.setBackgroundColor(Color.TRANSPARENT);
+            close_button.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
@@ -371,13 +371,13 @@ public abstract class AdView extends FrameLayout {
 
                 }
             });
-            this.addView(close);
-        } else if (custom_close && close != null) {
-            close.setVisibility(GONE);
-        } else if (!custom_close && close != null) {
-            this.removeView(close);
-            close.setVisibility(VISIBLE);
-            this.addView(close);// Re-add to send to top
+            this.addView(close_button);
+        } else if (custom_close && close_button != null) {
+            close_button.setVisibility(GONE);
+        } else if (!custom_close && close_button != null) {
+            this.removeView(close_button);
+            close_button.setVisibility(VISIBLE);
+            this.addView(close_button);// Re-add to send to top
         }
     }
 
@@ -470,12 +470,9 @@ public abstract class AdView extends FrameLayout {
             if (getLayoutParams().height > 0)
                 getLayoutParams().height = h;
         }
-        if (close != null) {
-            close = null;
-        }
-        // Add a stock close button to the top right corner
-        close = new ImageButton(this.getContext());
-        close.setImageDrawable(getResources().getDrawable(
+        // Add a stock close_button button to the top right corner
+        close_button = new ImageButton(this.getContext());
+        close_button.setImageDrawable(getResources().getDrawable(
                 android.R.drawable.ic_menu_close_clear_cancel));
 
         int grav = Gravity.RIGHT | Gravity.TOP;
@@ -509,9 +506,9 @@ public abstract class AdView extends FrameLayout {
                 FrameLayout.LayoutParams.WRAP_CONTENT, grav);
         blp.rightMargin = (this.getMeasuredWidth() - this.getChildAt(0)
                 .getMeasuredWidth()) / 2;
-        close.setLayoutParams(blp);
-        close.setBackgroundColor(Color.TRANSPARENT);
-        close.setOnClickListener(new View.OnClickListener() {
+        close_button.setLayoutParams(blp);
+        close_button.setBackgroundColor(Color.TRANSPARENT);
+        close_button.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -519,7 +516,7 @@ public abstract class AdView extends FrameLayout {
 
             }
         });
-        this.addView(close);
+        this.addView(close_button);
     }
 
     static class BrowserStyle {

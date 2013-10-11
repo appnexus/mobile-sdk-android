@@ -467,7 +467,9 @@ public class MRAIDImplementation {
                     }finally{
                         if(outstream!=null){
                             try {
-                                outstream.close();
+                                if(outstream!=null){
+                                    outstream.close();
+                                }
                             } catch (IOException e) {
                                 Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
                             }
@@ -493,7 +495,9 @@ public class MRAIDImplementation {
                                 Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
                             }finally{
                                 try {
-                                    outstream.close();
+                                    if(outstream!=null){
+                                        outstream.close();
+                                    }
                                 } catch (IOException e) {
                                     Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
                                 }
