@@ -329,7 +329,7 @@ public class SettingsFragment extends Fragment {
             }
 
             if (!savedMemberId.equals(editMemberId.getText().toString())) {
-                savedMemberId = editPlacementId.getText().toString();
+                savedMemberId = editMemberId.getText().toString();
                 prefs.writeString(Prefs.KEY_MEMBERID, savedMemberId);
             }
             if (!savedDongle.equals(editDongle.getText().toString())) {
