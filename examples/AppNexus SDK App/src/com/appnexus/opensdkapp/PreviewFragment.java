@@ -54,12 +54,12 @@ public class PreviewFragment extends Fragment {
 
         // locate members and set listeners
         bav = (BannerAdView) out.findViewById(R.id.banner);
-        bav.setAdListener(bannerAdListener);
+        bav.setAdListener(adListener);
 
         bannerText = (TextView) out.findViewById(R.id.bannertext);
 
         iav = new InterstitialAdView(getActivity());
-        iav.setAdListener(interstitialAdListener);
+        iav.setAdListener(adListener);
 
         pullToRefreshView = (PullToRefreshScrollView) out.findViewById(R.id.pull_to_refresh);
         pullToRefreshView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ScrollView>() {
@@ -102,8 +102,9 @@ public class PreviewFragment extends Fragment {
             bav.setShouldServePSAs(settingsWrapper.isAllowPsas());
             bav.setOpensNativeBrowser(!settingsWrapper.isBrowserInApp());
             bav.setPlacementID(settingsWrapper.getPlacementId());
-            if (!bav.loadAd())
-                pullToRefreshView.onRefreshComplete();
+            if (!bav.loadAd()) {
+                adListener.onAdRequestFailed(null);
+            }
         } else {
             bav.setAutoRefreshInterval(0);
             bav.setVisibility(View.GONE);
@@ -125,78 +126,49 @@ public class PreviewFragment extends Fragment {
                 }
             }
             iav.setBackgroundColor(color);
-            if (!iav.loadAd())
-                pullToRefreshView.onRefreshComplete();
+            if (!iav.loadAd()) {
+                adListener.onAdRequestFailed(null);
+            }
         }
     }
 
-    final private AdListener bannerAdListener = new AdListener() {
+    final private AdListener adListener = new AdListener() {
         @Override
         public void onAdRequestFailed(AdView adView) {
-            toast("Ad request failed");
             pullToRefreshView.onRefreshComplete();
+            toast("Ad request failed");
         }
 
         @Override
         public void onAdLoaded(AdView adView) {
-            View v = getView();
-            if (v == null) return;
-            FrameLayout adframe = (FrameLayout) v.findViewById(
-                    R.id.adframe);
-            ScrollView.LayoutParams lp = new ScrollView.LayoutParams(
-                    adframe.getLayoutParams());
-            if (lp != null && adframe != null) {
-                lp.height = ScrollView.LayoutParams.WRAP_CONTENT;
-                adframe.setLayoutParams(lp);
+            if (adView == bav) {
+                View v = getView();
+                if (v == null) return;
+                FrameLayout adframe = (FrameLayout) v.findViewById(
+                        R.id.adframe);
+                ScrollView.LayoutParams lp = new ScrollView.LayoutParams(
+                        adframe.getLayoutParams());
+                if (lp != null && adframe != null) {
+                    lp.height = ScrollView.LayoutParams.WRAP_CONTENT;
+                    adframe.setLayoutParams(lp);
+                }
+
+                DisplayMetrics m = new DisplayMetrics();
+                getActivity().getWindowManager().getDefaultDisplay().getMetrics(m);
+                float d = m.density;
+
+                FrameLayout.LayoutParams bannerlp = new FrameLayout.LayoutParams(bav.getLayoutParams());
+                if (bannerlp.width != -1) bannerlp.width = (int) (bav.getAdWidth() * d + 0.5f);
+                if (bannerlp.height != -1) bannerlp.height = (int) (bav.getAdHeight() * d + 0.5f);
+                bav.setLayoutParams(bannerlp);
+
+                bannerText.setVisibility(TextView.INVISIBLE);
+            } else if (adView == iav) {
+                iav.show();
             }
 
-            DisplayMetrics m = new DisplayMetrics();
-            getActivity().getWindowManager().getDefaultDisplay().getMetrics(m);
-            float d = m.density;
-
-            FrameLayout.LayoutParams bannerlp = new FrameLayout.LayoutParams(bav.getLayoutParams());
-            if (bannerlp.width != -1) bannerlp.width = (int) (bav.getAdWidth() * d + 0.5f);
-            if (bannerlp.height != -1) bannerlp.height = (int) (bav.getAdHeight() * d + 0.5f);
-            bav.setLayoutParams(bannerlp);
-
-            bannerText.setVisibility(TextView.INVISIBLE);
             pullToRefreshView.onRefreshComplete();
             toast("Ad loaded");
-        }
-
-        @Override
-        public void onAdExpanded(AdView adView) {
-            toast("Ad expanded");
-        }
-
-        @Override
-        public void onAdCollapsed(AdView adView) {
-            toast("Ad collapsed");
-        }
-
-        @Override
-        public void onAdClicked(AdView adView) {
-            toast("Ad clicked; opening browser");
-        }
-
-        private void toast(String message) {
-            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-            Clog.d(Constants.BASE_LOG_TAG, message);
-        }
-    };
-
-    final private AdListener interstitialAdListener = new AdListener() {
-        @Override
-        public void onAdLoaded(AdView adView) {
-            toast("Ad loaded");
-            pullToRefreshView.onRefreshComplete();
-            iav.show();
-        }
-
-        @Override
-        public void onAdRequestFailed(AdView adView) {
-            pullToRefreshView.onRefreshComplete();
-            toast("Ad request failed");
         }
 
         @Override
