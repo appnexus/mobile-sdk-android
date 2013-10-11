@@ -31,8 +31,15 @@ public interface AdRequester {
      */
     public void onReceiveResponse(AdResponse response);
 
-	/**
-	 * Used to get the owner adview of the request
-	 */
-	public AdView getOwner();
+    /**
+     * Used to get the owner adview of the request
+     */
+    public AdView getOwner();
+
+    /**
+     * Used to set inform the AdRequester which AdRequest is currently being run or pending
+     *
+     * @param adRequest the current ad request
+     */
+    public void setAdRequest(AdRequest adRequest);
 }

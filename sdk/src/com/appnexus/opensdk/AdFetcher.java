@@ -40,6 +40,7 @@ public class AdFetcher implements AdRequester {
     private long lastFetchTime = -1;
     private long timePausedAt = -1;
     private boolean shouldShowTrueTime = false;
+    protected AdRequest adRequest;
 
     // Fires requests whenever it receives a message
     public AdFetcher(AdView owner) {
@@ -58,6 +59,11 @@ public class AdFetcher implements AdRequester {
     }
 
     protected void stop() {
+        if (adRequest != null) {
+            adRequest.cancel(true);
+            adRequest = null;
+        }
+
         if (tasker == null)
             return;
         tasker.shutdownNow();
@@ -155,15 +161,16 @@ public class AdFetcher implements AdRequester {
             // this message
             // If an MRAID ad is expanded in the owning view, do nothing with
             // this message
-            if (mFetcher.get() == null
-                    || mFetcher.get().owner.isMRAIDExpanded())
+            AdFetcher fetcher = mFetcher.get();
+            if (fetcher == null
+                    || fetcher.owner.isMRAIDExpanded())
                 return;
 
             // If we need to reset, reset.
-            if (mFetcher.get().shouldReset) {
-                mFetcher.get().shouldReset = false;
-                mFetcher.get().stop();
-                mFetcher.get().start();
+            if (fetcher.shouldReset) {
+                fetcher.shouldReset = false;
+                fetcher.stop();
+                fetcher.start();
                 return;
             }
 
@@ -171,17 +178,16 @@ public class AdFetcher implements AdRequester {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(
                             R.string.new_ad_since,
-                            (int) (System.currentTimeMillis() - mFetcher.get().lastFetchTime)));
-            mFetcher.get().lastFetchTime = System.currentTimeMillis();
+                            (int) (System.currentTimeMillis() - fetcher.lastFetchTime)));
+            fetcher.lastFetchTime = System.currentTimeMillis();
 
             // Spawn an AdRequest
+            fetcher.adRequest = new AdRequest(fetcher);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                new AdRequest(mFetcher.get())
-                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                fetcher.adRequest.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
-                new AdRequest(mFetcher.get()).execute();
+                fetcher.adRequest.execute();
             }
-
         }
     }
 
@@ -208,7 +214,7 @@ public class AdFetcher implements AdRequester {
 
     @Override
     public void onReceiveResponse(final AdResponse response) {
-        this.owner.post(new Runnable() {
+        this.owner.handler.post(new Runnable() {
             public void run() {
 
                 boolean responseHasAds = (response != null) && response.containsAds();
@@ -235,8 +241,7 @@ public class AdFetcher implements AdRequester {
                                 owner.mAdFetcher,
                                 owner.popMediatedAd(),
                                 owner);
-                    }
-                    else if (owner.isInterstitial()) {
+                    } else if (owner.isInterstitial()) {
                         MediatedInterstitialAdViewController output = MediatedInterstitialAdViewController.create(
                                 (Activity) owner.getContext(),
                                 owner.mAdFetcher,
@@ -246,7 +251,7 @@ public class AdFetcher implements AdRequester {
                             output.getView();
                     }
                 } else if ((response != null)
-                        && response.isMraid) {
+                        && response.isMraid()) {
                     // mraid
                     MRAIDWebView output = new MRAIDWebView(owner);
                     output.loadAd(response);
@@ -261,12 +266,17 @@ public class AdFetcher implements AdRequester {
         });
     }
 
-	@Override
-	public AdView getOwner() {
-		return owner;
-	}
+    @Override
+    public AdView getOwner() {
+        return owner;
+    }
 
-	public void clearDurations() {
+    @Override
+    public void setAdRequest(AdRequest adRequest) {
+        this.adRequest = adRequest;
+    }
+
+    public void clearDurations() {
         lastFetchTime = -1;
         timePausedAt = -1;
 

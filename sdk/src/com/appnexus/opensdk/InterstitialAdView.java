@@ -44,7 +44,6 @@ public class InterstitialAdView extends AdView {
     protected ArrayList<Size> allowedSizes;
     protected int backgroundColor = Color.BLACK;
     protected int closeButtonDelay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
-    protected int interstitialAutoDismissTime = Settings.getSettings().DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME;
     protected boolean interacted = false;
     protected static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
     protected static Queue<Pair<Long, Displayable>> q = new LinkedList<Pair<Long, Displayable>>();
@@ -53,7 +52,6 @@ public class InterstitialAdView extends AdView {
     protected static String INTENT_KEY_TIME = "TIME";
     protected static String INTENT_KEY_ORIENTATION = "ORIENTATION";
     protected static String INTENT_KEY_CLOSE_BUTTON_DELAY = "CLOSE_BUTTON_DELAY";
-    protected static String INTENT_KEY_AUTO_DISMISS_TIME = "AUTO_DISMISS_TIME";
 
     //To let the activity show the button.
     private AdActivity adActivity = null;
@@ -209,7 +207,7 @@ public class InterstitialAdView extends AdView {
     @Override
     public void onLayout(boolean changed, int left, int top, int right,
                          int bottom) {
-        onFirstLayout();
+        // leave empty so that we don't call super
     }
 
     // No javadoc since these just print errors
@@ -270,7 +268,6 @@ public class InterstitialAdView extends AdView {
             i.putExtra(InterstitialAdView.INTENT_KEY_ORIENTATION, getContext().getResources()
                     .getConfiguration().orientation);
             i.putExtra(InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY, closeButtonDelay);
-            i.putExtra(InterstitialAdView.INTENT_KEY_AUTO_DISMISS_TIME, interstitialAutoDismissTime);
             getContext().startActivity(i);
             return InterstitialAdView.q.size() - 1; // Return the number of ads remaining, less the one we're about to show
         }
@@ -344,21 +341,7 @@ public class InterstitialAdView extends AdView {
      *                         is 15 seconds. Set to 0 to disable.
      */
     public void setCloseButtonDelay(int closeButtonDelay) {
-        this.closeButtonDelay = Math.min(closeButtonDelay, Settings.getSettings().DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME);
-    }
-
-    /**
-     * @return the duration of display for an interstitial ad before it is automatically dismissed.
-     */
-    public int getInterstitialAutoDismissTime() {
-        return interstitialAutoDismissTime;
-    }
-
-    /**
-     * @param interstitialAutoDismissTime The duration of display for an interstitial ad before it is automatically dismissed. Set to 0 to disable. Default is 15 seconds.
-     */
-    public void setInterstitialAutoDismissTime(int interstitialAutoDismissTime) {
-        this.interstitialAutoDismissTime = interstitialAutoDismissTime;
+        this.closeButtonDelay = Math.min(closeButtonDelay, Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
     }
 
     AdActivity getAdActivity() {

@@ -88,4 +88,8 @@ public class TestMediationSuccess extends AndroidTestCase implements AdRequester
     public AdView getOwner() {
         return null;
     }
+
+    @Override
+    public void setAdRequest(AdRequest adRequest) {
+    }
 }
