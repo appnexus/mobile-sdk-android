@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class MoPubMediationInterstitial extends CustomEventInterstitial implements AdListener {
     InterstitialAdView iad;
-    public static final String APID_KEY = "id";
+    public static final String PLACEMENTID_KEY = "id";
     CustomEventInterstitialListener listener;
 
     @Override
@@ -32,7 +32,7 @@ public class MoPubMediationInterstitial extends CustomEventInterstitial implemen
         listener = customEventInterstitialListener;
         String apid;
         if (extrasAreValid(serverExtras)) {
-            apid = serverExtras.get(APID_KEY);
+            apid = serverExtras.get(PLACEMENTID_KEY);
         } else {
             listener.onInterstitialFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
             return;
@@ -45,7 +45,7 @@ public class MoPubMediationInterstitial extends CustomEventInterstitial implemen
     }
 
     private boolean extrasAreValid(Map<String, String> serverExtras) {
-        return serverExtras.containsKey(APID_KEY);
+        return serverExtras.containsKey(PLACEMENTID_KEY);
     }
 
     @Override
@@ -56,7 +56,9 @@ public class MoPubMediationInterstitial extends CustomEventInterstitial implemen
 
     @Override
     protected void onInvalidate() {
-
+        if (iad != null)
+            iad.setAdListener(null);
+        iad = null;
     }
 
     @Override

@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class MoPubMediationBanner extends CustomEventBanner implements AdListener {
     private BannerAdView bav;
-    public static final String APID_KEY = "id";
+    public static final String PLACEMENTID_KEY = "id";
     public static final String AD_WIDTH_KEY = "width";
     public static final String AD_HEIGHT_KEY = "height";
     CustomEventBannerListener listener;
@@ -37,7 +37,7 @@ public class MoPubMediationBanner extends CustomEventBanner implements AdListene
         int width;
         int height;
         if (extrasAreValid(serverExtras)) {
-            apid = serverExtras.get(APID_KEY);
+            apid = serverExtras.get(PLACEMENTID_KEY);
             width = Integer.parseInt(serverExtras.get(AD_WIDTH_KEY));
             height = Integer.parseInt(serverExtras.get(AD_HEIGHT_KEY));
         } else {
@@ -63,12 +63,13 @@ public class MoPubMediationBanner extends CustomEventBanner implements AdListene
             return false;
         }
 
-        return serverExtras.containsKey(APID_KEY);
+        return serverExtras.containsKey(PLACEMENTID_KEY);
     }
 
     @Override
     protected void onInvalidate() {
-        bav.setAdListener(null);
+        if (bav != null)
+            bav.setAdListener(null);
         bav = null;
     }
 
