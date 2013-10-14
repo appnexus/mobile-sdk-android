@@ -29,7 +29,7 @@
     <Button android:id="@+id/log_btn_email"
             android:text="@string/log_btn_email"
             android:layout_alignParentBottom="true"
-            style="@style/widthFillheightWrap"/>
+            style="@style/button"/>
 
     <ScrollView
             android:id="@+id/frame"

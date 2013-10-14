@@ -55,8 +55,7 @@
         <Button
                 android:layout_marginTop="12dp"
                 android:id="@+id/btn_email_server"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                style="@style/button"
                 android:text="@string/debug_btn_email_server"/>
 
         <LinearLayout
@@ -107,8 +106,7 @@
 
         <Button
                 android:id="@+id/btn_run_debug"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                style="@style/button"
                 android:text="@string/debug_btn_debugauction"/>
 
     </LinearLayout>

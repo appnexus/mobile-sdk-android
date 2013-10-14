@@ -20,8 +20,7 @@
             android:fillViewport="true">
 
     <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/widthFillheightWrap"
             android:orientation="vertical"
             >
 
@@ -35,11 +34,40 @@
         <RelativeLayout
                 style="@style/itemContainer">
 
+            <!-- Placement ID -->
+
+            <TextView
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:id="@+id/txt_placementid"
+                    style="@style/settingsTextItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_txt_placementid"/>
+
+            <LinearLayout
+                    android:layout_toRightOf="@id/txt_placementid"
+                    android:layout_alignTop="@id/txt_placementid"
+                    android:layout_alignBottom="@id/txt_placementid"
+                    android:gravity="right"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+                <EditText
+                        android:id="@+id/edit_placementid"
+                        style="@style/settingsEditItem"
+                        android:inputType="number"
+                        />
+            </LinearLayout>
+
             <!-- AdType "Switch" -->
 
             <TextView
                     android:layout_marginBottom="8dp"
                     android:id="@+id/txt_adtype"
+                    android:layout_below="@id/txt_placementid"
                     android:text="@string/settings_txt_adtype"
                     android:layout_alignBottom="@+id/btns_adtype"
                     android:layout_alignTop="@+id/btns_adtype"
@@ -48,6 +76,7 @@
 
             <RelativeLayout
                     style="@style/switchContainer"
+                    android:layout_below="@id/txt_placementid"
                     android:id="@+id/btns_adtype"
                     android:layout_toRightOf="@id/txt_adtype"
                     >
@@ -152,33 +181,6 @@
                         android:layout_toRightOf="@id/mid_browser"
                         />
             </RelativeLayout>
-
-            <!-- Placement ID -->
-
-            <TextView
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:id="@+id/txt_placementid"
-                    style="@style/settingsTextItem"
-                    android:layout_below="@id/txt_browser"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/settings_txt_placementid"/>
-
-            <LinearLayout
-                    android:layout_toRightOf="@id/txt_placementid"
-                    android:layout_alignTop="@id/txt_placementid"
-                    android:layout_alignBottom="@id/txt_placementid"
-                    android:gravity="right"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
-                <EditText
-                        android:id="@+id/edit_placementid"
-                        style="@style/settingsEditItem"
-                        android:inputType="number"
-                        />
-            </LinearLayout>
         </RelativeLayout>
 
         <!-- Banner -->
@@ -318,7 +320,7 @@
 
         <Button
                 android:id="@+id/btn_load_ad"
-                style="@style/widthFillheightWrap"
+                style="@style/button"
                 android:text="@string/load_ad_button"/>
 
     </LinearLayout>
