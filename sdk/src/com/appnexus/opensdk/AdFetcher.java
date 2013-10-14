@@ -40,7 +40,7 @@ public class AdFetcher implements AdRequester {
     private long timePausedAt = -1;
     private boolean shouldShowTrueTime = false;
 
-    // Fires requests whenever it receives a message
+    // Fires requests whenever it receives unexpandedActivity message
     public AdFetcher(AdView owner) {
         this.owner = owner;
         handler = new RequestHandler(this);
@@ -93,7 +93,7 @@ public class AdFetcher implements AdRequester {
     }
 
     private void makeTasker() {
-        // Start a Scheduler to execute recurring tasks
+        // Start unexpandedActivity Scheduler to execute recurring tasks
         tasker = Executors
                 .newScheduledThreadPool(Settings.getSettings().FETCH_THREAD_COUNT);
 
@@ -144,7 +144,7 @@ public class AdFetcher implements AdRequester {
 
     }
 
-    // Create a handler which will receive the AsyncTasks and spawn them from
+    // Create unexpandedActivity handler which will receive the AsyncTasks and spawn them from
     // the main thread.
     static class RequestHandler extends Handler {
         private final WeakReference<AdFetcher> mFetcher;
@@ -215,7 +215,7 @@ public class AdFetcher implements AdRequester {
     public void dispatchResponse(final AdResponse response) {
         this.owner.post(new Runnable() {
             public void run() {
-                if (response.isMediated() && owner.getMRAIDAdType().equals("inline")) {
+                if (response.isMediated() && owner.isBanner()) {
                     MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
                             owner, response);
                     if (output != null) {
@@ -223,7 +223,7 @@ public class AdFetcher implements AdRequester {
                     }
                     return;
                 } else if (response.isMediated()
-                        && owner.getMRAIDAdType().equals("interstitial")) {
+                        && owner.isInterstitial()) {
                     MediatedInterstitialAdViewController output = MediatedInterstitialAdViewController.create(
                             (InterstitialAdView) owner, response);
                     if (output != null) {

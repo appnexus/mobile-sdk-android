@@ -47,7 +47,7 @@ public class BannerAdView extends AdView {
     }
 
     /**
-     * Creates a new BannerAdView
+     * Creates unexpandedActivity new BannerAdView
      *
      * @param context The context of the ViewGroup to which the BannerAdView is
      *                being added.
@@ -57,7 +57,7 @@ public class BannerAdView extends AdView {
     }
 
     /**
-     * Creates a new BannerAdView
+     * Creates unexpandedActivity new BannerAdView
      *
      * @param context The context of the ViewGroup to which the BannerAdView is
      *                being added.
@@ -68,7 +68,7 @@ public class BannerAdView extends AdView {
     }
 
     /**
-     * Creates a new BannerAdView
+     * Creates unexpandedActivity new BannerAdView
      *
      * @param context  The context of the ViewGroup to which the BannerAdView is
      *                 being added.
@@ -83,7 +83,7 @@ public class BannerAdView extends AdView {
     }
 
     /**
-     * Creates a new BannerAdView
+     * Creates unexpandedActivity new BannerAdView
      *
      * @param context          The context of the ViewGroup to which the BannerAdView is
      *                         being added.
@@ -139,7 +139,7 @@ public class BannerAdView extends AdView {
                                int bottom) {
         super.onLayout(changed, left, top, right, bottom);
 
-        // Are we coming back from a screen/user presence change?
+        // Are we coming back from unexpandedActivity screen/user presence change?
         if (running) {
             if (!receiversRegistered) {
                 setupBroadcast(getContext());
@@ -284,8 +284,8 @@ public class BannerAdView extends AdView {
     }
 
     /**
-     * @return Whether or not this view should load a new ad if the user resumes
-     *         use of the app from a screenlock or multitask.
+     * @return Whether or not this view should load unexpandedActivity new ad if the user resumes
+     *         use of the app from unexpandedActivity screenlock or multitask.
      */
     public boolean getShouldReloadOnResume() {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
@@ -294,8 +294,8 @@ public class BannerAdView extends AdView {
     }
 
     /**
-     * @param shouldReloadOnResume Whether or not this view should load a new ad if the user
-     *                             resumes use of the app from a screenlock or multitask.
+     * @param shouldReloadOnResume Whether or not this view should load unexpandedActivity new ad if the user
+     *                             resumes use of the app from unexpandedActivity screenlock or multitask.
      */
     public void setShouldReloadOnResume(boolean shouldReloadOnResume) {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
@@ -309,7 +309,7 @@ public class BannerAdView extends AdView {
     public void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
         if (visibility == VISIBLE) {
-            // Register a broadcast receiver to pause and refresh when the phone
+            // Register unexpandedActivity broadcast receiver to pause and refresh when the phone
             // is
             // locked
             if (!receiversRegistered) {
@@ -325,7 +325,7 @@ public class BannerAdView extends AdView {
                 requesting_visible = false;
             }
         } else {
-            // Unregister the receiver to prevent a leak.
+            // Unregister the receiver to prevent unexpandedActivity leak.
             if (receiversRegistered) {
                 dismantleBroadcast();
                 receiversRegistered = false;
@@ -345,6 +345,16 @@ public class BannerAdView extends AdView {
     protected void unhide() {
         super.unhide();
         this.requesting_visible = true;
+    }
+
+    @Override
+    boolean isBanner() {
+        return true;
+    }
+
+    @Override
+    boolean isInterstitial() {
+        return false;
     }
 
     protected String getMRAIDAdType() {

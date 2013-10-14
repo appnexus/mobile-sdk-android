@@ -90,7 +90,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             null, "BLANK", null);
 
     /**
-     * Creates a new AdRequest with the given parameters
+     * Creates unexpandedActivity new AdRequest with the given parameters
      *
      * @param requester       The instance of AdRequester which is filing this request.
      * @param aid             The ANDROID_ID to hash and pass.
@@ -126,7 +126,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         devMake = Settings.getSettings().deviceMake;
         devModel = Settings.getSettings().deviceModel;
 
-        // Get firstlaunch and convert it to a string
+        // Get firstlaunch and convert it to unexpandedActivity string
         firstlaunch = "" + Settings.getSettings().first_launch;
         // Get ua, the user agent...
         ua = Settings.getSettings().ua;
@@ -222,7 +222,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                     .getNetworkOperatorName();
         }
         carrier = Settings.getSettings().carrierName;
-        // Get firstlaunch and convert it to a string
+        // Get firstlaunch and convert it to unexpandedActivity string
         firstlaunch = "" + Settings.getSettings().first_launch;
         // Get ua, the user agent...
         ua = Settings.getSettings().ua;

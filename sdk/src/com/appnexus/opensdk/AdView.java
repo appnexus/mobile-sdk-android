@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -25,6 +26,7 @@ import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -84,7 +86,7 @@ public abstract class AdView extends FrameLayout {
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
         if (prefs.getBoolean("opensdk_first_launch", true)) {
-            // This is the first launch, store a value to remember
+            // This is the first launch, store unexpandedActivity value to remember
             Clog.v(Clog.baseLogTag,
                     Clog.getString(R.string.first_opensdk_launch));
             Settings.getSettings().first_launch = true;
@@ -175,7 +177,14 @@ public abstract class AdView extends FrameLayout {
     }
 
     /**
+<<<<<<< HEAD
      * Loads a new ad, if the ad space is visible.
+=======
+     * Loads unexpandedActivity new ad, if the ad space is visible.
+     *
+     * @return true is ad will begin loading, false if ad cannot be loaded
+     * at this time given the current settings
+>>>>>>> e711cd5... Fixes for fullscreen creatives with no customclose
      */
     public void loadAd() {
         if (this.getWindowVisibility() == VISIBLE && mAdFetcher != null) {
@@ -187,7 +196,7 @@ public abstract class AdView extends FrameLayout {
     }
 
     /**
-     * Loads a new ad, if the ad space is visible, and sets the placement id
+     * Loads unexpandedActivity new ad, if the ad space is visible, and sets the placement id
      * attribute of the AdView to the supplied parameter.
      *
      * @param placementID The new placement id to use.
@@ -198,7 +207,7 @@ public abstract class AdView extends FrameLayout {
     }
 
     /**
-     * Loads a new ad, if the ad space is visible, and sets the placement id, ad
+     * Loads unexpandedActivity new ad, if the ad space is visible, and sets the placement id, ad
      * width, and ad height attribute of the AdView to the supplied parameters.
      *
      * @param placementID The new placement id to use.
@@ -231,9 +240,9 @@ public abstract class AdView extends FrameLayout {
 	 */
 
     protected void display(Displayable d) {
-        if (d == null) {
-            if (this.adListener != null)
-                adListener.onAdRequestFailed(this);
+        if ((d == null) || d.failed()) {
+            // The displayable has failed to be parsed or turned into unexpandedActivity View.
+            fail();
             return;
         }
         if (d.failed()) {
@@ -338,20 +347,33 @@ public abstract class AdView extends FrameLayout {
 
     // Used only by MRAID
     private ImageButton close_button;
+    View oldContent;
+    Activity unexpandedActivity;
+    protected void close(int w, int h, MRAIDImplementation caller){
+        //For closing
+        if(oldContent.getParent()!=null){
+            ((ViewGroup)oldContent.getParent()).removeAllViewsInLayout();
+        }
+        unexpandedActivity.setContentView(oldContent);
+        if (caller.owner.isFullScreen) {
+            ((FrameLayout)caller.owner.getParent()).removeAllViews();
+            this.addView(caller.owner);
 
+        }
+        expand(w, h, true, null);
+    }
     protected void expand(int w, int h, boolean custom_close,
                           final MRAIDImplementation caller) {
-        // Only expand w and h if they are >0, otherwise they are match_parent
-        // or something
         mraid_expand = true;
+
         if (getLayoutParams() != null) {
             if (getLayoutParams().width > 0)
                 getLayoutParams().width = w;
             if (getLayoutParams().height > 0)
                 getLayoutParams().height = h;
         }
-        if (!custom_close && close_button == null) {
-            // Add a stock close_button button to the top right corner
+        if (!custom_close) {
+            // Add unexpandedActivity stock close_button button to the top right corner
             close_button = new ImageButton(this.getContext());
             close_button.setImageDrawable(getResources().getDrawable(
                     android.R.drawable.ic_menu_close_clear_cancel));
@@ -359,8 +381,29 @@ public abstract class AdView extends FrameLayout {
                     FrameLayout.LayoutParams.WRAP_CONTENT,
                     FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.RIGHT
                     | Gravity.TOP);
-            blp.rightMargin = (this.getMeasuredWidth() - this.getChildAt(0)
-                    .getMeasuredWidth()) / 2;
+            if(caller.owner.isFullScreen){
+                //Make unexpandedActivity new framelayout to contain webview and button
+                FrameLayout fslayout = new FrameLayout(this.getContext());
+                if(this.getChildCount()>0){
+                    this.removeAllViews();
+                }
+                fslayout.addView(caller.owner);
+                fslayout.addView(close_button);
+                if (this instanceof InterstitialAdView) {
+                    unexpandedActivity = AdActivity.getCurrent_ad_activity();
+                } else {
+                    unexpandedActivity = (Activity) this.getContext();
+                }
+                oldContent= ((ViewGroup)unexpandedActivity.findViewById(android.R.id.content)).getChildAt(0);
+                unexpandedActivity.setContentView(fslayout);
+            }else{
+
+                if(getChildAt(0)!=null){
+                    blp.rightMargin = (this.getMeasuredWidth() - this.getChildAt(0)
+                            .getMeasuredWidth()) / 2;
+                }
+                this.addView(close_button);
+            }
             close_button.setLayoutParams(blp);
             close_button.setBackgroundColor(Color.TRANSPARENT);
             close_button.setOnClickListener(new View.OnClickListener() {
@@ -371,17 +414,22 @@ public abstract class AdView extends FrameLayout {
 
                 }
             });
-            this.addView(close_button);
         } else if (custom_close && close_button != null) {
             close_button.setVisibility(GONE);
-        } else if (!custom_close && close_button != null) {
-            this.removeView(close_button);
-            close_button.setVisibility(VISIBLE);
-            this.addView(close_button);// Re-add to send to top
         }
     }
 
-    abstract String getMRAIDAdType();
+    /**
+     *
+     * @return true if the AdView is unexpandedActivity BannerAdView
+     */
+    abstract boolean isBanner();
+
+    /**
+     *
+     * @return true if the AdView is an InterstitialAdView
+     */
+    abstract boolean isInterstitial();
 
     /**
      * Sets the listener that the InterstitialAdView will call events in.

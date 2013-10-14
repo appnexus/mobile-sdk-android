@@ -25,7 +25,7 @@ public interface AdRequester {
     public void failed(AdRequest request);
 
     /**
-     * Called when a response is received
+     * Called when unexpandedActivity response is received
      *
      * @param response
      */

@@ -36,8 +36,7 @@ public class MRAIDWebView extends WebView implements Displayable {
     protected AdView owner;
     private int default_width;
     private int default_height;
-    private boolean isFullScreen = false;
-    private View oldView = null;
+    protected boolean isFullScreen = false;
 
     public MRAIDWebView(AdView owner) {
         super(owner.getContext());
@@ -129,18 +128,7 @@ public class MRAIDWebView extends WebView implements Displayable {
 
         if (h == -1 || w == -1) {
             if (owner != null) {
-                Activity a;
-                if (owner instanceof InterstitialAdView) {
-                    a = AdActivity.getCurrent_ad_activity();
-                } else {
-                    a = (Activity) this.getView().getContext();
-                }
-                if (a != null) {
-                    oldView = ((ViewGroup) a.findViewById(android.R.id.content)).getChildAt(0);
-                    ((ViewGroup) this.getParent()).removeView(this);
-                    a.setContentView(this);
-                    isFullScreen = true;
-                }
+                isFullScreen = true;
             }
         }
         if (h != -1) {
@@ -188,28 +176,9 @@ public class MRAIDWebView extends WebView implements Displayable {
         lp.gravity = Gravity.CENTER;
 
         if (owner != null) {
-            owner.expand(default_width, default_height, true, null);
+            owner.close(default_width, default_height, implementation);
         }
 
-        //For closing
-        if (owner != null && isFullScreen) {
-            Activity a;
-            if (owner instanceof InterstitialAdView) {
-                isInterstitial = true;
-                a = AdActivity.getCurrent_ad_activity();
-            } else {
-                a = (Activity) owner.getContext();
-            }
-            if (a != null && !isInterstitial) {
-                a.setContentView(oldView);
-                owner.addView(this);
-                isFullScreen = false;
-            } else if (a != null && isInterstitial) {
-                isFullScreen = false;
-                a.setContentView(oldView);
-                ((AdActivity) a).handleMRAIDCollapse(this);
-            }
-        }
 
         this.setLayoutParams(lp);
     }

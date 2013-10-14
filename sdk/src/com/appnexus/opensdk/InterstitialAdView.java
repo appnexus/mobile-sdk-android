@@ -59,7 +59,7 @@ public class InterstitialAdView extends AdView {
     private AdActivity adActivity = null;
 
     /**
-     * Creates a new InterstitialAdView
+     * Creates unexpandedActivity new InterstitialAdView
      *
      * @param context The context of the ViewGroup to which the InterstitialAdView
      *                is being added.
@@ -69,7 +69,7 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * Creates a new InterstitialAdView
+     * Creates unexpandedActivity new InterstitialAdView
      *
      * @param context The context of the ViewGroup to which the InterstitialAdView
      *                is being added.
@@ -81,7 +81,7 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * Creates a new InterstitialAdView
+     * Creates unexpandedActivity new InterstitialAdView
      *
      * @param context  The context of the ViewGroup to which the InterstitialAdView
      *                 is being added.
@@ -166,9 +166,9 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * Requests a new interstitial ad from the server and stores it in a local
-     * queue. Please note, that interstitials have a timeout of 60 seconds. You
-     * must show the interstitial (call 'show()') within 60 seconds of getting a
+     * Requests unexpandedActivity new interstitial ad from the server and stores it in unexpandedActivity local
+     * queue. Please note, that interstitials have unexpandedActivity timeout of 60 seconds. You
+     * must show the interstitial (call 'show()') within 60 seconds of getting unexpandedActivity
      * response, otherwise, the ad will not show.
      */
     @Override
@@ -213,6 +213,16 @@ public class InterstitialAdView extends AdView {
     }
 
     @Override
+    boolean isBanner() {
+        return false;
+    }
+
+    @Override
+    boolean isInterstitial() {
+        return true;
+    }
+
+    @Override
     public void setAdHeight(int height) {
         Clog.w(Clog.publicFunctionsLogTag,
                 Clog.getString(R.string.set_height_int));
@@ -220,7 +230,7 @@ public class InterstitialAdView extends AdView {
 
     /**
      * Pops ads from the queue until it finds one that has not exceeded the
-     * timeout of 60 seconds, and displays it in a new activity. All ads in the
+     * timeout of 60 seconds, and displays it in unexpandedActivity new activity. All ads in the
      * queue which have exceeded the timeout are removed.
      *
      * @return The number of remaining ads in the queue that do not exceed the
@@ -236,7 +246,7 @@ public class InterstitialAdView extends AdView {
                     || now - p.first > InterstitialAdView.MAX_AGE) {
                 to_remove.add(p);
             } else {
-                // We've reached a valid ad, so we can launch the activity.
+                // We've reached unexpandedActivity valid ad, so we can launch the activity.
                 break;
             }
         }
@@ -367,7 +377,7 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * A convenience class which holds a width and height in integers.
+     * A convenience class which holds unexpandedActivity width and height in integers.
      *
      * @author Jacob Shufro
      */
@@ -395,7 +405,7 @@ public class InterstitialAdView extends AdView {
         }
 
         /**
-         * Determines whether this size object fits inside a rectangle of the
+         * Determines whether this size object fits inside unexpandedActivity rectangle of the
          * given width and height
          *
          * @param width  The width to check against.
