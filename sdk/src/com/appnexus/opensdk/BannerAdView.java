@@ -41,7 +41,7 @@ public class BannerAdView extends AdView {
 
     private void setDefaultsBeforeXML() {
         running = false;
-        auto_refresh = true;
+        auto_refresh = false;
         shouldReloadOnResume = false;
         receiversRegistered = false;
     }
@@ -163,6 +163,12 @@ public class BannerAdView extends AdView {
         }
     }
 
+    @Override
+    public boolean loadAd() {
+        running = true;
+        return super.loadAd();
+    }
+
     protected void start() {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.start));
         mAdFetcher.start();
@@ -277,7 +283,7 @@ public class BannerAdView extends AdView {
             mAdFetcher.setAutoRefresh(auto_refresh);
             mAdFetcher.clearDurations();
         }
-        if (!running && mAdFetcher != null) {
+        if (this.auto_refresh && !running && mAdFetcher != null) {
             start();
         }
     }
@@ -302,7 +308,7 @@ public class BannerAdView extends AdView {
         this.shouldReloadOnResume = shouldReloadOnResume;
     }
 
-    private boolean requesting_visible = false;
+    private boolean requesting_visible = true;
 
     @Override
     public void onWindowVisibilityChanged(int visibility) {
