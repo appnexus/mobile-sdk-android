@@ -17,7 +17,7 @@
     <orderEntry type="jdk" jdkName="Android 4.0 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="sdk" />
-    <orderEntry type="module" module-name="mopub1" />
+    <orderEntry type="module" module-name="mopub-sdk" />
   </component>
 </module>
 
