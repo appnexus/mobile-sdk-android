@@ -250,11 +250,11 @@ public class BannerAdView extends AdView {
      *               is 15 seconds. The default period is 30 seconds.
      */
     public void setAutoRefreshInterval(int period) {
-        Clog.d(Clog.publicFunctionsLogTag,
-                Clog.getString(R.string.set_period, period));
         this.period = Math.max(Settings.getSettings().MIN_REFRESH_MILLISECONDS,
                 period);
         if (period > 0) {
+            Clog.d(Clog.publicFunctionsLogTag,
+                    Clog.getString(R.string.set_period, this.period));
             setAutoRefresh(true);
         } else {
             setAutoRefresh(false);
