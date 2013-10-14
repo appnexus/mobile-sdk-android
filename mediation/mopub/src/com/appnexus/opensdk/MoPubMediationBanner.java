@@ -16,12 +16,7 @@
 
 package com.appnexus.opensdk;
 
-import android.*;
 import android.content.Context;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import com.mopub.mobileads.AdViewController;
 import com.mopub.mobileads.CustomEventBanner;
 import com.mopub.mobileads.MoPubErrorCode;
 
@@ -49,8 +44,6 @@ public class MoPubMediationBanner extends CustomEventBanner implements AdListene
             listener.onBannerFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
             return;
         }
-
-//        apid = "1281482";
 
         bav = new BannerAdView(context);
         bav.setPlacementID(apid);
