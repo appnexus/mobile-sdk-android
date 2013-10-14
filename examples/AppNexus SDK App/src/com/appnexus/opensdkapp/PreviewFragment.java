@@ -187,7 +187,8 @@ public class PreviewFragment extends Fragment {
         }
 
         private void toast(String message) {
-            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+            if (getActivity() != null)
+                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
             Clog.d(Constants.BASE_LOG_TAG, message);
         }
     };
