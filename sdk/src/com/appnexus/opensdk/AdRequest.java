@@ -300,7 +300,14 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         }
 
         age = owner.getAge();
-        gender = owner.getGender();
+        if (owner.getGender() != null) {
+            if (owner.getGender() == AdView.GENDER.MALE)
+                gender = "m";
+            else if (owner.getGender() == AdView.GENDER.FEMALE)
+                gender = "f";
+            else
+                gender = null;
+        }
         customSegments = owner.getCustomSegments();
 
         mcc = Settings.getSettings().mcc;

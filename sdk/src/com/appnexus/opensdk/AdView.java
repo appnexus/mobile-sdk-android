@@ -54,7 +54,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     protected boolean shouldServePSAs = true;
     protected float reserve = 0.00f;
     protected String age;
-    protected String gender;
+    protected GENDER gender;
     protected ArrayList<Pair<String, String>> customSegments = new ArrayList<Pair<String, String>>();
     private boolean mraid_expand = false;
     protected AdListener adListener;
@@ -496,7 +496,12 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         this.age = age;
     }
 
-    public String getGender() {
+    public enum GENDER {
+        MALE,
+        FEMALE
+    }
+
+    public GENDER getGender() {
         return gender;
     }
 
@@ -504,7 +509,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
      *
      * @param gender should be either "m" for male or "f" for female
      */
-    public void setGender(String gender) {
+    public void setGender(GENDER gender) {
         this.gender = gender;
     }
 
