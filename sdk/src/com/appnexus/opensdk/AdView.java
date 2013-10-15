@@ -53,6 +53,9 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     protected int height = -1;
     protected boolean shouldServePSAs = true;
     protected float reserve = 0.00f;
+    protected String age;
+    protected String gender;
+    protected ArrayList<Pair<String, String>> customSegments = new ArrayList<Pair<String, String>>();
     private boolean mraid_expand = false;
     protected AdListener adListener;
     private BrowserStyle browserStyle;
@@ -478,6 +481,47 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
 
     public void setReserve(float reserve) {
         this.reserve = reserve;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    /**
+     *
+     * @param age should be a numerical age, birth year, or hyphenated age range.
+     *            For example: "56", "1974", or "25-35"
+     */
+    public void setAge(String age) {
+        this.age = age;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    /**
+     *
+     * @param gender should be either "m" for male or "f" for female
+     */
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    /**
+     * add a custom parameter to the request url for the ad
+     * @param key cannot be null or empty
+     * @param value cannot be null
+     */
+    public void addCustomSegment(String key, String value) {
+        if ((key == null) || (key.isEmpty()) || (value == null)) {
+            return;
+        }
+        customSegments.add(new Pair<String, String>(key, value));
+    }
+
+    public ArrayList<Pair<String, String>> getCustomSegments() {
+        return customSegments;
     }
 
     static class BrowserStyle {

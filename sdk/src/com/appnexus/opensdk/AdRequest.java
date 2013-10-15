@@ -30,6 +30,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
+import android.util.Pair;
 import com.appnexus.opensdk.InterstitialAdView.Size;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HashingFunctions;
@@ -87,6 +88,9 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     int maxHeight = -1;
     boolean shouldRetry = true; // true by default
     float reserve = 0.00f;
+    String age;
+    String gender;
+    ArrayList<Pair<String, String>> customSegments;
 
     private final Handler retryHandler = new Handler();
 
@@ -295,6 +299,10 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             this.psa = "0";
         }
 
+        age = owner.getAge();
+        gender = owner.getGender();
+        customSegments = owner.getCustomSegments();
+
         mcc = Settings.getSettings().mcc;
         mnc = Settings.getSettings().mnc;
         os = Settings.getSettings().os;
@@ -360,6 +368,17 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                 : ""));
         sb.append((!isEmpty(psa) ? "&psa=" + psa : ""));
         sb.append("&reserve=" + (reserve>0 ? Uri.encode(reserve+""):""));
+        if (!isEmpty(age)) sb.append("&age=").append(Uri.encode(age));
+        if (!isEmpty(gender)) sb.append("&gender=").append(Uri.encode(gender));
+        // add custom paramters if there are any
+        for (Pair<String, String> pair : customSegments) {
+            if (!isEmpty(pair.first) && (pair.second != null)) {
+                sb.append("&")
+                        .append(pair.first)
+                        .append("=")
+                        .append(Uri.encode(pair.second));
+            }
+        }
         sb.append("&format=json");
         sb.append("&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion));
 
