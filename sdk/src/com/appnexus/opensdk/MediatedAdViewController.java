@@ -202,15 +202,9 @@ public abstract class MediatedAdViewController implements Displayable {
                 // create the resultCB request
                 StringBuilder sb = new StringBuilder(resultCB);
                 sb.append("&reason=").append(result.ordinal());
-
                 // append the hashes of the device ID from settings
-                final String hidmd5 = Settings.getSettings().hidmd5;
-                final String hidsha1 = Settings.getSettings().hidsha1;
-                if ((hidmd5 != null) && !hidmd5.isEmpty())
-                    sb.append("&md5udid=").append(Uri.encode(hidmd5));
-                if ((hidmd5 != null) && !hidmd5.isEmpty())
-                    sb.append("&sha1udid=").append(Uri.encode(hidsha1));
-
+                sb.append("&md5udid=").append(Uri.encode(Settings.getSettings().hidmd5));
+                sb.append("&sha1udid=").append(Uri.encode(Settings.getSettings().hidsha1));
                 return sb.toString();
             }
         };
