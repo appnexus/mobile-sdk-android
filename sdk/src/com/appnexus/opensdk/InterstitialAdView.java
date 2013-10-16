@@ -255,13 +255,14 @@ public class InterstitialAdView extends AdView {
         Pair<Long, Displayable> top = InterstitialAdView.q.peek();
         if (top != null && top.second instanceof MediatedInterstitialAdViewController) {
             MediatedInterstitialAdViewController mAVC = (MediatedInterstitialAdViewController) top.second;
-            if (mAVC != null) {
-                mAVC.show();
-            }
+            mAVC.show();
+
             //Pop the mediated view;
             InterstitialAdView.q.poll();
             return InterstitialAdView.q.size();
         }
+
+        // otherwise, launch our adactivity
         if (!InterstitialAdView.q.isEmpty()) {
             Intent i = new Intent(getContext(), AdActivity.class);
             i.putExtra(InterstitialAdView.INTENT_KEY_TIME, now);

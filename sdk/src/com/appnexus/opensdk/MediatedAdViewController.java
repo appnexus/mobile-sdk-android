@@ -41,11 +41,7 @@ public abstract class MediatedAdViewController implements Displayable {
     MediatedAd currentAd;
     AdViewListener listener;
 
-    protected boolean errorCBMade = false;
-    protected boolean successCBMade = false;
-
-    //TODO: may be unnecessary
-    private boolean noMoreAds = false;
+    private boolean invalid = false;
 
     protected MediatedAdViewController(AdRequester requester, MediatedAd currentAd, AdViewListener listener) {
         this.requester = requester;
@@ -74,7 +70,7 @@ public abstract class MediatedAdViewController implements Displayable {
      * @return true if the controller is valid, false if not.
      */
     protected boolean isValid(Class callerClass) {
-        if (failed) {
+        if (invalid || failed) {
             return false;
         }
         if (currentAd == null) {
@@ -117,37 +113,47 @@ public abstract class MediatedAdViewController implements Displayable {
         return false;
     }
 
+    private void controllerFinish() {
+        invalid = true;
+        mAV = null;
+        requester = null;
+        currentAd = null;
+        listener = null;
+    }
+
     public void onAdLoaded() {
+        if (invalid) return;
+
         if (listener != null)
             listener.onAdLoaded(this);
-        if (!successCBMade) {
-            successCBMade = true;
-            fireResultCB(RESULT.SUCCESS);
-        }
+        fireResultCB(RESULT.SUCCESS);
+        controllerFinish();
     }
 
     public void onAdFailed(MediatedAdViewController.RESULT reason) {
-        this.failed = true;
-        if (listener != null)
-            listener.onAdFailed(noMoreAds);
+        if (invalid) return;
+        failed = true;
 
-        if (!errorCBMade) {
-            fireResultCB(reason);
-            errorCBMade = true;
-        }
+        if (listener != null)
+            listener.onAdFailed(false);
+        fireResultCB(reason);
+        controllerFinish();
     }
 
     public void onAdExpanded() {
+        if (invalid) return;
         if (listener != null)
             listener.onAdExpanded();
     }
 
     public void onAdCollapsed() {
+        if (invalid) return;
         if (listener != null)
             listener.onAdCollapsed();
     }
 
     public void onAdClicked() {
+        if (invalid) return;
         if (listener != null)
             listener.onAdClicked();
     }
@@ -158,6 +164,7 @@ public abstract class MediatedAdViewController implements Displayable {
     }
 
     private void fireResultCB(final RESULT result) {
+        if (invalid) return;
 
         // if resultCB is empty don't fire resultCB, and just continue to next ad
         if ((currentAd == null) || (currentAd.getResultCB() == null) || currentAd.getResultCB().isEmpty()) {
@@ -172,48 +179,59 @@ public abstract class MediatedAdViewController implements Displayable {
             requester.onReceiveResponse(null);
             return;
         }
-        final String resultCB = currentAd.getResultCB();
 
         //fire call to result cb url
-        HTTPGet<Void, Void, HTTPResponse> cb = new HTTPGet<Void, Void, HTTPResponse>() {
-            @Override
-            protected void onPostExecute(HTTPResponse httpResponse) {
-                if (requester == null) {
-                    Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
-                    return;
-                }
-                AdResponse response = null;
-                if ((httpResponse != null) && httpResponse.getSucceeded()) {
-                    response = new AdResponse(httpResponse.getResponseBody(), httpResponse.getHeaders());
-                }
-                else {
-                    Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_bad_response));
-                }
-
-                // if this was the result of a successful ad, stop looking for more ads
-                if (successCBMade)
-                    return;
-
-                requester.onReceiveResponse(response);
-            }
-
-            @Override
-            protected String getUrl() {
-                // create the resultCB request
-                StringBuilder sb = new StringBuilder(resultCB);
-                sb.append("&reason=").append(result.ordinal());
-                // append the hashes of the device ID from settings
-                sb.append("&md5udid=").append(Uri.encode(Settings.getSettings().hidmd5));
-                sb.append("&sha1udid=").append(Uri.encode(Settings.getSettings().hidsha1));
-                return sb.toString();
-            }
-        };
+        ResultCBRequest cb = new ResultCBRequest(requester, currentAd.getResultCB(), result);
 
         // Spawn GET call
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             cb.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             cb.execute();
+        }
+    }
+
+    private class ResultCBRequest extends HTTPGet<Void, Void, HTTPResponse> {
+        AdRequester requester;
+        private String resultCB;
+        RESULT result;
+
+        private ResultCBRequest(AdRequester requester, String resultCB, RESULT result) {
+            this.requester = requester;
+            this.resultCB = resultCB;
+            this.result = result;
+        }
+
+        @Override
+        protected void onPostExecute(HTTPResponse httpResponse) {
+            if (this.requester == null) {
+                Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
+                return;
+            }
+            AdResponse response = null;
+            if ((httpResponse != null) && httpResponse.getSucceeded()) {
+                response = new AdResponse(httpResponse.getResponseBody(), httpResponse.getHeaders());
+            }
+            else {
+                Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_bad_response));
+            }
+
+            // if this was the result of a successful ad, stop looking for more ads
+            if (result == RESULT.SUCCESS)
+                return;
+
+            this.requester.onReceiveResponse(response);
+        }
+
+        @Override
+        protected String getUrl() {
+            // create the resultCB request
+            StringBuilder sb = new StringBuilder(resultCB);
+            sb.append("&reason=").append(result.ordinal());
+            // append the hashes of the device ID from settings
+            sb.append("&md5udid=").append(Uri.encode(Settings.getSettings().hidmd5));
+            sb.append("&sha1udid=").append(Uri.encode(Settings.getSettings().hidsha1));
+            return sb.toString();
         }
     }
 }
