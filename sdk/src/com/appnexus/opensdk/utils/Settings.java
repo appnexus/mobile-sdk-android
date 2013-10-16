@@ -45,19 +45,21 @@ public class Settings {
 	public final int HTTP_SOCKET_TIMEOUT = 20000;
 
 	public final int FETCH_THREAD_COUNT = 4;
-	
+
 	public final int MIN_REFRESH_MILLISECONDS = 15000;
 	public final int DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY=10000;
 	public /*final*/ long HTTP_RETRY_INTERVAL = 30000;
 
+    public final long MEDIATED_TIMEOUT = 15000;
+
 	public final int MAX_BLANK_RETRIES = 3;
 	public final int MAX_CONNECTIVITY_RETRIES = 5;
-	
-    public /*final*/ String BASE_URL = "http://mobile.adnxs.com/mob?";
+
+//    public /*final*/ String BASE_URL = "http://mobile.adnxs.com/mob?";
 //    public final String BASE_URL = "http://jshufro.adnxs.net:8112/med?";
 //    public final String BASE_URL = "http://jshufro.adnxs.net:8112/mark?";
 //	public String BASE_URL = "http://rlissack.adnxs.net:8080/mobile/utest?";
-//	public /*final*/ String BASE_URL = "http://rlissack.adnxs.net:8080/mobile/wr?";
+	public /*final*/ String BASE_URL = "http://rlissack.adnxs.net:8080/mobile/wr?";
     public final String INSTALL_BASE_URL = "http://mobile.adnxs.com/install?";
     //public final String BASE_URL = "http://shuf.ro/anmob/med/admob.json?";
 

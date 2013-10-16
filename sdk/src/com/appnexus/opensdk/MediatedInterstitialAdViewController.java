@@ -55,6 +55,7 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
 
         RESULT errorCode = null;
 
+        startTimeout();
         try {
             ((MediatedInterstitialAdView) mAV).requestAd(this,
                     activity,

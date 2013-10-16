@@ -43,6 +43,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
 
         RESULT errorCode = null;
 
+        startTimeout();
         try {
             placeableView = ((MediatedBannerAdView) mAV).requestAd(this,
                     activity,
