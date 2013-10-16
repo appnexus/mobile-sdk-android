@@ -22,14 +22,29 @@ public class Lock {
     public static final Object lock = new Object();
     public static boolean notified = false;
 
-    public static void pause(long time) {
+    public static void pause() {
         synchronized (lock) {
             Clog.w(TestUtil.testLogTag, "pausing " + Thread.currentThread().getName());
             while (!notified) {
                 try {
-                    lock.wait(time);
+                    lock.wait();
                 } catch (InterruptedException ignored) {
                     continue; // recheck and go back to waiting if still not notified
+                }
+            }
+        }
+        notified = false;
+        Clog.w(TestUtil.testLogTag, "unpausing " + Thread.currentThread().getName());
+    }
+
+    public static void pause(long time) {
+        synchronized (lock) {
+            Clog.w(TestUtil.testLogTag, "pausing " + Thread.currentThread().getName());
+            if (!notified) {
+                try {
+                    lock.wait(time);
+                } catch (InterruptedException ignored) {
+                    // wake up
                 }
             }
         }

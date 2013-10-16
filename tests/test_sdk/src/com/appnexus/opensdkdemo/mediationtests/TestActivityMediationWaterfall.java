@@ -75,7 +75,7 @@ public class TestActivityMediationWaterfall extends ActivityInstrumentationTestC
         super.tearDown();
     }
 
-    public void test1FirstSuccessfulSkipSecond() {
+    public void test1FirstSuccessfulSkipSecond() throws Exception {
         bav.setPlacementID("11");
         activity.runOnUiThread(new Runnable() {
             @Override
@@ -85,6 +85,9 @@ public class TestActivityMediationWaterfall extends ActivityInstrumentationTestC
         });
 
         lock.pause(10000);
+
+        // wait for resultCB
+        Thread.sleep(5000);
 
         assertEquals(true, didLoad);
         assertEquals(false, didFailToLoad);

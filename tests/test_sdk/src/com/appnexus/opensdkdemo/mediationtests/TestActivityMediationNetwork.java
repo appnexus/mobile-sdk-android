@@ -29,7 +29,7 @@ public class TestActivityMediationNetwork extends ActivityInstrumentationTestCas
 
     DemoMainActivity activity;
     String old_base_url;
-    AdRequest shouldWork;
+    AdRequest request;
     String AdMobId = "10am";
     String MMId = "10mm";
     boolean didPass = true;
@@ -88,20 +88,20 @@ public class TestActivityMediationNetwork extends ActivityInstrumentationTestCas
     private void runBasicTest(String placementId) {
         Clog.w(TestUtil.testLogTag, "Start test");
 
-        shouldWork = new AdRequest(this, null, null, null, placementId, null, null, 320, 50, -1, -1, null, null, null, true, this, false, false);
+        request = new AdRequest(this, null, null, null, placementId, null, null, 320, 50, -1, -1, null, null, null, true, this, false, false);
         // change AdRequest.java to have setter for this unit test
-//        shouldWork.setContext(activity);
+//        request.setContext(activity);
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                shouldWork.execute();
+                request.execute();
             }
         });
         lock.pause(15000);
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                shouldWork.cancel(true);
+                request.cancel(true);
             }
         });
 

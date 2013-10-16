@@ -30,9 +30,9 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!--Enable for unit tests-->
-    <!--<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>-->
-    <!--<uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>-->
-    <!--<uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>-->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"
