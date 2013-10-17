@@ -145,12 +145,12 @@ public abstract class MediatedAdViewController implements Displayable {
     public void onAdFailed(MediatedAdViewController.RESULT reason) {
         if (hasSucceeded || hasFailed) return;
         cancelTimeout();
-        hasFailed = true;
 
         if (listener != null)
             listener.onAdFailed(false);
         fireResultCB(reason);
         finishController();
+        hasFailed = true;
     }
 
     public void onAdExpanded() {
@@ -261,7 +261,7 @@ public abstract class MediatedAdViewController implements Displayable {
      */
 
     protected void startTimeout() {
-        timeoutHandler.sendEmptyMessageDelayed(0, Settings.getSettings().MEDIATED_TIMEOUT);
+        timeoutHandler.sendEmptyMessageDelayed(0, Settings.getSettings().MEDIATED_NETWORK_TIMEOUT);
     }
 
     protected void cancelTimeout() {

@@ -9,6 +9,9 @@
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
+    <content url="file://$MODULE_DIR$/gen">
+      <sourceFolder url="file://$MODULE_DIR$/gen" isTestSource="false" />
+    </content>
     <content url="file://$MODULE_DIR$/src/main/java/com/mopub">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/com/mopub" isTestSource="false" packagePrefix="com.mopub" />
     </content>
