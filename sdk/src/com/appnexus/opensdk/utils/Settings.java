@@ -50,7 +50,7 @@ public class Settings {
 	public final int DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY=10000;
 	public /*final*/ long HTTP_RETRY_INTERVAL = 30000;
 
-    public final long MEDIATED_TIMEOUT = 15000;
+    public final long MEDIATED_NETWORK_TIMEOUT = 15000;
 
 	public final int MAX_BLANK_RETRIES = 3;
 	public final int MAX_CONNECTIVITY_RETRIES = 5;

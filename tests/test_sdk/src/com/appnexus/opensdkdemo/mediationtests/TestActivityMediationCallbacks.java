@@ -28,6 +28,7 @@ import com.appnexus.opensdkdemo.testviews.SecondSuccessfulMediationView;
 import com.appnexus.opensdkdemo.testviews.SuccessfulMediationView;
 import com.appnexus.opensdkdemo.testviews.ThirdSuccessfulMediationView;
 import com.appnexus.opensdkdemo.util.InstanceLock;
+import com.appnexus.opensdkdemo.util.Lock;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
 public class TestActivityMediationCallbacks extends ActivityInstrumentationTestCase2<DemoMainActivity> implements AdListener {
@@ -37,6 +38,7 @@ public class TestActivityMediationCallbacks extends ActivityInstrumentationTestC
     InstanceLock lock;
     boolean didLoad, didFail;
     boolean didLoadMultiple, didFailMultiple;
+    boolean didExpand, didCollapse, didClick;
     String oldUrl;
 
     private static final long WAIT_TIME = 10000;
@@ -58,6 +60,9 @@ public class TestActivityMediationCallbacks extends ActivityInstrumentationTestC
         didLoadMultiple = false;
         didFail = false;
         didFailMultiple = false;
+        didExpand = false;
+        didCollapse = false;
+        didClick = false;
         lock = new InstanceLock();
 
         setActivityInitialTouchMode(false);
@@ -80,8 +85,8 @@ public class TestActivityMediationCallbacks extends ActivityInstrumentationTestC
         super.tearDown();
     }
 
-    public void test18AdLoadedMultiple() throws Exception {
-        bav.setPlacementID("18");
+    private void runBasicTest(String placementId, boolean didLoadValue, long waitPeriod) {
+        bav.setPlacementID(placementId);
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -89,76 +94,51 @@ public class TestActivityMediationCallbacks extends ActivityInstrumentationTestC
             }
         });
 
-        lock.pause(WAIT_TIME);
+        lock.pause(waitPeriod);
 
-        // wait a bit to see if any new callbacks come in
-        pause();
+        // wait for the view to notify after completing all of its calls
+        Lock.pause();
 
-        assertTrue(didLoad);
+        assertEquals(didLoadValue, didLoad);
+        assertEquals(!didLoadValue, didFail);
         assertFalse(didLoadMultiple);
-        assertFalse(didFail);
         assertFalse(didFailMultiple);
+    }
+
+    public void test18AdLoadedMultiple() throws Exception {
+        runBasicTest("18", true, WAIT_TIME);
     }
 
     public void test19Timeout() {
-        bav.setPlacementID("19");
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                bav.loadAd();
-            }
-        });
-
-        lock.pause(WAIT_TIME + Settings.getSettings().MEDIATED_NETWORK_TIMEOUT);
-
-        // wait a bit to see if any new callbacks come in
-        pause();
-
-        assertFalse(didLoad);
-        assertFalse(didLoadMultiple);
-        assertTrue(didFail);
-        assertFalse(didFailMultiple);
+        runBasicTest("19", false, WAIT_TIME + Settings.getSettings().MEDIATED_NETWORK_TIMEOUT);
     }
 
-
     public void test20LoadThenFail() {
-        bav.setPlacementID("20");
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                bav.loadAd();
-            }
-        });
-
-        lock.pause(WAIT_TIME);
-
-        // wait a bit to see if any new callbacks come in
-        pause();
-
-        assertTrue(didLoad);
-        assertFalse(didLoadMultiple);
-        assertFalse(didFail);
-        assertFalse(didFailMultiple);
+        runBasicTest("20", true, WAIT_TIME);
     }
 
     public void test21FailThenLoad() {
-        bav.setPlacementID("21");
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                bav.loadAd();
-            }
-        });
+        runBasicTest("21", false, WAIT_TIME);
+    }
 
-        lock.pause(WAIT_TIME);
+    public void test22LoadAndHitOtherCallbacks() {
+        runBasicTest("22", true, WAIT_TIME + Settings.getSettings().MEDIATED_NETWORK_TIMEOUT);
 
-        // wait a bit to see if any new callbacks come in
-        pause();
+        assertTrue(didExpand);
+        assertTrue(didCollapse);
+        assertTrue(didClick);
+    }
 
-        assertFalse(didLoad);
-        assertFalse(didLoadMultiple);
-        assertTrue(didFail);
-        assertFalse(didFailMultiple);
+    public void test23FailAndHitOtherCallbacks() {
+        runBasicTest("23", false, WAIT_TIME + Settings.getSettings().MEDIATED_NETWORK_TIMEOUT);
+
+        assertFalse(didExpand);
+        assertFalse(didCollapse);
+        assertFalse(didClick);
+    }
+
+    public void test24AdFailedMultiple() throws Exception {
+        runBasicTest("24", false, WAIT_TIME);
     }
 
     @Override
@@ -183,14 +163,20 @@ public class TestActivityMediationCallbacks extends ActivityInstrumentationTestC
 
     @Override
     public void onAdExpanded(AdView adView) {
+        Clog.d(TestUtil.testLogTag, "onAdExpanded");
+        didExpand = true;
     }
 
     @Override
     public void onAdCollapsed(AdView adView) {
+        Clog.d(TestUtil.testLogTag, "onAdCollapsed");
+        didCollapse = true;
     }
 
     @Override
     public void onAdClicked(AdView adView) {
+        Clog.d(TestUtil.testLogTag, "onAdClicked");
+        didClick = true;
     }
 
     protected void pause() {

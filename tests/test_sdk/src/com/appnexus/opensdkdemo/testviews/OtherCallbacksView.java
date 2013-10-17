@@ -21,21 +21,30 @@ import android.view.View;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdkdemo.util.Lock;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class OtherCallbacksView implements MediatedBannerAdView {
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height) {
         mBC.onAdLoaded();
 
-        try {
-            Thread.sleep(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        final MediatedBannerAdViewController finalController = mBC;
 
-        mBC.onAdClicked();
-        mBC.onAdExpanded();
-        mBC.onAdCollapsed();
+        // use a timer so that we don't lock the main thread
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                finalController.onAdClicked();
+                finalController.onAdExpanded();
+                finalController.onAdCollapsed();
+
+                Lock.unpause();
+            }
+        }, Settings.getSettings().MEDIATED_NETWORK_TIMEOUT + 1000);
 
         return DummyView.dummyView;
     }

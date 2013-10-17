@@ -18,34 +18,33 @@ package com.appnexus.opensdkdemo.testviews;
 
 import android.app.Activity;
 import android.view.View;
+import com.appnexus.opensdk.MediatedAdViewController;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdkdemo.util.Lock;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
-public class SleepView implements MediatedBannerAdView {
+public class CallbacksFailMultiple implements MediatedBannerAdView {
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height) {
-        Clog.d(TestUtil.testLogTag, "request ad from SleepView");
+        Clog.d(TestUtil.testLogTag, "request ad from CallbacksFailMultiple");
 
-        final MediatedBannerAdViewController finalController = mBC;
+        mBC.onAdFailed(MediatedAdViewController.RESULT.UNABLE_TO_FILL);
+        mBC.onAdFailed(MediatedAdViewController.RESULT.UNABLE_TO_FILL);
+        sleep();
+        mBC.onAdFailed(MediatedAdViewController.RESULT.UNABLE_TO_FILL);
 
-        // use a timer so that we don't lock the main thread
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                finalController.onAdLoaded();
-
-                Lock.unpause();
-            }
-        }, Settings.getSettings().MEDIATED_NETWORK_TIMEOUT + 1000);
+        Lock.unpause();
 
         return DummyView.dummyView;
+    }
+
+    private void sleep() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

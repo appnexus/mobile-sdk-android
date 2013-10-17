@@ -18,20 +18,19 @@ package com.appnexus.opensdkdemo.testviews;
 
 import android.app.Activity;
 import android.view.View;
+import com.appnexus.opensdk.MediatedAdViewController;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
-import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdkdemo.util.Lock;
-import com.appnexus.opensdkdemo.util.TestUtil;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SleepView implements MediatedBannerAdView {
+public class FailOtherCallbacksView implements MediatedBannerAdView {
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height) {
-        Clog.d(TestUtil.testLogTag, "request ad from SleepView");
+        mBC.onAdFailed(MediatedAdViewController.RESULT.UNABLE_TO_FILL);
 
         final MediatedBannerAdViewController finalController = mBC;
 
@@ -40,7 +39,9 @@ public class SleepView implements MediatedBannerAdView {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                finalController.onAdLoaded();
+                finalController.onAdClicked();
+                finalController.onAdExpanded();
+                finalController.onAdCollapsed();
 
                 Lock.unpause();
             }

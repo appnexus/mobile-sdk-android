@@ -21,12 +21,14 @@ import android.view.View;
 import com.appnexus.opensdk.MediatedAdViewController;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
+import com.appnexus.opensdkdemo.util.Lock;
 
 public class LoadThenFailView implements MediatedBannerAdView {
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height) {
         mBC.onAdLoaded();
         mBC.onAdFailed(MediatedAdViewController.RESULT.UNABLE_TO_FILL);
+        Lock.unpause();
         return DummyView.dummyView;
     }
 }
