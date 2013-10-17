@@ -141,6 +141,50 @@ public class TestActivityMediationCallbacks extends ActivityInstrumentationTestC
         runBasicTest("24", false, WAIT_TIME);
     }
 
+    public void test25LoadThenLoadNewAndHitOtherCallbacks() throws Exception {
+        bav.setPlacementID("22");
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bav.loadAd();
+            }
+        });
+
+        lock.pause(WAIT_TIME);
+
+        assertTrue(didLoad);
+        assertFalse(didFail);
+        assertFalse(didLoadMultiple);
+        assertFalse(didFailMultiple);
+
+        // reset the variable since we will load a new ad
+        didLoad = false;
+
+        bav.setPlacementID("18");
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bav.loadAd();
+            }
+        });
+
+        lock.pause(WAIT_TIME);
+
+        // wait for the view to notify after completing all of its calls
+        Lock.pause();
+
+        assertTrue(didLoad);
+        assertFalse(didFail);
+        assertFalse(didLoadMultiple);
+        assertFalse(didFailMultiple);
+
+        Lock.pause();
+
+        assertFalse(didExpand);
+        assertFalse(didCollapse);
+        assertFalse(didClick);
+    }
+
     @Override
     public void onAdLoaded(AdView adView) {
         if (lock == null) return;
@@ -177,13 +221,5 @@ public class TestActivityMediationCallbacks extends ActivityInstrumentationTestC
     public void onAdClicked(AdView adView) {
         Clog.d(TestUtil.testLogTag, "onAdClicked");
         didClick = true;
-    }
-
-    protected void pause() {
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 }

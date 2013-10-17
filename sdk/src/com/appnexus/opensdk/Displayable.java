@@ -22,4 +22,6 @@ public interface Displayable {
     public View getView();
 
     public boolean failed();
+
+    public void destroy();
 }

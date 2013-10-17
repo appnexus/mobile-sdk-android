@@ -180,7 +180,12 @@ public abstract class MediatedAdViewController implements Displayable {
         return hasFailed;
     }
 
-    /*
+    @Override
+    public void destroy() {
+        finishController();
+    }
+
+/*
      Result CB Code
      */
 
