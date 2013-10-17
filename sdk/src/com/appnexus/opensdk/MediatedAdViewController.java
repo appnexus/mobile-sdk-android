@@ -94,7 +94,7 @@ public abstract class MediatedAdViewController implements Displayable {
     }
 
     /**
-     *  Attempts to instantiate currentAd
+     * Attempts to instantiate currentAd
      *
      * @return true if instantiation was successful, false if not.
      */
@@ -124,7 +124,7 @@ public abstract class MediatedAdViewController implements Displayable {
         requester = null;
         currentAd = null;
         listener = null;
-        Clog.w(Clog.mediationLogTag, "Mediation Controller has finished");
+        Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediation_finish));
     }
 
     /*
@@ -185,7 +185,7 @@ public abstract class MediatedAdViewController implements Displayable {
         finishController();
     }
 
-/*
+    /*
      Result CB Code
      */
 
@@ -237,8 +237,7 @@ public abstract class MediatedAdViewController implements Displayable {
             AdResponse response = null;
             if ((httpResponse != null) && httpResponse.getSucceeded()) {
                 response = new AdResponse(httpResponse.getResponseBody(), httpResponse.getHeaders());
-            }
-            else {
+            } else {
                 Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_bad_response));
             }
 
@@ -261,7 +260,7 @@ public abstract class MediatedAdViewController implements Displayable {
         }
     }
 
-    /**
+    /*
      Timeout handler code
      */
 
@@ -278,7 +277,7 @@ public abstract class MediatedAdViewController implements Displayable {
         @Override
         public void handleMessage(Message msg) {
             if (hasFailed) return;
-            Clog.w(Clog.mediationLogTag, "Third party mediation network timed out");
+            Clog.w(Clog.mediationLogTag, Clog.getString(R.string.mediation_timeout));
             onAdFailed(RESULT.INTERNAL_ERROR);
         }
     };
