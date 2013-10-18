@@ -173,9 +173,11 @@ public class AdResponse {
                                     String adId = getJSONString(handlerElement, RESPONSE_KEY_ID);
                                     String resultCB = getJSONString(mediatedElement, RESPONSE_KEY_RESULT_CB);
 
-                                    mediatedAds.add(new MediatedAd(className,
-                                            param, width, height, adId,
-                                            resultCB));
+                                    if (className != null && !className.isEmpty()) {
+                                        mediatedAds.add(new MediatedAd(className,
+                                                param, width, height, adId,
+                                                resultCB));
+                                    }
                                 }
                             }
                         }
