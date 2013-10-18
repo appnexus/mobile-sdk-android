@@ -30,8 +30,7 @@
 				document.getElementById("table1").remove();
 			}
 
-		}
-		else if(new_state==="expanded"){
+		}else if(new_state==="expanded"){
 			alert('EXPANDED');
 			document.getElementById("banner").style.display='none';
 
@@ -45,7 +44,7 @@
             button1 = document.createElement("button");
 
             button1.innerHTML = "Play Video";
-            button1.onclick = 'javascript:document.playVideo();';
+            button1.setAttribute('onclick', 'document.playVideo()');
 
             td1.appendChild(button1);
             row1.appendChild(td1);
