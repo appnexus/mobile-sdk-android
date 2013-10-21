@@ -548,7 +548,12 @@ public class MRAIDImplementation {
     }
 
     private void createCalendarEvent(ArrayList<BasicNameValuePair> parameters) {
-        W3CEvent event = W3CEvent.createFromJSON(parameters.get(0).getValue());
+        W3CEvent event = null;
+        try {
+            event = W3CEvent.createFromJSON(URLDecoder.decode(parameters.get(0).getValue(), "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            //TODO nothing
+        }
         Intent i = event.getInsertIntent();
         owner.getContext().startActivity(i);
 

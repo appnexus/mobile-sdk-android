@@ -16,6 +16,7 @@
 package com.appnexus.opensdk.utils;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.provider.CalendarContract;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -133,6 +134,9 @@ public class W3CEvent {
                 out.setStart(eventj.getString("start"));
             }
             if (!eventj.isNull("end")) {
+                if(eventj.isNull(("start"))){
+                    out.setStart(eventj.getString("end"));
+                }
                 out.setEnd(eventj.getString("end"));
             }
             if (!eventj.isNull("status")) {
@@ -223,7 +227,7 @@ public class W3CEvent {
     }
 
     public Intent getInsertIntent() {
-        Intent i = new Intent(Intent.ACTION_INSERT).setData(CalendarContract.Events.CONTENT_URI);
+        Intent i = new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI);
         if (getDecription() != null) {
             i.putExtra(CalendarContract.Events.TITLE, getDecription());
         }
