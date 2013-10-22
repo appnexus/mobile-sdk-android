@@ -90,7 +90,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     float reserve = 0.00f;
     String age;
     String gender;
-    ArrayList<Pair<String, String>> customSegments;
+    ArrayList<Pair<String, String>> customKeywords;
 
     private final Handler retryHandler = new Handler();
 
@@ -308,7 +308,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             else
                 gender = null;
         }
-        customSegments = owner.getCustomSegments();
+        customKeywords = owner.getCustomKeywords();
 
         mcc = Settings.getSettings().mcc;
         mnc = Settings.getSettings().mnc;
@@ -378,7 +378,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (!isEmpty(age)) sb.append("&age=").append(Uri.encode(age));
         if (!isEmpty(gender)) sb.append("&gender=").append(Uri.encode(gender));
         // add custom paramters if there are any
-        for (Pair<String, String> pair : customSegments) {
+        for (Pair<String, String> pair : customKeywords) {
             if (!isEmpty(pair.first) && (pair.second != null)) {
                 sb.append("&")
                         .append(pair.first)

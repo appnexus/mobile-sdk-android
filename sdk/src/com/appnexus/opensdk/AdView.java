@@ -55,7 +55,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     protected float reserve = 0.00f;
     protected String age;
     protected GENDER gender;
-    protected ArrayList<Pair<String, String>> customSegments = new ArrayList<Pair<String, String>>();
+    protected ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
     private boolean mraid_expand = false;
     protected AdListener adListener;
     private BrowserStyle browserStyle;
@@ -514,19 +514,36 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     }
 
     /**
-     * add a custom parameter to the request url for the ad
-     * @param key cannot be null or empty
-     * @param value cannot be null
+     * add a custom keyword to the request url for the ad
+     * @param key keyword name to add, cannot be null or empty
+     * @param value keyword value, cannot be null
      */
-    public void addCustomSegment(String key, String value) {
+    public void addCustomKeywords(String key, String value) {
         if ((key == null) || (key.isEmpty()) || (value == null)) {
             return;
         }
-        customSegments.add(new Pair<String, String>(key, value));
+        customKeywords.add(new Pair<String, String>(key, value));
     }
 
-    public ArrayList<Pair<String, String>> getCustomSegments() {
-        return customSegments;
+    /**
+     * remove a custom keyword from the request url for the ad
+     * @param key keyword name to remove, cannot be null or empty
+     */
+    public void removeCustomKeyword(String key) {
+        if ((key == null) || (key.isEmpty()))
+            return;
+
+        for (int i = 0; i < customKeywords.size(); i++) {
+            Pair<String, String> pair = customKeywords.get(i);
+            if (pair.first.equals(key)) {
+                customKeywords.remove(i);
+                break;
+            }
+        }
+    }
+
+    public ArrayList<Pair<String, String>> getCustomKeywords() {
+        return customKeywords;
     }
 
     static class BrowserStyle {
