@@ -30,6 +30,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.net.http.SslError;
+import android.os.Build;
 import android.util.Base64;
 import android.view.Display;
 import android.view.Gravity;
@@ -178,9 +179,16 @@ public class MRAIDImplementation {
                     Activity a = ((Activity) owner.getContext());
                     Display d = a.getWindowManager().getDefaultDisplay();
                     Point p = new Point();
-                    d.getSize(p);
-                    int width = p.x;
-                    int height = p.y;
+                    int width;
+                    int height;
+                    if(Build.VERSION.SDK_INT>=13){
+                        d.getSize(p);
+                        width = p.x;
+                        height = p.y;
+                    }else{
+                        width = d.getWidth();
+                        height = d.getHeight();
+                    }
 
                     Rect r = new Rect();
                     a.getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
@@ -198,9 +206,16 @@ public class MRAIDImplementation {
                 if (owner.getContext() instanceof Activity) {
                     Display d = ((Activity) owner.getContext()).getWindowManager().getDefaultDisplay();
                     Point p = new Point();
+                    int width;
+                    int height;
+                    if(Build.VERSION.SDK_INT>=13){
                     d.getSize(p);
-                    int width = p.x;
-                    int height = p.y;
+                        width = p.x;
+                        height = p.y;
+                    }else{
+                        width = d.getWidth();
+                        height = d.getHeight();
+                    }
 
                     view.loadUrl("javascript:window.mraid.util.setScreenSize({width: " + width + ", height:" + height + ")");
                 }

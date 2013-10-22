@@ -28,7 +28,7 @@
 	                               description:"Independence Day",
 	                               location:"USA",
 	                               summary:"The day the declaration of independence was signed.",
-	                               end:"2014-06-04T12:00:00+00:00"
+	                               end:"2014-07-04T12:00:00+00:00"
 	                               });
 	}
 

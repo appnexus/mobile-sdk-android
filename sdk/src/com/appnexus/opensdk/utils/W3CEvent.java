@@ -16,7 +16,7 @@
 package com.appnexus.opensdk.utils;
 
 import android.content.Intent;
-import android.net.Uri;
+import android.os.Build;
 import android.provider.CalendarContract;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,7 +24,7 @@ import org.json.JSONObject;
 
 public class W3CEvent {
     private String id;
-    private String decription;
+    private String description;
     private String location;//?
     private String summary;//?
     private String start;
@@ -42,12 +42,12 @@ public class W3CEvent {
         this.id = id;
     }
 
-    public String getDecription() {
-        return decription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDecription(String decription) {
-        this.decription = decription;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getLocation() {
@@ -122,7 +122,7 @@ public class W3CEvent {
                 out.setId(eventj.getString("id"));
             }
             if (!eventj.isNull("description")) {
-                out.setDecription(eventj.getString("description"));
+                out.setDescription(eventj.getString("description"));
             }
             if (!eventj.isNull("location")) {
                 out.setLocation(eventj.getString("location"));
@@ -134,7 +134,7 @@ public class W3CEvent {
                 out.setStart(eventj.getString("start"));
             }
             if (!eventj.isNull("end")) {
-                if(eventj.isNull(("start"))){
+                if (eventj.isNull(("start"))) {
                     out.setStart(eventj.getString("end"));
                 }
                 out.setEnd(eventj.getString("end"));
@@ -227,32 +227,65 @@ public class W3CEvent {
     }
 
     public Intent getInsertIntent() {
-        Intent i = new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI);
-        if (getDecription() != null) {
-            i.putExtra(CalendarContract.Events.TITLE, getDecription());
+        Intent i;
+        if (Build.VERSION.SDK_INT >= 14) {
+            i = new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI);
+        } else {
+            i = new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event");
+        }
+        if (getDescription() != null) {
+            if (Build.VERSION.SDK_INT >= 14) {
+                i.putExtra(CalendarContract.Events.TITLE, getDescription());
+            } else {
+                i.putExtra("title", getDescription());
+            }
         }
         if (getLocation() != null) {
-            i.putExtra(CalendarContract.Events.EVENT_LOCATION, getLocation());
+            if (Build.VERSION.SDK_INT >= 14) {
+                i.putExtra(CalendarContract.Events.EVENT_LOCATION, getLocation());
+            } else {
+                i.putExtra("eventLocation", getLocation());
+            }
         }
         if (getSummary() != null) {
-            i.putExtra(CalendarContract.Events.DESCRIPTION, getSummary());
+            if (Build.VERSION.SDK_INT >= 14) {
+                i.putExtra(CalendarContract.Events.DESCRIPTION, getSummary());
+            } else {
+                i.putExtra("description", getSummary());
+            }
         }
-        if (getStart() != null) {
-            //TODO: convert to UTC millis since epoch
-            i.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, getStart());
+        //if (getStart() != null) {
+        //TODO: convert to UTC millis since epoch
+        if (Build.VERSION.SDK_INT >= 14) {
+            i.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, 1404515377);//getStart());
+            i.putExtra(CalendarContract.Events.DTSTART, 1404515377);
+        } else {
+            i.putExtra("dtstart", 1404515377);
         }
-        if (getEnd() != null) {
-            //TODO: convert to UTC millis since epoch
-            i.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, getEnd());
+        //}
+        //if (getEnd() != null) {
+        //TODO: convert to UTC millis since epoch
+        if (Build.VERSION.SDK_INT >= 14) {
+            i.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, 1404518977);//getEnd());
+            i.putExtra(CalendarContract.Events.DTEND, 1404518977);
+        } else {
+            i.putExtra("dtend", 1404518977);
         }
+        //}
         if (getStatus() != null) {
-            i.putExtra(CalendarContract.Events.STATUS, getStatus());
+            if (Build.VERSION.SDK_INT >= 14) {
+                i.putExtra(CalendarContract.Events.STATUS, getStatus());
+            }
         }
         if (getTransparency() != null) {
-            i.putExtra(CalendarContract.Events.VISIBLE, getTransparency().equals("opaque") ? false : true);
+            if (Build.VERSION.SDK_INT >= 14) {
+                i.putExtra(CalendarContract.Events.VISIBLE, getTransparency().equals("opaque") ? false : true);
+            }
         }
         if (getReminder() != null) {
-            i.putExtra(CalendarContract.Reminders.MINUTES, getReminder());
+            if (Build.VERSION.SDK_INT >= 14) {
+                i.putExtra(CalendarContract.Reminders.MINUTES, getReminder());
+            }
         }
 
         StringBuilder repeatRuleBuilder = new StringBuilder("");
@@ -359,7 +392,11 @@ public class W3CEvent {
                 }
                 repeatRuleBuilder.append(";");
             }
-            i.putExtra(CalendarContract.Events.RRULE, repeatRuleBuilder.toString());
+            if (Build.VERSION.SDK_INT >= 14) {
+                i.putExtra(CalendarContract.Events.RRULE, repeatRuleBuilder.toString());
+            } else {
+                i.putExtra("rrule", repeatRuleBuilder.toString());
+            }
         }
 
         return i;
