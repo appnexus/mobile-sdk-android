@@ -15,11 +15,13 @@
  */
 package com.appnexus.opensdk;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
+import com.appnexus.opensdk.utils.Settings;
 
 public abstract class MediatedAdViewController implements Displayable {
 
@@ -197,7 +199,13 @@ public abstract class MediatedAdViewController implements Displayable {
 
             @Override
             protected String getUrl() {
-                return resultCB + "&reason=" + result.ordinal();
+                // create the resultCB request
+                StringBuilder sb = new StringBuilder(resultCB);
+                sb.append("&reason=").append(result.ordinal());
+                // append the hashes of the device ID from settings
+                sb.append("&md5udid=").append(Uri.encode(Settings.getSettings().hidmd5));
+                sb.append("&sha1udid=").append(Uri.encode(Settings.getSettings().hidsha1));
+                return sb.toString();
             }
         };
 

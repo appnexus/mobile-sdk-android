@@ -157,22 +157,29 @@ public class AdResponse {
                 // parse through the elements of the mediated array for handlers
                 JSONObject mediatedElement = getJSONObjectFromArray(mediated, i);
                 if (mediatedElement != null) {
-                    // get mediatedAd fields from handler if available
-                    JSONObject handler = getJSONObject(mediatedElement, RESPONSE_KEY_HANDLER);
+                    JSONArray handler = getJSONArray(mediatedElement, RESPONSE_KEY_HANDLER);
                     if (handler != null) {
-                        // we only care about handlers for android
-                        String type = getJSONString(handler, RESPONSE_KEY_TYPE);
-                        if ((type != null) && type.toLowerCase().equals(RESPONSE_VALUE_ANDROID)) {
-                            String className = getJSONString(handler, RESPONSE_KEY_CLASS);
-                            String param = getJSONString(handler, RESPONSE_KEY_PARAM);
-                            int height = getJSONInt(handler, RESPONSE_KEY_HEIGHT);
-                            int width = getJSONInt(handler, RESPONSE_KEY_WIDTH);
-                            String adId = getJSONString(handler, RESPONSE_KEY_ID);
-                            String resultCB = getJSONString(mediatedElement, RESPONSE_KEY_RESULT_CB);
+                        for (int j = 0; j < handler.length(); j++) {
+                            // get mediatedAd fields from handlerElement if available
+                            JSONObject handlerElement = getJSONObjectFromArray(handler, j);
+                            if (handlerElement != null) {
+                                // we only care about handlers for android
+                                String type = getJSONString(handlerElement, RESPONSE_KEY_TYPE);
+                                if ((type != null) && type.toLowerCase().equals(RESPONSE_VALUE_ANDROID)) {
+                                    String className = getJSONString(handlerElement, RESPONSE_KEY_CLASS);
+                                    String param = getJSONString(handlerElement, RESPONSE_KEY_PARAM);
+                                    int height = getJSONInt(handlerElement, RESPONSE_KEY_HEIGHT);
+                                    int width = getJSONInt(handlerElement, RESPONSE_KEY_WIDTH);
+                                    String adId = getJSONString(handlerElement, RESPONSE_KEY_ID);
+                                    String resultCB = getJSONString(mediatedElement, RESPONSE_KEY_RESULT_CB);
 
-                            mediatedAds.add(new MediatedAd(className,
-                                    param, width, height, adId,
-                                    resultCB));
+                                    if (className != null && !className.isEmpty()) {
+                                        mediatedAds.add(new MediatedAd(className,
+                                                param, width, height, adId,
+                                                resultCB));
+                                    }
+                                }
+                            }
                         }
                     }
                 }
