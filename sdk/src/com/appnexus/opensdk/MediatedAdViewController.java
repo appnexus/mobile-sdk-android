@@ -265,6 +265,7 @@ public abstract class MediatedAdViewController implements Displayable {
      */
 
     protected void startTimeout() {
+        if (hasSucceeded || hasFailed) return;
         timeoutHandler.sendEmptyMessageDelayed(0, Settings.getSettings().MEDIATED_NETWORK_TIMEOUT);
     }
 
