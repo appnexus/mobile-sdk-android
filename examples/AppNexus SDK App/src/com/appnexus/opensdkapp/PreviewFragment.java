@@ -43,6 +43,7 @@ public class PreviewFragment extends Fragment {
     private BannerAdView bav;
     private InterstitialAdView iav;
     private TextView bannerText;
+    private FrameLayout adFrame;
     PullToRefreshScrollView pullToRefreshView;
 
     private static final int DEF_COLOR = Color.BLACK;
@@ -53,6 +54,8 @@ public class PreviewFragment extends Fragment {
         final View out = inflater.inflate(R.layout.fragment_preview, null);
 
         // locate members and set listeners
+        adFrame = (FrameLayout) out.findViewById(R.id.adframe);
+
         bav = (BannerAdView) out.findViewById(R.id.banner);
         bav.setAdListener(adListener);
 
@@ -83,6 +86,7 @@ public class PreviewFragment extends Fragment {
 
     public void loadNewAd() {
         Log.d(Constants.BASE_LOG_TAG, "Loading new ad");
+        resetBanner();
 
         Context context = getActivity();
         if (context == null) {
@@ -129,6 +133,17 @@ public class PreviewFragment extends Fragment {
             if (!iav.loadAd()) {
                 adListener.onAdRequestFailed(null);
             }
+        }
+    }
+
+    private void resetBanner() {
+        if (bav != null) {
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) bav.getLayoutParams();
+            adFrame.removeView(bav);
+            bav = new BannerAdView(getActivity());
+            bav.setAdListener(adListener);
+            bav.setLayoutParams(lp);
+            adFrame.addView(bav, 0);
         }
     }
 
