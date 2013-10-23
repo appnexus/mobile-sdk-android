@@ -78,7 +78,7 @@ public class AdActivity extends Activity {
             auto_dismiss_time = close_button_delay;
         }
 
-        // Add unexpandedActivity close button after unexpandedActivity 10 second delay.
+        // Add a close button after a 10 second delay.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             new ButtonAsyncTask().executeOnExecutor(
                     AsyncTask.THREAD_POOL_EXECUTOR, layout);

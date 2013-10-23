@@ -17,7 +17,7 @@
 package com.appnexus.opensdk;
 
 /**
- * Implement this interface to create unexpandedActivity class which can react to ad events.
+ * Implement this interface to create a class which can react to ad events.
  *
  * @author Jacob Shufro
  */

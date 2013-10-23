@@ -43,8 +43,8 @@ public class InstallTrackerPixel extends BroadcastReceiver {
     BroadcastReceiver receiver_install;
     Context context;
 
-    // Test with am broadcast -unexpandedActivity com.android.vending.INSTALL_REFERRER --es
-    // "referrer" adb shell am broadcast -unexpandedActivity com.android.vending.INSTALL_REFERRER
+    // Test with am broadcast -a com.android.vending.INSTALL_REFERRER --es
+    // "referrer" adb shell am broadcast -a com.android.vending.INSTALL_REFERRER
     // --es "referrer"
     // "utm_source%3Dtest_source%26utm_medium%3Dtest_medium%26utm_term%3Dtest_term%26utm_content%3Dtest_content%26utm_campaign%3Dtest_name"
     // in adb

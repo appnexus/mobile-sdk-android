@@ -59,7 +59,7 @@ public class InterstitialAdView extends AdView {
     private AdActivity adActivity = null;
 
     /**
-     * Creates unexpandedActivity new InterstitialAdView
+     * Creates a new InterstitialAdView
      *
      * @param context The context of the ViewGroup to which the InterstitialAdView
      *                is being added.
@@ -69,7 +69,7 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * Creates unexpandedActivity new InterstitialAdView
+     * Creates a new InterstitialAdView
      *
      * @param context The context of the ViewGroup to which the InterstitialAdView
      *                is being added.
@@ -81,7 +81,7 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * Creates unexpandedActivity new InterstitialAdView
+     * Creates a new InterstitialAdView
      *
      * @param context  The context of the ViewGroup to which the InterstitialAdView
      *                 is being added.
@@ -166,9 +166,9 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * Requests unexpandedActivity new interstitial ad from the server and stores it in unexpandedActivity local
-     * queue. Please note, that interstitials have unexpandedActivity timeout of 60 seconds. You
-     * must show the interstitial (call 'show()') within 60 seconds of getting unexpandedActivity
+     * Requests a new interstitial ad from the server and stores it in a local
+     * queue. Please note, that interstitials have a timeout of 60 seconds. You
+     * must show the interstitial (call 'show()') within 60 seconds of getting a
      * response, otherwise, the ad will not show.
      */
     @Override
@@ -230,7 +230,7 @@ public class InterstitialAdView extends AdView {
 
     /**
      * Pops ads from the queue until it finds one that has not exceeded the
-     * timeout of 60 seconds, and displays it in unexpandedActivity new activity. All ads in the
+     * timeout of 60 seconds, and displays it in a new activity. All ads in the
      * queue which have exceeded the timeout are removed.
      *
      * @return The number of remaining ads in the queue that do not exceed the
@@ -246,7 +246,7 @@ public class InterstitialAdView extends AdView {
                     || now - p.first > InterstitialAdView.MAX_AGE) {
                 to_remove.add(p);
             } else {
-                // We've reached unexpandedActivity valid ad, so we can launch the activity.
+                // We've reached a valid ad, so we can launch the activity.
                 break;
             }
         }
@@ -377,7 +377,7 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * A convenience class which holds unexpandedActivity width and height in integers.
+     * A convenience class which holds a width and height in integers.
      *
      * @author Jacob Shufro
      */
@@ -405,7 +405,7 @@ public class InterstitialAdView extends AdView {
         }
 
         /**
-         * Determines whether this size object fits inside unexpandedActivity rectangle of the
+         * Determines whether this size object fits inside a rectangle of the
          * given width and height
          *
          * @param width  The width to check against.

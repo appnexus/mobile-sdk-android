@@ -116,7 +116,7 @@ public class AdWebView extends WebView implements Displayable {
                     destination.getContext().startActivity(intent);
                 }
 
-                // If unexpandedActivity listener is defined, call its onClicked
+                // If a listener is defined, call its onClicked
                 if (AdWebView.this.destination.adListener != null) {
                     AdWebView.this.destination.adListener
                             .onAdClicked(AdWebView.this.destination);

@@ -40,7 +40,7 @@ public class AdFetcher implements AdRequester {
     private long timePausedAt = -1;
     private boolean shouldShowTrueTime = false;
 
-    // Fires requests whenever it receives unexpandedActivity message
+    // Fires requests whenever it receives a message
     public AdFetcher(AdView owner) {
         this.owner = owner;
         handler = new RequestHandler(this);
@@ -93,7 +93,7 @@ public class AdFetcher implements AdRequester {
     }
 
     private void makeTasker() {
-        // Start unexpandedActivity Scheduler to execute recurring tasks
+        // Start a Scheduler to execute recurring tasks
         tasker = Executors
                 .newScheduledThreadPool(Settings.getSettings().FETCH_THREAD_COUNT);
 
@@ -144,7 +144,7 @@ public class AdFetcher implements AdRequester {
 
     }
 
-    // Create unexpandedActivity handler which will receive the AsyncTasks and spawn them from
+    // Create a handler which will receive the AsyncTasks and spawn them from
     // the main thread.
     static class RequestHandler extends Handler {
         private final WeakReference<AdFetcher> mFetcher;

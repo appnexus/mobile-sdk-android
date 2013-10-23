@@ -86,7 +86,7 @@ public abstract class AdView extends FrameLayout {
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
         if (prefs.getBoolean("opensdk_first_launch", true)) {
-            // This is the first launch, store unexpandedActivity value to remember
+            // This is the first launch, store a value to remember
             Clog.v(Clog.baseLogTag,
                     Clog.getString(R.string.first_opensdk_launch));
             Settings.getSettings().first_launch = true;
@@ -196,7 +196,7 @@ public abstract class AdView extends FrameLayout {
     }
 
     /**
-     * Loads unexpandedActivity new ad, if the ad space is visible, and sets the placement id
+     * Loads a new ad, if the ad space is visible, and sets the placement id
      * attribute of the AdView to the supplied parameter.
      *
      * @param placementID The new placement id to use.
@@ -207,7 +207,7 @@ public abstract class AdView extends FrameLayout {
     }
 
     /**
-     * Loads unexpandedActivity new ad, if the ad space is visible, and sets the placement id, ad
+     * Loads a new ad, if the ad space is visible, and sets the placement id, ad
      * width, and ad height attribute of the AdView to the supplied parameters.
      *
      * @param placementID The new placement id to use.
