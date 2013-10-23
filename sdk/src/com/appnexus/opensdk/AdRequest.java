@@ -361,6 +361,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         sb.append((!isEmpty(psa) ? "&psa=" + psa : ""));
         sb.append("&reserve=" + (reserve>0 ? Uri.encode(reserve+""):""));
         sb.append("&format=json");
+        sb.append("&st=mobile_app");
         sb.append("&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion));
 
         return sb.toString();
