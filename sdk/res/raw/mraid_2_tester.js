@@ -77,8 +77,57 @@
             row2.appendChild(td2);
             root_table.appendChild(row2);
 
-			document.getElementById("expanded").appendChild(root_table);
+			// Add a button to print the result of mraid.getVersion()
+            row3 = document.createElement("tr");
 
+            td3 = document.createElement("td");
+
+            button3 = document.createElement("button");
+
+            button3.innerHTML = "Print result of mraid.getVersion()";
+            button3.setAttribute('onclick', '(function(){alert(mraid.getVersion())})();');
+
+            td3.appendChild(button3);
+            row3.appendChild(td3);
+            root_table.appendChild(row3);
+
+			// Add a button to print the result of mraid.getVendor()
+            row4 = document.createElement("tr");
+
+            td4 = document.createElement("td");
+
+            button4 = document.createElement("button");
+
+            button4.innerHTML = "Print result of mraid.getVendor()";
+            button4.setAttribute('onclick', '(function(){alert(mraid.getVendor())})();');
+
+            td4.appendChild(button4);
+            row4.appendChild(td4);
+            root_table.appendChild(row4);
+
+			// Add a button to print the result of mraid.getPlacementType()
+            row5 = document.createElement("tr");
+
+            td5 = document.createElement("td");
+
+            button5 = document.createElement("button");
+
+            button5.innerHTML = "Print result of mraid.getPlacementType()";
+            button5.setAttribute('onclick', '(function(){alert(mraid.getPlacementType())})();');
+
+            td5.appendChild(button5);
+            row5.appendChild(td5);
+            root_table.appendChild(row5);
+			// Add a button to test mraid.close()
+			// Add a button to test mraid.open()
+			// Add a button to test mraid.resize()
+			// Add a button to test mraid.setOrientationProperties()
+			// Add a button to test mraid.storePicture()
+			// Add a button to test mraid.supports()
+			// Add a button to test mraid.getScreenSize()
+			// Add a button to test mraid.getMaxSize()
+			// Add a button to test mraid.getCurrentPosition
+            document.getElementById("expanded").appendChild(root_table);
 		}else if(new_state==="hidden"){
 			alert('EXPANDED');
 		}else if(new_state==="loading"){

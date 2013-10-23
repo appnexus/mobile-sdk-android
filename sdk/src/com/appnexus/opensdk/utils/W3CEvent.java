@@ -257,19 +257,19 @@ public class W3CEvent {
         //if (getStart() != null) {
         //TODO: convert to UTC millis since epoch WHY DOESN'T THIS WORK QQ
         if (Build.VERSION.SDK_INT >= 14) {
-            i.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, 1404515377);//getStart());
-            i.putExtra(CalendarContract.Events.DTSTART, 1404515377);
+            i.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, getStart());//getStart());
+            i.putExtra(CalendarContract.Events.DTSTART, getStart());
         } else {
-            i.putExtra("beginTime", 1404515377);
+            i.putExtra("beginTime", getStart());
         }
         //}
         //if (getEnd() != null) {
         //TODO: convert to UTC millis since epoch
         if (Build.VERSION.SDK_INT >= 14) {
-            i.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, 1404518977);//getEnd());
-            i.putExtra(CalendarContract.Events.DTEND, 1404518977);
+            i.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, getEnd());
+            i.putExtra(CalendarContract.Events.DTEND, getEnd());
         } else {
-            i.putExtra("endTime", 1404518977);
+            i.putExtra("endTime", getEnd());
         }
         //}
         if (getStatus() != null) {
