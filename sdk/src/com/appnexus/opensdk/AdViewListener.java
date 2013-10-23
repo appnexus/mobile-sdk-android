@@ -17,13 +17,13 @@
 package com.appnexus.opensdk;
 
 /**
- * Interface for receiving callbacks from unexpandedActivity MediatedAdViewController
+ * Interface for receiving callbacks from a MediatedAdViewController
  */
 public interface AdViewListener {
 
     /**
      * Called when the third-party mediation network has alerted the
-     * SDK of unexpandedActivity successful ad request
+     * SDK of a successful ad request
      *
      * @param d the displayable view to show for banners
      */
@@ -31,7 +31,7 @@ public interface AdViewListener {
 
     /**
      * Called when the third-party mediation network has alerted the
-     * SDK of unexpandedActivity failed ad request
+     * SDK of a failed ad request
      * @param noMoreAds true if the response contains no more ads
      *                  and we should call onAdRequestFailed
      */

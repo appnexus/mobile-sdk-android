@@ -177,14 +177,10 @@ public abstract class AdView extends FrameLayout {
     }
 
     /**
-<<<<<<< HEAD
      * Loads a new ad, if the ad space is visible.
-=======
-     * Loads unexpandedActivity new ad, if the ad space is visible.
      *
      * @return true is ad will begin loading, false if ad cannot be loaded
      * at this time given the current settings
->>>>>>> e711cd5... Fixes for fullscreen creatives with no customclose
      */
     public void loadAd() {
         if (this.getWindowVisibility() == VISIBLE && mAdFetcher != null) {
@@ -241,7 +237,7 @@ public abstract class AdView extends FrameLayout {
 
     protected void display(Displayable d) {
         if ((d == null) || d.failed()) {
-            // The displayable has failed to be parsed or turned into unexpandedActivity View.
+            // The displayable has failed to be parsed or turned into a View.
             fail();
             return;
         }
@@ -373,7 +369,7 @@ public abstract class AdView extends FrameLayout {
                 getLayoutParams().height = h;
         }
         if (!custom_close) {
-            // Add unexpandedActivity stock close_button button to the top right corner
+            // Add a stock close_button button to the top right corner
             close_button = new ImageButton(this.getContext());
             close_button.setImageDrawable(getResources().getDrawable(
                     android.R.drawable.ic_menu_close_clear_cancel));
@@ -382,7 +378,7 @@ public abstract class AdView extends FrameLayout {
                     FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.RIGHT
                     | Gravity.TOP);
             if(caller.owner.isFullScreen){
-                //Make unexpandedActivity new framelayout to contain webview and button
+                //Make a new framelayout to contain webview and button
                 FrameLayout fslayout = new FrameLayout(this.getContext());
                 if(this.getChildCount()>0){
                     this.removeAllViews();
@@ -421,7 +417,7 @@ public abstract class AdView extends FrameLayout {
 
     /**
      *
-     * @return true if the AdView is unexpandedActivity BannerAdView
+     * @return true if the AdView is a BannerAdView
      */
     abstract boolean isBanner();
 
