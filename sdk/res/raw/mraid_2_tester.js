@@ -119,10 +119,46 @@
             row5.appendChild(td5);
             root_table.appendChild(row5);
 			// Add a button to test mraid.close()
+            row6 = document.createElement("tr");
+
+            td6 = document.createElement("td");
+
+            button6 = document.createElement("button");
+
+            button6.innerHTML = "Call mraid.close()";
+            button6.setAttribute('onclick', '(function(){mraid.close()})();');
+
+            td6.appendChild(button6);
+            row6.appendChild(td6);
+            root_table.appendChild(row6);
 			// Add a button to test mraid.open()
+            row7 = document.createElement("tr");
+
+            td7 = document.createElement("td");
+
+            button7 = document.createElement("button");
+
+            button7.innerHTML = "Call mraid.open(aww.reddit.com)";
+            button7.setAttribute('onclick', '(function(){mraid.open("http://aww.reddit.com/")})();');
+
+            td7.appendChild(button7);
+            row7.appendChild(td7);
+            root_table.appendChild(row7);
 			// Add a button to test mraid.resize()
 			// Add a button to test mraid.setOrientationProperties()
 			// Add a button to test mraid.storePicture()
+            row8 = document.createElement("tr");
+
+            td8 = document.createElement("td");
+
+            button8 = document.createElement("button");
+
+            button8.innerHTML = "Call mraid.storePicture(url)";
+            button8.setAttribute('onclick', '(function(){mraid.storePicture("http://i.imgur.com/8dVigHB.jpg")})();');
+
+            td8.appendChild(button8);
+            row8.appendChild(td8);
+            root_table.appendChild(row8);
 			// Add a button to test mraid.supports()
 			// Add a button to test mraid.getScreenSize()
 			// Add a button to test mraid.getMaxSize()
