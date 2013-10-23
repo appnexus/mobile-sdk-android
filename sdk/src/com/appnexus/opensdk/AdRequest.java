@@ -301,12 +301,15 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
         age = owner.getAge();
         if (owner.getGender() != null) {
-            if (owner.getGender() == AdView.GENDER.MALE)
+            if (owner.getGender() == AdView.GENDER.MALE) {
                 gender = "m";
-            else if (owner.getGender() == AdView.GENDER.FEMALE)
+            }
+            else if (owner.getGender() == AdView.GENDER.FEMALE) {
                 gender = "f";
-            else
+            }
+            else {
                 gender = null;
+            }
         }
         customKeywords = owner.getCustomKeywords();
 
