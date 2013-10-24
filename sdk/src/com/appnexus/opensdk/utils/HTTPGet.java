@@ -40,12 +40,6 @@ public abstract class HTTPGet<Params extends Void, Progress extends Void, Result
     protected HTTPResponse doInBackground(Void... params) {
         HTTPResponse out = new HTTPResponse();
 
-        //TODO: shouldn't this class have timeouts? @Jacob
-//        HttpParams httpParams = new BasicHttpParams();
-//        HttpConnectionParams.setConnectionTimeout(httpParams, Settings.getSettings().HTTP_CONNECTION_TIMEOUT);
-//        HttpConnectionParams.setSoTimeout(httpParams, Settings.getSettings().HTTP_SOCKET_TIMEOUT);
-//        HttpClient httpc = new DefaultHttpClient(httpParams);
-
         HttpClient httpc = new DefaultHttpClient();
         try {
             URI uri = new URI(getUrl());

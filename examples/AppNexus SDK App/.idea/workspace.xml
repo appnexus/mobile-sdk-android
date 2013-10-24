@@ -39,25 +39,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0c55ad8b-acd7-4f69-b346-842ea74a83a1" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/android_support_v4.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/AppNexus SDK App.iml" afterPath="$PROJECT_DIR$/AppNexus SDK App.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/appnexus/opensdkapp/PreviewFragment.java" afterPath="$PROJECT_DIR$/src/com/appnexus/opensdkapp/PreviewFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/layout/fragment_preview.xml" afterPath="$PROJECT_DIR$/res/layout/fragment_preview.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/project.properties" afterPath="$PROJECT_DIR$/project.properties" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../sdk/src/com/appnexus/opensdk/utils/HTTPGet.java" afterPath="$PROJECT_DIR$/../../sdk/src/com/appnexus/opensdk/utils/HTTPGet.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="AppNexus SDK App.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/fragment.java" changelist="0c55ad8b-acd7-4f69-b346-842ea74a83a1" time="1382642295281" ignored="false" />
-    <file path="/Dummy.txt" changelist="0c55ad8b-acd7-4f69-b346-842ea74a83a1" time="1382642840609" ignored="false" />
+    <file path="/Dummy.txt" changelist="0c55ad8b-acd7-4f69-b346-842ea74a83a1" time="1382642873092" ignored="false" />
     <file path="/fragment_preview.xml" changelist="0c55ad8b-acd7-4f69-b346-842ea74a83a1" time="1382642802234" ignored="false" />
     <file path="/PreviewFragment.java" changelist="0c55ad8b-acd7-4f69-b346-842ea74a83a1" time="1382642777351" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -132,6 +120,15 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="HTTPGet.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../../sdk/src/com/appnexus/opensdk/utils/HTTPGet.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="41" column="0" selection-start="1376" selection-end="1376" vertical-scroll-proportion="0.30285037">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="project.properties" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/project.properties">
           <provider selected="true" editor-type-id="text-editor">
@@ -141,10 +138,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PreviewFragment.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="PreviewFragment.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/appnexus/opensdkapp/PreviewFragment.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="172" column="0" selection-start="6431" selection-end="6431" vertical-scroll-proportion="0.43942994">
+            <state line="172" column="0" selection-start="6431" selection-end="6431" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -175,6 +172,7 @@
       <list>
         <option value="$PROJECT_DIR$/res/layout/fragment_preview.xml" />
         <option value="$PROJECT_DIR$/src/com/appnexus/opensdkapp/PreviewFragment.java" />
+        <option value="$PROJECT_DIR$/../../sdk/src/com/appnexus/opensdk/utils/HTTPGet.java" />
       </list>
     </option>
   </component>
@@ -217,6 +215,56 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="AppNexus SDK App" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="AppNexus SDK App" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sdk" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="AppNexus SDK App" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sdk" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="opensdk" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="AppNexus SDK App" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sdk" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="opensdk" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="utils" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -458,6 +506,11 @@
       <created>1382642158373</created>
       <updated>1382642158373</updated>
     </task>
+    <task id="LOCAL-00001" summary="project files. and center gravity.">
+      <created>1382642883371</created>
+      <updated>1382642883371</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -575,7 +628,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/appnexus/opensdkapp/PreviewFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="172" column="0" selection-start="6431" selection-end="6431" vertical-scroll-proportion="0.43942994">
+        <state line="172" column="0" selection-start="6431" selection-end="6431" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../sdk/src/com/appnexus/opensdk/utils/HTTPGet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="41" column="0" selection-start="1376" selection-end="1376" vertical-scroll-proportion="0.30285037">
           <folding />
         </state>
       </provider>
