@@ -16,13 +16,13 @@
 
 package com.appnexus.opensdk;
 
+import android.*;
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.app.DownloadManager;
+import android.content.*;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -31,6 +31,8 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.Display;
 import android.view.Gravity;
@@ -434,7 +436,7 @@ public class MRAIDImplementation {
             return;
         }
 
-        final String uri_final = uri;
+        final String uri_final = Uri.decode(uri);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(owner.owner.getContext());
         builder.setTitle(R.string.store_picture_title);
@@ -491,39 +493,20 @@ public class MRAIDImplementation {
                     }
 
                 } else {
-                    HTTPGet<Void, Void, HTTPResponse> dl = new HTTPGet<Void, Void, HTTPResponse>() {
-                        @Override
-                        protected void onPostExecute(HTTPResponse response) {
-                            String ext = uri_final.substring(uri_final.lastIndexOf("."), uri_final.length());
-                            File out = new File(owner.owner.getContext().getFilesDir(), System.currentTimeMillis() + ext);
-                            FileOutputStream outstream = null;
-                            try {
-                                if(out.canWrite()){
-                                    byte[] out_array = response.getResponseBody().getBytes();
-                                    outstream = owner.owner.getContext().openFileOutput(out.getName(), Context.MODE_PRIVATE);
-                                    outstream.write(out_array);
-                                }
-                            } catch (FileNotFoundException e) {
-                                Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
-                            } catch (IOException e) {
-                                Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
-                            }finally{
-                                try {
-                                    if(outstream!=null){
-                                        outstream.close();
-                                    }
-                                } catch (IOException e) {
-                                    Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
-                                }
-                            }
-                        }
+                    //Use the download manager
+                    final DownloadManager dm = (DownloadManager) owner.getContext().getSystemService(Context.DOWNLOAD_SERVICE);
+                    DownloadManager.Request r = new DownloadManager.Request(Uri.parse(uri_final));
+                    r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
 
-                        @Override
-                        protected String getUrl() {
-                            return uri_final;  //To change body of implemented methods use File | Settings | File Templates.
-                        }
-                    };
-                    dl.execute();
+                    //Check if we're writing to internal or external
+                    PackageManager pm = owner.getContext().getPackageManager();
+                    if(pm.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, owner.getContext().getPackageName()) == PackageManager.PERMISSION_GRANTED){
+                        r.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, uri_final.split("/")[uri_final.split("/").length-1]);
+                        dm.enqueue(r);
+                    }else{
+                        Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
+                    }
+
                 }
             }
         });
