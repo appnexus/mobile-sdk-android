@@ -237,7 +237,6 @@ public class MRAIDImplementation {
                 }
 
                 //Calendar
-                //TODO Check for permissions
                 Intent i;
                 i = new Intent(Intent.ACTION_EDIT);
                 i.setType("vnd.android.cursor.item/event");
@@ -247,7 +246,10 @@ public class MRAIDImplementation {
                 i = null;
 
                 //Store Picture
-                //TODO Check for permissions
+                PackageManager pm = owner.getContext().getPackageManager();
+                if(pm.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, owner.getContext().getPackageName()) == PackageManager.PERMISSION_GRANTED){
+                    view.loadUrl("javascript:window.mraid.util.setSupportsStorePicture(true)");
+                }
 
                 //Video should always work inline.
                 view.loadUrl("javascript:window.mraid.util.setSupportsInlineVideo(true)");
