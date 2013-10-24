@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/AppNexus SDK App.iml" filepath="$PROJECT_DIR$/AppNexus SDK App.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../libs/Android-PullToRefresh/library/pulltorefresh.iml" filepath="$PROJECT_DIR$/../libs/Android-PullToRefresh/library/pulltorefresh.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../sdk/sdk.iml" filepath="$PROJECT_DIR$/../../sdk/sdk.iml" />
+    </modules>
+  </component>
+</project>
+

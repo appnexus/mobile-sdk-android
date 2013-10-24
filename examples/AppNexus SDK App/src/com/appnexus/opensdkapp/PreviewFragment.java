@@ -24,6 +24,7 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -163,16 +164,15 @@ public class PreviewFragment extends Fragment {
                         R.id.adframe);
                 ScrollView.LayoutParams lp = new ScrollView.LayoutParams(
                         adframe.getLayoutParams());
-                if (lp != null && adframe != null) {
-                    lp.height = ScrollView.LayoutParams.WRAP_CONTENT;
-                    adframe.setLayoutParams(lp);
-                }
+                lp.height = ScrollView.LayoutParams.WRAP_CONTENT;
+                adframe.setLayoutParams(lp);
 
                 DisplayMetrics m = new DisplayMetrics();
                 getActivity().getWindowManager().getDefaultDisplay().getMetrics(m);
                 float d = m.density;
 
                 FrameLayout.LayoutParams bannerlp = new FrameLayout.LayoutParams(bav.getLayoutParams());
+                bannerlp.gravity = Gravity.CENTER_HORIZONTAL;
                 if (bannerlp.width != -1) bannerlp.width = (int) (bav.getAdWidth() * d + 0.5f);
                 if (bannerlp.height != -1) bannerlp.height = (int) (bav.getAdHeight() * d + 0.5f);
                 bav.setLayoutParams(bannerlp);
