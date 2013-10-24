@@ -38,13 +38,13 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="OPENSDK" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0c55ad8b-acd7-4f69-b346-842ea74a83a1" name="Default" comment="remove comments">
+    <list default="true" id="0c55ad8b-acd7-4f69-b346-842ea74a83a1" name="Default" comment="project file">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="AppNexus SDK App.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/fragment.java" changelist="0c55ad8b-acd7-4f69-b346-842ea74a83a1" time="1382642295281" ignored="false" />
-    <file path="/Dummy.txt" changelist="0c55ad8b-acd7-4f69-b346-842ea74a83a1" time="1382643073761" ignored="false" />
+    <file path="/Dummy.txt" changelist="0c55ad8b-acd7-4f69-b346-842ea74a83a1" time="1382643150633" ignored="false" />
     <file path="/fragment_preview.xml" changelist="0c55ad8b-acd7-4f69-b346-842ea74a83a1" time="1382642802234" ignored="false" />
     <file path="/PreviewFragment.java" changelist="0c55ad8b-acd7-4f69-b346-842ea74a83a1" time="1382642777351" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -146,10 +146,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MainActivity.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="MainActivity.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/appnexus/opensdkapp/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="377" column="40" selection-start="12324" selection-end="12370" vertical-scroll-proportion="-1.1021378">
+            <state line="377" column="40" selection-start="12324" selection-end="12370" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="workspace.xml" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="19" column="61" selection-start="751" selection-end="751" vertical-scroll-proportion="0.33847982">
               <folding />
             </state>
           </provider>
@@ -353,6 +362,20 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="AppNexus SDK App" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="AppNexus SDK App" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value=".idea" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
       <pane id="PackagesPane" />
@@ -540,7 +563,11 @@
       <created>1382643042717</created>
       <updated>1382643042717</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="project file">
+      <created>1382643145637</created>
+      <updated>1382643145637</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -615,7 +642,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="remove comments" />
+    <option name="LAST_COMMIT_MESSAGE" value="project file" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -631,6 +658,7 @@
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
     <MESSAGE value="project files. and center gravity." />
     <MESSAGE value="remove comments" />
+    <MESSAGE value="project file" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -687,7 +715,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/com/appnexus/opensdkapp/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="377" column="40" selection-start="12324" selection-end="12370" vertical-scroll-proportion="-1.1021378">
+        <state line="377" column="40" selection-start="12324" selection-end="12370" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="19" column="61" selection-start="751" selection-end="751" vertical-scroll-proportion="0.33847982">
           <folding />
         </state>
       </provider>
