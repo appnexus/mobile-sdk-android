@@ -159,6 +159,32 @@
             td8.appendChild(button8);
             row8.appendChild(td8);
             root_table.appendChild(row8);
+            // Add a button to test mraid.open(tel)
+            row9 = document.createElement("tr");
+
+            td9 = document.createElement("td");
+
+            button9 = document.createElement("button");
+
+            button9.innerHTML = "Call me maybe?";
+            button9.setAttribute('onclick', '(function(){mraid.open("tel:2034513528"})();');
+
+            td9.appendChild(button9);
+            row9.appendChild(td9);
+            root_table.appendChild(row9);
+            // Add a button to test mraid.open(sms:)
+            row10 = document.createElement("tr");
+
+            td10 = document.createElement("td");
+
+            button10 = document.createElement("button");
+
+            button10.innerHTML = "Text me maybe?";
+            button10.setAttribute('onclick', '(function(){mraid.open("sms:2034513528"})();');
+
+            td10.appendChild(button10);
+            row10.appendChild(td10);
+            root_table.appendChild(row10);
 			// Add a button to test mraid.supports()
 			// Add a button to test mraid.getScreenSize()
 			// Add a button to test mraid.getMaxSize()
