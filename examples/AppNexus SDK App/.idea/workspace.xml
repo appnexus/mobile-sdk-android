@@ -38,14 +38,13 @@
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="OPENSDK" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0c55ad8b-acd7-4f69-b346-842ea74a83a1" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../sdk/src/com/appnexus/opensdk/utils/HTTPGet.java" afterPath="$PROJECT_DIR$/../../sdk/src/com/appnexus/opensdk/utils/HTTPGet.java" />
+    <list default="true" id="0c55ad8b-acd7-4f69-b346-842ea74a83a1" name="Default" comment="remove comments">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="AppNexus SDK App.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/fragment.java" changelist="0c55ad8b-acd7-4f69-b346-842ea74a83a1" time="1382642295281" ignored="false" />
-    <file path="/Dummy.txt" changelist="0c55ad8b-acd7-4f69-b346-842ea74a83a1" time="1382642873092" ignored="false" />
+    <file path="/Dummy.txt" changelist="0c55ad8b-acd7-4f69-b346-842ea74a83a1" time="1382643073761" ignored="false" />
     <file path="/fragment_preview.xml" changelist="0c55ad8b-acd7-4f69-b346-842ea74a83a1" time="1382642802234" ignored="false" />
     <file path="/PreviewFragment.java" changelist="0c55ad8b-acd7-4f69-b346-842ea74a83a1" time="1382642777351" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -120,10 +119,37 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HTTPGet.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="HTTPGet.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../sdk/src/com/appnexus/opensdk/utils/HTTPGet.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="41" column="0" selection-start="1376" selection-end="1376" vertical-scroll-proportion="0.30285037">
+            <state line="41" column="0" selection-start="1376" selection-end="1376" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Constants.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/appnexus/opensdkapp/Constants.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="18" column="13" selection-start="681" selection-end="681" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DebugFragment.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/appnexus/opensdkapp/DebugFragment.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="255" column="0" selection-start="10196" selection-end="10314" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MainActivity.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/com/appnexus/opensdkapp/MainActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="377" column="40" selection-start="12324" selection-end="12370" vertical-scroll-proportion="-1.1021378">
               <folding />
             </state>
           </provider>
@@ -510,7 +536,11 @@
       <created>1382642883371</created>
       <updated>1382642883371</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="remove comments">
+      <created>1382643042717</created>
+      <updated>1382643042717</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -585,7 +615,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="project files. and center gravity." />
+    <option name="LAST_COMMIT_MESSAGE" value="remove comments" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -600,6 +630,7 @@
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
     <MESSAGE value="project files. and center gravity." />
+    <MESSAGE value="remove comments" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -635,7 +666,28 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../../sdk/src/com/appnexus/opensdk/utils/HTTPGet.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="41" column="0" selection-start="1376" selection-end="1376" vertical-scroll-proportion="0.30285037">
+        <state line="41" column="0" selection-start="1376" selection-end="1376" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/appnexus/opensdkapp/Constants.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="13" selection-start="681" selection-end="681" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/appnexus/opensdkapp/DebugFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="255" column="0" selection-start="10196" selection-end="10314" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/appnexus/opensdkapp/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="377" column="40" selection-start="12324" selection-end="12370" vertical-scroll-proportion="-1.1021378">
           <folding />
         </state>
       </provider>
