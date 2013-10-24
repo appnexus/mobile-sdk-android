@@ -55,12 +55,12 @@ public class Settings {
 	public final int MAX_BLANK_RETRIES = 3;
 	public final int MAX_CONNECTIVITY_RETRIES = 5;
 
-    public /*final*/ String BASE_URL = "http://mobile.adnxs.com/mob?";
+    public /*final*/ String BASE_URL = "http://mediation.adnxs.com/mob?";
 //    public final String BASE_URL = "http://jshufro.adnxs.net:8112/med?";
 //    public final String BASE_URL = "http://jshufro.adnxs.net:8112/mark?";
 //	public String BASE_URL = "http://rlissack.adnxs.net:8080/mobile/utest?";
 //	public /*final*/ String BASE_URL = "http://rlissack.adnxs.net:8080/mobile/wr?";
-    public final String INSTALL_BASE_URL = "http://mobile.adnxs.com/install?";
+    public final String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
     //public final String BASE_URL = "http://shuf.ro/anmob/med/admob.json?";
 
 

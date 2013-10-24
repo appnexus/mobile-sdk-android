@@ -82,8 +82,6 @@ public class MainTabFragment extends Fragment implements AdListener {
 
         bannerAdView = (BannerAdView) out.findViewById(R.id.banner);
 
-        bannerAdView.setShouldServePSAs(false);
-
         bannerAdView.setAdListener(new AdListener() {
 
             @Override
