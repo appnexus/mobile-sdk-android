@@ -1,12 +1,12 @@
 /*
  *    Copyright 2013 APPNEXUS INC
- *    
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
  *        http://www.apache.org/licenses/LICENSE-2.0
- *    
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,115 +16,269 @@
 
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.utils.Clog;
 import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.appnexus.opensdk.utils.Clog;
+import java.util.LinkedList;
 
 public class AdResponse {
-	public AdRequester requester;
-	public String body;
-	public int height;
-	public int width;
-	private String type;
-	boolean fail = false;
-	final static String http_error = "HTTP_ERROR";
-	boolean isMraid = false;
+    private String body;
+    private int height;
+    private int width;
+    private String type;
+    private boolean isMraid = false;
 
-	public AdResponse(AdRequester requester, String body, Header[] headers) {
-		this.requester = requester;
-		if (body == null) {
-			this.fail = true;
-			Clog.clearLastResponse();
-			return;
-		} else if (body.equals(AdResponse.http_error)) {
-			this.fail = true;
-			Clog.clearLastResponse();
-			return;
-		} else if (body.length() == 0) {
-			Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
-			this.fail = true;
-			Clog.clearLastResponse();
-			return;
-		}
+    private LinkedList<MediatedAd> mediatedAds;
 
-		Clog.setLastResponse(body);
+    private boolean containsAds = false;
 
-		Clog.d(Clog.httpRespLogTag,
-				Clog.getString(R.string.response_body, body));
-		if (headers != null) {
-			for (Header h : headers) {
-				Clog.v(Clog.httpRespLogTag,
-						Clog.getString(R.string.response_header, h.getName(),
-								h.getValue()));
-			}
-		}
+    private boolean isHttpError = false;
+    private boolean isConnectivityRetry = false;
+    private boolean isBlankRetry = false;
 
-		parseResponse(body);
+    private static final String MRAID_JS_FILENAME = "mraid.js";
+    private static final String RESPONSE_KEY_STATUS = "status";
+    private static final String RESPONSE_KEY_ERROR_MESSAGE = "errorMessage";
+    private static final String RESPONSE_KEY_ADS = "ads";
+    private static final String RESPONSE_KEY_TYPE = "type";
+    private static final String RESPONSE_KEY_WIDTH = "width";
+    private static final String RESPONSE_KEY_HEIGHT = "height";
+    private static final String RESPONSE_KEY_CONTENT = "content";
+    private static final String RESPONSE_KEY_MEDIATED_ADS = "mediated";
+    private static final String RESPONSE_KEY_HANDLER = "handler";
+    private static final String RESPONSE_KEY_CLASS = "class";
+    private static final String RESPONSE_KEY_ID = "id";
+    private static final String RESPONSE_KEY_PARAM = "param";
+    private static final String RESPONSE_KEY_RESULT_CB = "result_cb";
 
-		isMraid = getBody().contains("mraid.js");
+    private static final String RESPONSE_VALUE_ERROR = "error";
+    private static final String RESPONSE_VALUE_ANDROID = "android";
 
-	}
+    public AdResponse(String body, Header[] headers) {
+        this.body = body;
 
-	private void parseResponse(String body) {
-		JSONObject response;
-		
-		if(body.equals("RETRY")||body.equals("RETRY2")){
-			return;
-		}
-		try {
-			response = new JSONObject(body);
-			String status = response.getString("status");
-			if (status.equals("error")) {
-				String error = response.getString("errorMessage");
-				Clog.e(Clog.httpRespLogTag,
-						Clog.getString(R.string.response_error, error));
-				return;
-			}
-			JSONArray ads = response.getJSONArray("ads");
-			// is the array empty? if so, no ads were returned, and we need to
-			// fail gracefully
-			if (ads.length() == 0) {
-				Clog.w(Clog.httpRespLogTag,
-						Clog.getString(R.string.response_no_ads));
-				return;
-			}
-			// for now, just take the first ad
-			JSONObject firstAd = ads.getJSONObject(0);
-			// assume there's content
-			height = firstAd.getInt("height");
-			width = firstAd.getInt("width");
-			this.body = firstAd.getString("content");
-			type = firstAd.getString("type");
-			if (this.body.equals("") || this.body == null)
-				Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.blank_ad));
-		} catch (JSONException e) {
-			Clog.e(Clog.httpRespLogTag,
-					Clog.getString(R.string.response_json_error, body));
-			e.printStackTrace();
-			return;
-		}
+        if (body == null) {
+            Clog.clearLastResponse();
+            return;
+        } else if (body.length() == 0) {
+            Clog.clearLastResponse();
+            return;
+        }
 
-	}
+        Clog.setLastResponse(body);
 
-	public String getBody() {
-		if (body == null)
-			return "";
-		return body;
-	}
+        Clog.d(Clog.httpRespLogTag,
+                Clog.getString(R.string.response_body, body));
+        if (headers != null) {
+            for (Header h : headers) {
+                Clog.v(Clog.httpRespLogTag,
+                        Clog.getString(R.string.response_header, h.getName(),
+                                h.getValue()));
+            }
+        }
 
-	public int getHeight() {
-		return height;
-	}
+        parseResponse(body);
 
-	public int getWidth() {
-		return width;
-	}
+        isMraid = getBody().contains(MRAID_JS_FILENAME);
 
-	// banner, interstitial
-	public String getType() {
-		return type;
-	}
+    }
+
+    public AdResponse(boolean isHttpError, boolean isConnectivityRetry, boolean isBlankRetry) {
+        this.isHttpError = isHttpError;
+        this.isConnectivityRetry = isConnectivityRetry;
+        this.isBlankRetry = isBlankRetry;
+    }
+
+    private void parseResponse(String body) {
+        JSONObject response;
+
+        try {
+            response = new JSONObject(body);
+        } catch (JSONException e) {
+            Clog.e(Clog.httpRespLogTag,
+                    Clog.getString(R.string.response_json_error, body));
+            return;
+        }
+        // response will never be null at this point
+
+        // stop parsing if status is not valid
+        if (!checkStatusIsValid(response)) return;
+        // stop parsing if we get an ad from ads[]
+        if (handleStdAds(response)) return;
+        // stop parsing if we get an ad from mediated[]
+        if (handleMediatedAds(response)) return;
+    }
+
+    // returns true if no error in status. don't fail on null or missing status
+    private boolean checkStatusIsValid(JSONObject response) {
+        String status = getJSONString(response, RESPONSE_KEY_STATUS);
+        if (status != null) {
+            if (status.equals(RESPONSE_VALUE_ERROR)) {
+                String error = getJSONString(response, RESPONSE_KEY_ERROR_MESSAGE);
+                Clog.e(Clog.httpRespLogTag,
+                        Clog.getString(R.string.response_error, error));
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // returns true if response contains an ad, false if not
+    private boolean handleStdAds(JSONObject response) {
+        JSONArray ads = getJSONArray(response, RESPONSE_KEY_ADS);
+        if (ads != null) {
+            // for now, just take the first ad
+            JSONObject firstAd = getJSONObjectFromArray(ads, 0);
+            type = getJSONString(firstAd, RESPONSE_KEY_TYPE);
+            height = getJSONInt(firstAd, RESPONSE_KEY_HEIGHT);
+            width = getJSONInt(firstAd, RESPONSE_KEY_WIDTH);
+            body = getJSONString(firstAd, RESPONSE_KEY_CONTENT);
+            if (body == null || body.equals("")) {
+                Clog.e(Clog.httpRespLogTag,
+                        Clog.getString(R.string.blank_ad));
+            }
+            else {
+                containsAds = true;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // returns true if response contains an ad, false if not
+    private boolean handleMediatedAds(JSONObject response) {
+        JSONArray mediated = getJSONArray(response, RESPONSE_KEY_MEDIATED_ADS);
+        if (mediated != null) {
+            mediatedAds = new LinkedList<MediatedAd>();
+            for (int i = 0; i < mediated.length(); i++) {
+                // parse through the elements of the mediated array for handlers
+                JSONObject mediatedElement = getJSONObjectFromArray(mediated, i);
+                if (mediatedElement != null) {
+                    JSONArray handler = getJSONArray(mediatedElement, RESPONSE_KEY_HANDLER);
+                    if (handler != null) {
+                        for (int j = 0; j < handler.length(); j++) {
+                            // get mediatedAd fields from handlerElement if available
+                            JSONObject handlerElement = getJSONObjectFromArray(handler, j);
+                            if (handlerElement != null) {
+                                // we only care about handlers for android
+                                String type = getJSONString(handlerElement, RESPONSE_KEY_TYPE);
+                                if ((type != null) && type.toLowerCase().equals(RESPONSE_VALUE_ANDROID)) {
+                                    String className = getJSONString(handlerElement, RESPONSE_KEY_CLASS);
+                                    String param = getJSONString(handlerElement, RESPONSE_KEY_PARAM);
+                                    int height = getJSONInt(handlerElement, RESPONSE_KEY_HEIGHT);
+                                    int width = getJSONInt(handlerElement, RESPONSE_KEY_WIDTH);
+                                    String adId = getJSONString(handlerElement, RESPONSE_KEY_ID);
+                                    String resultCB = getJSONString(mediatedElement, RESPONSE_KEY_RESULT_CB);
+
+                                    if (className != null && !className.isEmpty()) {
+                                        mediatedAds.add(new MediatedAd(className,
+                                                param, width, height, adId,
+                                                resultCB));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!mediatedAds.isEmpty()) {
+                containsAds = true;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getBody() {
+        if (body == null)
+            return "";
+        return body;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    // banner, interstitial
+    public String getType() {
+        return type;
+    }
+
+    public LinkedList<MediatedAd> getMediatedAds() {
+        return mediatedAds;
+    }
+
+    public boolean containsAds() {
+        return containsAds;
+    }
+
+    public boolean isMraid() {
+        return isMraid;
+    }
+
+    public boolean isConnectivityRetry() {
+        return isConnectivityRetry;
+    }
+
+    public boolean isBlankRetry() {
+        return isBlankRetry;
+    }
+
+    public boolean isHttpError() {
+        return isHttpError;
+    }
+
+    /**
+     * JSON parsing helper methods
+     */
+
+    private static JSONObject getJSONObject(JSONObject object, String key) {
+        if (object == null) return null;
+        try {
+            return object.getJSONObject(key);
+        } catch (JSONException ignored) {}
+        return null;
+    }
+
+    // also returns null if array is empty
+    private static JSONArray getJSONArray(JSONObject object, String key) {
+        if (object == null) return null;
+        try {
+            JSONArray array =  object.getJSONArray(key);
+            return array.length() > 0 ? array : null;
+        } catch (JSONException ignored) {}
+        return null;
+    }
+
+    private static JSONObject getJSONObjectFromArray(JSONArray array, int index) {
+        if (array == null) return null;
+        try {
+            return array.getJSONObject(index);
+        } catch (JSONException ignored) {}
+        return null;
+    }
+
+    private static String getJSONString(JSONObject object, String key) {
+        if (object == null) return null;
+        try {
+            return object.getString(key);
+        } catch (JSONException ignored) {}
+        return null;
+    }
+
+    private static int getJSONInt(JSONObject object, String key) {
+        if (object == null) return -1;
+        try {
+            return object.getInt(key);
+        } catch (JSONException ignored) {}
+        return -1;
+    }
 }

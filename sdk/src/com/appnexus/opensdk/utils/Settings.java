@@ -1,12 +1,12 @@
 /*
  *    Copyright 2013 APPNEXUS INC
- *    
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
  *        http://www.apache.org/licenses/LICENSE-2.0
- *    
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,10 +16,10 @@
 
 package com.appnexus.opensdk.utils;
 
+import android.os.Build;
+
 import java.util.Locale;
 import java.util.TimeZone;
-
-import android.os.Build;
 
 public class Settings {
 	public String hidmd5 = null;
@@ -45,34 +45,39 @@ public class Settings {
 	public final int HTTP_SOCKET_TIMEOUT = 20000;
 
 	public final int FETCH_THREAD_COUNT = 4;
-	
+
 	public final int MIN_REFRESH_MILLISECONDS = 15000;
 	public final int DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY=10000;
-	public final int DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME=Integer.MAX_VALUE;
-	public final long HTTP_RETRY_INTERVAL = 30000;
+	public /*final*/ long HTTP_RETRY_INTERVAL = 30000;
 
-	public final int MAX_HTTP_RETRIES = 3;
-	public final int MAX_FAILED_HTTP_RETRIES = 5;
-	
-	public final String BASE_URL = "http://mobile.adnxs.com/mob?";
-	public final String INSTALL_BASE_URL = "http://mobile.adnxs.com/install?";
-	
-	
+    public final long MEDIATED_NETWORK_TIMEOUT = 15000;
 
-	// STATICS
-	private static Settings settings_instance = null;
+	public final int MAX_BLANK_RETRIES = 3;
+	public final int MAX_CONNECTIVITY_RETRIES = 5;
 
-	public static Settings getSettings() {
-		if (settings_instance == null) {
-			settings_instance = new Settings();
-			Clog.v(Clog.baseLogTag, "The AppNexus " + Clog.baseLogTag
-					+ " is initializing.");
-		}
-		return settings_instance;
-	}
+    public /*final*/ String BASE_URL = "http://mobile.adnxs.com/mob?";
+//    public final String BASE_URL = "http://jshufro.adnxs.net:8112/med?";
+//    public final String BASE_URL = "http://jshufro.adnxs.net:8112/mark?";
+//	public String BASE_URL = "http://rlissack.adnxs.net:8080/mobile/utest?";
+//	public /*final*/ String BASE_URL = "http://rlissack.adnxs.net:8080/mobile/wr?";
+    public final String INSTALL_BASE_URL = "http://mobile.adnxs.com/install?";
+    //public final String BASE_URL = "http://shuf.ro/anmob/med/admob.json?";
 
-	private Settings() {
 
-	}
+    // STATICS
+    private static Settings settings_instance = null;
+
+    public static Settings getSettings() {
+        if (settings_instance == null) {
+            settings_instance = new Settings();
+            Clog.v(Clog.baseLogTag, "The AppNexus " + Clog.baseLogTag
+                    + " is initializing.");
+        }
+        return settings_instance;
+    }
+
+    private Settings() {
+
+    }
 
 }

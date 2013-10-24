@@ -12,16 +12,12 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- */
-
+*/
 package com.appnexus.opensdk;
 
+import android.app.Activity;
 import android.view.View;
 
-public interface Displayable {
-    public View getView();
-
-    public boolean failed();
-
-    public void destroy();
+public interface MediatedBannerAdView extends MediatedAdView {
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height);
 }
