@@ -110,4 +110,13 @@
 	<string formatted="false" name="fire_cb_result_null">firing result cb with null resultCB</string>
 	<string formatted="false" name="cancel_request">Cancelling scheduled request</string>
 	<string formatted="false" name="retry_already_cancelled">Tried to execute a retry request that was cancelled</string>
+	<string formatted="false" name="resize">MRAID resize() called with w:%d, h:%d, offset_x:%d, offset_y:%d, cust_close_position:%s, allow_offscreen:%b</string>
+	<string formatted="false" name="set_orientation_properties">MRAID setOrientationProperties called with allow_orientation_change=%b, orientation=%d</string>
+	<string formatted="false" name="create_calendar_event">MRAID createCalendarEvent() called</string>
+	<string formatted="false" name="unsupported_encoding">Cannot play video due to unsupported encoding</string>
+	<string formatted="false" name="play_vide_no_uri">MRAID playVideo() called, but no URI given</string>
+	<string formatted="false" name="store_picture_error">There was an error while storing picture.</string>
+	<string formatted="false" name="number_format">An invalid number was passed to an MRAID function.</string>
+	<string formatted="false" name="mediation_finish">Mediation Controller has finished.</string>
+	<string formatted="false" name="mediation_timeout">Mediation network timed out.</string>
 </resources>

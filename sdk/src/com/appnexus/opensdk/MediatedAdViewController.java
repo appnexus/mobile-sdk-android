@@ -18,6 +18,8 @@ package com.appnexus.opensdk;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
@@ -34,18 +36,14 @@ public abstract class MediatedAdViewController implements Displayable {
         INTERNAL_ERROR
     }
 
-    boolean failed = false;
     Class<?> c;
     MediatedAdView mAV;
     AdRequester requester;
     MediatedAd currentAd;
     AdViewListener listener;
 
-    protected boolean errorCBMade = false;
-    protected boolean successCBMade = false;
-
-    //TODO: may be unnecessary
-    private boolean noMoreAds = false;
+    private boolean hasFailed = false;
+    private boolean hasSucceeded = false;
 
     protected MediatedAdViewController(AdRequester requester, MediatedAd currentAd, AdViewListener listener) {
         this.requester = requester;
@@ -67,6 +65,10 @@ public abstract class MediatedAdViewController implements Displayable {
             onAdFailed(errorCode);
     }
 
+    /*
+    internal methods
+     */
+
     /**
      * Validates all fields necessary for controller to function properly
      *
@@ -74,7 +76,7 @@ public abstract class MediatedAdViewController implements Displayable {
      * @return true if the controller is valid, false if not.
      */
     protected boolean isValid(Class callerClass) {
-        if (failed) {
+        if (hasFailed) {
             return false;
         }
         if (currentAd == null) {
@@ -92,7 +94,7 @@ public abstract class MediatedAdViewController implements Displayable {
     }
 
     /**
-     *  Attempts to instantiate currentAd
+     * Attempts to instantiate currentAd
      *
      * @return true if instantiation was successful, false if not.
      */
@@ -117,47 +119,78 @@ public abstract class MediatedAdViewController implements Displayable {
         return false;
     }
 
+    private void finishController() {
+        mAV = null;
+        requester = null;
+        currentAd = null;
+        listener = null;
+        Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediation_finish));
+    }
+
+    /*
+    Public methods that the mediated network can call,
+    which will alert the registered AdViewListener
+     */
+
     public void onAdLoaded() {
+        if (hasSucceeded || hasFailed) return;
+        cancelTimeout();
+        hasSucceeded = true;
+
         if (listener != null)
             listener.onAdLoaded(this);
-        if (!successCBMade) {
-            successCBMade = true;
-            fireResultCB(RESULT.SUCCESS);
-        }
+        fireResultCB(RESULT.SUCCESS);
     }
 
     public void onAdFailed(MediatedAdViewController.RESULT reason) {
-        this.failed = true;
-        if (listener != null)
-            listener.onAdFailed(noMoreAds);
+        if (hasSucceeded || hasFailed) return;
+        cancelTimeout();
 
-        if (!errorCBMade) {
-            fireResultCB(reason);
-            errorCBMade = true;
-        }
+        if (listener != null)
+            listener.onAdFailed(false);
+        fireResultCB(reason);
+        finishController();
+        hasFailed = true;
     }
 
     public void onAdExpanded() {
+        if (hasFailed) return;
         if (listener != null)
             listener.onAdExpanded();
     }
 
     public void onAdCollapsed() {
+        if (hasFailed) return;
         if (listener != null)
             listener.onAdCollapsed();
     }
 
     public void onAdClicked() {
+        if (hasFailed) return;
         if (listener != null)
             listener.onAdClicked();
     }
 
+    /*
+    Overridden Displayable methods
+     */
+
     @Override
     public boolean failed() {
-        return failed;
+        return hasFailed;
     }
 
+    @Override
+    public void destroy() {
+        finishController();
+    }
+
+    /*
+     Result CB Code
+     */
+
     private void fireResultCB(final RESULT result) {
+        if (hasFailed) return;
 
         // if resultCB is empty don't fire resultCB, and just continue to next ad
         if ((currentAd == null) || (currentAd.getResultCB() == null) || currentAd.getResultCB().isEmpty()) {
@@ -172,42 +205,9 @@ public abstract class MediatedAdViewController implements Displayable {
             requester.onReceiveResponse(null);
             return;
         }
-        final String resultCB = currentAd.getResultCB();
 
         //fire call to result cb url
-        HTTPGet<Void, Void, HTTPResponse> cb = new HTTPGet<Void, Void, HTTPResponse>() {
-            @Override
-            protected void onPostExecute(HTTPResponse httpResponse) {
-                if (requester == null) {
-                    Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
-                    return;
-                }
-                AdResponse response = null;
-                if ((httpResponse != null) && httpResponse.getSucceeded()) {
-                    response = new AdResponse(httpResponse.getResponseBody(), httpResponse.getHeaders());
-                }
-                else {
-                    Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_bad_response));
-                }
-
-                // if this was the result of a successful ad, stop looking for more ads
-                if (successCBMade)
-                    return;
-
-                requester.onReceiveResponse(response);
-            }
-
-            @Override
-            protected String getUrl() {
-                // create the resultCB request
-                StringBuilder sb = new StringBuilder(resultCB);
-                sb.append("&reason=").append(result.ordinal());
-                // append the hashes of the device ID from settings
-                sb.append("&md5udid=").append(Uri.encode(Settings.getSettings().hidmd5));
-                sb.append("&sha1udid=").append(Uri.encode(Settings.getSettings().hidsha1));
-                return sb.toString();
-            }
-        };
+        ResultCBRequest cb = new ResultCBRequest(requester, currentAd.getResultCB(), result);
 
         // Spawn GET call
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -216,4 +216,71 @@ public abstract class MediatedAdViewController implements Displayable {
             cb.execute();
         }
     }
+
+    private class ResultCBRequest extends HTTPGet<Void, Void, HTTPResponse> {
+        AdRequester requester;
+        private String resultCB;
+        RESULT result;
+
+        private ResultCBRequest(AdRequester requester, String resultCB, RESULT result) {
+            this.requester = requester;
+            this.resultCB = resultCB;
+            this.result = result;
+        }
+
+        @Override
+        protected void onPostExecute(HTTPResponse httpResponse) {
+            if (this.requester == null) {
+                Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
+                return;
+            }
+            AdResponse response = null;
+            if ((httpResponse != null) && httpResponse.getSucceeded()) {
+                response = new AdResponse(httpResponse.getResponseBody(), httpResponse.getHeaders());
+            } else {
+                Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_bad_response));
+            }
+
+            // if this was the result of a successful ad, stop looking for more ads
+            if (this.result == RESULT.SUCCESS)
+                return;
+
+            this.requester.onReceiveResponse(response);
+        }
+
+        @Override
+        protected String getUrl() {
+            // create the resultCB request
+            StringBuilder sb = new StringBuilder(this.resultCB);
+            sb.append("&reason=").append(this.result.ordinal());
+            // append the hashes of the device ID from settings
+            sb.append("&md5udid=").append(Uri.encode(Settings.getSettings().hidmd5));
+            sb.append("&sha1udid=").append(Uri.encode(Settings.getSettings().hidsha1));
+            return sb.toString();
+        }
+    }
+
+    /*
+     Timeout handler code
+     */
+
+    protected void startTimeout() {
+        if (hasSucceeded || hasFailed) return;
+        timeoutHandler.sendEmptyMessageDelayed(0, Settings.getSettings().MEDIATED_NETWORK_TIMEOUT);
+    }
+
+    protected void cancelTimeout() {
+        timeoutHandler.removeMessages(0);
+    }
+
+    // if the mediated network fails to call us within the timeout period, fail
+    protected final Handler timeoutHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (hasFailed) return;
+            Clog.w(Clog.mediationLogTag, Clog.getString(R.string.mediation_timeout));
+            onAdFailed(RESULT.INTERNAL_ERROR);
+        }
+    };
+
 }

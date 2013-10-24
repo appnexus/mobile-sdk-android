@@ -58,6 +58,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     private BrowserStyle browserStyle;
     LinkedList<MediatedAd> mediatedAds;
     protected final Handler handler = new Handler();
+    private Displayable lastDisplayable;
 
     /**
      * Begin Construction *
@@ -251,12 +252,17 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
             fail();
             return;
         }
+        if (lastDisplayable != null) {
+            lastDisplayable.destroy();
+            lastDisplayable = null;
+        }
         this.removeAllViews();
         if (d.getView() == null) {
             //TODO: why do we fail silently here
             return;
         }
         this.addView(d.getView());
+        lastDisplayable = d;
         unhide();
     }
 

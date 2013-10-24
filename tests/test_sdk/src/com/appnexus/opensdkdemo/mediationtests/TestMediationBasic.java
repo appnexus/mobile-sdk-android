@@ -20,24 +20,30 @@ import android.test.AndroidTestCase;
 import com.appnexus.opensdk.*;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
-import com.appnexus.opensdkdemo.testviews.DummyView;
-import com.appnexus.opensdkdemo.testviews.NoSDK;
-import com.appnexus.opensdkdemo.testviews.ThirdSuccessfulMediationView;
+import com.appnexus.opensdkdemo.testviews.*;
 import com.appnexus.opensdkdemo.util.Lock;
 import com.appnexus.opensdkdemo.util.TestUtil;
 
-public class TestMediationFailures extends AndroidTestCase implements AdRequester {
-    String old_base_url;
-    AdRequest shouldFail;
-    String shouldFailPlacement;
+//TODO: many of the old mediation tests (1-10) are broken because we don't allow more than one successful adview
+// comment out the return code in MAVC to allow multiple successes and make the test pass
+public class TestMediationBasic extends AndroidTestCase implements AdRequester {
+    String oldUrl;
+    AdRequest request;
+    String placementId;
+    boolean didFail;
+    private static final long WAIT_TIME = 10000;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        Clog.w(TestUtil.testLogTag, "NEW TEST");
-        old_base_url = Settings.getSettings().BASE_URL;
+        Clog.w(TestUtil.testLogTag, "Setting up new test");
+        oldUrl = Settings.getSettings().BASE_URL;
         Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
-        Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
+        Clog.w(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
+        didFail = false;
+        SuccessfulMediationView.didPass = false;
+        SecondSuccessfulMediationView.didPass = false;
+        ThirdSuccessfulMediationView.didPass = false;
         NoSDK.didPass = false;
         ThirdSuccessfulMediationView.didPass = false;
         DummyView.createView(getContext());
@@ -45,15 +51,30 @@ public class TestMediationFailures extends AndroidTestCase implements AdRequeste
 
     @Override
     synchronized protected void tearDown() throws Exception {
-        try {
-            wait(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        if (NoSDK.didPass && ThirdSuccessfulMediationView.didPass)
-            Clog.w(TestUtil.testLogTag, "TEST PASSED #" + shouldFailPlacement);
-        Settings.getSettings().BASE_URL = old_base_url;
+        wait(1000);
+        if ((SuccessfulMediationView.didPass && SecondSuccessfulMediationView.didPass && ThirdSuccessfulMediationView.didPass)
+            || (NoSDK.didPass && ThirdSuccessfulMediationView.didPass))
+            Clog.w(TestUtil.testLogTag, "TEST PASSED #" + placementId);
+        Settings.getSettings().BASE_URL = oldUrl;
         super.tearDown();
+    }
+
+    /**
+     * Create a AdRequest which will request a mediated response to
+     * instantiate the SuccessfulMediationView
+     */
+    public void test1SucceedingMediationCall() {
+        placementId = "1";
+        request = new AdRequest(this, null, null, null, placementId, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
+
+        request.execute();
+        Lock.pause(WAIT_TIME);
+        request.cancel(true);
+
+        assertTrue(SuccessfulMediationView.didPass);
+        assertTrue(SecondSuccessfulMediationView.didPass);
+        assertTrue(ThirdSuccessfulMediationView.didPass);
+        assertFalse(didFail);
     }
 
     /*
@@ -63,13 +84,15 @@ public class TestMediationFailures extends AndroidTestCase implements AdRequeste
     * the following call will go to ThirdSuccessfulMediationView to confirm success
      */
     private void runStandardTest() {
-        shouldFail = new AdRequest(this, null, null, null, shouldFailPlacement, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
+        request = new AdRequest(this, null, null, null, placementId, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
 
-        shouldFail.execute();
-        Lock.pause(10000);
-        shouldFail.cancel(true);
-        assertEquals(true, NoSDK.didPass);
-        assertEquals(true, ThirdSuccessfulMediationView.didPass);
+        request.execute();
+        Lock.pause(WAIT_TIME);
+        request.cancel(true);
+
+        assertTrue(NoSDK.didPass);
+        assertTrue(ThirdSuccessfulMediationView.didPass);
+        assertFalse(didFail);
     }
 
     public void test2NoClassMediationCall() {
@@ -77,7 +100,7 @@ public class TestMediationFailures extends AndroidTestCase implements AdRequeste
         // that returns a non-exist class which cannot be instantiated
         // then verify that the correct fail URL request was made
 
-        shouldFailPlacement = "2";
+        placementId = "2";
         runStandardTest();
     }
 
@@ -86,7 +109,7 @@ public class TestMediationFailures extends AndroidTestCase implements AdRequeste
         // that returns an existing but invalid class which cannot be instantiated
         // then verify that the correct fail URL request was made
 
-        shouldFailPlacement = "3";
+        placementId = "3";
         runStandardTest();
     }
 
@@ -95,7 +118,7 @@ public class TestMediationFailures extends AndroidTestCase implements AdRequeste
         // that returns an class which does not make an ad request
         // then verify that the correct fail URL request was made
 
-        shouldFailPlacement = "4";
+        placementId = "4";
         runStandardTest();
     }
 
@@ -103,7 +126,7 @@ public class TestMediationFailures extends AndroidTestCase implements AdRequeste
         // Create an AdRequest which will request a mediated response
         // that returns an class which throws an exception
         // then verify that the correct fail URL request was made
-        shouldFailPlacement = "5";
+        placementId = "5";
         runStandardTest();
     }
 
@@ -111,13 +134,14 @@ public class TestMediationFailures extends AndroidTestCase implements AdRequeste
         // Create an AdRequest which will request a mediated response
         // that succeeds in instantiation but fails to return an ad
         // verify that the correct fail URL request was made
-        shouldFailPlacement = "6";
+        placementId = "6";
         runStandardTest();
     }
 
     @Override
     public void failed(AdRequest request) {
         Clog.d(TestUtil.testLogTag, "request failed");
+        didFail = true;
         Lock.unpause();
     }
 
