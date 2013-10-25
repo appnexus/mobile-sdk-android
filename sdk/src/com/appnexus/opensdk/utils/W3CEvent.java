@@ -260,10 +260,10 @@ public class W3CEvent {
         if (getStart() != null) {
             long start = -1;
             try {
-                start = (new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ssZZZZZ")).parse(getStart()).getTime();
+                start = (new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ")).parse(getStart()).getTime();
             } catch (ParseException e) {
                 try {
-                    start = (new SimpleDateFormat("yyyy-MM-DD'T'HH:mmZZZZZ")).parse(getStart()).getTime();
+                    start = (new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZZZZZ")).parse(getStart()).getTime();
                 } catch (ParseException e1) {
 
                 }
@@ -279,10 +279,10 @@ public class W3CEvent {
         if (getEnd() != null) {
             long end = -1;
             try {
-                end = (new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ssZZZZZ")).parse(getEnd()).getTime();
+                end = (new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ")).parse(getEnd()).getTime();
             } catch (ParseException e) {
                 try {
-                    end = (new SimpleDateFormat("yyyy-MM-DD'T'HH:mmZZZZZ")).parse(getEnd()).getTime();
+                    end = (new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZZZZZ")).parse(getEnd()).getTime();
                 } catch (ParseException e1) {
 
                 }
