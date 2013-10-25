@@ -150,6 +150,7 @@ public class MRAIDImplementation {
             @Override
             public void onPageFinished(WebView view, String url) {
                 // Fire the ready event only once
+                //TODO set position, size, maxsize, screensize
                 if (!readyFired) {
                     String t = owner.owner.isBanner() ? "inline" : "interstitial";
                     view.loadUrl("javascript:window.mraid.util.setPlacementType('"

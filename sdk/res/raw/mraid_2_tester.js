@@ -207,8 +207,44 @@
             row11.appendChild(td11);
             root_table.appendChild(row11);
 			// Add a button to test mraid.getScreenSize()
+            row12 = document.createElement("tr");
+
+            td12 = document.createElement("td");
+
+            button12 = document.createElement("button");
+
+            button12.innerHTML = "Write screensize to logs";
+            button12.setAttribute('onclick', '(function(){alert("Screen size: "+mraid.getScreenSize().width+", "+mraid.getScreenSize().height)})();');
+
+            td12.appendChild(button12);
+            row12.appendChild(td12);
+            root_table.appendChild(row12);
 			// Add a button to test mraid.getMaxSize()
+            row13 = document.createElement("tr");
+
+            td13 = document.createElement("td");
+
+            button13 = document.createElement("button");
+
+            button13.innerHTML = "Write maxsize to logs";
+            button13.setAttribute('onclick', '(function(){alert("Max size: "+mraid.getMaxSize().width+", "+mraid.getMaxSize().height)})();');
+
+            td13.appendChild(button13);
+            row13.appendChild(td13);
+            root_table.appendChild(row13);
 			// Add a button to test mraid.getCurrentPosition
+            row14 = document.createElement("tr");
+
+            td14 = document.createElement("td");
+
+            button14 = document.createElement("button");
+
+            button14.innerHTML = "Write currentposition to logs";
+            button14.setAttribute('onclick', '(function(){alert("Current position: "+mraid.getCurrentPosition().x+", "+mraid.getCurrentPosition().y)})();');
+
+            td14.appendChild(button14);
+            row14.appendChild(td14);
+            root_table.appendChild(row14);
             document.getElementById("expanded").appendChild(root_table);
 		}else if(new_state==="hidden"){
 			alert('EXPANDED');
