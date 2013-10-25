@@ -160,7 +160,7 @@ public class AdFetcher implements AdRequester {
             // this message
             AdFetcher fetcher = mFetcher.get();
             if (fetcher == null
-                    || fetcher.owner.isMRAIDExpanded())
+                    || !fetcher.owner.isReadyToStart())
                 return;
 
             // If we need to reset, reset.
