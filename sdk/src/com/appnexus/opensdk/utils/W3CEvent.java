@@ -22,6 +22,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 public class W3CEvent {
     private String id;
     private String description;
@@ -254,24 +257,44 @@ public class W3CEvent {
                 i.putExtra("description", getSummary());
             }
         }
-        //if (getStart() != null) {
-        //TODO: convert to UTC millis since epoch WHY DOESN'T THIS WORK QQ
-        if (Build.VERSION.SDK_INT >= 14) {
-            i.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, getStart());//getStart());
-            i.putExtra(CalendarContract.Events.DTSTART, getStart());
-        } else {
-            i.putExtra("beginTime", getStart());
+        if (getStart() != null) {
+            long start = -1;
+            try {
+                start = (new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ssZZZZZ")).parse(getStart()).getTime();
+            } catch (ParseException e) {
+                try {
+                    start = (new SimpleDateFormat("yyyy-MM-DD'T'HH:mmZZZZZ")).parse(getStart()).getTime();
+                } catch (ParseException e1) {
+
+                }
+            }
+            if(start>0){
+                if (Build.VERSION.SDK_INT >= 14) {
+                    i.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, start);
+                } else {
+                    i.putExtra("beginTime", start);
+                }
+            }
         }
-        //}
-        //if (getEnd() != null) {
-        //TODO: convert to UTC millis since epoch
-        if (Build.VERSION.SDK_INT >= 14) {
-            i.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, getEnd());
-            i.putExtra(CalendarContract.Events.DTEND, getEnd());
-        } else {
-            i.putExtra("endTime", getEnd());
+        if (getEnd() != null) {
+            long end = -1;
+            try {
+                end = (new SimpleDateFormat("yyyy-MM-DD'T'HH:mm:ssZZZZZ")).parse(getEnd()).getTime();
+            } catch (ParseException e) {
+                try {
+                    end = (new SimpleDateFormat("yyyy-MM-DD'T'HH:mmZZZZZ")).parse(getEnd()).getTime();
+                } catch (ParseException e1) {
+
+                }
+            }
+            if(end>0){
+                if (Build.VERSION.SDK_INT >= 14) {
+                    i.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, end);
+                } else {
+                    i.putExtra("beginTime", end);
+                }
+            }
         }
-        //}
         if (getStatus() != null) {
             if (Build.VERSION.SDK_INT >= 14) {
                 i.putExtra(CalendarContract.Events.STATUS, getStatus());

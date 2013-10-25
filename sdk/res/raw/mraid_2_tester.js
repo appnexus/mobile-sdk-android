@@ -167,7 +167,7 @@
             button9 = document.createElement("button");
 
             button9.innerHTML = "Call me maybe?";
-            button9.setAttribute('onclick', '(function(){mraid.open("tel:2034513528"})();');
+            button9.setAttribute('onclick', '(function(){mraid.open("tel:2034513528")})();');
 
             td9.appendChild(button9);
             row9.appendChild(td9);
@@ -180,12 +180,31 @@
             button10 = document.createElement("button");
 
             button10.innerHTML = "Text me maybe?";
-            button10.setAttribute('onclick', '(function(){mraid.open("sms:2034513528"})();');
+            button10.setAttribute('onclick', '(function(){mraid.open("sms:2034513528")})();');
 
             td10.appendChild(button10);
             row10.appendChild(td10);
             root_table.appendChild(row10);
+
 			// Add a button to test mraid.supports()
+            row11 = document.createElement("tr");
+
+            td11 = document.createElement("td");
+
+            button11 = document.createElement("button");
+
+            button11.innerHTML = "Print result of supports() to logs";
+            button11.setAttribute('onclick', '(function(){ \
+                alert("mraid.supports(sms) = "+mraid.supports(\"sms\"));\
+                alert("mraid.supports(tel) = "+mraid.supports(\"tel\"));\
+                alert("mraid.supports(cal) = "+mraid.supports(\"cal\"));\
+                alert("mraid.supports(storePicture) = "+mraid.supports(\"storePicture\"));\
+                alert("mraid.supports(inlineVideo) = "+mraid.supports(\"inlineVideo\"));\
+                })();');
+
+            td11.appendChild(button11);
+            row11.appendChild(td11);
+            root_table.appendChild(row11);
 			// Add a button to test mraid.getScreenSize()
 			// Add a button to test mraid.getMaxSize()
 			// Add a button to test mraid.getCurrentPosition

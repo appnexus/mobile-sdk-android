@@ -38,6 +38,7 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.Window;
 import android.webkit.*;
+import android.widget.Toast;
 import com.appnexus.opensdk.utils.*;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -96,10 +97,14 @@ public class MRAIDImplementation {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (!url.startsWith("mraid:") && !url.startsWith("javascript:")) {
-                    if (owner.owner.getOpensNativeBrowser()) {
+                    if (url.startsWith("sms:") || url.startsWith("tel:") || owner.owner.getOpensNativeBrowser()) {
                         Intent intent = new Intent(Intent.ACTION_VIEW,
                                 Uri.parse(url));
-                        owner.getContext().startActivity(intent);
+                        try{
+                            owner.getContext().startActivity(intent);
+                        }catch (Exception e){
+                            Toast.makeText(owner.getContext(),R.string.action_cant_be_completed, Toast.LENGTH_SHORT).show();
+                        }
                     } else {
                         Intent intent = new Intent(owner.getContext(),
                                 BrowserActivity.class);

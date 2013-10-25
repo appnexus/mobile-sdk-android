@@ -24,7 +24,6 @@
     </content>
     <orderEntry type="jdk" jdkName="Android 4.2.2 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="OpenSDK" exported="" />
     <orderEntry type="module" module-name="AmbilWarna" />
     <orderEntry type="module-library" exported="">
       <library>
@@ -35,6 +34,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="sdk" />
   </component>
 </module>
 
