@@ -30,7 +30,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
         return out.failed() ? null : out;
     }
 
-    protected MediatedBannerAdViewController(
+    private MediatedBannerAdViewController(
             Activity activity, AdRequester requester, MediatedAd mediatedAd,
             AdViewListener listener) {
         super(requester, mediatedAd, listener);

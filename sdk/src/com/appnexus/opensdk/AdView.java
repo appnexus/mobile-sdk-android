@@ -43,21 +43,21 @@ import java.util.LinkedList;
  */
 public abstract class AdView extends FrameLayout implements AdViewListener {
 
-    protected AdFetcher mAdFetcher;
-    protected String placementID;
-    protected boolean opensNativeBrowser = false;
-    protected int measuredWidth;
-    protected int measuredHeight;
+    AdFetcher mAdFetcher;
+    String placementID;
+    boolean opensNativeBrowser = false;
+    int measuredWidth;
+    int measuredHeight;
     private boolean measured = false;
-    protected int width = -1;
-    protected int height = -1;
-    protected boolean shouldServePSAs = true;
-    protected float reserve = 0.00f;
+    private   int width = -1;
+    private  int height = -1;
+    boolean shouldServePSAs = true;
+    private  float reserve = 0.00f;
     private boolean mraid_expand = false;
-    protected AdListener adListener;
+    AdListener adListener;
     private BrowserStyle browserStyle;
-    LinkedList<MediatedAd> mediatedAds;
-    protected final Handler handler = new Handler();
+    private LinkedList<MediatedAd> mediatedAds;
+    final Handler handler = new Handler();
     private Displayable lastDisplayable;
 
     /**
@@ -65,23 +65,23 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
      */
 
     @SuppressWarnings("javadoc")
-    public AdView(Context context) {
+    AdView(Context context) {
         super(context, null);
         setup(context, null);
     }
 
-    public AdView(Context context, AttributeSet attrs) {
+    AdView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setup(context, attrs);
 
     }
 
-    public AdView(Context context, AttributeSet attrs, int defStyle) {
+    AdView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         setup(context, attrs);
     }
 
-    protected void setup(Context context, AttributeSet attrs) {
+    void setup(Context context, AttributeSet attrs) {
         // Store self.context in the settings for errors
         Clog.error_context = this.getContext();
 
@@ -162,7 +162,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         }
     }
 
-    protected boolean isMRAIDExpanded() {
+    boolean isMRAIDExpanded() {
         if (this.getChildCount() > 0
                 && this.getChildAt(0) instanceof MRAIDWebView
                 && ((MRAIDWebView) getChildAt(0)).getImplementation().expanded) {
@@ -177,7 +177,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
      * @return true is ad will begin loading, false if ad cannot be loaded
      * at this time given the current settings
      */
-    public boolean loadAd() {
+    boolean loadAd() {
         if (isMRAIDExpanded()) {
             Clog.e(Clog.baseLogTag, Clog.getString(R.string.already_expanded));
             return false;
@@ -246,7 +246,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
      * End Construction
 	 */
 
-    protected void display(Displayable d) {
+    void display(Displayable d) {
         if ((d == null) || d.failed()) {
             // The displayable has failed to be parsed or turned into a View.
             fail();
@@ -268,13 +268,13 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         unhide();
     }
 
-    protected void unhide() {
+    void unhide() {
         if (getVisibility() != VISIBLE) {
             setVisibility(VISIBLE);
         }
     }
 
-    protected void hide() {
+    void hide() {
         if (getVisibility() != GONE)
             setVisibility(GONE);
     }
@@ -346,19 +346,19 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         return width;
     }
 
-    protected int getContainerWidth() {
+    int getContainerWidth() {
         return measuredWidth;
     }
 
-    protected int getContainerHeight() {
+    int getContainerHeight() {
         return measuredHeight;
     }
 
     // Used only by MRAID
     private ImageButton close;
 
-    protected void expand(int w, int h, boolean custom_close,
-                          final MRAIDImplementation caller) {
+    void expand(int w, int h, boolean custom_close,
+                final MRAIDImplementation caller) {
         // Only expand w and h if they are >0, otherwise they are match_parent
         // or something
         mraid_expand = true;
@@ -390,12 +390,14 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
                 }
             });
             this.addView(close);
-        } else if (custom_close && close != null) {
-            close.setVisibility(GONE);
-        } else if (!custom_close && close != null) {
-            this.removeView(close);
-            close.setVisibility(VISIBLE);
-            this.addView(close);// Re-add to send to top
+        } else if (close != null) {
+            if (custom_close) {
+                close.setVisibility(GONE);
+            } else {
+                this.removeView(close);
+                close.setVisibility(VISIBLE);
+                this.addView(close);// Re-add to send to top
+            }
         }
     }
 
@@ -433,7 +435,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         return adListener;
     }
 
-    protected void fail() {
+    void fail() {
         onAdFailed(true);
     }
 
@@ -458,7 +460,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         this.opensNativeBrowser = opensNativeBrowser;
     }
 
-    protected BrowserStyle getBrowserStyle() {
+    BrowserStyle getBrowserStyle() {
         return browserStyle;
     }
 
@@ -497,9 +499,9 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
             this.refreshButton = refreshButton;
         }
 
-        Drawable forwardButton;
-        Drawable backButton;
-        Drawable refreshButton;
+        final Drawable forwardButton;
+        final Drawable backButton;
+        final Drawable refreshButton;
 
         static final ArrayList<Pair<String, BrowserStyle>> bridge = new ArrayList<Pair<String, BrowserStyle>>();
     }

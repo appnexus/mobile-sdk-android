@@ -37,16 +37,16 @@ import java.util.Locale;
 public class AdActivity extends Activity {
 
     FrameLayout layout;
-    long now;
-    boolean close_added = false;
-    int close_button_delay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
+    private long now;
+    private boolean close_added = false;
+    private int close_button_delay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
     private static Activity current_ad_activity = null;
 
-    protected static Activity getCurrent_ad_activity() {
+    static Activity getCurrent_ad_activity() {
         return current_ad_activity;
     }
 
-    protected static void setCurrent_ad_activity(Activity current_ad_activity) {
+    private static void setCurrent_ad_activity(Activity current_ad_activity) {
         AdActivity.current_ad_activity = current_ad_activity;
     }
 
@@ -87,11 +87,11 @@ public class AdActivity extends Activity {
 
     }
 
-    protected void handleMRAIDCollapse(MRAIDWebView m) {
+    void handleMRAIDCollapse(MRAIDWebView m) {
         layout.addView(m);
     }
 
-    protected void addCloseButton(FrameLayout layout) {
+    void addCloseButton(FrameLayout layout) {
         if (close_added) {
             return;
         }
@@ -120,7 +120,7 @@ public class AdActivity extends Activity {
         if (layout != null) {
             layout.setBackgroundColor(av.getBackgroundColor());
             layout.removeAllViews();
-            if (((ViewGroup) av.getParent()) != null) {
+            if (av.getParent() != null) {
                 ((ViewGroup) av.getParent()).removeAllViews();
             }
             Pair<Long, Displayable> p = InterstitialAdView.q.poll();
@@ -129,7 +129,7 @@ public class AdActivity extends Activity {
                 Clog.w(Clog.baseLogTag, Clog.getString(R.string.too_old));
                 p = InterstitialAdView.q.poll();
             }
-            if (p == null)
+            if (p == null || p.second == null || p.second.getView() == null)
                 return;
             layout.addView(p.second.getView());
         }
@@ -139,7 +139,7 @@ public class AdActivity extends Activity {
         }
     }
 
-    class ButtonAsyncTask extends AsyncTask<FrameLayout, Integer, FrameLayout> {
+    private class ButtonAsyncTask extends AsyncTask<FrameLayout, Integer, FrameLayout> {
 
         @Override
         protected FrameLayout doInBackground(FrameLayout... params) {
@@ -163,7 +163,7 @@ public class AdActivity extends Activity {
     }
 
     @SuppressLint({"InlinedApi", "DefaultLocale"})
-    protected static void lockOrientation(Activity a) {
+    static void lockOrientation(Activity a) {
         // Fix an accelerometer bug with kindle fire HDs
         boolean isKindleFireHD = false;
         String device = Settings.getSettings().deviceModel

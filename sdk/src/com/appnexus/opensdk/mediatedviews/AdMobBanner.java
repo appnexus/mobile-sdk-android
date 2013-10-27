@@ -12,9 +12,10 @@ import com.google.ads.*;
 import com.google.ads.AdRequest.ErrorCode;
 
 public class AdMobBanner implements MediatedBannerAdView, AdListener {
-    MediatedBannerAdViewController mMediatedBannerAdViewController;
+    private MediatedBannerAdViewController mMediatedBannerAdViewController;
 
     public AdMobBanner() {
+        super();
     }
 
     @Override

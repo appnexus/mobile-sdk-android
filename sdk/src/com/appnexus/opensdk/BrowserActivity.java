@@ -38,9 +38,7 @@ import com.appnexus.opensdk.utils.Clog;
 
 public class BrowserActivity extends Activity {
     private WebView webview;
-    private ImageButton back;
-    private ImageButton forward;
-    private ImageButton refresh;
+
     private ProgressBar progressBar;
 
     @SuppressWarnings("deprecation")
@@ -51,9 +49,9 @@ public class BrowserActivity extends Activity {
         setContentView(R.layout.activity_in_app_browser);
 
         webview = (WebView) findViewById(R.id.web_view);
-        back = (ImageButton) findViewById(R.id.browser_back);
-        forward = (ImageButton) findViewById(R.id.browser_forward);
-        refresh = (ImageButton) findViewById(R.id.browser_refresh);
+        ImageButton  back = (ImageButton) findViewById(R.id.browser_back);
+        ImageButton forward = (ImageButton) findViewById(R.id.browser_forward);
+        ImageButton refresh = (ImageButton) findViewById(R.id.browser_refresh);
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         webview.getSettings().setBuiltInZoomControls(true);
@@ -184,6 +182,24 @@ public class BrowserActivity extends Activity {
         }
 
         webview.loadUrl(url);
+    }
+
+    @Override
+    protected void onResume() {
+        webview.onResume();
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        webview.onPause();
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        webview.destroy();
+        super.onDestroy();
     }
 
     @Override

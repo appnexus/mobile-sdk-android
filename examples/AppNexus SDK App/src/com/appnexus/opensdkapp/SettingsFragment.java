@@ -30,7 +30,6 @@ import android.widget.*;
 import com.appnexus.opensdk.utils.Clog;
 
 public class SettingsFragment extends Fragment {
-    private Button btnLoadAd;
     private GradientDrawable colorViewBackground;
     private Spinner dropSize, dropRefresh;
 
@@ -39,8 +38,7 @@ public class SettingsFragment extends Fragment {
             btnBrowserInApp, btnBrowserNative;
 
     private TextView txtSize, txtRefresh,
-            txtBackgroundColor,
-            txtMemberId, txtDongle;
+            txtBackgroundColor;
     private EditText editPlacementId,
             editBackgroundColor,
             editMemberId, editDongle;
@@ -68,8 +66,8 @@ public class SettingsFragment extends Fragment {
         txtSize = (TextView) out.findViewById(R.id.txt_size);
         txtRefresh = (TextView) out.findViewById(R.id.txt_refresh);
         txtBackgroundColor = (TextView) out.findViewById(R.id.txt_interstitial_color);
-        txtMemberId = (TextView) out.findViewById(R.id.txt_memberid);
-        txtDongle = (TextView) out.findViewById(R.id.txt_dongle);
+        TextView txtMemberId = (TextView) out.findViewById(R.id.txt_memberid);
+        TextView txtDongle = (TextView) out.findViewById(R.id.txt_dongle);
 
         colorViewBackground = (GradientDrawable) out.findViewById(R.id.view_color).getBackground();
 
@@ -78,7 +76,7 @@ public class SettingsFragment extends Fragment {
         editMemberId = (EditText) out.findViewById(R.id.edit_memberid);
         editDongle = (EditText) out.findViewById(R.id.edit_dongle);
 
-        btnLoadAd = (Button) out.findViewById(R.id.btn_load_ad);
+        Button  btnLoadAd = (Button) out.findViewById(R.id.btn_load_ad);
 
         // create dropdowns
         dropSize = initDropdown(out, container, R.id.dropdown_size, R.array.sizes);

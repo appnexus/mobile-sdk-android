@@ -21,7 +21,7 @@ import com.appnexus.opensdk.utils.Clog;
 
 public class MediatedInterstitialAdViewController extends MediatedAdViewController implements Displayable {
 
-    Activity activity;
+    private Activity activity;
 
     static public MediatedInterstitialAdViewController create(
             Activity activity, AdRequester requester,
@@ -30,7 +30,7 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
         return out.failed() ? null : out;
     }
 
-    protected MediatedInterstitialAdViewController(
+    private MediatedInterstitialAdViewController(
             Activity activity, AdRequester requester, MediatedAd mediatedAd,
             AdViewListener listener) {
         super(requester, mediatedAd, listener);
@@ -41,7 +41,7 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
         this.activity = activity;
     }
 
-    protected void show() {
+    void show() {
         if (mAV != null) {
             ((MediatedInterstitialAdView) mAV).show();
         }

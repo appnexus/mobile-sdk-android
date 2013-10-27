@@ -37,19 +37,20 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 @SuppressLint("InlinedApi")
-public class MRAIDImplementation {
-    MRAIDWebView owner;
-    boolean readyFired = false;
+class MRAIDImplementation {
+    private final MRAIDWebView owner;
+    private boolean readyFired = false;
     boolean expanded = false;
-    boolean hidden = false;
-    int default_width, default_height;
+    private boolean hidden = false;
+    private int default_width;
+    private int default_height;
 
     public MRAIDImplementation(MRAIDWebView owner) {
         this.owner = owner;
     }
 
     // The webview about to load the ad, and the html ad content
-    protected String onPreLoadContent(WebView wv, String html) {
+    String onPreLoadContent(WebView wv, String html) {
         // Check to ensure <html> tags are present
         if (!html.contains("<html>")) {
             html = "<html><head></head><body style='padding:0;margin:0;'>"
@@ -68,15 +69,17 @@ public class MRAIDImplementation {
         return html;
     }
 
-    protected String getMraidDotJS(Resources r) {
+    String getMraidDotJS(Resources r) {
         InputStream ins = r.openRawResource(R.raw.mraid);
         try {
             byte[] buffer = new byte[ins.available()];
-            ins.read(buffer);
-            return new String(buffer, "UTF-8");
+            if ( ins.read(buffer) > 0) {
+                return new String(buffer, "UTF-8");
+            }
         } catch (IOException e) {
-            return null;
+
         }
+        return null;
     }
 
     protected void onReceivedError(WebView view, int errorCode, String desc,
@@ -85,7 +88,7 @@ public class MRAIDImplementation {
                 R.string.webview_received_error, errorCode, desc, failingUrl));
     }
 
-    protected WebViewClient getWebViewClient() {
+    WebViewClient getWebViewClient() {
 
         return new WebViewClient() {
 
@@ -159,22 +162,22 @@ public class MRAIDImplementation {
         };
     }
 
-	protected WebChromeClient getWebChromeClient() {
+	WebChromeClient getWebChromeClient() {
 		return new VideoEnabledWebChromeClient((Activity) owner.getContext());
 	}
 
-    protected void onVisible() {
+    void onVisible() {
         if (readyFired)
             owner.loadUrl("javascript:window.mraid.util.setIsViewable(true)");
 
     }
 
-    protected void onInvisible() {
+    void onInvisible() {
         if (readyFired)
             owner.loadUrl("javascript:window.mraid.util.setIsViewable(false)");
     }
 
-    protected void close() {
+    void close() {
         if (expanded) {
             AdView.LayoutParams lp = new AdView.LayoutParams(
                     owner.getLayoutParams());
@@ -199,7 +202,7 @@ public class MRAIDImplementation {
         }
     }
 
-    protected void expand(ArrayList<BasicNameValuePair> parameters) {
+    void expand(ArrayList<BasicNameValuePair> parameters) {
         if (!hidden) {
             int width = owner.getLayoutParams().width;// Use current height and
             // width as expansion
@@ -243,7 +246,7 @@ public class MRAIDImplementation {
         }
     }
 
-    protected void dispatch_mraid_call(String url) {
+    void dispatch_mraid_call(String url) {
         // Remove the fake protocol
         url = url.replaceFirst("mraid://", "");
 

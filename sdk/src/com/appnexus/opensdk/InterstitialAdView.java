@@ -40,18 +40,18 @@ import java.util.Queue;
  * @author Jacob Shufro
  */
 public class InterstitialAdView extends AdView {
-    protected static final long MAX_AGE = 60000;
-    protected ArrayList<Size> allowedSizes;
-    protected int backgroundColor = Color.BLACK;
-    protected int closeButtonDelay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
-    protected boolean interacted = false;
-    protected static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
-    protected static Queue<Pair<Long, Displayable>> q = new LinkedList<Pair<Long, Displayable>>();
+    static final long MAX_AGE = 60000;
+    private ArrayList<Size> allowedSizes;
+    private int backgroundColor = Color.BLACK;
+    private int closeButtonDelay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
+    boolean interacted = false;
+    static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
+    static final Queue<Pair<Long, Displayable>> q = new LinkedList<Pair<Long, Displayable>>();
 
     //Intent Keys
-    protected static String INTENT_KEY_TIME = "TIME";
-    protected static String INTENT_KEY_ORIENTATION = "ORIENTATION";
-    protected static String INTENT_KEY_CLOSE_BUTTON_DELAY = "CLOSE_BUTTON_DELAY";
+    static final String INTENT_KEY_TIME = "TIME";
+    private static final String INTENT_KEY_ORIENTATION = "ORIENTATION";
+    static final String INTENT_KEY_CLOSE_BUTTON_DELAY = "CLOSE_BUTTON_DELAY";
 
     //To let the activity show the button.
     private AdActivity adActivity = null;
@@ -199,7 +199,7 @@ public class InterstitialAdView extends AdView {
                 .currentTimeMillis(), d));
     }
 
-    protected void interacted() {
+    void interacted() {
         interacted = true;
         if (getAdActivity() != null) {
             getAdActivity().addCloseButton(getAdActivity().layout);
@@ -361,8 +361,8 @@ public class InterstitialAdView extends AdView {
      * @author Jacob Shufro
      */
     public class Size {
-        private int w;
-        private int h;
+        private final int w;
+        private final int h;
 
         Size(int w, int h) {
             this.w = w;

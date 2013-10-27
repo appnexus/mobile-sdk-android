@@ -25,8 +25,7 @@ import com.millennialmedia.android.MMSDK;
 
 public class MillennialMediaInterstitial implements MediatedInterstitialAdView {
 
-    MMInterstitial iad;
-    MediatedInterstitialAdViewController mMediatedInterstitialAdViewController;
+    private MMInterstitial iad;
 
     @Override
     public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid) {
@@ -41,13 +40,11 @@ public class MillennialMediaInterstitial implements MediatedInterstitialAdView {
         }
         Clog.d(Clog.mediationLogTag, String.format("MillennialMediaInterstitial - requesting an interstitial ad: [%s, %s]", parameter, uid));
 
-        mMediatedInterstitialAdViewController = mIC;
-
         MMSDK.initialize(activity);
 
         iad = new MMInterstitial(activity);
         iad.setApid(uid);
-        iad.setListener(new MillennialMediaListener(mMediatedInterstitialAdViewController, getClass().getSimpleName()));
+        iad.setListener(new MillennialMediaListener(mIC, getClass().getSimpleName()));
 
         if (!iad.isAdAvailable()) {
             iad.fetch();

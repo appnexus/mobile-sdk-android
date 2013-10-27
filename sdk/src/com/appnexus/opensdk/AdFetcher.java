@@ -32,15 +32,14 @@ import java.util.concurrent.TimeUnit;
 
 public class AdFetcher implements AdRequester {
     private ScheduledExecutorService tasker;
-    protected AdView owner;
+    private final AdView owner;
     private int period = -1;
     private boolean autoRefresh;
-    private RequestHandler handler;
+    private final RequestHandler handler;
     private boolean shouldReset = false;
     private long lastFetchTime = -1;
     private long timePausedAt = -1;
-    private boolean shouldShowTrueTime = false;
-    protected AdRequest adRequest;
+    private AdRequest adRequest;
 
     // Fires requests whenever it receives a message
     public AdFetcher(AdView owner) {
@@ -48,7 +47,7 @@ public class AdFetcher implements AdRequester {
         handler = new RequestHandler(this);
     }
 
-    protected void setPeriod(int period) {
+    void setPeriod(int period) {
         this.period = period;
         if (tasker != null)
             shouldReset = true;
@@ -58,7 +57,7 @@ public class AdFetcher implements AdRequester {
         return period;
     }
 
-    protected void stop() {
+    void stop() {
         if (adRequest != null) {
             adRequest.cancel(true);
             adRequest = null;
@@ -83,7 +82,7 @@ public class AdFetcher implements AdRequester {
         owner.fail();
     }
 
-    protected void start() {
+    void start() {
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.start));
         if (tasker != null) {
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.moot_restart));
@@ -115,9 +114,7 @@ public class AdFetcher implements AdRequester {
             } else {
                 stall_temp = 0;
             }
-            if (!shouldShowTrueTime) {
-                stall_temp = 0;
-            }
+
             final long stall = stall_temp;
             Clog.v(Clog.baseLogTag,
                     Clog.getString(R.string.request_delayed_by_x_ms, stall));
@@ -133,7 +130,7 @@ public class AdFetcher implements AdRequester {
         }
     }
 
-    class MessageRunnable implements Runnable {
+    private class MessageRunnable implements Runnable {
 
         @Override
         public void run() {
@@ -191,11 +188,11 @@ public class AdFetcher implements AdRequester {
         }
     }
 
-    protected boolean getAutoRefresh() {
+    boolean getAutoRefresh() {
         return autoRefresh;
     }
 
-    protected void setAutoRefresh(boolean autoRefresh) {
+    void setAutoRefresh(boolean autoRefresh) {
         this.autoRefresh = autoRefresh;
         // Restart with new autorefresh setting, but only if auto-refresh was
         // set to true

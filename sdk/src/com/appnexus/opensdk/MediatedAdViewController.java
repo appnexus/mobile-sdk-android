@@ -36,16 +36,16 @@ public abstract class MediatedAdViewController implements Displayable {
         INTERNAL_ERROR
     }
 
-    Class<?> c;
+
     MediatedAdView mAV;
-    AdRequester requester;
+    private AdRequester requester;
     MediatedAd currentAd;
-    AdViewListener listener;
+    private AdViewListener listener;
 
     private boolean hasFailed = false;
     private boolean hasSucceeded = false;
 
-    protected MediatedAdViewController(AdRequester requester, MediatedAd currentAd, AdViewListener listener) {
+    MediatedAdViewController(AdRequester requester, MediatedAd currentAd, AdViewListener listener) {
         this.requester = requester;
         this.listener = listener;
         this.currentAd = currentAd;
@@ -75,7 +75,7 @@ public abstract class MediatedAdViewController implements Displayable {
      * @param callerClass the calling class that mAV should be an instance of
      * @return true if the controller is valid, false if not.
      */
-    protected boolean isValid(Class callerClass) {
+    boolean isValid(Class callerClass) {
         if (hasFailed) {
             return false;
         }
@@ -103,7 +103,7 @@ public abstract class MediatedAdViewController implements Displayable {
                 R.string.instantiating_class, currentAd.getClassName()));
 
         try {
-            c = Class.forName(currentAd.getClassName());
+            Class<?> c = Class.forName(currentAd.getClassName());
             mAV = (MediatedAdView) c.newInstance();
             // exceptions will skip down to return false
             return true;
@@ -218,9 +218,9 @@ public abstract class MediatedAdViewController implements Displayable {
     }
 
     private class ResultCBRequest extends HTTPGet<Void, Void, HTTPResponse> {
-        AdRequester requester;
-        private String resultCB;
-        RESULT result;
+        final AdRequester requester;
+        private final String resultCB;
+        final RESULT result;
 
         private ResultCBRequest(AdRequester requester, String resultCB, RESULT result) {
             this.requester = requester;
@@ -264,17 +264,17 @@ public abstract class MediatedAdViewController implements Displayable {
      Timeout handler code
      */
 
-    protected void startTimeout() {
+    void startTimeout() {
         if (hasSucceeded || hasFailed) return;
         timeoutHandler.sendEmptyMessageDelayed(0, Settings.getSettings().MEDIATED_NETWORK_TIMEOUT);
     }
 
-    protected void cancelTimeout() {
+    void cancelTimeout() {
         timeoutHandler.removeMessages(0);
     }
 
     // if the mediated network fails to call us within the timeout period, fail
-    protected final Handler timeoutHandler = new Handler() {
+    private final Handler timeoutHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if (hasFailed) return;

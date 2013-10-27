@@ -22,7 +22,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import com.appnexus.opensdk.utils.Clog;
 
-public class BaseWebChromeClient extends WebChromeClient {
+class BaseWebChromeClient extends WebChromeClient {
 
     @Override
     public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
