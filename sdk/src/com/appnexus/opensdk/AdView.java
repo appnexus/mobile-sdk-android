@@ -258,7 +258,15 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
             }
             lastDisplayable = null;
         }
+
+        WebView webView = null;
+        if (getChildAt(0) instanceof WebView) {
+            webView = (WebView) getChildAt(0);
+        }
+
         this.removeAllViews();
+        if (webView != null)
+            webView.destroy();
         if (d.getView() == null) {
             //TODO: why do we fail silently here
             return;

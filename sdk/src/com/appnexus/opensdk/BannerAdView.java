@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.webkit.WebView;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
@@ -329,6 +330,11 @@ public class BannerAdView extends AdView {
                 // Were' not displaying the adview, the system is
                 requesting_visible = false;
             }
+
+            if (getChildAt(0) instanceof WebView) {
+                WebView webView = (WebView) getChildAt(0);
+                webView.onResume();
+            }
         } else {
             // Unregister the receiver to prevent a leak.
             if (receiversRegistered) {
@@ -338,6 +344,11 @@ public class BannerAdView extends AdView {
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.hidden));
             if (mAdFetcher != null && running) {
                 stop();
+            }
+
+            if (getChildAt(0) instanceof WebView) {
+                WebView webView = (WebView) getChildAt(0);
+                webView.onPause();
             }
         }
     }
