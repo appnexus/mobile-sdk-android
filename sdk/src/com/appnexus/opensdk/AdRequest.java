@@ -30,6 +30,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
+import android.util.Pair;
 import com.appnexus.opensdk.InterstitialAdView.Size;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HashingFunctions;
@@ -84,6 +85,10 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     private int maxHeight = -1;
     private boolean shouldRetry = true; // true by default
     private float reserve = 0.00f;
+    private String age;
+    private String gender;
+    private ArrayList<Pair<String, String>> customKeywords;
+
 
     private final Handler retryHandler = new Handler();
 
@@ -292,6 +297,20 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             this.psa = "0";
         }
 
+        age = owner.getAge();
+        if (owner.getGender() != null) {
+            if (owner.getGender() == AdView.GENDER.MALE) {
+                gender = "m";
+            }
+            else if (owner.getGender() == AdView.GENDER.FEMALE) {
+                gender = "f";
+            }
+            else {
+                gender = null;
+            }
+        }
+        customKeywords = owner.getCustomKeywords();
+
         mcc = Settings.getSettings().mcc;
         mnc = Settings.getSettings().mnc;
         os = Settings.getSettings().os;
@@ -356,9 +375,21 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (!isEmpty(nativeBrowser)) sb.append("&native_browser=").append(nativeBrowser);
         if (!isEmpty(psa)) sb.append( "&psa=").append(psa);
         if (reserve>0) sb.append("&reserve=").append(reserve);
+        if (!isEmpty(age)) sb.append("&age=").append(Uri.encode(age));
+        if (!isEmpty(gender)) sb.append("&gender=").append(Uri.encode(gender));
         sb.append("&format=json");
         sb.append("&st=mobile_app");
         sb.append("&sdkver=").append(Uri.encode(Settings.getSettings().sdkVersion));
+
+        // add custom paramters if there are any
+        for (Pair<String, String> pair : customKeywords) {
+            if (!isEmpty(pair.first) && (pair.second != null)) {
+                sb.append("&")
+                        .append(pair.first)
+                        .append("=")
+                        .append(Uri.encode(pair.second));
+            }
+        }
 
         return sb.toString();
     }

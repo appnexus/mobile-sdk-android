@@ -50,10 +50,13 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     int measuredWidth;
     int measuredHeight;
     private boolean measured = false;
-    private   int width = -1;
-    private  int height = -1;
+    private int width = -1;
+    private int height = -1;
     boolean shouldServePSAs = true;
-    private  float reserve = 0.00f;
+    private float reserve = 0.00f;
+    String age;
+    GENDER gender;
+    ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
     boolean mraid_expand = false;
     AdListener adListener;
     private BrowserStyle browserStyle;
@@ -498,6 +501,69 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
 
     public void setReserve(float reserve) {
         this.reserve = reserve;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    /**
+     *
+     * @param age should be a numerical age, birth year, or hyphenated age range.
+     *            For example: "56", "1974", or "25-35"
+     */
+    public void setAge(String age) {
+        this.age = age;
+    }
+
+    public enum GENDER {
+        MALE,
+        FEMALE
+    }
+
+    public GENDER getGender() {
+        return gender;
+    }
+
+    /**
+     *
+     * @param gender should be either "m" for male or "f" for female
+     */
+    public void setGender(GENDER gender) {
+        this.gender = gender;
+    }
+
+    /**
+     * add a custom keyword to the request url for the ad
+     * @param key keyword name to add, cannot be null or empty
+     * @param value keyword value, cannot be null
+     */
+    public void addCustomKeywords(String key, String value) {
+        if ((key == null) || (key.isEmpty()) || (value == null)) {
+            return;
+        }
+        customKeywords.add(new Pair<String, String>(key, value));
+    }
+
+    /**
+     * remove a custom keyword from the request url for the ad
+     * @param key keyword name to remove, cannot be null or empty
+     */
+    public void removeCustomKeyword(String key) {
+        if ((key == null) || (key.isEmpty()))
+            return;
+
+        for (int i = 0; i < customKeywords.size(); i++) {
+            Pair<String, String> pair = customKeywords.get(i);
+            if (pair.first.equals(key)) {
+                customKeywords.remove(i);
+                break;
+            }
+        }
+    }
+
+    public ArrayList<Pair<String, String>> getCustomKeywords() {
+        return customKeywords;
     }
 
     static class BrowserStyle {
