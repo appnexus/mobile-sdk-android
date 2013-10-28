@@ -43,7 +43,6 @@ class MillennialMediaListener implements RequestListener {
             mediatedAdViewController.onAdExpanded();
     }
 
-    // this callback doesn't work...
     @Override
     public void MMAdOverlayClosed(MMAd mmAd) {
         Clog.d(Clog.mediationLogTag, String.format("%s - MMAdOverlayClosed: %s", className, mmAd));
@@ -102,7 +101,6 @@ class MillennialMediaListener implements RequestListener {
                 code = MediatedAdViewController.RESULT.INVALID_REQUEST;
                 break;
             case MMException.CACHE_NOT_EMPTY:
-                // this shouldn't happen anymore but just in case
                 Clog.d(Clog.mediationLogTag, "%s - cache not empty, show it");
                 if (mediatedAdViewController instanceof MediatedInterstitialAdViewController) {
                     shouldCancelFailure = true;
@@ -139,7 +137,6 @@ class MillennialMediaListener implements RequestListener {
             mediatedAdViewController.onAdFailed(code);
     }
 
-    // this callback doesn't work for MMInterstitials
     @Override
     public void onSingleTap(MMAd mmAd) {
         Clog.d(Clog.mediationLogTag, String.format("%s - onSingleTap: %s", className, mmAd));

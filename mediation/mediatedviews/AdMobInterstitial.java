@@ -39,8 +39,6 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
 
         AdRequest ar = new AdRequest();
 
-        ar.addTestDevice(((TelephonyManager) activity.getBaseContext()
-                .getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
 
         iad.setAdListener(this);
 

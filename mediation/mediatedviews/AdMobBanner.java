@@ -38,10 +38,6 @@ public class AdMobBanner implements MediatedBannerAdView, AdListener {
 
         mMediatedBannerAdViewController = mBC;
 
-        // TODO remove
-        ar.addTestDevice(((TelephonyManager) activity.getBaseContext()
-                .getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId());
-
         admobAV.loadAd(ar);
         return admobAV;
     }
