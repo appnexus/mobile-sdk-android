@@ -37,9 +37,9 @@ public abstract class MediatedAdViewController implements Displayable {
     }
 
 
-    MediatedAdView mAV;
+    protected MediatedAdView mAV;
     private AdRequester requester;
-    MediatedAd currentAd;
+    protected MediatedAd currentAd;
     private AdViewListener listener;
 
     private boolean hasFailed = false;

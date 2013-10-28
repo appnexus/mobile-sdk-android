@@ -22,9 +22,7 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Bundle;
+import android.os.*;
 import android.util.Pair;
 import android.view.*;
 import android.widget.FrameLayout;
@@ -39,7 +37,7 @@ public class AdActivity extends Activity {
     FrameLayout layout;
     private long now;
     private boolean close_added = false;
-    private int close_button_delay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
+    private int closeButtonDelay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
     private static Activity current_ad_activity = null;
 
     static Activity getCurrent_ad_activity() {
@@ -67,18 +65,23 @@ public class AdActivity extends Activity {
         setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
         now = getIntent().getLongExtra(InterstitialAdView.INTENT_KEY_TIME,
                 System.currentTimeMillis());
-        close_button_delay = getIntent().getIntExtra(
+        closeButtonDelay = getIntent().getIntExtra(
                 InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY,
                 Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
 
         // Add a close button after a 10 second delay.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            new ButtonAsyncTask().executeOnExecutor(
-                    AsyncTask.THREAD_POOL_EXECUTOR, layout);
-        } else {
-            new ButtonAsyncTask().execute(layout);
-        }
+        closeButtonHandler.sendMessageDelayed(closeButtonHandler.obtainMessage(0, layout), closeButtonDelay);
     }
+
+    private final Handler closeButtonHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.obj instanceof FrameLayout) {
+                final FrameLayout layout = (FrameLayout) msg.obj;
+                addCloseButton(layout);
+            }
+        }
+    };
 
     protected void finishIfNoInteraction() {
         if (!InterstitialAdView.INTERSTITIALADVIEW_TO_USE.interacted) {
@@ -137,29 +140,6 @@ public class AdActivity extends Activity {
         if (av != null) {
             av.setAdActivity(this);
         }
-    }
-
-    private class ButtonAsyncTask extends AsyncTask<FrameLayout, Integer, FrameLayout> {
-
-        @Override
-        protected FrameLayout doInBackground(FrameLayout... params) {
-            if (params.length < 1)
-                return null;
-            try {
-                Thread.sleep(close_button_delay);
-            } catch (InterruptedException e) {
-                return null;
-            }
-            return params[0];
-        }
-
-        @Override
-        protected void onPostExecute(FrameLayout result) {
-            if (result != null) {
-                addCloseButton(result);
-            }
-        }
-
     }
 
     @SuppressLint({"InlinedApi", "DefaultLocale"})

@@ -212,6 +212,10 @@ public class Clog {
         return listener != null && listeners.remove(listener);
     }
 
+    synchronized public static void unregisterAllListeners() {
+        listeners.clear();
+    }
+
     private synchronized static void notifyListener(LOG_LEVEL level, String LogTag, String message) {
         notifyListener(level, LogTag, message, null);
     }
