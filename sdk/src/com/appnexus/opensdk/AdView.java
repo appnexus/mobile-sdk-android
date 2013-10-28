@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Pair;
@@ -57,7 +58,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     AdListener adListener;
     private BrowserStyle browserStyle;
     private LinkedList<MediatedAd> mediatedAds;
-    final Handler handler = new Handler();
+    final Handler handler = new Handler(Looper.getMainLooper());
     private Displayable lastDisplayable;
 
     /**
@@ -517,7 +518,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
 
     @Override
     public void onAdLoaded(final Displayable d) {
-        this.post(new Runnable() {
+        handler.post(new Runnable() {
             @Override
             public void run() {
                 display(d);
