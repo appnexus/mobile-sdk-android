@@ -25,6 +25,7 @@ import android.graphics.Color;
 import android.os.*;
 import android.util.Pair;
 import android.view.*;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.Clog;
@@ -35,10 +36,11 @@ import java.util.Locale;
 public class AdActivity extends Activity {
 
     FrameLayout layout;
+    private WebView webView;
     private long now;
     private boolean close_added = false;
-    private int closeButtonDelay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
     private static Activity current_ad_activity = null;
+    private InterstitialAdView adView;
 
     static Activity getCurrent_ad_activity() {
         return current_ad_activity;
@@ -65,26 +67,27 @@ public class AdActivity extends Activity {
         setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
         now = getIntent().getLongExtra(InterstitialAdView.INTENT_KEY_TIME,
                 System.currentTimeMillis());
-        closeButtonDelay = getIntent().getIntExtra(
+        int closeButtonDelay = getIntent().getIntExtra(
                 InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY,
                 Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
 
         // Add a close button after a 10 second delay.
-        closeButtonHandler.sendMessageDelayed(closeButtonHandler.obtainMessage(0, layout), closeButtonDelay);
+        closeButtonHandler.sendEmptyMessageDelayed(0, closeButtonDelay);
     }
 
     private final Handler closeButtonHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if (msg.obj instanceof FrameLayout) {
-                final FrameLayout layout = (FrameLayout) msg.obj;
-                addCloseButton(layout);
+                if ((adView != null) && adView.interacted) {
+                    addCloseButton();
+                }
             }
         }
     };
 
     protected void finishIfNoInteraction() {
-        if (!InterstitialAdView.INTERSTITIALADVIEW_TO_USE.interacted) {
+        if ((adView != null) && !adView.interacted) {
             finish();
         }
 
@@ -94,7 +97,7 @@ public class AdActivity extends Activity {
         layout.addView(m);
     }
 
-    void addCloseButton(FrameLayout layout) {
+    void addCloseButton() {
         if (close_added) {
             return;
         }
@@ -132,14 +135,17 @@ public class AdActivity extends Activity {
                 Clog.w(Clog.baseLogTag, Clog.getString(R.string.too_old));
                 p = InterstitialAdView.q.poll();
             }
-            if (p == null || p.second == null || p.second.getView() == null)
+            if ((p == null) || (p.second == null)
+                    || !(p.second.getView() instanceof WebView))
                 return;
-            layout.addView(p.second.getView());
+            webView = (WebView) p.second.getView();
+            layout.addView(webView);
         }
 
         if (av != null) {
             av.setAdActivity(this);
         }
+        adView = av;
     }
 
     @SuppressLint({"InlinedApi", "DefaultLocale"})
@@ -194,4 +200,28 @@ public class AdActivity extends Activity {
         }
     }
 
+    @Override
+    protected void onPause() {
+        if (webView != null) webView.onPause();
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        if (webView != null) webView.onResume();
+        super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (webView != null) {
+            if (webView.getParent() != null)
+                ((ViewGroup) webView.getParent()).removeView(webView);
+            webView.destroy();
+        }
+        if (adView != null) {
+            adView.close = null;
+        }
+        super.onDestroy();
+    }
 }

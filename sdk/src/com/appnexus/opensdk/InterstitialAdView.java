@@ -25,8 +25,12 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Pair;
+import android.view.Gravity;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
@@ -202,7 +206,7 @@ public class InterstitialAdView extends AdView {
     void interacted() {
         interacted = true;
         if (getAdActivity() != null) {
-            getAdActivity().addCloseButton(getAdActivity().layout);
+            getAdActivity().addCloseButton();
         }
     }
 
@@ -405,5 +409,45 @@ public class InterstitialAdView extends AdView {
     @Override
     boolean isInterstitial() {
         return true;
+    }
+
+    @Override
+    void expand(int w, int h, boolean custom_close, final MRAIDImplementation caller) {
+        if ((getAdActivity() == null) || (getAdActivity().layout == null))
+            return;
+        FrameLayout activityLayout = getAdActivity().layout;
+
+        mraid_expand = true;
+        if (!custom_close && (close == null)) {
+            // Add a stock close button to the top right corner
+            close = new ImageButton(activityLayout.getContext());
+            close.setImageDrawable(getResources().getDrawable(
+                    android.R.drawable.ic_menu_close_clear_cancel));
+            FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.RIGHT
+                    | Gravity.TOP);
+            if (activityLayout.getChildAt(0) != null) {
+                blp.rightMargin = (w - activityLayout.getChildAt(0).getMeasuredWidth()) / 2;
+                blp.topMargin = (h - activityLayout.getChildAt(0).getMeasuredHeight()) / 2;
+            }
+            close.setLayoutParams(blp);
+            close.setBackgroundColor(Color.TRANSPARENT);
+            close.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    caller.close();
+                }
+            });
+            activityLayout.addView(close);
+        } else if (close != null) {
+            if (custom_close) {
+                close.setVisibility(GONE);
+            } else {
+                activityLayout.removeView(close);
+                close.setVisibility(VISIBLE);
+                activityLayout.addView(close);// Re-add to send to top
+            }
+        }
     }
 }

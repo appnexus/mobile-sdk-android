@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.webkit.*;
 import android.webkit.WebSettings.PluginState;
 import android.widget.FrameLayout;
@@ -198,7 +199,11 @@ public class BrowserActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        webview.destroy();
+        if (webview != null) {
+            if (webview.getParent() != null)
+                ((ViewGroup) webview.getParent()).removeView(webview);
+            webview.destroy();
+        }
         super.onDestroy();
     }
 

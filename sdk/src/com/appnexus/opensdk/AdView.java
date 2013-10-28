@@ -53,7 +53,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     private  int height = -1;
     boolean shouldServePSAs = true;
     private  float reserve = 0.00f;
-    private boolean mraid_expand = false;
+    boolean mraid_expand = false;
     AdListener adListener;
     private BrowserStyle browserStyle;
     private LinkedList<MediatedAd> mediatedAds;
@@ -355,7 +355,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     }
 
     // Used only by MRAID
-    private ImageButton close;
+    ImageButton close;
 
     void expand(int w, int h, boolean custom_close,
                 final MRAIDImplementation caller) {
@@ -377,8 +377,9 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
                     FrameLayout.LayoutParams.WRAP_CONTENT,
                     FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.RIGHT
                     | Gravity.TOP);
-            blp.rightMargin = (this.getMeasuredWidth() - this.getChildAt(0)
-                    .getMeasuredWidth()) / 2;
+            if (this.getChildAt(0) != null)
+                blp.rightMargin = (this.getMeasuredWidth() - this.getChildAt(0)
+                        .getMeasuredWidth()) / 2;
             close.setLayoutParams(blp);
             close.setBackgroundColor(Color.TRANSPARENT);
             close.setOnClickListener(new View.OnClickListener() {
