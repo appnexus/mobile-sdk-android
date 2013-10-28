@@ -25,8 +25,12 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Pair;
+import android.view.Gravity;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
@@ -40,18 +44,18 @@ import java.util.Queue;
  * @author Jacob Shufro
  */
 public class InterstitialAdView extends AdView {
-    protected static final long MAX_AGE = 60000;
-    protected ArrayList<Size> allowedSizes;
-    protected int backgroundColor = Color.BLACK;
-    protected int closeButtonDelay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
-    protected boolean interacted = false;
-    protected static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
-    protected static Queue<Pair<Long, Displayable>> q = new LinkedList<Pair<Long, Displayable>>();
+    static final long MAX_AGE = 60000;
+    private ArrayList<Size> allowedSizes;
+    private int backgroundColor = Color.BLACK;
+    private int closeButtonDelay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
+    boolean interacted = false;
+    static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
+    static final Queue<Pair<Long, Displayable>> q = new LinkedList<Pair<Long, Displayable>>();
 
     //Intent Keys
-    protected static String INTENT_KEY_TIME = "TIME";
-    protected static String INTENT_KEY_ORIENTATION = "ORIENTATION";
-    protected static String INTENT_KEY_CLOSE_BUTTON_DELAY = "CLOSE_BUTTON_DELAY";
+    static final String INTENT_KEY_TIME = "TIME";
+    private static final String INTENT_KEY_ORIENTATION = "ORIENTATION";
+    static final String INTENT_KEY_CLOSE_BUTTON_DELAY = "CLOSE_BUTTON_DELAY";
 
     //To let the activity show the button.
     private AdActivity adActivity = null;
@@ -199,10 +203,10 @@ public class InterstitialAdView extends AdView {
                 .currentTimeMillis(), d));
     }
 
-    protected void interacted() {
+    void interacted() {
         interacted = true;
         if (getAdActivity() != null) {
-            getAdActivity().addCloseButton(getAdActivity().layout);
+            getAdActivity().addCloseButton();
         }
     }
 
@@ -361,8 +365,8 @@ public class InterstitialAdView extends AdView {
      * @author Jacob Shufro
      */
     public class Size {
-        private int w;
-        private int h;
+        private final int w;
+        private final int h;
 
         Size(int w, int h) {
             this.w = w;
@@ -405,5 +409,45 @@ public class InterstitialAdView extends AdView {
     @Override
     boolean isInterstitial() {
         return true;
+    }
+
+    @Override
+    void expand(int w, int h, boolean custom_close, final MRAIDImplementation caller) {
+        if ((getAdActivity() == null) || (getAdActivity().layout == null))
+            return;
+        FrameLayout activityLayout = getAdActivity().layout;
+
+        mraid_expand = true;
+        if (!custom_close && (close == null)) {
+            // Add a stock close button to the top right corner
+            close = new ImageButton(activityLayout.getContext());
+            close.setImageDrawable(getResources().getDrawable(
+                    android.R.drawable.ic_menu_close_clear_cancel));
+            FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.RIGHT
+                    | Gravity.TOP);
+            if (activityLayout.getChildAt(0) != null) {
+                blp.rightMargin = (w - activityLayout.getChildAt(0).getMeasuredWidth()) / 2;
+                blp.topMargin = (h - activityLayout.getChildAt(0).getMeasuredHeight()) / 2;
+            }
+            close.setLayoutParams(blp);
+            close.setBackgroundColor(Color.TRANSPARENT);
+            close.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    caller.close();
+                }
+            });
+            activityLayout.addView(close);
+        } else if (close != null) {
+            if (custom_close) {
+                close.setVisibility(GONE);
+            } else {
+                activityLayout.removeView(close);
+                close.setVisibility(VISIBLE);
+                activityLayout.addView(close);// Re-add to send to top
+            }
+        }
     }
 }

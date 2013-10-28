@@ -74,10 +74,6 @@ public abstract class HTTPGet<Params extends Void, Progress extends Void, Result
         super.onCancelled(null);
     }
 
-    @Override
-    protected void onCancelled() {
-        super.onCancelled();
-    }
 
     protected abstract String getUrl();
 

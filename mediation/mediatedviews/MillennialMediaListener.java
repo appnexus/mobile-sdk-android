@@ -23,10 +23,10 @@ import com.millennialmedia.android.MMAd;
 import com.millennialmedia.android.MMException;
 import com.millennialmedia.android.RequestListener;
 
-public class MillennialMediaListener implements RequestListener {
+class MillennialMediaListener implements RequestListener {
 
-    MediatedAdViewController mediatedAdViewController;
-    String className;
+    private final MediatedAdViewController mediatedAdViewController;
+    private final String className;
 
     public MillennialMediaListener(MediatedAdViewController mediatedAdViewController, String className) {
         this.mediatedAdViewController = mediatedAdViewController;

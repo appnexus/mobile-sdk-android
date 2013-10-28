@@ -19,9 +19,9 @@ package com.appnexus.opensdk;
 public class MediatedAd {
     private String className;
     private String param;
-    int width;
-    int height;
-    String id;
+    private int width;
+    private int height;
+    private String id;
     private String resultCB;
 
     public MediatedAd(String className, String param, int width, int height, String id, String resultCB) {

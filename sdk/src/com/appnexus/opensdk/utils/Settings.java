@@ -26,8 +26,8 @@ public class Settings {
     public String hidsha1 = null;
     public String carrierName = null;
 
-    public String deviceMake = Build.MANUFACTURER;
-    public String deviceModel = Build.MODEL;
+    public final String deviceMake = Build.MANUFACTURER;
+    public final String deviceModel = Build.MODEL;
     public String app_id = null;
 
     public boolean test_mode = false;
@@ -37,9 +37,9 @@ public class Settings {
 
     public String mcc;
     public String mnc;
-    public String dev_timezone = TimeZone.getDefault().getID();
-    public String os = "Android " + Build.VERSION.RELEASE;
-    public String language = Locale.getDefault().getLanguage();
+    public final String dev_timezone = TimeZone.getDefault().getID();
+    public final String os = "Android " + Build.VERSION.RELEASE;
+    public final String language = Locale.getDefault().getLanguage();
 
     public final int HTTP_CONNECTION_TIMEOUT = 15000;
     public final int HTTP_SOCKET_TIMEOUT = 20000;

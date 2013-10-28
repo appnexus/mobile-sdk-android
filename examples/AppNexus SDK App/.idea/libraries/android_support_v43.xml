@@ -1,8 +1,6 @@
 <component name="libraryTable">
   <library name="android-support-v43">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../libs/Android-PullToRefresh/sample/libs/android-support-v4.jar!/" />
-    </CLASSES>
+    <CLASSES />
     <JAVADOC />
     <SOURCES />
   </library>

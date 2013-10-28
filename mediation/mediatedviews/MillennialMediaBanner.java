@@ -27,8 +27,6 @@ import com.millennialmedia.android.MMSDK;
 
 public class MillennialMediaBanner implements MediatedBannerAdView {
 
-    MediatedBannerAdViewController mMediatedBannerAdViewController;
-
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
                           int width, int height) {
@@ -43,8 +41,6 @@ public class MillennialMediaBanner implements MediatedBannerAdView {
         }
         Clog.d(Clog.mediationLogTag, String.format("MillennialMediaBanner - requesting an ad: [%s, %s, %dx%d]", parameter, uid, width, height));
 
-        mMediatedBannerAdViewController = mBC;
-
         MMSDK.initialize(activity);
 
         MMAdView adView = new MMAdView(activity);
@@ -54,7 +50,7 @@ public class MillennialMediaBanner implements MediatedBannerAdView {
 
         MMRequest mmRequest = new MMRequest();
         adView.setMMRequest(mmRequest);
-        adView.setListener(new MillennialMediaListener(mMediatedBannerAdViewController, getClass().getSimpleName()));
+        adView.setListener(new MillennialMediaListener(mBC, getClass().getSimpleName()));
         adView.getAd();
 
         return adView;

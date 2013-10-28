@@ -15,10 +15,11 @@ import com.google.ads.InterstitialAd;
 
 public class AdMobInterstitial implements MediatedInterstitialAdView,
         AdListener {
-    InterstitialAd iad;
-    MediatedInterstitialAdViewController mMediatedInterstitialAdViewController;
+    private InterstitialAd iad;
+    private MediatedInterstitialAdViewController mMediatedInterstitialAdViewController;
 
     public AdMobInterstitial() {
+        super();
     }
 
     @Override

@@ -100,15 +100,15 @@ public class Clog {
      * Logging helper functions for SDK
      */
 
-    public static String baseLogTag = "OPENSDK";
-    public static String mediationLogTag = baseLogTag + "-MEDIATION";
-    public static String publicFunctionsLogTag = baseLogTag + "-INTERFACE";
-    public static String httpReqLogTag = baseLogTag + "-REQUEST";
-    public static String httpRespLogTag = baseLogTag + "-RESPONSE";
-    public static String xmlLogTag = baseLogTag + "-XML";
-    public static String jsLogTag = baseLogTag + "-JS";
-    public static String mraidLogTag = baseLogTag + "-MRAID";
-    public static String browserLogTag = baseLogTag + "-APPBROWSER";
+    public static final String baseLogTag = "OPENSDK";
+    public static final String mediationLogTag = baseLogTag + "-MEDIATION";
+    public static final String publicFunctionsLogTag = baseLogTag + "-INTERFACE";
+    public static final String httpReqLogTag = baseLogTag + "-REQUEST";
+    public static final String httpRespLogTag = baseLogTag + "-RESPONSE";
+    public static final String xmlLogTag = baseLogTag + "-XML";
+    public static final String jsLogTag = baseLogTag + "-JS";
+    public static final String mraidLogTag = baseLogTag + "-MRAID";
+    public static final String browserLogTag = baseLogTag + "-APPBROWSER";
     public static Context error_context;
 
     public static String getString(int id) {
@@ -202,7 +202,7 @@ public class Clog {
      * ClogListener helper methods
      */
 
-    private static ArrayList<ClogListener> listeners = new ArrayList<ClogListener>();
+    private static final ArrayList<ClogListener> listeners = new ArrayList<ClogListener>();
 
     synchronized public static boolean registerListener(ClogListener listener) {
         return listener != null && listeners.add(listener);
@@ -212,11 +212,15 @@ public class Clog {
         return listener != null && listeners.remove(listener);
     }
 
-    synchronized public static void notifyListener(LOG_LEVEL level, String LogTag, String message) {
+    synchronized public static void unregisterAllListeners() {
+        listeners.clear();
+    }
+
+    private synchronized static void notifyListener(LOG_LEVEL level, String LogTag, String message) {
         notifyListener(level, LogTag, message, null);
     }
 
-    synchronized public static void notifyListener(LOG_LEVEL level, String LogTag, String message, Throwable tr) {
+    private synchronized static void notifyListener(LOG_LEVEL level, String LogTag, String message, Throwable tr) {
         for (ClogListener listener: listeners) {
             if (level.ordinal() >= listener.getLogLevel().ordinal()) {
                 if (tr != null)

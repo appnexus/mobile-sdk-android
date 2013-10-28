@@ -33,6 +33,7 @@ public class TestClogListener extends TestCase {
 
     @Override
     protected void tearDown() throws Exception {
+        Clog.unregisterAllListeners();
         super.tearDown();
     }
 
