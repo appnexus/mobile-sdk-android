@@ -141,7 +141,7 @@ public class DebugFragment extends Fragment {
                 }
                 txtResponse.setText(jsonString != null ? jsonString : Clog.getLastResponse());
             } else
-                txtResponse.setText(Clog.getLastResponse());
+                txtResponse.setText(R.string.debug_msg_response_empty);
         }
 
         if (editMemberId != null) editMemberId.setText(Prefs.getMemberId(getActivity()));

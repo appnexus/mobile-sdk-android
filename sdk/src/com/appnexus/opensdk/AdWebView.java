@@ -143,13 +143,13 @@ public class AdWebView extends WebView implements Displayable {
     }
 
     public void loadAd(AdResponse ad) {
-        if (ad.getBody().equals("")) {
+        if (ad.getContent().equals("")) {
             fail();
             return;
         }
 
         String body = "<html><head /><body style='margin:0;padding:0;'>"
-                + ad.getBody() + "</body></html>";
+                + ad.getContent() + "</body></html>";
         Clog.v(Clog.baseLogTag, Clog.getString(R.string.webview_loading, body));
         this.loadDataWithBaseURL("http://mobile.adnxs.com", body, "text/html",
                 "UTF-8", null);
