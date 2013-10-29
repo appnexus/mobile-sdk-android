@@ -59,10 +59,7 @@ public class AdResponse {
     private static final String RESPONSE_VALUE_ANDROID = "android";
 
     public AdResponse(String body, Header[] headers) {
-        if (body == null) {
-            Clog.clearLastResponse();
-            return;
-        } else if (body.length() == 0) {
+        if (body == null || body.isEmpty()) {
             Clog.clearLastResponse();
             return;
         }
