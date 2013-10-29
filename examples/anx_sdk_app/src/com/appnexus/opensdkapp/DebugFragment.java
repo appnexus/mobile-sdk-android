@@ -126,8 +126,6 @@ public class DebugFragment extends Fragment {
     }
 
     protected void refresh() {
-        Clog.d(Constants.BASE_LOG_TAG, "refreshing DebugFragment");
-
         if (txtRequest != null) txtRequest.setText(Clog.getLastRequest());
 
         if (txtResponse != null) {

@@ -52,6 +52,8 @@ public class MainActivity extends FragmentActivity implements
     private static final String PREVIEW_ID = "Preview";
     private static final String DEBUG_ID = "Debug";
 
+    private static final int NUM_TABS = 3;
+
     public static enum TABS {
         SETTINGS,
         PREVIEW,
@@ -175,6 +177,7 @@ public class MainActivity extends FragmentActivity implements
         this.viewPager = (ViewPager) findViewById(R.id.viewpager);
         this.viewPager.setAdapter(this.pagerAdapter);
         this.viewPager.setOnPageChangeListener(this);
+        this.viewPager.setOffscreenPageLimit(NUM_TABS);
     }
 
     private static void AddTab(MainActivity activity, TabHost tabHost,
