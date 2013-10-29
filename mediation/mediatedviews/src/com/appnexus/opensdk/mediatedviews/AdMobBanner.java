@@ -33,7 +33,7 @@ public class AdMobBanner implements MediatedBannerAdView, AdListener {
         Clog.d(Clog.mediationLogTag, String.format("AdMobBanner - requesting an ad: [%s, %s, %dx%d]", parameter, uid, width, height));
 
         AdView admobAV = new AdView(activity, new AdSize(width, height), uid);
-		admobAV.setAdListener(this);
+        admobAV.setAdListener(this);
         AdRequest ar = new AdRequest();
 
         mMediatedBannerAdViewController = mBC;
