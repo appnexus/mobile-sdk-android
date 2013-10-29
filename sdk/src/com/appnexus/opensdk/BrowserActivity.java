@@ -18,6 +18,7 @@ package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -95,16 +96,19 @@ public class BrowserActivity extends Activity {
                 if (url.startsWith("http")) {
                     Clog.d(Clog.baseLogTag,
                             Clog.getString(R.string.opening_url, url));
-                    webview.loadUrl(url);
-                    return true;
-                } else if (url.startsWith("market")) {
+                    return false;
+                } else {
                     Intent i = new Intent(Intent.ACTION_VIEW);
                     i.setData(Uri.parse(url));
-                    startActivity(i);
-                    finish();
+                    try {
+                        startActivity(i);
+                        finish();
+                    } catch (ActivityNotFoundException e) {
+                        Clog.w(Clog.browserLogTag,
+                                Clog.getString(R.string.opening_url_failed, url));
+                    }
                     return true;
                 }
-                return false;
             }
         });
 
