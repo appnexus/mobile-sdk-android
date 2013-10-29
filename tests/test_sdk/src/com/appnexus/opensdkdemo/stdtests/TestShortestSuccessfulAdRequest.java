@@ -94,20 +94,14 @@ public class TestShortestSuccessfulAdRequest extends TestCase implements AdReque
 
     @Override
     public void onAdExpanded(AdView adView) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onAdCollapsed(AdView adView) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onAdClicked(AdView adView) {
-        // TODO Auto-generated method stub
-
     }
 
 }
