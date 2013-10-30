@@ -129,8 +129,6 @@ public class InterstitialAdView extends AdView {
         allowedSizes = new ArrayList<Size>();
 
         // Set up the allowed sizes TODO: this will be server-side
-        if (new Size(320, 50).fitsIn(measuredWidth, measuredHeight))
-            allowedSizes.add(new Size(320, 50));
         if (new Size(300, 250).fitsIn(measuredWidth, measuredHeight))
             allowedSizes.add(new Size(300, 250));
         if (new Size(320, 480).fitsIn(measuredWidth, measuredHeight))
