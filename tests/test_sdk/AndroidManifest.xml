@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- package name must be unique so suffix with "tests" so package loader doesn't ignore us -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.appnexus.opensdkdemo.tests"
+          package="com.appnexus.opensdk.tests"
           android:versionCode="1"
           android:versionName="1.0">
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -14,10 +14,10 @@
     </application>
     <!--
     This declares that this application uses the instrumentation test runner targeting
-    the package of com.appnexus.opensdkdemo.  To run the tests use the command:
-    "adb shell am instrument -w com.appnexus.opensdkdemo.tests/android.test.InstrumentationTestRunner"
+    the package of com.appnexus.opensdk. To run the tests use the command:
+    "adb shell am instrument -w com.appnexus.opensdk.tests/android.test.InstrumentationTestRunner"
     -->
     <instrumentation android:name="android.test.InstrumentationTestRunner"
-                     android:targetPackage="com.appnexus.opensdkdemo"
-                     android:label="Tests for com.appnexus.opensdkdemo"/>
+                     android:targetPackage="com.appnexus.opensdk"
+                     android:label="Tests for com.appnexus.opensdk"/>
 </manifest>
