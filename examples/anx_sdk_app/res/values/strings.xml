@@ -60,6 +60,7 @@
     <string name="debug_btn_auction_email">Email Debug Auction Results</string>
 
     <string name="debug_msg_debugauction_failed">No Response from Server</string>
+    <string name="debug_msg_response_empty">Last response was empty</string>
 
     <string name="log_title_applogs">App Logs</string>
     <string name="log_btn_email">Email Logs</string>

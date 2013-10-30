@@ -76,7 +76,7 @@ public class SettingsFragment extends Fragment {
         editMemberId = (EditText) out.findViewById(R.id.edit_memberid);
         editDongle = (EditText) out.findViewById(R.id.edit_dongle);
 
-        Button  btnLoadAd = (Button) out.findViewById(R.id.btn_load_ad);
+        Button btnLoadAd = (Button) out.findViewById(R.id.btn_load_ad);
 
         // create dropdowns
         dropSize = initDropdown(out, container, R.id.dropdown_size, R.array.sizes);
@@ -103,10 +103,7 @@ public class SettingsFragment extends Fragment {
                 getResources().getStringArray(R.array.refresh)));
 
         // listeners for editText
-//        editPlacementId.addTextChangedListener(new SaveToPrefsTextWatcher(Prefs.KEY_PLACEMENT, Prefs.DEF_PLACEMENT));
         editBackgroundColor.addTextChangedListener(new BackgroundColorTextWatcher());
-//        editMemberId.addTextChangedListener(new SaveToPrefsTextWatcher(Prefs.KEY_MEMBERID, Prefs.DEF_MEMBERID));
-//        editDongle.addTextChangedListener(new SaveToPrefsTextWatcher(Prefs.KEY_DONGLE, Prefs.DEF_DONGLE));
 
         // load saved or default settings
         loadSettings();
@@ -209,34 +206,6 @@ public class SettingsFragment extends Fragment {
             String setting = sizeStrings[position];
 
             Clog.d(Constants.BASE_LOG_TAG, "Size set to: " + setting);
-
-//			bannerAdView.setAdWidth(getSizeFromPosition(position)[0]);
-//			bannerAdView.setAdHeight(getSizeFromPosition(position)[1]);
-
-//            DisplayMetrics m = new DisplayMetrics();
-//            SettingsFragment.this.getActivity().getWindowManager().getDefaultDisplay().getMetrics(m);
-//            float d = m.density;
-
-
-//			FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(bannerAdView.getLayoutParams());
-//			if(lp.width!=-1) lp.width = (int) (bannerAdView.getAdWidth()*d+0.5f);
-//			if(lp.height!=-1) lp.height = (int) (bannerAdView.getAdHeight()*d+0.5f);
-//			bannerAdView.setLayoutParams(lp);
-        }
-
-        int[] getSizeFromString(String size_string) {
-            int out[] = new int[2];
-            out[0] = Integer.parseInt(size_string.split("x")[0]);
-            out[1] = Integer.parseInt(size_string.split("x")[1]);
-
-            return out;
-        }
-
-        int[] getSizeFromPosition(int position) {
-            String size_str = sizeStrings[position];
-
-
-            return getSizeFromString(size_str);
         }
 
         @Override

@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.HTTPResponse;
 import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,7 +26,7 @@ import org.json.JSONObject;
 import java.util.LinkedList;
 
 public class AdResponse {
-    private String body;
+    private String content;
     private int height;
     private int width;
     private String type;
@@ -58,12 +59,7 @@ public class AdResponse {
     private static final String RESPONSE_VALUE_ANDROID = "android";
 
     public AdResponse(String body, Header[] headers) {
-        this.body = body;
-
-        if (body == null) {
-            Clog.clearLastResponse();
-            return;
-        } else if (body.length() == 0) {
+        if (body == null || body.isEmpty()) {
             Clog.clearLastResponse();
             return;
         }
@@ -72,6 +68,23 @@ public class AdResponse {
 
         Clog.d(Clog.httpRespLogTag,
                 Clog.getString(R.string.response_body, body));
+
+        printHeaders(headers);
+        parseResponse(body);
+    }
+
+    public AdResponse(HTTPResponse httpResponse) {
+        printHeaders(httpResponse.getHeaders());
+        parseResponse(httpResponse.getResponseBody());
+    }
+
+    public AdResponse(boolean isHttpError, boolean isConnectivityRetry, boolean isBlankRetry) {
+        this.isHttpError = isHttpError;
+        this.isConnectivityRetry = isConnectivityRetry;
+        this.isBlankRetry = isBlankRetry;
+    }
+
+    private void printHeaders(Header[] headers) {
         if (headers != null) {
             for (Header h : headers) {
                 Clog.v(Clog.httpRespLogTag,
@@ -79,17 +92,6 @@ public class AdResponse {
                                 h.getValue()));
             }
         }
-
-        parseResponse(body);
-
-        isMraid = getBody().contains(MRAID_JS_FILENAME);
-
-    }
-
-    public AdResponse(boolean isHttpError, boolean isConnectivityRetry, boolean isBlankRetry) {
-        this.isHttpError = isHttpError;
-        this.isConnectivityRetry = isConnectivityRetry;
-        this.isBlankRetry = isBlankRetry;
     }
 
     private void parseResponse(String body) {
@@ -135,12 +137,13 @@ public class AdResponse {
             type = getJSONString(firstAd, RESPONSE_KEY_TYPE);
             height = getJSONInt(firstAd, RESPONSE_KEY_HEIGHT);
             width = getJSONInt(firstAd, RESPONSE_KEY_WIDTH);
-            body = getJSONString(firstAd, RESPONSE_KEY_CONTENT);
-            if (body == null || body.equals("")) {
+            content = getJSONString(firstAd, RESPONSE_KEY_CONTENT);
+            if (content == null || content.equals("")) {
                 Clog.e(Clog.httpRespLogTag,
                         Clog.getString(R.string.blank_ad));
             }
             else {
+                isMraid = content.contains(MRAID_JS_FILENAME);
                 containsAds = true;
                 return true;
             }
@@ -193,10 +196,8 @@ public class AdResponse {
         return false;
     }
 
-    public String getBody() {
-        if (body == null)
-            return "";
-        return body;
+    public String getContent() {
+        return content != null ? content : "";
     }
 
     public int getHeight() {

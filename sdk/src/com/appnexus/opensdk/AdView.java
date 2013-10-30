@@ -175,13 +175,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         return false;
     }
 
-    /**
-     * Loads a new ad, if the ad space is visible.
-     *
-     * @return true is ad will begin loading, false if ad cannot be loaded
-     * at this time given the current settings
-     */
-    boolean loadAd() {
+    boolean isReadyToStart() {
         if (isMRAIDExpanded()) {
             Clog.e(Clog.baseLogTag, Clog.getString(R.string.already_expanded));
             return false;
@@ -190,6 +184,18 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
             Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_placement_id));
             return false;
         }
+        return true;
+    }
+
+    /**
+     * Loads a new ad, if the ad space is visible.
+     *
+     * @return true is ad will begin loading, false if ad cannot be loaded
+     * at this time given the current settings
+     */
+    public boolean loadAd() {
+        if (!isReadyToStart())
+            return false;
         if (this.getWindowVisibility() == VISIBLE && mAdFetcher != null) {
             // Reload Ad Fetcher to get new ad at user's request
             mAdFetcher.stop();
@@ -272,7 +278,6 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         if (webView != null)
             webView.destroy();
         if (d.getView() == null) {
-            //TODO: why do we fail silently here
             return;
         }
         this.addView(d.getView());

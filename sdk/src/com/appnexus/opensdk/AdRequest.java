@@ -381,13 +381,15 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         sb.append("&st=mobile_app");
         sb.append("&sdkver=").append(Uri.encode(Settings.getSettings().sdkVersion));
 
-        // add custom paramters if there are any
-        for (Pair<String, String> pair : customKeywords) {
-            if (!isEmpty(pair.first) && (pair.second != null)) {
-                sb.append("&")
-                        .append(pair.first)
-                        .append("=")
-                        .append(Uri.encode(pair.second));
+        // add custom parameters if there are any
+        if (customKeywords != null) {
+            for (Pair<String, String> pair : customKeywords) {
+                if (!isEmpty(pair.first) && (pair.second != null)) {
+                    sb.append("&")
+                            .append(pair.first)
+                            .append("=")
+                            .append(Uri.encode(pair.second));
+                }
             }
         }
 
