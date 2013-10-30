@@ -25,14 +25,14 @@ import com.appnexus.opensdk.util.TestUtil;
 
 public class TestRetryAdRequest extends AndroidTestCase implements AdRequester {
     /**
-     * Make sure permissions are set up in demo's AndroidManifest.xml file for wifi+data access and change
+     * Make sure permissions are set up in test_app's AndroidManifest.xml file for wifi+data access and change
      *
      * Also make sure AdRequest has setContext() uncommented, and uncomment the code here
      */
 
     String settingsURL;
     long settingsInterval;
-    AdRequest shouldFailAndRetry;
+    AdRequest request;
     boolean didFail = false;
     boolean didSucceed = false;
     InstanceLock lock;
@@ -46,16 +46,15 @@ public class TestRetryAdRequest extends AndroidTestCase implements AdRequester {
         Clog.w(TestUtil.testLogTag, "Testing Retries");
         settingsURL = Settings.getSettings().BASE_URL;
         settingsInterval = Settings.getSettings().HTTP_RETRY_INTERVAL;
-        Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
         Settings.getSettings().HTTP_RETRY_INTERVAL = TestUtil.SHORT_RETRY_INTERVAL;
-        shouldFailAndRetry = new AdRequest(this, "123456", null, null, placementId, "portrait", "AT&T",
+        request = new AdRequest(this, "123456", null, null, placementId, "portrait", "AT&T",
                 320, 50, 320, 50, null, null, "wifi", false, null, true, true);
         lock = new InstanceLock();
         timesRetried = 0;
         adView = new BannerAdView(getContext());
         adView.setPlacementID(placementId);
 
-//        shouldFailAndRetry.setContext(getContext());
+//        request.setContext(getContext());
         TestUtil.setWifi(true, getContext());
         TestUtil.setData(true, getContext());
     }
@@ -68,10 +67,10 @@ public class TestRetryAdRequest extends AndroidTestCase implements AdRequester {
     }
 
     public void testBlankRetries() {
-        shouldFailAndRetry.execute();
+        request.execute();
         long retryTime = Settings.getSettings().HTTP_RETRY_INTERVAL * Settings.getSettings().MAX_BLANK_RETRIES;
         lock.pause(10000 + retryTime);
-        shouldFailAndRetry.cancel(true);
+        request.cancel(true);
 
         assertFalse(didSucceed);
         assertTrue(didFail);
@@ -82,10 +81,10 @@ public class TestRetryAdRequest extends AndroidTestCase implements AdRequester {
         TestUtil.setWifi(false, getContext());
         TestUtil.setData(false, getContext());
 
-        shouldFailAndRetry.execute();
+        request.execute();
         long retryTime = Settings.getSettings().HTTP_RETRY_INTERVAL * Settings.getSettings().MAX_CONNECTIVITY_RETRIES;
         lock.pause(10000 + retryTime);
-        shouldFailAndRetry.cancel(true);
+        request.cancel(true);
 
         assertFalse(didSucceed);
         assertTrue(didFail);
