@@ -39,8 +39,8 @@ public class Prefs {
     public static final boolean DEF_ALLOW_PSAS = true;
     public static final boolean DEF_BROWSER_IS_INAPP = true;
     public static final String DEF_PLACEMENT = "1326299";
-    public static final String DEF_SIZE = "320x480";
-    public static final String DEF_REFRESH = "30 seconds";
+    public static final String DEF_SIZE = "300x250";
+    public static final String DEF_REFRESH = "Off";
     public static final String DEF_COLOR_HEX = "FF000000";
     public static final String DEF_MEMBERID = "";
     public static final String DEF_DONGLE = "";
