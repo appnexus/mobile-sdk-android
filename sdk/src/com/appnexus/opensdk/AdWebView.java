@@ -18,6 +18,7 @@ package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -33,14 +34,12 @@ import com.appnexus.opensdk.AdView.BrowserStyle;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
-/**
- * @author jshufro@appnexus.com
- */
 @SuppressLint("ViewConstructor")
 // This will only be constructed by AdFetcher.
 public class AdWebView extends WebView implements Displayable {
     private boolean failed = false;
     private AdView destination;
+
 
     public AdWebView(AdView owner) {
         super(owner.getContext());
@@ -94,26 +93,33 @@ public class AdWebView extends WebView implements Displayable {
                 if (url.startsWith("javascript:") || url.startsWith("mraid:"))
                     return false;
 
-                if (destination.getOpensNativeBrowser()) {
-                    Clog.d(Clog.baseLogTag,
-                            Clog.getString(R.string.opening_native));
-                    Intent intent = new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(url));
-                    getContext().startActivity(intent);
-                } else {
+                Intent intent;
+                // open the in-app browser
+                if (!AdWebView.this.destination.getOpensNativeBrowser() && url.startsWith("http")) {
                     Clog.d(Clog.baseLogTag,
                             Clog.getString(R.string.opening_inapp));
-                    Intent intent = new Intent(destination.getContext(),
+                    intent = new Intent(AdWebView.this.destination.getContext(),
                             BrowserActivity.class);
                     intent.putExtra("url", url);
-                    if (destination.getBrowserStyle() != null) {
+                    if (AdWebView.this.destination.getBrowserStyle() != null) {
                         String i = "" + this.hashCode();
                         intent.putExtra("bridgeid", i);
                         AdView.BrowserStyle.bridge
                                 .add(new Pair<String, BrowserStyle>(i,
-                                        destination.getBrowserStyle()));
+                                        AdWebView.this.destination.getBrowserStyle()));
                     }
-                    destination.getContext().startActivity(intent);
+                } else {
+                    Clog.d(Clog.baseLogTag,
+                            Clog.getString(R.string.opening_native));
+                    intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                }
+
+                try {
+                    AdWebView.this.destination.getContext().startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                    Clog.w(Clog.baseLogTag,
+                            Clog.getString(R.string.opening_url_failed, url));
                 }
 
                 // If a listener is defined, call its onClicked
@@ -138,13 +144,13 @@ public class AdWebView extends WebView implements Displayable {
     }
 
     public void loadAd(AdResponse ad) {
-        if (ad.getBody().equals("")) {
+        if (ad.getContent().equals("")) {
             fail();
             return;
         }
 
         String body = "<html><head /><body style='margin:0;padding:0;'>"
-                + ad.getBody() + "</body></html>";
+                + ad.getContent() + "</body></html>";
         Clog.v(Clog.baseLogTag, Clog.getString(R.string.webview_loading, body));
         this.loadDataWithBaseURL("http://mobile.adnxs.com", body, "text/html",
                 "UTF-8", null);

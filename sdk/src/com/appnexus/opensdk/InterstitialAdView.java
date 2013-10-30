@@ -25,8 +25,12 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Pair;
+import android.view.Gravity;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
@@ -40,20 +44,18 @@ import java.util.Queue;
  * @author Jacob Shufro
  */
 public class InterstitialAdView extends AdView {
-    protected static final long MAX_AGE = 60000;
-    protected ArrayList<Size> allowedSizes;
-    protected int backgroundColor = Color.BLACK;
-    protected int closeButtonDelay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
-    protected int interstitialAutoDismissTime = Settings.getSettings().DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME;
-    protected boolean interacted = false;
-    protected static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
-    protected static Queue<Pair<Long, Displayable>> q = new LinkedList<Pair<Long, Displayable>>();
+    static final long MAX_AGE = 60000;
+    private ArrayList<Size> allowedSizes;
+    private int backgroundColor = Color.BLACK;
+    private int closeButtonDelay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
+    boolean interacted = false;
+    static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
+    static final Queue<Pair<Long, Displayable>> q = new LinkedList<Pair<Long, Displayable>>();
 
     //Intent Keys
-    protected static String INTENT_KEY_TIME = "TIME";
-    protected static String INTENT_KEY_ORIENTATION = "ORIENTATION";
-    protected static String INTENT_KEY_CLOSE_BUTTON_DELAY = "CLOSE_BUTTON_DELAY";
-    protected static String INTENT_KEY_AUTO_DISMISS_TIME = "AUTO_DISMISS_TIME";
+    static final String INTENT_KEY_TIME = "TIME";
+    private static final String INTENT_KEY_ORIENTATION = "ORIENTATION";
+    static final String INTENT_KEY_CLOSE_BUTTON_DELAY = "CLOSE_BUTTON_DELAY";
 
     //To let the activity show the button.
     private AdActivity adActivity = null;
@@ -126,7 +128,7 @@ public class InterstitialAdView extends AdView {
 
         allowedSizes = new ArrayList<Size>();
 
-        // Set up the allowed sizes TODO: this will be server-side
+
         if (new Size(300, 250).fitsIn(measuredWidth, measuredHeight))
             allowedSizes.add(new Size(300, 250));
         if (new Size(320, 480).fitsIn(measuredWidth, measuredHeight))
@@ -172,13 +174,17 @@ public class InterstitialAdView extends AdView {
      * response, otherwise, the ad will not show.
      */
     @Override
-    public void loadAd() {
+    public boolean loadAd() {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.load_ad_int));
+        if (!isReadyToStart())
+            return false;
         if (mAdFetcher != null) {
             // Load an interstitial ad
             mAdFetcher.stop();
             mAdFetcher.start();
+            return true;
         }
+        return false;
     }
 
     @Override
@@ -189,20 +195,19 @@ public class InterstitialAdView extends AdView {
         }
         InterstitialAdView.q.add(new Pair<Long, Displayable>(System
                 .currentTimeMillis(), d));
-        d.getView();
     }
 
-    protected void interacted() {
+    void interacted() {
         interacted = true;
         if (getAdActivity() != null) {
-            getAdActivity().addCloseButton(getAdActivity().layout);
+            getAdActivity().addCloseButton();
         }
     }
 
     @Override
     public void onLayout(boolean changed, int left, int top, int right,
                          int bottom) {
-        onFirstLayout();
+        // leave empty so that we don't call super
     }
 
     // No javadoc since these just print errors
@@ -260,20 +265,20 @@ public class InterstitialAdView extends AdView {
         Pair<Long, Displayable> top = InterstitialAdView.q.peek();
         if (top != null && top.second instanceof MediatedInterstitialAdViewController) {
             MediatedInterstitialAdViewController mAVC = (MediatedInterstitialAdViewController) top.second;
-            if (mAVC != null) {
-                mAVC.show();
-            }
+            mAVC.show();
+
             //Pop the mediated view;
             InterstitialAdView.q.poll();
             return InterstitialAdView.q.size();
         }
+
+        // otherwise, launch our adactivity
         if (!InterstitialAdView.q.isEmpty()) {
             Intent i = new Intent(getContext(), AdActivity.class);
             i.putExtra(InterstitialAdView.INTENT_KEY_TIME, now);
             i.putExtra(InterstitialAdView.INTENT_KEY_ORIENTATION, getContext().getResources()
                     .getConfiguration().orientation);
             i.putExtra(InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY, closeButtonDelay);
-            i.putExtra(InterstitialAdView.INTENT_KEY_AUTO_DISMISS_TIME, interstitialAutoDismissTime);
             getContext().startActivity(i);
             return InterstitialAdView.q.size() - 1; // Return the number of ads remaining, less the one we're about to show
         }
@@ -333,10 +338,6 @@ public class InterstitialAdView extends AdView {
         InterstitialAdView.INTERSTITIALADVIEW_TO_USE = null;
     }
 
-    protected String getMRAIDAdType() {
-        return "interstitial";
-    }
-
     /**
      * @return the time in milliseconds after an interstitial is displayed until
      *         the close button appears. Default is 10 seconds. 0 is disabled
@@ -351,21 +352,7 @@ public class InterstitialAdView extends AdView {
      *                         is 15 seconds. Set to 0 to disable.
      */
     public void setCloseButtonDelay(int closeButtonDelay) {
-        this.closeButtonDelay = Math.min(closeButtonDelay, Settings.getSettings().DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME);
-    }
-
-    /**
-     * @return the duration of display for an interstitial ad before it is automatically dismissed.
-     */
-    public int getInterstitialAutoDismissTime() {
-        return interstitialAutoDismissTime;
-    }
-
-    /**
-     * @param interstitialAutoDismissTime The duration of display for an interstitial ad before it is automatically dismissed. Set to 0 to disable. Default is 15 seconds.
-     */
-    public void setInterstitialAutoDismissTime(int interstitialAutoDismissTime) {
-        this.interstitialAutoDismissTime = interstitialAutoDismissTime;
+        this.closeButtonDelay = Math.min(closeButtonDelay, Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
     }
 
     AdActivity getAdActivity() {
@@ -382,8 +369,8 @@ public class InterstitialAdView extends AdView {
      * @author Jacob Shufro
      */
     public class Size {
-        private int w;
-        private int h;
+        private final int w;
+        private final int h;
 
         Size(int w, int h) {
             this.w = w;
@@ -415,6 +402,46 @@ public class InterstitialAdView extends AdView {
          */
         public boolean fitsIn(int width, int height) {
             return h < height && w < width;
+        }
+    }
+
+    @Override
+    protected void expand(int w, int h, boolean custom_close, final MRAIDImplementation caller) {
+        if ((getAdActivity() == null) || (getAdActivity().layout == null))
+            return;
+        FrameLayout activityLayout = getAdActivity().layout;
+
+        mraid_expand = true;
+        if (!custom_close && (close_button == null)) {
+            // Add a stock close button to the top right corner
+            close_button = new ImageButton(activityLayout.getContext());
+            close_button.setImageDrawable(getResources().getDrawable(
+                    android.R.drawable.ic_menu_close_clear_cancel));
+            FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.RIGHT
+                    | Gravity.TOP);
+            if (activityLayout.getChildAt(0) != null) {
+                blp.rightMargin = (w - activityLayout.getChildAt(0).getMeasuredWidth()) / 2;
+                blp.topMargin = (h - activityLayout.getChildAt(0).getMeasuredHeight()) / 2;
+            }
+            close_button.setLayoutParams(blp);
+            close_button.setBackgroundColor(Color.TRANSPARENT);
+            close_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    caller.close();
+                }
+            });
+            activityLayout.addView(close_button);
+        } else if (close_button != null) {
+            if (custom_close) {
+                close_button.setVisibility(GONE);
+            } else {
+                activityLayout.removeView(close_button);
+                close_button.setVisibility(VISIBLE);
+                activityLayout.addView(close_button);// Re-add to send to top
+            }
         }
     }
 }

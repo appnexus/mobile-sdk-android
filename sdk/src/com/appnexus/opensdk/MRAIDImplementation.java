@@ -16,7 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import android.*;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -32,7 +31,6 @@ import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.Display;
 import android.view.Gravity;
@@ -47,9 +45,9 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 
 @SuppressLint("InlinedApi")
-public class MRAIDImplementation {
-    MRAIDWebView owner;
-    boolean readyFired = false;
+class MRAIDImplementation {
+    protected final MRAIDWebView owner;
+    private boolean readyFired = false;
     boolean expanded = false;
     boolean resized = false;
     boolean hidden = false;
@@ -60,7 +58,7 @@ public class MRAIDImplementation {
     }
 
     // The webview about to load the ad, and the html ad content
-    protected String onPreLoadContent(WebView wv, String html) {
+    String onPreLoadContent(WebView wv, String html) {
         // Check to ensure <html> tags are present
         if (!html.contains("<html>")) {
             html = "<html><head></head><body style='padding:0;margin:0;'>"
@@ -79,19 +77,26 @@ public class MRAIDImplementation {
         return html;
     }
 
-    protected String getMraidDotJS(Resources r) {
+    String getMraidDotJS(Resources r) {
         InputStream ins = r.openRawResource(R.raw.mraid);
         try {
             byte[] buffer = new byte[ins.available()];
-            ins.read(buffer);
-            return new String(buffer, "UTF-8");
+            if ( ins.read(buffer) > 0) {
+                return new String(buffer, "UTF-8");
+            }
         } catch (IOException e) {
-            return null;
+
         }
+        return null;
     }
 
-    protected WebViewClient getWebViewClient() {
+    protected void onReceivedError(WebView view, int errorCode, String desc,
+                                   String failingUrl) {
+        Clog.w(Clog.mraidLogTag, Clog.getString(
+                R.string.webview_received_error, errorCode, desc, failingUrl));
+    }
 
+    WebViewClient getWebViewClient() {
         return new WebViewClient() {
 
             @Override
@@ -270,45 +275,37 @@ public class MRAIDImplementation {
     }
 
 
-    protected WebChromeClient getWebChromeClient() {
-        return new MRAIDWebChromeClient((Activity) owner.getContext());
-    }
+	WebChromeClient getWebChromeClient() {
+		return new VideoEnabledWebChromeClient((Activity) owner.getContext()){
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                // super.onConsoleMessage(consoleMessage);
+                Clog.w(Clog.mraidLogTag,
+                        Clog.getString(R.string.console_message,
+                                consoleMessage.message(),
+                                consoleMessage.lineNumber(),
+                                consoleMessage.sourceId()));
+                return true;
+            }
 
-    class MRAIDWebChromeClient extends VideoEnabledWebChromeClient {
+            @Override
+            public boolean onJsAlert(WebView view, String url, String message,
+                                     JsResult result) {
+                // /super.onJsAlert(view, url, message, result);
+                Clog.w(Clog.mraidLogTag,
+                        Clog.getString(R.string.js_alert, message, url));
+                result.confirm();
+                return true;
+            }
 
-        public MRAIDWebChromeClient(Activity context) {
-            super(context);
-        }
-
-        @Override
-        public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-            // super.onConsoleMessage(consoleMessage);
-            Clog.w(Clog.mraidLogTag,
-                    Clog.getString(R.string.console_message,
-                            consoleMessage.message(),
-                            consoleMessage.lineNumber(),
-                            consoleMessage.sourceId()));
-            return true;
-        }
-
-        @Override
-        public boolean onJsAlert(WebView view, String url, String message,
-                                 JsResult result) {
-            // /super.onJsAlert(view, url, message, result);
-            Clog.w(Clog.mraidLogTag,
-                    Clog.getString(R.string.js_alert, message, url));
-            result.confirm();
-            return true;
-        }
-    }
-
-    protected void onVisible() {
+        };
+	}
+    void onVisible() {
         if (readyFired)
             owner.loadUrl("javascript:window.mraid.util.setIsViewable(true)");
-
     }
 
-    protected void onInvisible() {
+    void onInvisible() {
         if (readyFired)
             owner.loadUrl("javascript:window.mraid.util.setIsViewable(false)");
     }
@@ -323,7 +320,7 @@ public class MRAIDImplementation {
         view.loadUrl("javascript:window.mraid.util.setCurrentPosition(x:" + location[0] + ", y:" + location[1] + ", width:" + width + ", height:" + height + ")");
     }
 
-    protected void close() {
+    void close() {
         if (expanded) {
             AdView.LayoutParams lp = new AdView.LayoutParams(
                     owner.getLayoutParams());
@@ -349,7 +346,7 @@ public class MRAIDImplementation {
         }
     }
 
-    protected void expand(ArrayList<BasicNameValuePair> parameters) {
+    void expand(ArrayList<BasicNameValuePair> parameters) {
         if (!hidden) {
             int width = owner.getLayoutParams().width;// Use current height and
             // width as expansion
@@ -394,7 +391,7 @@ public class MRAIDImplementation {
         }
     }
 
-    protected void dispatch_mraid_call(String url) {
+    void dispatch_mraid_call(String url) {
         // Remove the fake protocol
         url = url.replaceFirst("mraid://", "");
 

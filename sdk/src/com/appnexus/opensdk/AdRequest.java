@@ -26,8 +26,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Handler;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
+import android.util.Pair;
 import com.appnexus.opensdk.InterstitialAdView.Size;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HashingFunctions;
@@ -45,49 +48,59 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
-/**
- * @author jacob
- */
 public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
-    AdView owner;
-    AdRequester requester;
-    AdListener adListener;
-    Context context;
-    String hidmd5;
-    String hidsha1;
-    String devMake;
-    String devModel;
-    String carrier;
-    String firstlaunch;
-    String lat;
-    String lon;
-    String locDataAge;
-    String locDataPrecision;
-    String ua;
-    String orientation;
-    String allowedSizes;
-    String mcc;
-    String mnc;
-    String connection_type;
-    String dev_time; // Set at the time of the request
-    String dev_timezone;
-    String os;
-    String language;
-    String placementId;
-    String nativeBrowser;
-    String psa;
-    int width = -1;
-    int height = -1;
-    int maxWidth = -1;
-    int maxHeight = -1;
-    boolean shouldRetry = true; // true by default
+    private AdView owner;
+    private final AdRequester requester;
+    private AdListener adListener;
+    private Context context;
+    private String hidmd5;
+    private String hidsha1;
+    private String devMake;
+    private String devModel;
+    private String carrier;
+    private String firstlaunch;
+    private String lat;
+    private String lon;
+    private String locDataAge;
+    private String locDataPrecision;
+    private String ua;
+    private String orientation;
+    private String allowedSizes;
+    private String mcc;
+    private String mnc;
+    private String connection_type;
+    private String dev_time; // Set at the time of the request
+    private String dev_timezone;
+    private String os;
+    private String language;
+    private final String placementId;
+    private String nativeBrowser;
+    private String psa;
+    private int width = -1;
+    private int height = -1;
+    private int maxWidth = -1;
+    private int maxHeight = -1;
+    private boolean shouldRetry = true; // true by default
+    private float reserve = 0.00f;
+    private String age;
+    private String gender;
+    private ArrayList<Pair<String, String>> customKeywords;
 
-    private static final AdResponse CONNECTIVITY_RETRY = new AdResponse(null,
-            "RETRY", null);
-    private static final AdResponse BLANK_RETRY = new AdResponse(
-            null, "BLANK", null);
+
+    private final Handler retryHandler = new Handler();
+
+    private int httpRetriesLeft = 0;
+    private int blankRetriesLeft = 0;
+
+    private static final AdResponse HTTP_ERROR
+            = new AdResponse(true, false, false);
+    private static final AdResponse CONNECTIVITY_RETRY
+            = new AdResponse(false, true, false);
+    private static final AdResponse BLANK_RETRY
+            = new AdResponse(false, false, true);
 
     /**
      * Creates a new AdRequest with the given parameters
@@ -119,6 +132,8 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                      AdListener adListener, boolean shouldServePSAs, boolean shouldRetry) {
         this.adListener = adListener;
         this.requester = requester;
+        this.httpRetriesLeft = Settings.getSettings().MAX_CONNECTIVITY_RETRIES;
+        this.blankRetriesLeft = Settings.getSettings().MAX_BLANK_RETRIES;
         if (aid != null) {
             hidmd5 = HashingFunctions.md5(aid);
             hidsha1 = HashingFunctions.sha1(aid);
@@ -160,8 +175,14 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     }
 
     public AdRequest(AdRequester adRequester) {
+        this(adRequester, Settings.getSettings().MAX_CONNECTIVITY_RETRIES, Settings.getSettings().MAX_BLANK_RETRIES);
+    }
+
+    private AdRequest(AdRequester adRequester, int httpRetriesLeft, int blankRetriesLeft) {
         owner = adRequester.getOwner();
         this.requester = adRequester;
+        this.httpRetriesLeft = httpRetriesLeft;
+        this.blankRetriesLeft = blankRetriesLeft;
         this.placementId = owner.getPlacementID();
         context = owner.getContext();
         String aid = android.provider.Settings.Secure.getString(
@@ -233,7 +254,7 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         maxHeight = owner.getContainerHeight();
         maxWidth = owner.getContainerWidth();
 
-        this.psa = owner.shouldServePSAs ? "1" : "0";
+
 
         if (Settings.getSettings().mcc == null
                 || Settings.getSettings().mnc == null) {
@@ -257,16 +278,38 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (owner instanceof InterstitialAdView) {
             // Make string for allowed_sizes
             allowedSizes = "";
-            for (Size s : ((InterstitialAdView) owner).getAllowedSizes()) {
+            ArrayList<Size> sizes = ((InterstitialAdView) owner).getAllowedSizes();
+            for (Size s : sizes) {
                 allowedSizes += "" + s.width() + "x" + s.height();
                 // If not last size, add a comma
-                if (((InterstitialAdView) owner).getAllowedSizes().indexOf(s) != ((InterstitialAdView) owner)
-                        .getAllowedSizes().size() - 1)
+                if (sizes.indexOf(s) != sizes.size() - 1)
                     allowedSizes += ",";
             }
         }
 
         nativeBrowser = owner.getOpensNativeBrowser() ? "1" : "0";
+
+        //Reserve price
+        reserve = owner.getReserve();
+        if(reserve<=0){
+            this.psa = owner.shouldServePSAs ? "1" : "0";
+        }else{
+            this.psa = "0";
+        }
+
+        age = owner.getAge();
+        if (owner.getGender() != null) {
+            if (owner.getGender() == AdView.GENDER.MALE) {
+                gender = "m";
+            }
+            else if (owner.getGender() == AdView.GENDER.FEMALE) {
+                gender = "f";
+            }
+            else {
+                gender = null;
+            }
+        }
+        customKeywords = owner.getCustomKeywords();
 
         mcc = Settings.getSettings().mcc;
         mnc = Settings.getSettings().mnc;
@@ -282,57 +325,73 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         Clog.clearLastResponse();
     }
 
-    public String getRequestUrl() {
+    String getRequestUrl() {
         StringBuilder sb;
         sb = new StringBuilder(Settings.getSettings().BASE_URL);
-        sb.append((placementId != null ? "id=" + Uri.encode(placementId)
-                : "id=NO-PLACEMENT-ID"));
-        sb.append((!isEmpty(hidmd5) ? "&md5udid=" + Uri.encode(hidmd5) : ""));
-        sb.append((!isEmpty(hidsha1) ? "&sha1udid=" + Uri.encode(hidsha1) : ""));
-        sb.append((!isEmpty(devMake) ? "&devmake=" + Uri.encode(devMake) : ""));
-        sb.append((!isEmpty(devModel) ? "&devmodel=" + Uri.encode(devModel)
-                : ""));
-        sb.append((!isEmpty(carrier) ? "&carrier=" + Uri.encode(carrier) : ""));
-        sb.append((!isEmpty(Settings.getSettings().app_id) ? "&appid="
-                + Uri.encode(Settings.getSettings().app_id)
-                : "&appid=NO-APP-ID"));
-        sb.append((!isEmpty(firstlaunch) ? "&firstlaunch=" + firstlaunch : ""));
-        sb.append(!isEmpty(lat) && !isEmpty(lon) ? "&loc=" + lat + "," + lon
-                : "");
-        sb.append((!isEmpty(locDataAge) ? "&" + "loc_age=" + locDataAge : ""));
-        sb.append((!isEmpty(locDataPrecision) ? "&loc_prec=" + locDataPrecision
-                : ""));
-        sb.append((Settings.getSettings().test_mode ? "&istest=true" : ""));
-        sb.append((!isEmpty(ua) ? "&ua=" + Uri.encode(ua) : ""));
-        sb.append((!isEmpty(orientation) ? "&orientation=" + orientation : ""));
-        sb.append(((width > 0 && height > 0) ? "&size=" + width + "x" + height
-                : ""));
+        sb.append("id=");
+        if (placementId != null) {
+            sb.append(Uri.encode(placementId));
+        } else {
+            sb.append("NO-PLACEMENT-ID");
+        }
+        if (!isEmpty(hidmd5)) sb.append("&md5udid=").append(Uri.encode(hidmd5));
+        if (!isEmpty(hidsha1)) sb.append("&sha1udid=").append(Uri.encode(hidsha1));
+        if (!isEmpty(devMake)) sb.append("&devmake=").append(Uri.encode(devMake));
+        if (!isEmpty(devModel)) sb.append("&devmodel=").append(Uri.encode(devModel));
+        if (!isEmpty(carrier)) sb.append( "&carrier=").append(Uri.encode(carrier));
+        sb.append("&appid=");
+        if (!isEmpty(Settings.getSettings().app_id)) {
+            sb.append(Uri.encode(Settings.getSettings().app_id));
+        } else {
+            sb.append("NO-APP-ID");
+        }
+        if (!isEmpty(firstlaunch)) sb.append("&firstlaunch=").append(firstlaunch);
+        if (!isEmpty(lat) && !isEmpty(lon)) sb.append("&loc=").append(lat).append(",").append(lon);
+        if (!isEmpty(locDataAge)) sb.append("&loc_age=").append(locDataAge);
+        if (!isEmpty(locDataPrecision)) sb.append("&loc_prec=").append(locDataPrecision);
+        if (Settings.getSettings().test_mode) sb.append("&istest=true");
+        if (!isEmpty(ua)) sb.append("&ua=").append(Uri.encode(ua));
+        if (!isEmpty(orientation)) sb.append("&orientation=").append(orientation);
+        if (width > 0 && height > 0) sb.append("&size=").append(width).append("x").append(height);
+        // complicated, don't change
         if (owner != null) {
             if (maxHeight > 0 && maxWidth > 0) {
                 if (!(owner instanceof InterstitialAdView)
                         && (width < 0 && height < 0)) {
-                    sb.append("&max_size=" + maxWidth + "x" + maxHeight);
+                    sb.append("&max_size=").append(maxWidth).append("x").append(maxHeight);
                 } else if (owner instanceof InterstitialAdView) {
-                    sb.append("&size=" + maxWidth + "x" + maxHeight);
+                    sb.append("&size=").append(maxWidth).append("x").append(maxHeight);
                 }
             }
         }
-        sb.append((!isEmpty(allowedSizes) ? "&promo_sizes=" + allowedSizes : ""));
-        sb.append((!isEmpty(mcc) ? "&mcc=" + Uri.encode(mcc) : ""));
-        sb.append((!isEmpty(mnc) ? "&mnc=" + Uri.encode(mnc) : ""));
-        sb.append((!isEmpty(os) ? "&os=" + Uri.encode(os) : ""));
-        sb.append((!isEmpty(language) ? "&language=" + Uri.encode(language)
-                : ""));
-        sb.append((!isEmpty(dev_timezone) ? "&devtz="
-                + Uri.encode(dev_timezone) : ""));
-        sb.append((!isEmpty(dev_time) ? "&devtime=" + Uri.encode(dev_time) : ""));
-        sb.append((!isEmpty(connection_type) ? "&connection_type="
-                + Uri.encode(connection_type) : ""));
-        sb.append((!isEmpty(nativeBrowser) ? "&native_browser=" + nativeBrowser
-                : ""));
-        sb.append((!isEmpty(psa) ? "&psa=" + psa : ""));
+        if (!isEmpty(allowedSizes)) sb.append("&promo_sizes=").append(allowedSizes);
+        if (!isEmpty(mcc)) sb.append("&mcc=").append(Uri.encode(mcc));
+        if (!isEmpty(mnc)) sb.append("&mnc=").append(Uri.encode(mnc));
+        if (!isEmpty(os)) sb.append("&os=").append(Uri.encode(os));
+        if (!isEmpty(language)) sb.append("&language=").append(Uri.encode(language));
+        if (!isEmpty(dev_timezone)) sb.append("&devtz=").append(Uri.encode(dev_timezone));
+        if (!isEmpty(dev_time)) sb.append("&devtime=").append(Uri.encode(dev_time));
+        if (!isEmpty(connection_type)) sb.append("&connection_type=").append( Uri.encode(connection_type));
+        if (!isEmpty(nativeBrowser)) sb.append("&native_browser=").append(nativeBrowser);
+        if (!isEmpty(psa)) sb.append( "&psa=").append(psa);
+        if (reserve>0) sb.append("&reserve=").append(reserve);
+        if (!isEmpty(age)) sb.append("&age=").append(Uri.encode(age));
+        if (!isEmpty(gender)) sb.append("&gender=").append(Uri.encode(gender));
         sb.append("&format=json");
-        sb.append("&sdkver=" + Uri.encode(Settings.getSettings().sdkVersion));
+        sb.append("&st=mobile_app");
+        sb.append("&sdkver=").append(Uri.encode(Settings.getSettings().sdkVersion));
+
+        // add custom parameters if there are any
+        if (customKeywords != null) {
+            for (Pair<String, String> pair : customKeywords) {
+                if (!isEmpty(pair.first) && (pair.second != null)) {
+                    sb.append("&")
+                            .append(pair.first)
+                            .append("=")
+                            .append(Uri.encode(pair.second));
+                }
+            }
+        }
 
         return sb.toString();
     }
@@ -340,11 +399,10 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     @Override
     protected AdResponse doInBackground(Void... params) {
         if (!hasNetwork(context)) {
-            Clog.d(Clog.httpReqLogTag,
+            Clog.e(Clog.httpReqLogTag,
                     Clog.getString(R.string.no_connectivity));
             if (!shouldRetry)
                 return doRequest();
-            fail();
             return AdRequest.CONNECTIVITY_RETRY;
         }
 
@@ -372,46 +430,37 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             DefaultHttpClient h = new DefaultHttpClient(p);
             r = h.execute(new HttpGet(query_string));
             if (!httpShouldContinue(r.getStatusLine())) {
-                fail();
-                return new AdResponse(null, AdResponse.http_error, null);
+                return AdRequest.HTTP_ERROR;
             }
             out = EntityUtils.toString(r.getEntity());
         } catch (ClientProtocolException e) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unknown));
-            fail();
             return AdRequest.CONNECTIVITY_RETRY;
         } catch (ConnectTimeoutException e) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_timeout));
-            fail();
             return AdRequest.CONNECTIVITY_RETRY;
-        } catch (HttpHostConnectException e) {
-            HttpHostConnectException he = (HttpHostConnectException) e;
+        } catch (HttpHostConnectException he) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(
                     R.string.http_unreachable, he.getHost().getHostName(), he
                     .getHost().getPort()));
-            fail();
             return AdRequest.CONNECTIVITY_RETRY;
         } catch (IOException e) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_io));
-            fail();
             return AdRequest.CONNECTIVITY_RETRY;
         } catch (SecurityException se) {
-            fail();
             Clog.e(Clog.baseLogTag,
                     Clog.getString(R.string.permissions_internet));
             return null;
         } catch (Exception e) {
             e.printStackTrace();
             Clog.e(Clog.baseLogTag, Clog.getString(R.string.unknown_exception));
-            fail();
             return AdRequest.CONNECTIVITY_RETRY;
         }
         if (out.equals("")) {
             Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
-            fail();
             return AdRequest.BLANK_RETRY;
         }
-        return new AdResponse(requester, out, r.getAllHeaders());
+        return new AdResponse(out, r.getAllHeaders());
     }
 
     private boolean hasNetwork(Context context) {
@@ -419,16 +468,18 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             NetworkInfo ninfo = ((ConnectivityManager) context
                     .getSystemService(Context.CONNECTIVITY_SERVICE))
                     .getActiveNetworkInfo();
-            if (ninfo == null || !ninfo.isConnectedOrConnecting()) {
-                return false;
+            if (ninfo != null && ninfo.isConnectedOrConnecting()) {
+                return true;
             }
-            return true;
         }
         return false;
     }
 
 
     private boolean httpShouldContinue(StatusLine statusLine) {
+        if (statusLine == null)
+            return false;
+
         int http_error_code = statusLine.getStatusCode();
         switch (http_error_code) {
             default:
@@ -443,76 +494,90 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
     @Override
     protected void onPostExecute(AdResponse result) {
+        if (requester != null)
+            requester.setAdRequest(null);
         if (result == null) {
             Clog.v(Clog.httpRespLogTag, Clog.getString(R.string.no_response));
+            fail();
             // Don't call fail again!
             return; // http request failed
-        } else if (shouldRetry && (result.equals(AdRequest.CONNECTIVITY_RETRY)
-                || result.equals(AdRequest.BLANK_RETRY))) {
-            new RetryAdRequest(this, Settings.getSettings().MAX_FAILED_HTTP_RETRIES, Settings.getSettings().MAX_HTTP_RETRIES).execute();
-            return; // The request failed and should be retried.
+        }
+        if (result.isHttpError()) {
+            fail();
+            return;
+        }
+
+        if (shouldRetry) {
+            if ((httpRetriesLeft < 1) || (blankRetriesLeft < 1)) {
+                // return if we have exceeded the max number of tries
+                fail();
+                return;
+            }
+            boolean resultIsRetry = false;
+
+            if (result.isConnectivityRetry()) {
+                httpRetriesLeft--;
+                resultIsRetry = true;
+            } else if (result.isBlankRetry()) {
+                blankRetriesLeft--;
+                resultIsRetry = true;
+            }
+
+            if (resultIsRetry) {
+                // don't fail, but clear the last response
+                Clog.clearLastResponse();
+                final AdRequest retry = new AdRequest(requester, httpRetriesLeft, blankRetriesLeft);
+                if (requester != null)
+                    requester.setAdRequest(retry);
+                retry.retryHandler.postDelayed(new RetryRunnable(retry), Settings.getSettings().HTTP_RETRY_INTERVAL);
+                return; // The request failed and should be retried.
+            }
+            // else let it continue to process the valid result
         }
         if (requester != null)
             requester.onReceiveResponse(result);
+        // for unit testing
         if (adListener != null)
             adListener.onAdLoaded(owner);
     }
 
-    private boolean isEmpty(String str) {
-        if (str == null)
-            return true;
-        if (str.equals(""))
-            return true;
-        return false;
+    @Override
+    protected void onCancelled(AdResponse adResponse) {
+        super.onCancelled(adResponse);
+        Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.cancel_request));
+        if (requester != null)
+            requester.setAdRequest(null);
+        // remove pending retry requests if the requester cancels the ad request
+        retryHandler.removeCallbacksAndMessages(null);
     }
 
-    private class RetryAdRequest extends AdRequest {
-        int tryMoreTimesHTTP = 0;
-        int tryMoreMaxTimesBlanks = 0;
-        AdRequest adRequest = null;
+    private static boolean isEmpty(String str) {
+        return (str == null) || str.equals("");
+    }
 
-        protected RetryAdRequest(AdRequest adRequest, int moreTimesHttp, int moreTimesBlanks) {
-            super(adRequest.requester);
-            tryMoreTimesHTTP = moreTimesHttp;
-            tryMoreMaxTimesBlanks = moreTimesBlanks;
-            this.adRequest = adRequest;
+    class RetryRunnable implements Runnable {
+        final AdRequest retry;
+
+        RetryRunnable(AdRequest retry) {
+            this.retry = retry;
         }
 
         @Override
-        protected AdResponse doInBackground(Void... params) {
-            boolean connectivity_problem = false;
-            if (!hasNetwork(context)) {
-                Clog.d(Clog.httpReqLogTag,
-                        Clog.getString(R.string.no_connectivity));
-                fail();
-                connectivity_problem = true;
-            }
-
-            try {
-                Thread.sleep(Settings.getSettings().HTTP_RETRY_INTERVAL);
-            } catch (InterruptedException e) {
-                //Do nothing, just retry
-            }
-
-            return connectivity_problem ? AdRequest.CONNECTIVITY_RETRY : doRequest();
-
-        }
-
-
-        @Override
-        protected void onPostExecute(AdResponse result) {
-            if (tryMoreTimesHTTP == 0 || tryMoreMaxTimesBlanks == 0) {
+        public void run() {
+            if (retry.isCancelled()) {
+                Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.retry_already_cancelled));
                 return;
             }
-            if (result.equals(AdRequest.CONNECTIVITY_RETRY) && tryMoreTimesHTTP > 0) {
-                new RetryAdRequest(adRequest, tryMoreTimesHTTP - 1, tryMoreMaxTimesBlanks).execute();
-            } else if (result.equals(AdRequest.BLANK_RETRY) && tryMoreMaxTimesBlanks > 0) {
-                new RetryAdRequest(adRequest, tryMoreTimesHTTP, tryMoreMaxTimesBlanks - 1).execute();
-            } else if (!result.equals(AdRequest.CONNECTIVITY_RETRY) && !result.equals(AdRequest.BLANK_RETRY)) {
-                super.onPostExecute(result);
+
+            // Spawn an AdRequest
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                retry.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                retry.execute();
             }
         }
     }
+
 //   // Uncomment for unit tests
 //   public void setContext(Context context) {
 //       this.context = context;

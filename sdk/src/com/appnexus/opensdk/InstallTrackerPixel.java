@@ -37,8 +37,8 @@ public class InstallTrackerPixel extends BroadcastReceiver {
 
     /* SET THIS TO YOUR PIXEL ID */
     final String pid = "";
-    static int RETRY_DELAY_INTERVAL_MS = 30 * 1000;
-    static int RETRY_DELAY_MAX_MS = 300 * 1000;
+    static final int RETRY_DELAY_INTERVAL_MS = 30 * 1000;
+    static final int RETRY_DELAY_MAX_MS = 300 * 1000;
 
     BroadcastReceiver receiver_install;
     Context context;

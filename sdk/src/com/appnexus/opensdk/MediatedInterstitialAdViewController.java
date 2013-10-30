@@ -1,3 +1,18 @@
+/*
+ *    Copyright 2013 APPNEXUS INC
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
 package com.appnexus.opensdk;
 
 import android.app.Activity;
@@ -6,60 +21,58 @@ import com.appnexus.opensdk.utils.Clog;
 
 public class MediatedInterstitialAdViewController extends MediatedAdViewController implements Displayable {
 
-    static public MediatedInterstitialAdViewController create(InterstitialAdView owner, AdResponse response) {
-        MediatedInterstitialAdViewController out;
-        try {
-            out = new MediatedInterstitialAdViewController(owner, response);
-        } catch (Exception e) {
-            return null;
-        }
+    private Activity activity;
 
-        return out;
-
+    static public MediatedInterstitialAdViewController create(
+            Activity activity, AdRequester requester,
+            MediatedAd mediatedAd, AdViewListener listener) {
+        MediatedInterstitialAdViewController out = new MediatedInterstitialAdViewController(activity, requester, mediatedAd, listener);
+        return out.failed() ? null : out;
     }
 
-    protected MediatedInterstitialAdViewController(InterstitialAdView owner, AdResponse response) throws Exception {
-        super(owner, response);
+    private MediatedInterstitialAdViewController(
+            Activity activity, AdRequester requester, MediatedAd mediatedAd,
+            AdViewListener listener) {
+        super(requester, mediatedAd, listener);
 
-        if (this.mAV == null || !(this.mAV instanceof MediatedInterstitialAdView)) {
-            throw new Exception(Clog.getString(R.string.instance_exception));
-        }
+        if (!isValid(MediatedInterstitialAdView.class))
+            return;
+
+        this.activity = activity;
     }
 
-
-    protected void show() {
+    void show() {
         if (mAV != null) {
             ((MediatedInterstitialAdView) mAV).show();
         }
     }
 
-    //TODO: how come this is inconsistent with Banner controller? in banner controller we requestAd in the constructor, but for IADs we do that in getView
-    //TODO: also we return null here; how to test if an interstitial returns an ad then?
     @Override
     public View getView() {
+        // if controller is valid, request an ad.
+        // create() will never return a non-null, invalid controller
         Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediated_request));
-        if (mAV == null) {
-            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_view_null));
-            return null;
-        }
-        if (owner == null) {
-            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_owner_null));
-            return null;
-        }
 
-        //TODO: refactor - this also depends on owner. what if owner is null? (for testing)
+        RESULT errorCode = null;
+
+        startTimeout();
         try {
-            ((MediatedInterstitialAdView) mAV).requestAd(this, (Activity) owner.getContext(), param, uid);
+            ((MediatedInterstitialAdView) mAV).requestAd(this,
+                    activity,
+                    currentAd.getParam(),
+                    currentAd.getId());
         } catch (Exception e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
-            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            errorCode = RESULT.INVALID_REQUEST;
         } catch (Error e) {
             // catch errors. exceptions will be caught above.
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_error), e);
-            onAdFailed(RESULT.MEDIATED_SDK_UNAVAILABLE);
+            errorCode = RESULT.MEDIATED_SDK_UNAVAILABLE;
         }
+
+        if (errorCode != null)
+            onAdFailed(errorCode);
 
         return null;
     }
-
 }

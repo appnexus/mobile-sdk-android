@@ -21,6 +21,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Pair;
@@ -34,6 +36,7 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * The parent class of InterstitialAdView and BannerAdView. This can not be
@@ -41,43 +44,50 @@ import java.util.ArrayList;
  *
  * @author jacob
  */
-public abstract class AdView extends FrameLayout {
+public abstract class AdView extends FrameLayout implements AdViewListener {
 
-    protected AdFetcher mAdFetcher;
-    private String placementID;
-    protected boolean opensNativeBrowser = false;
-    protected int measuredWidth;
-    protected int measuredHeight;
+    AdFetcher mAdFetcher;
+    String placementID;
+    boolean opensNativeBrowser = false;
+    int measuredWidth;
+    int measuredHeight;
     private boolean measured = false;
-    protected int width = -1;
-    protected int height = -1;
-    protected boolean shouldServePSAs = true;
-    private boolean mraid_expand = false;
-    protected AdListener adListener;
+    private int width = -1;
+    private int height = -1;
+    boolean shouldServePSAs = true;
+    private float reserve = 0.00f;
+    String age;
+    GENDER gender;
+    ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
+    boolean mraid_expand = false;
+    AdListener adListener;
     private BrowserStyle browserStyle;
+    private LinkedList<MediatedAd> mediatedAds;
+    final Handler handler = new Handler(Looper.getMainLooper());
+    private Displayable lastDisplayable;
 
     /**
      * Begin Construction *
      */
 
     @SuppressWarnings("javadoc")
-    public AdView(Context context) {
+    AdView(Context context) {
         super(context, null);
         setup(context, null);
     }
 
-    public AdView(Context context, AttributeSet attrs) {
+    AdView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setup(context, attrs);
 
     }
 
-    public AdView(Context context, AttributeSet attrs, int defStyle) {
+    AdView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         setup(context, attrs);
     }
 
-    protected void setup(Context context, AttributeSet attrs) {
+    void setup(Context context, AttributeSet attrs) {
         // Store self.context in the settings for errors
         Clog.error_context = this.getContext();
 
@@ -150,7 +160,6 @@ public abstract class AdView extends FrameLayout {
             // Hide the adview
             if (!measured) {
                 hide();
-                onFirstLayout();
             }
 
             measured = true;
@@ -159,15 +168,7 @@ public abstract class AdView extends FrameLayout {
         }
     }
 
-    // If single-use mode, we must manually start the fetcher
-    protected void onFirstLayout() {
-        // If an MRAID ad is expanded here, don't fetch on resume.
-        if (isMRAIDExpanded())
-            return;
-        mAdFetcher.start();
-    }
-
-    protected boolean isMRAIDExpanded() {
+    boolean isMRAIDExpanded() {
         if (this.getChildCount() > 0
                 && this.getChildAt(0) instanceof MRAIDWebView
                 && ((MRAIDWebView) getChildAt(0)).getImplementation().expanded) {
@@ -176,19 +177,35 @@ public abstract class AdView extends FrameLayout {
         return false;
     }
 
+    boolean isReadyToStart() {
+        if (isMRAIDExpanded()) {
+            Clog.e(Clog.baseLogTag, Clog.getString(R.string.already_expanded));
+            return false;
+        }
+        if (placementID == null || placementID.isEmpty()) {
+            Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_placement_id));
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Loads a new ad, if the ad space is visible.
      *
      * @return true is ad will begin loading, false if ad cannot be loaded
      * at this time given the current settings
      */
-    public void loadAd() {
+    public boolean loadAd() {
+        if (!isReadyToStart())
+            return false;
         if (this.getWindowVisibility() == VISIBLE && mAdFetcher != null) {
             // Reload Ad Fetcher to get new ad at user's request
             mAdFetcher.stop();
             mAdFetcher.clearDurations();
             mAdFetcher.start();
+            return true;
         }
+        return false;
     }
 
     /**
@@ -196,10 +213,13 @@ public abstract class AdView extends FrameLayout {
      * attribute of the AdView to the supplied parameter.
      *
      * @param placementID The new placement id to use.
+     *
+     * @return true is ad will begin loading, false if ad cannot be loaded
+     * at this time given the current settings
      */
-    public void loadAd(String placementID) {
+    public boolean loadAd(String placementID) {
         this.setPlacementID(placementID);
-        loadAd();
+        return loadAd();
     }
 
     /**
@@ -209,12 +229,15 @@ public abstract class AdView extends FrameLayout {
      * @param placementID The new placement id to use.
      * @param width       The new width to use.
      * @param height      The new height to use.
+     *
+     * @return true is ad will begin loading, false if ad cannot be loaded
+     * at this time given the current settings
      */
-    public void loadAd(String placementID, int width, int height) {
+    public boolean loadAd(String placementID, int width, int height) {
         this.setAdHeight(height);
         this.setAdWidth(width);
         this.setPlacementID(placementID);
-        loadAd();
+        return loadAd();
     }
 
     public void loadHtml(String content, int width, int height) {
@@ -235,33 +258,43 @@ public abstract class AdView extends FrameLayout {
      * End Construction
 	 */
 
-    protected void display(Displayable d) {
+
+    void display(Displayable d) {
         if ((d == null) || d.failed()) {
             // The displayable has failed to be parsed or turned into a View.
             fail();
             return;
         }
-        if (d.failed()) {
-            if (this.adListener != null)
-                adListener.onAdRequestFailed(this);
-            return; // The displayable has failed to be parsed or turned into a
-            // View.
+        if (lastDisplayable != null) {
+            if(lastDisplayable instanceof MediatedAdViewController){
+                lastDisplayable.destroy();
+            }
+            lastDisplayable = null;
         }
+
+        WebView webView = null;
+        if (getChildAt(0) instanceof WebView) {
+            webView = (WebView) getChildAt(0);
+        }
+
         this.removeAllViews();
+        if (webView != null)
+            webView.destroy();
         if (d.getView() == null) {
             return;
         }
         this.addView(d.getView());
+        lastDisplayable = d;
         unhide();
     }
 
-    protected void unhide() {
+    void unhide() {
         if (getVisibility() != VISIBLE) {
             setVisibility(VISIBLE);
         }
     }
 
-    protected void hide() {
+    void hide() {
         if (getVisibility() != GONE)
             setVisibility(GONE);
     }
@@ -333,16 +366,16 @@ public abstract class AdView extends FrameLayout {
         return width;
     }
 
-    protected int getContainerWidth() {
+    int getContainerWidth() {
         return measuredWidth;
     }
 
-    protected int getContainerHeight() {
+    int getContainerHeight() {
         return measuredHeight;
     }
 
     // Used only by MRAID
-    private ImageButton close_button;
+    ImageButton close_button;
     View oldContent;
     Activity unexpandedActivity;
     protected void close(int w, int h, MRAIDImplementation caller){
@@ -449,16 +482,8 @@ public abstract class AdView extends FrameLayout {
         return adListener;
     }
 
-    protected void fail() {
-        if (adListener != null)
-            this.post(new Runnable() {
-
-                @Override
-                public void run() {
-                    AdView.this.adListener.onAdRequestFailed(AdView.this);
-                }
-
-            });
+    void fail() {
+        onAdFailed(true);
     }
 
     /**
@@ -482,7 +507,7 @@ public abstract class AdView extends FrameLayout {
         this.opensNativeBrowser = opensNativeBrowser;
     }
 
-    protected BrowserStyle getBrowserStyle() {
+    BrowserStyle getBrowserStyle() {
         return browserStyle;
     }
 
@@ -563,6 +588,77 @@ public abstract class AdView extends FrameLayout {
         this.addView(close_button);
     }
 
+    public float getReserve() {
+        return reserve;
+    }
+
+    public void setReserve(float reserve) {
+        this.reserve = reserve;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    /**
+     *
+     * @param age should be a numerical age, birth year, or hyphenated age range.
+     *            For example: "56", "1974", or "25-35"
+     */
+    public void setAge(String age) {
+        this.age = age;
+    }
+
+    public enum GENDER {
+        MALE,
+        FEMALE
+    }
+
+    public GENDER getGender() {
+        return gender;
+    }
+
+    /**
+     *
+     * @param gender should be either "m" for male or "f" for female
+     */
+    public void setGender(GENDER gender) {
+        this.gender = gender;
+    }
+
+    /**
+     * add a custom keyword to the request url for the ad
+     * @param key keyword name to add, cannot be null or empty
+     * @param value keyword value, cannot be null
+     */
+    public void addCustomKeywords(String key, String value) {
+        if ((key == null) || (key.isEmpty()) || (value == null)) {
+            return;
+        }
+        customKeywords.add(new Pair<String, String>(key, value));
+    }
+
+    /**
+     * remove a custom keyword from the request url for the ad
+     * @param key keyword name to remove, cannot be null or empty
+     */
+    public void removeCustomKeyword(String key) {
+        if ((key == null) || (key.isEmpty()))
+            return;
+
+        for (int i = 0; i < customKeywords.size(); i++) {
+            Pair<String, String> pair = customKeywords.get(i);
+            if (pair.first.equals(key)) {
+                customKeywords.remove(i);
+                break;
+            }
+        }
+    }
+
+    public ArrayList<Pair<String, String>> getCustomKeywords() {
+        return customKeywords;
+    }
+
     static class BrowserStyle {
 
         public BrowserStyle(Drawable forwardButton, Drawable backButton,
@@ -572,10 +668,83 @@ public abstract class AdView extends FrameLayout {
             this.refreshButton = refreshButton;
         }
 
-        Drawable forwardButton;
-        Drawable backButton;
-        Drawable refreshButton;
+        final Drawable forwardButton;
+        final Drawable backButton;
+        final Drawable refreshButton;
 
         static final ArrayList<Pair<String, BrowserStyle>> bridge = new ArrayList<Pair<String, BrowserStyle>>();
     }
+
+    @Override
+    public void onAdLoaded(final Displayable d) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                display(d);
+                if (adListener != null)
+                    adListener.onAdLoaded(AdView.this);
+            }
+        });
+    }
+
+    @Override
+    public void onAdFailed(boolean noMoreAds) {
+        // wait until mediation waterfall is complete before calling adListener
+        if (!noMoreAds)
+            return;
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (adListener != null)
+                    adListener.onAdRequestFailed(AdView.this);
+            }
+        });
+    }
+
+    @Override
+    public void onAdExpanded() {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (adListener != null)
+                    adListener.onAdExpanded(AdView.this);
+            }
+        });
+    }
+
+    @Override
+    public void onAdCollapsed() {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (adListener != null)
+                    adListener.onAdCollapsed(AdView.this);
+            }
+        });
+    }
+
+    @Override
+    public void onAdClicked() {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (adListener != null)
+                    adListener.onAdClicked(AdView.this);
+            }
+        });
+    }
+
+    public LinkedList<MediatedAd> getMediatedAds() {
+        return mediatedAds;
+    }
+
+    public void setMediatedAds(LinkedList<MediatedAd> mediatedAds) {
+        this.mediatedAds = mediatedAds;
+    }
+
+    // returns the first mediated ad if available
+    public MediatedAd popMediatedAd() {
+        return mediatedAds != null ? mediatedAds.pop() : null;
+    }
+
 }

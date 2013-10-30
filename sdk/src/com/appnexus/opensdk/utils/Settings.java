@@ -26,8 +26,9 @@ public class Settings {
     public String hidsha1 = null;
     public String carrierName = null;
 
-    public String deviceMake = Build.MANUFACTURER;
-    public String deviceModel = Build.MODEL;
+    public final String deviceMake = Build.MANUFACTURER;
+    public final String deviceModel = Build.MODEL;
+
     public String app_id = null;
 
     public boolean test_mode = false;
@@ -37,9 +38,9 @@ public class Settings {
 
     public String mcc;
     public String mnc;
-    public String dev_timezone = TimeZone.getDefault().getID();
-    public String os = "Android " + Build.VERSION.RELEASE;
-    public String language = Locale.getDefault().getLanguage();
+    public final String dev_timezone = TimeZone.getDefault().getID();
+    public final String os = "Android " + Build.VERSION.RELEASE;
+    public final String language = Locale.getDefault().getLanguage();
 
     public final int HTTP_CONNECTION_TIMEOUT = 15000;
     public final int HTTP_SOCKET_TIMEOUT = 20000;
@@ -48,21 +49,16 @@ public class Settings {
 
     public final int MIN_REFRESH_MILLISECONDS = 15000;
     public final int DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY = 10000;
-    // disable auto close
-    public final int DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME = Integer.MAX_VALUE;
-    //    public final int DEFAULT_INTERSTITIAL_AUTOCLOSE_TIME = 15000;
-    public final long HTTP_RETRY_INTERVAL = 30000;
 
-    public final int MAX_HTTP_RETRIES = 3;
-    public final int MAX_FAILED_HTTP_RETRIES = 5;
+    public /*final*/ long HTTP_RETRY_INTERVAL = 10000;
 
-    public /*final*/ String BASE_URL = "http://mobile.adnxs.com/mob?";
-    //    public final String BASE_URL = "http://jshufro.adnxs.net:8112/med?";
-//    public final String BASE_URL = "http://jshufro.adnxs.net:8112/mark?";
-//	public final String BASE_URL = "http://rlissack.adnxs.net:8080/mobile/utest?";
-//	public final String BASE_URL = "http://rlissack.adnxs.net:8080/mobile/wr?";
-    public final String INSTALL_BASE_URL = "http://mobile.adnxs.com/install?";
-    //public final String BASE_URL = "http://shuf.ro/anmob/med/admob.json?";
+    public final long MEDIATED_NETWORK_TIMEOUT = 15000;
+
+    public final int MAX_BLANK_RETRIES = 1;
+    public final int MAX_CONNECTIVITY_RETRIES = 1;
+
+    public /*final*/ String BASE_URL = "http://mediation.adnxs.com/mob?";
+    public final String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
 
 
     // STATICS

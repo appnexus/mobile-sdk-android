@@ -50,7 +50,10 @@ public abstract class HTTPGet<Params extends Void, Progress extends Void, Result
 
             out.setHeaders(r.getAllHeaders());
             out.setResponseBody(EntityUtils.toString(r.getEntity()));
-            out.setSucceeded(true);
+            boolean isStatusOK = (r.getStatusLine() != null)
+                    && (r.getStatusLine().getStatusCode()
+                    == 200);
+            out.setSucceeded(isStatusOK);
         } catch (URISyntaxException e) {
             out.setSucceeded(false);
         } catch (ClientProtocolException e) {
@@ -72,10 +75,6 @@ public abstract class HTTPGet<Params extends Void, Progress extends Void, Result
         super.onCancelled(null);
     }
 
-    @Override
-    protected void onCancelled() {
-        super.onCancelled();
-    }
 
     protected abstract String getUrl();
 

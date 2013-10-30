@@ -32,8 +32,7 @@ import android.widget.FrameLayout;
 @SuppressLint("ViewConstructor")
 public class MRAIDWebView extends WebView implements Displayable {
     private MRAIDImplementation implementation;
-    private boolean failed = false;
-    protected AdView owner;
+    final AdView owner;
     private int default_width;
     private int default_height;
     protected boolean isFullScreen = false;
@@ -65,18 +64,18 @@ public class MRAIDWebView extends WebView implements Displayable {
         setScrollBarStyle(WebView.SCROLLBARS_INSIDE_OVERLAY);
     }
 
-    protected void setImplementation(MRAIDImplementation imp) {
+    void setImplementation(MRAIDImplementation imp) {
         this.implementation = imp;
         this.setWebViewClient(imp.getWebViewClient());
         this.setWebChromeClient(imp.getWebChromeClient());
     }
 
-    protected MRAIDImplementation getImplementation() {
+    MRAIDImplementation getImplementation() {
         return implementation;
     }
 
     public void loadAd(AdResponse ar) {
-        String html = ar.getBody();
+        String html = ar.getContent();
 
         if (html.contains("mraid.js")) {
             setImplementation(new MRAIDImplementation(this));
@@ -115,8 +114,8 @@ public class MRAIDWebView extends WebView implements Displayable {
     }
 
     // w,h in dips. this function converts to pixels
-    protected void expand(int w, int h, boolean cust_close,
-                          MRAIDImplementation caller) {
+    void expand(int w, int h, boolean cust_close,
+                MRAIDImplementation caller) {
         DisplayMetrics metrics = new DisplayMetrics();
         ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE))
                 .getDefaultDisplay().getMetrics(metrics);
@@ -155,19 +154,19 @@ public class MRAIDWebView extends WebView implements Displayable {
         this.setLayoutParams(lp);
     }
 
-    protected void hide() {
+    void hide() {
         if (owner != null) {
             owner.hide();
         }
     }
 
-    protected void show() {
+    void show() {
         if (owner != null) {
             owner.expand(default_width, default_height, true, null);
         }
     }
 
-    protected void close() {
+    void close() {
         boolean isInterstitial = false;
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 this.getLayoutParams());
@@ -190,7 +189,7 @@ public class MRAIDWebView extends WebView implements Displayable {
 
     @Override
     public boolean failed() {
-        return failed;
+        return false;
     }
 
     @Override

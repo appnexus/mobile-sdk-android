@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
@@ -31,14 +32,14 @@ import java.util.concurrent.TimeUnit;
 
 public class AdFetcher implements AdRequester {
     private ScheduledExecutorService tasker;
-    protected AdView owner;
+    private final AdView owner;
     private int period = -1;
     private boolean autoRefresh;
-    private RequestHandler handler;
+    private final RequestHandler handler;
     private boolean shouldReset = false;
     private long lastFetchTime = -1;
     private long timePausedAt = -1;
-    private boolean shouldShowTrueTime = false;
+    private AdRequest adRequest;
 
     // Fires requests whenever it receives a message
     public AdFetcher(AdView owner) {
@@ -46,7 +47,7 @@ public class AdFetcher implements AdRequester {
         handler = new RequestHandler(this);
     }
 
-    protected void setPeriod(int period) {
+    void setPeriod(int period) {
         this.period = period;
         if (tasker != null)
             shouldReset = true;
@@ -56,7 +57,12 @@ public class AdFetcher implements AdRequester {
         return period;
     }
 
-    protected void stop() {
+    void stop() {
+        if (adRequest != null) {
+            adRequest.cancel(true);
+            adRequest = null;
+        }
+
         if (tasker == null)
             return;
         tasker.shutdownNow();
@@ -76,14 +82,8 @@ public class AdFetcher implements AdRequester {
         owner.fail();
     }
 
-    protected void start() {
+    void start() {
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.start));
-        // Requests can't be made without a placement ID
-        if (owner.getPlacementID() == null) {
-            Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_placement_id));
-            requestFailed();
-            return;
-        }
         if (tasker != null) {
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.moot_restart));
             requestFailed();
@@ -114,9 +114,7 @@ public class AdFetcher implements AdRequester {
             } else {
                 stall_temp = 0;
             }
-            if (!shouldShowTrueTime) {
-                stall_temp = 0;
-            }
+
             final long stall = stall_temp;
             Clog.v(Clog.baseLogTag,
                     Clog.getString(R.string.request_delayed_by_x_ms, stall));
@@ -132,7 +130,7 @@ public class AdFetcher implements AdRequester {
         }
     }
 
-    class MessageRunnable implements Runnable {
+    private class MessageRunnable implements Runnable {
 
         @Override
         public void run() {
@@ -160,15 +158,16 @@ public class AdFetcher implements AdRequester {
             // this message
             // If an MRAID ad is expanded in the owning view, do nothing with
             // this message
-            if (mFetcher.get() == null
-                    || mFetcher.get().owner.isMRAIDExpanded())
+            AdFetcher fetcher = mFetcher.get();
+            if (fetcher == null
+                    || !fetcher.owner.isReadyToStart())
                 return;
 
             // If we need to reset, reset.
-            if (mFetcher.get().shouldReset) {
-                mFetcher.get().shouldReset = false;
-                mFetcher.get().stop();
-                mFetcher.get().start();
+            if (fetcher.shouldReset) {
+                fetcher.shouldReset = false;
+                fetcher.stop();
+                fetcher.start();
                 return;
             }
 
@@ -176,30 +175,29 @@ public class AdFetcher implements AdRequester {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(
                             R.string.new_ad_since,
-                            (int) (System.currentTimeMillis() - mFetcher.get().lastFetchTime)));
-            mFetcher.get().lastFetchTime = System.currentTimeMillis();
+                            (int) (System.currentTimeMillis() - fetcher.lastFetchTime)));
+            fetcher.lastFetchTime = System.currentTimeMillis();
 
             // Spawn an AdRequest
+            fetcher.adRequest = new AdRequest(fetcher);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                new AdRequest(mFetcher.get())
-                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                fetcher.adRequest.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
-                new AdRequest(mFetcher.get()).execute();
+                fetcher.adRequest.execute();
             }
-
         }
     }
 
-    protected boolean getAutoRefresh() {
+    boolean getAutoRefresh() {
         return autoRefresh;
     }
 
-    protected void setAutoRefresh(boolean autoRefresh) {
+    void setAutoRefresh(boolean autoRefresh) {
         this.autoRefresh = autoRefresh;
         // Restart with new autorefresh setting, but only if auto-refresh was
         // set to true
         if (tasker != null) {
-            if (autoRefresh == true) {
+            if (autoRefresh) {
                 stop();
                 start();
             }
@@ -213,47 +211,71 @@ public class AdFetcher implements AdRequester {
 
     @Override
     public void dispatchResponse(final AdResponse response) {
-        this.owner.post(new Runnable() {
-            public void run() {
-                if (response.isMediated() && owner.isBanner()) {
-                    MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
-                            owner, response);
-                    if (output != null) {
-                        owner.display(output);
-                    }
-                    return;
-                } else if (response.isMediated()
-                        && owner.isInterstitial()) {
-                    MediatedInterstitialAdViewController output = MediatedInterstitialAdViewController.create(
-                            (InterstitialAdView) owner, response);
-                    if (output != null) {
-                        owner.display(output);
-                    }
-                    return;
-                } else if (response.isMraid) {
-                    MRAIDWebView output = new MRAIDWebView(owner);
-                    output.loadAd(response);
-                    owner.display(output);
-                } else {
-                    AdWebView output = new AdWebView(owner);
-                    output.loadAd(response);
-                    owner.display(output);
-                }
+
+        if ((owner.getMediatedAds() != null) && !owner.getMediatedAds().isEmpty()) {
+            // mediated
+            if (owner.isBanner()) {
+                MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
+                        (Activity) owner.getContext(),
+                        owner.mAdFetcher,
+                        owner.popMediatedAd(),
+                        owner);
+            } else if (owner.isInterstitial()) {
+                MediatedInterstitialAdViewController output = MediatedInterstitialAdViewController.create(
+                        (Activity) owner.getContext(),
+                        owner.mAdFetcher,
+                        owner.popMediatedAd(),
+                        owner);
+                if (output != null)
+                    output.getView();
             }
-        });
+        } else if ((response != null)
+                && response.isMraid()) {
+            // mraid
+            MRAIDWebView output = new MRAIDWebView(owner);
+            output.loadAd(response);
+            owner.onAdLoaded(output);
+        } else {
+            // standard
+            AdWebView output = new AdWebView(owner);
+            output.loadAd(response);
+            owner.onAdLoaded(output);
+        }
     }
 
-    @Override
-    public void onReceiveResponse(AdResponse response) {
-        dispatchResponse(response);
-        if (owner.adListener != null) {
-            owner.adListener.onAdLoaded(owner);
+    public void onReceiveResponse(final AdResponse response) {
+        boolean responseHasAds = (response != null) && response.containsAds();
+        boolean ownerHasAds = (owner.getMediatedAds() != null) && !owner.getMediatedAds().isEmpty();
+
+        // no ads in the response and no old ads means no fill
+        if (!responseHasAds && !ownerHasAds) {
+            Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
+            requestFailed();
+            return;
         }
+
+        if (responseHasAds) {
+            // if non-mediated ad is overriding the list,
+            // this will be null and skip the loop for mediation
+            owner.setMediatedAds(response.getMediatedAds());
+        }
+
+        this.owner.handler.post(new Runnable() {
+            @Override
+            public void run() {
+                AdFetcher.this.dispatchResponse(response);
+            }
+        });
+
     }
 
     @Override
     public AdView getOwner() {
         return owner;
+    }
+
+    public void setAdRequest(AdRequest adRequest) {
+        this.adRequest = adRequest;
     }
 
     public void clearDurations() {
