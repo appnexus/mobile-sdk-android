@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   Copyright 2013 APPNEXUS INC
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ -->
+<resources>
+
+    <string name="app_name">AppNexus SDK App</string>
+    <string name="banner_space">Banners will load here.</string>
+    <string name="load_ad_button">Load Ad</string>
+    <string name="paste_ad_button">Paste Ad</string>
+
+    <string name="settings_title_general">General</string>
+    <string name="settings_title_banner">Banner</string>
+    <string name="settings_title_interstitial">Interstitial</string>
+    <string name="settings_title_debug">Debug Auction</string>
+
+    <string name="settings_txt_adtype">Ad Type:</string>
+    <string name="settings_txt_psas">Allow PSAs:</string>
+    <string name="settings_txt_browser">Browser:</string>
+    <string name="settings_txt_placementid">Placement Id:</string>
+    <string name="settings_txt_size">Size:</string>
+    <string name="settings_txt_refresh">Refresh Rate:</string>
+    <string name="settings_txt_interstitial_bg_color">Background Color:</string>
+    <string name="settings_txt_memberid">Member Id:</string>
+    <string name="settings_txt_dongle">Dongle:</string>
+
+    <string name="settings_hint_placementid">placement id</string>
+    <string name="settings_hint_color">00000000</string>
+    <string name="settings_hint_memberid">member id</string>
+    <string name="settings_hint_dongle">dongle</string>
+
+    <string name="settings_btn_banner">Banner</string>
+    <string name="settings_btn_interstitial">Interstitial</string>
+    <string name="settings_btn_psas_yes">Yes</string>
+    <string name="settings_btn_psas_no">No</string>
+    <string name="settings_btn_browser_inapp">In-App</string>
+    <string name="settings_btn_browser_native">Device</string>
+
+    <string name="debug_title_request">Last Request URL</string>
+    <string name="debug_title_response">Last Server Response</string>
+
+    <string name="debug_txt_memberid">Debug Member ID:</string>
+    <string name="debug_txt_dongle">Dongle:</string>
+    <string name="debug_txt_placementid">Debug Placement ID:</string>
+
+    <string name="debug_btn_debugauction">Run Debug Auction</string>
+    <string name="debug_btn_email_server">Email Server Request/Response</string>
+    <string name="debug_btn_auction_email">Email Debug Auction Results</string>
+
+    <string name="debug_msg_debugauction_failed">No Response from Server</string>
+    <string name="debug_msg_response_empty">Last response was empty</string>
+
+    <string name="log_title_applogs">App Logs</string>
+    <string name="log_btn_email">Email Logs</string>
+
+    <string-array name="sizes">
+        <item>300x50</item>
+        <item>320x50</item>
+        <item>300x250</item>
+        <item>320x480</item>
+        <item>728x90</item>
+        <item>160x600</item>
+        <item>1024x768</item>
+    </string-array>
+
+    <string-array name="refresh">
+        <item>Off</item>
+        <item>30 seconds</item>
+        <item>60 seconds</item>
+        <item>120 seconds</item>
+    </string-array>
+
+</resources>

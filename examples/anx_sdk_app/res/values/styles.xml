@@ -1,0 +1,114 @@
+<resources>
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    -->
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <item name="android:windowNoTitle">true</item>
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+
+    <style name="widthFillheightWrap">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+    </style>
+
+    <style name="header" parent="widthFillheightWrap">
+        <item name="android:padding">4dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@color/header_bg</item>
+        <item name="android:textColor">@color/an_black</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:minHeight">40dp</item>
+    </style>
+
+    <style name="button" parent="widthFillheightWrap">
+        <item name="android:background">@drawable/btn_normal</item>
+        <item name="android:textColor">@color/an_black</item>
+        <!--<item name="android:layout_marginLeft">12dp</item>-->
+        <!--<item name="android:layout_marginRight">12dp</item>-->
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_centerHorizontal">true</item>
+    </style>
+
+    <style name="itemContainer" parent="widthFillheightWrap">
+        <item name="android:padding">4dp</item>
+    </style>
+
+    <style name="switchContainer" parent="widthFillheightWrap">
+        <item name="android:padding">2dp</item>
+    </style>
+
+    <style name="switchButtonMiddle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
+        <!--<item name="android:background">@color/light_grey</item>-->
+        <item name="android:layout_centerInParent">true</item>
+    </style>
+
+    <style name="switchButtonItem" parent="widthFillheightWrap">
+        <!--<item name="android:background">@drawable/btn_switch</item>-->
+        <item name="android:background">@drawable/btn_holo</item>
+        <item name="android:textColor">@color/btn_switch_txt</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:padding">-5dp</item>
+    </style>
+
+    <style name="settingsTextItem">
+        <item name="android:layout_width">108dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:gravity">center_vertical|right</item>
+    </style>
+
+    <style name="settingsTextItem.long">
+        <item name="android:layout_width">136dp</item>
+    </style>
+
+    <style name="settingsEditItem">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minWidth">128dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:maxLength">16</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_alignParentRight">true</item>
+    </style>
+
+    <style name="settingsEditItem.prefix">
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:layout_alignParentRight">false</item>
+    </style>
+
+    <style name="debugParent" parent="widthFillheightWrap">
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+    <style name="debugText" parent="widthFillheightWrap">
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+    <style name="debugEdit" parent="widthFillheightWrap">
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:editable">false</item>
+        <item name="android:enabled">false</item>
+    </style>
+
+</resources>
