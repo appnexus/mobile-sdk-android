@@ -5,5 +5,7 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="lib" path="libs/GoogleAdMobAdsSdk-6.4.1.jar"/>
+	<classpathentry kind="lib" path="libs/MMSDK-5.1.0-13.08.12.a.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk;
 
+import android.annotation.SuppressLint;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import org.apache.http.Header;
@@ -25,6 +26,7 @@ import org.json.JSONObject;
 
 import java.util.LinkedList;
 
+@SuppressLint("NewApi")
 public class AdResponse {
     private String content;
     private int height;
