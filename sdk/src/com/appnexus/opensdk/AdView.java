@@ -533,7 +533,6 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
 
     public void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean,
                        final MRAIDImplementation caller) {
-        //TODO: Offsets???
         mraid_expand = true;
         if (getLayoutParams() != null) {
             if (getLayoutParams().width > 0)
@@ -553,7 +552,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         int grav = Gravity.RIGHT | Gravity.TOP;
         switch (custom_close_position) {
             case bottom_center:
-                grav = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                grav = Gravity.BOTTOM | Gravity.CENTER;
                 break;
             case bottom_left:
                 grav = Gravity.BOTTOM | Gravity.LEFT;
@@ -565,7 +564,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
                 grav = Gravity.CENTER;
                 break;
             case top_center:
-                grav = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+                grav = Gravity.TOP | Gravity.CENTER;
                 break;
             case top_left:
                 grav = Gravity.TOP | Gravity.LEFT;
