@@ -542,6 +542,10 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
                 getLayoutParams().height = h;
         }
         // Add a stock close_button button to the top right corner
+        if(close_button!=null){
+            ((ViewGroup)close_button.getParent()).removeView(close_button);
+            close_button.setVisibility(GONE);
+        }
         close_button = new ImageButton(this.getContext());
         close_button.setImageDrawable(getResources().getDrawable(
                 android.R.drawable.ic_menu_close_clear_cancel));
