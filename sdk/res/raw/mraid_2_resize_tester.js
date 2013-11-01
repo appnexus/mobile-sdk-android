@@ -14,6 +14,7 @@
 	}
 
     onReady = function(){
+        document.body.style.background = 'black';
         alert("ON_READY");
         mraid.setResizeProperties({width: 320, height:50, offsetX:0, offsetY:0, customClosePosition:"top-right", allowOffscreen: false});
     }
@@ -67,5 +68,5 @@
 	mraid.addEventListener('stateChange', onChange);
 
     </script>
-    <div id="banner" onclick='mraid.resize()'><img src='http://dummyimage.com/320x480/e67e17/fff.jpg&text=Click+to+Resize' /></div>
+    <center><div id="banner" onclick='mraid.resize()'><img src='http://dummyimage.com/320x440/e67e17/fff.jpg&text=Click+to+Resize' /></div></center>
     <div id="expanded" />

@@ -343,7 +343,7 @@
 	};
 
 	mraid.util.stateChangeEvent=function(new_state){
-		if(state===new_state) return;
+		if(state===new_state && state!='resized') return;
 		state=new_state;
 		if(new_state==='hidden'){
 			mraid.util.setIsViewable(false);
