@@ -155,7 +155,6 @@ class MRAIDImplementation {
             @Override
             public void onPageFinished(WebView view, String url) {
                 // Fire the ready event only once
-                //TODO set position, size, maxsize, screensize
                 if (!readyFired) {
                     String t = owner.owner.isBanner() ? "inline" : "interstitial";
                     view.loadUrl("javascript:window.mraid.util.setPlacementType('"
@@ -236,13 +235,11 @@ class MRAIDImplementation {
 
             private void setSupportsValues(WebView view) {
                 //SMS
-                //TODO Check for permissions
                 if (hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("sms:5555555555")))) {
                     view.loadUrl("javascript:window.mraid.util.setSupportsSMS(true)");
                 }
 
                 //Tel
-                //TODO Check for permissions
                 if (hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("tel:5555555555")))) {
                     view.loadUrl("javascript:window.mraid.util.setSupportsTel(true)");
                 }
@@ -310,7 +307,7 @@ class MRAIDImplementation {
             owner.loadUrl("javascript:window.mraid.util.setIsViewable(false)");
     }
 
-    protected void setCurrentPosition(int left, int top, int right, int bottom, WebView view) { //TODO find somewhere convenient to call this
+    protected void setCurrentPosition(int left, int top, int right, int bottom, WebView view) {
         int height = right-left;
         int width = bottom-top;
 
@@ -327,7 +324,6 @@ class MRAIDImplementation {
             lp.gravity = Gravity.CENTER;
             owner.setLayoutParams(lp);
             owner.close();
-            owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent(" + default_width + "," + default_height + ")");
             owner.loadUrl("javascript:window.mraid.util.stateChangeEvent('default');");
             owner.owner.adListener.onAdCollapsed(this.owner.owner);
 
@@ -370,7 +366,6 @@ class MRAIDImplementation {
 
             owner.expand(width, height, useCustomClose, this);
             // Fire the stateChange to MRAID
-            owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent(" + width + "," + height + ")"); // TODO: centralize
             this.owner
                     .loadUrl("javascript:window.mraid.util.stateChangeEvent('expanded');");
             expanded = true;
@@ -559,7 +554,7 @@ class MRAIDImplementation {
         try {
             event = W3CEvent.createFromJSON(URLDecoder.decode(parameters.get(0).getValue(), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
-            //TODO nothing
+
         }
         Intent i = event.getInsertIntent();
         owner.getContext().startActivity(i);

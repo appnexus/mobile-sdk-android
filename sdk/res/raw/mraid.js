@@ -181,7 +181,7 @@
                        +"&offset_x="+resize_properties.offsetX
                        +"&offset_y="+resize_properties.offsetY
                        +"&custom_close_position="+resize_properties.customClosePosition
-                       +"&allow_offscreen="+resize_properties.allowOffscreen); //TODO: sizechange events must be fired from native side, after successful resize
+                       +"&allow_offscreen="+resize_properties.allowOffscreen);
             mraid.util.stateChangeEvent('resized');
             break;
         case 'hidden':
