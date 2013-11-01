@@ -380,10 +380,12 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     Activity unexpandedActivity;
     protected void close(int w, int h, MRAIDImplementation caller){
         //For closing
-        if(oldContent.getParent()!=null){
+        if(oldContent!= null && oldContent.getParent()!=null){
             ((ViewGroup)oldContent.getParent()).removeAllViewsInLayout();
         }
-        unexpandedActivity.setContentView(oldContent);
+        if(unexpandedActivity!=null){
+            unexpandedActivity.setContentView(oldContent);
+        }
         if (caller.owner.isFullScreen) {
             ((FrameLayout)caller.owner.getParent()).removeAllViews();
             this.addView(caller.owner);
