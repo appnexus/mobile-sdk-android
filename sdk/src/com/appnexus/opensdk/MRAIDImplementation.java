@@ -310,14 +310,12 @@ class MRAIDImplementation {
             owner.loadUrl("javascript:window.mraid.util.setIsViewable(false)");
     }
 
-    protected void setCurrentPosition(WebView view) { //TODO find somewhere convenient to call this
-        int[] location = new int[2];
-        owner.getLocationOnScreen(location);
+    protected void setCurrentPosition(int left, int top, int right, int bottom, WebView view) { //TODO find somewhere convenient to call this
+        int height = right-left;
+        int width = bottom-top;
 
-        int height = owner.getMeasuredHeight();
-        int width = owner.getMeasuredWidth();
-
-        view.loadUrl("javascript:window.mraid.util.setCurrentPosition(x:" + location[0] + ", y:" + location[1] + ", width:" + width + ", height:" + height + ")");
+        owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent(" + width + "," + height + ")");
+        view.loadUrl("javascript:window.mraid.util.setCurrentPosition(x:" + left + ", y:" + bottom + ", width:" + width + ", height:" + height + ")");
     }
 
     void close() {
@@ -330,9 +328,8 @@ class MRAIDImplementation {
             owner.setLayoutParams(lp);
             owner.close();
             owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent(" + default_width + "," + default_height + ")");
-            this.owner
-                    .loadUrl("javascript:window.mraid.util.stateChangeEvent('default');");
-            this.owner.owner.adListener.onAdCollapsed(this.owner.owner);
+            owner.loadUrl("javascript:window.mraid.util.stateChangeEvent('default');");
+            owner.owner.adListener.onAdCollapsed(this.owner.owner);
 
             // Allow orientation changes
             Activity a = ((Activity) this.owner.getContext());

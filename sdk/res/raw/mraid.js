@@ -354,8 +354,10 @@
 	};
 
 	mraid.util.sizeChangeEvent=function(width, height){
-        for(var i=0;i<listeners['sizeChange'].length;i++){
-            listeners['sizeChange'][i](width, height);
+	    if(width != mraid.getCurrentPosition().width || height != mraid.getCurrentPosition().height){
+            for(var i=0;i<listeners['sizeChange'].length;i++){
+                listeners['sizeChange'][i](width, height);
+            }
         }
 	}
 

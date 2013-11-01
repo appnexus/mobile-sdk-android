@@ -196,7 +196,7 @@ public class MRAIDWebView extends WebView implements Displayable {
     public void onLayout(boolean changed, int left, int top, int right,
                          int bottom) {
         if (changed) {
-            implementation.setCurrentPosition(this);
+            implementation.setCurrentPosition(left, top, right, bottom, this);
         }
     }
 
@@ -235,4 +235,5 @@ public class MRAIDWebView extends WebView implements Displayable {
 
         this.setLayoutParams(lp);
     }
+
 }

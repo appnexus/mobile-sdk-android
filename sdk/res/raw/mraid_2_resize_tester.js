@@ -58,7 +58,9 @@
 		    rprops = mraid.getResizeProperties();
 		    rprops.width+=10;
 		    rprops.height+=10;
+		    rprops.customClosePosition="top-center"
 		    mraid.setResizeProperties(rprops);
+
 		    alert('RESIZED');
 		}
 	}
