@@ -192,7 +192,17 @@
     }
 
     mraid.setResizeProperties=function(props){
-        resize_properties=props;
+        if(props.customClosePosition!=null && props.customClosePosition != "top-right"
+                                       && props.customClosePosition != "top-left"
+                                       && props.customClosePosition != "center"
+                                       && props.customClosePosition != "bottom-left"
+                                       && props.customClosePosition != "bottom-right"
+                                       && props.customClosePosition != "top-center"
+                                       && props.customClosePosition != "bottom-center"){
+            mraid.util.errorEvent("Invalid customClosePosition.", "mraid.setResizeProperties()");
+        }else{
+            resize_properties=props;
+        }
     }
 
     mraid.getResizeProperties=function(){

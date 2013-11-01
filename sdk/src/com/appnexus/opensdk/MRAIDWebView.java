@@ -206,8 +206,10 @@ public class MRAIDWebView extends WebView implements Displayable {
                 .getDefaultDisplay().getMetrics(metrics);
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 this.getLayoutParams());
-        default_width = lp.width;
-        default_height = lp.height;
+        if(!implementation.resized){
+            default_width = lp.width;
+            default_height = lp.height;
+        }
 
 
         if (h != -1) {

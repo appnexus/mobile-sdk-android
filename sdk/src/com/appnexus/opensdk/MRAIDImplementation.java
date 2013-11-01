@@ -321,7 +321,7 @@ class MRAIDImplementation {
     }
 
     void close() {
-        if (expanded) {
+        if (expanded || resized) {
             AdView.LayoutParams lp = new AdView.LayoutParams(
                     owner.getLayoutParams());
             lp.height = default_height;
@@ -339,6 +339,7 @@ class MRAIDImplementation {
             if (a != null)
                 a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             expanded = false;
+            resized = false;
         } else {
             // state must be default
             owner.hide();
@@ -632,7 +633,7 @@ class MRAIDImplementation {
         }
 
         Clog.d(Clog.mraidLogTag, Clog.getString(R.string.resize, w, h, offset_x, offset_y, custom_close_position, allow_offscrean));
-        this.owner.resize(w, h, offset_x, offset_y, CUSTOM_CLOSE_POSITION.valueOf(custom_close_position.replace('_', '-')), allow_offscrean);
+        this.owner.resize(w, h, offset_x, offset_y, CUSTOM_CLOSE_POSITION.valueOf(custom_close_position.replace('-', '_')), allow_offscrean);
 
         this.owner
                 .loadUrl("javascript:window.mraid.util.stateChangeEvent('resized');");
