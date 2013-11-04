@@ -106,18 +106,5 @@ public class VideoEnabledWebChromeClient extends BaseWebChromeClient {
         });
         layout.addView(close);
     }
-
-//
-//    @Override
-//    public void onCompletion(MediaPlayer mediaPlayer) {
-//        Clog.d(Clog.baseLogTag, "onCompletion");
-////        onHideCustomView();
-//    }
-//
-//    @Override
-//    public boolean onError(MediaPlayer mediaPlayer, int i, int i2) {
-//        Clog.d(Clog.baseLogTag, "onError");
-////        onHideCustomView();
-//        return false;
-//    }
+    
 }

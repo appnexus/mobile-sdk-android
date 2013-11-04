@@ -134,7 +134,7 @@ public class AdResponse {
     private boolean handleStdAds(JSONObject response) {
         JSONArray ads = getJSONArray(response, RESPONSE_KEY_ADS);
         if (ads != null) {
-            // for now, just take the first ad
+            // take the first ad
             JSONObject firstAd = getJSONObjectFromArray(ads, 0);
             type = getJSONString(firstAd, RESPONSE_KEY_TYPE);
             height = getJSONInt(firstAd, RESPONSE_KEY_HEIGHT);
