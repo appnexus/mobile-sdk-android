@@ -2,3 +2,4 @@
 bin/
 *.iml
 *.idea
+*local.properties

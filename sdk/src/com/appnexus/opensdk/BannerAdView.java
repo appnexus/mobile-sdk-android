@@ -211,12 +211,12 @@ public class BannerAdView extends AdView {
                 setAutoRefresh(a.getBoolean(attr, false));
                 Clog.d(Clog.xmlLogTag, Clog.getString(
                         R.string.xml_set_auto_refresh, auto_refresh));
-            } else if (attr == R.styleable.BannerAdView_width) {
+            } else if (attr == R.styleable.BannerAdView_adWidth) {
                 setAdWidth(a.getInt(attr, -1));
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.xml_ad_width,
                                 a.getInt(attr, -1)));
-            } else if (attr == R.styleable.BannerAdView_height) {
+            } else if (attr == R.styleable.BannerAdView_adHeight) {
                 setAdHeight(a.getInt(attr, -1));
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.xml_ad_height,

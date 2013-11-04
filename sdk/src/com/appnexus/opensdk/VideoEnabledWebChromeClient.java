@@ -106,5 +106,5 @@ public class VideoEnabledWebChromeClient extends BaseWebChromeClient {
         });
         layout.addView(close);
     }
-    
+
 }
