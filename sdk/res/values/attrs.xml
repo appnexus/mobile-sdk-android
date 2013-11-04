@@ -20,8 +20,8 @@
     <declare-styleable name="BannerAdView">
         <attr name="placement_id"/>
         <attr name="test"/>
-        <attr name="adWidth"/>
-        <attr name="adHeight"/>
+        <attr name="adWidth" format="integer"/>
+        <attr name="adHeight" format="integer"/>
         <attr name="should_reload_on_resume" format="boolean"/>
         <attr name="auto_refresh_interval" format="integer"/>
         <attr name="auto_refresh" format="boolean"/>
