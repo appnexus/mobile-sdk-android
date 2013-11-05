@@ -118,6 +118,7 @@
 	<string formatted="false" name="play_vide_no_uri">MRAID playVideo() called, but no URI given</string>
 	<string formatted="false" name="store_picture_error">There was an error while storing picture.</string>
 	<string formatted="false" name="number_format">An invalid number was passed to an MRAID function.</string>
+	<string formatted="false" name="xml_set_expands_to_full_screen_width">setExpandsToFullScreenWidth set to %b in xml</string>
 	<string formatted="false" name="mediation_finish">Mediation Controller has finished.</string>
 	<string formatted="false" name="mediation_timeout">Mediation network timed out.</string>
 </resources>

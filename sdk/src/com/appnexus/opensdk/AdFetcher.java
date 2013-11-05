@@ -217,6 +217,12 @@ public class AdFetcher implements AdRequester {
                 boolean responseHasAds = (response != null) && response.containsAds();
                 boolean ownerHasAds = (owner.getMediatedAds() != null) && !owner.getMediatedAds().isEmpty();
 
+                //If we're about to dispatch a creative to a banneradview that has been resized by ad stretching, reset it's size
+                if(owner.isBanner()){
+                    BannerAdView bav = (BannerAdView)owner;
+                    bav.resetContainerIfNeeded();
+                }
+
                 // no ads in the response and no old ads means no fill
                 if (!responseHasAds && !ownerHasAds) {
                     Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
@@ -254,9 +260,15 @@ public class AdFetcher implements AdRequester {
                     output.loadAd(response);
                     owner.onAdLoaded(output);
                 } else {
-                    // standard
                     AdWebView output = new AdWebView(owner);
                     output.loadAd(response);
+                    // standard
+                    if(owner.isBanner()){
+                        BannerAdView bav = (BannerAdView) owner;
+                        if(bav.getExpandsToFitScreenWidth() == true){
+                            bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), output);
+                        }
+                    }
                     owner.onAdLoaded(output);
                 }
             }

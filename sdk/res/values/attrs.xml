@@ -26,6 +26,7 @@
         <attr name="auto_refresh_interval" format="integer"/>
         <attr name="auto_refresh" format="boolean"/>
         <attr name="opens_native_browser" format="boolean"/>
+        <attr name="expands_to_fit_screen_width" format="boolean"/>
     </declare-styleable>
 
     <declare-styleable name="InterstitialAdView">
