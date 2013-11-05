@@ -21,8 +21,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.TypedArray;
+import android.graphics.Point;
+import android.os.Build;
 import android.util.AttributeSet;
+import android.view.Display;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.webkit.WebView;
+import android.widget.FrameLayout;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
@@ -39,6 +45,8 @@ public class BannerAdView extends AdView {
     private boolean shouldReloadOnResume;
     private BroadcastReceiver receiver;
     private boolean receiversRegistered;
+    protected boolean reset_container = false;
+    private boolean expandsToFitScreenWidth = false;
 
     private void setDefaultsBeforeXML() {
         running = false;
@@ -230,6 +238,12 @@ public class BannerAdView extends AdView {
                 Clog.d(Clog.xmlLogTag, Clog.getString(
                         R.string.xml_set_opens_native_browser,
                         opensNativeBrowser));
+            }else if (attr == R.styleable.BannerAdView_expands_to_fit_screen_width){
+                setExpandsToFitScreenWidth(a.getBoolean(attr, true));
+                Clog.d(Clog.xmlLogTag, Clog.getString(
+                        R.string.xml_set_expands_to_full_screen_width,
+                        expandsToFitScreenWidth
+                ));
             }
         }
         a.recycle();
@@ -371,5 +385,64 @@ public class BannerAdView extends AdView {
     @Override
     boolean isInterstitial() {
         return false;
+    }
+
+    public boolean getExpandsToFitScreenWidth() {
+        return expandsToFitScreenWidth;
+    }
+
+    public void setExpandsToFitScreenWidth(boolean expandsToFitScreenWidth) {
+        this.expandsToFitScreenWidth = expandsToFitScreenWidth;
+    }
+
+    protected int oldH;
+    protected int oldW;
+    public void expandToFitScreenWidth(int adWidth, int adHeight, AdWebView webview) {
+        //Determine the width of the screen
+        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+
+        int width=-1;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2){
+            Point p = new Point();
+            display.getSize(p);
+            width=p.x;
+        }else{
+            width=display.getWidth();
+        }
+        float ratio_delta = ((float) width)/((float) adWidth);
+        int new_height = (int)(adHeight*ratio_delta);
+        oldH = getLayoutParams().height;
+        oldW = getLayoutParams().width;
+
+        //Adjust width of container
+        if(getLayoutParams().width>0){
+            getLayoutParams().width=(int)(adWidth*ratio_delta);
+        }else if(getLayoutParams().width==ViewGroup.LayoutParams.WRAP_CONTENT){
+            getLayoutParams().width=(int)(adWidth*ratio_delta);
+        }
+        //Adjust height of container
+        getLayoutParams().height=new_height;
+
+        //Adjust height of webview
+        if(webview.getLayoutParams()==null){
+            webview.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        }else{
+            webview.getLayoutParams().width = FrameLayout.LayoutParams.MATCH_PARENT;
+            webview.getLayoutParams().height = FrameLayout.LayoutParams.MATCH_PARENT;
+        }
+
+        webview.setInitialScale((int)(ratio_delta*100));
+
+        webview.invalidate();
+
+        reset_container=true;
+
+    }
+
+    public void resetContainer() {
+        reset_container=false;
+        getLayoutParams().height = oldH;
+        getLayoutParams().width = oldW;
     }
 }

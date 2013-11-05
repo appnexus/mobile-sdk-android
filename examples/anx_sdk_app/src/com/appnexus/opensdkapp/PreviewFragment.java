@@ -1,12 +1,12 @@
 /*
  *    Copyright 2013 APPNEXUS INC
- *    
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
  *        http://www.apache.org/licenses/LICENSE-2.0
- *    
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -86,8 +86,10 @@ public class PreviewFragment extends Fragment {
     }
 
     public void loadNewAd() {
+        //TODO just for testing auto-scaling awesomeness
+        bav.setExpandsToFitScreenWidth(true);
         Log.d(Constants.BASE_LOG_TAG, "Loading new ad");
-        resetBanner();
+        //resetBanner();
 
         Context context = getActivity();
         if (context == null) {
@@ -103,6 +105,7 @@ public class PreviewFragment extends Fragment {
             bav.setAutoRefreshInterval(settingsWrapper.getRefreshPeriod());
             bav.setAdWidth(settingsWrapper.getWidth());
             bav.setAdHeight(settingsWrapper.getHeight());
+
 
             bav.setShouldServePSAs(settingsWrapper.isAllowPsas());
             bav.setOpensNativeBrowser(!settingsWrapper.isBrowserInApp());
@@ -141,9 +144,16 @@ public class PreviewFragment extends Fragment {
         if (bav != null) {
             FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) bav.getLayoutParams();
             adFrame.removeView(bav);
-            bav = new BannerAdView(getActivity());
-            bav.setAdListener(adListener);
-            bav.setLayoutParams(lp);
+            if(!bav.getExpandsToFitScreenWidth()){
+                bav = new BannerAdView(getActivity());
+                bav.setAdListener(adListener);
+                bav.setLayoutParams(lp);
+            }else{
+                bav = new BannerAdView(getActivity());
+                bav.setExpandsToFitScreenWidth(true);
+                bav.setAdListener(adListener);
+                bav.setLayoutParams(lp);
+            }
             adFrame.addView(bav, 0);
         }
     }
@@ -165,17 +175,20 @@ public class PreviewFragment extends Fragment {
                 ScrollView.LayoutParams lp = new ScrollView.LayoutParams(
                         adframe.getLayoutParams());
                 lp.height = ScrollView.LayoutParams.WRAP_CONTENT;
-                adframe.setLayoutParams(lp);
+                if(!bav.getExpandsToFitScreenWidth()){
+                    adframe.setLayoutParams(lp);
+                }
 
                 DisplayMetrics m = new DisplayMetrics();
                 getActivity().getWindowManager().getDefaultDisplay().getMetrics(m);
                 float d = m.density;
 
-                FrameLayout.LayoutParams bannerlp = new FrameLayout.LayoutParams(bav.getLayoutParams());
-                bannerlp.gravity = Gravity.CENTER_HORIZONTAL;
-                if (bannerlp.width != -1) bannerlp.width = (int) (bav.getAdWidth() * d + 0.5f);
-                if (bannerlp.height != -1) bannerlp.height = (int) (bav.getAdHeight() * d + 0.5f);
-                bav.setLayoutParams(bannerlp);
+                if(!bav.getExpandsToFitScreenWidth()){
+                    FrameLayout.LayoutParams bannerlp = new FrameLayout.LayoutParams(bav.getLayoutParams());
+                    bannerlp.gravity = Gravity.CENTER_HORIZONTAL;
+                    if (bannerlp.width != -1) bannerlp.width = (int) (bav.getAdWidth() * d + 0.5f);
+                    if (bannerlp.height != -1) bannerlp.height = (int) (bav.getAdHeight() * d + 0.5f);
+                }
 
                 bannerText.setVisibility(TextView.INVISIBLE);
             } else if (adView == iav) {
