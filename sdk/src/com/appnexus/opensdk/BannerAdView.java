@@ -442,8 +442,10 @@ public class BannerAdView extends AdView {
 
     protected void resetContainer() {
         shouldResetContainer =false;
-        getLayoutParams().height = oldH;
-        getLayoutParams().width = oldW;
+        if(getLayoutParams()!=null){
+            getLayoutParams().height = oldH;
+            getLayoutParams().width = oldW;
+        }
     }
 
     public void resetContainerIfNeeded() {
