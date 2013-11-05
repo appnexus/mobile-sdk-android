@@ -86,8 +86,6 @@ public class PreviewFragment extends Fragment {
     }
 
     public void loadNewAd() {
-        //TODO just for testing auto-scaling awesomeness
-        bav.setExpandsToFitScreenWidth(true);
         Log.d(Constants.BASE_LOG_TAG, "Loading new ad");
         //resetBanner();
 
