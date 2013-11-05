@@ -220,9 +220,7 @@ public class AdFetcher implements AdRequester {
                 //If we're about to dispatch a creative to a banneradview that has been resized by ad stretching, reset it's size
                 if(owner.isBanner()){
                     BannerAdView bav = (BannerAdView)owner;
-                    if(bav.reset_container){
-                        bav.resetContainer();
-                    }
+                    bav.resetContainerIfNeeded();
                 }
 
                 // no ads in the response and no old ads means no fill

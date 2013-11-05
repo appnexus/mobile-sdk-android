@@ -45,7 +45,7 @@ public class BannerAdView extends AdView {
     private boolean shouldReloadOnResume;
     private BroadcastReceiver receiver;
     private boolean receiversRegistered;
-    protected boolean reset_container = false;
+    protected boolean shouldResetContainer = false;
     private boolean expandsToFitScreenWidth = false;
 
     private void setDefaultsBeforeXML() {
@@ -239,7 +239,7 @@ public class BannerAdView extends AdView {
                         R.string.xml_set_opens_native_browser,
                         opensNativeBrowser));
             }else if (attr == R.styleable.BannerAdView_expands_to_fit_screen_width){
-                setExpandsToFitScreenWidth(a.getBoolean(attr, true));
+                setExpandsToFitScreenWidth(a.getBoolean(attr, false));
                 Clog.d(Clog.xmlLogTag, Clog.getString(
                         R.string.xml_set_expands_to_full_screen_width,
                         expandsToFitScreenWidth
@@ -397,7 +397,7 @@ public class BannerAdView extends AdView {
 
     protected int oldH;
     protected int oldW;
-    public void expandToFitScreenWidth(int adWidth, int adHeight, AdWebView webview) {
+    protected void expandToFitScreenWidth(int adWidth, int adHeight, AdWebView webview) {
         //Determine the width of the screen
         WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
@@ -436,13 +436,19 @@ public class BannerAdView extends AdView {
 
         webview.invalidate();
 
-        reset_container=true;
+        shouldResetContainer =true;
 
     }
 
-    public void resetContainer() {
-        reset_container=false;
+    protected void resetContainer() {
+        shouldResetContainer =false;
         getLayoutParams().height = oldH;
         getLayoutParams().width = oldW;
+    }
+
+    public void resetContainerIfNeeded() {
+        if(this.shouldResetContainer){
+            resetContainer();
+        }
     }
 }
