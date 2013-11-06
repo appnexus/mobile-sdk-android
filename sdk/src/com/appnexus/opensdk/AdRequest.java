@@ -61,7 +61,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     private String devMake;
     private String devModel;
     private String carrier;
-    private String firstlaunch;
+    private boolean firstlaunch;
     private String lat;
     private String lon;
     private String locDataAge;
@@ -74,7 +74,6 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     private String connection_type;
     private String dev_time; // Set at the time of the request
     private String dev_timezone;
-    private String os;
     private String language;
     private final String placementId;
     private String nativeBrowser;
@@ -142,7 +141,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         devModel = Settings.getSettings().deviceModel;
 
         // Get firstlaunch and convert it to a string
-        firstlaunch = "" + Settings.getSettings().first_launch;
+        firstlaunch = Settings.getSettings().first_launch;
         // Get ua, the user agent...
         ua = Settings.getSettings().ua;
 
@@ -163,7 +162,6 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         this.dev_time = "" + System.currentTimeMillis();
 
         this.dev_timezone = Settings.getSettings().dev_timezone;
-        this.os = Settings.getSettings().os;
         this.language = Settings.getSettings().language;
 
         this.placementId = placementId;
@@ -222,8 +220,8 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         }
 
         // Get orientation, the current rotation of the device
-        orientation = context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? "landscape"
-                : "portrait";
+        orientation = context.getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE ? "h" : "v";
         // Get hidmd5, hidsha1, the device ID hashed
         if (Settings.getSettings().hidmd5 == null) {
             Settings.getSettings().hidmd5 = HashingFunctions.md5(aid);
@@ -244,7 +242,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         }
         carrier = Settings.getSettings().carrierName;
         // Get firstlaunch and convert it to a string
-        firstlaunch = "" + Settings.getSettings().first_launch;
+        firstlaunch = Settings.getSettings().first_launch;
         // Get ua, the user agent...
         ua = Settings.getSettings().ua;
         // Get wxh
@@ -316,7 +314,6 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
         mcc = Settings.getSettings().mcc;
         mnc = Settings.getSettings().mnc;
-        os = Settings.getSettings().os;
         language = Settings.getSettings().language;
     }
 
@@ -348,7 +345,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         } else {
             sb.append("NO-APP-ID");
         }
-        if (!isEmpty(firstlaunch)) sb.append("&firstlaunch=").append(firstlaunch);
+        if (firstlaunch) sb.append("&firstlaunch=true");
         if (!isEmpty(lat) && !isEmpty(lon)) sb.append("&loc=").append(lat).append(",").append(lon);
         if (!isEmpty(locDataAge)) sb.append("&loc_age=").append(locDataAge);
         if (!isEmpty(locDataPrecision)) sb.append("&loc_prec=").append(locDataPrecision);
@@ -370,7 +367,6 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (!isEmpty(allowedSizes)) sb.append("&promo_sizes=").append(allowedSizes);
         if (!isEmpty(mcc)) sb.append("&mcc=").append(Uri.encode(mcc));
         if (!isEmpty(mnc)) sb.append("&mnc=").append(Uri.encode(mnc));
-        if (!isEmpty(os)) sb.append("&os=").append(Uri.encode(os));
         if (!isEmpty(language)) sb.append("&language=").append(Uri.encode(language));
         if (!isEmpty(dev_timezone)) sb.append("&devtz=").append(Uri.encode(dev_timezone));
         if (!isEmpty(dev_time)) sb.append("&devtime=").append(Uri.encode(dev_time));
