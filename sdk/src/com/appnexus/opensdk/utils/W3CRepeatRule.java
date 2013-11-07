@@ -1,5 +1,7 @@
 package com.appnexus.opensdk.utils;
 
+//See http://www.w3.org/TR/calendar-api/#idl-def-CalendarRepeatRule
+//Question marks denote optional parameters.
 public class W3CRepeatRule {
     //Repeat rule?
     private String frequency;//?

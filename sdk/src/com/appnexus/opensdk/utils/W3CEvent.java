@@ -25,6 +25,8 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+//See http://www.w3.org/TR/calendar-api/#calendarevent-interface
+//Question marks denote optional parameters.
 public class W3CEvent {
     private String id;
     private String description;
@@ -228,30 +230,29 @@ public class W3CEvent {
     private W3CEvent() {
 
     }
-
     public Intent getInsertIntent() {
         Intent i;
-        if (Build.VERSION.SDK_INT >= 14) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             i = new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI);
         } else {
             i = new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event");
         }
         if (getDescription() != null) {
-            if (Build.VERSION.SDK_INT >= 14) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 i.putExtra(CalendarContract.Events.TITLE, getDescription());
             } else {
                 i.putExtra("title", getDescription());
             }
         }
         if (getLocation() != null) {
-            if (Build.VERSION.SDK_INT >= 14) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 i.putExtra(CalendarContract.Events.EVENT_LOCATION, getLocation());
             } else {
                 i.putExtra("eventLocation", getLocation());
             }
         }
         if (getSummary() != null) {
-            if (Build.VERSION.SDK_INT >= 14) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 i.putExtra(CalendarContract.Events.DESCRIPTION, getSummary());
             } else {
                 i.putExtra("description", getSummary());
@@ -259,17 +260,9 @@ public class W3CEvent {
         }
         if (getStart() != null) {
             long start = -1;
-            try {
-                start = (new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ")).parse(getStart()).getTime();
-            } catch (ParseException e) {
-                try {
-                    start = (new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZZZZZ")).parse(getStart()).getTime();
-                } catch (ParseException e1) {
-
-                }
-            }
+                start = millisFromDateString(getStart());
             if(start>0){
-                if (Build.VERSION.SDK_INT >= 14) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                     i.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, start);
                 } else {
                     i.putExtra("beginTime", start);
@@ -278,17 +271,9 @@ public class W3CEvent {
         }
         if (getEnd() != null) {
             long end = -1;
-            try {
-                end = (new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ")).parse(getEnd()).getTime();
-            } catch (ParseException e) {
-                try {
-                    end = (new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZZZZZ")).parse(getEnd()).getTime();
-                } catch (ParseException e1) {
-
-                }
-            }
+            end = millisFromDateString(getEnd());
             if(end>0){
-                if (Build.VERSION.SDK_INT >= 14) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                     i.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, end);
                 } else {
                     i.putExtra("beginTime", end);
@@ -296,17 +281,17 @@ public class W3CEvent {
             }
         }
         if (getStatus() != null) {
-            if (Build.VERSION.SDK_INT >= 14) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 i.putExtra(CalendarContract.Events.STATUS, getStatus());
             }
         }
         if (getTransparency() != null) {
-            if (Build.VERSION.SDK_INT >= 14) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 i.putExtra(CalendarContract.Events.VISIBLE, getTransparency().equals("opaque") ? false : true);
             }
         }
         if (getReminder() != null) {
-            if (Build.VERSION.SDK_INT >= 14) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 i.putExtra(CalendarContract.Reminders.MINUTES, getReminder());
             }
         }
@@ -350,10 +335,7 @@ public class W3CEvent {
                             break;
                     }
                 }
-                if (repeatRuleBuilder.charAt(repeatRuleBuilder.length() - 1) == ',') {
-                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length() - 1);
-                }
-                repeatRuleBuilder.append(";");
+                repeatRuleBuilder.setCharAt(repeatRuleBuilder.length()-1, ';');
             }
             if (getRecurrence().getDaysInMonth().length > 0) {
                 repeatRuleBuilder.append("BYMONTHDAY=");
@@ -361,10 +343,7 @@ public class W3CEvent {
                     repeatRuleBuilder.append(getRecurrence().getDaysInMonth()[j]);
                     repeatRuleBuilder.append(",");
                 }
-                if (repeatRuleBuilder.charAt(repeatRuleBuilder.length() - 1) == ',') {
-                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length() - 1);
-                }
-                repeatRuleBuilder.append(";");
+                repeatRuleBuilder.setCharAt(repeatRuleBuilder.length()-1, ';');
             }
             if (getRecurrence().getDaysInYear().length > 0) {
                 repeatRuleBuilder.append("BYYEARDAY=");
@@ -372,10 +351,7 @@ public class W3CEvent {
                     repeatRuleBuilder.append(getRecurrence().getDaysInYear()[j]);
                     repeatRuleBuilder.append(",");
                 }
-                if (repeatRuleBuilder.charAt(repeatRuleBuilder.length() - 1) == ',') {
-                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length() - 1);
-                }
-                repeatRuleBuilder.append(";");
+                repeatRuleBuilder.setCharAt(repeatRuleBuilder.length()-1, ';');
             }
             if (getRecurrence().getMonthsInYear().length > 0) {
                 repeatRuleBuilder.append("BYMONTH=");
@@ -383,10 +359,7 @@ public class W3CEvent {
                     repeatRuleBuilder.append(getRecurrence().getMonthsInYear()[j]);
                     repeatRuleBuilder.append(",");
                 }
-                if (repeatRuleBuilder.charAt(repeatRuleBuilder.length() - 1) == ',') {
-                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length() - 1);
-                }
-                repeatRuleBuilder.append(";");
+                repeatRuleBuilder.setCharAt(repeatRuleBuilder.length()-1, ';');
             }
             if (getRecurrence().getWeeksInMonth().length > 0) {
                 repeatRuleBuilder.append("BYWEEKNO=");
@@ -394,10 +367,7 @@ public class W3CEvent {
                     repeatRuleBuilder.append(getRecurrence().getWeeksInMonth()[j]);
                     repeatRuleBuilder.append(",");
                 }
-                if (repeatRuleBuilder.charAt(repeatRuleBuilder.length() - 1) == ',') {
-                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length() - 1);
-                }
-                repeatRuleBuilder.append(";");
+                repeatRuleBuilder.setCharAt(repeatRuleBuilder.length()-1, ';');
             }
             if (getRecurrence().getExpires() != null) {
                 repeatRuleBuilder.append("UNTIL=");
@@ -410,12 +380,9 @@ public class W3CEvent {
                     repeatRuleBuilder.append(s);
                     repeatRuleBuilder.append(",");
                 }
-                if (repeatRuleBuilder.charAt(repeatRuleBuilder.length() - 1) == ',') {
-                    repeatRuleBuilder.deleteCharAt(repeatRuleBuilder.length() - 1);
-                }
-                repeatRuleBuilder.append(";");
+                repeatRuleBuilder.setCharAt(repeatRuleBuilder.length()-1, ';');
             }
-            if (Build.VERSION.SDK_INT >= 14) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 i.putExtra(CalendarContract.Events.RRULE, repeatRuleBuilder.toString());
             } else {
                 i.putExtra("rrule", repeatRuleBuilder.toString());
@@ -424,5 +391,19 @@ public class W3CEvent {
 
         return i;
 
+    }
+
+    private static SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ");
+    private static SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZZZZZ");
+    private long millisFromDateString(String date){
+        try {
+            return format1.parse(date).getTime();
+        } catch (ParseException e) {
+            try {
+                return format2.parse(date).getTime();
+            } catch (ParseException e1) {
+                return -1;
+            }
+        }
     }
 }
