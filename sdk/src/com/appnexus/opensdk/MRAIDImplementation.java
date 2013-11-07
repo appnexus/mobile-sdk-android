@@ -31,6 +31,7 @@ import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Environment;
+import android.provider.CalendarContract;
 import android.util.Base64;
 import android.view.Display;
 import android.view.Gravity;
@@ -156,9 +157,9 @@ class MRAIDImplementation {
             public void onPageFinished(WebView view, String url) {
                 // Fire the ready event only once
                 if (!readyFired) {
-                    String t = owner.owner.isBanner() ? "inline" : "interstitial";
+                    String adType = owner.owner.isBanner() ? "inline" : "interstitial";
                     view.loadUrl("javascript:window.mraid.util.setPlacementType('"
-                            + t + "')");
+                            + adType + "')");
                     view.loadUrl("javascript:window.mraid.util.setIsViewable(true)");
 
                     setSupportsValues(view);
@@ -246,8 +247,11 @@ class MRAIDImplementation {
 
                 //Calendar
                 Intent i;
-                i = new Intent(Intent.ACTION_EDIT);
-                i.setType("vnd.android.cursor.item/event");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                    i = new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI);
+                } else {
+                    i = new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event");
+                }
                 if (hasIntent(i)) {
                     view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
                 }
@@ -312,7 +316,7 @@ class MRAIDImplementation {
         int width = bottom-top;
 
         owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent(" + width + "," + height + ")");
-        view.loadUrl("javascript:window.mraid.util.setCurrentPosition(x:" + left + ", y:" + bottom + ", width:" + width + ", height:" + height + ")");
+        owner.loadUrl("javascript:window.mraid.util.setCurrentPosition(x:" + left + ", y:" + bottom + ", width:" + width + ", height:" + height + ")");
     }
 
     void close() {
@@ -419,6 +423,9 @@ class MRAIDImplementation {
             playVideo(parameters);
         } else if (func.equals("storePicture")) {
             storePicture(parameters);
+        } else {
+            Clog.d(Clog.mraidLogTag, Clog.getString(R.string.unsupported_mraid, func));
+
         }
     }
 
@@ -546,15 +553,21 @@ class MRAIDImplementation {
             Clog.d(Clog.mraidLogTag, Clog.getString(R.string.unsupported_encoding));
             return;
         }
-        owner.getContext().startActivity(i);
+        try{
+            owner.getContext().startActivity(i);
+        }catch(ActivityNotFoundException e){
+            return;
+        }
     }
 
     private void createCalendarEvent(ArrayList<BasicNameValuePair> parameters) {
         W3CEvent event = null;
         try {
-            event = W3CEvent.createFromJSON(URLDecoder.decode(parameters.get(0).getValue(), "UTF-8"));
+            if(parameters.size()>0){
+                event = W3CEvent.createFromJSON(URLDecoder.decode(parameters.get(0).getValue(), "UTF-8"));
+            }
         } catch (UnsupportedEncodingException e) {
-
+            return;
         }
         Intent i = event.getInsertIntent();
         owner.getContext().startActivity(i);
