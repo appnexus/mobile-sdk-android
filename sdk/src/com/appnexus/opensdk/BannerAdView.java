@@ -33,9 +33,23 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
 /**
- * This view is added to an existing layout in order to display ads.
+ * This view is added to an existing layout in order to display banner ads.
+ * It may be added via XML or via code 
+ * 
+ * in XML Note that you must insert your Placement ID.
+ * <quote>
+  <com.appnexus.opensdk.BannerAdView
+            android:id="@+id/banner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:placement_id="YOUR PLACEMENT ID"
+            android:auto_refresh="true"
+            android:auto_refresh_interval=30
+            android:opens_native_browser=true
+            />
+  </quote>
+  
  *
- * @author Jacob Shufro
  */
 public class BannerAdView extends AdView {
 

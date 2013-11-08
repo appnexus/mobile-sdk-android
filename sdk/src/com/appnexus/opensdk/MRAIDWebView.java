@@ -44,7 +44,8 @@ public class MRAIDWebView extends WebView implements Displayable {
         setup();
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
+    @SuppressWarnings("deprecation")
+	@SuppressLint("SetJavaScriptEnabled")
     private void setup() {
         this.getSettings().setJavaScriptEnabled(true);
         this.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);

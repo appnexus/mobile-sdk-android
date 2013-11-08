@@ -239,18 +239,6 @@ public class AdResponse {
         return isHttpError;
     }
 
-    /**
-     * JSON parsing helper methods
-     */
-
-    private static JSONObject getJSONObject(JSONObject object, String key) {
-        if (object == null) return null;
-        try {
-            return object.getJSONObject(key);
-        } catch (JSONException ignored) {}
-        return null;
-    }
-
     // also returns null if array is empty
     private static JSONArray getJSONArray(JSONObject object, String key) {
         if (object == null) return null;

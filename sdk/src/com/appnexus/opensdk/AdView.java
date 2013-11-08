@@ -38,9 +38,8 @@ import java.util.LinkedList;
 
 /**
  * The parent class of InterstitialAdView and BannerAdView. This can not be
- * instantiated.
+ * instantiated directly. It should be accessed through one of its child classes. 
  *
- * @author jacob
  */
 public abstract class AdView extends FrameLayout implements AdViewListener {
 
@@ -55,7 +54,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     boolean shouldServePSAs = true;
     private float reserve = 0.00f;
     String age;
-    GENDER gender;
+    GENDER gender = GENDER.UNKNOWN;
     ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
     boolean mraid_expand = false;
     AdListener adListener;
@@ -67,7 +66,6 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     /**
      * Begin Construction *
      */
-
     @SuppressWarnings("javadoc")
     AdView(Context context) {
         super(context, null);
@@ -188,12 +186,12 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     }
 
     /**
-     * Loads a new ad, if the ad space is visible.
-     *
-     * @return true is ad will begin loading, false if ad cannot be loaded
-     * at this time given the current settings
+     * Loads a new ad, if the ad space is visible. You should have called
+     * setPlacementID() before invoking this method. 
+     * @return true is ad will begin loading, false otherwise. 
+     * 
      */
-    public boolean loadAd() {
+    protected boolean loadAd() {
         if (!isReadyToStart())
             return false;
         if (this.getWindowVisibility() == VISIBLE && mAdFetcher != null) {
@@ -238,7 +236,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         return loadAd();
     }
 
-    public void loadHtml(String content, int width, int height) {
+    void loadHtml(String content, int width, int height) {
         this.mAdFetcher.stop();
 
         AdWebView awv = new AdWebView(this);
@@ -297,6 +295,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     }
 
     /**
+     * Retrieve the current placement ID.
      * @return The current placement id.
      */
     public String getPlacementID() {
@@ -340,7 +339,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     /**
      * Sets the width of the ad to request.
      *
-     * @param w The width, in pixels, to use.
+     * @param w The width, in pixels, to use. 
      */
     public void setAdWidth(int w) {
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_width, w));
@@ -348,7 +347,8 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     }
 
     /**
-     * @return The height of the ad to be requested.
+     * Retrieve the previously set height of the ad.
+     * @return The height of the ad to be requested. A value of -1 indicates any size
      */
     public int getAdHeight() {
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_height, height));
@@ -356,7 +356,8 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     }
 
     /**
-     * @return The width of the ad to be requested.
+     * Retrieve the previously set width of the ad.
+     * @return The width of the ad to be requested. A value of -1 indicates any size
      */
     public int getAdWidth() {
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_width, width));
@@ -458,7 +459,8 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     }
 
     /**
-     * @return whether or not the native browser is used instead of the in-app
+     * Retrieve the inapp or  native browser setting. 
+     * @return whether or not the devices native browser is used instead of the in-app
      *         browser.
      */
     public boolean getOpensNativeBrowser() {
@@ -468,8 +470,12 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     }
 
     /**
-     * Set this to true to disable the in-app browser.
-     *
+     * Set this to true to disable the in-app browser. That will cause url's to open
+     * in the device's native browser e.g. Chrome. If set to true when a user clicks 
+     * on an ad your app will be paused and the native browser will open. 
+     * Set this to false to enabled the in-app browser. Which is a lightweight browser that runs
+     * within your app.
+     * The default value is false.
      * @param opensNativeBrowser
      */
     public void setOpensNativeBrowser(boolean opensNativeBrowser) {
@@ -487,6 +493,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     }
 
     /**
+     * Retrieve the current PSA setting
      * @return Whether this placement accepts PSAs if no ad is served.
      */
     public boolean getShouldServePSAs() {
@@ -494,26 +501,45 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     }
 
     /**
+     * Allows overriding the platform behavior if there is no ad available. If 
+     * set to true the platform will retrieve a PSA ( Public Service Announcement).
+     * set to false it will return no ad. If writing a custom mediation adaptor make sure 
+     * that this is set to false.
      * @param shouldServePSAs Whether this placement accepts PSAs if no ad is served.
      */
     public void setShouldServePSAs(boolean shouldServePSAs) {
         this.shouldServePSAs = shouldServePSAs;
     }
 
+    /**
+     * Retrieve the minimum price. A value of zero indicates no minimum.
+     * @return The minimum price zero indicates none.
+     */
     public float getReserve() {
         return reserve;
     }
 
+    /**
+     * Set a minimum price. Note that setting a minimum may negatively affect monetization.
+     * Setting this value to zero disables the minimum price. Default value is zero. 
+     * @param reserve
+     */
     public void setReserve(float reserve) {
         this.reserve = reserve;
     }
 
+    
+    /**
+     * Retrieve the current users Age. Note this is a string as it may be an age, 
+     * birth year or age range. The default value is an empty string.
+     * @return The age 
+     */
     public String getAge() {
         return age;
     }
 
     /**
-     *
+     * Set's the user's age. should be used if age or age range is known. 
      * @param age should be a numerical age, birth year, or hyphenated age range.
      *            For example: "56", "1974", or "25-35"
      */
@@ -521,25 +547,32 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         this.age = age;
     }
 
+    
     public enum GENDER {
+    	UNKNOWN,
         MALE,
-        FEMALE
+        FEMALE,
+
     }
 
+    /**
+     * Get the current user's gender. 
+     * @return
+     */
     public GENDER getGender() {
         return gender;
     }
 
     /**
-     *
-     * @param gender should be either "m" for male or "f" for female
+     * Set the users gender if it is known. Default value is UNKNOWN
+     * @param The users gender 
      */
     public void setGender(GENDER gender) {
         this.gender = gender;
     }
 
     /**
-     * add a custom keyword to the request url for the ad
+     * add a custom keyword to the request url for the ad. 
      * @param key keyword name to add, cannot be null or empty
      * @param value keyword value, cannot be null
      */
@@ -567,6 +600,10 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         }
     }
 
+    /**
+     * Retrieve the array of currently configured Custom Keywords
+     * @return The array list
+     */
     public ArrayList<Pair<String, String>> getCustomKeywords() {
         return customKeywords;
     }
@@ -587,6 +624,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         static final ArrayList<Pair<String, BrowserStyle>> bridge = new ArrayList<Pair<String, BrowserStyle>>();
     }
 
+   
     @Override
     public void onAdLoaded(final Displayable d) {
         handler.post(new Runnable() {
@@ -646,11 +684,11 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         });
     }
 
-    public LinkedList<MediatedAd> getMediatedAds() {
+    LinkedList<MediatedAd> getMediatedAds() {
         return mediatedAds;
     }
 
-    public void setMediatedAds(LinkedList<MediatedAd> mediatedAds) {
+    void setMediatedAds(LinkedList<MediatedAd> mediatedAds) {
         this.mediatedAds = mediatedAds;
     }
 

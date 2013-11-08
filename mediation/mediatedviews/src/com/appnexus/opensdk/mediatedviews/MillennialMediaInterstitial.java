@@ -23,6 +23,16 @@ import com.appnexus.opensdk.utils.Clog;
 import com.millennialmedia.android.MMInterstitial;
 import com.millennialmedia.android.MMSDK;
 
+/**
+ * This class is the Millennial Media interstitial adaptor it provides the functionality needed to allow 
+ * an application using the App Nexus SDK to load an interstitial ad through the Millennial Media SDK. The instantiation 
+ * of this class is done in response from the AppNexus server for a banner placement that is configured 
+ * to use MM  to serve it. This class is never instantiated by the developer. 
+ * 
+ * This class also serves as an example of how to write a Mediation adaptor for the AppNexus 
+ * SDK. 
+ *
+ */
 public class MillennialMediaInterstitial implements MediatedInterstitialAdView {
 
     private MMInterstitial iad;

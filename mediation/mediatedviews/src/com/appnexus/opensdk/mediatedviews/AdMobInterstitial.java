@@ -1,8 +1,7 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
-import android.content.Context;
-import android.telephony.TelephonyManager;
+
 import com.appnexus.opensdk.MediatedAdViewController;
 import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
@@ -13,6 +12,17 @@ import com.google.ads.AdRequest;
 import com.google.ads.AdRequest.ErrorCode;
 import com.google.ads.InterstitialAd;
 
+
+/**
+ * This class is the Google AdMob interstitial adaptor it provides the functionality needed to allow 
+ * an application using the App Nexus SDK to load a banner ad through the Google SDK. The instantiation 
+ * of this class is done in response from the AppNexus server for a banner placement that is configured 
+ * to use AdMob to serve it. This class is never instantiated by the developer. 
+ * 
+ * This class also serves as an example of how to write a Mediation adaptor for the AppNexus 
+ * SDK. 
+ *
+ */
 public class AdMobInterstitial implements MediatedInterstitialAdView,
         AdListener {
     private InterstitialAd iad;

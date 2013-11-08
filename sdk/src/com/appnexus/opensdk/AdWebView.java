@@ -46,7 +46,8 @@ public class AdWebView extends WebView implements Displayable {
         setup();
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
+    @SuppressWarnings("deprecation")
+	@SuppressLint("SetJavaScriptEnabled")
     private void setup() {
         Settings.getSettings().ua = this.getSettings().getUserAgentString();
         this.getSettings().setJavaScriptEnabled(true);
