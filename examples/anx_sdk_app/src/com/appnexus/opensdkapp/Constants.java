@@ -19,7 +19,7 @@ package com.appnexus.opensdkapp;
 public class Constants {
     public final static String BASE_LOG_TAG = "OPENSDK-APP";
     public final static String PREFS_TAG = "OPENSDK-APP-PREFS";
-    public final static String DEBUG_AUCTION_URL = "http://mobile.adnxs.com/mob?";
+    public final static String DEBUG_AUCTION_URL = "http://mediation.adnxs.com/mob?";
     public final static String PREFERENCES = "AppNexus SDK App";
 
     public final static String LOG_FILENAME = "AN_LOG_FILE";
@@ -28,4 +28,5 @@ public class Constants {
     public static final int LOG_MAX_CHAR = 85000;
 
     public static final int JSON_INDENT_SPACES = 4;
+
 }
