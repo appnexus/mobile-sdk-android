@@ -329,7 +329,9 @@ class MRAIDImplementation {
             owner.setLayoutParams(lp);
             owner.close();
             owner.loadUrl("javascript:window.mraid.util.stateChangeEvent('default');");
-            owner.owner.adListener.onAdCollapsed(this.owner.owner);
+            if (owner.owner!=null && owner.owner.adListener!=null) {
+                owner.owner.adListener.onAdCollapsed(this.owner.owner);
+            }
 
             // Allow orientation changes
             Activity a = ((Activity) this.owner.getContext());
