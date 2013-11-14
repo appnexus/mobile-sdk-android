@@ -1,7 +1,5 @@
 *.class
 bin/
-.classpath
-.project
-.settings/
-examples/anx_sdk_app/.idea
-
+*.iml
+*.idea
+*local.properties

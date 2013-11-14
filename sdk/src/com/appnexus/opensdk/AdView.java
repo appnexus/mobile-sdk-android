@@ -749,7 +749,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
 
     // returns the first mediated ad if available
     public MediatedAd popMediatedAd() {
-        return mediatedAds != null ? mediatedAds.pop() : null;
+        return mediatedAds != null ? mediatedAds.removeFirst() : null;
     }
 
 }

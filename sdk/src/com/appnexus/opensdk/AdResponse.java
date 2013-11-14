@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk;
 
+import android.annotation.SuppressLint;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import org.apache.http.Header;
@@ -25,6 +26,7 @@ import org.json.JSONObject;
 
 import java.util.LinkedList;
 
+@SuppressLint("NewApi")
 public class AdResponse {
     private String content;
     private int height;
@@ -132,7 +134,7 @@ public class AdResponse {
     private boolean handleStdAds(JSONObject response) {
         JSONArray ads = getJSONArray(response, RESPONSE_KEY_ADS);
         if (ads != null) {
-            // for now, just take the first ad
+            // take the first ad
             JSONObject firstAd = getJSONObjectFromArray(ads, 0);
             type = getJSONString(firstAd, RESPONSE_KEY_TYPE);
             height = getJSONInt(firstAd, RESPONSE_KEY_HEIGHT);

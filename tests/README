@@ -1,0 +1,3 @@
+Unit Tests should be run in IntelliJ at this time.
+
+Set up the test module with submodules testapp and testsdk.
