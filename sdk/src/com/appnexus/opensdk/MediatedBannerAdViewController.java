@@ -19,7 +19,7 @@ import android.app.Activity;
 import android.view.View;
 import com.appnexus.opensdk.utils.Clog;
 
-public class MediatedBannerAdViewController extends MediatedAdViewController implements Displayable {
+class MediatedBannerAdViewController extends MediatedAdViewController implements Displayable {
 
     private View placeableView;
 

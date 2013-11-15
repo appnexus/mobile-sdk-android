@@ -27,7 +27,7 @@ import org.json.JSONObject;
 import java.util.LinkedList;
 
 @SuppressLint("NewApi")
-public class AdResponse {
+class AdResponse {
     private String content;
     private int height;
     private int width;

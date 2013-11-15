@@ -15,5 +15,5 @@
  */
 package com.appnexus.opensdk;
 
-public interface MediatedAdView {
+interface MediatedAdView {
 }

@@ -15,6 +15,7 @@
  */
 package com.appnexus.opensdk;
 
+import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -25,7 +26,7 @@ import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.Settings;
 
-public abstract class MediatedAdViewController implements Displayable {
+abstract class MediatedAdViewController implements Displayable {
 
     public static enum RESULT {
         SUCCESS,
@@ -75,7 +76,8 @@ public abstract class MediatedAdViewController implements Displayable {
      * @param callerClass the calling class that mAV should be an instance of
      * @return true if the controller is valid, false if not.
      */
-    boolean isValid(Class callerClass) {
+    @SuppressWarnings("rawtypes")
+	boolean isValid(Class callerClass) {
         if (hasFailed) {
             return false;
         }
@@ -188,8 +190,8 @@ public abstract class MediatedAdViewController implements Displayable {
     /*
      Result CB Code
      */
-
-    private void fireResultCB(final RESULT result) {
+    @SuppressLint("InlinedApi") /* suppress AsyncTask.THREAD_POOL_EXECUTOR warning for < HONEYCOMB */
+	private void fireResultCB(final RESULT result) {
         if (hasFailed) return;
 
         // if resultCB is empty don't fire resultCB, and just continue to next ad

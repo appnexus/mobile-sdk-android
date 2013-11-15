@@ -36,7 +36,7 @@ import com.appnexus.opensdk.utils.Settings;
 
 @SuppressLint("ViewConstructor")
 // This will only be constructed by AdFetcher.
-public class AdWebView extends WebView implements Displayable {
+class AdWebView extends WebView implements Displayable {
     private boolean failed = false;
     private final AdView destination;
 

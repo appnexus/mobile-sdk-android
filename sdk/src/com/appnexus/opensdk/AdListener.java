@@ -17,9 +17,7 @@
 package com.appnexus.opensdk;
 
 /**
- * Implement this interface to create a class which can react to ad events.
- *
- * @author Jacob Shufro
+ * Implement this interface and pass it to your {@link BannerAdView} or {@link  InterstitialAdView} to create a class which can react to ad events.
  */
 public interface AdListener {
     /**
@@ -31,27 +29,35 @@ public interface AdListener {
 
     /**
      * Called when an ad request fails.
+     * Ad request failures may include no ad available, or networking errors
      *
      * @param adView The {@link AdView} that loaded the ad.
      */
     public void onAdRequestFailed(AdView adView);
 
     /**
-     * Called when an ad expands due to interaction.
+     * Called when an ad expands due to user interaction.
+     * This would be a good time to stop or pause your app due 
+     * to the user interacting with the ad. 
      *
      * @param adView The {@link AdView} that loaded the ad.
      */
     public void onAdExpanded(AdView adView);
 
     /**
-     * Called when an ad is closed/unexpanded.
+     * Called when an ad is closed/unexpanded. The user has stopped interacting 
+     * with the ad. 
      *
      * @param adView The {@link AdView} that loaded the ad.
      */
     public void onAdCollapsed(AdView adView);
 
     /**
-     * Called when an ad is clicked, and the user is directed to the landing page.
+     * Called when an ad is clicked. The current activity will be paused 
+     * as the user switches activities to the activity launched from 
+     * the ad interaction. For example the user clicked a link that 
+     * opened a web browser, or the user touched a click to call link 
+     * which launched the phone dialer. 
      *
      * @param adView The {@link AdView} that loaded the ad.
      */

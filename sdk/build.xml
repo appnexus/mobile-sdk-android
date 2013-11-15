@@ -89,4 +89,43 @@
     <!-- version-tag: 1 -->
     <import file="${sdk.dir}/tools/ant/build.xml" />
 
+    <property name="docs.dir" location="doc" />
+    <property name="bin.dir" location="bin" />
+    <property name="src.dir" location="src" />
+    <property name="gen.dir" location="gen" />
+
+    <target name="javadoc" description="Generate JavaDoc documentation" >
+
+    <xmlproperty
+        collapseAttributes="true"
+        file="AndroidManifest.xml"
+        prefix="tm" />
+
+    <mkdir dir="${docs.dir}" />
+
+    <javadoc
+        access="public"
+        author="false"
+	packagenames="com.appnexus.opensdk"
+        classpath="${sdk.dir}/platforms/${target}/android.jar"
+        destdir="${docs.dir}"
+        linkoffline="http://d.android.com/reference ${sdk.dir}/docs/reference"
+        linksource="true"
+        sourcepath="${source.dir}"
+        use="true"
+        version="true" />
+
+    <jar
+        basedir="${docs.dir}"
+        compress="${jar.compress}"
+        jarfile="${bin.dir}/${tm.manifest.package}_${tm.manifest.android:versionName}_javadoc.jar" />
+</target>
+
+<target
+   name="clean"
+   depends="android_rules.clean" >
+
+   <delete dir="${docs.dir}" />
+</target>
+
 </project>

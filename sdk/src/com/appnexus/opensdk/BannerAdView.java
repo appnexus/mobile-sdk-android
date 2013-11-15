@@ -37,18 +37,29 @@ import com.appnexus.opensdk.utils.Settings;
  * It may be added via XML or via code 
  * 
  * in XML Note that you must insert your Placement ID.
- * <quote>
-  <com.appnexus.opensdk.BannerAdView
-            android:id="@+id/banner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:placement_id="YOUR PLACEMENT ID"
-            android:auto_refresh="true"
-            android:auto_refresh_interval=30
-            android:opens_native_browser=true
-            />
-  </quote>
-  
+ * <pre>
+ * {@code
+ * 
+ * <com.appnexus.opensdk.BannerAdView
+ *           android:id="@+id/banner"
+ *           android:layout_width="wrap_content"
+ *           android:layout_height="wrap_content"
+ *           android:placement_id="YOUR PLACEMENT ID"
+ *           android:auto_refresh="true"
+ *           android:auto_refresh_interval=30
+ *           android:opens_native_browser=true
+ *           />
+ * }
+ * </pre>
+ * 
+ * In code you do the following
+ * {@code
+ *   blah 
+ *   blah 
+ *   blah
+ * }
+ * 
+ * 
  *
  */
 public class BannerAdView extends AdView {
@@ -186,6 +197,13 @@ public class BannerAdView extends AdView {
         }
     }
 
+    /**
+     * Call this method to start loading an ad into this view. 
+     * Ad loading is asynchronous, that is calling this method will request 
+     * an ad from the server. If you wish to know whether the ad failed to load or was successfully loaded
+     *  use the AdListener object to receive the corresponding events. 
+     * @return true if the ad load was successfully dispatched, false otherwise
+     */
     @Override
     public boolean loadAd() {
         running = true;
@@ -264,6 +282,7 @@ public class BannerAdView extends AdView {
     }
 
     /**
+     * Retreive the current set auto refresh interval.
      * @return The interval, in milliseconds, at which the BannerAdView will
      *         request new ads, if autorefresh is enabled.
      */
@@ -274,6 +293,9 @@ public class BannerAdView extends AdView {
     }
 
     /**
+     * Set the autorefresh interval. Setting a value of zero disables auto refresh. 
+     * By default autorefresh is enabled for BannerAdViews and the default refresh rate is 
+     * 30 seconds. 
      * @param period The interval, in milliseconds, at which the BannerAdView will
      *               request new ads, if autorefresh is enabled. The minimum period
      *               is 15 seconds. The default period is 30 seconds.
@@ -318,8 +340,8 @@ public class BannerAdView extends AdView {
     }
 
     /**
-     * @return Whether or not this view should load a new ad if the user resumes
-     *         use of the app from a screenlock or multitask.
+     * Retrieves the current shouldAutoReload on resume value 
+     * @return True add will reload on resume, false otherwise.
      */
     public boolean getShouldReloadOnResume() {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
@@ -328,8 +350,9 @@ public class BannerAdView extends AdView {
     }
 
     /**
-     * @param shouldReloadOnResume Whether or not this view should load a new ad if the user
-     *                             resumes use of the app from a screenlock or multitask.
+     *  Whether or not this view should load a new ad if the user
+     *  resumes use of the app from a screenlock or multitask.
+     * @param shouldReloadOnResume True to reload on resume, false otherwise
      */
     void setShouldReloadOnResume(boolean shouldReloadOnResume) {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
@@ -339,8 +362,9 @@ public class BannerAdView extends AdView {
 
     private boolean requesting_visible = true;
 
+    
     @Override
-    public void onWindowVisibilityChanged(int visibility) {
+    protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
         if (visibility == VISIBLE) {
             // Register a broadcast receiver to pause and refresh when the phone
@@ -401,17 +425,31 @@ public class BannerAdView extends AdView {
         return false;
     }
 
+    /**
+     * Retrieves the current expandsToFitWindowWidth setting. 
+     * 
+     * @return true ad expands to fit screen width, false otherwise
+     */
     public boolean getExpandsToFitScreenWidth() {
         return expandsToFitScreenWidth;
     }
 
+    /**
+     * Enable the expand ad to fit screen width. This feature will cause ad creatives
+     * that are smaller than the view size to 'stretch' to the current size. This may cause 
+     * image quality degradation for the benefit of having an ad occupy the entire adview. 
+     * By default his feature is disabled 
+     * @param expandsToFitScreenWidth true to enable the automatic expansion, false otherwise 
+     */
     public void setExpandsToFitScreenWidth(boolean expandsToFitScreenWidth) {
         this.expandsToFitScreenWidth = expandsToFitScreenWidth;
     }
 
     protected int oldH;
     protected int oldW;
-    protected void expandToFitScreenWidth(int adWidth, int adHeight, AdWebView webview) {
+    
+    @SuppressWarnings("deprecation")
+	protected void expandToFitScreenWidth(int adWidth, int adHeight, AdWebView webview) {
         //Determine the width of the screen
         WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
@@ -462,7 +500,7 @@ public class BannerAdView extends AdView {
         }
     }
 
-    public void resetContainerIfNeeded() {
+    void resetContainerIfNeeded() {
         if(this.shouldResetContainer){
             resetContainer();
         }

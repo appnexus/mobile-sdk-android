@@ -50,7 +50,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
+class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
     private AdView owner;
     private final AdRequester requester;
