@@ -16,7 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import java.lang.reflect.Method;
 
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
@@ -34,6 +33,7 @@ import android.webkit.WebView;
 import android.widget.FrameLayout;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.WebviewUtil;
 
 /**
  * This view is added to an existing layout in order to display banner ads.
@@ -290,7 +290,7 @@ public class BannerAdView extends AdView {
     }
 
     /**
-     * Retreive the current set auto refresh interval.
+     * Retrieve the current set auto refresh interval.
      * @return The interval, in milliseconds, at which the BannerAdView will
      *         request new ads, if autorefresh is enabled.
      */
@@ -393,12 +393,7 @@ public class BannerAdView extends AdView {
 
             if (getChildAt(0) instanceof WebView) {
                 WebView webView = (WebView) getChildAt(0);
-                try {
-                    Method onPause = WebView.class.getDeclaredMethod("onResume");
-                    onPause.invoke(webView);
-                } catch (Exception e) {
-                	// Expect this exception in API < 11
-                }
+                WebviewUtil.onResume(webView);
             }
         } else {
             // Unregister the receiver to prevent a leak.
@@ -413,12 +408,7 @@ public class BannerAdView extends AdView {
 
             if (getChildAt(0) instanceof WebView) {
                 WebView webView = (WebView) getChildAt(0);
-                try {
-                    Method onPause = WebView.class.getDeclaredMethod("onPause");
-                    onPause.invoke(webView);
-                } catch (Exception e) {
-                	// Expect this exception in API < 11
-                }
+                WebviewUtil.onPause(webView);
             }
         }
     }

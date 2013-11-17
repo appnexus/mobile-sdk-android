@@ -30,6 +30,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.WebviewUtil;
 
 import java.util.Locale;
 
@@ -41,7 +42,7 @@ import java.util.Locale;
  * <application>
  *   ....
  *   <activity android:name="com.appnexus.opensdk.AdActivity" />
-     <activity android:name="com.appnexus.opensdk.BrowserActivity" />
+ *   <activity android:name="com.appnexus.opensdk.BrowserActivity" />
  * </application>
  * }
  * </pre>
@@ -88,6 +89,7 @@ public class AdActivity extends Activity {
         closeButtonHandler.sendEmptyMessageDelayed(0, closeButtonDelay);
     }
 
+  
     private final Handler closeButtonHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -215,13 +217,13 @@ public class AdActivity extends Activity {
 
     @Override
     protected void onPause() {
-        if (webView != null) webView.onPause();
+        if (webView != null) WebviewUtil.onPause(webView);
         super.onPause();
     }
 
     @Override
     protected void onResume() {
-        if (webView != null) webView.onResume();
+        if (webView != null) WebviewUtil.onResume(webView);
         super.onResume();
     }
 

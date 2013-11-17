@@ -45,7 +45,7 @@ import com.appnexus.opensdk.utils.Clog;
  * <application>
  *   ....
  *   <activity android:name="com.appnexus.opensdk.AdActivity" />
-     <activity android:name="com.appnexus.opensdk.BrowserActivity" />
+ *   <activity android:name="com.appnexus.opensdk.BrowserActivity" />
  * </application>
  * }
  * </pre>
