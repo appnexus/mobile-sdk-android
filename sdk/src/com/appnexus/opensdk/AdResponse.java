@@ -102,10 +102,14 @@ class AdResponse {
         JSONObject response;
 
         try {
-            response = new JSONObject(body);
+            if (!StringUtil.isEmpty(body)) {
+                response = new JSONObject(body);
+            } else {
+                return;
+            }
         } catch (JSONException e) {
             Clog.e(Clog.httpRespLogTag,
-                    Clog.getString(R.string.response_json_error, body));
+                Clog.getString(R.string.response_json_error, body));
             return;
         }
         // response will never be null at this point
