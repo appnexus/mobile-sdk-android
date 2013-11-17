@@ -58,7 +58,7 @@ public class BrowserActivity extends Activity {
     @SuppressWarnings("deprecation")
     @SuppressLint({"SetJavaScriptEnabled", "NewApi"})
     @Override
-    public void onCreate(Bundle savedInstance) {
+    protected void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_in_app_browser);
 

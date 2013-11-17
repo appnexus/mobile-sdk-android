@@ -16,6 +16,9 @@
 
 package com.appnexus.opensdk;
 
+import java.lang.reflect.Method;
+
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -36,7 +39,7 @@ import com.appnexus.opensdk.utils.Settings;
  * This view is added to an existing layout in order to display banner ads.
  * It may be added via XML or via code 
  * 
- * in XML Note that you must insert your Placement ID.
+ * Note that you must insert your Placement ID.
  * <pre>
  * {@code
  * 
@@ -45,9 +48,14 @@ import com.appnexus.opensdk.utils.Settings;
  *           android:layout_width="wrap_content"
  *           android:layout_height="wrap_content"
  *           android:placement_id="YOUR PLACEMENT ID"
- *           android:auto_refresh="true"
+ *           android:auto_refresh=true
  *           android:auto_refresh_interval=30
  *           android:opens_native_browser=true
+ *           android:adWidth=320
+ *           android:adHeight=50
+ *           android:should_reload_on_resume=true
+ *           android:opens_native_browser=true
+ *           android:expands_to_fit_screen_width=false
  *           />
  * }
  * </pre>
@@ -385,7 +393,12 @@ public class BannerAdView extends AdView {
 
             if (getChildAt(0) instanceof WebView) {
                 WebView webView = (WebView) getChildAt(0);
-                webView.onResume();
+                try {
+                    Method onPause = WebView.class.getDeclaredMethod("onResume");
+                    onPause.invoke(webView);
+                } catch (Exception e) {
+                	// Expect this exception in API < 11
+                }
             }
         } else {
             // Unregister the receiver to prevent a leak.
@@ -400,7 +413,12 @@ public class BannerAdView extends AdView {
 
             if (getChildAt(0) instanceof WebView) {
                 WebView webView = (WebView) getChildAt(0);
-                webView.onPause();
+                try {
+                    Method onPause = WebView.class.getDeclaredMethod("onPause");
+                    onPause.invoke(webView);
+                } catch (Exception e) {
+                	// Expect this exception in API < 11
+                }
             }
         }
     }
@@ -448,7 +466,8 @@ public class BannerAdView extends AdView {
     protected int oldH;
     protected int oldW;
     
-    @SuppressWarnings("deprecation")
+    @SuppressLint("NewApi")
+	@SuppressWarnings("deprecation")
 	protected void expandToFitScreenWidth(int adWidth, int adHeight, AdWebView webview) {
         //Determine the width of the screen
         WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);

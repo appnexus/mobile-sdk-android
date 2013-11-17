@@ -17,7 +17,8 @@
 package com.appnexus.opensdk;
 
 /**
- * Implement this interface and pass it to your {@link BannerAdView} or {@link  InterstitialAdView} to create a class which can react to ad events.
+ * Implement this interface and pass it to your {@link BannerAdView} and {@link  InterstitialAdView}
+ * objects to receive events on the status of the ad.
  */
 public interface AdListener {
     /**
@@ -28,7 +29,7 @@ public interface AdListener {
     public void onAdLoaded(AdView adView);
 
     /**
-     * Called when an ad request fails.
+     * Called when an ad request has failed.
      * Ad request failures may include no ad available, or networking errors
      *
      * @param adView The {@link AdView} that loaded the ad.
@@ -36,8 +37,9 @@ public interface AdListener {
     public void onAdRequestFailed(AdView adView);
 
     /**
-     * Called when an ad expands due to user interaction.
-     * This would be a good time to stop or pause your app due 
+     * Called when an ad expands due to user interaction. MRAID ads that expand
+     * the screen generate these events. This event may fire from both Banner and Interstitial ads.
+     * This would be a good time to stop or pause your application due 
      * to the user interacting with the ad. 
      *
      * @param adView The {@link AdView} that loaded the ad.
@@ -46,7 +48,7 @@ public interface AdListener {
 
     /**
      * Called when an ad is closed/unexpanded. The user has stopped interacting 
-     * with the ad. 
+     * with the ad. This is the corollary of onAdExpanded.
      *
      * @param adView The {@link AdView} that loaded the ad.
      */

@@ -32,14 +32,15 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.StringUtil;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
- * The parent class of InterstitialAdView and BannerAdView. This can not be
- * instantiated directly. It should be accessed through one of its child
- * classes.
+ * The parent class of InterstitialAdView and BannerAdView. This may not be
+ * instantiated directly. It public methods are accessed through one of its sub classes.
+ * 
  * 
  */
 public abstract class AdView extends FrameLayout {
@@ -135,7 +136,7 @@ public abstract class AdView extends FrameLayout {
 	 * The view layout
 	 */
 	@Override
-	public void onLayout(boolean changed, int left, int top, int right,
+	protected void onLayout(boolean changed, int left, int top, int right,
 			int bottom) {
 		super.onLayout(changed, left, top, right, bottom);
 		if (mraid_expand) {
@@ -185,7 +186,7 @@ public abstract class AdView extends FrameLayout {
 			Clog.e(Clog.baseLogTag, Clog.getString(R.string.already_expanded));
 			return false;
 		}
-		if (placementID == null || placementID.isEmpty()) {
+		if (StringUtil.isEmpty(placementID)) {
 			Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_placement_id));
 			return false;
 		}
@@ -216,11 +217,9 @@ public abstract class AdView extends FrameLayout {
 	 * Loads a new ad, if the ad space is visible, and sets the placement id
 	 * attribute of the AdView to the supplied parameter.
 	 * 
-	 * @param placementID
-	 *            The new placement id to use.
+	 * @param placementID   The new placement id to use.
 	 * 
-	 * @return true is ad will begin loading, false if ad cannot be loaded at
-	 *         this time given the current settings
+	 * @return true is ad will begin loading, false otherwise
 	 */
 	public boolean loadAd(String placementID) {
 		this.setPlacementID(placementID);
@@ -238,8 +237,7 @@ public abstract class AdView extends FrameLayout {
 	 * @param height
 	 *            The new height to use.
 	 * 
-	 * @return true is ad will begin loading, false if ad cannot be loaded at
-	 *         this time given the current settings
+	 * @return true is ad will begin loading, false otherwise
 	 */
 	public boolean loadAd(String placementID, int width, int height) {
 		this.setAdHeight(height);
@@ -556,7 +554,7 @@ public abstract class AdView extends FrameLayout {
 	 * monetization. Setting this value to zero disables the minimum price.
 	 * Default value is zero.
 	 * 
-	 * @param reserve
+	 * @param reserve The reserve in CPM. 
 	 */
 	public void setReserve(float reserve) {
 		this.reserve = reserve;
@@ -583,8 +581,15 @@ public abstract class AdView extends FrameLayout {
 		this.age = age;
 	}
 
+	/**
+	 * 
+	 * Users gender enumeration
+	 *
+	 */
 	public enum GENDER {
-		UNKNOWN, MALE, FEMALE,
+		UNKNOWN,
+		MALE,
+		FEMALE,
 
 	}
 
@@ -618,7 +623,7 @@ public abstract class AdView extends FrameLayout {
 	 *            keyword value, cannot be null
 	 */
 	public void addCustomKeywords(String key, String value) {
-		if ((key == null) || (key.isEmpty()) || (value == null)) {
+		if (StringUtil.isEmpty(key) || (value == null)) {
 			return;
 		}
 		customKeywords.add(new Pair<String, String>(key, value));
@@ -632,7 +637,7 @@ public abstract class AdView extends FrameLayout {
 	 *            keyword name to remove, cannot be null or empty
 	 */
 	public void removeCustomKeyword(String key) {
-		if ((key == null) || (key.isEmpty()))
+		if (StringUtil.isEmpty(key))
 			return;
 
 		for (int i = 0; i < customKeywords.size(); i++) {
@@ -757,7 +762,7 @@ public abstract class AdView extends FrameLayout {
 	}
 
 	// returns the first mediated ad if available
-	public MediatedAd popMediatedAd() {
+	MediatedAd popMediatedAd() {
 		return mediatedAds != null ? mediatedAds.removeFirst() : null;
 	}
 

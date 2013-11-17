@@ -19,11 +19,17 @@ import android.app.Activity;
 import android.view.View;
 import com.appnexus.opensdk.utils.Clog;
 
-class MediatedBannerAdViewController extends MediatedAdViewController implements Displayable {
+/**
+ * An object of this type is sent to the 3rd party SDK's MediatedBannerAdView object. The 3rd party
+ * SDK uses this object from within its banner view implementation to send events back to the AppNexus
+ * SDK
+ *
+ */
+public class MediatedBannerAdViewController extends MediatedAdViewController implements Displayable {
 
     private View placeableView;
 
-    static public MediatedBannerAdViewController create(
+    static MediatedBannerAdViewController create(
             Activity activity, AdRequester requester,
             MediatedAd mediatedAd, AdViewListener listener) {
         MediatedBannerAdViewController out = new MediatedBannerAdViewController(activity, requester, mediatedAd, listener);
@@ -70,6 +76,10 @@ class MediatedBannerAdViewController extends MediatedAdViewController implements
         }
     }
 
+    /**
+     * Returns the Banner view of the underlying SDK. 
+     * @return the mediated SDK's view.
+     */
     @Override
     public View getView() {
         return placeableView;

@@ -19,6 +19,8 @@ package com.appnexus.opensdk;
 import android.annotation.SuppressLint;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPResponse;
+import com.appnexus.opensdk.utils.StringUtil;
+
 import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -178,7 +180,7 @@ class AdResponse {
                                     String adId = getJSONString(handlerElement, RESPONSE_KEY_ID);
                                     String resultCB = getJSONString(mediatedElement, RESPONSE_KEY_RESULT_CB);
 
-                                    if (className != null && !className.isEmpty()) {
+                                    if (!StringUtil.isEmpty(className)) {
                                         mediatedAds.add(new MediatedAd(className,
                                                 param, width, height, adId,
                                                 resultCB));

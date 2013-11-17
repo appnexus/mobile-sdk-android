@@ -113,7 +113,13 @@
         linksource="true"
         sourcepath="${source.dir}"
         use="true"
-        version="true" />
+	windowtitle="AppNexus Android Advertising SDK"
+	footer="The best damn SDK in the world"
+        version="true" >
+
+	<header><![CDATA[<a target="_blank" href="http://www.appnexus.com">AppNexus</a>]]></header>
+	<footer><![CDATA[<font size="-2">AppNexus SDK</font>]]></footer>
+</javadoc>
 
     <jar
         basedir="${docs.dir}"
