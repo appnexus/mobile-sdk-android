@@ -63,6 +63,7 @@ public class BannerAdView extends AdView {
      */
     public BannerAdView(Context context) {
         super(context);
+        setup(context, null);
     }
 
     /**
@@ -74,6 +75,7 @@ public class BannerAdView extends AdView {
      */
     public BannerAdView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setup(context, attrs);
     }
 
     /**
@@ -89,6 +91,7 @@ public class BannerAdView extends AdView {
      */
     public BannerAdView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        setup(context, attrs);
     }
 
     /**

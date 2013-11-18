@@ -71,18 +71,15 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     @SuppressWarnings("javadoc")
     AdView(Context context) {
         super(context, null);
-        setup(context, null);
     }
 
     AdView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setup(context, attrs);
 
     }
 
     AdView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        setup(context, attrs);
     }
 
     void setup(Context context, AttributeSet attrs) {
@@ -142,9 +139,9 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
             float density = getContext().getResources().getDisplayMetrics().density;
             measuredWidth = (int) ((right - left) / density + 0.5f);
             measuredHeight = (int) ((bottom - top) / density + 0.5f);
-            if ((measuredHeight < height || measuredWidth < width) && measuredHeight > 0 && measuredWidth > 0) {
+            /*if ((measuredHeight < height || measuredWidth < width) && measuredHeight > 0 && measuredWidth > 0) {
                 Clog.e(Clog.baseLogTag, Clog.getString(R.string.adsize_too_big,
-                        measuredWidth, measuredHeight, width, height));
+                       measuredWidth, measuredHeight, width, height)); //TODO this doesn't even BELONG here!?!?!?!
                 // Hide the space, since no ad will be loaded due to error
                 hide();
                 // Stop any request in progress
@@ -153,7 +150,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
                 // Returning here allows the SDK to re-request when the layout
                 // next changes, and maybe the error will be amended.
                 return;
-            }
+            }*/
 
             // Hide the adview
             if (!measured) {
