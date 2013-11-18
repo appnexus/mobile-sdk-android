@@ -50,8 +50,6 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     int measuredWidth;
     int measuredHeight;
     private boolean measured = false;
-    private int width = -1;
-    private int height = -1;
     boolean shouldServePSAs = true;
     private float reserve = 0.00f;
     String age;
@@ -217,24 +215,6 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         return loadAd();
     }
 
-    /**
-     * Loads a new ad, if the ad space is visible, and sets the placement id, ad
-     * width, and ad height attribute of the AdView to the supplied parameters.
-     *
-     * @param placementID The new placement id to use.
-     * @param width       The new width to use.
-     * @param height      The new height to use.
-     *
-     * @return true is ad will begin loading, false if ad cannot be loaded
-     * at this time given the current settings
-     */
-    public boolean loadAd(String placementID, int width, int height) {
-        this.setAdHeight(height);
-        this.setAdWidth(width);
-        this.setPlacementID(placementID);
-        return loadAd();
-    }
-
     public void loadHtml(String content, int width, int height) {
         this.mAdFetcher.stop();
 
@@ -322,42 +302,6 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         // Just in case, kill the adfetcher's service
         if (mAdFetcher != null)
             mAdFetcher.stop();
-    }
-
-    /**
-     * Sets the height of the ad to request.
-     *
-     * @param h The height, in pixels, to use.
-     */
-    public void setAdHeight(int h) {
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_height, h));
-        height = h;
-    }
-
-    /**
-     * Sets the width of the ad to request.
-     *
-     * @param w The width, in pixels, to use.
-     */
-    public void setAdWidth(int w) {
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_width, w));
-        width = w;
-    }
-
-    /**
-     * @return The height of the ad to be requested.
-     */
-    public int getAdHeight() {
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_height, height));
-        return height;
-    }
-
-    /**
-     * @return The width of the ad to be requested.
-     */
-    public int getAdWidth() {
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_width, width));
-        return width;
     }
 
     int getContainerWidth() {

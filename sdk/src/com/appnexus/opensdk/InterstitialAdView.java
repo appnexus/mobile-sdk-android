@@ -210,19 +210,6 @@ public class InterstitialAdView extends AdView {
         // leave empty so that we don't call super
     }
 
-    // No javadoc since these just print errors
-    @Override
-    public void setAdWidth(int width) {
-        Clog.w(Clog.publicFunctionsLogTag,
-                Clog.getString(R.string.set_width_int));
-    }
-
-    @Override
-    public void setAdHeight(int height) {
-        Clog.w(Clog.publicFunctionsLogTag,
-                Clog.getString(R.string.set_height_int));
-    }
-
     /**
      * Pops ads from the queue until it finds one that has not exceeded the
      * timeout of 60 seconds, and displays it in a new activity. All ads in the

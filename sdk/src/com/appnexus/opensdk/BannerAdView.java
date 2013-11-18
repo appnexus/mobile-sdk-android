@@ -47,6 +47,8 @@ public class BannerAdView extends AdView {
     private boolean receiversRegistered;
     protected boolean shouldResetContainer = false;
     private boolean expandsToFitScreenWidth = false;
+    private int width = -1;
+    private int height = -1;
 
     private void setDefaultsBeforeXML() {
         running = false;
@@ -175,6 +177,24 @@ public class BannerAdView extends AdView {
         }
     }
 
+    /**
+     * Loads a new ad, if the ad space is visible, and sets the placement id, ad
+     * width, and ad height attribute of the AdView to the supplied parameters.
+     *
+     * @param placementID The new placement id to use.
+     * @param width       The new width to use.
+     * @param height      The new height to use.
+     *
+     * @return true is ad will begin loading, false if ad cannot be loaded
+     * at this time given the current settings
+     */
+    public boolean loadAd(String placementID, int width, int height) {
+        this.setAdHeight(height);
+        this.setAdWidth(width);
+        this.setPlacementID(placementID);
+        return loadAd();
+    }
+
     @Override
     public boolean loadAd() {
         running = true;
@@ -260,6 +280,58 @@ public class BannerAdView extends AdView {
         Clog.d(Clog.publicFunctionsLogTag,
                 Clog.getString(R.string.get_period, period));
         return period;
+    }
+
+    /**
+     * Sets the height of the ad to request.
+     *
+     * @deprecated Favor setAdSize(int w, int h)
+     * @param h The height, in pixels, to use.
+     */
+    @Deprecated
+    public void setAdHeight(int h) {
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_height, h));
+        height = h;
+    }
+
+    /**
+     * Sets the width of the ad to request.
+     *
+     * @deprecated Favor setAdSize(int w, int h)
+     * @param w The width, in pixels, to use.
+     */
+    @Deprecated
+    public void setAdWidth(int w) {
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_width, w));
+        width = w;
+    }
+
+    /**
+     * Sets the size of the ad to request.
+     *
+     * @param w The width, in pixels, to use.
+     * @param h The height, in pixels, to use.
+     */
+    public void setAdSize(int w, int h){
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_size, w, h));
+        width=w;
+        height=h;
+    }
+
+    /**
+     * @return The height of the ad to be requested.
+     */
+    public int getAdHeight() {
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_height, height));
+        return height;
+    }
+
+    /**
+     * @return The width of the ad to be requested.
+     */
+    public int getAdWidth() {
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_width, width));
+        return width;
     }
 
     /**

@@ -248,8 +248,11 @@ public class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         // Get ua, the user agent...
         ua = Settings.getSettings().ua;
         // Get wxh
-        this.width = owner.getAdWidth();
-        this.height = owner.getAdHeight();
+
+        if(owner.isBanner()){
+            this.width = ((BannerAdView)owner).getAdWidth();
+            this.height = ((BannerAdView)owner).getAdHeight();
+        }
 
         maxHeight = owner.getContainerHeight();
         maxWidth = owner.getContainerWidth();
