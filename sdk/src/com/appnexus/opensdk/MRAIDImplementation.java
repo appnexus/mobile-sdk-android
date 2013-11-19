@@ -108,6 +108,10 @@ class MRAIDImplementation {
                                 Uri.parse(url));
                         try{
                             owner.getContext().startActivity(intent);
+                            //Call onAdClicked
+                            if(owner.owner.adListener!=null){
+                                owner.owner.adListener.onAdClicked(owner.owner);
+                            }
                         }catch (Exception e){
                             Toast.makeText(owner.getContext(),R.string.action_cant_be_completed, Toast.LENGTH_SHORT).show();
                         }
@@ -116,6 +120,10 @@ class MRAIDImplementation {
                                 BrowserActivity.class);
                         intent.putExtra("url", url);
                         owner.getContext().startActivity(intent);
+                        //Call onAdClicked
+                        if(owner.owner.adListener!=null){
+                            owner.owner.adListener.onAdClicked(owner.owner);
+                        }
                     }
                     return true;
                 } else if (url.startsWith("mraid://")) {
@@ -128,6 +136,10 @@ class MRAIDImplementation {
                 try {
                     owner.getContext().startActivity(
                             new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    //Call onAdClicked
+                    if(owner.owner.adListener!=null){
+                        owner.owner.adListener.onAdClicked(owner.owner);
+                    }
                     // If it's an IAV, prevent it from closing
                     if (owner.owner instanceof InterstitialAdView) {
                         ((InterstitialAdView) (owner.owner)).interacted();
@@ -557,6 +569,10 @@ class MRAIDImplementation {
         }
         try{
             owner.getContext().startActivity(i);
+            //Call onAdClicked
+            if(owner.owner.adListener!=null){
+                owner.owner.adListener.onAdClicked(owner.owner);
+            }
         }catch(ActivityNotFoundException e){
             return;
         }
@@ -571,6 +587,12 @@ class MRAIDImplementation {
         } catch (UnsupportedEncodingException e) {
             return;
         }
+
+        //Call onAdClicked
+        if(owner.owner.adListener!=null){
+            owner.owner.adListener.onAdClicked(owner.owner);
+        }
+
         Intent i = event.getInsertIntent();
         owner.getContext().startActivity(i);
 
@@ -641,6 +663,11 @@ class MRAIDImplementation {
 
         Clog.d(Clog.mraidLogTag, Clog.getString(R.string.resize, w, h, offset_x, offset_y, custom_close_position, allow_offscrean));
         this.owner.resize(w, h, offset_x, offset_y, CUSTOM_CLOSE_POSITION.valueOf(custom_close_position.replace('-', '_')), allow_offscrean);
+
+        //Call onAdClicked
+        if(owner.owner.adListener!=null){
+            owner.owner.adListener.onAdExpanded(owner.owner);
+        }
 
         this.owner
                 .loadUrl("javascript:window.mraid.util.stateChangeEvent('resized');");
