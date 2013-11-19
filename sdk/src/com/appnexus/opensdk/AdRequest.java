@@ -248,8 +248,11 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         // Get ua, the user agent...
         ua = Settings.getSettings().ua;
         // Get wxh
-        this.width = owner.getAdWidth();
-        this.height = owner.getAdHeight();
+
+        if(owner.isBanner()){
+            this.width = ((BannerAdView)owner).getAdWidth();
+            this.height = ((BannerAdView)owner).getAdHeight();
+        }
 
         maxHeight = owner.getContainerHeight();
         maxWidth = owner.getContainerWidth();
@@ -357,7 +360,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (owner != null) {
             if (maxHeight > 0 && maxWidth > 0) {
                 if (!(owner instanceof InterstitialAdView)
-                        && (width < 0 && height < 0)) {
+                        && (width < 0 || height < 0)) {
                     sb.append("&max_size=").append(maxWidth).append("x").append(maxHeight);
                 } else if (owner instanceof InterstitialAdView) {
                     sb.append("&size=").append(maxWidth).append("x").append(maxHeight);

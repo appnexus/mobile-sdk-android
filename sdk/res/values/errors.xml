@@ -62,6 +62,7 @@
 	<string formatted="false" name="set_width">setAdWidth() to: %d</string>
 	<string formatted="false" name="get_width">getAdWidth() returned %d</string>
 	<string formatted="false" name="get_height">getAdHeight() returned %d</string>
+	<string formatted="false" name="set_size">setAdSize() to: %dx%d</string>
 	<string formatted="false" name="init">The AppNexus OpenSDK is initializing</string>
 	<string formatted="false" name="get_should_resume">getShouldReloadOnResume() returned %b</string>
 	<string formatted="false" name="set_should_resume">setShouldReloadOnResume() to %b</string>
@@ -120,5 +121,6 @@
 	<string formatted="false" name="number_format">An invalid number was passed to an MRAID function.</string>
 	<string formatted="false" name="xml_set_expands_to_full_screen_width">setExpandsToFullScreenWidth set to %b in xml</string>
 	<string formatted="false" name="mediation_finish">Mediation Controller has finished.</string>
+	<string formatted="false" name="unsupported_mraid">Mraid function %s unsupported.</string>
 	<string formatted="false" name="mediation_timeout">Mediation network timed out.</string>
 </resources>

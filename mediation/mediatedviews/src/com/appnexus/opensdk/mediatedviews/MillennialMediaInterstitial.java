@@ -76,7 +76,7 @@ public class MillennialMediaInterstitial implements MediatedInterstitialAdView {
             return;
         }
 
-        if (iad.display(true))
+        if (iad.display(false))
             Clog.d(Clog.mediationLogTag, "MillennialMediaInterstitial - display called successfully");
         else
             Clog.e(Clog.mediationLogTag, "MillennialMediaInterstitial - display failed");

@@ -41,8 +41,8 @@ import java.util.Queue;
 
 /**
  * This class controls the loading and displaying of interstitial ads.
- * Interstitial ads are modal and take up the entire screen. The Interstitial Ad is tied 
- * to an {@link AdActivity} which is lauched to show the ad. 
+ * Interstitial ads are modal and take up the entire screen. The Interstitial Ad is tied
+ * to an {@link AdActivity} which is lauched to show the ad.
  *
  */
 public class InterstitialAdView extends AdView {
@@ -213,23 +213,6 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * Interstitial ads have no set width, this method does nothing.
-     */
-    @Override
-    public void setAdWidth(int width) {
-        Clog.w(Clog.publicFunctionsLogTag,
-                Clog.getString(R.string.set_width_int));
-    }
-    /**
-     * Interstitial ads have no set height, this method does nothing.
-     */
-    @Override
-    public void setAdHeight(int height) {
-        Clog.w(Clog.publicFunctionsLogTag,
-                Clog.getString(R.string.set_height_int));
-    }
-
-    /**
      * Pops ads from the queue until it finds one that has not exceeded the
      * timeout of 60 seconds, and displays it in a new activity. All ads in the
      * queue which have exceeded the timeout are removed.
@@ -275,13 +258,13 @@ public class InterstitialAdView extends AdView {
             i.putExtra(InterstitialAdView.INTENT_KEY_ORIENTATION, getContext().getResources()
                     .getConfiguration().orientation);
             i.putExtra(InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY, closeButtonDelay);
-            
+
             try {
 				getContext().startActivity(i);
 			} catch (ActivityNotFoundException e) {
 				Clog.e(Clog.baseLogTag, "Did you insert com.appneus.opensd.AdActivity into AndroidManifest.xml ?");
 			}
-           
+
             return InterstitialAdView.q.size() - 1; // Return the number of ads remaining, less the one we're about to show
         }
         Clog.w(Clog.baseLogTag, Clog.getString(R.string.empty_queue));
@@ -301,8 +284,8 @@ public class InterstitialAdView extends AdView {
 
     /**
      * Sets the ArrayList of {@link Size}s which are allowed to be displayed.
-     * The allowed sizes is the list of the platform ad sizes which may be inserted into 
-     * an interstitial view. The default list is sufficient for most implementations. Custom 
+     * The allowed sizes is the list of the platform ad sizes which may be inserted into
+     * an interstitial view. The default list is sufficient for most implementations. Custom
      * sizes may be added here.
      * @param allowed_sizes The ArrayList of {@link Size}s which are allowed to be
      *                      displayed.
@@ -352,10 +335,10 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * Interstitial Ad's have a close button. The close button does not appear until the ad 
-     * has been view for 10 seconds by default. This method allows you to override the timeout. Settting 
+     * Interstitial Ad's have a close button. The close button does not appear until the ad
+     * has been view for 10 seconds by default. This method allows you to override the timeout. Settting
      * the value to 0 shows the close button with the ad. The maximum time allowed is 10 seconds. Any value
-     * larger than that will cause 10 seconds to be used. 
+     * larger than that will cause 10 seconds to be used.
      * @param closeButtonDelay The time in milliseconds to wait before showing the close button.
      */
     public void setCloseButtonDelay(int closeButtonDelay) {

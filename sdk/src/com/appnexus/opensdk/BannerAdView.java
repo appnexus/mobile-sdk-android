@@ -37,12 +37,12 @@ import com.appnexus.opensdk.utils.WebviewUtil;
 
 /**
  * This view is added to an existing layout in order to display banner ads.
- * It may be added via XML or via code 
- * 
+ * It may be added via XML or via code
+ *
  * Note that you must insert your Placement ID.
  * <pre>
  * {@code
- * 
+ *
  * <com.appnexus.opensdk.BannerAdView
  *           android:id="@+id/banner"
  *           android:layout_width="wrap_content"
@@ -59,15 +59,15 @@ import com.appnexus.opensdk.utils.WebviewUtil;
  *           />
  * }
  * </pre>
- * 
+ *
  * In code you do the following
  * {@code
- *   blah 
- *   blah 
+ *   blah
+ *   blah
  *   blah
  * }
- * 
- * 
+ *
+ *
  *
  */
 public class BannerAdView extends AdView {
@@ -80,6 +80,8 @@ public class BannerAdView extends AdView {
     private boolean receiversRegistered;
     protected boolean shouldResetContainer = false;
     private boolean expandsToFitScreenWidth = false;
+    private int width = -1;
+    private int height = -1;
 
     private void setDefaultsBeforeXML() {
         running = false;
@@ -96,6 +98,7 @@ public class BannerAdView extends AdView {
      */
     public BannerAdView(Context context) {
         super(context);
+        setup(context, null);
     }
 
     /**
@@ -107,6 +110,7 @@ public class BannerAdView extends AdView {
      */
     public BannerAdView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setup(context, attrs);
     }
 
     /**
@@ -122,6 +126,7 @@ public class BannerAdView extends AdView {
      */
     public BannerAdView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        setup(context, attrs);
     }
 
     /**
@@ -206,10 +211,10 @@ public class BannerAdView extends AdView {
     }
 
     /**
-     * Call this method to start loading an ad into this view. 
-     * Ad loading is asynchronous, that is calling this method will request 
+     * Call this method to start loading an ad into this view.
+     * Ad loading is asynchronous, that is calling this method will request
      * an ad from the server. If you wish to know whether the ad failed to load or was successfully loaded
-     *  use the AdListener object to receive the corresponding events. 
+     *  use the AdListener object to receive the corresponding events.
      * @return true if the ad load was successfully dispatched, false otherwise
      */
     @Override
@@ -301,9 +306,64 @@ public class BannerAdView extends AdView {
     }
 
     /**
-     * Set the autorefresh interval. Setting a value of zero disables auto refresh. 
-     * By default autorefresh is enabled for BannerAdViews and the default refresh rate is 
-     * 30 seconds. 
+<<<<<<< HEAD
+     * Set the autorefresh interval. Setting a value of zero disables auto refresh.
+     * By default autorefresh is enabled for BannerAdViews and the default refresh rate is
+     * 30 seconds.
+=======
+     * Sets the height of the ad to request.
+     *
+     * @deprecated Favor setAdSize(int w, int h)
+     * @param h The height, in pixels, to use.
+     */
+    @Deprecated
+    public void setAdHeight(int h) {
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_height, h));
+        height = h;
+    }
+
+    /**
+     * Sets the width of the ad to request.
+     *
+     * @deprecated Favor setAdSize(int w, int h)
+     * @param w The width, in pixels, to use.
+     */
+    @Deprecated
+    public void setAdWidth(int w) {
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_width, w));
+        width = w;
+    }
+
+    /**
+     * Sets the size of the ad to request.
+     *
+     * @param w The width, in pixels, to use.
+     * @param h The height, in pixels, to use.
+     */
+    public void setAdSize(int w, int h){
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_size, w, h));
+        width=w;
+        height=h;
+    }
+
+    /**
+     * @return The height of the ad to be requested.
+     */
+    public int getAdHeight() {
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_height, height));
+        return height;
+    }
+
+    /**
+     * @return The width of the ad to be requested.
+     */
+    public int getAdWidth() {
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_width, width));
+        return width;
+    }
+
+    /**
+>>>>>>> master
      * @param period The interval, in milliseconds, at which the BannerAdView will
      *               request new ads, if autorefresh is enabled. The minimum period
      *               is 15 seconds. The default period is 30 seconds.
@@ -348,7 +408,7 @@ public class BannerAdView extends AdView {
     }
 
     /**
-     * Retrieves the current shouldAutoReload on resume value 
+     * Retrieves the current shouldAutoReload on resume value
      * @return True add will reload on resume, false otherwise.
      */
     public boolean getShouldReloadOnResume() {
@@ -370,7 +430,7 @@ public class BannerAdView extends AdView {
 
     private boolean requesting_visible = true;
 
-    
+
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
@@ -434,8 +494,8 @@ public class BannerAdView extends AdView {
     }
 
     /**
-     * Retrieves the current expandsToFitWindowWidth setting. 
-     * 
+     * Retrieves the current expandsToFitWindowWidth setting.
+     *
      * @return true ad expands to fit screen width, false otherwise
      */
     public boolean getExpandsToFitScreenWidth() {
@@ -444,10 +504,10 @@ public class BannerAdView extends AdView {
 
     /**
      * Enable the expand ad to fit screen width. This feature will cause ad creatives
-     * that are smaller than the view size to 'stretch' to the current size. This may cause 
-     * image quality degradation for the benefit of having an ad occupy the entire adview. 
-     * By default his feature is disabled 
-     * @param expandsToFitScreenWidth true to enable the automatic expansion, false otherwise 
+     * that are smaller than the view size to 'stretch' to the current size. This may cause
+     * image quality degradation for the benefit of having an ad occupy the entire adview.
+     * By default his feature is disabled
+     * @param expandsToFitScreenWidth true to enable the automatic expansion, false otherwise
      */
     public void setExpandsToFitScreenWidth(boolean expandsToFitScreenWidth) {
         this.expandsToFitScreenWidth = expandsToFitScreenWidth;
@@ -455,7 +515,7 @@ public class BannerAdView extends AdView {
 
     protected int oldH;
     protected int oldW;
-    
+
     @SuppressLint("NewApi")
 	@SuppressWarnings("deprecation")
 	protected void expandToFitScreenWidth(int adWidth, int adHeight, AdWebView webview) {

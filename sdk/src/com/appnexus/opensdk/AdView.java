@@ -40,8 +40,8 @@ import java.util.LinkedList;
 /**
  * The parent class of InterstitialAdView and BannerAdView. This may not be
  * instantiated directly. It public methods are accessed through one of its sub classes.
- * 
- * 
+ *
+ *
  */
 public abstract class AdView extends FrameLayout {
 
@@ -196,9 +196,9 @@ public abstract class AdView extends FrameLayout {
 	/**
 	 * Loads a new ad, if the ad space is visible. You should have called
 	 * setPlacementID() before invoking this method.
-	 * 
+	 *
 	 * @return true is ad will begin loading, false otherwise.
-	 * 
+	 *
 	 */
 	protected boolean loadAd() {
 		if (!isReadyToStart())
@@ -216,9 +216,9 @@ public abstract class AdView extends FrameLayout {
 	/**
 	 * Loads a new ad, if the ad space is visible, and sets the placement id
 	 * attribute of the AdView to the supplied parameter.
-	 * 
+	 *
 	 * @param placementID   The new placement id to use.
-	 * 
+	 *
 	 * @return true is ad will begin loading, false otherwise
 	 */
 	public boolean loadAd(String placementID) {
@@ -229,14 +229,14 @@ public abstract class AdView extends FrameLayout {
 	/**
 	 * Loads a new ad, if the ad space is visible, and sets the placement id, ad
 	 * width, and ad height attribute of the AdView to the supplied parameters.
-	 * 
+	 *
 	 * @param placementID
 	 *            The new placement id to use.
 	 * @param width
 	 *            The new width to use.
 	 * @param height
 	 *            The new height to use.
-	 * 
+	 *
 	 * @return true is ad will begin loading, false otherwise
 	 */
 	public boolean loadAd(String placementID, int width, int height) {
@@ -306,7 +306,7 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 * Retrieve the current placement ID.
-	 * 
+	 *
 	 * @return The current placement id.
 	 */
 	public String getPlacementID() {
@@ -319,7 +319,7 @@ public abstract class AdView extends FrameLayout {
 	 * Sets the placement id of the AdView. The placement ID identifies a
 	 * location in your application. You must have a valid active placement ID
 	 * to monetize your application.
-	 * 
+	 *
 	 * @param placementID
 	 *            The placement id to use
 	 */
@@ -344,7 +344,7 @@ public abstract class AdView extends FrameLayout {
 	 * Sets the height of the ad to request. this is typically the height of the
 	 * view containing the ad. Although not necessary it is recommended to set a
 	 * width and height for an ad.
-	 * 
+	 *
 	 * @param h
 	 *            The ad height, in pixels, to use.
 	 */
@@ -355,7 +355,7 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 * Sets the width of the ad to request.
-	 * 
+	 *
 	 * @param w
 	 *            The ad width, in pixels, to use.
 	 */
@@ -366,7 +366,7 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 * Retrieve the previously set height of the ad.
-	 * 
+	 *
 	 * @return The height of the ad to be requested. A value of -1 indicates any
 	 *         size
 	 */
@@ -377,7 +377,7 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 * Retrieve the previously set width of the ad.
-	 * 
+	 *
 	 * @return The width of the ad to be requested. A value of -1 indicates any
 	 *         size
 	 */
@@ -443,20 +443,20 @@ public abstract class AdView extends FrameLayout {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return true if the AdView is a BannerAdView
 	 */
 	abstract boolean isBanner();
 
 	/**
-	 * 
+	 *
 	 * @return true if the AdView is an InterstitialAdView
 	 */
 	abstract boolean isInterstitial();
 
 	/**
 	 * Sets the currently installed listener that the SDK will send events on.
-	 * 
+	 *
 	 * @param listener
 	 *            The {@link AdListener} object to use.
 	 */
@@ -468,7 +468,7 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 * Gets the currently installed listener that the SDK will send events on.
-	 * 
+	 *
 	 * @return The {@link AdListener} object in use.
 	 */
 	public AdListener getAdListener() {
@@ -483,7 +483,7 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 * Retrieve the inapp or native browser setting.
-	 * 
+	 *
 	 * @return whether or not the devices native browser is used instead of the
 	 *         in-app browser.
 	 */
@@ -500,7 +500,7 @@ public abstract class AdView extends FrameLayout {
 	 * open. Set this to false to enabled the in-app browser. Which is a
 	 * lightweight browser that runs within your app. The default value is
 	 * false.
-	 * 
+	 *
 	 * @param opensNativeBrowser
 	 */
 	public void setOpensNativeBrowser(boolean opensNativeBrowser) {
@@ -519,7 +519,7 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 * Retrieve the current PSA setting
-	 * 
+	 *
 	 * @return Whether this placement accepts PSAs if no ad is served.
 	 */
 	public boolean getShouldServePSAs() {
@@ -531,7 +531,7 @@ public abstract class AdView extends FrameLayout {
 	 * currently available. If set to true the platform will retrieve and
 	 * displaya PSA (Public Service Announcement) . Set the value to false it
 	 * will return no ad.
-	 * 
+	 *
 	 * @param shouldServePSAs
 	 *            Whether this placement is willing to accept PSA if no ad is
 	 *            served.
@@ -542,7 +542,7 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 * Retrieve the minimum price. A value of zero indicates no minimum.
-	 * 
+	 *
 	 * @return The minimum price zero indicates none.
 	 */
 	public float getReserve() {
@@ -553,8 +553,8 @@ public abstract class AdView extends FrameLayout {
 	 * Set a minimum price. Note that setting a minimum may negatively affect
 	 * monetization. Setting this value to zero disables the minimum price.
 	 * Default value is zero.
-	 * 
-	 * @param reserve The reserve in CPM. 
+	 *
+	 * @param reserve The reserve in CPM.
 	 */
 	public void setReserve(float reserve) {
 		this.reserve = reserve;
@@ -563,7 +563,7 @@ public abstract class AdView extends FrameLayout {
 	/**
 	 * Retrieve the current users Age. Note this is a string as it may be an
 	 * age, birth year or age range. The default value is an empty string.
-	 * 
+	 *
 	 * @return The age
 	 */
 	public String getAge() {
@@ -572,7 +572,7 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 * Set's the user's age. should be used if age or age range is known.
-	 * 
+	 *
 	 * @param age
 	 *            should be a numerical age, birth year, or hyphenated age
 	 *            range. For example: "56", "1974", or "25-35"
@@ -582,7 +582,7 @@ public abstract class AdView extends FrameLayout {
 	}
 
 	/**
-	 * 
+	 *
 	 * Users gender enumeration
 	 *
 	 */
@@ -595,7 +595,7 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 * Get the current user's gender if available
-	 * 
+	 *
 	 * @return The gender
 	 */
 	public GENDER getGender() {
@@ -604,7 +604,7 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 * Set the users gender if it is known. Default value is UNKNOWN
-	 * 
+	 *
 	 * @param gender
 	 *            One of UNKNOWN,MALE,FEMALE
 	 */
@@ -616,7 +616,7 @@ public abstract class AdView extends FrameLayout {
 	 * Add a custom keyword to the request url for the ad. This will be used to
 	 * allow custom targeting parameters within the AppNexus platform. You will
 	 * be given the names and to use by App Nexus account representative.
-	 * 
+	 *
 	 * @param key
 	 *            keyword name to add, cannot be null or empty
 	 * @param value
@@ -632,7 +632,7 @@ public abstract class AdView extends FrameLayout {
 	/**
 	 * Remove a custom keyword from the request url for the ad. Use this to
 	 * remove a keyword previously set using addCustomKeywords.
-	 * 
+	 *
 	 * @param key
 	 *            keyword name to remove, cannot be null or empty
 	 */
@@ -652,7 +652,7 @@ public abstract class AdView extends FrameLayout {
 	/**
 	 * Retrieve the array of currently configured Custom Keywords in the current
 	 * AdView.
-	 * 
+	 *
 	 * @return The current list of key value pairs of custom keywords.
 	 */
 	public ArrayList<Pair<String, String>> getCustomKeywords() {
@@ -678,7 +678,7 @@ public abstract class AdView extends FrameLayout {
 	/**
 	 * Private class to bridge events from mediation to the user AdListener
 	 * class
-	 *  
+	 *
 	 */
 	private class AdListenerDispatch implements AdViewListener {
 
