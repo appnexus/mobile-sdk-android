@@ -223,6 +223,25 @@ public class BannerAdView extends AdView {
         return super.loadAd();
     }
 
+    /**
+     * Loads a new ad, if the ad space is visible, and sets the placement id, ad
+     * width, and ad height attribute of the AdView to the supplied parameters.
+     *
+     * @param placementID
+     *            The new placement id to use.
+     * @param width
+     *            The new width to use.
+     * @param height
+     *            The new height to use.
+     *
+     * @return true is ad will begin loading, false otherwise
+     */
+    public boolean loadAd(String placementID, int width, int height) {
+        setAdSize(width, height);
+        this.setPlacementID(placementID);
+        return loadAd();
+    }
+
     void start() {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.start));
         mAdFetcher.start();

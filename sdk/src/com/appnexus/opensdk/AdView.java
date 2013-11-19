@@ -226,26 +226,6 @@ public abstract class AdView extends FrameLayout {
 		return loadAd();
 	}
 
-	/**
-	 * Loads a new ad, if the ad space is visible, and sets the placement id, ad
-	 * width, and ad height attribute of the AdView to the supplied parameters.
-	 *
-	 * @param placementID
-	 *            The new placement id to use.
-	 * @param width
-	 *            The new width to use.
-	 * @param height
-	 *            The new height to use.
-	 *
-	 * @return true is ad will begin loading, false otherwise
-	 */
-	public boolean loadAd(String placementID, int width, int height) {
-		this.setAdHeight(height);
-		this.setAdWidth(width);
-		this.setPlacementID(placementID);
-		return loadAd();
-	}
-
 	void loadHtml(String content, int width, int height) {
 		this.mAdFetcher.stop();
 
@@ -338,52 +318,6 @@ public abstract class AdView extends FrameLayout {
 		// Just in case, kill the adfetcher's service
 		if (mAdFetcher != null)
 			mAdFetcher.stop();
-	}
-
-	/**
-	 * Sets the height of the ad to request. this is typically the height of the
-	 * view containing the ad. Although not necessary it is recommended to set a
-	 * width and height for an ad.
-	 *
-	 * @param h
-	 *            The ad height, in pixels, to use.
-	 */
-	public void setAdHeight(int h) {
-		Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_height, h));
-		height = h;
-	}
-
-	/**
-	 * Sets the width of the ad to request.
-	 *
-	 * @param w
-	 *            The ad width, in pixels, to use.
-	 */
-	public void setAdWidth(int w) {
-		Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_width, w));
-		width = w;
-	}
-
-	/**
-	 * Retrieve the previously set height of the ad.
-	 *
-	 * @return The height of the ad to be requested. A value of -1 indicates any
-	 *         size
-	 */
-	public int getAdHeight() {
-		Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_height, height));
-		return height;
-	}
-
-	/**
-	 * Retrieve the previously set width of the ad.
-	 *
-	 * @return The width of the ad to be requested. A value of -1 indicates any
-	 *         size
-	 */
-	public int getAdWidth() {
-		Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_width, width));
-		return width;
 	}
 
 	int getContainerWidth() {
