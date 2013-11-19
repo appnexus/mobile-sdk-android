@@ -137,18 +137,6 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
             float density = getContext().getResources().getDisplayMetrics().density;
             measuredWidth = (int) ((right - left) / density + 0.5f);
             measuredHeight = (int) ((bottom - top) / density + 0.5f);
-            /*if ((measuredHeight < height || measuredWidth < width) && measuredHeight > 0 && measuredWidth > 0) {
-                Clog.e(Clog.baseLogTag, Clog.getString(R.string.adsize_too_big,
-                       measuredWidth, measuredHeight, width, height)); //TODO this doesn't even BELONG here!?!?!?!
-                // Hide the space, since no ad will be loaded due to error
-                hide();
-                // Stop any request in progress
-                if (mAdFetcher != null)
-                    mAdFetcher.stop();
-                // Returning here allows the SDK to re-request when the layout
-                // next changes, and maybe the error will be amended.
-                return;
-            }*/
 
             // Hide the adview
             if (!measured) {
@@ -185,8 +173,8 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     /**
      * Loads a new ad, if the ad space is visible.
      *
-     * @return true is ad will begin loading, false if ad cannot be loaded
-     * at this time given the current settings
+     * @return true if ad will begin loading, false if ad cannot be loaded
+     * at this time given the current settings.
      */
     public boolean loadAd() {
         if (!isReadyToStart())
@@ -202,10 +190,10 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     }
 
     /**
-     * Loads a new ad, if the ad space is visible, and sets the placement id
+     * Loads a new ad, if the ad space is visible, and sets the placement ID
      * attribute of the AdView to the supplied parameter.
      *
-     * @param placementID The new placement id to use.
+     * @param placementID The new placement ID to use.
      *
      * @return true is ad will begin loading, false if ad cannot be loaded
      * at this time given the current settings
@@ -274,7 +262,7 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     }
 
     /**
-     * @return The current placement id.
+     * @return The current placement ID.
      */
     public String getPlacementID() {
         Clog.d(Clog.publicFunctionsLogTag,
@@ -283,9 +271,9 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
     }
 
     /**
-     * Sets the placement id of the AdView.
+     * Sets the placement ID of the AdView.
      *
-     * @param placementID The placement id to use
+     * @param placementID The placement ID to use
      */
     public void setPlacementID(String placementID) {
         Clog.d(Clog.publicFunctionsLogTag,
