@@ -277,6 +277,10 @@ public abstract class MediatedAdViewController implements Displayable {
 
         @Override
         protected void onPostExecute(HTTPResponse httpResponse) {
+            // if this was the result of a successful ad, ignore the response and stop looking for more ads
+            if (this.result == RESULT.SUCCESS)
+                return;
+
             if (this.requester == null) {
                 Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
                 return;
@@ -287,10 +291,6 @@ public abstract class MediatedAdViewController implements Displayable {
             } else {
                 Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_bad_response));
             }
-
-            // if this was the result of a successful ad, stop looking for more ads
-            if (this.result == RESULT.SUCCESS)
-                return;
 
             this.requester.onReceiveResponse(response);
         }
