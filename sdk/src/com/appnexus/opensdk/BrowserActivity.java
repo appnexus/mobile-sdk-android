@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -68,7 +69,7 @@ public class BrowserActivity extends Activity {
         ImageButton refresh = (ImageButton) findViewById(R.id.browser_refresh);
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
-        webview.getSettings().setBuiltInZoomControls(true);
+        webview.getSettings().setBuiltInZoomControls(false);
         webview.getSettings().setSupportZoom(true);
         webview.getSettings().setUseWideViewPort(true);
         webview.getSettings().setJavaScriptEnabled(true);
@@ -240,6 +241,6 @@ public class BrowserActivity extends Activity {
             }
 
         });
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 }

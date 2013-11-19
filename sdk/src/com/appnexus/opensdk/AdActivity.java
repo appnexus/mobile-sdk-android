@@ -89,7 +89,7 @@ public class AdActivity extends Activity {
         closeButtonHandler.sendEmptyMessageDelayed(0, closeButtonDelay);
     }
 
-  
+
     private final Handler closeButtonHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
