@@ -237,7 +237,15 @@ public class InterstitialAdView extends AdView {
      */
     public boolean isReady() {
         removeStaleAds();
-        return !InterstitialAdView.q.isEmpty();
+        if (!InterstitialAdView.q.isEmpty()) {
+            Pair<Long, Displayable> top = InterstitialAdView.q.peek();
+            if (top != null && top.second instanceof MediatedInterstitialAdViewController) {
+                MediatedInterstitialAdViewController mAVC = (MediatedInterstitialAdViewController) top.second;
+                return mAVC.isReady();
+            }
+            return true;
+        }
+        return false;
     }
 
     /**

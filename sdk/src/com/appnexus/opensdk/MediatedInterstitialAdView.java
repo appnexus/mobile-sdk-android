@@ -27,4 +27,10 @@ public interface MediatedInterstitialAdView extends MediatedAdView {
      * InterstitialAdView.show() {@link InterstitialAdView} 
      */
     public void show();
+
+    /**
+     * The AppNexus SDK will call this method to check if the interstitial view is ready when the user
+     * calls InterstitialAdView.isReady() {@link InterstitialAdView}
+     */
+    public boolean isReady();
 }

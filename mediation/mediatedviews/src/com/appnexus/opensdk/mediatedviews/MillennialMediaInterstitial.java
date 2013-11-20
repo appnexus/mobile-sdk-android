@@ -81,4 +81,9 @@ public class MillennialMediaInterstitial implements MediatedInterstitialAdView {
         else
             Clog.e(Clog.mediationLogTag, "MillennialMediaInterstitial - display failed");
     }
+
+    @Override
+    public boolean isReady() {
+        return (iad != null) && (iad.isAdAvailable());
+    }
 }

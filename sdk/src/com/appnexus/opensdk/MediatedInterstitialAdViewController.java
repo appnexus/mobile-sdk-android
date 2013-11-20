@@ -80,4 +80,8 @@ import com.appnexus.opensdk.utils.Clog;
 
         return null;
     }
+
+    boolean isReady() {
+        return ((MediatedInterstitialAdView) mAV).isReady();
+    }
 }

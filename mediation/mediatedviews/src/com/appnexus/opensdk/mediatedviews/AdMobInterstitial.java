@@ -124,4 +124,9 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
         Clog.d(Clog.mediationLogTag, "AdMobInterstitial - interstitial ad shown");
     }
 
+    @Override
+    public boolean isReady() {
+        return (iad != null) && (iad.isReady());
+    }
+
 }
