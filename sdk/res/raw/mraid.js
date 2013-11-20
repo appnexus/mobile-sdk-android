@@ -219,14 +219,14 @@
     mraid.setOrientationProperties=function(properties){
         orientation_properties=properties;
 
-        if(properties.forceOrientation!='portrait' && properties.forceOrientation!='landscape' && properties.forceOrientation!='none' ){
+        if(properties.forceOrientation!=='portrait' && properties.forceOrientation!=='landscape' && properties.forceOrientation!=='none' ){
             mraid.util.errorEvent("Invalid orientationProperties forceOrientation property", "mraid.setOrientationProperties()");
-            return;
+            properties.forceOrientation='none';
         }
 
-        if(typeof properties.allowOrientationChange != "boolean"){
+        if(typeof properties.allowOrientationChange !== "boolean"){
             mraid.util.errorEvent("Invalid orientationProperties allowOrientationChange property", "mraid.setOrientationProperties()");
-            return;
+            properties.allowOrientationChange=true;
         }
 
         window.open("mraid://setOrientationProperties/?allow_orientation_change="+properties.allowOrientationChange
