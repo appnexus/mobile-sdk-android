@@ -212,6 +212,34 @@ public class InterstitialAdView extends AdView {
         // leave empty so that we don't call super
     }
 
+    private void removeStaleAds() {
+        ArrayList<Pair<Long, Displayable>> staleAdsList = new ArrayList<Pair<Long, Displayable>>();
+        long now = System.currentTimeMillis();
+        for (Pair<Long, Displayable> p : InterstitialAdView.q) {
+            if (p == null || p.second == null
+                    || now - p.first > InterstitialAdView.MAX_AGE) {
+                staleAdsList.add(p);
+            } else {
+                // We've reached a valid ad, so we can stop looking
+                break;
+            }
+        }
+        // Clear the queue of invalid ads
+        for (Pair<Long, Displayable> p : staleAdsList) {
+            InterstitialAdView.q.remove(p);
+        }
+    }
+
+    /**
+     * Checks the queue to see if there are any valid ads available.
+     *
+     * @return whether there is a valid ad available in the queue
+     */
+    public boolean isReady() {
+        removeStaleAds();
+        return !InterstitialAdView.q.isEmpty();
+    }
+
     /**
      * Pops ads from the queue until it finds one that has not exceeded the
      * timeout of 60 seconds, and displays it in a new activity. All ads in the
@@ -223,22 +251,7 @@ public class InterstitialAdView extends AdView {
     public int show() {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.show_int));
         // Make sure there is an ad to show
-        ArrayList<Pair<Long, Displayable>> to_remove = new ArrayList<Pair<Long, Displayable>>();
-        long now = System.currentTimeMillis();
-        for (Pair<Long, Displayable> p : InterstitialAdView.q) {
-            if (p == null || p.second == null
-                    || now - p.first > InterstitialAdView.MAX_AGE) {
-                to_remove.add(p);
-            } else {
-                // We've reached a valid ad, so we can launch the activity.
-                break;
-            }
-        }
-        // Before we do anything else, clear the head of the queue of invalid
-        // ads
-        for (Pair<Long, Displayable> p : to_remove) {
-            InterstitialAdView.q.remove(p);
-        }
+        removeStaleAds();
 
         //If the head of the queue is interstitial mediation, show that instead of our adactivity
         Pair<Long, Displayable> top = InterstitialAdView.q.peek();
@@ -253,6 +266,7 @@ public class InterstitialAdView extends AdView {
 
         // otherwise, launch our adActivity
         if (!InterstitialAdView.q.isEmpty()) {
+            long now = System.currentTimeMillis();
             Intent i = new Intent(getContext(), AdActivity.class);
             i.putExtra(InterstitialAdView.INTENT_KEY_TIME, now);
             i.putExtra(InterstitialAdView.INTENT_KEY_ORIENTATION, getContext().getResources()
