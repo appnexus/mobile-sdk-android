@@ -445,8 +445,27 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
 
                 }
             });
-        } else if (custom_close && close_button != null) {
-            close_button.setVisibility(GONE);
+        } else {
+            if(close_button!=null){
+                close_button.setVisibility(GONE);
+            }
+
+            //Expand and use custom close.
+            if(caller!=null && caller.owner.isFullScreen){
+                //Make a new framelayout to contain webview and button
+                FrameLayout fslayout = new FrameLayout(this.getContext());
+                if(this.getChildCount()>0){
+                    this.removeAllViews();
+                }
+                fslayout.addView(caller.owner);
+                if (this instanceof InterstitialAdView) {
+                    unexpandedActivity = AdActivity.getCurrent_ad_activity();
+                } else {
+                    unexpandedActivity = (Activity) this.getContext();
+                }
+                oldContent= ((ViewGroup)unexpandedActivity.findViewById(android.R.id.content)).getChildAt(0);
+                unexpandedActivity.setContentView(fslayout);
+            }
         }
     }
 
