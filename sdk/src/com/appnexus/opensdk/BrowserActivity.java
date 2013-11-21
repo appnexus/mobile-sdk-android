@@ -20,7 +20,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Pair;
@@ -52,16 +51,8 @@ public class BrowserActivity extends Activity {
         setContentView(R.layout.activity_in_app_browser);
 
         webview = (WebView) findViewById(R.id.web_view);
-        final ImageButton back = (ImageButton) findViewById(R.id.browser_back);
-        final ImageButton forward = (ImageButton) findViewById(R.id.browser_forward);
-        ImageButton openBrowser = (ImageButton) findViewById(R.id.open_browser);
-        back.setEnabled(false);
-        forward.setEnabled(false);
-        Drawable play = getResources().getDrawable(android.R.drawable.ic_media_play).mutate();
-        back.setScaleX(-1);
-        back.setLayoutDirection(ImageButton.LAYOUT_DIRECTION_RTL);
-        back.setImageDrawable(play);
-
+        ImageButton  back = (ImageButton) findViewById(R.id.browser_back);
+        ImageButton forward = (ImageButton) findViewById(R.id.browser_forward);
         ImageButton refresh = (ImageButton) findViewById(R.id.browser_refresh);
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
@@ -76,7 +67,11 @@ public class BrowserActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                webview.goBack();
+                if (webview.canGoBack()) {
+                    webview.goBack();
+                } else {
+                    finish();
+                }
             }
 
         });
@@ -113,21 +108,6 @@ public class BrowserActivity extends Activity {
                                 Clog.getString(R.string.opening_url_failed, url));
                     }
                     return true;
-                }
-            }
-
-            @Override
-            public void onPageFinished(WebView webview, String url){
-                if(webview.canGoBack()){
-                    back.setEnabled(true);
-                }else{
-                    back.setEnabled(false);
-                }
-
-                if(webview.canGoForward()){
-                    forward.setEnabled(true);
-                }else{
-                    forward.setEnabled(false);
                 }
             }
         });
@@ -206,18 +186,6 @@ public class BrowserActivity extends Activity {
             }
         }
 
-        openBrowser.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Clog.d(Clog.baseLogTag,
-                        Clog.getString(R.string.opening_native_current));
-                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(webview
-                        .getUrl()));
-                startActivity(i);
-                finish();
-            }
-        });
-
         webview.loadUrl(url);
     }
 
@@ -245,6 +213,21 @@ public class BrowserActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        return false;
+        MenuItem open = menu.add("Open With Browser");
+        open.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Clog.d(Clog.baseLogTag,
+                        Clog.getString(R.string.opening_native_current));
+                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(webview
+                        .getUrl()));
+                startActivity(i);
+                finish();
+                return true;
+            }
+
+        });
+        return true;
     }
 }
