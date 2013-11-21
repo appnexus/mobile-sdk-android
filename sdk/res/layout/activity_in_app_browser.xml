@@ -42,19 +42,24 @@
             android:layout_alignParentBottom="true"
             >
         <ImageButton
+                android:id="@+id/open_browser"
+                android:contentDescription="@string/open_browser"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:src="@android:drawable/ic_menu_upload"/>
+        <ImageButton
                 android:id="@+id/browser_back"
                 android:contentDescription="@string/back"
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
-                android:layout_weight="2"
-                android:src="@android:drawable/ic_media_rew"/>
+                android:layout_weight="2"/>
         <ImageButton
                 android:id="@+id/browser_forward"
                 android:contentDescription="@string/forward"
                 android:layout_height="wrap_content"
                 android:layout_width="0dp"
                 android:layout_weight="2"
-                android:src="@android:drawable/ic_media_ff"/>
+                android:src="@android:drawable/ic_media_play"/>
 
         <ImageButton
                 android:id="@+id/browser_refresh"
