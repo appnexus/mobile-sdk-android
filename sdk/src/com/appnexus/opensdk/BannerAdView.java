@@ -325,11 +325,6 @@ public class BannerAdView extends AdView {
     }
 
     /**
-<<<<<<< HEAD
-     * Set the autorefresh interval. Setting a value of zero disables auto refresh.
-     * By default autorefresh is enabled for BannerAdViews and the default refresh rate is
-     * 30 seconds.
-=======
      * Sets the height of the ad to request.
      *
      * @deprecated Favor setAdSize(int w, int h)
@@ -382,7 +377,6 @@ public class BannerAdView extends AdView {
     }
 
     /**
->>>>>>> master
      * @param period The interval, in milliseconds, at which the BannerAdView will
      *               request new ads, if autorefresh is enabled. The minimum period
      *               is 15 seconds. The default period is 30 seconds.

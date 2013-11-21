@@ -212,15 +212,17 @@ public class InterstitialAdView extends AdView {
         // leave empty so that we don't call super
     }
 
-    private void removeStaleAds() {
+    // removes stale ads and returns whether or not a valid ad exists
+    private boolean removeStaleAds(long now) {
+        boolean validAdExists = false;
         ArrayList<Pair<Long, Displayable>> staleAdsList = new ArrayList<Pair<Long, Displayable>>();
-        long now = System.currentTimeMillis();
         for (Pair<Long, Displayable> p : InterstitialAdView.q) {
             if (p == null || p.second == null
                     || now - p.first > InterstitialAdView.MAX_AGE) {
                 staleAdsList.add(p);
             } else {
                 // We've reached a valid ad, so we can stop looking
+                validAdExists = true;
                 break;
             }
         }
@@ -228,6 +230,7 @@ public class InterstitialAdView extends AdView {
         for (Pair<Long, Displayable> p : staleAdsList) {
             InterstitialAdView.q.remove(p);
         }
+        return validAdExists;
     }
 
     /**
@@ -236,8 +239,8 @@ public class InterstitialAdView extends AdView {
      * @return whether there is a valid ad available in the queue
      */
     public boolean isReady() {
-        removeStaleAds();
-        if (!InterstitialAdView.q.isEmpty()) {
+        long now = System.currentTimeMillis();
+        if (removeStaleAds(now)) {
             Pair<Long, Displayable> top = InterstitialAdView.q.peek();
             if (top != null && top.second instanceof MediatedInterstitialAdViewController) {
                 MediatedInterstitialAdViewController mAVC = (MediatedInterstitialAdViewController) top.second;
@@ -259,7 +262,8 @@ public class InterstitialAdView extends AdView {
     public int show() {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.show_int));
         // Make sure there is an ad to show
-        removeStaleAds();
+        long now = System.currentTimeMillis();
+        boolean validAdExists = removeStaleAds(now);
 
         //If the head of the queue is interstitial mediation, show that instead of our adactivity
         Pair<Long, Displayable> top = InterstitialAdView.q.peek();
@@ -273,8 +277,7 @@ public class InterstitialAdView extends AdView {
         }
 
         // otherwise, launch our adActivity
-        if (!InterstitialAdView.q.isEmpty()) {
-            long now = System.currentTimeMillis();
+        if (validAdExists) {
             Intent i = new Intent(getContext(), AdActivity.class);
             i.putExtra(InterstitialAdView.INTENT_KEY_TIME, now);
             i.putExtra(InterstitialAdView.INTENT_KEY_ORIENTATION, getContext().getResources()
