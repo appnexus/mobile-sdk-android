@@ -25,5 +25,6 @@
     <string name="store_picture_accept">Accept</string>
     <string name="store_picture_decline">Decline</string>
     <string name="action_cant_be_completed">The requested action could not be completed.</string>
+    <string name="open_browser">Open current page in native browser</string>
 
 </resources>
