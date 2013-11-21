@@ -219,6 +219,11 @@
     mraid.setOrientationProperties=function(properties){
         orientation_properties=properties;
 
+        if (typeof properties === "undefined") {
+           return;
+        }
+
+
         if(properties.forceOrientation!=='portrait' && properties.forceOrientation!=='landscape' && properties.forceOrientation!=='none' ){
             mraid.util.errorEvent("Invalid orientationProperties forceOrientation property", "mraid.setOrientationProperties()");
             properties.forceOrientation='none';
