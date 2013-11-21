@@ -38,7 +38,6 @@ public class Settings {
     public String mcc;
     public String mnc;
     public final String dev_timezone = TimeZone.getDefault().getID();
-    public final String os = "Android " + Build.VERSION.RELEASE;
     public final String language = Locale.getDefault().getLanguage();
 
     public final int HTTP_CONNECTION_TIMEOUT = 15000;

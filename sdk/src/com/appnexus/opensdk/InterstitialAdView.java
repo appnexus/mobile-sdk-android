@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -39,9 +40,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * This class controls loading and displaying interstitial ads.
+ * This class controls the loading and displaying of interstitial ads.
+ * Interstitial ads are modal and take up the entire screen. The Interstitial Ad is tied
+ * to an {@link AdActivity} which is lauched to show the ad.
  *
- * @author Jacob Shufro
  */
 public class InterstitialAdView extends AdView {
     static final long MAX_AGE = 60000;
@@ -205,22 +207,48 @@ public class InterstitialAdView extends AdView {
     }
 
     @Override
-    public void onLayout(boolean changed, int left, int top, int right,
+    protected void onLayout(boolean changed, int left, int top, int right,
                          int bottom) {
         // leave empty so that we don't call super
     }
 
-    // No javadoc since these just print errors
-    @Override
-    public void setAdWidth(int width) {
-        Clog.w(Clog.publicFunctionsLogTag,
-                Clog.getString(R.string.set_width_int));
+    // removes stale ads and returns whether or not a valid ad exists
+    private boolean removeStaleAds(long now) {
+        boolean validAdExists = false;
+        ArrayList<Pair<Long, Displayable>> staleAdsList = new ArrayList<Pair<Long, Displayable>>();
+        for (Pair<Long, Displayable> p : InterstitialAdView.q) {
+            if (p == null || p.second == null
+                    || now - p.first > InterstitialAdView.MAX_AGE) {
+                staleAdsList.add(p);
+            } else {
+                // We've reached a valid ad, so we can stop looking
+                validAdExists = true;
+                break;
+            }
+        }
+        // Clear the queue of invalid ads
+        for (Pair<Long, Displayable> p : staleAdsList) {
+            InterstitialAdView.q.remove(p);
+        }
+        return validAdExists;
     }
 
-    @Override
-    public void setAdHeight(int height) {
-        Clog.w(Clog.publicFunctionsLogTag,
-                Clog.getString(R.string.set_height_int));
+    /**
+     * Checks the queue to see if there are any valid ads available.
+     *
+     * @return whether there is a valid ad available in the queue
+     */
+    public boolean isReady() {
+        long now = System.currentTimeMillis();
+        if (removeStaleAds(now)) {
+            Pair<Long, Displayable> top = InterstitialAdView.q.peek();
+            if (top != null && top.second instanceof MediatedInterstitialAdViewController) {
+                MediatedInterstitialAdViewController mAVC = (MediatedInterstitialAdViewController) top.second;
+                return mAVC.isReady();
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -234,22 +262,8 @@ public class InterstitialAdView extends AdView {
     public int show() {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.show_int));
         // Make sure there is an ad to show
-        ArrayList<Pair<Long, Displayable>> to_remove = new ArrayList<Pair<Long, Displayable>>();
         long now = System.currentTimeMillis();
-        for (Pair<Long, Displayable> p : InterstitialAdView.q) {
-            if (p == null || p.second == null
-                    || now - p.first > InterstitialAdView.MAX_AGE) {
-                to_remove.add(p);
-            } else {
-                // We've reached a valid ad, so we can launch the activity.
-                break;
-            }
-        }
-        // Before we do anything else, clear the head of the queue of invalid
-        // ads
-        for (Pair<Long, Displayable> p : to_remove) {
-            InterstitialAdView.q.remove(p);
-        }
+        boolean validAdExists = removeStaleAds(now);
 
         //If the head of the queue is interstitial mediation, show that instead of our adactivity
         Pair<Long, Displayable> top = InterstitialAdView.q.peek();
@@ -262,14 +276,20 @@ public class InterstitialAdView extends AdView {
             return InterstitialAdView.q.size();
         }
 
-        // otherwise, launch our adactivity
-        if (!InterstitialAdView.q.isEmpty()) {
+        // otherwise, launch our adActivity
+        if (validAdExists) {
             Intent i = new Intent(getContext(), AdActivity.class);
             i.putExtra(InterstitialAdView.INTENT_KEY_TIME, now);
             i.putExtra(InterstitialAdView.INTENT_KEY_ORIENTATION, getContext().getResources()
                     .getConfiguration().orientation);
             i.putExtra(InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY, closeButtonDelay);
-            getContext().startActivity(i);
+
+            try {
+				getContext().startActivity(i);
+			} catch (ActivityNotFoundException e) {
+				Clog.e(Clog.baseLogTag, "Did you insert com.appneus.opensd.AdActivity into AndroidManifest.xml ?");
+			}
+
             return InterstitialAdView.q.size() - 1; // Return the number of ads remaining, less the one we're about to show
         }
         Clog.w(Clog.baseLogTag, Clog.getString(R.string.empty_queue));
@@ -289,7 +309,9 @@ public class InterstitialAdView extends AdView {
 
     /**
      * Sets the ArrayList of {@link Size}s which are allowed to be displayed.
-     *
+     * The allowed sizes is the list of the platform ad sizes which may be inserted into
+     * an interstitial view. The default list is sufficient for most implementations. Custom
+     * sizes may be added here.
      * @param allowed_sizes The ArrayList of {@link Size}s which are allowed to be
      *                      displayed.
      */
@@ -301,6 +323,7 @@ public class InterstitialAdView extends AdView {
 
     /**
      * Sets the background Color to use behind the interstitial ad.
+     * If left unspecified the default background is Black.
      */
     public void setBackgroundColor(int color) {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_bg));
@@ -337,9 +360,11 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * @param closeButtonDelay The time in milliseconds after an interstitial is displayed
-     *                         until the close button appears. Default is 10 seconds. Maximum
-     *                         is 15 seconds. Set to 0 to disable.
+     * Interstitial Ad's have a close button. The close button does not appear until the ad
+     * has been view for 10 seconds by default. This method allows you to override the timeout. Settting
+     * the value to 0 shows the close button with the ad. The maximum time allowed is 10 seconds. Any value
+     * larger than that will cause 10 seconds to be used.
+     * @param closeButtonDelay The time in milliseconds to wait before showing the close button.
      */
     public void setCloseButtonDelay(int closeButtonDelay) {
         this.closeButtonDelay = Math.min(closeButtonDelay, Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
@@ -355,10 +380,8 @@ public class InterstitialAdView extends AdView {
 
     /**
      * A convenience class which holds a width and height in integers.
-     *
-     * @author Jacob Shufro
-     */
-    public class Size {
+  	*/
+     public class Size {
         private final int w;
         private final int h;
 

@@ -33,7 +33,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
-public class InstallTrackerPixel extends BroadcastReceiver {
+class InstallTrackerPixel extends BroadcastReceiver {
 
     /* SET THIS TO YOUR PIXEL ID */
     final String pid = "";

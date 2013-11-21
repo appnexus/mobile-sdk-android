@@ -95,15 +95,19 @@ class MRAIDImplementation {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (!url.startsWith("mraid:") && !url.startsWith("javascript:")) {
+                	Intent intent;
                     if (owner.owner.getOpensNativeBrowser()) {
-                        Intent intent = new Intent(Intent.ACTION_VIEW,
+                        intent = new Intent(Intent.ACTION_VIEW,
                                 Uri.parse(url));
-                        owner.getContext().startActivity(intent);
                     } else {
-                        Intent intent = new Intent(owner.getContext(),
+                        intent = new Intent(owner.getContext(),
                                 BrowserActivity.class);
                         intent.putExtra("url", url);
-                        owner.getContext().startActivity(intent);
+                    }
+                    try {
+                    	owner.getContext().startActivity(intent);
+                    } catch(ActivityNotFoundException e) {
+                    	Clog.w(Clog.mraidLogTag, Clog.getString(R.string.opening_url_failed,url));
                     }
                     return true;
                 } else if (url.startsWith("mraid://")) {

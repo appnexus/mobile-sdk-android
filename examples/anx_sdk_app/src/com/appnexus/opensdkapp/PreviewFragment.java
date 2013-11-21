@@ -190,7 +190,12 @@ public class PreviewFragment extends Fragment {
 
                 bannerText.setVisibility(TextView.INVISIBLE);
             } else if (adView == iav) {
-                iav.show();
+                if (iav.isReady()) {
+                    toast("Interstitial ad ready, calling show()");
+                    iav.show();
+                } else {
+                    toast("Interstitial ad not ready");
+                }
             }
 
             pullToRefreshView.onRefreshComplete();

@@ -25,6 +25,16 @@ import com.millennialmedia.android.MMAdView;
 import com.millennialmedia.android.MMRequest;
 import com.millennialmedia.android.MMSDK;
 
+/**
+ * This class is the Millennial Media banner adaptor it provides the functionality needed to allow 
+ * an application using the AppNexus SDK to load a banner ad through the Millennial Media SDK. The instantiation 
+ * of this class is done in response from the AppNexus server for a banner placement that is configured 
+ * to use MM to serve it. This class is never directly instantiated by the application. 
+ * 
+ * This class also serves as an example of how to write a Mediation adaptor for the AppNexus 
+ * SDK. 
+ *
+ */
 public class MillennialMediaBanner implements MediatedBannerAdView {
 
     @Override

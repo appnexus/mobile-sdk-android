@@ -13,15 +13,16 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+package com.appnexus.opensdk.utils;
 
-package com.appnexus.opensdk;
+public class StringUtil {
 
-import android.view.View;
-
-interface Displayable {
-    public View getView();
-
-    public boolean failed();
-
-    public void destroy();
+	/**
+	 * Implement an isEmpty for API < 9 
+	 * @param s
+	 * @return
+	 */
+	public static boolean isEmpty(String s) {
+		return s == null || s.length() == 0;
+	}
 }
