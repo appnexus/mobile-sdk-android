@@ -28,6 +28,7 @@ import android.util.DisplayMetrics;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -40,9 +41,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * This class controls the loading and displaying of interstitial ads.
- * Interstitial ads are modal and take up the entire screen. The Interstitial Ad is tied
- * to an {@link AdActivity} which is lauched to show the ad.
+ * This class controls the loading and display of interstitial ads.
+ * These ads are modal and take up the entire screen.  Each
+ * interstitial ad is tied to a {@link AdActivity} which is launched
+ * to show the ad.
  *
  */
 public class InterstitialAdView extends AdView {
@@ -63,38 +65,46 @@ public class InterstitialAdView extends AdView {
     private AdActivity adActivity = null;
 
     /**
-     * Creates a new InterstitialAdView
+     * Creates a new interstitial ad view in which to load and show
+     * interstitial ads.
      *
-     * @param context The context of the ViewGroup to which the InterstitialAdView
-     *                is being added.
+     * @param context The context of the {@link ViewGroup} to which
+     *                the interstitial ad view is being added.
      */
     public InterstitialAdView(Context context) {
         super(context);
     }
 
     /**
-     * Creates a new InterstitialAdView
+     * Creates a new interstitial ad view in which to load and show
+     * interstitial ads.
      *
-     * @param context The context of the ViewGroup to which the InterstitialAdView
-     *                is being added.
-     * @param attrs   The {@link AttributeSet} to use when creating the
-     *                InterstitialAdView.
+     * @param context The context of the {@link ViewGroup} to which
+     *                the interstitial ad view is being added.
+     *
+     * @param attrs The {@link AttributeSet} to use when creating the
+     *              interstitial ad view.
      */
     public InterstitialAdView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
     /**
-     * Creates a new InterstitialAdView
+     * Creates a new interstitial ad view in which to load and show
+     * interstitial ads.
      *
-     * @param context  The context of the ViewGroup to which the InterstitialAdView
-     *                 is being added.
-     * @param attrs    The AttributeSet to use when creating the
-     *                 InterstitialAdView.rs
-     * @param defStyle The default style to apply to this view. If 0, no style will
-     *                 be applied (beyond what is included in the theme). This may
-     *                 either be an attribute resource, whose value will be retrieved
-     *                 from the current theme, or an explicit style resource.
+     * @param context The context of the {@link ViewGroup} to which
+     *                the interstitial ad view is being added.
+     *
+     * @param attrs The {@link AttributeSet} to use when creating the
+     *              interstitial ad view.
+     *
+     * @param defStyle The default style to apply to this view. If 0,
+     *                 no style will be applied (beyond what is
+     *                 included in the theme). This may be either an
+     *                 attribute resource, whose value will be
+     *                 retrieved from the current theme, or an
+     *                 explicit style resource.
      */
     public InterstitialAdView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -170,10 +180,14 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * Requests a new interstitial ad from the server and stores it in a local
-     * queue. Please note, that interstitials have a timeout of 60 seconds. You
-     * must show the interstitial (call 'show()') within 60 seconds of getting a
-     * response, otherwise, the ad will not show.
+     * Requests a new interstitial ad from the server and stores it in
+     * a local queue.  Note that interstitials have a timeout of 60
+     * seconds; you must show the interstitial (by calling
+     * <code>show()</code>) within 60 seconds of getting a response;
+     * otherwise, the ad will not show.
+     *
+     * @return <code>true</code> if the ad load was successfully
+     *         dispatched; <code>false</code> otherwise.
      */
     @Override
     public boolean loadAd() {
@@ -234,9 +248,11 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * Checks the queue to see if there are any valid ads available.
+     * Checks the queue to see if there is a valid (i.e., fresher than
+     * 60 seconds) interstitial ad available.
      *
-     * @return whether there is a valid ad available in the queue
+     * @return <code>true</code> if there is a valid ad available in
+     *         the queue, <code>false</code> otherwise.
      */
     public boolean isReady() {
         long now = System.currentTimeMillis();
@@ -252,12 +268,13 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * Pops ads from the queue until it finds one that has not exceeded the
-     * timeout of 60 seconds, and displays it in a new activity. All ads in the
-     * queue which have exceeded the timeout are removed.
+     * Pops interstitial ads from the queue until it finds one that
+     * has not exceeded the 60 second timeout, and displays it in a
+     * new activity.  All ads in the queue which have exceeded the
+     * timeout are removed.
      *
-     * @return The number of remaining ads in the queue that do not exceed the
-     *         timeout.
+     * @return The number of remaining ads in the queue that do not
+     *         exceed the timeout.
      */
     public int show() {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.show_int));
@@ -297,9 +314,11 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * Returns an ArrayList of {@link Size}s which are allowed to be displayed.
+     * Get a list of ad {@link Size}s which are allowed to be
+     * displayed.
      *
-     * @return The ArrayList of {@link Size}s which are allowed to be displayed.
+     * @return The {@link ArrayList} of {@link Size}s which are
+     *         allowed to be displayed.
      */
     public ArrayList<Size> getAllowedSizes() {
         Clog.d(Clog.publicFunctionsLogTag,
@@ -308,12 +327,13 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * Sets the ArrayList of {@link Size}s which are allowed to be displayed.
-     * The allowed sizes is the list of the platform ad sizes which may be inserted into
-     * an interstitial view. The default list is sufficient for most implementations. Custom
-     * sizes may be added here.
-     * @param allowed_sizes The ArrayList of {@link Size}s which are allowed to be
-     *                      displayed.
+     * Set the ad {@link Size}s which are allowed to be displayed.
+     * This is a list of the platform ad sizes that may be inserted
+     * into an interstitial ad view.  The default list is sufficient
+     * for most implementations.  Custom sizes may also be added here.
+     *
+     * @param allowed_sizes The {@link ArrayList} of {@link Size}s
+     *                      which are allowed to be displayed.
      */
     public void setAllowedSizes(ArrayList<Size> allowed_sizes) {
         Clog.d(Clog.publicFunctionsLogTag,
@@ -322,8 +342,8 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * Sets the background Color to use behind the interstitial ad.
-     * If left unspecified the default background is Black.
+     * Sets the background color to use behind the interstitial ad.
+     * If left unspecified, the default is black.
      */
     public void setBackgroundColor(int color) {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.set_bg));
@@ -331,9 +351,10 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * Gets the background Color to use behind the interstitial ad.
+     * Get the current background color which will appear behind the
+     * interstitial ad.
      *
-     * @return The background Color to use behind the interstitial ad.
+     * @return The background color to use behind the interstitial ad.
      */
     public int getBackgroundColor() {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.get_bg));
@@ -341,7 +362,7 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * Destroys this InterstitialAdView object.
+     * Destroy this InterstitialAdView object.
      */
     public void destroy() {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.destroy_int));
@@ -352,19 +373,25 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * @return the time in milliseconds after an interstitial is displayed until
-     *         the close button appears. Default is 10 seconds. 0 is disabled
+     * Get the delay between when an interstitial ad is displayed and
+     * when the close button appears to the user.  10 seconds is the
+     * default; 0 means that the close button will appear immediately.
+     *
+     * @return the time in milliseconds between when an interstitial
+     *         ad is displayed and when the close button appears.
      */
     public int getCloseButtonDelay() {
         return closeButtonDelay;
     }
 
     /**
-     * Interstitial Ad's have a close button. The close button does not appear until the ad
-     * has been view for 10 seconds by default. This method allows you to override the timeout. Settting
-     * the value to 0 shows the close button with the ad. The maximum time allowed is 10 seconds. Any value
-     * larger than that will cause 10 seconds to be used.
-     * @param closeButtonDelay The time in milliseconds to wait before showing the close button.
+     * Set the delay between when an interstitial ad is displayed and
+     * when the close button appears to the user.  10 seconds is the
+     * default; it is also the maximum.  Setting the value to 0 allows
+     * the close button to appear immediately.
+     * 
+     * @param closeButtonDelay The time in milliseconds before the
+     *                         close button is displayed to the user.
      */
     public void setCloseButtonDelay(int closeButtonDelay) {
         this.closeButtonDelay = Math.min(closeButtonDelay, Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);

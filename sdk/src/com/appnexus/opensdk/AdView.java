@@ -38,8 +38,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
- * The parent class of InterstitialAdView and BannerAdView. This may not be
- * instantiated directly. It public methods are accessed through one of its sub classes.
+ * The parent class of {@link InterstitialAdView} and {@link
+ * BannerAdView}.  This may not be instantiated directly.  Its public
+ * methods are accessed through one of its sub classes.
  *
  *
  */
@@ -194,10 +195,10 @@ public abstract class AdView extends FrameLayout {
 	}
 
 	/**
-	 * Loads a new ad, if the ad space is visible. You should have called
-	 * setPlacementID() before invoking this method.
+	 * Loads a new ad, if the ad space is visible.  You should
+	 * have called setPlacementID before invoking this method.
 	 *
-	 * @return true is ad will begin loading, false otherwise.
+	 * @return true means the ad will begin loading; false otherwise.
 	 *
 	 */
 	protected boolean loadAd() {
@@ -214,12 +215,12 @@ public abstract class AdView extends FrameLayout {
 	}
 
 	/**
-	 * Loads a new ad, if the ad space is visible, and sets the placement id
-	 * attribute of the AdView to the supplied parameter.
+	 * Loads a new ad, if the ad space is visible, and sets the
+	 * AdView's placement ID.
 	 *
-	 * @param placementID   The new placement id to use.
+	 * @param placementID The new placement ID to use.
 	 *
-	 * @return true is ad will begin loading, false otherwise
+	 * @return true means the ad will begin loading; false otherwise.
 	 */
 	public boolean loadAd(String placementID) {
 		this.setPlacementID(placementID);
@@ -296,12 +297,13 @@ public abstract class AdView extends FrameLayout {
 	}
 
 	/**
-	 * Sets the placement id of the AdView. The placement ID identifies a
-	 * location in your application. You must have a valid active placement ID
-	 * to monetize your application.
+	 * Sets the placement id of the AdView.  The placement ID
+	 * identifies the location in your application where ads will
+	 * be shown.  You must have a valid, active placement ID to
+	 * monetize your application.
 	 *
 	 * @param placementID
-	 *            The placement id to use
+	 *            The placement ID to use.
 	 */
 	public void setPlacementID(String placementID) {
 		Clog.d(Clog.publicFunctionsLogTag,
@@ -378,18 +380,18 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 *
-	 * @return true if the AdView is a BannerAdView
+	 * @return true if the AdView is a {@link BannerAdView}.
 	 */
 	abstract boolean isBanner();
 
 	/**
 	 *
-	 * @return true if the AdView is an InterstitialAdView
+	 * @return true if the AdView is an {@link InterstitialAdView}.
 	 */
 	abstract boolean isInterstitial();
 
 	/**
-	 * Sets the currently installed listener that the SDK will send events on.
+	 * Sets the currently installed listener that the SDK will send events to.
 	 *
 	 * @param listener
 	 *            The {@link AdListener} object to use.
@@ -401,7 +403,7 @@ public abstract class AdView extends FrameLayout {
 	}
 
 	/**
-	 * Gets the currently installed listener that the SDK will send events on.
+	 * Gets the currently installed listener that the SDK will send events to.
 	 *
 	 * @return The {@link AdListener} object in use.
 	 */
@@ -416,10 +418,11 @@ public abstract class AdView extends FrameLayout {
 	}
 
 	/**
-	 * Retrieve the inapp or native browser setting.
+	 * Retrieve the setting that determines whether or not the
+	 * device's native browser is used instead of the in-app
+	 * browser when the user clicks an ad.
 	 *
-	 * @return whether or not the devices native browser is used instead of the
-	 *         in-app browser.
+	 * @return true if the device's native browser will be used; false otherwise. 
 	 */
 	public boolean getOpensNativeBrowser() {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
@@ -428,12 +431,12 @@ public abstract class AdView extends FrameLayout {
 	}
 
 	/**
-	 * Set this to true to disable the in-app browser. That will cause url's to
-	 * open in the device's native browser e.g. Chrome. If set to true when a
-	 * user clicks on an ad your app will be paused and the native browser will
-	 * open. Set this to false to enabled the in-app browser. Which is a
-	 * lightweight browser that runs within your app. The default value is
-	 * false.
+	 * Set this to true to disable the in-app browser.  This will
+	 * cause URLs to open in a native browser such as Chrome so
+	 * that when the user clicks on an ad, your app will be paused
+	 * and the native browser will open.  Set this to false to
+	 * enable the in-app browser instead (a lightweight browser
+	 * that runs within your app).  The default value is false.
 	 *
 	 * @param opensNativeBrowser
 	 */
@@ -452,7 +455,11 @@ public abstract class AdView extends FrameLayout {
 	}
 
 	/**
-	 * Retrieve the current PSA setting
+	 * Retrieve the current PSA setting.  PSAs (Public Service
+	 * Announcements) are ads for various causes or nonprofit
+	 * organizations that can be served if there are no ads
+	 * available.  You can turn this on and off with
+	 * setShouldServePSAs.
 	 *
 	 * @return Whether this placement accepts PSAs if no ad is served.
 	 */
@@ -461,55 +468,63 @@ public abstract class AdView extends FrameLayout {
 	}
 
 	/**
-	 * Allows overriding the platform behavior in the case there is no ad
-	 * currently available. If set to true the platform will retrieve and
-	 * displaya PSA (Public Service Announcement) . Set the value to false it
-	 * will return no ad.
+	 * Set the current PSA setting.  If set to true, the SDK will
+	 * retrieve and display a Public Service Announcement if no
+	 * other ad is available.  PSAs are ads for various causes or
+	 * nonprofit organizations.  If set to false, no ad is
+	 * returned.
 	 *
 	 * @param shouldServePSAs
-	 *            Whether this placement is willing to accept PSA if no ad is
-	 *            served.
+	 *            Whether this placement is willing to accept a PSA if no other ad is available.
 	 */
 	public void setShouldServePSAs(boolean shouldServePSAs) {
 		this.shouldServePSAs = shouldServePSAs;
 	}
 
 	/**
-	 * Retrieve the minimum price. A value of zero indicates no minimum.
+	 * Retrieve the reserve price.  The reserve price is the
+	 * minimum price you will accept in order to show an ad.  A
+	 * value of 0 indicates that there is no minimum.
 	 *
-	 * @return The minimum price zero indicates none.
+	 * @return The reserve price.  A value of 0 indicates that no reserve is set.
 	 */
 	public float getReserve() {
 		return reserve;
 	}
 
 	/**
-	 * Set a minimum price. Note that setting a minimum may negatively affect
-	 * monetization. Setting this value to zero disables the minimum price.
-	 * Default value is zero.
+	 * Set a reserve price.  The reserve price is the minimum
+	 * price you will accept in order to show an ad.  Note that
+	 * setting a reserve price may negatively affect monetization,
+	 * since there may not be any buyers willing to pay more than
+	 * your reserve.  Setting this value to zero disables the
+	 * reserve price.  The default value is zero.
 	 *
-	 * @param reserve The reserve in CPM.
+	 * @param reserve The reserve price expressed in CPM, e.g., 0.50f.
 	 */
 	public void setReserve(float reserve) {
 		this.reserve = reserve;
 	}
 
 	/**
-	 * Retrieve the current users Age. Note this is a string as it may be an
-	 * age, birth year or age range. The default value is an empty string.
+	 * Retrieve the current user's age.  Note that this is a
+	 * string as it may come in one of several formats: age, birth
+	 * year, or age range.  The default value is an empty string.
 	 *
-	 * @return The age
+	 * @return The current user's age.
 	 */
 	public String getAge() {
 		return age;
 	}
 
 	/**
-	 * Set's the user's age. should be used if age or age range is known.
+	 * Set the current user's age.  This should be set if the
+	 * user's age or age range is known, as it can help make
+	 * buying the ad space more attractive to advertisers.
 	 *
-	 * @param age
-	 *            should be a numerical age, birth year, or hyphenated age
-	 *            range. For example: "56", "1974", or "25-35"
+	 * @param age A string containing a numeric age, birth year,
+	 *            or hyphenated age range.  For example: "56",
+	 *            "1974", or "25-35".
 	 */
 	public void setAge(String age) {
 		this.age = age;
@@ -517,7 +532,7 @@ public abstract class AdView extends FrameLayout {
 
 	/**
 	 *
-	 * Users gender enumeration
+	 * The user's gender.
 	 *
 	 */
 	public enum GENDER {
@@ -528,33 +543,39 @@ public abstract class AdView extends FrameLayout {
 	}
 
 	/**
-	 * Get the current user's gender if available
+	 * Get the current user's gender, if it's available.  The
+	 * default value is UNKNOWN.
 	 *
-	 * @return The gender
+	 * @return The user's gender.
 	 */
 	public GENDER getGender() {
 		return gender;
 	}
 
 	/**
-	 * Set the users gender if it is known. Default value is UNKNOWN
+	 * Set the user's gender.  This should be set if the user's
+	 * gender is known, as it can help make buying the ad space
+	 * more attractive to advertisers.  The default value is
+	 * UNKNOWN.
 	 *
 	 * @param gender
-	 *            One of UNKNOWN,MALE,FEMALE
+	 *            The user's gender.
 	 */
 	public void setGender(GENDER gender) {
 		this.gender = gender;
 	}
 
 	/**
-	 * Add a custom keyword to the request url for the ad. This will be used to
-	 * allow custom targeting parameters within the AppNexus platform. You will
-	 * be given the names and to use by App Nexus account representative.
+	 * Add a custom keyword to the request URL for the ad.  This
+	 * is used to set custom targeting parameters within the
+	 * AppNexus platform.  You will be given the keys and values
+	 * to use by your AppNexus account representative or your ad
+	 * network.
 	 *
 	 * @param key
-	 *            keyword name to add, cannot be null or empty
+	 *            The key to add; this cannot be null or empty.
 	 * @param value
-	 *            keyword value, cannot be null
+	 *            The value to add; this cannot be null or empty.
 	 */
 	public void addCustomKeywords(String key, String value) {
 		if (StringUtil.isEmpty(key) || (value == null)) {
@@ -564,11 +585,13 @@ public abstract class AdView extends FrameLayout {
 	}
 
 	/**
-	 * Remove a custom keyword from the request url for the ad. Use this to
-	 * remove a keyword previously set using addCustomKeywords.
+	 *
+	 * Remove a custom keyword from the request URL for the ad.
+	 * Use this to remove a keyword previously set using
+	 * addCustomKeywords.
 	 *
 	 * @param key
-	 *            keyword name to remove, cannot be null or empty
+	 *            The key to remove; this cannot be null or empty.
 	 */
 	public void removeCustomKeyword(String key) {
 		if (StringUtil.isEmpty(key))
@@ -584,10 +607,11 @@ public abstract class AdView extends FrameLayout {
 	}
 
 	/**
-	 * Retrieve the array of currently configured Custom Keywords in the current
-	 * AdView.
+	 * Retrieve the array of custom keywords associated with the
+	 * current AdView.
 	 *
-	 * @return The current list of key value pairs of custom keywords.
+	 * @return The current list of key-value pairs of custom
+	 * keywords.
 	 */
 	public ArrayList<Pair<String, String>> getCustomKeywords() {
 		return customKeywords;
@@ -610,8 +634,8 @@ public abstract class AdView extends FrameLayout {
 	}
 
 	/**
-	 * Private class to bridge events from mediation to the user AdListener
-	 * class
+	 * Private class to bridge events from mediation to the user
+	 * AdListener class.
 	 *
 	 */
 	private class AdListenerDispatch implements AdViewListener {

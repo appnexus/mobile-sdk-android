@@ -41,13 +41,16 @@ import android.widget.VideoView;
 
 import com.appnexus.opensdk.AdView.BrowserStyle;
 import com.appnexus.opensdk.utils.Clog;
+
 /**
- * This is the in-app browser activity. You must add a reference to in your app's AndroidManifest.xml
- * file. {@link AdActivity} Also needs to be added allow the in-app browser functionality,
+ * This is the in-app browser activity.  You must add a reference to
+ * this activity in your app's <code>AndroidManifest.xml</code>
+ * file. {@link AdActivity} also needs to be added allow the in-app
+ * browser functionality,
+ *
  * <pre>
  * {@code
  * <application>
- *   ....
  *   <activity android:name="com.appnexus.opensdk.AdActivity" />
  *   <activity android:name="com.appnexus.opensdk.BrowserActivity" />
  * </application>
