@@ -54,15 +54,15 @@ import com.appnexus.opensdk.utils.WebviewUtil;
  *           android:layout_width="wrap_content"
  *           android:layout_height="wrap_content"
  *           android:placement_id="YOUR PLACEMENT ID"
- *           android:auto_refresh=true
- *           android:auto_refresh_interval=30
- *           android:opens_native_browser=true
- *           android:adWidth=320
- *           android:adHeight=50
- *           android:should_reload_on_resume=true
- *           android:opens_native_browser=true
- *           android:expands_to_fit_screen_width=false
- *           />;
+ *           android:auto_refresh="true"
+ *           android:auto_refresh_interval="30"
+ *           android:opens_native_browser="true"
+ *           android:adWidth="320"
+ *           android:adHeight="50"
+ *           android:should_reload_on_resume="true"
+ *           android:opens_native_browser="true"
+ *           android:expands_to_fit_screen_width="false"
+ *           />
  * }
  * </pre>
  *
