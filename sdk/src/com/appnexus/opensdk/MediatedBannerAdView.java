@@ -19,33 +19,60 @@ import android.app.Activity;
 import android.view.View;
 
 /**
- * The interface a mediation adaptor must implement for requesting banners. 
- * The mediation interface allows 3rd party SDK's to be called via the 
- * AppNexus SDK. To integrate a 3rd party SDK create a class that implements
- * MediatedBannerAdView. Implement the required method and configure it within 
- * the AppNexus Network Manager to be called whenever the network targeting 
- * matches the conditions that are defined in Network Manager.
- * 
- *
+ * This is the interface a mediation adaptor must implement for
+ * requesting banner ads.  The mediation interface allows third-party
+ * SDKs to be called by the AppNexus SDK.  To integrate a third-party
+ * SDK, create a class that implements
+ * <code>MediatedBannerAdView</code>.  Implement the required method
+ * and configure it within the AppNexus Ad Network Manager to be
+ * called whenever the targeting matches the conditions defined in the
+ * Ad Network Manager. (The Ad Network Manager is a web application
+ * that AppNexus platform members can use to work with ad networks
+ * that are not on the platform.)
  */
+
 public interface MediatedBannerAdView extends MediatedAdView {
+
 	/**
-	 * The AppNexus SDK will call this method to ask the 3rd party SDK to request an Ad 
-	 * from its network. The  AppNexus SDK expects to be notified of events through the 
-	 * {@link MediatedBannerAdViewController} Note that once a requestAd call has been made 
-	 * the AppNexus SDK expects a onAdLoaded or onAdFailed called through the MediatedBannerAdViewController
-	 * within 15 seconds or the mediation call is considered failed. 
+	 * The AppNexus SDK will call this method to ask the
+	 * third-party SDK to request an ad from its network.  The
+	 * AppNexus SDK expects to be notified of events through the
+	 * {@link MediatedBannerAdViewController}.  Note that once a
+	 * requestAd call has been made, the AppNexus SDK expects
+	 * onAdLoaded or onAdFailed to be called through the {@link
+	 * MediatedBannerAdViewController} within 15 seconds or the
+	 * mediation call is considered to have failed.
 	 * 
-	 * @param mBC The controller to notify on load, failure etc.
-	 * @param activity The activity from which this call was made. 
-	 * @param parameter An optional opaque string passed from Network Manager , this can be used to defined
-	 * SDK specific parameters such as additional targeting information. The encoding of the contents of this 
-	 * string are entirely up to the implementation of the 3rd party SDK adaptor. 
-	 * @param uid The network ID for this ad call. This ID is opaque to the AppNexus SDK and its contents and their encoding
-	 * are up to the implementation of the 3rd party SDK.
-	 * @param width The width of the advertisement as defined in the {@link BannerAdView} object that initiated this call.
-	 * @param height The height of the advertisement as defined in the {@link BannerAdView} object that initiated this call.
-	 * @return A view that will be inserted into the BannerAdView that will hold the ad from the 3rd party SDK
+	 * @param mBC The controller to notify on load, failure, etc.
+	 *
+	 * @param activity The activity from which this method was
+	 *                 called.
+	 *
+	 * @param parameter An optional opaque string passed from the
+	 *                  Ad Network Manager, this can be used to
+	 *                  defined SDK-specific parameters such as
+	 *                  additional targeting information.  The
+	 *                  encoding of the contents of this string
+	 *                  are entirely up to the implementation of
+	 *                  the third-party SDK adaptor.
+	 *
+	 * @param uid The network ID for this ad call.  This ID is
+	 *            opaque to the AppNexus SDK and its contents and
+	 *            their encoding are up to the implementation of
+	 *            the third-party SDK.
+	 *
+	 * @param width The width of the advertisement in pixels as
+	 *              defined in the {@link BannerAdView} object
+	 *              that initiated this call.
+	 *
+	 * @param height The height of the advertisement in pixels as
+	 *               defined in the {@link BannerAdView} object
+	 *               that initiated this call.
+	 *
+	 * @return A view that will be inserted into the {@link
+	 *         BannerAdView} that will hold the ad from the
+	 *         third-party SDK.
 	 */
+
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height);
 }

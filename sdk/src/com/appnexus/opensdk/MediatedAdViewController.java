@@ -28,42 +28,51 @@ import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 
 /**
- * This class is the base of the Mediation controllers. It is used to implement external or 3rd party 
- * SDK mediation. Where the AppNexus SDK calls into other SDK's when commanded to do so via the 
- * AppNexus Network Manager.
- * The mediation adaptors receives an object of this class and uses it to inform the AppNexus
- * SDK of events from the 3rd party SDK.
+ * <p>
+ * This is the base class for the AppNexus SDK's mediation
+ * controllers.  It's used to implement external or third party SDK
+ * mediation.  It determines where the AppNexus SDK calls into other
+ * SDKs when commanded to do so via the AppNexus Network Manager.
+ * </p>
+ * <p>
+ * The mediation adaptor receives an object of this class and uses it
+ * to inform the AppNexus SDK of events from the third party SDK.
+ * </p>
  */
+
 public abstract class MediatedAdViewController implements Displayable {
 
 	/**
-	 * The results from mediation calls sent back to the AppNexusSDK in the onAdFailed method.
-	 *
+	 * This enum contains the results from mediation calls sent
+	 * back to the AppNexus SDK in the <code>onAdFailed</code>
+	 * method.
 	 */
     public static enum RESULT {
     	/**
-    	 * Return this if the ad successfully loaded
+    	 * Return this if the ad loaded successfully.
     	 */
         SUCCESS,
         /**
-         * Return this if the ad request parameters or id were invalid
+         * Return this if the ad request parameters or placement ID
+         * were invalid.
          */
         INVALID_REQUEST,
         /**
-         * Return this if the mediated network did not return an ad in this call.
+         * Return this if the mediated network did not return an ad in
+         * this call.
          */
         UNABLE_TO_FILL,
-        
         /**
-         * Return if the underlying SDK is not available.
+         * Return this if the third-party SDK is not available.
          */
         MEDIATED_SDK_UNAVAILABLE,
         /**
-         * A Network error caused no ad to be returned. 
+         * Return this if a network error caused no ad to be returned.
          */
         NETWORK_ERROR,
         /**
-         * Internal error detected in the underlying SDK.
+         * Return this if an Internal error is detected in the
+         * third-party SDK.
          */
         INTERNAL_ERROR
     }
@@ -102,10 +111,14 @@ public abstract class MediatedAdViewController implements Displayable {
      */
 
     /**
-     * Validates all fields necessary for controller to function properly
+     * Validates all the fields necessary for the controller to
+     * function properly.
      *
-     * @param callerClass the calling class that mAV should be an instance of
-     * @return true if the controller is valid, false if not.
+     * @param callerClass The calling class that mAV (the
+     *                    MediatedAdView) should be an instance of.
+     *
+     * @return <code>true</code> if the controller is valid,
+     *         <code>false</code> otherwise.
      */
     @SuppressWarnings("rawtypes")
 	boolean isValid(Class callerClass) {
@@ -127,9 +140,10 @@ public abstract class MediatedAdViewController implements Displayable {
     }
 
     /**
-     * Attempts to instantiate currentAd
+     * Attempts to instantiate the currentAd.
      *
-     * @return true if instantiation was successful, false if not.
+     * @return <code>true</code> if instantiation was successful,
+     *         <code>false</code> otherwise.
      */
     private boolean instantiateNewMediatedAd() {
         Clog.d(Clog.mediationLogTag, Clog.getString(
@@ -161,8 +175,13 @@ public abstract class MediatedAdViewController implements Displayable {
     }
 
     /**
-     * Call this method to inform that AppNexus SDK that an Ad from the 3rd party SDK 
-     * has successfully loaded. This method should only be called once per requestAd call.
+     * Call this method to inform the AppNexus SDK that an ad from the
+     * third-party SDK has successfully loaded.  This method should
+     * only be called once per <code>requestAd</code> call (see the
+     * implementations of <code>requestAd</code> for banners and
+     * interstitials in {@link MediatedBannerAdView} and {@link
+     * MediatedInterstitialAdView}).
+     *
      */
     public void onAdLoaded() {
         if (hasSucceeded || hasFailed) return;
@@ -175,9 +194,15 @@ public abstract class MediatedAdViewController implements Displayable {
     }
 
     /**
-     * Call this method to inform the AppNexus SDK than an ad call from the 3rd party SDK 
-     * has failed to load an ad.This method should only be called once per requestedAd call.
-     * @param reason The reason for the failure. 
+     * Call this method to inform the AppNexus SDK than an ad call
+     * from the third-party SDK has failed to load an ad.  This method
+     * should only be called once per <code>requestAd</code> call (see
+     * the implementations of <code>requestAd</code> for banners and
+     * interstitials in {@link MediatedBannerAdView} and {@link
+     * MediatedInterstitialAdView}).
+     *
+     * @param reason The reason why the ad call from the third-party
+     * SDK failed.
      */
     public void onAdFailed(MediatedAdViewController.RESULT reason) {
         if (hasSucceeded || hasFailed) return;
@@ -191,8 +216,10 @@ public abstract class MediatedAdViewController implements Displayable {
     }
 
     /**
-     * Call this method to inform the AppNexus SDK that the ad has expanded its size. 
-     * This is usually due to the user interacting with an expanding MRAID ad. 
+     * Call this method to inform the AppNexus SDK that the ad has
+     * expanded from its original size.  This is usually due to the
+     * user interacting with an expanding
+     * <a href="http://www.iab.net/mraid">MRAID</a> ad.
      */
     public void onAdExpanded() {
         if (hasFailed) return;
@@ -201,7 +228,8 @@ public abstract class MediatedAdViewController implements Displayable {
     }
 
     /**
-     * Call this method to inform the AppNexus SDK that the previous expansion has completed. 
+     * Call this method to inform the AppNexus SDK that a previously
+     * expanded ad has now collapsed to its original size.
      */
     public void onAdCollapsed() {
         if (hasFailed) return;
@@ -210,7 +238,8 @@ public abstract class MediatedAdViewController implements Displayable {
     }
 
     /**
-     * Call this method to inform the the AppNexus SDK that the user is interacting with the ad.
+     * Call this method to inform the the AppNexus SDK that the user
+     * is interacting with the ad (i.e., has clicked on it).
      */
     public void onAdClicked() {
         if (hasFailed) return;

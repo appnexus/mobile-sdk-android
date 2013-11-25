@@ -20,11 +20,13 @@ import android.view.View;
 import com.appnexus.opensdk.utils.Clog;
 
 /**
-* An object of this type is sent to the 3rd party SDK's MediatedInterstitialAdView object. The 3rd party
-* SDK uses this object from within its interstitial view implementation to send events back to the AppNexus
-* SDK
-*
-*/public class MediatedInterstitialAdViewController extends MediatedAdViewController implements Displayable {
+* An object of this type is sent to the third-party SDK's {@link
+* MediatedInterstitialAdView} object.  The third-party SDK uses this
+* object from within its interstitial view implementation to send
+* events back to the AppNexus SDK.
+*/
+
+public class MediatedInterstitialAdViewController extends MediatedAdViewController implements Displayable {
 
     private Activity activity;
 
@@ -51,6 +53,18 @@ import com.appnexus.opensdk.utils.Clog;
             ((MediatedInterstitialAdView) mAV).show();
         }
     }
+
+    /**
+     * Gets the interstitial ad view of the underlying third-party SDK
+     * and begins the process of fetching an interstitial ad in the
+     * background.  Note that the ad will expire 60 seconds after
+     * being delivered from the server.  In other words, if the user
+     * views or clicks the ad 60 seconds after it was initially
+     * fetched from the server, you will not get credit for that
+     * impression or click.
+     * 
+     * @return the third-party SDK's view.
+     */
 
     @Override
     public View getView() {

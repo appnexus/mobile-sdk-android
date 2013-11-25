@@ -20,11 +20,12 @@ import android.view.View;
 import com.appnexus.opensdk.utils.Clog;
 
 /**
- * An object of this type is sent to the 3rd party SDK's MediatedBannerAdView object. The 3rd party
- * SDK uses this object from within its banner view implementation to send events back to the AppNexus
- * SDK
- *
+ * An object of this type is sent to the third-party SDK's {@link
+ * MediatedBannerAdView} object.  The third-party SDK uses this object
+ * from within its banner view implementation to send events back to
+ * the AppNexus SDK.
  */
+
 public class MediatedBannerAdViewController extends MediatedAdViewController implements Displayable {
 
     private View placeableView;
@@ -77,8 +78,9 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
     }
 
     /**
-     * Returns the Banner view of the underlying SDK. 
-     * @return the mediated SDK's view.
+     * Get the banner ad view of the underlying third-party SDK.
+     *
+     * @return the third-party SDK's banner ad view.
      */
     @Override
     public View getView() {
