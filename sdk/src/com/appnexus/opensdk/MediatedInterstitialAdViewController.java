@@ -26,7 +26,7 @@ import com.appnexus.opensdk.utils.Clog;
 * events back to the AppNexus SDK.
 */
 
-public class MediatedInterstitialAdViewController extends MediatedAdViewController implements Displayable {
+public class MediatedInterstitialAdViewController extends MediatedAdViewController {
 
     private Activity activity;
 
