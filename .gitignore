@@ -4,6 +4,8 @@ bin/
 *.idea
 *local.properties
 .DS_Store
+**/out/
+**/gen/
 examples/.DS_Store
 examples/anx_sdk_app/gen/
 examples/libs/pulltorefresh/gen/
@@ -15,3 +17,4 @@ mediation/mediating/.DS_Store
 sdk/.DS_Store
 sdk/doc/
 sdk/gen/
+
