@@ -20,6 +20,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,6 +39,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView.ScaleType;
 import android.widget.ProgressBar;
 import android.widget.VideoView;
 
@@ -72,10 +76,28 @@ public class BrowserActivity extends Activity {
         ImageButton openBrowser = (ImageButton) findViewById(R.id.open_browser);
         back.setEnabled(false);
         forward.setEnabled(false);
-        Drawable play = getResources().getDrawable(android.R.drawable.ic_media_play).mutate();
-        back.setScaleX(-1);
-        back.setLayoutDirection(ImageButton.LAYOUT_DIRECTION_RTL);
-        back.setImageDrawable(play);
+        
+        int sdk = android.os.Build.VERSION.SDK_INT;
+        if (sdk >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            Drawable play = getResources().getDrawable(android.R.drawable.ic_media_play).mutate();
+            back.setScaleX(-1);
+            back.setLayoutDirection(ImageButton.LAYOUT_DIRECTION_RTL);
+            back.setImageDrawable(play);
+        } else {
+            back.post(new Runnable() {
+                public void run() {
+                    Bitmap pbmp = BitmapFactory.decodeResource(getResources(),
+                            android.R.drawable.ic_media_play);
+                    Matrix x = new Matrix();
+                    back.setScaleType(ScaleType.MATRIX);
+                    x.postRotate((float) 180.0f);
+
+                    Bitmap rotated = Bitmap.createBitmap(pbmp, 0, 0,
+                            pbmp.getWidth(), pbmp.getHeight(), x, true);
+                    back.setImageBitmap(rotated);
+                }
+            });
+        }
 
         ImageButton refresh = (ImageButton) findViewById(R.id.browser_refresh);
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
@@ -208,7 +230,6 @@ public class BrowserActivity extends Activity {
                 }
             }
             if (style != null) {
-                int sdk = android.os.Build.VERSION.SDK_INT;
                 if (sdk >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
                     back.setBackground(style.backButton);
                     forward.setBackground(style.forwardButton);
