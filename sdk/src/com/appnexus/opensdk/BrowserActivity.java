@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -79,7 +80,7 @@ public class BrowserActivity extends Activity {
         ImageButton openBrowser = (ImageButton) findViewById(R.id.open_browser);
         back.setEnabled(false);
         forward.setEnabled(false);
-        
+
         int sdk = android.os.Build.VERSION.SDK_INT;
         if (sdk >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
             Drawable play = getResources().getDrawable(android.R.drawable.ic_media_play).mutate();
@@ -91,12 +92,15 @@ public class BrowserActivity extends Activity {
                 public void run() {
                     Bitmap pbmp = BitmapFactory.decodeResource(getResources(),
                             android.R.drawable.ic_media_play);
+                    forward.setImageBitmap(pbmp);
                     Matrix x = new Matrix();
                     back.setScaleType(ScaleType.MATRIX);
                     x.postRotate((float) 180.0f);
 
                     Bitmap rotated = Bitmap.createBitmap(pbmp, 0, 0,
                             pbmp.getWidth(), pbmp.getHeight(), x, true);
+                    back.setScaleType(ScaleType.CENTER_INSIDE);
+                    forward.setScaleType(ScaleType.CENTER_INSIDE);
                     back.setImageBitmap(rotated);
                 }
             });
