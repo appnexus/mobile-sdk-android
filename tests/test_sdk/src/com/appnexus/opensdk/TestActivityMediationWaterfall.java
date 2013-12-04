@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package com.appnexus.opensdk.mediationtests;
+package com.appnexus.opensdk;
 
 import android.test.ActivityInstrumentationTestCase2;
 import com.appnexus.opensdk.AdListener;
@@ -28,41 +28,31 @@ import com.appnexus.opensdk.testviews.SecondSuccessfulMediationView;
 import com.appnexus.opensdk.testviews.SuccessfulMediationView;
 import com.appnexus.opensdk.testviews.ThirdSuccessfulMediationView;
 import com.appnexus.opensdk.util.InstanceLock;
-import com.appnexus.opensdk.util.Lock;
 import com.appnexus.opensdk.util.TestUtil;
 
-public class TestActivityMediationCallbacks extends ActivityInstrumentationTestCase2<TestActivity> implements AdListener {
+public class TestActivityMediationWaterfall extends ActivityInstrumentationTestCase2<TestActivity> implements AdListener {
 
     TestActivity activity;
     BannerAdView bav;
     InstanceLock lock;
-    boolean didLoad, didFail;
-    boolean didLoadMultiple, didFailMultiple;
-    boolean didExpand, didCollapse, didClick;
-    String oldUrl;
+    boolean didLoad = false, didFailToLoad = false;
+    String old_base_url;
 
-    private static final long WAIT_TIME = 10000;
-
-    public TestActivityMediationCallbacks() {
+    public TestActivityMediationWaterfall() {
         super(TestActivity.class);
     }
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        oldUrl = Settings.getSettings().BASE_URL;
+        old_base_url = Settings.getSettings().BASE_URL;
         Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
         Clog.w(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
         SuccessfulMediationView.didPass = false;
         SecondSuccessfulMediationView.didPass = false;
         ThirdSuccessfulMediationView.didPass = false;
         didLoad = false;
-        didLoadMultiple = false;
-        didFail = false;
-        didFailMultiple = false;
-        didExpand = false;
-        didCollapse = false;
-        didClick = false;
+        didFailToLoad = false;
         lock = new InstanceLock();
 
         setActivityInitialTouchMode(false);
@@ -78,15 +68,15 @@ public class TestActivityMediationCallbacks extends ActivityInstrumentationTestC
     @Override
     protected void tearDown() throws Exception {
         Clog.w(TestUtil.testLogTag, "tear down");
-        Settings.getSettings().BASE_URL = oldUrl;
+        Settings.getSettings().BASE_URL = old_base_url;
 
         Thread.sleep(2500);
 
         super.tearDown();
     }
 
-    private void runBasicTest(String placementId, boolean didLoadValue, long waitPeriod) {
-        bav.setPlacementID(placementId);
+    public void test1FirstSuccessfulSkipSecond() throws Exception {
+        bav.setPlacementID("11");
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -94,55 +84,19 @@ public class TestActivityMediationCallbacks extends ActivityInstrumentationTestC
             }
         });
 
-        lock.pause(waitPeriod);
+        lock.pause(10000);
 
-        // wait for the view to notify after completing all of its calls
-        Lock.pause();
+        // wait for resultCB
+        Thread.sleep(5000);
 
-        assertEquals(didLoadValue, didLoad);
-        assertEquals(!didLoadValue, didFail);
-        assertFalse(didLoadMultiple);
-        assertFalse(didFailMultiple);
+        assertEquals(true, didLoad);
+        assertEquals(false, didFailToLoad);
+        assertTrue(SuccessfulMediationView.didPass);
+        assertFalse(SecondSuccessfulMediationView.didPass);
     }
 
-    public void test18AdLoadedMultiple() throws Exception {
-        runBasicTest("18", true, WAIT_TIME);
-    }
-
-    public void test19Timeout() {
-        runBasicTest("19", false, WAIT_TIME + Settings.getSettings().MEDIATED_NETWORK_TIMEOUT);
-    }
-
-    public void test20LoadThenFail() {
-        runBasicTest("20", true, WAIT_TIME);
-    }
-
-    public void test21FailThenLoad() {
-        runBasicTest("21", false, WAIT_TIME);
-    }
-
-    public void test22LoadAndHitOtherCallbacks() {
-        runBasicTest("22", true, WAIT_TIME + Settings.getSettings().MEDIATED_NETWORK_TIMEOUT);
-
-        assertTrue(didExpand);
-        assertTrue(didCollapse);
-        assertTrue(didClick);
-    }
-
-    public void test23FailAndHitOtherCallbacks() {
-        runBasicTest("23", false, WAIT_TIME + Settings.getSettings().MEDIATED_NETWORK_TIMEOUT);
-
-        assertFalse(didExpand);
-        assertFalse(didCollapse);
-        assertFalse(didClick);
-    }
-
-    public void test24AdFailedMultiple() throws Exception {
-        runBasicTest("24", false, WAIT_TIME);
-    }
-
-    public void test25LoadThenLoadNewAndHitOtherCallbacks() throws Exception {
-        bav.setPlacementID("22");
+    public void test2SkipFirstSuccessfulSecond() {
+        bav.setPlacementID("12");
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -150,47 +104,83 @@ public class TestActivityMediationCallbacks extends ActivityInstrumentationTestC
             }
         });
 
-        lock.pause(WAIT_TIME);
+        lock.pause(10000);
 
+        assertEquals(true, didLoad);
+        assertEquals(false, didFailToLoad);
+        assertTrue(SecondSuccessfulMediationView.didPass);
+    }
+
+    public void test3FirstFailsIntoOverrideStd() {
+        bav.setPlacementID("13");
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bav.loadAd();
+            }
+        });
+
+        lock.pause(10000);
+
+        assertEquals(true, didLoad);
+        assertEquals(false, didFailToLoad);
+        assertFalse(SuccessfulMediationView.didPass);
+    }
+
+    public void test4FirstFailsIntoOverrideMediated() {
+        bav.setPlacementID("14");
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bav.loadAd();
+            }
+        });
+
+        lock.pause(10000);
+
+        assertEquals(true, didLoad);
+        assertEquals(false, didFailToLoad);
+        assertFalse(SuccessfulMediationView.didPass);
+        assertTrue(ThirdSuccessfulMediationView.didPass);
+    }
+
+    public void test5TestNoFill() {
+        bav.setPlacementID("15");
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bav.loadAd();
+            }
+        });
+
+        lock.pause(10000);
+
+        // onAdRequestFailed should have been called
+        assertFalse(didLoad);
+        assertTrue(didFailToLoad);
+    }
+
+    public void test6NoResultCB() {
+        bav.setPlacementID("16");
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bav.loadAd();
+            }
+        });
+
+        lock.pause(10000);
+
+        // onAdLoaded should have been called
         assertTrue(didLoad);
-        assertFalse(didFail);
-        assertFalse(didLoadMultiple);
-        assertFalse(didFailMultiple);
-
-        // reset the variable since we will load a new ad
-        didLoad = false;
-
-        bav.setPlacementID("18");
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                bav.loadAd();
-            }
-        });
-
-        lock.pause(WAIT_TIME);
-
-        // wait for the view to notify after completing all of its calls
-        Lock.pause();
-
-        assertTrue(didLoad);
-        assertFalse(didFail);
-        assertFalse(didLoadMultiple);
-        assertFalse(didFailMultiple);
-
-        Lock.pause();
-
-        assertFalse(didExpand);
-        assertFalse(didCollapse);
-        assertFalse(didClick);
+        assertFalse(didFailToLoad);
+        assertTrue(SuccessfulMediationView.didPass);
     }
 
     @Override
     public void onAdLoaded(AdView adView) {
         if (lock == null) return;
         Clog.d(TestUtil.testLogTag, "onAdLoaded");
-        if (didLoad)
-            didLoadMultiple = true;
         didLoad = true;
         lock.unpause();
     }
@@ -199,27 +189,19 @@ public class TestActivityMediationCallbacks extends ActivityInstrumentationTestC
     public void onAdRequestFailed(AdView adView) {
         if (lock == null) return;
         Clog.d(TestUtil.testLogTag, "onAdFailed");
-        if (didFail)
-            didFailMultiple = true;
-        didFail = true;
+        didFailToLoad = true;
         lock.unpause();
     }
 
     @Override
     public void onAdExpanded(AdView adView) {
-        Clog.d(TestUtil.testLogTag, "onAdExpanded");
-        didExpand = true;
     }
 
     @Override
     public void onAdCollapsed(AdView adView) {
-        Clog.d(TestUtil.testLogTag, "onAdCollapsed");
-        didCollapse = true;
     }
 
     @Override
     public void onAdClicked(AdView adView) {
-        Clog.d(TestUtil.testLogTag, "onAdClicked");
-        didClick = true;
     }
 }

@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package com.appnexus.opensdk.mediationtests;
+package com.appnexus.opensdk;
 
 import android.test.AndroidTestCase;
 import com.appnexus.opensdk.*;
@@ -22,13 +22,20 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.testviews.DummyView;
 import com.appnexus.opensdk.testviews.SuccessfulMediationView;
+import com.appnexus.opensdk.util.InstanceLock;
 import com.appnexus.opensdk.util.TestUtil;
 
-public class TestMediationSuccessThenStd extends AndroidTestCase implements AdRequester {
+public class Test404Error extends AndroidTestCase implements AdRequester {
+    /**
+     * NOTE: requires commenting out return code in MAVC's resultCB handler
+     * to allow for multiple successes.
+     */
     String old_base_url;
     AdRequest shouldWork;
-    boolean didPass = false;
-    String shouldWorkPlacement = "7";
+    String shouldWorkPlacement;
+    InstanceLock lock;
+    boolean responseWasNull;
+    boolean receivedResponse;
 
     @Override
     protected void setUp() throws Exception {
@@ -36,52 +43,72 @@ public class TestMediationSuccessThenStd extends AndroidTestCase implements AdRe
         old_base_url = Settings.getSettings().BASE_URL;
         Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
         Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
-        shouldWork = new AdRequest(this, null, null, null, shouldWorkPlacement, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
         SuccessfulMediationView.didPass = false;
-        didPass = false;
         DummyView.createView(getContext());
+        lock = new InstanceLock();
+        responseWasNull = false;
+        receivedResponse = false;
     }
 
     @Override
     protected void tearDown() throws Exception {
         Clog.d(TestUtil.testLogTag, "tear down");
         Settings.getSettings().BASE_URL = old_base_url;
-
         super.tearDown();
     }
 
-    public void testSucceedingMediationAndStdCall() {
+    public void testSuccessWithResult404() {
         // Create a AdRequest which will request a mediated response to
-        // instantiate the SuccessfulMediationView
-        // Since we're just testing to see successful instantiation, interrupt
-        // the sleeping thread from the requestAd function
+        // instantiate the SuccessfulMediationView. The (success) result_cb
+        // should return a 404 error, which should fail instantiation
 
+        shouldWorkPlacement = "9a";
+        shouldWork = new AdRequest(this, null, null, null, shouldWorkPlacement, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
         shouldWork.execute();
-        pause();
+        lock.pause(10000);
         shouldWork.cancel(true);
 
+        assertTrue(receivedResponse);
         assertEquals(true, SuccessfulMediationView.didPass);
-        assertEquals(true, didPass);
+        // responses from a successful result_cb no longer get passed back up, so can't check
+    }
+
+    public void testFailWithResult404() {
+        // Create a AdRequest which will request a mediated response to
+        // instantiate the a non-existent view. The (failure) result_cb
+        // should return a 404 error, which should fail instantiation
+
+        shouldWorkPlacement = "9b";
+        shouldWork = new AdRequest(this, null, null, null, shouldWorkPlacement, null, null, 320, 50, -1, -1, null, null, null, true, null, false, false);
+        shouldWork.execute();
+        lock.pause(10000);
+        shouldWork.cancel(true);
+
+        assertTrue(receivedResponse);
+        assertTrue(responseWasNull);
     }
 
     @Override
-    synchronized public void failed(AdRequest request) {
+    public void failed(AdRequest request) {
         Clog.d(TestUtil.testLogTag, "request failed: " + request);
         SuccessfulMediationView.didPass = false;
-        notify();
+        lock.unpause();
     }
 
     @Override
-    synchronized public void onReceiveResponse(AdResponse response) {
-        if (response == null) return;
-        Clog.d(TestUtil.testLogTag, "received first response: " + response.toString());
-        if (response.getMediatedAds() != null) {
+    public void onReceiveResponse(AdResponse response) {
+        // response should be a regular valid mediated ad
+        Clog.d(TestUtil.testLogTag, "received response: " + response);
+        if (response != null && response.getMediatedAds() != null) {
             MediatedBannerAdViewController output = MediatedBannerAdViewController.create(
                     null, this, response.getMediatedAds().pop(), null);
-        } else if (response.getType() != null && response.getType().equals("banner")) {
-            didPass = true;
-            notify();
+            receivedResponse = true;
+            return;
+        } else if (response == null) {
+            // resultCB response should have be a 404, so null
+            responseWasNull = true;
         }
+        lock.unpause();
     }
 
     @Override
@@ -89,19 +116,4 @@ public class TestMediationSuccessThenStd extends AndroidTestCase implements AdRe
         return null;
     }
 
-    @Override
-    public void setAdRequest(AdRequest adRequest) {
-    }
-
-    synchronized private void pause() {
-        Clog.d(TestUtil.testLogTag, "pausing");
-        try {
-            wait();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            shouldWork.cancel(true);
-            return;
-        }
-        Clog.d(TestUtil.testLogTag, "unpausing");
-    }
 }
