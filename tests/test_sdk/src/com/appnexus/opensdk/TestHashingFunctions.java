@@ -14,7 +14,7 @@
  *    limitations under the License.
 */
 
-package com.appnexus.opensdk.stdtests;
+package com.appnexus.opensdk;
 
 import com.appnexus.opensdk.utils.HashingFunctions;
 import junit.framework.TestCase;
