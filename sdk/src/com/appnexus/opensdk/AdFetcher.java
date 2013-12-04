@@ -280,11 +280,6 @@ class AdFetcher implements AdRequester {
         return owner;
     }
 
-    @Override
-    public void setAdRequest(AdRequest adRequest) {
-        this.adRequest = adRequest;
-    }
-
     public void clearDurations() {
         lastFetchTime = -1;
         timePausedAt = -1;
