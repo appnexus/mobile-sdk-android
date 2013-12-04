@@ -41,8 +41,6 @@ class AdResponse {
     private boolean containsAds = false;
 
     private boolean isHttpError = false;
-    private boolean isConnectivityRetry = false;
-    private boolean isBlankRetry = false;
 
     private static final String MRAID_JS_FILENAME = "mraid.js";
     private static final String RESPONSE_KEY_STATUS = "status";
@@ -82,10 +80,8 @@ class AdResponse {
         parseResponse(httpResponse.getResponseBody());
     }
 
-    public AdResponse(boolean isHttpError, boolean isConnectivityRetry, boolean isBlankRetry) {
+    public AdResponse(boolean isHttpError) {
         this.isHttpError = isHttpError;
-        this.isConnectivityRetry = isConnectivityRetry;
-        this.isBlankRetry = isBlankRetry;
     }
 
     private void printHeaders(Header[] headers) {
@@ -231,14 +227,6 @@ class AdResponse {
 
     public boolean isMraid() {
         return isMraid;
-    }
-
-    public boolean isConnectivityRetry() {
-        return isConnectivityRetry;
-    }
-
-    public boolean isBlankRetry() {
-        return isBlankRetry;
     }
 
     public boolean isHttpError() {
