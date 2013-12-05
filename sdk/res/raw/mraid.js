@@ -377,7 +377,7 @@
 	var supports_calendar = false;
 	var supports_storePicture = false;
 	var supports_inlineVideo = false;
-	mraid.util.setSupportsTel=function(val){
+	mraid.util.setSupportsSMS=function(val){
 	    supports_sms = val;
 	}
 
