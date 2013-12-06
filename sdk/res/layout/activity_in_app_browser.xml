@@ -50,13 +50,13 @@
         <ImageButton
                 android:id="@+id/browser_back"
                 android:contentDescription="@string/back"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_width="0dp"
                 android:layout_weight="2"/>
         <ImageButton
                 android:id="@+id/browser_forward"
                 android:contentDescription="@string/forward"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_width="0dp"
                 android:layout_weight="2"
                 android:src="@android:drawable/ic_media_play"/>
