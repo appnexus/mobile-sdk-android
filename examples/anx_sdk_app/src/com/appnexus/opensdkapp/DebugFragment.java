@@ -19,6 +19,7 @@ package com.appnexus.opensdkapp;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,6 +40,8 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshWebView;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.net.URI;
 
 public class DebugFragment extends Fragment {
 
@@ -235,13 +238,14 @@ public class DebugFragment extends Fragment {
             params.append("&debug_member=").append(Prefs.getMemberId(getActivity()));
             params.append("&dongle=").append(Prefs.getDongle(getActivity()));
             params.append("&size=").append(Prefs.getSize(getActivity()));
+            params.append("&psa=").append(Prefs.getAllowPSAs(getActivity()) ? "1" : "0");
+            params.append("&ua=").append(Uri.encode(webView.getSettings().getUserAgentString()));
             return Constants.DEBUG_AUCTION_URL + params.toString();
         }
 
         public void runAuction() {
             final String debugAuctionUrl = getUrl();
             Clog.d(Constants.BASE_LOG_TAG, "Running a Debug Auction: " + debugAuctionUrl);
-//            loadUrl(debugAuctionUrl);
 
             final HTTPGet<Void, Void, HTTPResponse> auctionGet = new HTTPGet<Void, Void, HTTPResponse>() {
                 @Override
