@@ -468,11 +468,10 @@ public abstract class AdView extends FrameLayout {
 	}
 
 	/**
-	 * Set the current PSA setting.  If set to true, the SDK will
-	 * retrieve and display a Public Service Announcement if no
-	 * other ad is available.  PSAs are ads for various causes or
-	 * nonprofit organizations.  If set to false, no ad is
-	 * returned.
+	 * Allows overriding the platform behavior in the case there is no ad
+	 * currently available. If set to true the platform will retrieve and
+	 * display a PSA (Public Service Announcement) . Set the value to false it
+	 * will return no ad.
 	 *
 	 * @param shouldServePSAs
 	 *            Whether this placement is willing to accept a PSA if no other ad is available.
