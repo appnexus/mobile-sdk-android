@@ -380,6 +380,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (!hasNetwork(context)) {
             Clog.e(Clog.httpReqLogTag,
                     Clog.getString(R.string.no_connectivity));
+            return null;
         }
 
         return doRequest();
