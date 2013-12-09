@@ -116,7 +116,7 @@
 			mraid.util.errorEvent("mraid.expand() called while state is 'loading'.", "mraid.expand()");
 			break;
 		case 'default':
-            if(expand_properties.height < current_position.height || expand_properties.width < current_position.width){
+            if((expand_properties.height>0 && expand_properties.width>0) && (expand_properties.height < current_position.height || expand_properties.width < current_position.width)){
                 mraid.util.errorEvent("Can't expand to a size smaller than the default size.", "mraid.expand()");
                 return;
             }
@@ -412,6 +412,7 @@
                           "y": y,
                           "width":width,
                           "height": height};
+        current_position = default_position;
     }
 
     mraid.util.setCurrentPosition=function(x, y, width, height){
@@ -420,7 +421,5 @@
                           "width":width,
                           "height": height};
     }
-
-
 
 }());

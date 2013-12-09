@@ -24,6 +24,7 @@ import android.app.DownloadManager;
 import android.content.*;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -196,7 +197,7 @@ class MRAIDImplementation {
 
                 int height = owner.getMeasuredHeight();
                 int width = owner.getMeasuredWidth();
-                view.loadUrl("javascript:window.mraid.util.setDefaultPosition(x:" + location[0] + ", y:" + location[1] + ", width:" + width + ", height:" + height + ")");
+                view.loadUrl("javascript:window.mraid.util.setDefaultPosition(" + location[0] + ", " + location[1] + ", " + width + ", " + height + ")");
             }
 
             private void setMaxSize(WebView view) {
@@ -221,7 +222,7 @@ class MRAIDImplementation {
                     height -= contentViewTop;
 
 
-                    view.loadUrl("javascript:window.mraid.util.setMaxSize({width: " + width + ", height:" + height + ")");
+                    view.loadUrl("javascript:window.mraid.util.setMaxSize(" + width + ", " + height + ")");
                 }
 
 
@@ -234,7 +235,7 @@ class MRAIDImplementation {
                     int width;
                     int height;
                     if(Build.VERSION.SDK_INT>=13){
-                    d.getSize(p);
+                        d.getSize(p);
                         width = p.x;
                         height = p.y;
                     }else{
@@ -242,7 +243,7 @@ class MRAIDImplementation {
                         height = d.getHeight();
                     }
 
-                    view.loadUrl("javascript:window.mraid.util.setScreenSize({width: " + width + ", height:" + height + ")");
+                    view.loadUrl("javascript:window.mraid.util.setScreenSize("+width + ", " + height + ")");
                 }
             }
 
@@ -328,7 +329,7 @@ class MRAIDImplementation {
         int width = bottom-top;
 
         owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent(" + width + "," + height + ")");
-        owner.loadUrl("javascript:window.mraid.util.setCurrentPosition(x:" + left + ", y:" + bottom + ", width:" + width + ", height:" + height + ")");
+        owner.loadUrl("javascript:window.mraid.util.setCurrentPosition(" + left + ", " + top + ", " + width + ", " + height + ")");
     }
 
     void close() {
