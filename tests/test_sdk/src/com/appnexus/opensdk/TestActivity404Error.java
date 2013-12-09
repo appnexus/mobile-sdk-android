@@ -14,10 +14,9 @@
  *    limitations under the License.
  */
 
-package com.appnexus.opensdk.mediationtests;
+package com.appnexus.opensdk;
 
 import android.test.ActivityInstrumentationTestCase2;
-import android.view.View;
 import com.appnexus.opensdk.AdListener;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.BannerAdView;
@@ -25,22 +24,22 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.TestActivity;
 import com.appnexus.opensdk.testviews.DummyView;
-import com.appnexus.opensdk.testviews.ThirdSuccessfulMediationView;
+import com.appnexus.opensdk.testviews.SuccessfulMediationView;
 import com.appnexus.opensdk.util.InstanceLock;
-import com.appnexus.opensdk.util.Lock;
 import com.appnexus.opensdk.util.TestUtil;
 
-public class TestActivityRefreshStdThenMediated extends ActivityInstrumentationTestCase2<TestActivity> implements AdListener {
-
+public class TestActivity404Error extends ActivityInstrumentationTestCase2<TestActivity> implements AdListener {
+    /**
+     * NOTE: requires commenting out return code in MAVC's resultCB handler
+     * to allow for multiple successes.
+     */
     TestActivity activity;
     BannerAdView bav;
-    boolean isLoadingMediation;
     InstanceLock lock;
+    boolean didLoad = false, didFail = false;
     String old_base_url;
-    boolean didPassStd = false;
 
-
-    public TestActivityRefreshStdThenMediated() {
+    public TestActivity404Error() {
         super(TestActivity.class);
     }
 
@@ -50,9 +49,9 @@ public class TestActivityRefreshStdThenMediated extends ActivityInstrumentationT
         old_base_url = Settings.getSettings().BASE_URL;
         Settings.getSettings().BASE_URL = TestUtil.MEDIATION_TEST_URL;
         Clog.d(TestUtil.testLogTag, "BASE_URL set to " + Settings.getSettings().BASE_URL);
-        ThirdSuccessfulMediationView.didPass = false;
-        didPassStd = false;
-        isLoadingMediation = false;
+        SuccessfulMediationView.didPass = false;
+        didLoad = false;
+        didFail = false;
         lock = new InstanceLock();
 
         setActivityInitialTouchMode(false);
@@ -62,8 +61,6 @@ public class TestActivityRefreshStdThenMediated extends ActivityInstrumentationT
         DummyView.createView(activity);
 
         bav = (BannerAdView) activity.findViewById(com.appnexus.opensdk.R.id.banner);
-        bav.setPlacementID("8a");
-        bav.setAutoRefreshInterval(15);
         bav.setAdListener(this);
     }
 
@@ -76,10 +73,12 @@ public class TestActivityRefreshStdThenMediated extends ActivityInstrumentationT
         super.tearDown();
     }
 
-    public void testRefresh() {
-        Clog.w(TestUtil.testLogTag, "TEST REFRESH");
+    public void testSuccessThen404() {
+        // Create a AdRequest which will request a mediated response to
+        // instantiate the a successful view. The (failure) result_cb
+        // should return a 404 error, which should fail instantiation
 
-        // get a std ad
+        bav.setPlacementID("9a");
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -89,42 +88,45 @@ public class TestActivityRefreshStdThenMediated extends ActivityInstrumentationT
 
         lock.pause(10000);
 
-        // set up mediation properties
-        isLoadingMediation = true;
-        bav.setPlacementID("8b");
+        assertTrue(SuccessfulMediationView.didPass);
+        assertTrue(didLoad);
+        assertFalse(didFail);
+        // no way to verify the response from the resultCB here
+        // use LogCat / Test404Error tests it
+    }
 
-        Clog.w(TestUtil.testLogTag, "wait for refresh - 15s minimum; " + Thread.currentThread().getName());
-        try {
-            Thread.sleep(15000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public void testFailThen404() {
+        // Create a AdRequest which will request a mediated response to
+        // instantiate the fake view. The (failure) result_cb
+        // should return a 404 error, which should fail instantiation
 
-        Clog.w(TestUtil.testLogTag, "wait for refresh done " + Thread.currentThread().getName());
+        bav.setPlacementID("9b");
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bav.loadAd();
+            }
+        });
 
-        // wait for mediation response to process and complete
-        Lock.pause(10000);
+        lock.pause(10000);
 
-        assertEquals(true, didPassStd);
-        assertEquals(true, ThirdSuccessfulMediationView.didPass);
-        assertEquals(View.VISIBLE, bav.getVisibility());
+        assertFalse(didLoad);
+        assertTrue(didFail);
+        // no way to verify the response from the resultCB here
+        // use LogCat / Test404Error tests it
     }
 
     @Override
     public void onAdLoaded(AdView adView) {
-        didPassStd = true;
-        if (!isLoadingMediation) {
-            lock.unpause();
-        }
+        didLoad = true;
+        lock.unpause();
     }
 
     @Override
     public void onAdRequestFailed(AdView adView) {
         if (lock == null) return;
-        didPassStd = false;
-        if (!isLoadingMediation) {
-            lock.unpause();
-        }
+        didFail = true;
+        lock.unpause();
     }
 
     @Override

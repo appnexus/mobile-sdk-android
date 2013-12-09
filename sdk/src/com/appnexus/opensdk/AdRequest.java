@@ -35,6 +35,7 @@ import com.appnexus.opensdk.InterstitialAdView.Size;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HashingFunctions;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.StringUtil;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
@@ -82,24 +83,13 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     private int height = -1;
     private int maxWidth = -1;
     private int maxHeight = -1;
-    private boolean shouldRetry = true; // true by default
     private float reserve = 0.00f;
     private String age;
     private String gender;
     private ArrayList<Pair<String, String>> customKeywords;
 
-
-    private final Handler retryHandler = new Handler();
-
-    private int httpRetriesLeft = 0;
-    private int blankRetriesLeft = 0;
-
     private static final AdResponse HTTP_ERROR
-            = new AdResponse(true, false, false);
-    private static final AdResponse CONNECTIVITY_RETRY
-            = new AdResponse(false, true, false);
-    private static final AdResponse BLANK_RETRY
-            = new AdResponse(false, false, true);
+            = new AdResponse(true);
 
     /**
      * Creates a new AdRequest with the given parameters
@@ -131,8 +121,6 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                      AdListener adListener, boolean shouldServePSAs, boolean shouldRetry) {
         this.adListener = adListener;
         this.requester = requester;
-        this.httpRetriesLeft = Settings.getSettings().MAX_CONNECTIVITY_RETRIES;
-        this.blankRetriesLeft = Settings.getSettings().MAX_BLANK_RETRIES;
         if (aid != null) {
             hidmd5 = HashingFunctions.md5(aid);
             hidsha1 = HashingFunctions.sha1(aid);
@@ -168,19 +156,11 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         this.psa = shouldServePSAs ? "1" : "0";
 
         this.nativeBrowser = isNativeBrowser ? "1" : "0";
-
-        this.shouldRetry = shouldRetry;
     }
 
     public AdRequest(AdRequester adRequester) {
-        this(adRequester, Settings.getSettings().MAX_CONNECTIVITY_RETRIES, Settings.getSettings().MAX_BLANK_RETRIES);
-    }
-
-    private AdRequest(AdRequester adRequester, int httpRetriesLeft, int blankRetriesLeft) {
         owner = adRequester.getOwner();
         this.requester = adRequester;
-        this.httpRetriesLeft = httpRetriesLeft;
-        this.blankRetriesLeft = blankRetriesLeft;
         this.placementId = owner.getPlacementID();
         context = owner.getContext();
         String aid = android.provider.Settings.Secure.getString(
@@ -334,24 +314,24 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         } else {
             sb.append("NO-PLACEMENT-ID");
         }
-        if (!isEmpty(hidmd5)) sb.append("&md5udid=").append(Uri.encode(hidmd5));
-        if (!isEmpty(hidsha1)) sb.append("&sha1udid=").append(Uri.encode(hidsha1));
-        if (!isEmpty(devMake)) sb.append("&devmake=").append(Uri.encode(devMake));
-        if (!isEmpty(devModel)) sb.append("&devmodel=").append(Uri.encode(devModel));
-        if (!isEmpty(carrier)) sb.append( "&carrier=").append(Uri.encode(carrier));
+        if (!StringUtil.isEmpty(hidmd5)) sb.append("&md5udid=").append(Uri.encode(hidmd5));
+        if (!StringUtil.isEmpty(hidsha1)) sb.append("&sha1udid=").append(Uri.encode(hidsha1));
+        if (!StringUtil.isEmpty(devMake)) sb.append("&devmake=").append(Uri.encode(devMake));
+        if (!StringUtil.isEmpty(devModel)) sb.append("&devmodel=").append(Uri.encode(devModel));
+        if (!StringUtil.isEmpty(carrier)) sb.append( "&carrier=").append(Uri.encode(carrier));
         sb.append("&appid=");
-        if (!isEmpty(Settings.getSettings().app_id)) {
+        if (!StringUtil.isEmpty(Settings.getSettings().app_id)) {
             sb.append(Uri.encode(Settings.getSettings().app_id));
         } else {
             sb.append("NO-APP-ID");
         }
         if (firstlaunch) sb.append("&firstlaunch=true");
-        if (!isEmpty(lat) && !isEmpty(lon)) sb.append("&loc=").append(lat).append(",").append(lon);
-        if (!isEmpty(locDataAge)) sb.append("&loc_age=").append(locDataAge);
-        if (!isEmpty(locDataPrecision)) sb.append("&loc_prec=").append(locDataPrecision);
+        if (!StringUtil.isEmpty(lat) && !StringUtil.isEmpty(lon)) sb.append("&loc=").append(lat).append(",").append(lon);
+        if (!StringUtil.isEmpty(locDataAge)) sb.append("&loc_age=").append(locDataAge);
+        if (!StringUtil.isEmpty(locDataPrecision)) sb.append("&loc_prec=").append(locDataPrecision);
         if (Settings.getSettings().test_mode) sb.append("&istest=true");
-        if (!isEmpty(ua)) sb.append("&ua=").append(Uri.encode(ua));
-        if (!isEmpty(orientation)) sb.append("&orientation=").append(orientation);
+        if (!StringUtil.isEmpty(ua)) sb.append("&ua=").append(Uri.encode(ua));
+        if (!StringUtil.isEmpty(orientation)) sb.append("&orientation=").append(orientation);
         if (width > 0 && height > 0) sb.append("&size=").append(width).append("x").append(height);
         // complicated, don't change
         if (owner != null) {
@@ -364,18 +344,18 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                 }
             }
         }
-        if (!isEmpty(allowedSizes)) sb.append("&promo_sizes=").append(allowedSizes);
-        if (!isEmpty(mcc)) sb.append("&mcc=").append(Uri.encode(mcc));
-        if (!isEmpty(mnc)) sb.append("&mnc=").append(Uri.encode(mnc));
-        if (!isEmpty(language)) sb.append("&language=").append(Uri.encode(language));
-        if (!isEmpty(dev_timezone)) sb.append("&devtz=").append(Uri.encode(dev_timezone));
-        if (!isEmpty(dev_time)) sb.append("&devtime=").append(Uri.encode(dev_time));
-        if (!isEmpty(connection_type)) sb.append("&connection_type=").append( Uri.encode(connection_type));
-        if (!isEmpty(nativeBrowser)) sb.append("&native_browser=").append(nativeBrowser);
-        if (!isEmpty(psa)) sb.append( "&psa=").append(psa);
+        if (!StringUtil.isEmpty(allowedSizes)) sb.append("&promo_sizes=").append(allowedSizes);
+        if (!StringUtil.isEmpty(mcc)) sb.append("&mcc=").append(Uri.encode(mcc));
+        if (!StringUtil.isEmpty(mnc)) sb.append("&mnc=").append(Uri.encode(mnc));
+        if (!StringUtil.isEmpty(language)) sb.append("&language=").append(Uri.encode(language));
+        if (!StringUtil.isEmpty(dev_timezone)) sb.append("&devtz=").append(Uri.encode(dev_timezone));
+        if (!StringUtil.isEmpty(dev_time)) sb.append("&devtime=").append(Uri.encode(dev_time));
+        if (!StringUtil.isEmpty(connection_type)) sb.append("&connection_type=").append( Uri.encode(connection_type));
+        if (!StringUtil.isEmpty(nativeBrowser)) sb.append("&native_browser=").append(nativeBrowser);
+        if (!StringUtil.isEmpty(psa)) sb.append( "&psa=").append(psa);
         if (reserve>0) sb.append("&reserve=").append(reserve);
-        if (!isEmpty(age)) sb.append("&age=").append(Uri.encode(age));
-        if (!isEmpty(gender)) sb.append("&gender=").append(Uri.encode(gender));
+        if (!StringUtil.isEmpty(age)) sb.append("&age=").append(Uri.encode(age));
+        if (!StringUtil.isEmpty(gender)) sb.append("&gender=").append(Uri.encode(gender));
         sb.append("&format=json");
         sb.append("&st=mobile_app");
         sb.append("&sdkver=").append(Uri.encode(Settings.getSettings().sdkVersion));
@@ -383,7 +363,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         // add custom parameters if there are any
         if (customKeywords != null) {
             for (Pair<String, String> pair : customKeywords) {
-                if (!isEmpty(pair.first) && (pair.second != null)) {
+                if (!StringUtil.isEmpty(pair.first) && (pair.second != null)) {
                     sb.append("&")
                             .append(pair.first)
                             .append("=")
@@ -400,9 +380,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (!hasNetwork(context)) {
             Clog.e(Clog.httpReqLogTag,
                     Clog.getString(R.string.no_connectivity));
-            if (!shouldRetry)
-                return doRequest();
-            return AdRequest.CONNECTIVITY_RETRY;
+            return null;
         }
 
         return doRequest();
@@ -434,18 +412,18 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             out = EntityUtils.toString(r.getEntity());
         } catch (ClientProtocolException e) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unknown));
-            return AdRequest.CONNECTIVITY_RETRY;
+            return null;
         } catch (ConnectTimeoutException e) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_timeout));
-            return AdRequest.CONNECTIVITY_RETRY;
+            return null;
         } catch (HttpHostConnectException he) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(
                     R.string.http_unreachable, he.getHost().getHostName(), he
                     .getHost().getPort()));
-            return AdRequest.CONNECTIVITY_RETRY;
+            return null;
         } catch (IOException e) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_io));
-            return AdRequest.CONNECTIVITY_RETRY;
+            return null;
         } catch (SecurityException se) {
             Clog.e(Clog.baseLogTag,
                     Clog.getString(R.string.permissions_internet));
@@ -453,11 +431,11 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         } catch (Exception e) {
             e.printStackTrace();
             Clog.e(Clog.baseLogTag, Clog.getString(R.string.unknown_exception));
-            return AdRequest.CONNECTIVITY_RETRY;
+            return null;
         }
         if (out.equals("")) {
             Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
-            return AdRequest.BLANK_RETRY;
+            return null;
         }
         return new AdResponse(out, r.getAllHeaders());
     }
@@ -493,12 +471,10 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
     @Override
     protected void onPostExecute(AdResponse result) {
-        if (requester != null)
-            requester.setAdRequest(null);
+        // check for invalid responses
         if (result == null) {
             Clog.v(Clog.httpRespLogTag, Clog.getString(R.string.no_response));
             fail();
-            // Don't call fail again!
             return; // http request failed
         }
         if (result.isHttpError()) {
@@ -506,33 +482,6 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             return;
         }
 
-        if (shouldRetry) {
-            if ((httpRetriesLeft < 1) || (blankRetriesLeft < 1)) {
-                // return if we have exceeded the max number of tries
-                fail();
-                return;
-            }
-            boolean resultIsRetry = false;
-
-            if (result.isConnectivityRetry()) {
-                httpRetriesLeft--;
-                resultIsRetry = true;
-            } else if (result.isBlankRetry()) {
-                blankRetriesLeft--;
-                resultIsRetry = true;
-            }
-
-            if (resultIsRetry) {
-                // don't fail, but clear the last response
-                Clog.clearLastResponse();
-                final AdRequest retry = new AdRequest(requester, httpRetriesLeft, blankRetriesLeft);
-                if (requester != null)
-                    requester.setAdRequest(retry);
-                retry.retryHandler.postDelayed(new RetryRunnable(retry), Settings.getSettings().HTTP_RETRY_INTERVAL);
-                return; // The request failed and should be retried.
-            }
-            // else let it continue to process the valid result
-        }
         if (requester != null)
             requester.onReceiveResponse(result);
         // for unit testing
@@ -544,37 +493,6 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     protected void onCancelled(AdResponse adResponse) {
         super.onCancelled(adResponse);
         Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.cancel_request));
-        if (requester != null)
-            requester.setAdRequest(null);
-        // remove pending retry requests if the requester cancels the ad request
-        retryHandler.removeCallbacksAndMessages(null);
-    }
-
-    private static boolean isEmpty(String str) {
-        return (str == null) || str.equals("");
-    }
-
-    class RetryRunnable implements Runnable {
-        final AdRequest retry;
-
-        RetryRunnable(AdRequest retry) {
-            this.retry = retry;
-        }
-
-        @Override
-        public void run() {
-            if (retry.isCancelled()) {
-                Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.retry_already_cancelled));
-                return;
-            }
-
-            // Spawn an AdRequest
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                retry.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            } else {
-                retry.execute();
-            }
-        }
     }
 
 //   // Uncomment for unit tests
