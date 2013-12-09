@@ -242,9 +242,12 @@ public class InterstitialAdView extends AdView {
         long now = System.currentTimeMillis();
         if (removeStaleAds(now)) {
             Pair<Long, Displayable> top = InterstitialAdView.q.peek();
-            if (top != null && top.second instanceof MediatedInterstitialAdViewController) {
-                MediatedInterstitialAdViewController mAVC = (MediatedInterstitialAdViewController) top.second;
-                return mAVC.isReady();
+            if (top != null && top.second instanceof MediatedDisplayable) {
+                MediatedDisplayable mediatedDisplayable = (MediatedDisplayable) top.second;
+                if (mediatedDisplayable.mAVC instanceof MediatedInterstitialAdViewController) {
+                    MediatedInterstitialAdViewController mAVC = (MediatedInterstitialAdViewController) mediatedDisplayable.mAVC;
+                    return mAVC.isReady();
+                }
             }
             return true;
         }
@@ -267,13 +270,16 @@ public class InterstitialAdView extends AdView {
 
         //If the head of the queue is interstitial mediation, show that instead of our adactivity
         Pair<Long, Displayable> top = InterstitialAdView.q.peek();
-        if (top != null && top.second instanceof MediatedInterstitialAdViewController) {
-            MediatedInterstitialAdViewController mAVC = (MediatedInterstitialAdViewController) top.second;
-            mAVC.show();
+        if (top != null && top.second instanceof MediatedDisplayable) {
+            MediatedDisplayable mediatedDisplayable = (MediatedDisplayable) top.second;
+            if (mediatedDisplayable.mAVC instanceof MediatedInterstitialAdViewController) {
+                MediatedInterstitialAdViewController mAVC = (MediatedInterstitialAdViewController) mediatedDisplayable.mAVC;
+                mAVC.show();
 
-            //Pop the mediated view;
-            InterstitialAdView.q.poll();
-            return InterstitialAdView.q.size();
+                //Pop the mediated view;
+                InterstitialAdView.q.poll();
+                return InterstitialAdView.q.size();
+            }
         }
 
         // otherwise, launch our adActivity
