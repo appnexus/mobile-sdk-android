@@ -463,7 +463,7 @@ public abstract class AdView extends FrameLayout {
 	/**
 	 * Allows overriding the platform behavior in the case there is no ad
 	 * currently available. If set to true the platform will retrieve and
-	 * displaya PSA (Public Service Announcement) . Set the value to false it
+	 * display a PSA (Public Service Announcement) . Set the value to false it
 	 * will return no ad.
 	 *
 	 * @param shouldServePSAs

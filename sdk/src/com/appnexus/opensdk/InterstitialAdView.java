@@ -190,7 +190,7 @@ public class InterstitialAdView extends AdView {
     }
 
     @Override
-    public void display(Displayable d) {
+    void display(Displayable d) {
         if (d == null) {
             fail();
             return;
