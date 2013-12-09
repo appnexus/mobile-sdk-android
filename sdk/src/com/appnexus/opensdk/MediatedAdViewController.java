@@ -40,7 +40,7 @@ import com.appnexus.opensdk.utils.StringUtil;
  * </p>
  */
 
-public abstract class MediatedAdViewController implements Displayable {
+public abstract class MediatedAdViewController {
 
 	/**
 	 * This enum contains the results from mediation calls sent
@@ -82,9 +82,10 @@ public abstract class MediatedAdViewController implements Displayable {
     private AdRequester requester;
     protected MediatedAd currentAd;
     private AdViewListener listener;
+    protected MediatedDisplayable mediatedDisplayable = new MediatedDisplayable(this);
 
-    private boolean hasFailed = false;
-    private boolean hasSucceeded = false;
+    boolean hasFailed = false;
+    boolean hasSucceeded = false;
 
     MediatedAdViewController(AdRequester requester, MediatedAd currentAd, AdViewListener listener) {
         this.requester = requester;
@@ -166,7 +167,7 @@ public abstract class MediatedAdViewController implements Displayable {
         return false;
     }
 
-    private void finishController() {
+    void finishController() {
         mAV = null;
         requester = null;
         currentAd = null;
@@ -189,7 +190,7 @@ public abstract class MediatedAdViewController implements Displayable {
         hasSucceeded = true;
 
         if (listener != null)
-            listener.onAdLoaded(this);
+            listener.onAdLoaded(mediatedDisplayable);
         fireResultCB(RESULT.SUCCESS);
     }
 
@@ -245,20 +246,6 @@ public abstract class MediatedAdViewController implements Displayable {
         if (hasFailed) return;
         if (listener != null)
             listener.onAdClicked();
-    }
-
-    /*
-    Overridden Displayable methods
-     */
-
-    @Override
-    public boolean failed() {
-        return hasFailed;
-    }
-
-    @Override
-    public void destroy() {
-        finishController();
     }
 
     /*

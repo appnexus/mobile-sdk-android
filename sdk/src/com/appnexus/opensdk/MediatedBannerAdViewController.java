@@ -26,15 +26,13 @@ import com.appnexus.opensdk.utils.Clog;
  * the AppNexus SDK.
  */
 
-public class MediatedBannerAdViewController extends MediatedAdViewController implements Displayable {
-
-    private View placeableView;
+public class MediatedBannerAdViewController extends MediatedAdViewController {
 
     static MediatedBannerAdViewController create(
             Activity activity, AdRequester requester,
             MediatedAd mediatedAd, AdViewListener listener) {
         MediatedBannerAdViewController out = new MediatedBannerAdViewController(activity, requester, mediatedAd, listener);
-        return out.failed() ? null : out;
+        return out.hasFailed ? null : out;
     }
 
     private MediatedBannerAdViewController(
@@ -52,7 +50,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
 
         startTimeout();
         try {
-            placeableView = ((MediatedBannerAdView) mAV).requestAd(this,
+            mediatedDisplayable.view = ((MediatedBannerAdView) mAV).requestAd(this,
                     activity,
                     currentAd.getParam(),
                     currentAd.getId(),
@@ -67,7 +65,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
             errorCode = RESULT.MEDIATED_SDK_UNAVAILABLE;
         }
 
-        if (placeableView == null) {
+        if (mediatedDisplayable.view == null) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_view_null));
             errorCode = RESULT.UNABLE_TO_FILL;
         }
