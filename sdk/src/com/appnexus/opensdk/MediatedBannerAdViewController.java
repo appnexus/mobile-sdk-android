@@ -50,12 +50,13 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
 
         startTimeout();
         try {
-            mediatedDisplayable.view = ((MediatedBannerAdView) mAV).requestAd(this,
+            View viewFromMediatedAdaptor = ((MediatedBannerAdView) mAV).requestAd(this,
                     activity,
                     currentAd.getParam(),
                     currentAd.getId(),
                     currentAd.getWidth(),
                     currentAd.getHeight());
+            mediatedDisplayable.setView(viewFromMediatedAdaptor);
         } catch (Exception e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
             errorCode = RESULT.INVALID_REQUEST;
@@ -65,7 +66,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
             errorCode = RESULT.MEDIATED_SDK_UNAVAILABLE;
         }
 
-        if (mediatedDisplayable.view == null) {
+        if (mediatedDisplayable.getView() == null) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_view_null));
             errorCode = RESULT.UNABLE_TO_FILL;
         }

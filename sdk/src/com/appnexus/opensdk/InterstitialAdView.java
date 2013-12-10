@@ -260,8 +260,8 @@ public class InterstitialAdView extends AdView {
             Pair<Long, Displayable> top = InterstitialAdView.q.peek();
             if (top != null && top.second instanceof MediatedDisplayable) {
                 MediatedDisplayable mediatedDisplayable = (MediatedDisplayable) top.second;
-                if (mediatedDisplayable.mAVC instanceof MediatedInterstitialAdViewController) {
-                    MediatedInterstitialAdViewController mAVC = (MediatedInterstitialAdViewController) mediatedDisplayable.mAVC;
+                if (mediatedDisplayable.getMAVC() instanceof MediatedInterstitialAdViewController) {
+                    MediatedInterstitialAdViewController mAVC = (MediatedInterstitialAdViewController) mediatedDisplayable.getMAVC();
                     return mAVC.isReady();
                 }
             }
@@ -289,8 +289,8 @@ public class InterstitialAdView extends AdView {
         Pair<Long, Displayable> top = InterstitialAdView.q.peek();
         if (top != null && top.second instanceof MediatedDisplayable) {
             MediatedDisplayable mediatedDisplayable = (MediatedDisplayable) top.second;
-            if (mediatedDisplayable.mAVC instanceof MediatedInterstitialAdViewController) {
-                MediatedInterstitialAdViewController mAVC = (MediatedInterstitialAdViewController) mediatedDisplayable.mAVC;
+            if (mediatedDisplayable.getMAVC() instanceof MediatedInterstitialAdViewController) {
+                MediatedInterstitialAdViewController mAVC = (MediatedInterstitialAdViewController) mediatedDisplayable.getMAVC();
                 mAVC.show();
 
                 //Pop the mediated view;

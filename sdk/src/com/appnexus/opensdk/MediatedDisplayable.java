@@ -19,8 +19,8 @@ package com.appnexus.opensdk;
 import android.view.View;
 
 class MediatedDisplayable implements Displayable {
-    View view;
-    MediatedAdViewController mAVC;
+    private View view;
+    private MediatedAdViewController mAVC;
 
     MediatedDisplayable(MediatedAdViewController mAVC) {
         this.mAVC = mAVC;
@@ -39,5 +39,17 @@ class MediatedDisplayable implements Displayable {
     @Override
     public void destroy() {
         mAVC.finishController();
+    }
+
+    void setView(View view) {
+        this.view = view;
+    }
+
+    MediatedAdViewController getMAVC() {
+        return mAVC;
+    }
+
+    void setMAVC(MediatedAdViewController mAVC) {
+        this.mAVC = mAVC;
     }
 }
