@@ -195,7 +195,7 @@ public class DebugFragment extends Fragment {
     };
 
     private class DebugAuctionWebViewClient extends WebViewClient {
-        WebView webView;
+        private WebView webView;
 
         private DebugAuctionWebViewClient(WebView view) {
             this.webView = view;
@@ -233,14 +233,10 @@ public class DebugFragment extends Fragment {
         String result;
 
         public String getUrl() {
-            StringBuilder params = new StringBuilder();
-            params.append("&id=").append(Prefs.getPlacementId(getActivity()));
-            params.append("&debug_member=").append(Prefs.getMemberId(getActivity()));
-            params.append("&dongle=").append(Prefs.getDongle(getActivity()));
-            params.append("&size=").append(Prefs.getSize(getActivity()));
-            params.append("&psa=").append(Prefs.getAllowPSAs(getActivity()) ? "1" : "0");
-            params.append("&ua=").append(Uri.encode(webView.getSettings().getUserAgentString()));
-            return Constants.DEBUG_AUCTION_URL + params.toString();
+            StringBuilder auctionURL = new StringBuilder(Clog.getLastRequest());
+            auctionURL.append("&debug_member=").append(Prefs.getMemberId(getActivity()));
+            auctionURL.append("&dongle=").append(Prefs.getDongle(getActivity()));
+            return auctionURL.toString();
         }
 
         public void runAuction() {
