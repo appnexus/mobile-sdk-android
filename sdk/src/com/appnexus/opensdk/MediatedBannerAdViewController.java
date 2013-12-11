@@ -75,14 +75,4 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
             onAdFailed(errorCode);
         }
     }
-
-    /**
-     * Get the banner ad view of the underlying third-party SDK.
-     *
-     * @return the third-party SDK's banner ad view.
-     */
-    @Override
-    public View getView() {
-        return placeableView;
-    }
 }
