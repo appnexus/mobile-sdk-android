@@ -209,7 +209,6 @@ class AdFetcher implements AdRequester {
         owner.fail();
     }
 
-    @Override
     public void dispatchResponse(final AdResponse response) {
 
         if ((owner.getMediatedAds() != null) && !owner.getMediatedAds().isEmpty()) {
@@ -226,8 +225,6 @@ class AdFetcher implements AdRequester {
                         owner.mAdFetcher,
                         owner.popMediatedAd(),
                         owner.getAdDispatcher());
-                if (output != null)
-                    output.getView();
             }
         } else if ((response != null)
                 && response.isMraid()) {
@@ -291,10 +288,6 @@ class AdFetcher implements AdRequester {
     @Override
     public AdView getOwner() {
         return owner;
-    }
-
-    public void setAdRequest(AdRequest adRequest) {
-        this.adRequest = adRequest;
     }
 
     public void clearDurations() {

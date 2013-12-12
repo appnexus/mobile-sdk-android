@@ -25,15 +25,13 @@ import com.appnexus.opensdk.utils.Clog;
  * SDK
  *
  */
-public class MediatedBannerAdViewController extends MediatedAdViewController implements Displayable {
-
-    private View placeableView;
+public class MediatedBannerAdViewController extends MediatedAdViewController {
 
     static MediatedBannerAdViewController create(
             Activity activity, AdRequester requester,
             MediatedAd mediatedAd, AdViewListener listener) {
         MediatedBannerAdViewController out = new MediatedBannerAdViewController(activity, requester, mediatedAd, listener);
-        return out.failed() ? null : out;
+        return out.hasFailed ? null : out;
     }
 
     private MediatedBannerAdViewController(
@@ -51,12 +49,13 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
 
         startTimeout();
         try {
-            placeableView = ((MediatedBannerAdView) mAV).requestAd(this,
+            View viewFromMediatedAdaptor = ((MediatedBannerAdView) mAV).requestAd(this,
                     activity,
                     currentAd.getParam(),
                     currentAd.getId(),
                     currentAd.getWidth(),
                     currentAd.getHeight());
+            mediatedDisplayable.setView(viewFromMediatedAdaptor);
         } catch (Exception e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
             errorCode = RESULT.INVALID_REQUEST;
@@ -66,7 +65,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
             errorCode = RESULT.MEDIATED_SDK_UNAVAILABLE;
         }
 
-        if (placeableView == null) {
+        if (mediatedDisplayable.getView() == null) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_view_null));
             errorCode = RESULT.UNABLE_TO_FILL;
         }
@@ -74,14 +73,5 @@ public class MediatedBannerAdViewController extends MediatedAdViewController imp
         if (errorCode != null) {
             onAdFailed(errorCode);
         }
-    }
-
-    /**
-     * Returns the Banner view of the underlying SDK. 
-     * @return the mediated SDK's view.
-     */
-    @Override
-    public View getView() {
-        return placeableView;
     }
 }

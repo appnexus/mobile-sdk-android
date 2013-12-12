@@ -49,12 +49,7 @@ public class Settings {
     public final int MIN_REFRESH_MILLISECONDS = 15000;
     public final int DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY = 10000;
 
-    public /*final*/ long HTTP_RETRY_INTERVAL = 10000;
-
     public final long MEDIATED_NETWORK_TIMEOUT = 15000;
-
-    public final int MAX_BLANK_RETRIES = 1;
-    public final int MAX_CONNECTIVITY_RETRIES = 1;
 
     public /*final*/ String BASE_URL = "http://mediation.adnxs.com/mob?";
     public final String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";

@@ -35,18 +35,4 @@ interface AdRequester {
      * Used to get the owner adview of the request
      */
     public AdView getOwner();
-
-    /**
-     * Called when a response to the original request is received
-     *
-     * @param response
-     */
-    public void dispatchResponse(final AdResponse response);
-    /**
-     * Used to set inform the AdRequester which AdRequest is currently being run or pending
-     *
-     * @param adRequest the current ad request
-     */
-    public void setAdRequest(AdRequest adRequest);
-
 }
