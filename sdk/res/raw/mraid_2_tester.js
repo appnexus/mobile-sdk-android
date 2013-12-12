@@ -19,7 +19,7 @@
 
 	document.playVideo = function(){
 	    alert("PLAY_VIDEO");
-	    mraid.playVideo("http://upload.wikimedia.org/wikipedia/commons/4/47/Cat_and_kittens.webm");
+	    mraid.playVideo("http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4");
 	}
 
 	document.addJuly4th = function(){
@@ -198,7 +198,7 @@
             button11.setAttribute('onclick', '(function(){ \
                 alert("mraid.supports(sms) = "+mraid.supports(\"sms\"));\
                 alert("mraid.supports(tel) = "+mraid.supports(\"tel\"));\
-                alert("mraid.supports(cal) = "+mraid.supports(\"cal\"));\
+                alert("mraid.supports(cal) = "+mraid.supports(\"calendar\"));\
                 alert("mraid.supports(storePicture) = "+mraid.supports(\"storePicture\"));\
                 alert("mraid.supports(inlineVideo) = "+mraid.supports(\"inlineVideo\"));\
                 })();');

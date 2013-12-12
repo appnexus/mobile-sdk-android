@@ -435,7 +435,7 @@ public abstract class AdView extends FrameLayout {
                 getLayoutParams().height = h;
         }
         // Add a stock close_button button to the top right corner
-        if(close_button!=null){
+        if(close_button!=null && ((ViewGroup)close_button.getParent())!=null){
             ((ViewGroup)close_button.getParent()).removeView(close_button);
             close_button.setVisibility(GONE);
         }
