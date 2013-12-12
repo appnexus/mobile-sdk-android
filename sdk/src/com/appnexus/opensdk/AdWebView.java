@@ -36,7 +36,7 @@ import com.appnexus.opensdk.utils.Settings;
 
 @SuppressLint("ViewConstructor")
 // This will only be constructed by AdFetcher.
-public class AdWebView extends WebView implements Displayable {
+class AdWebView extends WebView implements Displayable {
     private boolean failed = false;
     private AdView destination;
 
@@ -47,7 +47,8 @@ public class AdWebView extends WebView implements Displayable {
         setup();
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
+    @SuppressWarnings("deprecation")
+	@SuppressLint("SetJavaScriptEnabled")
     private void setup() {
         Settings.getSettings().ua = this.getSettings().getUserAgentString();
         this.getSettings().setJavaScriptEnabled(true);

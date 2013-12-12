@@ -1,6 +1,5 @@
 package com.appnexus.opensdk;
 
-import android.R;
 import android.app.Activity;
 import android.graphics.Color;
 import android.view.Gravity;
@@ -8,9 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+
 import com.appnexus.opensdk.utils.Clog;
 
-public class VideoEnabledWebChromeClient extends BaseWebChromeClient {
+class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     CustomViewCallback customViewCallback;
     FrameLayout frame;
     Activity context;
@@ -34,7 +34,7 @@ public class VideoEnabledWebChromeClient extends BaseWebChromeClient {
         if (view instanceof FrameLayout) {
             frame = (FrameLayout) view;
 
-            ViewGroup root = (ViewGroup) context.findViewById(R.id.content);
+            ViewGroup root = (ViewGroup) context.findViewById(android.R.id.content);
             if (root == null) {
                 Clog.e(Clog.baseLogTag, "onShowCustomView: could not find root view");
                 return;
@@ -64,7 +64,7 @@ public class VideoEnabledWebChromeClient extends BaseWebChromeClient {
             return;
         }
 
-        ViewGroup root = ((ViewGroup) context.findViewById(R.id.content));
+        ViewGroup root = ((ViewGroup) context.findViewById(android.R.id.content));
         if (root == null) {
             Clog.e(Clog.baseLogTag, "onHideCustomView: could not find root view");
             return;

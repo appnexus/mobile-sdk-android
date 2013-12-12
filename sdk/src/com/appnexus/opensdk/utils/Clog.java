@@ -183,6 +183,12 @@ public class Clog {
         return String.format(error_context.getString(id), b, i);
     }
 
+    public static String getString(int id, int i, int j) {
+        if (clogged || error_context == null)
+            return null;
+        return String.format(error_context.getString(id), i, j);
+    }
+
     /**
      * lastRequest/lastResponse helper methods
      */

@@ -62,6 +62,7 @@
 	<string formatted="false" name="set_width">setAdWidth() to: %d</string>
 	<string formatted="false" name="get_width">getAdWidth() returned %d</string>
 	<string formatted="false" name="get_height">getAdHeight() returned %d</string>
+	<string formatted="false" name="set_size">setAdSize() to: %dx%d</string>
 	<string formatted="false" name="init">The AppNexus OpenSDK is initializing</string>
 	<string formatted="false" name="get_should_resume">getShouldReloadOnResume() returned %b</string>
 	<string formatted="false" name="set_should_resume">setShouldReloadOnResume() to %b</string>

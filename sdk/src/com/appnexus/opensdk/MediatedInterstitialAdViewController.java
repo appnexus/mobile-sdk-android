@@ -19,11 +19,16 @@ import android.app.Activity;
 import android.view.View;
 import com.appnexus.opensdk.utils.Clog;
 
-public class MediatedInterstitialAdViewController extends MediatedAdViewController implements Displayable {
+/**
+* An object of this type is sent to the 3rd party SDK's MediatedInterstitialAdView object. The 3rd party
+* SDK uses this object from within its interstitial view implementation to send events back to the AppNexus
+* SDK
+*
+*/public class MediatedInterstitialAdViewController extends MediatedAdViewController implements Displayable {
 
     private Activity activity;
 
-    static public MediatedInterstitialAdViewController create(
+    static MediatedInterstitialAdViewController create(
             Activity activity, AdRequester requester,
             MediatedAd mediatedAd, AdViewListener listener) {
         MediatedInterstitialAdViewController out = new MediatedInterstitialAdViewController(activity, requester, mediatedAd, listener);
@@ -74,5 +79,9 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
             onAdFailed(errorCode);
 
         return null;
+    }
+
+    boolean isReady() {
+        return ((MediatedInterstitialAdView) mAV).isReady();
     }
 }

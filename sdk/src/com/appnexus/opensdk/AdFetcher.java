@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class AdFetcher implements AdRequester {
+class AdFetcher implements AdRequester {
     private ScheduledExecutorService tasker;
     private final AdView owner;
     private int period = -1;
@@ -219,13 +219,13 @@ public class AdFetcher implements AdRequester {
                         (Activity) owner.getContext(),
                         owner.mAdFetcher,
                         owner.popMediatedAd(),
-                        owner);
+                        owner.getAdDispatcher());
             } else if (owner.isInterstitial()) {
                 MediatedInterstitialAdViewController output = MediatedInterstitialAdViewController.create(
                         (Activity) owner.getContext(),
                         owner.mAdFetcher,
                         owner.popMediatedAd(),
-                        owner);
+                        owner.getAdDispatcher());
                 if (output != null)
                     output.getView();
             }
@@ -234,7 +234,7 @@ public class AdFetcher implements AdRequester {
             // mraid
             MRAIDWebView output = new MRAIDWebView(owner);
             output.loadAd(response);
-            owner.onAdLoaded(output);
+            owner.getAdDispatcher().onAdLoaded(output);
         } else {
             AdWebView output = new AdWebView(owner);
             output.loadAd(response);
@@ -245,7 +245,7 @@ public class AdFetcher implements AdRequester {
                     bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), output);
                 }
             }
-            owner.onAdLoaded(output);
+            owner.getAdDispatcher().onAdLoaded(output);
         }
     }
 
@@ -283,7 +283,6 @@ public class AdFetcher implements AdRequester {
             @Override
             public void run() {
                 AdFetcher.this.dispatchResponse(response);
-
             }
         });
 

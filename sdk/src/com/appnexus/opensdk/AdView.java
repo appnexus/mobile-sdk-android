@@ -34,345 +34,301 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.StringUtil;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
- * The parent class of InterstitialAdView and BannerAdView. This can not be
- * instantiated.
+ * The parent class of InterstitialAdView and BannerAdView. This may not be
+ * instantiated directly. It public methods are accessed through one of its sub classes.
  *
- * @author jacob
+ *
  */
-public abstract class AdView extends FrameLayout implements AdViewListener {
+public abstract class AdView extends FrameLayout {
 
-    AdFetcher mAdFetcher;
-    String placementID;
-    boolean opensNativeBrowser = false;
-    int measuredWidth;
-    int measuredHeight;
-    private boolean measured = false;
-    private int width = -1;
-    private int height = -1;
-    boolean shouldServePSAs = true;
-    private float reserve = 0.00f;
-    String age;
-    GENDER gender;
-    ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
-    boolean mraid_expand = false;
-    AdListener adListener;
-    private BrowserStyle browserStyle;
-    private LinkedList<MediatedAd> mediatedAds;
-    final Handler handler = new Handler(Looper.getMainLooper());
-    private Displayable lastDisplayable;
+	AdFetcher mAdFetcher;
+	String placementID;
+	boolean opensNativeBrowser = false;
+	int measuredWidth;
+	int measuredHeight;
+	private boolean measured = false;
+	private int width = -1;
+	private int height = -1;
+	boolean shouldServePSAs = true;
+	private float reserve = 0.00f;
+	String age;
+	GENDER gender = GENDER.UNKNOWN;
+	ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
+	boolean mraid_expand = false;
+	AdListener adListener;
+	private BrowserStyle browserStyle;
+	private LinkedList<MediatedAd> mediatedAds;
+	final Handler handler = new Handler(Looper.getMainLooper());
+	private Displayable lastDisplayable;
+	private AdListenerDispatch dispatcher;
 
-    /**
-     * Begin Construction *
-     */
+	/**
+	 * Begin Construction
+	 */
+	@SuppressWarnings("javadoc")
+	AdView(Context context) {
+		super(context, null);
+		setup(context, null);
+	}
 
-    @SuppressWarnings("javadoc")
-    AdView(Context context) {
-        super(context, null);
-        setup(context, null);
-    }
+	AdView(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		setup(context, attrs);
 
-    AdView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        setup(context, attrs);
+	}
 
-    }
+	AdView(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+		setup(context, attrs);
+	}
 
-    AdView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        setup(context, attrs);
-    }
+	void setup(Context context, AttributeSet attrs) {
+		dispatcher = new AdView.AdListenerDispatch(handler);
 
-    void setup(Context context, AttributeSet attrs) {
-        // Store self.context in the settings for errors
-        Clog.error_context = this.getContext();
+		// Store self.context in the settings for errors
+		Clog.error_context = this.getContext();
 
-        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.new_adview));
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.new_adview));
 
-        SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        if (prefs.getBoolean("opensdk_first_launch", true)) {
-            // This is the first launch, store a value to remember
-            Clog.v(Clog.baseLogTag,
-                    Clog.getString(R.string.first_opensdk_launch));
-            Settings.getSettings().first_launch = true;
-            prefs.edit().putBoolean("opensdk_first_launch", false).commit();
-        } else {
-            // Found the stored value, this is NOT the first launch
-            Clog.v(Clog.baseLogTag,
-                    Clog.getString(R.string.not_first_opensdk_launch));
-            Settings.getSettings().first_launch = false;
-        }
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		if (prefs.getBoolean("opensdk_first_launch", true)) {
+			// This is the first launch, store a value to remember
+			Clog.v(Clog.baseLogTag,
+					Clog.getString(R.string.first_opensdk_launch));
+			Settings.getSettings().first_launch = true;
+			prefs.edit().putBoolean("opensdk_first_launch", false).commit();
+		} else {
+			// Found the stored value, this is NOT the first launch
+			Clog.v(Clog.baseLogTag,
+					Clog.getString(R.string.not_first_opensdk_launch));
+			Settings.getSettings().first_launch = false;
+		}
 
-        // Store the UA in the settings
-        Settings.getSettings().ua = new WebView(context).getSettings()
-                .getUserAgentString();
-        Clog.v(Clog.baseLogTag,
-                Clog.getString(R.string.ua, Settings.getSettings().ua));
+		// Store the UA in the settings
+		Settings.getSettings().ua = new WebView(context).getSettings()
+				.getUserAgentString();
+		Clog.v(Clog.baseLogTag,
+				Clog.getString(R.string.ua, Settings.getSettings().ua));
 
-        // Store the AppID in the settings
-        Settings.getSettings().app_id = context.getApplicationContext()
-                .getPackageName();
-        Clog.v(Clog.baseLogTag,
-                Clog.getString(R.string.appid, Settings.getSettings().app_id));
+		// Store the AppID in the settings
+		Settings.getSettings().app_id = context.getApplicationContext()
+				.getPackageName();
+		Clog.v(Clog.baseLogTag,
+				Clog.getString(R.string.appid, Settings.getSettings().app_id));
 
-        Clog.v(Clog.baseLogTag, Clog.getString(R.string.making_adman));
-        // Make an AdFetcher - Continue the creation pass
-        mAdFetcher = new AdFetcher(this);
-        // Load user variables only if attrs isn't null
-        if (attrs != null)
-            loadVariablesFromXML(context, attrs);
+		Clog.v(Clog.baseLogTag, Clog.getString(R.string.making_adman));
+		// Make an AdFetcher - Continue the creation pass
+		mAdFetcher = new AdFetcher(this);
+		// Load user variables only if attrs isn't null
+		if (attrs != null)
+			loadVariablesFromXML(context, attrs);
 
-        // We don't start the ad requesting here, since the view hasn't been
-        // sized yet.
-    }
+		// We don't start the ad requesting here, since the view hasn't been
+		// sized yet.
+	}
 
-    @Override
-    public void onLayout(boolean changed, int left, int top, int right,
-                         int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        if (mraid_expand) {
-            mraid_expand = false;
-            return;
-        }
-        if (!measured || changed) {
-            // Convert to dips
-            float density = getContext().getResources().getDisplayMetrics().density;
-            measuredWidth = (int) ((right - left) / density + 0.5f);
-            measuredHeight = (int) ((bottom - top) / density + 0.5f);
-            if ((measuredHeight < height || measuredWidth < width) && measuredHeight > 0 && measuredWidth > 0) {
-                Clog.e(Clog.baseLogTag, Clog.getString(R.string.adsize_too_big,
-                        measuredWidth, measuredHeight, width, height));
-                // Hide the space, since no ad will be loaded due to error
-                hide();
-                // Stop any request in progress
-                if (mAdFetcher != null)
-                    mAdFetcher.stop();
-                // Returning here allows the SDK to re-request when the layout
-                // next changes, and maybe the error will be amended.
-                return;
-            }
+	/**
+	 * The view layout
+	 */
+	@Override
+	protected void onLayout(boolean changed, int left, int top, int right,
+			int bottom) {
+		super.onLayout(changed, left, top, right, bottom);
+		if (mraid_expand) {
+			mraid_expand = false;
+			return;
+		}
+		if (!measured || changed) {
+			// Convert to dips
+			float density = getContext().getResources().getDisplayMetrics().density;
+			measuredWidth = (int) ((right - left) / density + 0.5f);
+			measuredHeight = (int) ((bottom - top) / density + 0.5f);
+			if ((measuredHeight < height || measuredWidth < width)
+					&& measuredHeight > 0 && measuredWidth > 0) {
+				Clog.e(Clog.baseLogTag, Clog.getString(R.string.adsize_too_big,
+						measuredWidth, measuredHeight, width, height));
+				// Hide the space, since no ad will be loaded due to error
+				hide();
+				// Stop any request in progress
+				if (mAdFetcher != null)
+					mAdFetcher.stop();
+				// Returning here allows the SDK to re-request when the layout
+				// next changes, and maybe the error will be amended.
+				return;
+			}
 
-            // Hide the adview
-            if (!measured) {
-                hide();
-            }
+			// Hide the adview
+			if (!measured) {
+				hide();
+			}
 
-            measured = true;
+			measured = true;
 
+		}
+	}
 
-        }
-    }
+	boolean isMRAIDExpanded() {
+		if (this.getChildCount() > 0
+				&& this.getChildAt(0) instanceof MRAIDWebView
+				&& ((MRAIDWebView) getChildAt(0)).getImplementation().expanded) {
+			return true;
+		}
+		return false;
+	}
 
-    boolean isMRAIDExpanded() {
-        if (this.getChildCount() > 0
-                && this.getChildAt(0) instanceof MRAIDWebView
-                && ((MRAIDWebView) getChildAt(0)).getImplementation().expanded) {
-            return true;
-        }
-        return false;
-    }
+	boolean isReadyToStart() {
+		if (isMRAIDExpanded()) {
+			Clog.e(Clog.baseLogTag, Clog.getString(R.string.already_expanded));
+			return false;
+		}
+		if (StringUtil.isEmpty(placementID)) {
+			Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_placement_id));
+			return false;
+		}
+		return true;
+	}
 
-    boolean isReadyToStart() {
-        if (isMRAIDExpanded()) {
-            Clog.e(Clog.baseLogTag, Clog.getString(R.string.already_expanded));
-            return false;
-        }
-        if (placementID == null || placementID.isEmpty()) {
-            Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_placement_id));
-            return false;
-        }
-        return true;
-    }
+	/**
+	 * Loads a new ad, if the ad space is visible. You should have called
+	 * setPlacementID() before invoking this method.
+	 *
+	 * @return true is ad will begin loading, false otherwise.
+	 *
+	 */
+	protected boolean loadAd() {
+		if (!isReadyToStart())
+			return false;
+		if (this.getWindowVisibility() == VISIBLE && mAdFetcher != null) {
+			// Reload Ad Fetcher to get new ad at user's request
+			mAdFetcher.stop();
+			mAdFetcher.clearDurations();
+			mAdFetcher.start();
+			return true;
+		}
+		return false;
+	}
 
-    /**
-     * Loads a new ad, if the ad space is visible.
-     *
-     * @return true is ad will begin loading, false if ad cannot be loaded
-     * at this time given the current settings
-     */
-    public boolean loadAd() {
-        if (!isReadyToStart())
-            return false;
-        if (this.getWindowVisibility() == VISIBLE && mAdFetcher != null) {
-            // Reload Ad Fetcher to get new ad at user's request
-            mAdFetcher.stop();
-            mAdFetcher.clearDurations();
-            mAdFetcher.start();
-            return true;
-        }
-        return false;
-    }
+	/**
+	 * Loads a new ad, if the ad space is visible, and sets the placement id
+	 * attribute of the AdView to the supplied parameter.
+	 *
+	 * @param placementID   The new placement id to use.
+	 *
+	 * @return true is ad will begin loading, false otherwise
+	 */
+	public boolean loadAd(String placementID) {
+		this.setPlacementID(placementID);
+		return loadAd();
+	}
 
-    /**
-     * Loads a new ad, if the ad space is visible, and sets the placement id
-     * attribute of the AdView to the supplied parameter.
-     *
-     * @param placementID The new placement id to use.
-     *
-     * @return true is ad will begin loading, false if ad cannot be loaded
-     * at this time given the current settings
-     */
-    public boolean loadAd(String placementID) {
-        this.setPlacementID(placementID);
-        return loadAd();
-    }
+	void loadHtml(String content, int width, int height) {
+		this.mAdFetcher.stop();
 
-    /**
-     * Loads a new ad, if the ad space is visible, and sets the placement id, ad
-     * width, and ad height attribute of the AdView to the supplied parameters.
-     *
-     * @param placementID The new placement id to use.
-     * @param width       The new width to use.
-     * @param height      The new height to use.
-     *
-     * @return true is ad will begin loading, false if ad cannot be loaded
-     * at this time given the current settings
-     */
-    public boolean loadAd(String placementID, int width, int height) {
-        this.setAdHeight(height);
-        this.setAdWidth(width);
-        this.setPlacementID(placementID);
-        return loadAd();
-    }
+		AdWebView awv = new AdWebView(this);
+		awv.loadData(content, "text/html", "UTF-8");
+		FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(width,
+				height);
+		awv.setLayoutParams(lp);
+		this.display(awv);
+	}
 
-    public void loadHtml(String content, int width, int height) {
-        this.mAdFetcher.stop();
-
-        AdWebView awv = new AdWebView(this);
-        awv.loadData(content, "text/html", "UTF-8");
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(width,
-                height);
-        awv.setLayoutParams(lp);
-        this.display(awv);
-    }
-
-    protected abstract void loadVariablesFromXML(Context context,
-                                                 AttributeSet attrs);
+	protected abstract void loadVariablesFromXML(Context context,
+			AttributeSet attrs);
 
 	/*
-     * End Construction
+	 * End Construction
 	 */
 
+	void display(Displayable d) {
+		if ((d == null) || d.failed()) {
+			// The displayable has failed to be parsed or turned into a View.
+			fail();
+			return;
+		}
+		if (lastDisplayable != null) {
+			if (lastDisplayable instanceof MediatedAdViewController) {
+				lastDisplayable.destroy();
+			}
+			lastDisplayable = null;
+		}
 
-    void display(Displayable d) {
-        if ((d == null) || d.failed()) {
-            // The displayable has failed to be parsed or turned into a View.
-            fail();
-            return;
-        }
-        if (lastDisplayable != null) {
-            if(lastDisplayable instanceof MediatedAdViewController){
-                lastDisplayable.destroy();
-            }
-            lastDisplayable = null;
-        }
+		WebView webView = null;
+		if (getChildAt(0) instanceof WebView) {
+			webView = (WebView) getChildAt(0);
+		}
 
-        WebView webView = null;
-        if (getChildAt(0) instanceof WebView) {
-            webView = (WebView) getChildAt(0);
-        }
+		this.removeAllViews();
+		if (webView != null)
+			webView.destroy();
+		if (d.getView() == null) {
+			return;
+		}
+		this.addView(d.getView());
+		lastDisplayable = d;
+		unhide();
+	}
 
-        this.removeAllViews();
-        if (webView != null)
-            webView.destroy();
-        if (d.getView() == null) {
-            return;
-        }
-        this.addView(d.getView());
-        lastDisplayable = d;
-        unhide();
-    }
+	void unhide() {
+		if (getVisibility() != VISIBLE) {
+			setVisibility(VISIBLE);
+		}
+	}
 
-    void unhide() {
-        if (getVisibility() != VISIBLE) {
-            setVisibility(VISIBLE);
-        }
-    }
+	void hide() {
+		if (getVisibility() != GONE)
+			setVisibility(GONE);
+	}
 
-    void hide() {
-        if (getVisibility() != GONE)
-            setVisibility(GONE);
-    }
+	/**
+	 * Retrieve the current placement ID.
+	 *
+	 * @return The current placement id.
+	 */
+	public String getPlacementID() {
+		Clog.d(Clog.publicFunctionsLogTag,
+				Clog.getString(R.string.get_placement_id, placementID));
+		return placementID;
+	}
 
-    /**
-     * @return The current placement id.
-     */
-    public String getPlacementID() {
-        Clog.d(Clog.publicFunctionsLogTag,
-                Clog.getString(R.string.get_placement_id, placementID));
-        return placementID;
-    }
+	/**
+	 * Sets the placement id of the AdView. The placement ID identifies a
+	 * location in your application. You must have a valid active placement ID
+	 * to monetize your application.
+	 *
+	 * @param placementID
+	 *            The placement id to use
+	 */
+	public void setPlacementID(String placementID) {
+		Clog.d(Clog.publicFunctionsLogTag,
+				Clog.getString(R.string.set_placement_id, placementID));
+		this.placementID = placementID;
+	}
 
-    /**
-     * Sets the placement id of the AdView.
-     *
-     * @param placementID The placement id to use
-     */
-    public void setPlacementID(String placementID) {
-        Clog.d(Clog.publicFunctionsLogTag,
-                Clog.getString(R.string.set_placement_id, placementID));
-        this.placementID = placementID;
-    }
+	@Override
+	protected void finalize() {
+		try {
+			super.finalize();
+		} catch (Throwable e) {
+		}
+		// Just in case, kill the adfetcher's service
+		if (mAdFetcher != null)
+			mAdFetcher.stop();
+	}
 
-    @Override
-    protected void finalize() {
-        try {
-            super.finalize();
-        } catch (Throwable e) {
-        }
-        // Just in case, kill the adfetcher's service
-        if (mAdFetcher != null)
-            mAdFetcher.stop();
-    }
+	int getContainerWidth() {
+		return measuredWidth;
+	}
 
-    /**
-     * Sets the height of the ad to request.
-     *
-     * @param h The height, in pixels, to use.
-     */
-    public void setAdHeight(int h) {
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_height, h));
-        height = h;
-    }
-
-    /**
-     * Sets the width of the ad to request.
-     *
-     * @param w The width, in pixels, to use.
-     */
-    public void setAdWidth(int w) {
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_width, w));
-        width = w;
-    }
-
-    /**
-     * @return The height of the ad to be requested.
-     */
-    public int getAdHeight() {
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_height, height));
-        return height;
-    }
-
-    /**
-     * @return The width of the ad to be requested.
-     */
-    public int getAdWidth() {
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_width, width));
-        return width;
-    }
-
-    int getContainerWidth() {
-        return measuredWidth;
-    }
-
-    int getContainerHeight() {
-        return measuredHeight;
-    }
+	int getContainerHeight() {
+		return measuredHeight;
+	}
 
     // Used only by MRAID
     ImageButton close_button;
@@ -469,87 +425,6 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         }
     }
 
-    /**
-     *
-     * @return true if the AdView is a BannerAdView
-     */
-    abstract boolean isBanner();
-
-    /**
-     *
-     * @return true if the AdView is an InterstitialAdView
-     */
-    abstract boolean isInterstitial();
-
-    /**
-     * Sets the listener that the InterstitialAdView will call events in.
-     *
-     * @param listener The {@link AdListener} object to use.
-     */
-    public void setAdListener(AdListener listener) {
-        Clog.d(Clog.publicFunctionsLogTag,
-                Clog.getString(R.string.set_ad_listener));
-        adListener = listener;
-    }
-
-    /**
-     * Gets the listener that the InterstitialAdView will call events in.
-     *
-     * @return The {@link AdListener} object in use.
-     */
-    public AdListener getAdListener() {
-        Clog.d(Clog.publicFunctionsLogTag,
-                Clog.getString(R.string.get_ad_listener));
-        return adListener;
-    }
-
-    void fail() {
-        onAdFailed(true);
-    }
-
-    /**
-     * @return whether or not the native browser is used instead of the in-app
-     *         browser.
-     */
-    public boolean getOpensNativeBrowser() {
-        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
-                R.string.get_opens_native_browser, opensNativeBrowser));
-        return opensNativeBrowser;
-    }
-
-    /**
-     * Set this to true to disable the in-app browser.
-     *
-     * @param opensNativeBrowser
-     */
-    public void setOpensNativeBrowser(boolean opensNativeBrowser) {
-        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
-                R.string.set_opens_native_browser, opensNativeBrowser));
-        this.opensNativeBrowser = opensNativeBrowser;
-    }
-
-    BrowserStyle getBrowserStyle() {
-        return browserStyle;
-    }
-
-    protected void setBrowserStyle(BrowserStyle browserStyle) {
-        this.browserStyle = browserStyle;
-    }
-
-    /**
-     * @return Whether this placement accepts PSAs if no ad is served.
-     */
-    public boolean getShouldServePSAs() {
-        return shouldServePSAs;
-    }
-
-    /**
-     * @param shouldServePSAs Whether this placement accepts PSAs if no ad is served.
-     */
-    public void setShouldServePSAs(boolean shouldServePSAs) {
-        this.shouldServePSAs = shouldServePSAs;
-    }
-
     public void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean,
                        final MRAIDImplementation caller) {
         mraid_expand = true;
@@ -611,164 +486,328 @@ public abstract class AdView extends FrameLayout implements AdViewListener {
         });
         this.addView(close_button);
     }
+	/**
+	 *
+	 * @return true if the AdView is a BannerAdView
+	 */
+	abstract boolean isBanner();
 
-    public float getReserve() {
-        return reserve;
-    }
+	/**
+	 *
+	 * @return true if the AdView is an InterstitialAdView
+	 */
+	abstract boolean isInterstitial();
 
-    public void setReserve(float reserve) {
-        this.reserve = reserve;
-    }
+	/**
+	 * Sets the currently installed listener that the SDK will send events on.
+	 *
+	 * @param listener
+	 *            The {@link AdListener} object to use.
+	 */
+	public void setAdListener(AdListener listener) {
+		Clog.d(Clog.publicFunctionsLogTag,
+				Clog.getString(R.string.set_ad_listener));
+		adListener = listener;
+	}
 
-    public String getAge() {
-        return age;
-    }
+	/**
+	 * Gets the currently installed listener that the SDK will send events on.
+	 *
+	 * @return The {@link AdListener} object in use.
+	 */
+	public AdListener getAdListener() {
+		Clog.d(Clog.publicFunctionsLogTag,
+				Clog.getString(R.string.get_ad_listener));
+		return adListener;
+	}
 
-    /**
-     *
-     * @param age should be a numerical age, birth year, or hyphenated age range.
-     *            For example: "56", "1974", or "25-35"
-     */
-    public void setAge(String age) {
-        this.age = age;
-    }
+	void fail() {
+		this.getAdDispatcher().onAdFailed(true);
+	}
 
-    public enum GENDER {
-        MALE,
-        FEMALE
-    }
+	/**
+	 * Retrieve the inapp or native browser setting.
+	 *
+	 * @return whether or not the devices native browser is used instead of the
+	 *         in-app browser.
+	 */
+	public boolean getOpensNativeBrowser() {
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
+				R.string.get_opens_native_browser, opensNativeBrowser));
+		return opensNativeBrowser;
+	}
 
-    public GENDER getGender() {
-        return gender;
-    }
+	/**
+	 * Set this to true to disable the in-app browser. That will cause url's to
+	 * open in the device's native browser e.g. Chrome. If set to true when a
+	 * user clicks on an ad your app will be paused and the native browser will
+	 * open. Set this to false to enabled the in-app browser. Which is a
+	 * lightweight browser that runs within your app. The default value is
+	 * false.
+	 *
+	 * @param opensNativeBrowser
+	 */
+	public void setOpensNativeBrowser(boolean opensNativeBrowser) {
+		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
+				R.string.set_opens_native_browser, opensNativeBrowser));
+		this.opensNativeBrowser = opensNativeBrowser;
+	}
 
-    /**
-     *
-     * @param gender should be either "m" for male or "f" for female
-     */
-    public void setGender(GENDER gender) {
-        this.gender = gender;
-    }
+	BrowserStyle getBrowserStyle() {
+		return browserStyle;
+	}
 
-    /**
-     * add a custom keyword to the request url for the ad
-     * @param key keyword name to add, cannot be null or empty
-     * @param value keyword value, cannot be null
-     */
-    public void addCustomKeywords(String key, String value) {
-        if ((key == null) || (key.isEmpty()) || (value == null)) {
-            return;
-        }
-        customKeywords.add(new Pair<String, String>(key, value));
-    }
+	protected void setBrowserStyle(BrowserStyle browserStyle) {
+		this.browserStyle = browserStyle;
+	}
 
-    /**
-     * remove a custom keyword from the request url for the ad
-     * @param key keyword name to remove, cannot be null or empty
-     */
-    public void removeCustomKeyword(String key) {
-        if ((key == null) || (key.isEmpty()))
-            return;
+	/**
+	 * Retrieve the current PSA setting
+	 *
+	 * @return Whether this placement accepts PSAs if no ad is served.
+	 */
+	public boolean getShouldServePSAs() {
+		return shouldServePSAs;
+	}
 
-        for (int i = 0; i < customKeywords.size(); i++) {
-            Pair<String, String> pair = customKeywords.get(i);
-            if (pair.first.equals(key)) {
-                customKeywords.remove(i);
-                break;
-            }
-        }
-    }
+	/**
+	 * Allows overriding the platform behavior in the case there is no ad
+	 * currently available. If set to true the platform will retrieve and
+	 * displaya PSA (Public Service Announcement) . Set the value to false it
+	 * will return no ad.
+	 *
+	 * @param shouldServePSAs
+	 *            Whether this placement is willing to accept PSA if no ad is
+	 *            served.
+	 */
+	public void setShouldServePSAs(boolean shouldServePSAs) {
+		this.shouldServePSAs = shouldServePSAs;
+	}
 
-    public ArrayList<Pair<String, String>> getCustomKeywords() {
-        return customKeywords;
-    }
+	/**
+	 * Retrieve the minimum price. A value of zero indicates no minimum.
+	 *
+	 * @return The minimum price zero indicates none.
+	 */
+	public float getReserve() {
+		return reserve;
+	}
 
-    static class BrowserStyle {
+	/**
+	 * Set a minimum price. Note that setting a minimum may negatively affect
+	 * monetization. Setting this value to zero disables the minimum price.
+	 * Default value is zero.
+	 *
+	 * @param reserve The reserve in CPM.
+	 */
+	public void setReserve(float reserve) {
+		this.reserve = reserve;
+	}
 
-        public BrowserStyle(Drawable forwardButton, Drawable backButton,
-                            Drawable refreshButton) {
-            this.forwardButton = forwardButton;
-            this.backButton = backButton;
-            this.refreshButton = refreshButton;
-        }
+	/**
+	 * Retrieve the current users Age. Note this is a string as it may be an
+	 * age, birth year or age range. The default value is an empty string.
+	 *
+	 * @return The age
+	 */
+	public String getAge() {
+		return age;
+	}
 
-        final Drawable forwardButton;
-        final Drawable backButton;
-        final Drawable refreshButton;
+	/**
+	 * Set's the user's age. should be used if age or age range is known.
+	 *
+	 * @param age
+	 *            should be a numerical age, birth year, or hyphenated age
+	 *            range. For example: "56", "1974", or "25-35"
+	 */
+	public void setAge(String age) {
+		this.age = age;
+	}
 
-        static final ArrayList<Pair<String, BrowserStyle>> bridge = new ArrayList<Pair<String, BrowserStyle>>();
-    }
+	/**
+	 *
+	 * Users gender enumeration
+	 *
+	 */
+	public enum GENDER {
+		UNKNOWN,
+		MALE,
+		FEMALE,
 
-    @Override
-    public void onAdLoaded(final Displayable d) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                display(d);
-                if (adListener != null)
-                    adListener.onAdLoaded(AdView.this);
-            }
-        });
-    }
+	}
 
-    @Override
-    public void onAdFailed(boolean noMoreAds) {
-        // wait until mediation waterfall is complete before calling adListener
-        if (!noMoreAds)
-            return;
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (adListener != null)
-                    adListener.onAdRequestFailed(AdView.this);
-            }
-        });
-    }
+	/**
+	 * Get the current user's gender if available
+	 *
+	 * @return The gender
+	 */
+	public GENDER getGender() {
+		return gender;
+	}
 
-    @Override
-    public void onAdExpanded() {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (adListener != null)
-                    adListener.onAdExpanded(AdView.this);
-            }
-        });
-    }
+	/**
+	 * Set the users gender if it is known. Default value is UNKNOWN
+	 *
+	 * @param gender
+	 *            One of UNKNOWN,MALE,FEMALE
+	 */
+	public void setGender(GENDER gender) {
+		this.gender = gender;
+	}
 
-    @Override
-    public void onAdCollapsed() {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (adListener != null)
-                    adListener.onAdCollapsed(AdView.this);
-            }
-        });
-    }
+	/**
+	 * Add a custom keyword to the request url for the ad. This will be used to
+	 * allow custom targeting parameters within the AppNexus platform. You will
+	 * be given the names and to use by App Nexus account representative.
+	 *
+	 * @param key
+	 *            keyword name to add, cannot be null or empty
+	 * @param value
+	 *            keyword value, cannot be null
+	 */
+	public void addCustomKeywords(String key, String value) {
+		if (StringUtil.isEmpty(key) || (value == null)) {
+			return;
+		}
+		customKeywords.add(new Pair<String, String>(key, value));
+	}
 
-    @Override
-    public void onAdClicked() {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (adListener != null)
-                    adListener.onAdClicked(AdView.this);
-            }
-        });
-    }
+	/**
+	 * Remove a custom keyword from the request url for the ad. Use this to
+	 * remove a keyword previously set using addCustomKeywords.
+	 *
+	 * @param key
+	 *            keyword name to remove, cannot be null or empty
+	 */
+	public void removeCustomKeyword(String key) {
+		if (StringUtil.isEmpty(key))
+			return;
 
-    public LinkedList<MediatedAd> getMediatedAds() {
-        return mediatedAds;
-    }
+		for (int i = 0; i < customKeywords.size(); i++) {
+			Pair<String, String> pair = customKeywords.get(i);
+			if (pair.first.equals(key)) {
+				customKeywords.remove(i);
+				break;
+			}
+		}
+	}
 
-    public void setMediatedAds(LinkedList<MediatedAd> mediatedAds) {
-        this.mediatedAds = mediatedAds;
-    }
+	/**
+	 * Retrieve the array of currently configured Custom Keywords in the current
+	 * AdView.
+	 *
+	 * @return The current list of key value pairs of custom keywords.
+	 */
+	public ArrayList<Pair<String, String>> getCustomKeywords() {
+		return customKeywords;
+	}
 
-    // returns the first mediated ad if available
-    public MediatedAd popMediatedAd() {
-        return mediatedAds != null ? mediatedAds.removeFirst() : null;
-    }
+	static class BrowserStyle {
+
+		public BrowserStyle(Drawable forwardButton, Drawable backButton,
+				Drawable refreshButton) {
+			this.forwardButton = forwardButton;
+			this.backButton = backButton;
+			this.refreshButton = refreshButton;
+		}
+
+		final Drawable forwardButton;
+		final Drawable backButton;
+		final Drawable refreshButton;
+
+		static final ArrayList<Pair<String, BrowserStyle>> bridge = new ArrayList<Pair<String, BrowserStyle>>();
+	}
+
+	/**
+	 * Private class to bridge events from mediation to the user AdListener
+	 * class
+	 *
+	 */
+	private class AdListenerDispatch implements AdViewListener {
+
+		Handler handler;
+
+		public AdListenerDispatch(Handler h) {
+			handler = h;
+		}
+
+		@Override
+		public void onAdLoaded(final Displayable d) {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					display(d);
+					if (adListener != null)
+						adListener.onAdLoaded(AdView.this);
+				}
+			});
+		}
+
+		@Override
+		public void onAdFailed(boolean noMoreAds) {
+			// wait until mediation waterfall is complete before calling
+			// adListener
+			if (!noMoreAds)
+				return;
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if (adListener != null)
+						adListener.onAdRequestFailed(AdView.this);
+				}
+			});
+		}
+
+		@Override
+		public void onAdExpanded() {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if (adListener != null)
+						adListener.onAdExpanded(AdView.this);
+				}
+			});
+		}
+
+		@Override
+		public void onAdCollapsed() {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if (adListener != null)
+						adListener.onAdCollapsed(AdView.this);
+				}
+			});
+		}
+
+		@Override
+		public void onAdClicked() {
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if (adListener != null)
+						adListener.onAdClicked(AdView.this);
+				}
+			});
+		}
+	}
+
+	AdViewListener getAdDispatcher() {
+		return this.dispatcher;
+	}
+
+	LinkedList<MediatedAd> getMediatedAds() {
+		return mediatedAds;
+	}
+
+	void setMediatedAds(LinkedList<MediatedAd> mediatedAds) {
+		this.mediatedAds = mediatedAds;
+	}
+
+	// returns the first mediated ad if available
+	MediatedAd popMediatedAd() {
+		return mediatedAds != null ? mediatedAds.removeFirst() : null;
+	}
 
 }

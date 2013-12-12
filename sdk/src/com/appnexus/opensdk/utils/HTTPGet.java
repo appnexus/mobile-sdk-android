@@ -36,7 +36,8 @@ public abstract class HTTPGet<Params extends Void, Progress extends Void, Result
         super();
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     protected HTTPResponse doInBackground(Void... params) {
         HTTPResponse out = new HTTPResponse();
 

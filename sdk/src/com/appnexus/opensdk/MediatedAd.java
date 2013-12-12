@@ -16,7 +16,7 @@
 
 package com.appnexus.opensdk;
 
-public class MediatedAd {
+class MediatedAd {
     private String className;
     private String param;
     private int width;

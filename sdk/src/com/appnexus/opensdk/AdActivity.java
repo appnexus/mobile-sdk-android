@@ -30,9 +30,23 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.WebviewUtil;
 
 import java.util.Locale;
 
+/**
+ * This is the main ad activity. You must add a reference to in your app's AndroidManifest.xml
+ * file. {@link BrowserActivity} Also needs to be added allow the in-app browser functionality,
+ * <pre>
+ * {@code
+ * <application>
+ *   ....
+ *   <activity android:name="com.appnexus.opensdk.AdActivity" />
+ *   <activity android:name="com.appnexus.opensdk.BrowserActivity" />
+ * </application>
+ * }
+ * </pre>
+ */
 public class AdActivity extends Activity {
 
     FrameLayout layout;
@@ -74,6 +88,7 @@ public class AdActivity extends Activity {
         // Add a close button after a 10 second delay.
         closeButtonHandler.sendEmptyMessageDelayed(0, closeButtonDelay);
     }
+
 
     private final Handler closeButtonHandler = new Handler() {
         @Override
@@ -282,13 +297,13 @@ public class AdActivity extends Activity {
 
     @Override
     protected void onPause() {
-        if (webView != null) webView.onPause();
+        if (webView != null) WebviewUtil.onPause(webView);
         super.onPause();
     }
 
     @Override
     protected void onResume() {
-        if (webView != null) webView.onResume();
+        if (webView != null) WebviewUtil.onResume(webView);
         super.onResume();
     }
 

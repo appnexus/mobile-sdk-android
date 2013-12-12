@@ -23,6 +23,11 @@ import com.millennialmedia.android.MMAd;
 import com.millennialmedia.android.MMException;
 import com.millennialmedia.android.RequestListener;
 
+/**
+ * This class provides the bridge for the Millennial Media's SDK events to the AppNexus SDK events. 
+ * This class is used internally by the Millennial Media mediation adaptor.  
+ *
+ */
 class MillennialMediaListener implements RequestListener {
 
     private final MediatedAdViewController mediatedAdViewController;

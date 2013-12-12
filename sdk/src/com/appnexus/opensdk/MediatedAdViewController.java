@@ -15,6 +15,7 @@
  */
 package com.appnexus.opensdk;
 
+import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -24,15 +25,46 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.StringUtil;
 
+/**
+ * This class is the base of the Mediation controllers. It is used to implement external or 3rd party 
+ * SDK mediation. Where the AppNexus SDK calls into other SDK's when commanded to do so via the 
+ * AppNexus Network Manager.
+ * The mediation adaptors receives an object of this class and uses it to inform the AppNexus
+ * SDK of events from the 3rd party SDK.
+ */
 public abstract class MediatedAdViewController implements Displayable {
 
+	/**
+	 * The results from mediation calls sent back to the AppNexusSDK in the onAdFailed method.
+	 *
+	 */
     public static enum RESULT {
+    	/**
+    	 * Return this if the ad successfully loaded
+    	 */
         SUCCESS,
+        /**
+         * Return this if the ad request parameters or id were invalid
+         */
         INVALID_REQUEST,
+        /**
+         * Return this if the mediated network did not return an ad in this call.
+         */
         UNABLE_TO_FILL,
+        
+        /**
+         * Return if the underlying SDK is not available.
+         */
         MEDIATED_SDK_UNAVAILABLE,
+        /**
+         * A Network error caused no ad to be returned. 
+         */
         NETWORK_ERROR,
+        /**
+         * Internal error detected in the underlying SDK.
+         */
         INTERNAL_ERROR
     }
 
@@ -75,7 +107,8 @@ public abstract class MediatedAdViewController implements Displayable {
      * @param callerClass the calling class that mAV should be an instance of
      * @return true if the controller is valid, false if not.
      */
-    boolean isValid(Class callerClass) {
+    @SuppressWarnings("rawtypes")
+	boolean isValid(Class callerClass) {
         if (hasFailed) {
             return false;
         }
@@ -127,11 +160,10 @@ public abstract class MediatedAdViewController implements Displayable {
         Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediation_finish));
     }
 
-    /*
-    Public methods that the mediated network can call,
-    which will alert the registered AdViewListener
+    /**
+     * Call this method to inform that AppNexus SDK that an Ad from the 3rd party SDK 
+     * has successfully loaded. This method should only be called once per requestAd call.
      */
-
     public void onAdLoaded() {
         if (hasSucceeded || hasFailed) return;
         cancelTimeout();
@@ -142,6 +174,11 @@ public abstract class MediatedAdViewController implements Displayable {
         fireResultCB(RESULT.SUCCESS);
     }
 
+    /**
+     * Call this method to inform the AppNexus SDK than an ad call from the 3rd party SDK 
+     * has failed to load an ad.This method should only be called once per requestedAd call.
+     * @param reason The reason for the failure. 
+     */
     public void onAdFailed(MediatedAdViewController.RESULT reason) {
         if (hasSucceeded || hasFailed) return;
         cancelTimeout();
@@ -153,18 +190,28 @@ public abstract class MediatedAdViewController implements Displayable {
         hasFailed = true;
     }
 
+    /**
+     * Call this method to inform the AppNexus SDK that the ad has expanded its size. 
+     * This is usually due to the user interacting with an expanding MRAID ad. 
+     */
     public void onAdExpanded() {
         if (hasFailed) return;
         if (listener != null)
             listener.onAdExpanded();
     }
 
+    /**
+     * Call this method to inform the AppNexus SDK that the previous expansion has completed. 
+     */
     public void onAdCollapsed() {
         if (hasFailed) return;
         if (listener != null)
             listener.onAdCollapsed();
     }
 
+    /**
+     * Call this method to inform the the AppNexus SDK that the user is interacting with the ad.
+     */
     public void onAdClicked() {
         if (hasFailed) return;
         if (listener != null)
@@ -188,12 +235,12 @@ public abstract class MediatedAdViewController implements Displayable {
     /*
      Result CB Code
      */
-
-    private void fireResultCB(final RESULT result) {
+    @SuppressLint({ "InlinedApi", "NewApi" }) /* suppress AsyncTask.THREAD_POOL_EXECUTOR warning for < HONEYCOMB */
+	private void fireResultCB(final RESULT result) {
         if (hasFailed) return;
 
         // if resultCB is empty don't fire resultCB, and just continue to next ad
-        if ((currentAd == null) || (currentAd.getResultCB() == null) || currentAd.getResultCB().isEmpty()) {
+        if ((currentAd == null) || StringUtil.isEmpty(currentAd.getResultCB())) {
             Clog.w(Clog.mediationLogTag, Clog.getString(R.string.fire_cb_result_null));
 
             // just making sure
@@ -230,6 +277,10 @@ public abstract class MediatedAdViewController implements Displayable {
 
         @Override
         protected void onPostExecute(HTTPResponse httpResponse) {
+            // if this was the result of a successful ad, ignore the response and stop looking for more ads
+            if (this.result == RESULT.SUCCESS)
+                return;
+
             if (this.requester == null) {
                 Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
                 return;
@@ -240,10 +291,6 @@ public abstract class MediatedAdViewController implements Displayable {
             } else {
                 Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_bad_response));
             }
-
-            // if this was the result of a successful ad, stop looking for more ads
-            if (this.result == RESULT.SUCCESS)
-                return;
 
             this.requester.onReceiveResponse(response);
         }

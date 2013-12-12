@@ -16,7 +16,7 @@
 
 package com.appnexus.opensdk;
 
-public interface AdRequester {
+interface AdRequester {
     /**
      * Called when the request made by the requester fails.
      *

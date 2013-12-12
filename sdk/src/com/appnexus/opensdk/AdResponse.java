@@ -19,6 +19,8 @@ package com.appnexus.opensdk;
 import android.annotation.SuppressLint;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPResponse;
+import com.appnexus.opensdk.utils.StringUtil;
+
 import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,7 +29,7 @@ import org.json.JSONObject;
 import java.util.LinkedList;
 
 @SuppressLint("NewApi")
-public class AdResponse {
+class AdResponse {
     private String content;
     private int height;
     private int width;
@@ -100,10 +102,14 @@ public class AdResponse {
         JSONObject response;
 
         try {
-            response = new JSONObject(body);
+            if (!StringUtil.isEmpty(body)) {
+                response = new JSONObject(body);
+            } else {
+                return;
+            }
         } catch (JSONException e) {
             Clog.e(Clog.httpRespLogTag,
-                    Clog.getString(R.string.response_json_error, body));
+                Clog.getString(R.string.response_json_error, body));
             return;
         }
         // response will never be null at this point
@@ -178,7 +184,7 @@ public class AdResponse {
                                     String adId = getJSONString(handlerElement, RESPONSE_KEY_ID);
                                     String resultCB = getJSONString(mediatedElement, RESPONSE_KEY_RESULT_CB);
 
-                                    if (className != null && !className.isEmpty()) {
+                                    if (!StringUtil.isEmpty(className)) {
                                         mediatedAds.add(new MediatedAd(className,
                                                 param, width, height, adId,
                                                 resultCB));
@@ -237,18 +243,6 @@ public class AdResponse {
 
     public boolean isHttpError() {
         return isHttpError;
-    }
-
-    /**
-     * JSON parsing helper methods
-     */
-
-    private static JSONObject getJSONObject(JSONObject object, String key) {
-        if (object == null) return null;
-        try {
-            return object.getJSONObject(key);
-        } catch (JSONException ignored) {}
-        return null;
     }
 
     // also returns null if array is empty

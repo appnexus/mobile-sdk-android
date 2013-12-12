@@ -104,8 +104,9 @@ class MRAIDImplementation {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (!url.startsWith("mraid:") && !url.startsWith("javascript:")) {
+                    Intent intent;
                     if (url.startsWith("sms:") || url.startsWith("tel:") || owner.owner.getOpensNativeBrowser()) {
-                        Intent intent = new Intent(Intent.ACTION_VIEW,
+                        intent = new Intent(Intent.ACTION_VIEW,
                                 Uri.parse(url));
                         try{
                             owner.getContext().startActivity(intent);
@@ -117,10 +118,14 @@ class MRAIDImplementation {
                             Toast.makeText(owner.getContext(),R.string.action_cant_be_completed, Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Intent intent = new Intent(owner.getContext(),
+                        intent = new Intent(owner.getContext(),
                                 BrowserActivity.class);
                         intent.putExtra("url", url);
-                        owner.getContext().startActivity(intent);
+                        try {
+                            owner.getContext().startActivity(intent);
+                        } catch(ActivityNotFoundException e) {
+                            Clog.w(Clog.mraidLogTag, Clog.getString(R.string.opening_url_failed,url));
+                        }
                         //Call onAdClicked
                         if(owner.owner.adListener!=null){
                             owner.owner.adListener.onAdClicked(owner.owner);

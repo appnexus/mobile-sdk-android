@@ -20,24 +20,45 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.webkit.*;
+import android.webkit.ConsoleMessage;
+import android.webkit.JsResult;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings.PluginState;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView.ScaleType;
 import android.widget.ProgressBar;
 import android.widget.VideoView;
+
 import com.appnexus.opensdk.AdView.BrowserStyle;
 import com.appnexus.opensdk.utils.Clog;
-
+/**
+ * This is the in-app browser activity. You must add a reference to in your app's AndroidManifest.xml
+ * file. {@link AdActivity} Also needs to be added allow the in-app browser functionality,
+ * <pre>
+ * {@code
+ * <application>
+ *   ....
+ *   <activity android:name="com.appnexus.opensdk.AdActivity" />
+ *   <activity android:name="com.appnexus.opensdk.BrowserActivity" />
+ * </application>
+ * }
+ * </pre>
+ */
 public class BrowserActivity extends Activity {
     private WebView webview;
 
@@ -46,17 +67,46 @@ public class BrowserActivity extends Activity {
     @SuppressWarnings("deprecation")
     @SuppressLint({"SetJavaScriptEnabled", "NewApi"})
     @Override
-    public void onCreate(Bundle savedInstance) {
+    protected void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_in_app_browser);
 
         webview = (WebView) findViewById(R.id.web_view);
-        ImageButton  back = (ImageButton) findViewById(R.id.browser_back);
-        ImageButton forward = (ImageButton) findViewById(R.id.browser_forward);
+        final ImageButton back = (ImageButton) findViewById(R.id.browser_back);
+        final ImageButton forward = (ImageButton) findViewById(R.id.browser_forward);
+        ImageButton openBrowser = (ImageButton) findViewById(R.id.open_browser);
+        back.setEnabled(false);
+        forward.setEnabled(false);
+
+        int sdk = android.os.Build.VERSION.SDK_INT;
+        if (sdk >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            Drawable play = getResources().getDrawable(android.R.drawable.ic_media_play).mutate();
+            back.setScaleX(-1);
+            back.setLayoutDirection(ImageButton.LAYOUT_DIRECTION_RTL);
+            back.setImageDrawable(play);
+        } else {
+            back.post(new Runnable() {
+                public void run() {
+                    Bitmap pbmp = BitmapFactory.decodeResource(getResources(),
+                            android.R.drawable.ic_media_play);
+                    forward.setImageBitmap(pbmp);
+                    Matrix x = new Matrix();
+                    back.setScaleType(ScaleType.MATRIX);
+                    x.postRotate((float) 180.0f);
+
+                    Bitmap rotated = Bitmap.createBitmap(pbmp, 0, 0,
+                            pbmp.getWidth(), pbmp.getHeight(), x, true);
+                    back.setScaleType(ScaleType.CENTER_INSIDE);
+                    forward.setScaleType(ScaleType.CENTER_INSIDE);
+                    back.setImageBitmap(rotated);
+                }
+            });
+        }
+
         ImageButton refresh = (ImageButton) findViewById(R.id.browser_refresh);
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
-        webview.getSettings().setBuiltInZoomControls(true);
+        webview.getSettings().setBuiltInZoomControls(false);
         webview.getSettings().setSupportZoom(true);
         webview.getSettings().setUseWideViewPort(true);
         webview.getSettings().setJavaScriptEnabled(true);
@@ -67,11 +117,7 @@ public class BrowserActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                if (webview.canGoBack()) {
-                    webview.goBack();
-                } else {
-                    finish();
-                }
+                webview.goBack();
             }
 
         });
@@ -108,6 +154,21 @@ public class BrowserActivity extends Activity {
                                 Clog.getString(R.string.opening_url_failed, url));
                     }
                     return true;
+                }
+            }
+
+            @Override
+            public void onPageFinished(WebView webview, String url){
+                if(webview.canGoBack()){
+                    back.setEnabled(true);
+                }else{
+                    back.setEnabled(false);
+                }
+
+                if(webview.canGoForward()){
+                    forward.setEnabled(true);
+                }else{
+                    forward.setEnabled(false);
                 }
             }
         });
@@ -173,7 +234,6 @@ public class BrowserActivity extends Activity {
                 }
             }
             if (style != null) {
-                int sdk = android.os.Build.VERSION.SDK_INT;
                 if (sdk >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
                     back.setBackground(style.backButton);
                     forward.setBackground(style.forwardButton);
@@ -185,6 +245,18 @@ public class BrowserActivity extends Activity {
                 }
             }
         }
+
+        openBrowser.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Clog.d(Clog.baseLogTag,
+                        Clog.getString(R.string.opening_native_current));
+                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(webview
+                        .getUrl()));
+                startActivity(i);
+                finish();
+            }
+        });
 
         webview.loadUrl(url);
     }
@@ -213,21 +285,6 @@ public class BrowserActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuItem open = menu.add("Open With Browser");
-        open.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                Clog.d(Clog.baseLogTag,
-                        Clog.getString(R.string.opening_native_current));
-                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(webview
-                        .getUrl()));
-                startActivity(i);
-                finish();
-                return true;
-            }
-
-        });
-        return true;
+        return false;
     }
 }
