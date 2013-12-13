@@ -245,6 +245,20 @@
             td14.appendChild(button14);
             row14.appendChild(td14);
             root_table.appendChild(row14);
+
+            // Add a button to test mraid.getCurrentPosition
+            row15 = document.createElement("tr");
+
+            td15 = document.createElement("td");
+
+            button15 = document.createElement("button");
+
+            button15.innerHTML = "Lock orientation landscape";
+            button15.setAttribute('onclick', '(function(){mraid.setOrientationProperties({"allowOrientationChange":false,"forceOrientation":"landscape"})})();');
+
+            td15.appendChild(button15);
+            row15.appendChild(td15);
+            root_table.appendChild(row15);
             document.getElementById("expanded").appendChild(root_table);
 		}else if(new_state==="hidden"){
 			alert('EXPANDED');

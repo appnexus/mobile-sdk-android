@@ -614,11 +614,19 @@ class MRAIDImplementation {
             if (bnvp.getName().equals("allow_orientation_change")) {
                 allow_orientation_change = Boolean.parseBoolean(bnvp.getValue());
             } else if (bnvp.getName().equals("force_orientation")) {
-                orientation = AdActivity.OrientationEnum.valueOf(bnvp.getValue());
+                String val = bnvp.getValue();
+                if(val.equals("landscape")){
+                    orientation = AdActivity.OrientationEnum.landscape;
+                }else if(val.equals("portrait")){
+                    orientation = AdActivity.OrientationEnum.portrait;
+                }else{
+                    orientation = AdActivity.OrientationEnum.none;
+                }
             }
         }
 
         if (!allow_orientation_change) {
+            AdActivity.setOrientation((Activity) owner.getContext(), AdActivity.OrientationEnum.none);
             AdActivity.setOrientation((Activity) owner.getContext(), orientation);
         } else {
             AdActivity.setOrientation((Activity) owner.getContext(), AdActivity.OrientationEnum.none);
