@@ -28,6 +28,7 @@ public class Settings {
 
     public final String deviceMake = Build.MANUFACTURER;
     public final String deviceModel = Build.MODEL;
+
     public String app_id = null;
 
     public boolean test_mode = false;

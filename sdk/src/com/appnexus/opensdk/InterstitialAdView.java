@@ -247,6 +247,16 @@ public class InterstitialAdView extends AdView {
         return validAdExists;
     }
 
+    @Override
+    boolean isBanner() {
+        return false;
+    }
+
+    @Override
+    boolean isInterstitial() {
+        return true;
+    }
+
     /**
      * Checks the queue to see if there is a valid (i.e., fresher than
      * 60 seconds) interstitial ad available.
@@ -452,26 +462,16 @@ public class InterstitialAdView extends AdView {
     }
 
     @Override
-    boolean isBanner() {
-        return false;
-    }
-
-    @Override
-    boolean isInterstitial() {
-        return true;
-    }
-
-    @Override
-    void expand(int w, int h, boolean custom_close, final MRAIDImplementation caller) {
+    protected void expand(int w, int h, boolean custom_close, final MRAIDImplementation caller) {
         if ((getAdActivity() == null) || (getAdActivity().layout == null))
             return;
         FrameLayout activityLayout = getAdActivity().layout;
 
         mraid_expand = true;
-        if (!custom_close && (close == null)) {
+        if (!custom_close && (close_button == null)) {
             // Add a stock close button to the top right corner
-            close = new ImageButton(activityLayout.getContext());
-            close.setImageDrawable(getResources().getDrawable(
+            close_button = new ImageButton(activityLayout.getContext());
+            close_button.setImageDrawable(getResources().getDrawable(
                     android.R.drawable.ic_menu_close_clear_cancel));
             FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.WRAP_CONTENT,
@@ -481,22 +481,22 @@ public class InterstitialAdView extends AdView {
                 blp.rightMargin = (w - activityLayout.getChildAt(0).getMeasuredWidth()) / 2;
                 blp.topMargin = (h - activityLayout.getChildAt(0).getMeasuredHeight()) / 2;
             }
-            close.setLayoutParams(blp);
-            close.setBackgroundColor(Color.TRANSPARENT);
-            close.setOnClickListener(new View.OnClickListener() {
+            close_button.setLayoutParams(blp);
+            close_button.setBackgroundColor(Color.TRANSPARENT);
+            close_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     caller.close();
                 }
             });
-            activityLayout.addView(close);
-        } else if (close != null) {
+            activityLayout.addView(close_button);
+        } else if (close_button != null) {
             if (custom_close) {
-                close.setVisibility(GONE);
+                close_button.setVisibility(GONE);
             } else {
-                activityLayout.removeView(close);
-                close.setVisibility(VISIBLE);
-                activityLayout.addView(close);// Re-add to send to top
+                activityLayout.removeView(close_button);
+                close_button.setVisibility(VISIBLE);
+                activityLayout.addView(close_button);// Re-add to send to top
             }
         }
     }

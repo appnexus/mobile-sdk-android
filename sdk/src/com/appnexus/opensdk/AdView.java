@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -27,6 +28,7 @@ import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -330,54 +332,162 @@ public abstract class AdView extends FrameLayout {
 		return measuredHeight;
 	}
 
-	// Used only by MRAID
-	ImageButton close;
+    // Used only by MRAID
+    ImageButton close_button;
+    View oldContent;
+    Activity unexpandedActivity;
+    protected void close(int w, int h, MRAIDImplementation caller){
+        //For closing
+        if(oldContent!= null && oldContent.getParent()!=null){
+            ((ViewGroup)oldContent.getParent()).removeAllViewsInLayout();
+        }
+        if(unexpandedActivity!=null){
+            unexpandedActivity.setContentView(oldContent);
+        }
+        if (caller.owner.isFullScreen) {
+            ((FrameLayout)caller.owner.getParent()).removeAllViews();
+            this.addView(caller.owner);
 
-	void expand(int w, int h, boolean custom_close,
-			final MRAIDImplementation caller) {
-		// Only expand w and h if they are >0, otherwise they are match_parent
-		// or something
-		mraid_expand = true;
-		if (getLayoutParams() != null) {
-			if (getLayoutParams().width > 0)
-				getLayoutParams().width = w;
-			if (getLayoutParams().height > 0)
-				getLayoutParams().height = h;
-		}
-		if (!custom_close && close == null) {
-			// Add a stock close button to the top right corner
-			close = new ImageButton(this.getContext());
-			close.setImageDrawable(getResources().getDrawable(
-					android.R.drawable.ic_menu_close_clear_cancel));
-			FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
-					FrameLayout.LayoutParams.WRAP_CONTENT,
-					FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.RIGHT
-							| Gravity.TOP);
-			if (this.getChildAt(0) != null)
-				blp.rightMargin = (this.getMeasuredWidth() - this.getChildAt(0)
-						.getMeasuredWidth()) / 2;
-			close.setLayoutParams(blp);
-			close.setBackgroundColor(Color.TRANSPARENT);
-			close.setOnClickListener(new View.OnClickListener() {
+        }
+        expand(w, h, true, null);
+    }
+    protected void expand(int w, int h, boolean custom_close,
+                          final MRAIDImplementation caller) {
+        mraid_expand = true;
 
-				@Override
-				public void onClick(View v) {
-					caller.close();
+        if (getLayoutParams() != null) {
+            if (getLayoutParams().width > 0)
+                getLayoutParams().width = w;
+            if (getLayoutParams().height > 0)
+                getLayoutParams().height = h;
+        }
+        if (!custom_close) {
+            // Add a stock close_button button to the top right corner
+            close_button = new ImageButton(this.getContext());
+            close_button.setImageDrawable(getResources().getDrawable(
+                    android.R.drawable.ic_menu_close_clear_cancel));
+            FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.RIGHT
+                    | Gravity.TOP);
+            if(caller.owner.isFullScreen){
+                //Make a new framelayout to contain webview and button
+                FrameLayout fslayout = new FrameLayout(this.getContext());
+                if(this.getChildCount()>0){
+                    this.removeAllViews();
+                }
+                fslayout.addView(caller.owner);
+                fslayout.addView(close_button);
+                if (this instanceof InterstitialAdView) {
+                    unexpandedActivity = AdActivity.getCurrent_ad_activity();
+                } else {
+                    unexpandedActivity = (Activity) this.getContext();
+                }
+                oldContent= ((ViewGroup)unexpandedActivity.findViewById(android.R.id.content)).getChildAt(0);
+                unexpandedActivity.setContentView(fslayout);
+            }else{
 
-				}
-			});
-			this.addView(close);
-		} else if (close != null) {
-			if (custom_close) {
-				close.setVisibility(GONE);
-			} else {
-				this.removeView(close);
-				close.setVisibility(VISIBLE);
-				this.addView(close);// Re-add to send to top
-			}
-		}
-	}
+                if(getChildAt(0)!=null){
+                    blp.rightMargin = (this.getMeasuredWidth() - this.getChildAt(0)
+                            .getMeasuredWidth()) / 2;
+                }
+                this.addView(close_button);
+            }
+            close_button.setLayoutParams(blp);
+            close_button.setBackgroundColor(Color.TRANSPARENT);
+            close_button.setOnClickListener(new View.OnClickListener() {
 
+                @Override
+                public void onClick(View v) {
+                    caller.close();
+
+                }
+            });
+        } else {
+            if(close_button!=null){
+                close_button.setVisibility(GONE);
+            }
+
+            //Expand and use custom close.
+            if(caller!=null && caller.owner.isFullScreen){
+                //Make a new framelayout to contain webview and button
+                FrameLayout fslayout = new FrameLayout(this.getContext());
+                if(this.getChildCount()>0){
+                    this.removeAllViews();
+                }
+                fslayout.addView(caller.owner);
+                if (this instanceof InterstitialAdView) {
+                    unexpandedActivity = AdActivity.getCurrent_ad_activity();
+                } else {
+                    unexpandedActivity = (Activity) this.getContext();
+                }
+                oldContent= ((ViewGroup)unexpandedActivity.findViewById(android.R.id.content)).getChildAt(0);
+                unexpandedActivity.setContentView(fslayout);
+            }
+        }
+    }
+
+    public void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean,
+                       final MRAIDImplementation caller) {
+        mraid_expand = true;
+        if (getLayoutParams() != null) {
+            if (getLayoutParams().width > 0)
+                getLayoutParams().width = w;
+            if (getLayoutParams().height > 0)
+                getLayoutParams().height = h;
+        }
+        // Add a stock close_button button to the top right corner
+        if(close_button!=null && ((ViewGroup)close_button.getParent())!=null){
+            ((ViewGroup)close_button.getParent()).removeView(close_button);
+            close_button.setVisibility(GONE);
+        }
+        close_button = new ImageButton(this.getContext());
+        close_button.setImageDrawable(getResources().getDrawable(
+                android.R.drawable.ic_menu_close_clear_cancel));
+
+        int grav = Gravity.RIGHT | Gravity.TOP;
+        switch (custom_close_position) {
+            case bottom_center:
+                grav = Gravity.BOTTOM | Gravity.CENTER;
+                break;
+            case bottom_left:
+                grav = Gravity.BOTTOM | Gravity.LEFT;
+                break;
+            case bottom_right:
+                grav = Gravity.BOTTOM | Gravity.RIGHT;
+                break;
+            case center:
+                grav = Gravity.CENTER;
+                break;
+            case top_center:
+                grav = Gravity.TOP | Gravity.CENTER;
+                break;
+            case top_left:
+                grav = Gravity.TOP | Gravity.LEFT;
+                break;
+            case top_right:
+                grav = Gravity.TOP | Gravity.RIGHT;
+                break;
+
+        }
+
+        FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT, grav);
+        blp.rightMargin = (this.getMeasuredWidth() - this.getChildAt(0)
+                .getMeasuredWidth()) / 2;
+        close_button.setLayoutParams(blp);
+        close_button.setBackgroundColor(Color.TRANSPARENT);
+        close_button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                caller.close();
+
+            }
+        });
+        this.addView(close_button);
+    }
 	/**
 	 *
 	 * @return true if the AdView is a {@link BannerAdView}.

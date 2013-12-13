@@ -50,8 +50,7 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
             } catch (Exception e) {
                 Clog.d(Clog.baseLogTag, e.toString());
             }
-        }
-        else
+        } else
             frame = null;
     }
 
