@@ -196,6 +196,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                 lat = ""+lastLocation.getLatitude();
                 lon = ""+lastLocation.getLongitude();
                 locDataPrecision = ""+lastLocation.getAccuracy();
+                locDataAge = "" + (System.currentTimeMillis() - lastLocation.getTime());
             }
         } else {
             Clog.w(Clog.baseLogTag,
