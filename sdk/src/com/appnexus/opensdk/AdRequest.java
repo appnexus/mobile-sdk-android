@@ -175,14 +175,27 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             // available
             LocationManager lm = (LocationManager) context
                     .getSystemService(Context.LOCATION_SERVICE);
-            Location lastLocation = lm.getLastKnownLocation(lm.getBestProvider(
-                    new Criteria(), false));
-            if (lastLocation != null) {
-                lat = "" + lastLocation.getLatitude();
-                lon = "" + lastLocation.getLongitude();
-                locDataAge = ""
-                        + (System.currentTimeMillis() - lastLocation.getTime());
-                locDataPrecision = "" + lastLocation.getAccuracy();
+            Location lastLocation = null;
+            for (String provider_name : lm.getProviders(true)) {
+                Location l = lm.getLastKnownLocation(provider_name);
+                if (l == null) {
+                    continue;
+                }
+
+                if (lastLocation == null) {
+                    lastLocation = l;
+                } else {
+                    if ( l.getTime() > 0 && lastLocation.getTime()>0) {
+                        if (l.getTime() > lastLocation.getTime()) {
+                            lastLocation = l;
+                        }
+                    }
+                }
+            }
+            if(lastLocation!=null){
+                lat = ""+lastLocation.getLatitude();
+                lon = ""+lastLocation.getLongitude();
+                locDataPrecision = ""+lastLocation.getAccuracy();
             }
         } else {
             Clog.w(Clog.baseLogTag,
