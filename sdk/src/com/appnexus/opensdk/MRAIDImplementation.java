@@ -489,11 +489,12 @@ class MRAIDImplementation {
                     if (uri_final.contains("base64")) {
                         isBase64 = true;
                     }
-                    File out = new File(owner.owner.getContext().getFilesDir(), System.currentTimeMillis() + ext);
+                    File out = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), System.currentTimeMillis() + ext);
                     FileOutputStream outstream=null;
+                    String outdir = out.getPath();
                     try {
                         byte[] out_array;
-                        outstream = owner.owner.getContext().openFileOutput(out.getName(), Context.MODE_PRIVATE);
+                        outstream = new FileOutputStream(out);
                         if(out.canWrite()){
                             if (!isBase64) {
                                 out_array = Hex.hexStringToByteArray(uri_final.substring(uri_final.lastIndexOf(",") + 1, uri_final.length()));
