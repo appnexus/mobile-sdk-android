@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 import android.content.Context;
+import com.appnexus.opensdk.utils.Clog;
 import com.mopub.mobileads.CustomEventInterstitial;
 import com.mopub.mobileads.MoPubErrorCode;
 
@@ -29,18 +30,23 @@ public class MoPubMediationInterstitial extends CustomEventInterstitial implemen
 
     @Override
     protected void loadInterstitial(Context context, CustomEventInterstitialListener customEventInterstitialListener, Map<String, Object> localExtras, Map<String, String> serverExtras) {
+        Clog.d(Clog.mediationLogTag, "Initializing ANInterstitial via MoPub SDK");
         listener = customEventInterstitialListener;
-        String apid;
+        String placementID;
         if (extrasAreValid(serverExtras)) {
-            apid = serverExtras.get(PLACEMENTID_KEY);
+            placementID = serverExtras.get(PLACEMENTID_KEY);
+            Clog.d(Clog.mediationLogTag, String.format("Server extras were valid: placementID: %s", placementID));
         } else {
             listener.onInterstitialFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+            Clog.e(Clog.mediationLogTag, "Failed to parse server extras. Check setup of placement in MoPub.");
             return;
         }
 
         iad = new InterstitialAdView(context);
-        iad.setPlacementID(apid);
+        iad.setPlacementID(placementID);
         iad.setAdListener(this);
+
+        Clog.d(Clog.mediationLogTag, "Fetch ANInterstitial");
         iad.loadAd();
     }
 
@@ -50,8 +56,12 @@ public class MoPubMediationInterstitial extends CustomEventInterstitial implemen
 
     @Override
     protected void showInterstitial() {
-        if (iad != null)
+        if (iad != null) {
+            Clog.d(Clog.mediationLogTag, "Show ANInterstitial");
             iad.show();
+        } else {
+            Clog.d(Clog.mediationLogTag, "Failed to show ANInterstitial; null object");
+        }
     }
 
     @Override
@@ -63,11 +73,13 @@ public class MoPubMediationInterstitial extends CustomEventInterstitial implemen
 
     @Override
     public void onAdLoaded(AdView adView) {
+        Clog.d(Clog.mediationLogTag, "ANInterstitial loaded successfully");
         if (listener != null) listener.onInterstitialLoaded();
     }
 
     @Override
     public void onAdRequestFailed(AdView adView) {
+        Clog.d(Clog.mediationLogTag, "ANInterstitial failed to load");
         if (listener != null) listener.onInterstitialFailed(MoPubErrorCode.UNSPECIFIED);
     }
 
