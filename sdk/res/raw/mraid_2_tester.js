@@ -33,6 +33,17 @@
 	                               });
 	}
 
+    document.secondToLastDayOfMonth = function(){
+        mraid.createCalendarEvent({id:"2ndtolast",
+                                   description:"2nd To Last Day of the Month",
+                                   location:"Global",
+                                   summary:"A short description goes here, normally",
+                                   start:"2000-07-04T10:00:00+00:00",
+                                   recurrence:{frequency:"monthly",
+                                               daysInMonth:[-2]}
+                                   });
+    }
+
 	onChange = function(new_state){
 		if(new_state==="default"){
 			alert('DEFAULT');
@@ -273,6 +284,21 @@
             td16.appendChild(button16);
             row16.appendChild(td16);
             root_table.appendChild(row16);
+
+            // Add a recurrence test
+
+            row17 = document.createElement("tr");
+
+            td17 = document.createElement("td");
+
+            button17 = document.createElement("button");
+
+            button17.innerHTML = "Add 2nd To Last Day of the Month";
+            button17.setAttribute('onclick', 'document.secondToLastDayOfMonth()');
+
+            td17.appendChild(button17);
+            row17.appendChild(td17);
+            root_table.appendChild(row17);
 
             document.getElementById("expanded").appendChild(root_table);
 		}else if(new_state==="hidden"){

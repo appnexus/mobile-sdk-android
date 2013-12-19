@@ -308,7 +308,7 @@ public class W3CEvent {
                 repeatRuleBuilder.append(getRecurrence().getInterval());
                 repeatRuleBuilder.append(";");
             }
-            if (getRecurrence().getDaysInWeek().length > 0) {
+            if (getRecurrence().getDaysInWeek()!=null&&getRecurrence().getDaysInWeek().length > 0) {
                 repeatRuleBuilder.append("BYDAY=");
                 for (int j : getRecurrence().getDaysInWeek()) {
                     switch (j) {
@@ -337,34 +337,34 @@ public class W3CEvent {
                 }
                 repeatRuleBuilder.setCharAt(repeatRuleBuilder.length()-1, ';');
             }
-            if (getRecurrence().getDaysInMonth().length > 0) {
+            if (getRecurrence().getDaysInMonth()!=null&&getRecurrence().getDaysInMonth().length > 0) {
                 repeatRuleBuilder.append("BYMONTHDAY=");
                 for (int j : getRecurrence().getDaysInMonth()) {
-                    repeatRuleBuilder.append(getRecurrence().getDaysInMonth()[j]);
+                    repeatRuleBuilder.append(j);
                     repeatRuleBuilder.append(",");
                 }
                 repeatRuleBuilder.setCharAt(repeatRuleBuilder.length()-1, ';');
             }
-            if (getRecurrence().getDaysInYear().length > 0) {
+            if (getRecurrence().getDaysInYear()!=null&&getRecurrence().getDaysInYear().length > 0) {
                 repeatRuleBuilder.append("BYYEARDAY=");
                 for (int j : getRecurrence().getDaysInYear()) {
-                    repeatRuleBuilder.append(getRecurrence().getDaysInYear()[j]);
+                    repeatRuleBuilder.append(j);
                     repeatRuleBuilder.append(",");
                 }
                 repeatRuleBuilder.setCharAt(repeatRuleBuilder.length()-1, ';');
             }
-            if (getRecurrence().getMonthsInYear().length > 0) {
+            if (getRecurrence().getMonthsInYear()!=null&&getRecurrence().getMonthsInYear().length > 0) {
                 repeatRuleBuilder.append("BYMONTH=");
                 for (int j : getRecurrence().getMonthsInYear()) {
-                    repeatRuleBuilder.append(getRecurrence().getMonthsInYear()[j]);
+                    repeatRuleBuilder.append(j);
                     repeatRuleBuilder.append(",");
                 }
                 repeatRuleBuilder.setCharAt(repeatRuleBuilder.length()-1, ';');
             }
-            if (getRecurrence().getWeeksInMonth().length > 0) {
+            if (getRecurrence().getWeeksInMonth()!=null&&getRecurrence().getWeeksInMonth().length > 0) {
                 repeatRuleBuilder.append("BYWEEKNO=");
                 for (int j : getRecurrence().getWeeksInMonth()) {
-                    repeatRuleBuilder.append(getRecurrence().getWeeksInMonth()[j]);
+                    repeatRuleBuilder.append(j);
                     repeatRuleBuilder.append(",");
                 }
                 repeatRuleBuilder.setCharAt(repeatRuleBuilder.length()-1, ';');
@@ -374,7 +374,7 @@ public class W3CEvent {
                 repeatRuleBuilder.append(getRecurrence().getExpires());
                 repeatRuleBuilder.append(";");
             }
-            if (getRecurrence().getExceptionDates().length > 0) {
+            if (getRecurrence().getExceptionDates()!=null&&getRecurrence().getExceptionDates().length > 0) {
                 repeatRuleBuilder.append("EXDATE=");
                 for (String s : getRecurrence().getExceptionDates()) {
                     repeatRuleBuilder.append(s);
