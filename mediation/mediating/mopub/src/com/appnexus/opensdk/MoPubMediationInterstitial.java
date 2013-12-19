@@ -44,6 +44,7 @@ public class MoPubMediationInterstitial extends CustomEventInterstitial implemen
 
         iad = new InterstitialAdView(context);
         iad.setPlacementID(placementID);
+        iad.setShouldServePSAs(false);
         iad.setAdListener(this);
 
         Clog.d(Clog.mediationLogTag, "Fetch ANInterstitial");
@@ -56,11 +57,15 @@ public class MoPubMediationInterstitial extends CustomEventInterstitial implemen
 
     @Override
     protected void showInterstitial() {
-        if (iad != null) {
+        if (iad != null && iad.isReady()) {
             Clog.d(Clog.mediationLogTag, "Show ANInterstitial");
             iad.show();
         } else {
-            Clog.d(Clog.mediationLogTag, "Failed to show ANInterstitial; null object");
+            if (iad == null) {
+                Clog.e(Clog.mediationLogTag, "Failed to show ANInterstitial; null object");
+            } else if (!iad.isReady()) {
+                Clog.e(Clog.mediationLogTag, "Failed to show ANInterstitial; ad unavailable");
+            }
         }
     }
 

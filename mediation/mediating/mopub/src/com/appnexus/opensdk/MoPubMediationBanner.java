@@ -53,6 +53,7 @@ public class MoPubMediationBanner extends CustomEventBanner implements AdListene
         bav = new BannerAdView(context);
         bav.setPlacementID(placementID);
         bav.setAdSize(width, height);
+        bav.setShouldServePSAs(false);
         bav.setAdListener(this);
 
         Clog.d(Clog.mediationLogTag, "Load ANBanner");
