@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 import android.content.Context;
+import com.appnexus.opensdk.utils.Clog;
 import com.mopub.mobileads.CustomEventBanner;
 import com.mopub.mobileads.MoPubErrorCode;
 
@@ -31,25 +32,30 @@ public class MoPubMediationBanner extends CustomEventBanner implements AdListene
 
     @Override
     protected void loadBanner(Context context, CustomEventBannerListener customEventBannerListener, Map<String, Object> localExtras, Map<String, String> serverExtras) {
+        Clog.d(Clog.mediationLogTag, "Initializing ANBanner via MoPub SDK");
         this.listener = customEventBannerListener;
 
-        String apid;
+        String placementID;
         int width;
         int height;
+
         if (extrasAreValid(serverExtras)) {
-            apid = serverExtras.get(PLACEMENTID_KEY);
+            placementID = serverExtras.get(PLACEMENTID_KEY);
             width = Integer.parseInt(serverExtras.get(AD_WIDTH_KEY));
             height = Integer.parseInt(serverExtras.get(AD_HEIGHT_KEY));
+            Clog.d(Clog.mediationLogTag, String.format("Server extras were valid: placementID: %s, width: %s, height: %s", placementID, width, height));
         } else {
             listener.onBannerFailed(MoPubErrorCode.ADAPTER_CONFIGURATION_ERROR);
+            Clog.e(Clog.mediationLogTag, "Failed to parse server extras. Check setup of placement in MoPub.");
             return;
         }
 
         bav = new BannerAdView(context);
-        bav.setPlacementID(apid);
+        bav.setPlacementID(placementID);
         bav.setAdSize(width, height);
         bav.setAdListener(this);
 
+        Clog.d(Clog.mediationLogTag, "Load ANBanner");
         bav.loadAdOffscreen();
     }
 
@@ -73,11 +79,13 @@ public class MoPubMediationBanner extends CustomEventBanner implements AdListene
 
     @Override
     public void onAdLoaded(AdView adView) {
+        Clog.d(Clog.mediationLogTag, "ANBanner loaded successfully");
         if (listener != null) listener.onBannerLoaded(bav);
     }
 
     @Override
     public void onAdRequestFailed(AdView adView) {
+        Clog.d(Clog.mediationLogTag, "ANBanner failed to load");
         if (listener != null) listener.onBannerFailed(MoPubErrorCode.UNSPECIFIED);
     }
 
