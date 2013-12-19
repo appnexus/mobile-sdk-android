@@ -291,8 +291,15 @@ public class W3CEvent {
             }
         }
         if (getReminder() != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                i.putExtra(CalendarContract.Reminders.MINUTES, getReminder());
+            long time = millisFromDateString(getReminder());
+            if(time<0){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                    i.putExtra(CalendarContract.Reminders.MINUTES, Math.abs(time/60000));
+                }
+            }else if(getStart()!=null){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                    i.putExtra(CalendarContract.Reminders.MINUTES, Math.abs(millisFromDateString(getStart()) - (time/60000)));
+                }
             }
         }
 
@@ -402,7 +409,11 @@ public class W3CEvent {
             try {
                 return format2.parse(date).getTime();
             } catch (ParseException e1) {
-                return -1;
+                try{
+                    return Long.parseLong(date);
+                }catch (NumberFormatException e2){
+                    return -1;
+                }
             }
         }
     }

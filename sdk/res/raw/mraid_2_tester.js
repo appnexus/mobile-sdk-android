@@ -44,6 +44,18 @@
                                    });
     }
 
+    document.newMonth = function(){
+        mraid.createCalendarEvent({id:"newmonth",
+                                   description:"New month",
+                                   location:"Global",
+                                   summary:"A short description goes here, normally",
+                                   start:"2000-07-04T10:00:00+00:00",
+                                   reminder:"-3600000",
+                                   recurrence:{frequency:"monthly",
+                                               daysInMonth:[1]}
+                                   });
+    }
+
 	onChange = function(new_state){
 		if(new_state==="default"){
 			alert('DEFAULT');
@@ -299,6 +311,21 @@
             td17.appendChild(button17);
             row17.appendChild(td17);
             root_table.appendChild(row17);
+
+            // Add a reminder test
+
+            row18 = document.createElement("tr");
+
+            td18 = document.createElement("td");
+
+            button18 = document.createElement("button");
+
+            button18.innerHTML = "Add New Month Reminder";
+            button18.setAttribute('onclick', 'document.newMonth()');
+
+            td18.appendChild(button18);
+            row18.appendChild(td18);
+            root_table.appendChild(row18);
 
             document.getElementById("expanded").appendChild(root_table);
 		}else if(new_state==="hidden"){
