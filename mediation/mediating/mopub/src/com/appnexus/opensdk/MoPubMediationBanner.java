@@ -47,12 +47,10 @@ public class MoPubMediationBanner extends CustomEventBanner implements AdListene
 
         bav = new BannerAdView(context);
         bav.setPlacementID(apid);
-        bav.setAdHeight(height);
-        bav.setAdWidth(width);
+        bav.setAdSize(width, height);
         bav.setAdListener(this);
 
-        bav.loadAd();
-
+        bav.loadAdOffscreen();
     }
 
     private boolean extrasAreValid(Map<String, String> serverExtras) {
