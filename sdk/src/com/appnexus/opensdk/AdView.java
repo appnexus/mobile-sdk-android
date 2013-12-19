@@ -68,6 +68,7 @@ public abstract class AdView extends FrameLayout {
 	final Handler handler = new Handler(Looper.getMainLooper());
 	private Displayable lastDisplayable;
 	private AdListenerDispatch dispatcher;
+    boolean loadedOffscreen = false;
 
 	/**
 	 * Begin Construction
@@ -166,7 +167,7 @@ public abstract class AdView extends FrameLayout {
 			}
 
 			// Hide the adview
-			if (!measured) {
+			if (!measured && !loadedOffscreen) {
 				hide();
 			}
 
@@ -215,6 +216,18 @@ public abstract class AdView extends FrameLayout {
 		}
 		return false;
 	}
+
+    protected void loadAdOffscreen() {
+        if (!isReadyToStart())
+            return;
+        if (mAdFetcher != null) {
+            // Reload Ad Fetcher to get new ad at user's request
+            mAdFetcher.stop();
+            mAdFetcher.clearDurations();
+            mAdFetcher.start();
+            loadedOffscreen = true;
+        }
+    }
 
 	/**
 	 * Loads a new ad, if the ad space is visible, and sets the
