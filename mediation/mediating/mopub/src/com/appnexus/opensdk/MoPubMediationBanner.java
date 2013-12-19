@@ -92,16 +92,19 @@ public class MoPubMediationBanner extends CustomEventBanner implements AdListene
 
     @Override
     public void onAdExpanded(AdView adView) {
+        Clog.d(Clog.mediationLogTag, "ANBanner expanded");
         if (listener != null) listener.onBannerExpanded();
     }
 
     @Override
     public void onAdCollapsed(AdView adView) {
+        Clog.d(Clog.mediationLogTag, "ANBanner collapsed");
         if (listener != null) listener.onBannerCollapsed();
     }
 
     @Override
     public void onAdClicked(AdView adView) {
+        Clog.d(Clog.mediationLogTag, "ANBanner was clicked");
         if (listener != null) listener.onBannerClicked();
     }
 }

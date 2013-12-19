@@ -90,16 +90,19 @@ public class MoPubMediationInterstitial extends CustomEventInterstitial implemen
 
     @Override
     public void onAdExpanded(AdView adView) {
+        Clog.d(Clog.mediationLogTag, "ANInterstitial expanded");
         if (listener != null) listener.onInterstitialShown();
     }
 
     @Override
     public void onAdCollapsed(AdView adView) {
+        Clog.d(Clog.mediationLogTag, "ANInterstitial collapsed");
         if (listener != null) listener.onInterstitialDismissed();
     }
 
     @Override
     public void onAdClicked(AdView adView) {
+        Clog.d(Clog.mediationLogTag, "ANInterstitial was clicked");
         if (listener != null) listener.onInterstitialClicked();
     }
 }
