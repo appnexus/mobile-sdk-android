@@ -255,16 +255,16 @@ public abstract class MediatedAdViewController {
 	private void fireResultCB(final RESULT result) {
         if (hasFailed) return;
 
+
         // if resultCB is empty don't fire resultCB, and just continue to next ad
         if ((currentAd == null) || StringUtil.isEmpty(currentAd.getResultCB())) {
+            if(result == RESULT.SUCCESS) return;
             Clog.w(Clog.mediationLogTag, Clog.getString(R.string.fire_cb_result_null));
-
             // just making sure
             if (requester == null) {
                 Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
                 return;
             }
-
             requester.onReceiveResponse(null);
             return;
         }
