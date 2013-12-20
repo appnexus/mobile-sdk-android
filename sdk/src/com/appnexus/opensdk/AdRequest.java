@@ -16,10 +16,10 @@
 
 package com.appnexus.opensdk;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -27,7 +27,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Handler;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.util.Pair;
@@ -502,6 +501,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             adListener.onAdLoaded(owner);
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     protected void onCancelled(AdResponse adResponse) {
         super.onCancelled(adResponse);
