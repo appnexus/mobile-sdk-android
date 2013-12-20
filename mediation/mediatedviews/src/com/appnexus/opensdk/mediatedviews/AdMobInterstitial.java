@@ -28,7 +28,7 @@ import com.google.ads.AdListener;
 import com.google.ads.AdRequest;
 import com.google.ads.AdRequest.ErrorCode;
 import com.google.ads.InterstitialAd;
-import com.google.ads.doubleclick.DfpExtras;
+import com.google.ads.mediation.admob.AdMobAdapterExtras;
 
 
 /**
@@ -78,7 +78,7 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
                 ar.setGender(AdRequest.Gender.MALE);
                 break;
         }
-        DfpExtras extras = new DfpExtras();
+        AdMobAdapterExtras extras = new AdMobAdapterExtras();
         if(targetingParameters.getAge()!=null){
             extras.addExtra("Age", targetingParameters.getAge());
         }

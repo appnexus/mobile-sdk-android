@@ -30,7 +30,7 @@ import com.google.ads.AdRequest;
 import com.google.ads.AdRequest.ErrorCode;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
-import com.google.ads.doubleclick.DfpExtras;
+import com.google.ads.mediation.admob.AdMobAdapterExtras;
 
 /**
  * This class is the Google AdMob banner adaptor it provides the functionality needed to allow
@@ -88,7 +88,7 @@ public class AdMobBanner implements MediatedBannerAdView, AdListener {
                 ar.setGender(AdRequest.Gender.MALE);
                 break;
         }
-        DfpExtras extras = new DfpExtras();
+        AdMobAdapterExtras extras = new AdMobAdapterExtras();
         if(targetingParameters.getAge()!=null){
             extras.addExtra("Age", targetingParameters.getAge());
         }
