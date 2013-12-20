@@ -51,8 +51,12 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
         startTimeout();
 
         TargetingParameters tp=null;
-        if(((AdView) requester)!=null){
-            tp = ((AdView) requester).getTargetingParameters();
+        try{
+            if(((AdView) requester)!=null){
+                tp = ((AdView) requester).getTargetingParameters();
+            }
+        }catch(ClassCastException e){
+
         }
 
         try {
