@@ -16,16 +16,16 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
+import android.util.Pair;
 import android.view.View;
-import com.appnexus.opensdk.MediatedAdViewController;
-import com.appnexus.opensdk.MediatedBannerAdView;
-import com.appnexus.opensdk.MediatedBannerAdViewController;
+import com.appnexus.opensdk.*;
 import com.appnexus.opensdk.utils.Clog;
 import com.google.ads.Ad;
 import com.google.ads.AdListener;
 import com.google.ads.AdRequest;
 import com.google.ads.AdSize;
 import com.google.ads.doubleclick.DfpAdView;
+import com.google.ads.doubleclick.DfpExtras;
 
 /**
  * This class is the Google DFP banner adaptor it provides the functionality needed to allow
@@ -56,7 +56,7 @@ public class DFPBanner implements MediatedBannerAdView, AdListener {
      */
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String adUnitID,
-                          int width, int height) {
+                          int width, int height, TargetingParameters targetingParameters) {
 
         if (mBC == null) {
             Clog.e(Clog.mediationLogTag, "DFPBanner - requestAd called with null controller");
@@ -72,6 +72,26 @@ public class DFPBanner implements MediatedBannerAdView, AdListener {
         DfpAdView v = new DfpAdView(activity, new AdSize(width, height), adUnitID);
         v.setAdListener(this);
         AdRequest ar = new AdRequest();
+
+        switch(targetingParameters.getGender()){
+            case UNKNOWN:
+                break;
+            case FEMALE:
+                ar.setGender(AdRequest.Gender.FEMALE);
+                break;
+            case MALE:
+                ar.setGender(AdRequest.Gender.MALE);
+                break;
+        }
+        DfpExtras extras = new DfpExtras();
+        if(targetingParameters.getAge()!=null){
+            extras.addExtra("Age", targetingParameters.getAge());
+        }
+
+        for(Pair<String, String> p : targetingParameters.getCustomKeywords()){
+            extras.addExtra(p.first, p.second);
+        }
+        ar.setNetworkExtras(extras);
 
         mMediatedBannerAdViewController = mBC;
 

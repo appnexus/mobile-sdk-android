@@ -34,8 +34,8 @@ public interface MediatedInterstitialAdView extends MediatedAdView {
      *            encoding are up to the implementation of the
      *            third-party SDK.
      */
-    
-    public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid);
+
+    public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid, TargetingParameters tp);
 
     /**
      * The AppNexus SDK will call this method to show the interstitial

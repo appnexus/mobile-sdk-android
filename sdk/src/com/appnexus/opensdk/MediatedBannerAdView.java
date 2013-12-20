@@ -42,7 +42,7 @@ public interface MediatedBannerAdView extends MediatedAdView {
 	 * onAdLoaded or onAdFailed to be called through the {@link
 	 * MediatedBannerAdViewController} within 15 seconds or the
 	 * mediation call is considered to have failed.
-	 * 
+	 *
 	 * @param mBC The controller to notify on load, failure, etc.
 	 *
 	 * @param activity The activity from which this method was
@@ -74,5 +74,5 @@ public interface MediatedBannerAdView extends MediatedAdView {
 	 *         third-party SDK.
 	 */
 
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height);
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp);
 }

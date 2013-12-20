@@ -545,7 +545,7 @@ public abstract class AdView extends FrameLayout {
 	 * device's native browser is used instead of the in-app
 	 * browser when the user clicks an ad.
 	 *
-	 * @return true if the device's native browser will be used; false otherwise. 
+	 * @return true if the device's native browser will be used; false otherwise.
 	 */
 	public boolean getOpensNativeBrowser() {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
@@ -728,6 +728,10 @@ public abstract class AdView extends FrameLayout {
 		}
 	}
 
+    protected TargetingParameters getTargetingParameters(){
+        return new TargetingParameters(getAge(), getGender(), getCustomKeywords());
+    }
+
 	/**
 	 * Retrieve the array of custom keywords associated with the
 	 * current AdView.
@@ -845,5 +849,6 @@ public abstract class AdView extends FrameLayout {
 	MediatedAd popMediatedAd() {
 		return mediatedAds != null ? mediatedAds.removeFirst() : null;
 	}
+
 
 }

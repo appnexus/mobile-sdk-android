@@ -18,32 +18,36 @@ package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
 import android.util.DisplayMetrics;
+import android.util.Pair;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
+import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.utils.Clog;
 import com.millennialmedia.android.MMAdView;
 import com.millennialmedia.android.MMRequest;
 import com.millennialmedia.android.MMSDK;
 
+import java.util.HashMap;
+
 /**
- * This class is the Millennial Media banner adaptor it provides the functionality needed to allow 
- * an application using the AppNexus SDK to load a banner ad through the Millennial Media SDK. The instantiation 
- * of this class is done in response from the AppNexus server for a banner placement that is configured 
- * to use MM to serve it. This class is never directly instantiated by the application. 
- * 
- * This class also serves as an example of how to write a Mediation adaptor for the AppNexus 
- * SDK. 
+ * This class is the Millennial Media banner adaptor it provides the functionality needed to allow
+ * an application using the AppNexus SDK to load a banner ad through the Millennial Media SDK. The instantiation
+ * of this class is done in response from the AppNexus server for a banner placement that is configured
+ * to use MM to serve it. This class is never directly instantiated by the application.
+ *
+ * This class also serves as an example of how to write a Mediation adaptor for the AppNexus
+ * SDK.
  *
  */
 public class MillennialMediaBanner implements MediatedBannerAdView {
 
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
-                          int width, int height) {
+                          int width, int height, TargetingParameters targetingParameters) {
         if (mBC == null) {
             Clog.e(Clog.mediationLogTag, "MillennialMediaBanner - requestAd called with null controller");
             return null;
@@ -57,7 +61,7 @@ public class MillennialMediaBanner implements MediatedBannerAdView {
 
         MMSDK.initialize(activity);
 
-        MMAdView adView = new MMAdView(activity);        
+        MMAdView adView = new MMAdView(activity);
         adView.setApid(uid);
         adView.setWidth(width);
         adView.setHeight(height);
@@ -65,13 +69,37 @@ public class MillennialMediaBanner implements MediatedBannerAdView {
         DisplayMetrics displayMetrics = activity.getResources().getDisplayMetrics();
 		int wpx = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, width, displayMetrics);
         int hpx = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, height, displayMetrics);
-        
+
         //Fix the AdView dimensions so we don't show any white padding to the left and right
         ViewGroup.LayoutParams lps = new ViewGroup.LayoutParams(wpx, hpx);
-        
+
         adView.setLayoutParams(lps);
-        
+
         MMRequest mmRequest = new MMRequest();
+
+
+        switch(targetingParameters.getGender()){
+            case UNKNOWN:
+                mmRequest.setGender(MMRequest.GENDER_OTHER);
+                break;
+            case FEMALE:
+                mmRequest.setGender(MMRequest.GENDER_FEMALE);
+                break;
+            case MALE:
+                mmRequest.setGender(MMRequest.GENDER_MALE);
+                break;
+        }
+
+        if(targetingParameters.getAge()!=null){
+            mmRequest.setAge(targetingParameters.getAge());
+        }
+
+        HashMap<String, String> mv = new HashMap<String, String>();
+        for(Pair<String, String> p : targetingParameters.getCustomKeywords()){
+            mv.put(p.first, p.second);
+        }
+        mmRequest.setMetaValues(mv);
+
         adView.setMMRequest(mmRequest);
         adView.setListener(new MillennialMediaListener(mBC, getClass().getSimpleName()));
         adView.getAd();

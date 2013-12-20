@@ -16,14 +16,17 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
+import android.util.Pair;
 import com.appnexus.opensdk.MediatedAdViewController;
 import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
+import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.utils.Clog;
 import com.google.ads.Ad;
 import com.google.ads.AdListener;
 import com.google.ads.AdRequest;
 import com.google.ads.InterstitialAd;
+import com.google.ads.doubleclick.DfpExtras;
 
 /**
  * This class is the Google DFP interstitial adaptor it provides the functionality needed to allow
@@ -44,7 +47,7 @@ public class DFPInterstitial implements MediatedInterstitialAdView, AdListener {
     }
 
     @Override
-    public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid) {
+    public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid, TargetingParameters targetingParameters) {
         if (mIC == null) {
             Clog.e(Clog.mediationLogTag, "DFPInterstitial - requestAd called with null controller");
             return;
@@ -60,6 +63,25 @@ public class DFPInterstitial implements MediatedInterstitialAdView, AdListener {
 
         AdRequest ar = new AdRequest();
 
+        switch(targetingParameters.getGender()){
+            case UNKNOWN:
+                break;
+            case FEMALE:
+                ar.setGender(AdRequest.Gender.FEMALE);
+                break;
+            case MALE:
+                ar.setGender(AdRequest.Gender.MALE);
+                break;
+        }
+        DfpExtras extras = new DfpExtras();
+        if(targetingParameters.getAge()!=null){
+            extras.addExtra("Age", targetingParameters.getAge());
+        }
+
+        for(Pair<String, String> p : targetingParameters.getCustomKeywords()){
+            extras.addExtra(p.first, p.second);
+        }
+        ar.setNetworkExtras(extras);
 
         iad.setAdListener(this);
 
