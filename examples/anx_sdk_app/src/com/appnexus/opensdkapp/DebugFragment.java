@@ -19,6 +19,7 @@ package com.appnexus.opensdkapp;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,6 +40,8 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshWebView;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.net.URI;
 
 public class DebugFragment extends Fragment {
 
@@ -192,7 +195,7 @@ public class DebugFragment extends Fragment {
     };
 
     private class DebugAuctionWebViewClient extends WebViewClient {
-        WebView webView;
+        private WebView webView;
 
         private DebugAuctionWebViewClient(WebView view) {
             this.webView = view;
@@ -230,18 +233,15 @@ public class DebugFragment extends Fragment {
         String result;
 
         public String getUrl() {
-            StringBuilder params = new StringBuilder();
-            params.append("&id=").append(Prefs.getPlacementId(getActivity()));
-            params.append("&debug_member=").append(Prefs.getMemberId(getActivity()));
-            params.append("&dongle=").append(Prefs.getDongle(getActivity()));
-            params.append("&size=").append(Prefs.getSize(getActivity()));
-            return Constants.DEBUG_AUCTION_URL + params.toString();
+            StringBuilder auctionURL = new StringBuilder(Clog.getLastRequest());
+            auctionURL.append("&debug_member=").append(Prefs.getMemberId(getActivity()));
+            auctionURL.append("&dongle=").append(Prefs.getDongle(getActivity()));
+            return auctionURL.toString();
         }
 
         public void runAuction() {
             final String debugAuctionUrl = getUrl();
             Clog.d(Constants.BASE_LOG_TAG, "Running a Debug Auction: " + debugAuctionUrl);
-//            loadUrl(debugAuctionUrl);
 
             final HTTPGet<Void, Void, HTTPResponse> auctionGet = new HTTPGet<Void, Void, HTTPResponse>() {
                 @Override

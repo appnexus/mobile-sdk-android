@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package com.appnexus.opensdk.mediationtests;
+package com.appnexus.opensdk;
 
 import android.test.AndroidTestCase;
 import com.appnexus.opensdk.*;
@@ -53,7 +53,7 @@ public class TestMediationBasic extends AndroidTestCase implements AdRequester {
     synchronized protected void tearDown() throws Exception {
         wait(1000);
         if ((SuccessfulMediationView.didPass && SecondSuccessfulMediationView.didPass && ThirdSuccessfulMediationView.didPass)
-            || (NoSDK.didPass && ThirdSuccessfulMediationView.didPass))
+                || (NoSDK.didPass && ThirdSuccessfulMediationView.didPass))
             Clog.w(TestUtil.testLogTag, "TEST PASSED #" + placementId);
         Settings.getSettings().BASE_URL = oldUrl;
         super.tearDown();
@@ -156,9 +156,5 @@ public class TestMediationBasic extends AndroidTestCase implements AdRequester {
     @Override
     public AdView getOwner() {
         return null;
-    }
-
-    @Override
-    public void setAdRequest(AdRequest adRequest) {
     }
 }

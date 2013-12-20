@@ -20,19 +20,19 @@ import android.view.View;
 import com.appnexus.opensdk.utils.Clog;
 
 /**
-* An object of this type is sent to the 3rd party SDK's MediatedInterstitialAdView object. The 3rd party
-* SDK uses this object from within its interstitial view implementation to send events back to the AppNexus
-* SDK
-*
-*/public class MediatedInterstitialAdViewController extends MediatedAdViewController implements Displayable {
+* An object of this type is sent to the third-party SDK's {@link
+* MediatedInterstitialAdView} object.  The third-party SDK uses this
+* object from within its interstitial view implementation to send
+* events back to the AppNexus SDK.
+*/
 
-    private Activity activity;
+public class MediatedInterstitialAdViewController extends MediatedAdViewController {
 
     static MediatedInterstitialAdViewController create(
             Activity activity, AdRequester requester,
             MediatedAd mediatedAd, AdViewListener listener) {
         MediatedInterstitialAdViewController out = new MediatedInterstitialAdViewController(activity, requester, mediatedAd, listener);
-        return out.failed() ? null : out;
+        return out.hasFailed ? null : out;
     }
 
     private MediatedInterstitialAdViewController(
@@ -43,19 +43,7 @@ import com.appnexus.opensdk.utils.Clog;
         if (!isValid(MediatedInterstitialAdView.class))
             return;
 
-        this.activity = activity;
-    }
-
-    void show() {
-        if (mAV != null) {
-            ((MediatedInterstitialAdView) mAV).show();
-        }
-    }
-
-    @Override
-    public View getView() {
         // if controller is valid, request an ad.
-        // create() will never return a non-null, invalid controller
         Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediated_request));
 
         RESULT errorCode = null;
@@ -77,8 +65,12 @@ import com.appnexus.opensdk.utils.Clog;
 
         if (errorCode != null)
             onAdFailed(errorCode);
+    }
 
-        return null;
+    void show() {
+        if (mAV != null) {
+            ((MediatedInterstitialAdView) mAV).show();
+        }
     }
 
     boolean isReady() {

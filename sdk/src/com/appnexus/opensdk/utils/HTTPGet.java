@@ -16,7 +16,9 @@
 
 package com.appnexus.opensdk.utils;
 
+import android.annotation.TargetApi;
 import android.os.AsyncTask;
+import android.os.Build;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -70,6 +72,7 @@ public abstract class HTTPGet<Params extends Void, Progress extends Void, Result
     @Override
     abstract protected void onPostExecute(HTTPResponse response);
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     protected void onCancelled(HTTPResponse response) {
         super.onCancelled(null);

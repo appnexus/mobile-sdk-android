@@ -14,7 +14,7 @@
  *    limitations under the License.
 */
 
-package com.appnexus.opensdk.stdtests;
+package com.appnexus.opensdk;
 
 import android.test.ActivityInstrumentationTestCase2;
 import android.view.View;

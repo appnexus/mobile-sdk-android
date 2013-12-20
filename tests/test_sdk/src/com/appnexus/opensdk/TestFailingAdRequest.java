@@ -14,42 +14,54 @@
  *    limitations under the License.
 */
 
-package com.appnexus.opensdk.stdtests;
+package com.appnexus.opensdk;
 
 import com.appnexus.opensdk.*;
 import junit.framework.TestCase;
 
-public class TestShortestSuccessfulAdRequest extends TestCase implements AdRequester, AdListener {
-    AdRequest shouldWork;
-    AdRequest shouldWork2;
-    boolean shouldWorkDidWork = false;
-    boolean shouldWorkDidWork2 = false;
+public class TestFailingAdRequest extends TestCase implements AdRequester, AdListener {
+    int notifyCount = 0;
+    AdRequest shouldNotWork;
+    AdRequest shouldNotWork2;
+    boolean shouldPass = false;
+    boolean shouldPass2 = false;
 
     protected void setUp() {
-        shouldWork = new AdRequest(this, null, null, null, "1281482",
-                null, null, 320, 50, -1, -1, null, null, null, false, null, false, false);
-        shouldWork2 = new AdRequest(null, null, null, null, "1281482",
-                null, null, 320, 50, -1, -1, null, null, null, false, this, false, false);
+        shouldNotWork = new AdRequest(this, "123456", null, null, null, "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, null, true, false);
+        shouldNotWork2 = new AdRequest(null, "123456", null, null, null, "portrait", "AT&T", 320, 50, 320, 50, null, null, "wifi", false, this, true, false);
     }
 
-    public void testSucceedingRequest() {
-        shouldWork.execute();
+    public void testFailingRequest() {
+        shouldNotWork.execute();
         pause();
-        shouldWork.cancel(true);
-        assertEquals(true, shouldWorkDidWork);
+        shouldNotWork.cancel(true);
+        assertEquals(true, shouldPass);
     }
 
-    public void testSucceedingRequestListener() {
-        shouldWork2.execute();
+    public void testFailingRequestListener() {
+        shouldNotWork2.execute();
         pause();
-        shouldWork2.cancel(true);
-        assertEquals(true, shouldWorkDidWork2);
+        shouldNotWork2.cancel(true);
+        assertEquals(true, shouldPass2);
+    }
+
+    synchronized void pause() {
+        try {
+            wait(30 * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            shouldNotWork.cancel(true);
+            shouldNotWork2.cancel(true);
+            return;
+        }
     }
 
     @Override
     synchronized public void onReceiveResponse(AdResponse response) {
-        assertEquals(true, response.getContent().length() > 0);
-        shouldWorkDidWork = true;
+        if (response == null) return;
+        shouldPass = response.getContent() == null;
+        if (response.getContent() != null)
+            shouldPass = response.getContent().length() <= 0;
         notify();
     }
 
@@ -59,36 +71,20 @@ public class TestShortestSuccessfulAdRequest extends TestCase implements AdReque
     }
 
     @Override
-    public void setAdRequest(AdRequest adRequest) {
-    }
-
-    @Override
     synchronized public void failed(AdRequest request) {
-        shouldWorkDidWork = false;
+        shouldPass = true;
         notify();
-    }
-
-    synchronized void pause() {
-        try {
-            wait(10 * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            shouldWork.cancel(true);
-            shouldWork2.cancel(true);
-            return;
-        }
     }
 
     @Override
     synchronized public void onAdLoaded(AdView adView) {
-        shouldWorkDidWork2 = true;
+        shouldPass2 = false;
         notify();
-
     }
 
     @Override
     synchronized public void onAdRequestFailed(AdView adView) {
-        shouldWorkDidWork2 = false;
+        shouldPass2 = true;
         notify();
     }
 

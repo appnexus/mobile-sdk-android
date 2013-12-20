@@ -17,8 +17,9 @@
 package com.appnexus.opensdk;
 
 /**
- * Implement this interface and pass it to your {@link BannerAdView} and {@link  InterstitialAdView}
- * objects to receive events on the status of the ad.
+ * Implement this interface and pass it to your {@link BannerAdView}
+ * and {@link InterstitialAdView} objects to receive events on the
+ * status of the ad.
  */
 public interface AdListener {
     /**
@@ -29,37 +30,40 @@ public interface AdListener {
     public void onAdLoaded(AdView adView);
 
     /**
-     * Called when an ad request has failed.
-     * Ad request failures may include no ad available, or networking errors
+     * Called when an ad request has failed.  Ad requests can fail
+     * because no ad is available, or because of networking errors.
      *
      * @param adView The {@link AdView} that loaded the ad.
      */
     public void onAdRequestFailed(AdView adView);
 
     /**
-     * Called when an ad expands due to user interaction. MRAID ads that expand
-     * the screen generate these events. This event may fire from both Banner and Interstitial ads.
-     * This would be a good time to stop or pause your application due 
-     * to the user interacting with the ad. 
+     * Called when an ad expands due to user interaction.  MRAID ads
+     * that expand the screen generate these events, for example.
+     * This event may fire from both banner and interstitial ads.
+     * This would be a good time to stop or pause your application due
+     * to the user interacting with the ad.  This is the inverse of
+     * onAdCollapsed.
      *
      * @param adView The {@link AdView} that loaded the ad.
      */
     public void onAdExpanded(AdView adView);
 
     /**
-     * Called when an ad is closed/unexpanded. The user has stopped interacting 
-     * with the ad. This is the corollary of onAdExpanded.
+     * Called when an ad is closed/unexpanded, for example if the user
+     * has stopped interacting with the ad.  This is the inverse of
+     * onAdExpanded.
      *
      * @param adView The {@link AdView} that loaded the ad.
      */
     public void onAdCollapsed(AdView adView);
 
     /**
-     * Called when an ad is clicked. The current activity will be paused 
-     * as the user switches activities to the activity launched from 
-     * the ad interaction. For example the user clicked a link that 
-     * opened a web browser, or the user touched a click to call link 
-     * which launched the phone dialer. 
+     * Called when an ad is clicked.  The current activity will be
+     * paused as the user switches to the activity launched from the
+     * ad interaction.  For example, the user may click a link that
+     * opens a web browser, or touch a click-to-call link which
+     * launches the phone dialer.
      *
      * @param adView The {@link AdView} that loaded the ad.
      */
