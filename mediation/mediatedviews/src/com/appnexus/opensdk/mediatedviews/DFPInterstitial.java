@@ -77,7 +77,9 @@ public class DFPInterstitial implements MediatedInterstitialAdView, AdListener {
         if(targetingParameters.getAge()!=null){
             extras.addExtra("Age", targetingParameters.getAge());
         }
-
+        if(targetingParameters.getLocation()!=null){
+            ar.setLocation(targetingParameters.getLocation());
+        }
         for(Pair<String, String> p : targetingParameters.getCustomKeywords()){
             extras.addExtra(p.first, p.second);
         }

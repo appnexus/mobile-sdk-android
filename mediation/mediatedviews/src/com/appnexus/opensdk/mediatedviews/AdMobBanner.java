@@ -96,6 +96,9 @@ public class AdMobBanner implements MediatedBannerAdView, AdListener {
         for(Pair<String, String> p : targetingParameters.getCustomKeywords()){
             extras.addExtra(p.first, p.second);
         }
+        if(targetingParameters.getLocation()!=null){
+            ar.setLocation(targetingParameters.getLocation());
+        }
         ar.setNetworkExtras(extras);
 
         mMediatedBannerAdViewController = mBC;

@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
@@ -61,6 +62,7 @@ public abstract class AdView extends FrameLayout {
 	String age;
 	GENDER gender = GENDER.UNKNOWN;
 	ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
+    private Location location = null;
 	boolean mraid_expand = false;
 	AdListener adListener;
 	private BrowserStyle browserStyle;
@@ -652,7 +654,15 @@ public abstract class AdView extends FrameLayout {
 		this.age = age;
 	}
 
-	/**
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    /**
 	 *
 	 * The user's gender.
 	 *
@@ -729,7 +739,7 @@ public abstract class AdView extends FrameLayout {
 	}
 
     protected TargetingParameters getTargetingParameters(){
-        return new TargetingParameters(getAge(), getGender(), getCustomKeywords());
+        return new TargetingParameters(getAge(), getGender(), getCustomKeywords(), getLocation());
     }
 
 	/**

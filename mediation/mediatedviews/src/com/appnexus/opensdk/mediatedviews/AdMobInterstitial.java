@@ -87,6 +87,9 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
             extras.addExtra(p.first, p.second);
         }
         ar.setNetworkExtras(extras);
+        if(targetingParameters.getLocation()!=null){
+            ar.setLocation(targetingParameters.getLocation());
+        }
         iad.setAdListener(this);
 
         iad.loadAd(ar);

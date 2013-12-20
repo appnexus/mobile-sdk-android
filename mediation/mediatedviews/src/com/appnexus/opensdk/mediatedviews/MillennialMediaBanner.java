@@ -98,6 +98,9 @@ public class MillennialMediaBanner implements MediatedBannerAdView {
         for(Pair<String, String> p : targetingParameters.getCustomKeywords()){
             mv.put(p.first, p.second);
         }
+        if(targetingParameters.getLocation()!=null){
+            mmRequest.setUserLocation(targetingParameters.getLocation());
+        }
         mmRequest.setMetaValues(mv);
 
         adView.setMMRequest(mmRequest);
