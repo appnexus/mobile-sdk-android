@@ -26,6 +26,10 @@ import com.google.ads.AdRequest;
 import com.google.ads.AdSize;
 import com.google.ads.doubleclick.DfpAdView;
 import com.google.ads.doubleclick.DfpExtras;
+import com.google.ads.doubleclick.SwipeableDfpAdView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * This class is the Google DFP banner adaptor it provides the functionality needed to allow
@@ -69,9 +73,23 @@ public class DFPBanner implements MediatedBannerAdView, AdListener {
         }
         Clog.d(Clog.mediationLogTag, String.format("DFPBanner - requesting an ad: [%s, %s, %dx%d]", parameter, adUnitID, width, height));
 
-        DfpAdView v = new DfpAdView(activity, new AdSize(width, height), adUnitID);
+        DFBBannerSSParameters ssparm = new DFBBannerSSParameters(parameter);
+        AdSize adSize = ssparm.isSmartBanner ? AdSize.SMART_BANNER : new AdSize(width,height);
+
+        DfpAdView v ;
+        if (ssparm.isSwipable) {
+            v = new SwipeableDfpAdView(activity, adSize, adUnitID);
+        } else {
+            v = new DfpAdView(activity, adSize, adUnitID);
+        }
+
         v.setAdListener(this);
         AdRequest ar = new AdRequest();
+
+        if (ssparm.test_device != null && ssparm.test_device.length() > 0) {
+            Clog.d(Clog.mediationLogTag, "DFPBanner - requestAd called with test device " + ssparm.test_device);
+            ar.addTestDevice(ssparm.test_device);
+        }
 
         switch(targetingParameters.getGender()){
             case UNKNOWN:
@@ -154,5 +172,62 @@ public class DFPBanner implements MediatedBannerAdView, AdListener {
         if (mMediatedBannerAdViewController != null) {
             mMediatedBannerAdViewController.onAdClicked();
         }
+    }
+
+    /**
+     * Class to extract optional server side parameters from passed in json string. 
+     * Supports 
+     * {
+     *  "swipeable" : 1,
+     *  "smartbanner" : 1
+     *  "testdevice" : "ABCDE..."
+     *  }
+     *
+     */
+    class DFBBannerSSParameters {
+
+        public DFBBannerSSParameters(String parameter)
+        {
+            final String SWIPEABLE = "swipeable";
+            final String TEST = "testdevice";
+            final String SMARTBANNER = "smartbanner";
+
+
+            do {
+                JSONObject req = null;
+                if (parameter == null || parameter.length() == 0) {
+                    break;
+                }
+                try {
+                    req = new JSONObject(parameter);
+                } catch (JSONException e) {
+                    // This is optional
+                }
+                finally {
+                    if (req == null) {
+                        break;
+                    }
+                }
+
+                try {
+                    isSwipable = req.getBoolean(SWIPEABLE);
+                }   catch (JSONException e) {}
+
+                try {
+                    test_device = req.getString(TEST);
+                }   catch (JSONException e) {}
+                try {
+                    isSmartBanner = req.getBoolean(SMARTBANNER);
+                }   catch (JSONException e) {}
+
+            } while (false);
+        }
+
+
+        public boolean isSwipable;
+        public String test_device;
+        public boolean isSmartBanner;
+
+
     }
 }

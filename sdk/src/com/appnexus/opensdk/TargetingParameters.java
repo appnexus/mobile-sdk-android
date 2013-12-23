@@ -21,11 +21,14 @@ import android.util.Pair;
 import java.util.ArrayList;
 
 public class TargetingParameters {
-    private String age;
-    private ArrayList<Pair<String, String>> customKeywords;
-    private AdView.GENDER gender;
-    private Location location;
+    private String age = null;
+    private ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
+    private AdView.GENDER gender = AdView.GENDER.UNKNOWN;
+    private Location location = null;
 
+    public TargetingParameters() {
+        
+    }
     public TargetingParameters(String age, AdView.GENDER gender, ArrayList<Pair<String,String>> customKeywords, Location location){
         this.age = age;
         this.gender = gender;

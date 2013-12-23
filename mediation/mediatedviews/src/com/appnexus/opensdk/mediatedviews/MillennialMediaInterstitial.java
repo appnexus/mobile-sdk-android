@@ -85,7 +85,7 @@ public class MillennialMediaInterstitial implements MediatedInterstitialAdView {
         }
         mmRequest.setMetaValues(mv);
         if(targetingParameters.getLocation()!=null){
-            mmRequest.setUserLocation(targetingParameters.getLocation());
+            MMRequest.setUserLocation(targetingParameters.getLocation());
         }
         if (!iad.isAdAvailable()) {
             iad.fetch(mmRequest);

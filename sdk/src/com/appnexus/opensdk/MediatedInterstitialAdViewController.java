@@ -16,7 +16,6 @@
 package com.appnexus.opensdk;
 
 import android.app.Activity;
-import android.view.View;
 import com.appnexus.opensdk.utils.Clog;
 
 /**
@@ -50,11 +49,16 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
 
         TargetingParameters tp = null;
         try{
-            if(((AdView) requester )!= null){
-                tp = ((AdView) requester ).getTargetingParameters();
+            AdView av = requester.getOwner();
+            if (av!= null){
+                tp = av.getTargetingParameters();
             }
         }catch(ClassCastException e){
             
+        } finally {
+            if (tp == null) {
+                tp = new TargetingParameters();
+            }
         }
 
         startTimeout();

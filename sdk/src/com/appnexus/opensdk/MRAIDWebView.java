@@ -17,13 +17,11 @@
 package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -168,7 +166,6 @@ class MRAIDWebView extends WebView implements Displayable {
     }
 
     void close() {
-        boolean isInterstitial = false;
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 this.getLayoutParams());
         lp.height = default_height;

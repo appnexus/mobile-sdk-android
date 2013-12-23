@@ -16,15 +16,28 @@
 
 package com.appnexus.opensdk;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+
+import org.apache.http.message.BasicNameValuePair;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
-import android.content.*;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -37,14 +50,17 @@ import android.util.Base64;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.Window;
-import android.webkit.*;
+import android.webkit.ConsoleMessage;
+import android.webkit.JsResult;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Toast;
-import com.appnexus.opensdk.utils.*;
-import org.apache.http.message.BasicNameValuePair;
 
-import java.io.*;
-import java.net.URLDecoder;
-import java.util.ArrayList;
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Hex;
+import com.appnexus.opensdk.utils.W3CEvent;
 
 @SuppressLint("InlinedApi")
 class MRAIDImplementation {
@@ -54,7 +70,9 @@ class MRAIDImplementation {
     boolean resized = false;
     boolean hidden = false;
     int default_width, default_height;
-
+    boolean supportsPictureAPI = false;
+    boolean supportsCalendar = false;
+    
     public MRAIDImplementation(MRAIDWebView owner) {
         this.owner = owner;
     }
@@ -205,6 +223,8 @@ class MRAIDImplementation {
                 view.loadUrl("javascript:window.mraid.util.setDefaultPosition(" + location[0] + ", " + location[1] + ", " + width + ", " + height + ")");
             }
 
+            @SuppressLint("NewApi")
+            @SuppressWarnings("deprecation")
             private void setMaxSize(WebView view) {
                 if (owner.getContext() instanceof Activity) {
                     Activity a = ((Activity) owner.getContext());
@@ -233,6 +253,8 @@ class MRAIDImplementation {
 
             }
 
+            @SuppressLint("NewApi")
+            @SuppressWarnings("deprecation")
             private void setScreenSize(WebView view) {
                 if (owner.getContext() instanceof Activity) {
                     Display d = ((Activity) owner.getContext()).getWindowManager().getDefaultDisplay();
@@ -252,6 +274,7 @@ class MRAIDImplementation {
                 }
             }
 
+            @SuppressLint("NewApi")
             private void setSupportsValues(WebView view) {
                 //SMS
                 if (hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("sms:5555555555")))) {
@@ -272,13 +295,17 @@ class MRAIDImplementation {
                 }
                 if (hasIntent(i)) {
                     view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
+                    supportsCalendar = true;
                 }
                 i = null;
 
-                //Store Picture
+                //Store Picture only if on API 11 or above
                 PackageManager pm = owner.getContext().getPackageManager();
                 if(pm.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, owner.getContext().getPackageName()) == PackageManager.PERMISSION_GRANTED){
-                    view.loadUrl("javascript:window.mraid.util.setSupportsStorePicture(true)");
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                        view.loadUrl("javascript:window.mraid.util.setSupportsStorePicture(true)");
+                        supportsPictureAPI = true;
+                    }
                 }
 
                 //Video should always work inline.
@@ -437,11 +464,11 @@ class MRAIDImplementation {
             resize(parameters);
         } else if (func.equals("setOrientationProperties")) {
             setOrientationProperties(parameters);
-        } else if (func.equals("createCalendarEvent")) {
+        } else if (supportsCalendar && func.equals("createCalendarEvent")) {
             createCalendarEvent(parameters);
         } else if (func.equals("playVideo")) {
             playVideo(parameters);
-        } else if (func.equals("storePicture")) {
+        } else if (supportsPictureAPI && func.equals("storePicture")) {
             storePicture(parameters);
         } else {
             Clog.d(Clog.mraidLogTag, Clog.getString(R.string.unsupported_mraid, func));
@@ -467,6 +494,7 @@ class MRAIDImplementation {
         builder.setTitle(R.string.store_picture_title);
         builder.setMessage(R.string.store_picture_message);
         builder.setPositiveButton(R.string.store_picture_accept, new DialogInterface.OnClickListener() {
+            @SuppressLint("NewApi")
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //Check URI scheme
@@ -489,9 +517,8 @@ class MRAIDImplementation {
                     if (uri_final.contains("base64")) {
                         isBase64 = true;
                     }
-                    File out = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), System.currentTimeMillis() + ext);
+                    File out = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), System.currentTimeMillis() + ext);
                     FileOutputStream outstream=null;
-                    String outdir = out.getPath();
                     try {
                         byte[] out_array;
                         outstream = new FileOutputStream(out);
@@ -508,7 +535,10 @@ class MRAIDImplementation {
                         Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
                     } catch (IOException e) {
                         Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
-                    }finally{
+                    } catch (IllegalArgumentException e) {
+                        Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));                     
+                    }
+                    finally{
                         if(outstream!=null){
                             try {
                                 outstream.close();
@@ -522,18 +552,13 @@ class MRAIDImplementation {
                     //Use the download manager
                     final DownloadManager dm = (DownloadManager) owner.getContext().getSystemService(Context.DOWNLOAD_SERVICE);
                     DownloadManager.Request r = new DownloadManager.Request(Uri.parse(uri_final));
-                    r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
 
                     //Check if we're writing to internal or external
                     PackageManager pm = owner.getContext().getPackageManager();
                     if(pm.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, owner.getContext().getPackageName()) == PackageManager.PERMISSION_GRANTED){
-                        r.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, uri_final.split("/")[uri_final.split("/").length-1]);
-
-                        if(Build.VERSION.SDK_INT<Build.VERSION_CODES.HONEYCOMB){
-                            r.setShowRunningNotification(true);
-                        }else{
-                            r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                        }
+                        r.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, uri_final.split("/")[uri_final.split("/").length-1]);
+                        r.allowScanningByMediaScanner();
+                        r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
                         dm.enqueue(r);
                     }else{
                         Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
@@ -588,22 +613,28 @@ class MRAIDImplementation {
     private void createCalendarEvent(ArrayList<BasicNameValuePair> parameters) {
         W3CEvent event = null;
         try {
-            if(parameters.size()>0){
+            if(parameters != null && parameters.size()>0){
                 event = W3CEvent.createFromJSON(URLDecoder.decode(parameters.get(0).getValue(), "UTF-8"));
             }
         } catch (UnsupportedEncodingException e) {
             return;
         }
 
-        //Call onAdClicked
-        if(owner.owner.adListener!=null){
-            owner.owner.adListener.onAdClicked(owner.owner);
+
+        if (event != null) {
+            try {
+                Intent i = event.getInsertIntent();
+                owner.getContext().startActivity(i);
+                // Call onAdClicked
+                if (owner.owner.adListener != null) {
+                    owner.owner.adListener.onAdClicked(owner.owner);
+                }
+                Clog.d(Clog.mraidLogTag, Clog.getString(R.string.create_calendar_event));
+            } catch (ActivityNotFoundException e) {
+
+            }
         }
 
-        Intent i = event.getInsertIntent();
-        owner.getContext().startActivity(i);
-
-        Clog.d(Clog.mraidLogTag, Clog.getString(R.string.create_calendar_event));
     }
 
 

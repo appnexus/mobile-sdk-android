@@ -99,7 +99,7 @@ public class MillennialMediaBanner implements MediatedBannerAdView {
             mv.put(p.first, p.second);
         }
         if(targetingParameters.getLocation()!=null){
-            mmRequest.setUserLocation(targetingParameters.getLocation());
+            MMRequest.setUserLocation(targetingParameters.getLocation());
         }
         mmRequest.setMetaValues(mv);
 

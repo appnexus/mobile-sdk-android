@@ -418,7 +418,10 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                     Settings.getSettings().HTTP_SOCKET_TIMEOUT);
             HttpConnectionParams.setSocketBufferSize(p, 8192);
             DefaultHttpClient h = new DefaultHttpClient(p);
-            r = h.execute(new HttpGet(query_string));
+
+            HttpGet req = new HttpGet(query_string);
+            req.setHeader("User-Agent", Settings.getSettings().ua);
+            r = h.execute(req);
             if (!httpShouldContinue(r.getStatusLine())) {
                 return AdRequest.HTTP_ERROR;
             }
@@ -440,6 +443,9 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         } catch (SecurityException se) {
             Clog.e(Clog.baseLogTag,
                     Clog.getString(R.string.permissions_internet));
+            return null;
+        } catch(IllegalArgumentException ie) {
+            Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unknown));
             return null;
         } catch (Exception e) {
             e.printStackTrace();
