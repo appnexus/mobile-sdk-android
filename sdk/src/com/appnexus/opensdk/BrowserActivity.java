@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
+import android.webkit.CookieSyncManager;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings.PluginState;
@@ -45,6 +46,7 @@ import android.widget.VideoView;
 
 import com.appnexus.opensdk.AdView.BrowserStyle;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.WebviewUtil;
 
 /**
  * This is the in-app browser activity.  You must add a reference to
@@ -172,6 +174,10 @@ public class BrowserActivity extends Activity {
                 }else{
                     forward.setEnabled(false);
                 }
+                CookieSyncManager csm = CookieSyncManager.getInstance();
+                if (csm != null) {
+                    csm.sync();
+                }
             }
         });
 
@@ -265,13 +271,21 @@ public class BrowserActivity extends Activity {
 
     @Override
     protected void onResume() {
-        webview.onResume();
+        WebviewUtil.onResume(webview);
+        CookieSyncManager csm = CookieSyncManager.getInstance();
+        if (csm != null) {
+            csm.startSync();
+        }
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        webview.onPause();
+        WebviewUtil.onPause(webview);
+        CookieSyncManager csm = CookieSyncManager.getInstance();
+        if (csm != null) {
+            csm.stopSync();
+        }
         super.onPause();
     }
 

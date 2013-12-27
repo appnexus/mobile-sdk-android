@@ -25,6 +25,7 @@ import android.graphics.Color;
 import android.os.*;
 import android.util.Pair;
 import android.view.*;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -32,6 +33,7 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.WebviewUtil;
 
+import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 /**
@@ -55,6 +57,7 @@ public class AdActivity extends Activity {
     private boolean close_added = false;
     private static Activity current_ad_activity = null;
     private InterstitialAdView adView;
+    static final int CLOSE_BUTTON_MESSAGE_ID = 8000;
 
     static Activity getCurrent_ad_activity() {
         return current_ad_activity;
@@ -86,21 +89,36 @@ public class AdActivity extends Activity {
                 Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
 
         // Add a close button after a 10 second delay.
-        closeButtonHandler.sendEmptyMessageDelayed(0, closeButtonDelay);
+        closeButtonHandler.sendEmptyMessageDelayed(CLOSE_BUTTON_MESSAGE_ID, closeButtonDelay);
+        CookieSyncManager.createInstance(this);
+        CookieSyncManager csm = CookieSyncManager.getInstance();
+        if (csm != null) {
+            csm.startSync();
+        }
+        
     }
 
-
-    private final Handler closeButtonHandler = new Handler() {
+    /**
+     * Keep a weak reference to the AdActivity to prevent circular dependency 
+     * between handler and Activity
+     * 
+     */
+    static class CloseButtonHandler extends Handler {
+        WeakReference<AdActivity> activity_weak;
+        public CloseButtonHandler(AdActivity activity) {
+            activity_weak = new WeakReference<AdActivity>(activity);
+        }
         @Override
         public void handleMessage(Message msg) {
-            if (msg.obj instanceof FrameLayout) {
-                if ((adView != null) && adView.interacted) {
-                    addCloseButton();
-                }
+            AdActivity activity = activity_weak.get();
+            if (activity != null && msg.what == CLOSE_BUTTON_MESSAGE_ID) {
+                activity.addCloseButton();
             }
         }
-    };
-
+    }
+  
+    private final CloseButtonHandler closeButtonHandler = new CloseButtonHandler(this);
+  
     protected void finishIfNoInteraction() {
         if ((adView != null) && !adView.interacted) {
             finish();
@@ -113,7 +131,7 @@ public class AdActivity extends Activity {
     }
 
     void addCloseButton() {
-        if (close_added) {
+        if (close_added || layout == null) {
             return;
         }
         close_added = true;
@@ -298,12 +316,20 @@ public class AdActivity extends Activity {
     @Override
     protected void onPause() {
         if (webView != null) WebviewUtil.onPause(webView);
+        CookieSyncManager csm = CookieSyncManager.getInstance();
+        if (csm != null) {
+            csm.stopSync();
+        }
         super.onPause();
     }
 
     @Override
     protected void onResume() {
         if (webView != null) WebviewUtil.onResume(webView);
+        CookieSyncManager csm = CookieSyncManager.getInstance();
+        if (csm != null) {
+            csm.startSync();
+        }
         super.onResume();
     }
 

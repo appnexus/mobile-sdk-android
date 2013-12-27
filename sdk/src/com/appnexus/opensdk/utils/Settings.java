@@ -51,6 +51,8 @@ public class Settings {
 
     public final long MEDIATED_NETWORK_TIMEOUT = 15000;
 
+    public final String COOKIE_DOMAIN = "http://mediation.adnxs.com";
+    public final String AN_UUID = "uuid2";
     public /*final*/ String BASE_URL = "http://mediation.adnxs.com/mob?";
     public final String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
 
