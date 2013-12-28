@@ -489,8 +489,10 @@ public abstract class AdView extends FrameLayout {
         FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT, grav);
-        blp.rightMargin = (this.getMeasuredWidth() - this.getChildAt(0)
-                .getMeasuredWidth()) / 2;
+        if (this.getChildCount() > 0) { 
+            blp.rightMargin = (this.getMeasuredWidth() - this.getChildAt(0)
+                    .getMeasuredWidth()) / 2;
+        }
         close_button.setLayoutParams(blp);
         close_button.setBackgroundColor(Color.TRANSPARENT);
         close_button.setOnClickListener(new View.OnClickListener() {
