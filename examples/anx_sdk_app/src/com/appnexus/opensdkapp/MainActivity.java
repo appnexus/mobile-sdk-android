@@ -16,6 +16,8 @@
 
 package com.appnexus.opensdkapp;
 
+import android.R.color;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -197,6 +199,7 @@ public class MainActivity extends FragmentActivity implements
 
         public View createTabContent(String tag) {
             View v = new View(mContext);
+
             v.setMinimumWidth(0);
             v.setMinimumHeight(0);
             return v;
@@ -351,6 +354,7 @@ public class MainActivity extends FragmentActivity implements
         }
     }
 
+    @SuppressLint("NewApi")
     synchronized public void readFromFile() {
         Clog.d(Constants.BASE_LOG_TAG, "Reading log file");
 
