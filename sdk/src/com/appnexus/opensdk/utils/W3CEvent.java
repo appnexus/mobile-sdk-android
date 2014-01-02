@@ -276,7 +276,7 @@ public class W3CEvent {
             end = millisFromDateString(getEnd());
             if(end>0){
                 if (nativeMethod) {
-                    i.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, end);
+                    i.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, end);
                 } else {
                     i.putExtra("endTime", end);
                 }
