@@ -72,7 +72,7 @@ class MRAIDImplementation {
     int default_width, default_height;
     boolean supportsPictureAPI = false;
     boolean supportsCalendar = false;
-    
+
     public MRAIDImplementation(MRAIDWebView owner) {
         this.owner = owner;
     }
@@ -287,17 +287,15 @@ class MRAIDImplementation {
                 }
 
                 //Calendar
-                Intent i;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                    i = new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI);
-                } else {
-                    i = new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event");
-                }
-                if (hasIntent(i)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH
+                        && hasIntent(new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI))) {
                     view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
                     supportsCalendar = true;
+                }else if(hasIntent(new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event"))){
+                    view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
+                    supportsCalendar = true;
+                    W3CEvent.useMIME = true;
                 }
-                i = null;
 
                 //Store Picture only if on API 11 or above
                 PackageManager pm = owner.getContext().getPackageManager();
@@ -536,7 +534,7 @@ class MRAIDImplementation {
                     } catch (IOException e) {
                         Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
                     } catch (IllegalArgumentException e) {
-                        Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));                     
+                        Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
                     }
                     finally{
                         if(outstream!=null){

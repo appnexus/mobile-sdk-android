@@ -38,6 +38,7 @@ public class W3CEvent {
     private String transparency;//?
     private String reminder;//?
     private W3CRepeatRule recurrence;
+    public static boolean useMIME=false;
 
     public String getId() {
         return id;
@@ -232,7 +233,7 @@ public class W3CEvent {
     }
     public Intent getInsertIntent() {
         Intent i;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+        if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             i = new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI);
         } else {
             i = new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event");
