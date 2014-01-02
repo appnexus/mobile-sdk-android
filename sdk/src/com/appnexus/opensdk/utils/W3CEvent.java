@@ -239,21 +239,21 @@ public class W3CEvent {
             i = new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event");
         }
         if (getDescription() != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 i.putExtra(CalendarContract.Events.TITLE, getDescription());
             } else {
                 i.putExtra("title", getDescription());
             }
         }
         if (getLocation() != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 i.putExtra(CalendarContract.Events.EVENT_LOCATION, getLocation());
             } else {
                 i.putExtra("eventLocation", getLocation());
             }
         }
         if (getSummary() != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 i.putExtra(CalendarContract.Events.DESCRIPTION, getSummary());
             } else {
                 i.putExtra("description", getSummary());
@@ -263,7 +263,7 @@ public class W3CEvent {
             long start = -1;
                 start = millisFromDateString(getStart());
             if(start>0){
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                     i.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, start);
                 } else {
                     i.putExtra("beginTime", start);
@@ -274,31 +274,31 @@ public class W3CEvent {
             long end = -1;
             end = millisFromDateString(getEnd());
             if(end>0){
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                     i.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, end);
                 } else {
-                    i.putExtra("beginTime", end);
+                    i.putExtra("endTime", end);
                 }
             }
         }
         if (getStatus() != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 i.putExtra(CalendarContract.Events.STATUS, getStatus());
             }
         }
         if (getTransparency() != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 i.putExtra(CalendarContract.Events.VISIBLE, getTransparency().equals("opaque") ? false : true);
             }
         }
         if (getReminder() != null) {
             long time = millisFromDateString(getReminder());
             if(time<0){
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                     i.putExtra(CalendarContract.Reminders.MINUTES, Math.abs(time/60000));
                 }
             }else if(getStart()!=null){
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                     i.putExtra(CalendarContract.Reminders.MINUTES, Math.abs(millisFromDateString(getStart()) - (time/60000)));
                 }
             }
@@ -390,7 +390,7 @@ public class W3CEvent {
                 }
                 repeatRuleBuilder.setCharAt(repeatRuleBuilder.length()-1, ';');
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 i.putExtra(CalendarContract.Events.RRULE, repeatRuleBuilder.toString());
             } else {
                 i.putExtra("rrule", repeatRuleBuilder.toString());
