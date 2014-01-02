@@ -180,7 +180,6 @@ public class DFPBanner implements MediatedBannerAdView, AdListener {
      * {
      *  "swipeable" : 1,
      *  "smartbanner" : 1
-     *  "testdevice" : "ABCDE..."
      *  }
      *
      */
@@ -189,9 +188,7 @@ public class DFPBanner implements MediatedBannerAdView, AdListener {
         public DFBBannerSSParameters(String parameter)
         {
             final String SWIPEABLE = "swipeable";
-            final String TEST = "testdevice";
             final String SMARTBANNER = "smartbanner";
-
 
             do {
                 JSONObject req = null;
@@ -211,10 +208,6 @@ public class DFPBanner implements MediatedBannerAdView, AdListener {
 
                 try {
                     isSwipable = req.getBoolean(SWIPEABLE);
-                }   catch (JSONException e) {}
-
-                try {
-                    test_device = req.getString(TEST);
                 }   catch (JSONException e) {}
                 try {
                     isSmartBanner = req.getBoolean(SMARTBANNER);

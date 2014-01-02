@@ -15,9 +15,6 @@
  */
 package com.appnexus.opensdk.mediatedviews;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.util.Pair;
 import com.appnexus.opensdk.MediatedAdViewController;
@@ -63,15 +60,9 @@ public class DFPInterstitial implements MediatedInterstitialAdView, AdListener {
         Clog.d(Clog.mediationLogTag, String.format("DFPInterstitial - requesting an ad: [%s, %s]", parameter, uid));
 
         iad = new InterstitialAd(activity, uid);
-
-        DFBInterstitialSSParameters ssparam = new DFBInterstitialSSParameters(parameter);
         
         AdRequest ar = new AdRequest();
 
-        if (ssparam.test_device != null && ssparam.test_device.length() > 0) {
-            Clog.d(Clog.mediationLogTag, "DFPInterstitial - requestAd called with test device " + ssparam.test_device);
-            ar.addTestDevice(ssparam.test_device);
-        }
         switch(targetingParameters.getGender()){
             case UNKNOWN:
                 break;
@@ -172,45 +163,5 @@ public class DFPInterstitial implements MediatedInterstitialAdView, AdListener {
     public boolean isReady() {
         return (iad != null) && (iad.isReady());
     }
-    
-    /**
-     * Class to extract optional server side parameters from passed in json string. 
-     * Supports 
-     * {
-     *  "testdevice" : "ABCDE..."
-     *  }
-     *
-     */
-    class DFBInterstitialSSParameters {
 
-        public DFBInterstitialSSParameters(String parameter)
-        {
-            final String TEST = "testdevice";
-
-            do {
-                JSONObject req = null;
-                if (parameter == null || parameter.length() == 0) {
-                    break;
-                }
-                try {
-                    req = new JSONObject(parameter);
-                } catch (JSONException e) {
-                    // This is optional
-                }
-                finally {
-                    if (req == null) {
-                        break;
-                    }
-                }
-            
-                try {
-                    test_device = req.getString(TEST);
-                }   catch (JSONException e) {}
-            
-            } while (false);
-        }
-
-        public String test_device;
-
-    }
 }
