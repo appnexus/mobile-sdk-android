@@ -233,27 +233,28 @@ public class W3CEvent {
     }
     public Intent getInsertIntent() {
         Intent i;
-        if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+        boolean nativeMethod = (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH);
+        if (nativeMethod) {
             i = new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI);
         } else {
             i = new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event");
         }
         if (getDescription() != null) {
-            if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            if (nativeMethod) {
                 i.putExtra(CalendarContract.Events.TITLE, getDescription());
             } else {
                 i.putExtra("title", getDescription());
             }
         }
         if (getLocation() != null) {
-            if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            if (nativeMethod) {
                 i.putExtra(CalendarContract.Events.EVENT_LOCATION, getLocation());
             } else {
                 i.putExtra("eventLocation", getLocation());
             }
         }
         if (getSummary() != null) {
-            if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            if (nativeMethod) {
                 i.putExtra(CalendarContract.Events.DESCRIPTION, getSummary());
             } else {
                 i.putExtra("description", getSummary());
@@ -263,7 +264,7 @@ public class W3CEvent {
             long start = -1;
                 start = millisFromDateString(getStart());
             if(start>0){
-                if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                if (nativeMethod) {
                     i.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, start);
                 } else {
                     i.putExtra("beginTime", start);
@@ -274,7 +275,7 @@ public class W3CEvent {
             long end = -1;
             end = millisFromDateString(getEnd());
             if(end>0){
-                if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                if (nativeMethod) {
                     i.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, end);
                 } else {
                     i.putExtra("endTime", end);
@@ -282,23 +283,23 @@ public class W3CEvent {
             }
         }
         if (getStatus() != null) {
-            if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            if (nativeMethod) {
                 i.putExtra(CalendarContract.Events.STATUS, getStatus());
             }
         }
         if (getTransparency() != null) {
-            if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            if (nativeMethod) {
                 i.putExtra(CalendarContract.Events.VISIBLE, getTransparency().equals("opaque") ? false : true);
             }
         }
         if (getReminder() != null) {
             long time = millisFromDateString(getReminder());
             if(time<0){
-                if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                if (nativeMethod) {
                     i.putExtra(CalendarContract.Reminders.MINUTES, Math.abs(time/60000));
                 }
             }else if(getStart()!=null){
-                if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                if (nativeMethod) {
                     i.putExtra(CalendarContract.Reminders.MINUTES, Math.abs(millisFromDateString(getStart()) - (time/60000)));
                 }
             }
@@ -390,7 +391,7 @@ public class W3CEvent {
                 }
                 repeatRuleBuilder.setCharAt(repeatRuleBuilder.length()-1, ';');
             }
-            if (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            if (nativeMethod) {
                 i.putExtra(CalendarContract.Events.RRULE, repeatRuleBuilder.toString());
             } else {
                 i.putExtra("rrule", repeatRuleBuilder.toString());
