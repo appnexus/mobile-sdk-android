@@ -114,12 +114,8 @@ class MRAIDWebView extends WebView implements Displayable {
     }
 
     protected void removeFromParent(){
-        try{
-            if(this.getParent() != null && ((ViewGroup) this.getParent()) !=null){
-                ((ViewGroup) this.getParent()).removeView(this);
-            }
-        }catch(ClassCastException e){
-
+        if(this.getParent() !=null){
+            ((ViewGroup) this.getParent()).removeView(this);
         }
     }
 
