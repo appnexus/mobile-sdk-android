@@ -555,13 +555,16 @@ class MRAIDImplementation {
                     PackageManager pm = owner.getContext().getPackageManager();
                     if(pm.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, owner.getContext().getPackageName()) == PackageManager.PERMISSION_GRANTED){
                         r.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, uri_final.split("/")[uri_final.split("/").length-1]);
-                        r.allowScanningByMediaScanner();
-                        r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                        dm.enqueue(r);
+                        try { 
+                            r.allowScanningByMediaScanner();
+                            r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                            dm.enqueue(r);
+                        } catch (IllegalStateException ex) {
+                            Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
+                        }
                     }else{
                         Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
                     }
-
                 }
             }
         });
