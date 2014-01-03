@@ -505,7 +505,11 @@ public abstract class AdView extends FrameLayout {
 
             }
         });
-        this.addView(close_button);
+        if(this instanceof BannerAdView){
+            this.addView(close_button);
+        }else{
+            AdActivity.getCurrent_ad_activity().layout.addView(close_button);
+        }
     }
 	/**
 	 *

@@ -164,14 +164,9 @@ public class AdActivity extends Activity {
     }
 
     void showCloseButton(){
-        if(close!=null){
+        if(close!=null && close_added){
             close.setVisibility(View.VISIBLE);
         }
-    }
-
-    protected void removeCloseButton(){
-        close_added=false;
-        layout.removeView(close);
     }
 
     private void setIAdView(InterstitialAdView av) {
