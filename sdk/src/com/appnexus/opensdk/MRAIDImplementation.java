@@ -26,6 +26,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 
 import android.view.ViewGroup;
+import com.appnexus.opensdk.utils.StringUtil;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.Manifest;
@@ -447,9 +448,15 @@ class MRAIDImplementation {
             params = url.substring(url.indexOf("?") + 1);
 
             for (String s : params.split("&")) {
-                if (s.split("=").length < 2) {
+                String [] pair = s.split("=");
+                if (pair.length < 2) {
                     continue;
                 }
+
+                if (StringUtil.isEmpty(pair[1]) || "undefined".equals(pair[1])) {
+                    continue;
+                }
+
                 parameters.add(new BasicNameValuePair(s.split("=")[0], s
                         .split("=")[1]));
             }
@@ -708,9 +715,14 @@ class MRAIDImplementation {
                 return;
             }
         }
+        CUSTOM_CLOSE_POSITION cp_enum = CUSTOM_CLOSE_POSITION.top_right;
+        try{
+            cp_enum = CUSTOM_CLOSE_POSITION.valueOf(custom_close_position.replace('-', '_'));
+        }catch(IllegalArgumentException e){} //Default case is used
+
 
         Clog.d(Clog.mraidLogTag, Clog.getString(R.string.resize, w, h, offset_x, offset_y, custom_close_position, allow_offscrean));
-        this.owner.resize(w, h, offset_x, offset_y, CUSTOM_CLOSE_POSITION.valueOf(custom_close_position.replace('-', '_')), allow_offscrean);
+        this.owner.resize(w, h, offset_x, offset_y, cp_enum, allow_offscrean);
 
         //Call onAdClicked
         if(owner.owner.adListener!=null){
