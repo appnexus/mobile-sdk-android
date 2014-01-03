@@ -55,15 +55,15 @@ public class AdActivity extends Activity {
     private WebView webView;
     private long now;
     private boolean close_added = false;
-    private static Activity current_ad_activity = null;
+    private static AdActivity current_ad_activity = null;
     private InterstitialAdView adView;
     static final int CLOSE_BUTTON_MESSAGE_ID = 8000;
 
-    static Activity getCurrent_ad_activity() {
+    static AdActivity getCurrent_ad_activity() {
         return current_ad_activity;
     }
 
-    private static void setCurrent_ad_activity(Activity current_ad_activity) {
+    private static void setCurrent_ad_activity(AdActivity current_ad_activity) {
         AdActivity.current_ad_activity = current_ad_activity;
     }
 
@@ -95,13 +95,13 @@ public class AdActivity extends Activity {
         if (csm != null) {
             csm.startSync();
         }
-        
+
     }
 
     /**
-     * Keep a weak reference to the AdActivity to prevent circular dependency 
+     * Keep a weak reference to the AdActivity to prevent circular dependency
      * between handler and Activity
-     * 
+     *
      */
     static class CloseButtonHandler extends Handler {
         WeakReference<AdActivity> activity_weak;
@@ -116,9 +116,9 @@ public class AdActivity extends Activity {
             }
         }
     }
-  
+
     private final CloseButtonHandler closeButtonHandler = new CloseButtonHandler(this);
-  
+
     protected void finishIfNoInteraction() {
         if ((adView != null) && !adView.interacted) {
             finish();
@@ -130,12 +130,15 @@ public class AdActivity extends Activity {
         layout.addView(m);
     }
 
+    ImageButton close;
     void addCloseButton() {
+        if(close==null){
+            close = new ImageButton(this);
+        }
         if (close_added || layout == null) {
             return;
         }
         close_added = true;
-        final ImageButton close = new ImageButton(this);
         close.setImageDrawable(getResources().getDrawable(
                 android.R.drawable.ic_menu_close_clear_cancel));
         FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
@@ -152,7 +155,23 @@ public class AdActivity extends Activity {
 
             }
         });
+
+        //If this button is being added because the ad was clicked, and the ad is an expandable mraid ad, don't show the button until the ad is collapsed
+        if(adView.isMRAIDExpanded()){
+            close.setVisibility(View.GONE);
+        }
         layout.addView(close);
+    }
+
+    void showCloseButton(){
+        if(close!=null){
+            close.setVisibility(View.VISIBLE);
+        }
+    }
+
+    protected void removeCloseButton(){
+        close_added=false;
+        layout.removeView(close);
     }
 
     private void setIAdView(InterstitialAdView av) {

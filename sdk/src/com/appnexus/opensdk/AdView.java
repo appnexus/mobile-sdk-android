@@ -391,6 +391,8 @@ public abstract class AdView extends FrameLayout {
                 if(this.getChildCount()>0){
                     this.removeAllViews();
                 }
+
+                caller.owner.removeFromParent();
                 fslayout.addView(caller.owner);
                 fslayout.addView(close_button);
                 if (this instanceof InterstitialAdView) {
@@ -489,7 +491,7 @@ public abstract class AdView extends FrameLayout {
         FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT, grav);
-        if (this.getChildCount() > 0) { 
+        if (this.getChildCount() > 0) {
             blp.rightMargin = (this.getMeasuredWidth() - this.getChildAt(0)
                     .getMeasuredWidth()) / 2;
         }

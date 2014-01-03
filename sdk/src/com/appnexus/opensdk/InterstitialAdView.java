@@ -405,7 +405,7 @@ public class InterstitialAdView extends AdView {
      * when the close button appears to the user.  10 seconds is the
      * default; it is also the maximum.  Setting the value to 0 allows
      * the close button to appear immediately.
-     * 
+     *
      * @param closeButtonDelay The time in milliseconds before the
      *                         close button is displayed to the user.
      */
@@ -462,42 +462,26 @@ public class InterstitialAdView extends AdView {
     }
 
     @Override
-    protected void expand(int w, int h, boolean custom_close, final MRAIDImplementation caller) {
-        if ((getAdActivity() == null) || (getAdActivity().layout == null))
-            return;
-        FrameLayout activityLayout = getAdActivity().layout;
+    boolean isMRAIDExpanded() {
+        return mraid_expand;
+    }
 
-        mraid_expand = true;
-        if (!custom_close && (close_button == null)) {
-            // Add a stock close button to the top right corner
-            close_button = new ImageButton(activityLayout.getContext());
-            close_button.setImageDrawable(getResources().getDrawable(
-                    android.R.drawable.ic_menu_close_clear_cancel));
-            FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.WRAP_CONTENT,
-                    FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.RIGHT
-                    | Gravity.TOP);
-            if (activityLayout.getChildAt(0) != null) {
-                blp.rightMargin = (w - activityLayout.getChildAt(0).getMeasuredWidth()) / 2;
-                blp.topMargin = (h - activityLayout.getChildAt(0).getMeasuredHeight()) / 2;
-            }
-            close_button.setLayoutParams(blp);
-            close_button.setBackgroundColor(Color.TRANSPARENT);
-            close_button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    caller.close();
-                }
-            });
-            activityLayout.addView(close_button);
-        } else if (close_button != null) {
-            if (custom_close) {
-                close_button.setVisibility(GONE);
-            } else {
-                activityLayout.removeView(close_button);
-                close_button.setVisibility(VISIBLE);
-                activityLayout.addView(close_button);// Re-add to send to top
-            }
+    @Override
+    protected void close(int w, int h, MRAIDImplementation caller){
+        //For closing
+        if(oldContent!= null && oldContent.getParent()!=null){
+            ((ViewGroup)oldContent.getParent()).removeAllViewsInLayout();
         }
+        if(unexpandedActivity!=null){
+            unexpandedActivity.setContentView(oldContent);
+        }
+        if (caller.owner.isFullScreen) {
+            ((FrameLayout)caller.owner.getParent()).removeAllViews();
+            caller.owner.removeFromParent();
+            AdActivity.getCurrent_ad_activity().layout.addView(caller.owner);
+            AdActivity.getCurrent_ad_activity().showCloseButton();
+
+        }
+        expand(w, h, true, null);
     }
 }

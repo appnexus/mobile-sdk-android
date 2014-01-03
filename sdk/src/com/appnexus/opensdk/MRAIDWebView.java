@@ -22,6 +22,7 @@ import android.graphics.Color;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -110,6 +111,16 @@ class MRAIDWebView extends WebView implements Displayable {
     @Override
     public void scrollTo(int x, int y) {
         super.scrollTo(0, 0);
+    }
+
+    protected void removeFromParent(){
+        try{
+            if(this.getParent() != null && ((ViewGroup) this.getParent()) !=null){
+                ((ViewGroup) this.getParent()).removeView(this);
+            }
+        }catch(ClassCastException e){
+
+        }
     }
 
     // w,h in dips. this function converts to pixels

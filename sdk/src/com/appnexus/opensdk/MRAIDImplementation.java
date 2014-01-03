@@ -25,6 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 
+import android.view.ViewGroup;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.Manifest;
@@ -555,7 +556,7 @@ class MRAIDImplementation {
                     PackageManager pm = owner.getContext().getPackageManager();
                     if(pm.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, owner.getContext().getPackageName()) == PackageManager.PERMISSION_GRANTED){
                         r.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, uri_final.split("/")[uri_final.split("/").length-1]);
-                        try { 
+                        try {
                             r.allowScanningByMediaScanner();
                             r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
                             dm.enqueue(r);
