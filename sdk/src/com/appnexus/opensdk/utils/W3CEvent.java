@@ -15,6 +15,7 @@
  */
 package com.appnexus.opensdk.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Build;
 import android.provider.CalendarContract;
@@ -24,6 +25,7 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 //See http://www.w3.org/TR/calendar-api/#calendarevent-interface
 //Question marks denote optional parameters.
@@ -231,6 +233,13 @@ public class W3CEvent {
     private W3CEvent() {
 
     }
+    //Constants for Event frequency
+    static final String W3C_DAILY = "daily";
+    static final String W3C_WEEKLY = "weekly";
+    static final String W3C_MONTHLY = "monthly";
+    static final String W3C_YEARLY = "yearly";
+    
+    @SuppressLint({ "NewApi", "InlinedApi" })
     public Intent getInsertIntent() {
         Intent i;
         boolean nativeMethod = (!useMIME && Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH);
@@ -239,28 +248,28 @@ public class W3CEvent {
         } else {
             i = new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event");
         }
-        if (getDescription() != null) {
+        if (!StringUtil.isEmpty(getDescription())) {
             if (nativeMethod) {
                 i.putExtra(CalendarContract.Events.TITLE, getDescription());
             } else {
                 i.putExtra("title", getDescription());
             }
         }
-        if (getLocation() != null) {
+        if (!StringUtil.isEmpty(getLocation())) {
             if (nativeMethod) {
                 i.putExtra(CalendarContract.Events.EVENT_LOCATION, getLocation());
             } else {
                 i.putExtra("eventLocation", getLocation());
             }
         }
-        if (getSummary() != null) {
+        if (!StringUtil.isEmpty(getSummary())) {
             if (nativeMethod) {
                 i.putExtra(CalendarContract.Events.DESCRIPTION, getSummary());
             } else {
                 i.putExtra("description", getSummary());
             }
         }
-        if (getStart() != null) {
+        if (!StringUtil.isEmpty(getStart())) {
             long start = -1;
                 start = millisFromDateString(getStart());
             if(start>0){
@@ -271,7 +280,7 @@ public class W3CEvent {
                 }
             }
         }
-        if (getEnd() != null) {
+        if (!StringUtil.isEmpty(getEnd())) {
             long end = -1;
             end = millisFromDateString(getEnd());
             if(end>0){
@@ -282,42 +291,58 @@ public class W3CEvent {
                 }
             }
         }
-        if (getStatus() != null) {
+        if (!StringUtil.isEmpty(getStatus())) {
             if (nativeMethod) {
                 i.putExtra(CalendarContract.Events.STATUS, getStatus());
             }
         }
-        if (getTransparency() != null) {
+        if (!StringUtil.isEmpty(getTransparency())) {
             if (nativeMethod) {
                 i.putExtra(CalendarContract.Events.VISIBLE, getTransparency().equals("opaque") ? false : true);
             }
         }
-        if (getReminder() != null) {
+        if (!StringUtil.isEmpty(getReminder())) {
             long time = millisFromDateString(getReminder());
             if(time<0){
                 if (nativeMethod) {
                     i.putExtra(CalendarContract.Reminders.MINUTES, Math.abs(time/60000));
                 }
-            }else if(getStart()!=null){
+            }else if(!StringUtil.isEmpty(getStart())){
                 if (nativeMethod) {
-                    i.putExtra(CalendarContract.Reminders.MINUTES, Math.abs(millisFromDateString(getStart()) - (time/60000)));
+                    long tstart = millisFromDateString(getStart());
+                    if (tstart > 0) {
+                        i.putExtra(CalendarContract.Reminders.MINUTES, Math.abs((tstart- time)/60000));
+                    }
                 }
             }
         }
 
         StringBuilder repeatRuleBuilder = new StringBuilder("");
         if (getRecurrence() != null) {
-            if (getRecurrence().getFrequency() != null) {
-                repeatRuleBuilder.append("FREQ=");
-                repeatRuleBuilder.append(getRecurrence().getFrequency().toUpperCase());
-                repeatRuleBuilder.append(";");
+           
+            String freq = getRecurrence().getFrequency();
+            if (!StringUtil.isEmpty(freq)) {
+                if (W3C_DAILY.equals(freq)) {
+                    repeatRuleBuilder.append("FREQ=DAILY;");
+                } else if (W3C_WEEKLY.equals(freq)) {
+                    repeatRuleBuilder.append("FREQ=WEEKLY;");   
+                } else if (W3C_MONTHLY.equals(freq)) {
+                    repeatRuleBuilder.append("FREQ=MONTHLY;");                    
+                } else if (W3C_YEARLY.equals(freq)) {
+                    repeatRuleBuilder.append("FREQ=YEARLY;");
+                } else {
+                    freq = "";
+                }
+            } else {
+                freq = "";
             }
             if (getRecurrence().getInterval() > 0) {
                 repeatRuleBuilder.append("INTERVAL=");
                 repeatRuleBuilder.append(getRecurrence().getInterval());
                 repeatRuleBuilder.append(";");
             }
-            if (getRecurrence().getDaysInWeek()!=null&&getRecurrence().getDaysInWeek().length > 0) {
+            if (W3C_WEEKLY.equals(freq) && getRecurrence().getDaysInWeek()!=null && 
+                    getRecurrence().getDaysInWeek().length > 0) {
                 repeatRuleBuilder.append("BYDAY=");
                 for (int j : getRecurrence().getDaysInWeek()) {
                     switch (j) {
@@ -346,7 +371,7 @@ public class W3CEvent {
                 }
                 repeatRuleBuilder.setCharAt(repeatRuleBuilder.length()-1, ';');
             }
-            if (getRecurrence().getDaysInMonth()!=null&&getRecurrence().getDaysInMonth().length > 0) {
+            if (W3C_MONTHLY.equals(freq) && getRecurrence().getDaysInMonth()!=null&&getRecurrence().getDaysInMonth().length > 0) {
                 repeatRuleBuilder.append("BYMONTHDAY=");
                 for (int j : getRecurrence().getDaysInMonth()) {
                     repeatRuleBuilder.append(j);
@@ -354,7 +379,7 @@ public class W3CEvent {
                 }
                 repeatRuleBuilder.setCharAt(repeatRuleBuilder.length()-1, ';');
             }
-            if (getRecurrence().getDaysInYear()!=null&&getRecurrence().getDaysInYear().length > 0) {
+            if (W3C_YEARLY.equals(freq) && getRecurrence().getDaysInYear()!=null&&getRecurrence().getDaysInYear().length > 0) {
                 repeatRuleBuilder.append("BYYEARDAY=");
                 for (int j : getRecurrence().getDaysInYear()) {
                     repeatRuleBuilder.append(j);
@@ -362,7 +387,7 @@ public class W3CEvent {
                 }
                 repeatRuleBuilder.setCharAt(repeatRuleBuilder.length()-1, ';');
             }
-            if (getRecurrence().getMonthsInYear()!=null&&getRecurrence().getMonthsInYear().length > 0) {
+            if (W3C_YEARLY.equals(freq) && getRecurrence().getMonthsInYear()!=null&&getRecurrence().getMonthsInYear().length > 0) {
                 repeatRuleBuilder.append("BYMONTH=");
                 for (int j : getRecurrence().getMonthsInYear()) {
                     repeatRuleBuilder.append(j);
@@ -370,7 +395,7 @@ public class W3CEvent {
                 }
                 repeatRuleBuilder.setCharAt(repeatRuleBuilder.length()-1, ';');
             }
-            if (getRecurrence().getWeeksInMonth()!=null&&getRecurrence().getWeeksInMonth().length > 0) {
+            if (W3C_MONTHLY.equals(freq) && getRecurrence().getWeeksInMonth()!=null&&getRecurrence().getWeeksInMonth().length > 0) {
                 repeatRuleBuilder.append("BYWEEKNO=");
                 for (int j : getRecurrence().getWeeksInMonth()) {
                     repeatRuleBuilder.append(j);
@@ -378,7 +403,7 @@ public class W3CEvent {
                 }
                 repeatRuleBuilder.setCharAt(repeatRuleBuilder.length()-1, ';');
             }
-            if (getRecurrence().getExpires() != null) {
+            if (!StringUtil.isEmpty(getRecurrence().getExpires())) {
                 repeatRuleBuilder.append("UNTIL=");
                 repeatRuleBuilder.append(getRecurrence().getExpires());
                 repeatRuleBuilder.append(";");
@@ -402,8 +427,8 @@ public class W3CEvent {
 
     }
 
-    private static SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ");
-    private static SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZZZZZ");
+    private static SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZZZZZ",Locale.US);
+    private static SimpleDateFormat format2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZZZZZ",Locale.US);
     private long millisFromDateString(String date){
         try {
             return format1.parse(date).getTime();
