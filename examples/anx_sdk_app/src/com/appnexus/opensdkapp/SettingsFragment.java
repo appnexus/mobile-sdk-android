@@ -66,9 +66,7 @@ public class SettingsFragment extends Fragment {
         txtSize = (TextView) out.findViewById(R.id.txt_size);
         txtRefresh = (TextView) out.findViewById(R.id.txt_refresh);
         txtBackgroundColor = (TextView) out.findViewById(R.id.txt_interstitial_color);
-        TextView txtMemberId = (TextView) out.findViewById(R.id.txt_memberid);
-        TextView txtDongle = (TextView) out.findViewById(R.id.txt_dongle);
-
+    
         colorViewBackground = (GradientDrawable) out.findViewById(R.id.view_color).getBackground();
 
         editPlacementId = (EditText) out.findViewById(R.id.edit_placementid);

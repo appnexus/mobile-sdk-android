@@ -16,8 +16,11 @@
 
 package com.appnexus.opensdkapp;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
+
 import com.appnexus.opensdk.utils.Clog;
 
 public class Prefs {
@@ -114,8 +117,13 @@ public class Prefs {
         editor.putLong(key, value);
     }
 
+    @SuppressLint("NewApi")
     public void applyChanges() {
-        editor.apply();
+        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+            editor.apply();
+        } else {
+            editor.commit();
+        }
     }
 
     /**

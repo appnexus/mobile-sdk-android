@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdkapp;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -36,6 +37,7 @@ import android.widget.*;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
+import com.appnexus.opensdk.utils.StringUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshWebView;
 import org.json.JSONException;
@@ -132,7 +134,7 @@ public class DebugFragment extends Fragment {
         if (txtRequest != null) txtRequest.setText(Clog.getLastRequest());
 
         if (txtResponse != null) {
-            if (!Clog.getLastResponse().isEmpty()) {
+            if (!StringUtil.isEmpty(Clog.getLastResponse())) {
                 String jsonString = null;
                 try {
                     JSONObject responseObject = new JSONObject(Clog.getLastResponse());
@@ -197,6 +199,7 @@ public class DebugFragment extends Fragment {
     private class DebugAuctionWebViewClient extends WebViewClient {
         private WebView webView;
 
+        @SuppressLint("SetJavaScriptEnabled")
         private DebugAuctionWebViewClient(WebView view) {
             this.webView = view;
 
@@ -239,6 +242,7 @@ public class DebugFragment extends Fragment {
             return auctionURL.toString();
         }
 
+        @SuppressLint("NewApi")
         public void runAuction() {
             final String debugAuctionUrl = getUrl();
             Clog.d(Constants.BASE_LOG_TAG, "Running a Debug Auction: " + debugAuctionUrl);
