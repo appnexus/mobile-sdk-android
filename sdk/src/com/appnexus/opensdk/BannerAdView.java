@@ -39,7 +39,7 @@ import com.appnexus.opensdk.utils.WebviewUtil;
  * This view is added to an existing layout in order to display banner
  * ads.  It may be added via XML or code.
  *
- * <p> 
+ * <p>
  * Note that you need a placement ID in order to show ads.  If you
  * don't have a placement ID, you'll need to get one from your
  * AppNexus representative or your ad network.
@@ -467,7 +467,7 @@ public class BannerAdView extends AdView {
     /**
      * Check whether the ad view will load a new ad if the user
      * resumes use of the app from a screenlock or multitask.
-     * 
+     *
      * @return If true, the ad will reload on resume.
      */
     public boolean getShouldReloadOnResume() {
@@ -504,7 +504,7 @@ public class BannerAdView extends AdView {
                 receiversRegistered = true;
             }
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.unhidden));
-            if (mAdFetcher != null
+            if (!isMRAIDExpanded() && mAdFetcher != null
                     && (!requesting_visible || running || shouldReloadOnResume || auto_refresh))
                 start();
             else {
