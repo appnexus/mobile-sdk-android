@@ -15,6 +15,8 @@
  */
 package com.appnexus.opensdk;
 
+import java.lang.ref.WeakReference;
+
 import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -255,16 +257,16 @@ public abstract class MediatedAdViewController {
 	private void fireResultCB(final RESULT result) {
         if (hasFailed) return;
 
+
         // if resultCB is empty don't fire resultCB, and just continue to next ad
         if ((currentAd == null) || StringUtil.isEmpty(currentAd.getResultCB())) {
+            if(result == RESULT.SUCCESS) return;
             Clog.w(Clog.mediationLogTag, Clog.getString(R.string.fire_cb_result_null));
-
             // just making sure
             if (requester == null) {
                 Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
                 return;
             }
-
             requester.onReceiveResponse(null);
             return;
         }
@@ -336,14 +338,23 @@ public abstract class MediatedAdViewController {
         timeoutHandler.removeMessages(0);
     }
 
-    // if the mediated network fails to call us within the timeout period, fail
-    private final Handler timeoutHandler = new Handler() {
+    static class TimeoutHandler extends Handler {
+        WeakReference<MediatedAdViewController> mavc;
+        
+        public TimeoutHandler(MediatedAdViewController mavc) {
+            this.mavc = new WeakReference<MediatedAdViewController>(mavc);
+        }
+        
         @Override
         public void handleMessage(Message msg) {
-            if (hasFailed) return;
+            MediatedAdViewController avc = mavc.get();
+            
+            if (avc == null || avc.hasFailed) return;
             Clog.w(Clog.mediationLogTag, Clog.getString(R.string.mediation_timeout));
-            onAdFailed(RESULT.INTERNAL_ERROR);
+            avc.onAdFailed(RESULT.INTERNAL_ERROR);
         }
     };
+    // if the mediated network fails to call us within the timeout period, fail
+    private final Handler timeoutHandler = new TimeoutHandler(this);
 
 }

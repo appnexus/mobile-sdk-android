@@ -38,7 +38,8 @@ import com.appnexus.opensdk.utils.Settings;
 // This will only be constructed by AdFetcher.
 class AdWebView extends WebView implements Displayable {
     private boolean failed = false;
-    private final AdView destination;
+    private AdView destination;
+
 
     public AdWebView(AdView owner) {
         super(owner.getContext());

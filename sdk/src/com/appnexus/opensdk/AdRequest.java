@@ -16,6 +16,21 @@
 
 package com.appnexus.opensdk;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.HttpHostConnectException;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
+
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -30,25 +45,13 @@ import android.os.Build;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.util.Pair;
+
 import com.appnexus.opensdk.InterstitialAdView.Size;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HashingFunctions;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.util.EntityUtils;
-
-import java.io.IOException;
-import java.util.ArrayList;
+import com.appnexus.opensdk.utils.WebviewUtil;
 
 class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
@@ -194,8 +197,8 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             if(lastLocation!=null){
                 lat = ""+lastLocation.getLatitude();
                 lon = ""+lastLocation.getLongitude();
-                locDataAge = "" + (System.currentTimeMillis() - lastLocation.getTime());
                 locDataPrecision = ""+lastLocation.getAccuracy();
+                locDataAge = "" + (System.currentTimeMillis() - lastLocation.getTime());
             }
         } else {
             Clog.w(Clog.baseLogTag,
@@ -418,11 +421,15 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                     Settings.getSettings().HTTP_SOCKET_TIMEOUT);
             HttpConnectionParams.setSocketBufferSize(p, 8192);
             DefaultHttpClient h = new DefaultHttpClient(p);
-            r = h.execute(new HttpGet(query_string));
+
+            HttpGet req = new HttpGet(query_string);
+            req.setHeader("User-Agent", Settings.getSettings().ua);
+            r = h.execute(req);
             if (!httpShouldContinue(r.getStatusLine())) {
                 return AdRequest.HTTP_ERROR;
             }
             out = EntityUtils.toString(r.getEntity());
+            WebviewUtil.cookieSync(h.getCookieStore().getCookies());
         } catch (ClientProtocolException e) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unknown));
             return null;
@@ -440,6 +447,9 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         } catch (SecurityException se) {
             Clog.e(Clog.baseLogTag,
                     Clog.getString(R.string.permissions_internet));
+            return null;
+        } catch(IllegalArgumentException ie) {
+            Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unknown));
             return null;
         } catch (Exception e) {
             e.printStackTrace();

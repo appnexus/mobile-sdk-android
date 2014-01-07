@@ -209,68 +209,80 @@ class AdFetcher implements AdRequester {
         owner.fail();
     }
 
-    @Override
-    public void onReceiveResponse(final AdResponse response) {
-        this.owner.handler.post(new Runnable() {
-            public void run() {
+    public void dispatchResponse(final AdResponse response) {
 
-                boolean responseHasAds = (response != null) && response.containsAds();
-                boolean ownerHasAds = (owner.getMediatedAds() != null) && !owner.getMediatedAds().isEmpty();
-
-                //If we're about to dispatch a creative to a banneradview that has been resized by ad stretching, reset it's size
-                if(owner.isBanner()){
-                    BannerAdView bav = (BannerAdView)owner;
-                    bav.resetContainerIfNeeded();
-                }
-
-                // no ads in the response and no old ads means no fill
-                if (!responseHasAds && !ownerHasAds) {
-                    Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
-                    requestFailed();
-                    return;
-                }
-
-                if (responseHasAds) {
-                    // if non-mediated ad is overriding the list,
-                    // this will be null and skip the loop for mediation
-                    owner.setMediatedAds(response.getMediatedAds());
-                }
-
-                if ((owner.getMediatedAds() != null) && !owner.getMediatedAds().isEmpty()) {
-                    // mediated
-                    if (owner.isBanner()) {
-                        MediatedBannerAdViewController.create(
-                                (Activity) owner.getContext(),
-                                owner.mAdFetcher,
-                                owner.popMediatedAd(),
-                                owner.getAdDispatcher());
-                    } else if (owner.isInterstitial()) {
-                        MediatedInterstitialAdViewController.create(
-                                (Activity) owner.getContext(),
-                                owner.mAdFetcher,
-                                owner.popMediatedAd(),
-                                owner.getAdDispatcher());
-                    }
-                } else if ((response != null)
-                        && response.isMraid()) {
-                    // mraid
-                    MRAIDWebView output = new MRAIDWebView(owner);
-                    output.loadAd(response);
-                    owner.getAdDispatcher().onAdLoaded(output);
-                } else {
-                    AdWebView output = new AdWebView(owner);
-                    output.loadAd(response);
-                    // standard
-                    if(owner.isBanner()){
-                        BannerAdView bav = (BannerAdView) owner;
-                        if(bav.getExpandsToFitScreenWidth() == true){
-                            bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), output);
-                        }
-                    }
-                    owner.getAdDispatcher().onAdLoaded(output);
+        if ((owner.getMediatedAds() != null) && !owner.getMediatedAds().isEmpty()) {
+            // mediated
+            if (owner.isBanner()) {
+                MediatedBannerAdViewController.create(
+                        (Activity) owner.getContext(),
+                        owner.mAdFetcher,
+                        owner.popMediatedAd(),
+                        owner.getAdDispatcher());
+            } else if (owner.isInterstitial()) {
+                MediatedInterstitialAdViewController.create(
+                        (Activity) owner.getContext(),
+                        owner.mAdFetcher,
+                        owner.popMediatedAd(),
+                        owner.getAdDispatcher());
+            }
+        } else if ((response != null)
+                && response.isMraid()) {
+            // mraid
+            MRAIDWebView output = new MRAIDWebView(owner);
+            output.loadAd(response);
+            owner.getAdDispatcher().onAdLoaded(output);
+        } else {
+            AdWebView output = new AdWebView(owner);
+            output.loadAd(response);
+            // standard
+            if(owner.isBanner()){
+                BannerAdView bav = (BannerAdView) owner;
+                if(bav.getExpandsToFitScreenWidth() == true){
+                    bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), output);
                 }
             }
+            owner.getAdDispatcher().onAdLoaded(output);
+        }
+    }
+
+    public void onReceiveResponse(final AdResponse response) {
+        boolean responseHasAds = (response != null) && response.containsAds();
+        boolean ownerHasAds = (owner.getMediatedAds() != null) && !owner.getMediatedAds().isEmpty();
+
+        // no ads in the response and no old ads means no fill
+        if (!responseHasAds && !ownerHasAds) {
+            Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
+            requestFailed();
+            return;
+        }
+
+        //If we're about to dispatch a creative to a banneradview that has been resized by ad stretching, reset it's size
+        if(owner.isBanner()){
+            BannerAdView bav = (BannerAdView)owner;
+            bav.resetContainerIfNeeded();
+        }
+
+        // no ads in the response and no old ads means no fill
+        if (!responseHasAds && !ownerHasAds) {
+            Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
+            requestFailed();
+            return;
+        }
+
+        if (responseHasAds) {
+            // if non-mediated ad is overriding the list,
+            // this will be null and skip the loop for mediation
+            owner.setMediatedAds(response.getMediatedAds());
+        }
+
+        this.owner.handler.post(new Runnable() {
+            @Override
+            public void run() {
+                AdFetcher.this.dispatchResponse(response);
+            }
         });
+
     }
 
     @Override

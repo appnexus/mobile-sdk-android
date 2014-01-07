@@ -27,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.LinkedList;
+import java.util.Locale;
 
 @SuppressLint("NewApi")
 class AdResponse {
@@ -61,7 +62,7 @@ class AdResponse {
     private static final String RESPONSE_VALUE_ANDROID = "android";
 
     public AdResponse(String body, Header[] headers) {
-        if (body == null || body.isEmpty()) {
+        if (StringUtil.isEmpty(body)) {
             Clog.clearLastResponse();
             return;
         }
@@ -172,7 +173,10 @@ class AdResponse {
                             if (handlerElement != null) {
                                 // we only care about handlers for android
                                 String type = getJSONString(handlerElement, RESPONSE_KEY_TYPE);
-                                if ((type != null) && type.toLowerCase().equals(RESPONSE_VALUE_ANDROID)) {
+                                if (type != null) {
+                                    type.toLowerCase(Locale.US);
+                                }
+                                if ((type != null) && type.equals(RESPONSE_VALUE_ANDROID)) {
                                     String className = getJSONString(handlerElement, RESPONSE_KEY_CLASS);
                                     String param = getJSONString(handlerElement, RESPONSE_KEY_PARAM);
                                     int height = getJSONInt(handlerElement, RESPONSE_KEY_HEIGHT);

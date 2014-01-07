@@ -171,6 +171,18 @@ public class Clog {
         return String.format(error_context.getString(id), i, s);
     }
 
+    public static String getString(int id, int w, int h, int offset_x, int offset_y, String custom_close_position, boolean allow_offscrean) {
+        if (clogged || error_context == null)
+            return null;
+        return String.format(error_context.getString(id), w, h, offset_x, offset_y, custom_close_position, allow_offscrean);
+    }
+
+    public static String getString(int id, boolean b, int i){
+        if (clogged || error_context == null)
+            return null;
+        return String.format(error_context.getString(id), b, i);
+    }
+
     public static String getString(int id, int i, int j) {
         if (clogged || error_context == null)
             return null;
@@ -180,6 +192,7 @@ public class Clog {
     /**
      * lastRequest/lastResponse helper methods
      */
+
 
     private static String lastRequest = "";
     private static String lastResponse = "";

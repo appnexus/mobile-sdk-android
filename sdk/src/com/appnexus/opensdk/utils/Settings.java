@@ -28,12 +28,13 @@ public class Settings {
 
     public final String deviceMake = Build.MANUFACTURER;
     public final String deviceModel = Build.MODEL;
+
     public String app_id = null;
 
     public boolean test_mode = false;
     public String ua = null;
     public boolean first_launch;
-    public final String sdkVersion = "1.6";
+    public final String sdkVersion = "1.7";
 
     public String mcc;
     public String mnc;
@@ -50,6 +51,8 @@ public class Settings {
 
     public final long MEDIATED_NETWORK_TIMEOUT = 15000;
 
+    public final String COOKIE_DOMAIN = "http://mediation.adnxs.com";
+    public final String AN_UUID = "uuid2";
     public /*final*/ String BASE_URL = "http://mediation.adnxs.com/mob?";
     public final String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
 

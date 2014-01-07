@@ -17,7 +17,6 @@
 package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.DisplayMetrics;
@@ -35,8 +34,7 @@ class MRAIDWebView extends WebView implements Displayable {
     final AdView owner;
     private int default_width;
     private int default_height;
-    private boolean isFullScreen = false;
-    private View oldView = null;
+    protected boolean isFullScreen = false;
 
     public MRAIDWebView(AdView owner) {
         super(owner.getContext());
@@ -115,6 +113,12 @@ class MRAIDWebView extends WebView implements Displayable {
         super.scrollTo(0, 0);
     }
 
+    protected void removeFromParent(){
+        if(this.getParent() !=null){
+            ((ViewGroup) this.getParent()).removeView(this);
+        }
+    }
+
     // w,h in dips. this function converts to pixels
     void expand(int w, int h, boolean cust_close,
                 MRAIDImplementation caller) {
@@ -129,18 +133,7 @@ class MRAIDWebView extends WebView implements Displayable {
 
         if (h == -1 || w == -1) {
             if (owner != null) {
-                Activity a;
-                if (owner instanceof InterstitialAdView) {
-                    a = AdActivity.getCurrent_ad_activity();
-                } else {
-                    a = (Activity) this.getView().getContext();
-                }
-                if (a != null) {
-                    oldView = ((ViewGroup) a.findViewById(android.R.id.content)).getChildAt(0);
-                    ((ViewGroup) this.getParent()).removeView(this);
-                    a.setContentView(this);
-                    isFullScreen = true;
-                }
+                isFullScreen = true;
             }
         }
         if (h != -1) {
@@ -180,7 +173,6 @@ class MRAIDWebView extends WebView implements Displayable {
     }
 
     void close() {
-        boolean isInterstitial = false;
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 this.getLayoutParams());
         lp.height = default_height;
@@ -188,28 +180,9 @@ class MRAIDWebView extends WebView implements Displayable {
         lp.gravity = Gravity.CENTER;
 
         if (owner != null) {
-            owner.expand(default_width, default_height, true, null);
+            owner.close(default_width, default_height, implementation);
         }
 
-        //For closing
-        if (owner != null && isFullScreen) {
-            Activity a;
-            if (owner instanceof InterstitialAdView) {
-                isInterstitial = true;
-                a = AdActivity.getCurrent_ad_activity();
-            } else {
-                a = (Activity) owner.getContext();
-            }
-            if (a != null && !isInterstitial) {
-                a.setContentView(oldView);
-                owner.addView(this);
-                isFullScreen = false;
-            } else if (a != null && isInterstitial) {
-                isFullScreen = false;
-                a.setContentView(oldView);
-                ((AdActivity) a).handleMRAIDCollapse(this);
-            }
-        }
 
         this.setLayoutParams(lp);
     }
@@ -222,6 +195,50 @@ class MRAIDWebView extends WebView implements Displayable {
     @Override
     public boolean failed() {
         return false;
+    }
+
+    @Override
+    public void onLayout(boolean changed, int left, int top, int right,
+                         int bottom) {
+        if (changed) {
+            implementation.setCurrentPosition(left, top, right, bottom, this);
+        }
+    }
+
+    public void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE))
+                .getDefaultDisplay().getMetrics(metrics);
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                this.getLayoutParams());
+        if(!implementation.resized){
+            default_width = lp.width;
+            default_height = lp.height;
+        }
+
+
+        if (h != -1) {
+            h = (int) (h * metrics.density + 0.5);
+        }
+        if (w != -1) {
+            w = (int) (w * metrics.density + 0.5);
+        }
+
+
+        lp.height = h;
+        lp.width = w;
+        lp.gravity = Gravity.CENTER;
+
+        if (owner != null) {
+            owner.resize(w, h, offset_x, offset_y, custom_close_position, allow_offscrean, implementation);
+        }
+
+        //If it's an IAV, prevent it from closing
+        if (owner instanceof InterstitialAdView) {
+            ((InterstitialAdView) owner).interacted();
+        }
+
+        this.setLayoutParams(lp);
     }
 
 }

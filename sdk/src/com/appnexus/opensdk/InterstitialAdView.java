@@ -247,6 +247,16 @@ public class InterstitialAdView extends AdView {
         return validAdExists;
     }
 
+    @Override
+    boolean isBanner() {
+        return false;
+    }
+
+    @Override
+    boolean isInterstitial() {
+        return true;
+    }
+
     /**
      * Checks the queue to see if there is a valid (i.e., fresher than
      * 60 seconds) interstitial ad available.
@@ -395,7 +405,7 @@ public class InterstitialAdView extends AdView {
      * when the close button appears to the user.  10 seconds is the
      * default; it is also the maximum.  Setting the value to 0 allows
      * the close button to appear immediately.
-     * 
+     *
      * @param closeButtonDelay The time in milliseconds before the
      *                         close button is displayed to the user.
      */
@@ -452,52 +462,26 @@ public class InterstitialAdView extends AdView {
     }
 
     @Override
-    boolean isBanner() {
-        return false;
+    boolean isMRAIDExpanded() {
+        return mraid_expand;
     }
 
     @Override
-    boolean isInterstitial() {
-        return true;
-    }
-
-    @Override
-    void expand(int w, int h, boolean custom_close, final MRAIDImplementation caller) {
-        if ((getAdActivity() == null) || (getAdActivity().layout == null))
-            return;
-        FrameLayout activityLayout = getAdActivity().layout;
-
-        mraid_expand = true;
-        if (!custom_close && (close == null)) {
-            // Add a stock close button to the top right corner
-            close = new ImageButton(activityLayout.getContext());
-            close.setImageDrawable(getResources().getDrawable(
-                    android.R.drawable.ic_menu_close_clear_cancel));
-            FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.WRAP_CONTENT,
-                    FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.RIGHT
-                    | Gravity.TOP);
-            if (activityLayout.getChildAt(0) != null) {
-                blp.rightMargin = (w - activityLayout.getChildAt(0).getMeasuredWidth()) / 2;
-                blp.topMargin = (h - activityLayout.getChildAt(0).getMeasuredHeight()) / 2;
-            }
-            close.setLayoutParams(blp);
-            close.setBackgroundColor(Color.TRANSPARENT);
-            close.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    caller.close();
-                }
-            });
-            activityLayout.addView(close);
-        } else if (close != null) {
-            if (custom_close) {
-                close.setVisibility(GONE);
-            } else {
-                activityLayout.removeView(close);
-                close.setVisibility(VISIBLE);
-                activityLayout.addView(close);// Re-add to send to top
-            }
+    protected void close(int w, int h, MRAIDImplementation caller){
+        //For closing
+        if(oldContent!= null && oldContent.getParent()!=null){
+            ((ViewGroup)oldContent.getParent()).removeAllViewsInLayout();
         }
+        if(unexpandedActivity!=null){
+            unexpandedActivity.setContentView(oldContent);
+        }
+        if (caller.owner.isFullScreen) {
+            ((FrameLayout)caller.owner.getParent()).removeAllViews();
+            caller.owner.removeFromParent();
+            AdActivity.getCurrent_ad_activity().layout.addView(caller.owner);
+            AdActivity.getCurrent_ad_activity().showCloseButton();
+
+        }
+        expand(w, h, true, null);
     }
 }

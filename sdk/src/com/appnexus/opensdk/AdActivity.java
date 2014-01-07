@@ -25,6 +25,7 @@ import android.graphics.Color;
 import android.os.*;
 import android.util.Pair;
 import android.view.*;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -32,6 +33,7 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.WebviewUtil;
 
+import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 /**
@@ -53,14 +55,15 @@ public class AdActivity extends Activity {
     private WebView webView;
     private long now;
     private boolean close_added = false;
-    private static Activity current_ad_activity = null;
+    private static AdActivity current_ad_activity = null;
     private InterstitialAdView adView;
+    static final int CLOSE_BUTTON_MESSAGE_ID = 8000;
 
-    static Activity getCurrent_ad_activity() {
+    static AdActivity getCurrent_ad_activity() {
         return current_ad_activity;
     }
 
-    private static void setCurrent_ad_activity(Activity current_ad_activity) {
+    private static void setCurrent_ad_activity(AdActivity current_ad_activity) {
         AdActivity.current_ad_activity = current_ad_activity;
     }
 
@@ -86,20 +89,35 @@ public class AdActivity extends Activity {
                 Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
 
         // Add a close button after a 10 second delay.
-        closeButtonHandler.sendEmptyMessageDelayed(0, closeButtonDelay);
+        closeButtonHandler.sendEmptyMessageDelayed(CLOSE_BUTTON_MESSAGE_ID, closeButtonDelay);
+        CookieSyncManager.createInstance(this);
+        CookieSyncManager csm = CookieSyncManager.getInstance();
+        if (csm != null) {
+            csm.startSync();
+        }
+
     }
 
-
-    private final Handler closeButtonHandler = new Handler() {
+    /**
+     * Keep a weak reference to the AdActivity to prevent circular dependency
+     * between handler and Activity
+     *
+     */
+    static class CloseButtonHandler extends Handler {
+        WeakReference<AdActivity> activity_weak;
+        public CloseButtonHandler(AdActivity activity) {
+            activity_weak = new WeakReference<AdActivity>(activity);
+        }
         @Override
         public void handleMessage(Message msg) {
-            if (msg.obj instanceof FrameLayout) {
-                if ((adView != null) && adView.interacted) {
-                    addCloseButton();
-                }
+            AdActivity activity = activity_weak.get();
+            if (activity != null && msg.what == CLOSE_BUTTON_MESSAGE_ID) {
+                activity.addCloseButton();
             }
         }
-    };
+    }
+
+    private final CloseButtonHandler closeButtonHandler = new CloseButtonHandler(this);
 
     protected void finishIfNoInteraction() {
         if ((adView != null) && !adView.interacted) {
@@ -112,12 +130,15 @@ public class AdActivity extends Activity {
         layout.addView(m);
     }
 
+    ImageButton close;
     void addCloseButton() {
-        if (close_added) {
+        if(close==null){
+            close = new ImageButton(this);
+        }
+        if (close_added || layout == null) {
             return;
         }
         close_added = true;
-        final ImageButton close = new ImageButton(this);
         close.setImageDrawable(getResources().getDrawable(
                 android.R.drawable.ic_menu_close_clear_cancel));
         FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
@@ -134,7 +155,18 @@ public class AdActivity extends Activity {
 
             }
         });
+
+        //If this button is being added because the ad was clicked, and the ad is an expandable mraid ad, don't show the button until the ad is collapsed
+        if(adView.isMRAIDExpanded()){
+            close.setVisibility(View.GONE);
+        }
         layout.addView(close);
+    }
+
+    void showCloseButton(){
+        if(close!=null && close_added){
+            close.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setIAdView(InterstitialAdView av) {
@@ -215,15 +247,103 @@ public class AdActivity extends Activity {
         }
     }
 
+    enum OrientationEnum {
+        portrait,
+        landscape,
+        none
+    }
+
+    @SuppressLint({"InlinedApi", "DefaultLocale"})
+    protected static void setOrientation(Activity a, OrientationEnum e) {
+        // Fix an accelerometer bug with kindle fire HDs
+        boolean isKindleFireHD = false;
+        String device = Settings.getSettings().deviceModel
+                .toUpperCase(Locale.US);
+        String make = Settings.getSettings().deviceMake.toUpperCase(Locale.US);
+        if (make.equals("AMAZON")
+                && (device.equals("KFTT") || device.equals("KFJWI") || device
+                .equals("KFJWA"))) {
+            isKindleFireHD = true;
+        }
+        Display d = ((WindowManager) a.getSystemService(Context.WINDOW_SERVICE))
+                .getDefaultDisplay();
+
+        int orientation = a.getResources().getConfiguration().orientation;
+
+        switch (e) {
+            case none:
+                a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                return;
+            case landscape:
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    break;
+                } else {
+                    orientation = Configuration.ORIENTATION_LANDSCAPE;
+                    break;
+                }
+            case portrait:
+                if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    break;
+                } else {
+                    orientation = Configuration.ORIENTATION_PORTRAIT;
+                    break;
+                }
+        }
+
+
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO) {
+                a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            } else {
+                int rotation = d.getRotation();
+                if (rotation == android.view.Surface.ROTATION_90
+                        || rotation == android.view.Surface.ROTATION_180) {
+                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+                } else {
+                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                }
+            }
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO) {
+                a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            } else {
+                int rotation = d.getRotation();
+                if (!isKindleFireHD) {
+                    if (rotation == android.view.Surface.ROTATION_0
+                            || rotation == android.view.Surface.ROTATION_90) {
+                        a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                    } else {
+                        a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+                    }
+                } else {
+                    if (rotation == android.view.Surface.ROTATION_0
+                            || rotation == android.view.Surface.ROTATION_90) {
+                        a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+                    } else {
+                        a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     protected void onPause() {
         if (webView != null) WebviewUtil.onPause(webView);
+        CookieSyncManager csm = CookieSyncManager.getInstance();
+        if (csm != null) {
+            csm.stopSync();
+        }
         super.onPause();
     }
 
     @Override
     protected void onResume() {
         if (webView != null) WebviewUtil.onResume(webView);
+        CookieSyncManager csm = CookieSyncManager.getInstance();
+        if (csm != null) {
+            csm.startSync();
+        }
         super.onResume();
     }
 
@@ -235,7 +355,7 @@ public class AdActivity extends Activity {
             webView.destroy();
         }
         if (adView != null) {
-            adView.close = null;
+            adView.close_button = null;
         }
         super.onDestroy();
     }

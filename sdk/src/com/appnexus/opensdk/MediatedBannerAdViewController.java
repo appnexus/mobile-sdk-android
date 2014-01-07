@@ -49,13 +49,28 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
         RESULT errorCode = null;
 
         startTimeout();
+
+        TargetingParameters tp=null;
+        try{
+            AdView av = requester.getOwner();
+            if(av !=null){
+                tp = av.getTargetingParameters();
+            }
+        } catch(ClassCastException e){            
+        } finally {
+            if (tp == null) {
+                tp = new TargetingParameters();
+            }
+        }
+
         try {
             View viewFromMediatedAdaptor = ((MediatedBannerAdView) mAV).requestAd(this,
                     activity,
                     currentAd.getParam(),
                     currentAd.getId(),
                     currentAd.getWidth(),
-                    currentAd.getHeight());
+                    currentAd.getHeight(),
+                    tp);
             mediatedDisplayable.setView(viewFromMediatedAdaptor);
         } catch (Exception e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);

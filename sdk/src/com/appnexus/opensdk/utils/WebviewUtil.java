@@ -16,42 +16,109 @@
 package com.appnexus.opensdk.utils;
 
 import java.lang.reflect.Method;
+import java.util.Date;
+import java.util.List;
 
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.cookie.DateUtils;
+
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 
 public class WebviewUtil {
 
-	/**
-	 * Call WebView onResume in API version safe manner
-	 * @param wv
-	 */
-	public static void onResume(WebView wv)
-	{
-		if (wv == null) {
-			return;
-		}
-		try {
+    /**
+     * Call WebView onResume in API version safe manner
+     * 
+     * @param wv
+     */
+    public static void onResume(WebView wv) {
+        if (wv == null) {
+            return;
+        }
+        try {
             Method onResume = WebView.class.getDeclaredMethod("onResume");
             onResume.invoke(wv);
         } catch (Exception e) {
-        	// Expect this exception in API < 11
+            // Expect this exception in API < 11
         }
-	}
-	
-	/**
-	 * Call WebView onPause in API version safe manner
-	 * @param wv
-	 */
-	public static void onPause(WebView wv)
-	{
-		if (wv == null) {
-			return;
-		}
-		try {
+    }
+
+    /**
+     * Call WebView onPause in API version safe manner
+     * 
+     * @param wv
+     */
+    public static void onPause(WebView wv) {
+        if (wv == null) {
+            return;
+        }
+        try {
             Method onPause = WebView.class.getDeclaredMethod("onPause");
             onPause.invoke(wv);
         } catch (Exception e) {
-        	// Expect this exception in API < 11
+            // Expect this exception in API < 11
         }
-	}
+    }
+
+    /***
+     * Synchronize the uuid2 cookie to the Webview Cookie Jar
+     * This is only done if there is no present cookie.  
+     * @param cookies
+     */
+    public static void cookieSync(List<Cookie> cookies) {
+
+        Settings settings = Settings.getSettings();
+
+        try {
+            CookieManager cm = CookieManager.getInstance();
+            if (cm == null) {
+                Clog.i(Clog.httpRespLogTag, "Unable to find a CookieManager");
+                return;
+            }
+            String wvcookie = cm.getCookie(settings.BASE_URL);
+            if (!StringUtil.isEmpty(wvcookie)) {
+                Clog.d(Clog.httpRespLogTag, "Webview already has our cookie");
+                return;
+            }
+            CookieSyncManager csm = CookieSyncManager.getInstance();
+            if (csm == null) {
+                Clog.i(Clog.httpRespLogTag,
+                        "Unable to find a CookieSyncManager");
+                return;
+            }
+            StringBuilder sb = new StringBuilder();
+            for (Cookie c : cookies) {
+                if (!settings.AN_UUID.equals(c.getName())) {
+                    continue;
+                }
+                if (!StringUtil.isEmpty(c.getDomain())) {
+                    sb.append("domain=").append(c.getDomain()).append("; ");
+                }
+                if (!StringUtil.isEmpty(c.getPath())) {
+                    sb.append("path=").append(c.getPath()).append("; ");
+                }
+                sb.append(c.getName()).append('=').append(c.getValue())
+                        .append("; ");
+
+                Date d = c.getExpiryDate();
+                if (d != null && d.getTime() > 0) {
+                    sb.append("expires=").append(DateUtils.formatDate(d))
+                            .append("; ");
+                }
+                if (c.isSecure()) {
+                    sb.append("secure");
+                } else {
+                    sb.append("HttpOnly");
+                }
+                Clog.d(Clog.httpRespLogTag, "set-cookie: " + sb.toString());
+                cm.setCookie(settings.COOKIE_DOMAIN, sb.toString());
+                csm.sync();
+            }
+        } catch (IllegalStateException ise) {
+        } catch (Exception e) {
+        }
+
+    }
 }

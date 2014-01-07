@@ -101,8 +101,7 @@ public class PreviewFragment extends Fragment {
         if (settingsWrapper.isAdTypeBanner()) {
             // Load and display a banner
             bav.setAutoRefreshInterval(settingsWrapper.getRefreshPeriod());
-            bav.setAdWidth(settingsWrapper.getWidth());
-            bav.setAdHeight(settingsWrapper.getHeight());
+            bav.setAdSize(settingsWrapper.getWidth(),settingsWrapper.getHeight());
 
 
             bav.setShouldServePSAs(settingsWrapper.isAllowPsas());
