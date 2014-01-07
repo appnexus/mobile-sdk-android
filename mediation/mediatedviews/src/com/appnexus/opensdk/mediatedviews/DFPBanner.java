@@ -77,7 +77,7 @@ public class DFPBanner implements MediatedBannerAdView, AdListener {
         AdSize adSize = ssparm.isSmartBanner ? AdSize.SMART_BANNER : new AdSize(width,height);
 
         DfpAdView v ;
-        if (ssparm.isSwipable) {
+        if (ssparm.isSwipeable) {
             v = new SwipeableDfpAdView(activity, adSize, adUnitID);
         } else {
             v = new DfpAdView(activity, adSize, adUnitID);
@@ -175,8 +175,8 @@ public class DFPBanner implements MediatedBannerAdView, AdListener {
     }
 
     /**
-     * Class to extract optional server side parameters from passed in json string. 
-     * Supports 
+     * Class to extract optional server side parameters from passed in json string.
+     * Supports
      * {
      *  "swipeable" : 1,
      *  "smartbanner" : 1
@@ -207,7 +207,7 @@ public class DFPBanner implements MediatedBannerAdView, AdListener {
                 }
 
                 try {
-                    isSwipable = req.getBoolean(SWIPEABLE);
+                    isSwipeable = req.getBoolean(SWIPEABLE);
                 }   catch (JSONException e) {}
                 try {
                     isSmartBanner = req.getBoolean(SMARTBANNER);
@@ -217,7 +217,7 @@ public class DFPBanner implements MediatedBannerAdView, AdListener {
         }
 
 
-        public boolean isSwipable;
+        public boolean isSwipeable;
         public String test_device;
         public boolean isSmartBanner;
 
