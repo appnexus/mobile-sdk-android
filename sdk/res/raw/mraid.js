@@ -123,9 +123,6 @@
                 return;
             }
 			window.open("mraid://expand/"+"?w="+mraid.getExpandProperties().width+"&h="+mraid.getExpandProperties().height+"&useCustomClose="+mraid.getExpandProperties().useCustomClose+(url!=null ? "&url="+url:""));
-			if(url!=null){
-			    window.open(url);
-			}
 			break;
 		case 'expanded':
 			mraid.util.errorEvent("mraid.expand() called while state is 'expanded'.", "mraid.expand()");

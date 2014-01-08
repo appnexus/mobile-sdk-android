@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import android.view.ViewGroup;
 import com.appnexus.opensdk.utils.StringUtil;
@@ -398,6 +399,7 @@ class MRAIDImplementation {
             // defaults.
             int height = owner.getLayoutParams().height;
             boolean useCustomClose = false;
+            String uri = null;
             for (BasicNameValuePair bnvp : parameters) {
                 if (bnvp.getName().equals("w"))
                     try {
@@ -413,10 +415,16 @@ class MRAIDImplementation {
                     }
                 else if (bnvp.getName().equals("useCustomClose"))
                     useCustomClose = Boolean.parseBoolean(bnvp.getValue());
+                else if (bnvp.getName().equals("url")){
+                    uri = Uri.decode(bnvp.getValue());
+                }
             }
 
             owner.expand(width, height, useCustomClose, this);
             // Fire the stateChange to MRAID
+            if(uri!=null){
+                this.owner.loadUrl(uri);
+            }
             this.owner
                     .loadUrl("javascript:window.mraid.util.stateChangeEvent('expanded');");
             expanded = true;
