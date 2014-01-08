@@ -24,9 +24,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Locale;
-
-import android.view.ViewGroup;
 import com.appnexus.opensdk.utils.StringUtil;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -223,7 +220,9 @@ class MRAIDImplementation {
 
                 int height = owner.getMeasuredHeight();
                 int width = owner.getMeasuredWidth();
-                view.loadUrl("javascript:window.mraid.util.setDefaultPosition(" + location[0] + ", " + location[1] + ", " + width + ", " + height + ")");
+                if(readyFired){
+                    view.loadUrl("javascript:window.mraid.util.setDefaultPosition(" + location[0] + ", " + location[1] + ", " + width + ", " + height + ")");
+                }
             }
 
             @SuppressLint("NewApi")
@@ -249,8 +248,9 @@ class MRAIDImplementation {
                     int contentViewTop = a.getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
                     height -= contentViewTop;
 
-
-                    view.loadUrl("javascript:window.mraid.util.setMaxSize(" + width + ", " + height + ")");
+                    if(readyFired){
+                        view.loadUrl("javascript:window.mraid.util.setMaxSize(" + width + ", " + height + ")");
+                    }
                 }
 
 
@@ -273,7 +273,9 @@ class MRAIDImplementation {
                         height = d.getHeight();
                     }
 
-                    view.loadUrl("javascript:window.mraid.util.setScreenSize("+width + ", " + height + ")");
+                    if(readyFired){
+                        view.loadUrl("javascript:window.mraid.util.setScreenSize("+width + ", " + height + ")");
+                    }
                 }
             }
 
@@ -361,8 +363,10 @@ class MRAIDImplementation {
         int height = right-left;
         int width = bottom-top;
 
-        owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent(" + width + "," + height + ")");
-        owner.loadUrl("javascript:window.mraid.util.setCurrentPosition(" + left + ", " + top + ", " + width + ", " + height + ")");
+        if(readyFired){
+            owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent(" + width + "," + height + ")");
+            owner.loadUrl("javascript:window.mraid.util.setCurrentPosition(" + left + ", " + top + ", " + width + ", " + height + ")");
+        }
     }
 
     void close() {
