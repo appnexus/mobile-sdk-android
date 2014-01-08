@@ -504,7 +504,7 @@ public class BannerAdView extends AdView {
                 receiversRegistered = true;
             }
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.unhidden));
-            if (!isMRAIDExpanded() && mAdFetcher != null
+            if (!mraid_changing_size_or_visibility && !isMRAIDExpanded() && mAdFetcher != null
                     && (!requesting_visible || running || shouldReloadOnResume || auto_refresh))
                 start();
             else {

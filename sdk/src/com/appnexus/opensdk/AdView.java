@@ -63,7 +63,7 @@ public abstract class AdView extends FrameLayout {
 	GENDER gender = GENDER.UNKNOWN;
 	ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
     private Location location = null;
-	boolean mraid_expand = false;
+	boolean mraid_changing_size_or_visibility = false;
 	AdListener adListener;
 	private BrowserStyle browserStyle;
 	private LinkedList<MediatedAd> mediatedAds;
@@ -145,8 +145,8 @@ public abstract class AdView extends FrameLayout {
 	protected void onLayout(boolean changed, int left, int top, int right,
 			int bottom) {
 		super.onLayout(changed, left, top, right, bottom);
-		if (mraid_expand) {
-			mraid_expand = false;
+		if (mraid_changing_size_or_visibility) {
+			mraid_changing_size_or_visibility = false;
 			return;
 		}
 		if (!measured || changed) {
@@ -368,7 +368,7 @@ public abstract class AdView extends FrameLayout {
     }
     protected void expand(int w, int h, boolean custom_close,
                           final MRAIDImplementation caller) {
-        mraid_expand = true;
+        mraid_changing_size_or_visibility = true;
 
         if (getLayoutParams() != null) {
             if (getLayoutParams().width > 0)
@@ -446,7 +446,7 @@ public abstract class AdView extends FrameLayout {
 
     public void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean,
                        final MRAIDImplementation caller) {
-        mraid_expand = true;
+        mraid_changing_size_or_visibility = true;
         if (getLayoutParams() != null) {
             if (getLayoutParams().width > 0)
                 getLayoutParams().width = w;
