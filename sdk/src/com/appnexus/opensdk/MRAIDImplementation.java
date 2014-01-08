@@ -215,12 +215,13 @@ class MRAIDImplementation {
             }
 
             private void setDefaultPosition(WebView view) {
-                int[] location = new int[2];
-                owner.getLocationOnScreen(location);
-
-                int height = owner.getMeasuredHeight();
-                int width = owner.getMeasuredWidth();
                 if(readyFired){
+                    int[] location = new int[2];
+                    owner.getLocationOnScreen(location);
+
+                    int height = owner.getMeasuredHeight();
+                    int width = owner.getMeasuredWidth();
+
                     view.loadUrl("javascript:window.mraid.util.setDefaultPosition(" + location[0] + ", " + location[1] + ", " + width + ", " + height + ")");
                 }
             }
