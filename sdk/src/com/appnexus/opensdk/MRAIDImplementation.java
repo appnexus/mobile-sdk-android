@@ -427,7 +427,7 @@ class MRAIDImplementation {
 
             owner.expand(width, height, useCustomClose, this);
             // Fire the stateChange to MRAID
-            if(uri!=null){
+            if(!StringUtil.isEmpty(uri)){
                 this.owner.loadUrl(uri);
             }
             this.owner
