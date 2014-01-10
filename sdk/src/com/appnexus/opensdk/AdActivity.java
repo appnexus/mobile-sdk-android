@@ -51,7 +51,7 @@ import java.util.Locale;
  */
 public class AdActivity extends Activity {
 
-    FrameLayout layout;
+    protected FrameLayout layout;
     private WebView webView;
     private long now;
     private boolean close_added = false;

@@ -429,8 +429,14 @@ public abstract class AdView extends FrameLayout {
             if(caller!=null && caller.owner.isFullScreen){
                 //Make a new framelayout to contain webview and button
                 FrameLayout fslayout = new FrameLayout(this.getContext());
-                if(this.getChildCount()>0){
-                    this.removeAllViews();
+
+                if (this instanceof InterstitialAdView) {
+                    AdActivity aa = AdActivity.getCurrent_ad_activity();
+                    aa.layout.removeAllViews();
+                } else {
+                    if(this.getChildCount()>0){
+                        this.removeAllViews();
+                    }
                 }
                 fslayout.addView(caller.owner);
                 if (this instanceof InterstitialAdView) {
