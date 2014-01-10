@@ -96,19 +96,7 @@ class AdWebView extends WebView implements Displayable {
 
                 loadURLInCorrectBrowser(url);
 
-                // If a listener is defined, call its onClicked
-                if (AdWebView.this.destination.adListener != null) {
-                    AdWebView.this.destination.adListener
-                            .onAdClicked(AdWebView.this.destination);
-                }
-
-                // If it's an IAV, prevent it from closing
-                if (AdWebView.this.destination instanceof InterstitialAdView) {
-                    InterstitialAdView iav = (InterstitialAdView) AdWebView.this.destination;
-                    if (iav != null) {
-                        iav.interacted();
-                    }
-                }
+                fireAdClicked();
 
                 return true;
             }
@@ -127,25 +115,30 @@ class AdWebView extends WebView implements Displayable {
                             loadURLInCorrectBrowser(url);
                             view.stopLoading();
 
-                            // If a listener is defined, call its onClicked
-                            if (AdWebView.this.destination.adListener != null) {
-                                AdWebView.this.destination.adListener
-                                        .onAdClicked(AdWebView.this.destination);
-                            }
+                            fireAdClicked();
 
-                            // If it's an IAV, prevent it from closing
-                            if (AdWebView.this.destination instanceof InterstitialAdView) {
-                                InterstitialAdView iav = (InterstitialAdView) AdWebView.this.destination;
-                                if (iav != null) {
-                                    iav.interacted();
-                                }
-                            }
                             break;
                     }
                 }
             }
         });
 
+    }
+
+    private void fireAdClicked(){
+        // If a listener is defined, call its onClicked
+        if (AdWebView.this.destination.adListener != null) {
+            AdWebView.this.destination.adListener
+                    .onAdClicked(AdWebView.this.destination);
+        }
+
+        // If it's an IAV, prevent it from closing
+        if (AdWebView.this.destination instanceof InterstitialAdView) {
+            InterstitialAdView iav = (InterstitialAdView) AdWebView.this.destination;
+            if (iav != null) {
+                iav.interacted();
+            }
+        }
     }
 
     private void loadURLInCorrectBrowser(String url){
