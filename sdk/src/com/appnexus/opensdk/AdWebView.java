@@ -116,23 +116,31 @@ class AdWebView extends WebView implements Displayable {
             @Override
             public void onLoadResource (WebView view, String url) {
                 if (url.startsWith("http")) {
-                    if(view.getHitTestResult().getType() > 0){
-                        loadURLInCorrectBrowser(url);
-                        view.stopLoading();
+                    switch(getHitTestResult().getType()){
+                        default:
+                            break;
+                        case HitTestResult.ANCHOR_TYPE:
+                        case HitTestResult.IMAGE_ANCHOR_TYPE:
+                        case HitTestResult.SRC_ANCHOR_TYPE:
+                        case HitTestResult.SRC_IMAGE_ANCHOR_TYPE:
 
-                        // If a listener is defined, call its onClicked
-                        if (AdWebView.this.destination.adListener != null) {
-                            AdWebView.this.destination.adListener
-                                    .onAdClicked(AdWebView.this.destination);
-                        }
+                            loadURLInCorrectBrowser(url);
+                            view.stopLoading();
 
-                        // If it's an IAV, prevent it from closing
-                        if (AdWebView.this.destination instanceof InterstitialAdView) {
-                            InterstitialAdView iav = (InterstitialAdView) AdWebView.this.destination;
-                            if (iav != null) {
-                                iav.interacted();
+                            // If a listener is defined, call its onClicked
+                            if (AdWebView.this.destination.adListener != null) {
+                                AdWebView.this.destination.adListener
+                                        .onAdClicked(AdWebView.this.destination);
                             }
-                        }
+
+                            // If it's an IAV, prevent it from closing
+                            if (AdWebView.this.destination instanceof InterstitialAdView) {
+                                InterstitialAdView iav = (InterstitialAdView) AdWebView.this.destination;
+                                if (iav != null) {
+                                    iav.interacted();
+                                }
+                            }
+                            break;
                     }
                 }
             }
