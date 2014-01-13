@@ -163,7 +163,11 @@
         if(resize_properties.height<0 || resize_properties.width<0){
             mraid.util.errorEvent("mraid.resize() called before mraid.setResizeProperties()", "mraid.resize()");
             return;
+        }else if(resize_properties.height<0 || resize_properties.width<0){
+            mraid.util.errorEvent("mraid.resize() called with a width or height below the minimum 50px", "mraid.resize()");
+            return;
         }
+
         switch(mraid.getState()){
         case 'loading':
             mraid.util.errorEvent("mraid.resize() called while state is 'loading'.", "mraid.resize()");
@@ -192,6 +196,9 @@
     }
 
     mraid.setResizeProperties=function(props){
+        if(props.width<50 || props.height<50){
+            mraid.util.errorEvent("Resize properties contains a dimension below the minimum 50 pixels", "mraid.setResizeProperties()");
+        }
         resize_properties=props;
     }
 

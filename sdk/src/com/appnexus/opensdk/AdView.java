@@ -450,6 +450,8 @@ public abstract class AdView extends FrameLayout {
         }
     }
 
+
+    int fiftyPxAsDP=0;
     public void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean,
                        final MRAIDImplementation caller) {
         mraid_changing_size_or_visibility = true;
@@ -465,10 +467,10 @@ public abstract class AdView extends FrameLayout {
             close_button.setVisibility(GONE);
         }
         close_button = new ImageButton(this.getContext());
-        close_button.setImageDrawable(getResources().getDrawable(
-                android.R.drawable.ic_menu_close_clear_cancel));
+        //No drawable
 
         int grav = Gravity.RIGHT | Gravity.TOP;
+        boolean closeRegionOffScreen = false;
         switch (custom_close_position) {
             case bottom_center:
                 grav = Gravity.BOTTOM | Gravity.CENTER;
@@ -494,9 +496,14 @@ public abstract class AdView extends FrameLayout {
 
         }
 
+        if(!(fiftyPxAsDP>0)){
+            final float scale = caller.owner.getContext().getResources().getDisplayMetrics().density;
+            fiftyPxAsDP = (int)(50*scale);
+        }
+
         FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT, grav);
+                fiftyPxAsDP,
+                fiftyPxAsDP, grav);
         if (this.getChildCount() > 0) {
             blp.rightMargin = (this.getMeasuredWidth() - this.getChildAt(0)
                     .getMeasuredWidth()) / 2;
@@ -548,7 +555,7 @@ public abstract class AdView extends FrameLayout {
 	 */
 	public AdListener getAdListener() {
 		Clog.d(Clog.publicFunctionsLogTag,
-				Clog.getString(R.string.get_ad_listener));
+                Clog.getString(R.string.get_ad_listener));
 		return adListener;
 	}
 
