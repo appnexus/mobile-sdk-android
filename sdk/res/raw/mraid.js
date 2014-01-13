@@ -163,7 +163,7 @@
         if(resize_properties.height<0 || resize_properties.width<0){
             mraid.util.errorEvent("mraid.resize() called before mraid.setResizeProperties()", "mraid.resize()");
             return;
-        }else if(resize_properties.height<0 || resize_properties.width<0){
+        }else if(resize_properties.height<50 || resize_properties.width<50){
             mraid.util.errorEvent("mraid.resize() called with a width or height below the minimum 50px", "mraid.resize()");
             return;
         }
