@@ -49,7 +49,7 @@ class AdWebView extends WebView implements Displayable {
 
     @SuppressWarnings("deprecation")
 	@SuppressLint("SetJavaScriptEnabled")
-    private void setup() {
+    protected void setup() {
         Settings.getSettings().ua = this.getSettings().getUserAgentString();
         this.getSettings().setJavaScriptEnabled(true);
         this.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
@@ -145,7 +145,7 @@ class AdWebView extends WebView implements Displayable {
         }
     }
 
-    private void loadURLInCorrectBrowser(String url){
+    protected void loadURLInCorrectBrowser(String url){
         Intent intent;
         // open the in-app browser
         if (!AdWebView.this.destination.getOpensNativeBrowser() && url.startsWith("http")) {

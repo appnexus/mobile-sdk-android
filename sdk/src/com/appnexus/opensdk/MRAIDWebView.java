@@ -29,7 +29,7 @@ import android.webkit.WebView;
 import android.widget.FrameLayout;
 
 @SuppressLint("ViewConstructor")
-class MRAIDWebView extends WebView implements Displayable {
+class MRAIDWebView extends AdWebView implements Displayable {
     private MRAIDImplementation implementation;
     final AdView owner;
     private int default_width;
@@ -37,14 +37,15 @@ class MRAIDWebView extends WebView implements Displayable {
     protected boolean isFullScreen = false;
 
     public MRAIDWebView(AdView owner) {
-        super(owner.getContext());
+        super(owner);
         this.owner = owner;
-        setup();
     }
+
 
     @SuppressWarnings("deprecation")
 	@SuppressLint("SetJavaScriptEnabled")
-    private void setup() {
+    @Override
+    protected void setup() {
         this.getSettings().setJavaScriptEnabled(true);
         this.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         // this.setInitialScale(100);

@@ -489,9 +489,24 @@ class MRAIDImplementation {
             playVideo(parameters);
         } else if (supportsPictureAPI && func.equals("storePicture")) {
             storePicture(parameters);
+        } else if (func.equals("open")){
+            open(parameters);
         } else {
             Clog.d(Clog.mraidLogTag, Clog.getString(R.string.unsupported_mraid, func));
 
+        }
+    }
+
+    private void open(ArrayList<BasicNameValuePair> parameters){
+        String uri = null;
+        for (BasicNameValuePair bnvp : parameters){
+            if(bnvp.getName().equals("uri")){
+                uri = Uri.decode(bnvp.getValue());
+            }
+        }
+
+        if(uri!=null){
+            this.owner.loadURLInCorrectBrowser(uri);
         }
     }
 
