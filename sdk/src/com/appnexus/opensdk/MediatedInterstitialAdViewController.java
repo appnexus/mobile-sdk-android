@@ -69,6 +69,9 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
                         currentAd.getParam(),
                         currentAd.getId(),
                         tp);
+            }else{
+                Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_null_activity));
+                errorCode = RESULT.INTERNAL_ERROR;
             }
         } catch (Exception e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
