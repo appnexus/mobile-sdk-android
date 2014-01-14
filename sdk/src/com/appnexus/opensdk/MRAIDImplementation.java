@@ -505,7 +505,7 @@ class MRAIDImplementation {
             }
         }
 
-        if(uri!=null){
+        if(!StringUtil.isEmpty(uri)){
             this.owner.loadURLInCorrectBrowser(uri);
         }
     }
