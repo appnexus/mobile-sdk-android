@@ -470,7 +470,6 @@ public abstract class AdView extends FrameLayout {
         //No drawable
 
         int grav = Gravity.RIGHT | Gravity.TOP;
-        boolean closeRegionOffScreen = false;
         switch (custom_close_position) {
             case bottom_center:
                 grav = Gravity.BOTTOM | Gravity.CENTER;
