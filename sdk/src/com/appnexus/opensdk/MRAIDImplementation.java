@@ -357,8 +357,8 @@ class MRAIDImplementation {
     }
 
     protected void setCurrentPosition(int left, int top, int right, int bottom, WebView view) {
-        int height = right-left;
-        int width = bottom-top;
+        int width = right-left;
+        int height = bottom-top;
 
         if(readyFired){
             owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent(" + width + "," + height + ")");
