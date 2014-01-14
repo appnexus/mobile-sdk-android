@@ -249,9 +249,7 @@ class MRAIDImplementation {
                     int contentViewTop = a.getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
                     height -= contentViewTop;
 
-                    if(readyFired){
-                        view.loadUrl("javascript:window.mraid.util.setMaxSize(" + width + ", " + height + ")");
-                    }
+                    view.loadUrl("javascript:window.mraid.util.setMaxSize(" + width + ", " + height + ")");
                 }
 
 
@@ -274,9 +272,7 @@ class MRAIDImplementation {
                         height = d.getHeight();
                     }
 
-                    if(readyFired){
-                        view.loadUrl("javascript:window.mraid.util.setScreenSize("+width + ", " + height + ")");
-                    }
+                    view.loadUrl("javascript:window.mraid.util.setScreenSize("+width + ", " + height + ")");
                 }
             }
 
