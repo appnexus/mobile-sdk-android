@@ -62,15 +62,6 @@ public class AdMobBanner implements MediatedBannerAdView, AdListener {
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String adUnitID,
                           int width, int height, TargetingParameters targetingParameters) {
-        if (mBC == null) {
-            Clog.e(Clog.mediationLogTag, "AdMobBanner - requestAd called with null controller");
-            return null;
-        }
-
-        if (activity == null) {
-            Clog.e(Clog.mediationLogTag, "AdMobBanner - requestAd called with null activity");
-            return null;
-        }
         Clog.d(Clog.mediationLogTag, String.format("AdMobBanner - requesting an ad: [%s, %s, %dx%d]", parameter, adUnitID, width, height));
 
         AdView admobAV = new AdView(activity, new AdSize(width, height), adUnitID);

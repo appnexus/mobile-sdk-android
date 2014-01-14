@@ -44,12 +44,11 @@ class AdWebView extends WebView implements Displayable {
     public AdWebView(AdView owner) {
         super(owner.getContext());
         destination = owner;
+        setupSettings();
         setup();
     }
 
-    @SuppressWarnings("deprecation")
-	@SuppressLint("SetJavaScriptEnabled")
-    private void setup() {
+    protected void setupSettings(){
         Settings.getSettings().ua = this.getSettings().getUserAgentString();
         this.getSettings().setJavaScriptEnabled(true);
         this.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
@@ -69,6 +68,11 @@ class AdWebView extends WebView implements Displayable {
 
         setBackgroundColor(Color.TRANSPARENT);
         setScrollBarStyle(WebView.SCROLLBARS_INSIDE_OVERLAY);
+    }
+
+    @SuppressWarnings("deprecation")
+	@SuppressLint("SetJavaScriptEnabled")
+    protected void setup() {
 
         setWebChromeClient(new VideoEnabledWebChromeClient((Activity) destination.getContext()));
 
@@ -145,7 +149,7 @@ class AdWebView extends WebView implements Displayable {
         }
     }
 
-    private void loadURLInCorrectBrowser(String url){
+    protected void loadURLInCorrectBrowser(String url){
         Intent intent;
         // open the in-app browser
         if (!AdWebView.this.destination.getOpensNativeBrowser() && url.startsWith("http")) {

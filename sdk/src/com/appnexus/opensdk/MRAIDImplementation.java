@@ -358,8 +358,8 @@ class MRAIDImplementation {
     }
 
     protected void setCurrentPosition(int left, int top, int right, int bottom, WebView view) {
-        int height = right-left;
-        int width = bottom-top;
+        int width = right-left;
+        int height = bottom-top;
 
         if(readyFired){
             owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent(" + width + "," + height + ")");
@@ -486,9 +486,24 @@ class MRAIDImplementation {
             playVideo(parameters);
         } else if (supportsPictureAPI && func.equals("storePicture")) {
             storePicture(parameters);
+        } else if (func.equals("open")){
+            open(parameters);
         } else {
             Clog.d(Clog.mraidLogTag, Clog.getString(R.string.unsupported_mraid, func));
 
+        }
+    }
+
+    private void open(ArrayList<BasicNameValuePair> parameters){
+        String uri = null;
+        for (BasicNameValuePair bnvp : parameters){
+            if(bnvp.getName().equals("uri")){
+                uri = Uri.decode(bnvp.getValue());
+            }
+        }
+
+        if(!StringUtil.isEmpty(uri)){
+            this.owner.loadURLInCorrectBrowser(uri);
         }
     }
 

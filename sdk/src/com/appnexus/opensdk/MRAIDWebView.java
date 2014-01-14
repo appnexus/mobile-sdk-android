@@ -29,7 +29,7 @@ import android.webkit.WebView;
 import android.widget.FrameLayout;
 
 @SuppressLint("ViewConstructor")
-class MRAIDWebView extends WebView implements Displayable {
+class MRAIDWebView extends AdWebView implements Displayable {
     private MRAIDImplementation implementation;
     final AdView owner;
     private int default_width;
@@ -37,31 +37,8 @@ class MRAIDWebView extends WebView implements Displayable {
     protected boolean isFullScreen = false;
 
     public MRAIDWebView(AdView owner) {
-        super(owner.getContext());
+        super(owner);
         this.owner = owner;
-        setup();
-    }
-
-    @SuppressWarnings("deprecation")
-	@SuppressLint("SetJavaScriptEnabled")
-    private void setup() {
-        this.getSettings().setJavaScriptEnabled(true);
-        this.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        // this.setInitialScale(100);
-        this.getSettings().setPluginState(WebSettings.PluginState.ON);
-        this.getSettings().setBuiltInZoomControls(false);
-        this.getSettings().setLightTouchEnabled(false);
-        this.getSettings().setLoadsImagesAutomatically(true);
-        this.getSettings().setSupportZoom(false);
-        this.getSettings().setUseWideViewPort(false);
-        this.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        setHorizontalScrollbarOverlay(false);
-        setHorizontalScrollBarEnabled(false);
-        setVerticalScrollbarOverlay(false);
-        setVerticalScrollBarEnabled(false);
-
-        setBackgroundColor(Color.TRANSPARENT);
-        setScrollBarStyle(WebView.SCROLLBARS_INSIDE_OVERLAY);
     }
 
     void setImplementation(MRAIDImplementation imp) {
