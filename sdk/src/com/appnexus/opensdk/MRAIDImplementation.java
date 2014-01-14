@@ -116,6 +116,8 @@ class MRAIDImplementation {
                 R.string.webview_received_error, errorCode, desc, failingUrl));
     }
 
+    int screenWidth;
+    int screenHeight;
     WebViewClient getWebViewClient() {
         return new WebViewClient() {
 
@@ -249,9 +251,7 @@ class MRAIDImplementation {
                     int contentViewTop = a.getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
                     height -= contentViewTop;
 
-                    if(readyFired){
-                        view.loadUrl("javascript:window.mraid.util.setMaxSize(" + width + ", " + height + ")");
-                    }
+                    view.loadUrl("javascript:window.mraid.util.setMaxSize(" + width + ", " + height + ")");
                 }
 
 
@@ -263,20 +263,17 @@ class MRAIDImplementation {
                 if (owner.getContext() instanceof Activity) {
                     Display d = ((Activity) owner.getContext()).getWindowManager().getDefaultDisplay();
                     Point p = new Point();
-                    int width;
-                    int height;
+
                     if(Build.VERSION.SDK_INT>=13){
                         d.getSize(p);
-                        width = p.x;
-                        height = p.y;
+                        screenWidth = p.x;
+                        screenHeight = p.y;
                     }else{
-                        width = d.getWidth();
-                        height = d.getHeight();
+                        screenWidth = d.getWidth();
+                        screenHeight = d.getHeight();
                     }
 
-                    if(readyFired){
-                        view.loadUrl("javascript:window.mraid.util.setScreenSize("+width + ", " + height + ")");
-                    }
+                    view.loadUrl("javascript:window.mraid.util.setScreenSize("+screenWidth + ", " + screenHeight + ")");
                 }
             }
 
@@ -728,6 +725,12 @@ class MRAIDImplementation {
                 return;
             }
         }
+        //If the resized ad is larger than the screen, reject with great prejudice
+        if(w>screenWidth || h>screenHeight){
+            this.owner.loadUrl("javascript:mraid.util.errorEvent('Resize called with resizeProperties larger than the screen.', 'mraid.resize()')");
+            return;
+        }
+
         CUSTOM_CLOSE_POSITION cp_enum = CUSTOM_CLOSE_POSITION.top_right;
         try{
             cp_enum = CUSTOM_CLOSE_POSITION.valueOf(custom_close_position.replace('-', '_'));
