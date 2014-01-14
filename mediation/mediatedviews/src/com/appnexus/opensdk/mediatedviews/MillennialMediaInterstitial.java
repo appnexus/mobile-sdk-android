@@ -44,15 +44,6 @@ public class MillennialMediaInterstitial implements MediatedInterstitialAdView {
 
     @Override
     public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid, TargetingParameters targetingParameters) {
-        if (mIC == null) {
-            Clog.e(Clog.mediationLogTag, "MillennialMediaInterstitial - requestAd called with null controller");
-            return;
-        }
-
-        if (activity == null) {
-            Clog.e(Clog.mediationLogTag, "MillennialMediaInterstitial - requestAd called with null activity");
-            return;
-        }
         Clog.d(Clog.mediationLogTag, String.format("MillennialMediaInterstitial - requesting an interstitial ad: [%s, %s]", parameter, uid));
 
         MMSDK.initialize(activity);

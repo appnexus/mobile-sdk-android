@@ -56,7 +56,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
             if(av !=null){
                 tp = av.getTargetingParameters();
             }
-        } catch(ClassCastException e){            
+        } catch(ClassCastException e){
         } finally {
             if (tp == null) {
                 tp = new TargetingParameters();
@@ -64,14 +64,16 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
         }
 
         try {
-            View viewFromMediatedAdaptor = ((MediatedBannerAdView) mAV).requestAd(this,
-                    activity,
-                    currentAd.getParam(),
-                    currentAd.getId(),
-                    currentAd.getWidth(),
-                    currentAd.getHeight(),
-                    tp);
-            mediatedDisplayable.setView(viewFromMediatedAdaptor);
+            if(activity!=null){
+                View viewFromMediatedAdaptor = ((MediatedBannerAdView) mAV).requestAd(this,
+                        activity,
+                        currentAd.getParam(),
+                        currentAd.getId(),
+                        currentAd.getWidth(),
+                        currentAd.getHeight(),
+                        tp);
+                mediatedDisplayable.setView(viewFromMediatedAdaptor);
+            }
         } catch (Exception e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
             errorCode = RESULT.INVALID_REQUEST;

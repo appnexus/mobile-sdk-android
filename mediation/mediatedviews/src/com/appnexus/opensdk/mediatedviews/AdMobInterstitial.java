@@ -52,15 +52,6 @@ public class AdMobInterstitial implements MediatedInterstitialAdView,
 
     @Override
     public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid, TargetingParameters targetingParameters) {
-        if (mIC == null) {
-            Clog.e(Clog.mediationLogTag, "AdMobInterstitial - requestAd called with null controller");
-            return;
-        }
-
-        if (activity == null) {
-            Clog.e(Clog.mediationLogTag, "AdMobInterstitial - requestAd called with null activity");
-            return;
-        }
         Clog.d(Clog.mediationLogTag, String.format("AdMobInterstitial - requesting an ad: [%s, %s]", parameter, uid));
 
         iad = new InterstitialAd(activity, uid);

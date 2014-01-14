@@ -62,15 +62,6 @@ public class DFPBanner implements MediatedBannerAdView, AdListener {
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String adUnitID,
                           int width, int height, TargetingParameters targetingParameters) {
 
-        if (mBC == null) {
-            Clog.e(Clog.mediationLogTag, "DFPBanner - requestAd called with null controller");
-            return null;
-        }
-
-        if (activity == null) {
-            Clog.e(Clog.mediationLogTag, "DFPBanner - requestAd called with null activity");
-            return null;
-        }
         Clog.d(Clog.mediationLogTag, String.format("DFPBanner - requesting an ad: [%s, %s, %dx%d]", parameter, adUnitID, width, height));
 
         DFBBannerSSParameters ssparm = new DFBBannerSSParameters(parameter);
