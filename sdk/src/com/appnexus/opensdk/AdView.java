@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Handler;
@@ -466,8 +467,95 @@ public abstract class AdView extends FrameLayout {
             ((ViewGroup)close_button.getParent()).removeView(close_button);
             close_button.setVisibility(GONE);
         }
-        close_button = new ImageButton(this.getContext());
-        //No drawable
+        close_button = new ImageButton(this.getContext()){
+
+            @Override
+            public void onLayout(boolean changed, int left, int top, int right, int bottom){
+                int i[] = new int[2];
+                this.getLocationOnScreen(i);
+                float scale = caller.owner.getContext().getResources().getDisplayMetrics().density;
+                //Determine screen width and height
+                Activity a = null;
+                try{
+                    a=(Activity) caller.owner.getContext();
+                }catch(ClassCastException e){
+                    return;
+                }
+                Point screen_size = new Point();
+                a.getWindowManager().getDefaultDisplay().getSize(screen_size);
+
+                float fifty_dp_as_px = 50*scale;
+                if(i[0]<0 || i[0]>screen_size.x-fifty_dp_as_px ||
+                   i[1]<0 || i[1]>screen_size.y-fifty_dp_as_px){
+                    //Button is off screen, and must be relocated on screen
+
+                    //Ensure there is a minimum 50x50 area to place the close button
+                    if(caller.owner.getLeft() > 0 && caller.owner.getRight() > screen_size.x-fifty_dp_as_px &&
+                       caller.owner.getTop() > 0 && caller.owner.getBottom() > screen_size.y-fifty_dp_as_px){
+                        //Run like a chicken with no head
+                        return; //Here be dragons
+                    }
+
+                    //Determine which edges particularly are clipped
+                    boolean leftClipped=false;
+                    boolean rightClipped=false;
+                    boolean topClipped=false;
+                    boolean bottomClipped=false;
+
+                    if(caller.owner.getLeft()<0){
+                        leftClipped=true;
+                    }
+                    if(caller.owner.getRight()>screen_size.x){
+                        rightClipped=true;
+                    }
+                    if(caller.owner.getTop()<0){
+                        topClipped=true;
+                    }
+                    if(caller.owner.getBottom()>screen_size.y){
+                        bottomClipped=true;
+                    }
+
+                    //Just return if there's no clipping
+                    if(!(leftClipped || rightClipped || topClipped || bottomClipped)){
+                        return;
+                    }
+
+                    FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(this.getLayoutParams());
+
+                    if(bottomClipped && rightClipped && !topClipped && !leftClipped){
+                        //Top-left
+                        lp.gravity = Gravity.TOP | Gravity.LEFT;
+                    }else if(bottomClipped && leftClipped && !topClipped && !rightClipped){
+                        //Top-right
+                        lp.gravity = Gravity.TOP | Gravity.RIGHT;
+                    }else if(topClipped && rightClipped && !bottomClipped && !leftClipped){
+                        //Bottom-left
+                        lp.gravity = Gravity.BOTTOM | Gravity.LEFT;
+                    }else if(topClipped && leftClipped && !bottomClipped && !rightClipped){
+                        //Bottom-right
+                        lp.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+                    }else if(!topClipped){
+                        //Top center
+                        lp.gravity = Gravity.TOP | Gravity.CENTER;
+                    }else if(!bottomClipped){
+                        //Bottom center
+                        lp.gravity = Gravity.BOTTOM | Gravity.CENTER;
+                    }else if(!rightClipped){
+                        //Right center
+                        lp.gravity = Gravity.RIGHT | Gravity.CENTER;
+                    }else if(!leftClipped){
+                        //Left center
+                        lp.gravity = Gravity.LEFT | Gravity.CENTER;
+                    }else{
+                        lp.gravity = Gravity.CENTER;
+                    }
+
+                    this.setLayoutParams(lp);
+                    close_button.setImageDrawable(getResources().getDrawable(
+                            android.R.drawable.ic_menu_close_clear_cancel));
+                }
+            }
+        };
 
         int grav = Gravity.RIGHT | Gravity.TOP;
         switch (custom_close_position) {
@@ -501,12 +589,9 @@ public abstract class AdView extends FrameLayout {
         }
 
         FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
-                fiftyPxAsDP,
-                fiftyPxAsDP, grav);
-        if (this.getChildCount() > 0) {
-            blp.rightMargin = (this.getMeasuredWidth() - this.getChildAt(0)
-                    .getMeasuredWidth()) / 2;
-        }
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT, grav);
+
         close_button.setLayoutParams(blp);
         close_button.setBackgroundColor(Color.TRANSPARENT);
         close_button.setOnClickListener(new View.OnClickListener() {
