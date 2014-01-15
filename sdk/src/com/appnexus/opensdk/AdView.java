@@ -454,7 +454,8 @@ public abstract class AdView extends FrameLayout {
     }
 
 
-    int fiftyPxAsDP=0;
+    int buttonNormalWidth = 0;
+
     public void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean,
                        final MRAIDImplementation caller) {
         mraid_changing_size_or_visibility = true;
@@ -469,6 +470,12 @@ public abstract class AdView extends FrameLayout {
             ((ViewGroup)close_button.getParent()).removeView(close_button);
             close_button.setVisibility(GONE);
         }
+
+        if(!(buttonNormalWidth >0)){
+            final float scale = caller.owner.getContext().getResources().getDisplayMetrics().density;
+            buttonNormalWidth = (int)(50*scale);
+        }
+
         close_button = new ImageButton(this.getContext()){
 
             @Override
@@ -476,123 +483,104 @@ public abstract class AdView extends FrameLayout {
                 int i[] = new int[2];
                 this.getLocationOnScreen(i);
                 float scale = caller.owner.getContext().getResources().getDisplayMetrics().density;
-                //Determine screen width and height
-                Activity a = null;
+
+                //Determine container width and height
+                Point container_size;
+                Point screen_size=new Point(0,0);
+                Activity a;
+                boolean useScreenSizeForAddedAccuracy = true;
                 try{
-                    a=(Activity) caller.owner.getContext();
-                }catch(ClassCastException e){
-                    return;
+                    a = (Activity)caller.owner.getContext();
+                    a.getWindowManager().getDefaultDisplay().getSize(screen_size);
+                }catch (ClassCastException e){
+                    useScreenSizeForAddedAccuracy = false;
                 }
-                Point screen_size = new Point();
-                a.getWindowManager().getDefaultDisplay().getSize(screen_size);
 
-                float fifty_dp_as_px = 50*scale;
-                if(i[0]<0 || i[0]>screen_size.x-fifty_dp_as_px ||
-                   i[1]<0 || i[1]>screen_size.y-fifty_dp_as_px){
+
+                int adviewLoc[] = new int[2];
+                if(AdView.this instanceof InterstitialAdView){
+                    InterstitialAdView.INTERSTITIALADVIEW_TO_USE.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+                    InterstitialAdView.INTERSTITIALADVIEW_TO_USE.getLocationOnScreen(adviewLoc);
+                    container_size = new Point(InterstitialAdView.INTERSTITIALADVIEW_TO_USE.getMeasuredWidth(),
+                                                  InterstitialAdView.INTERSTITIALADVIEW_TO_USE.getMeasuredHeight());
+                }else{
+                    AdView.this.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+                    AdView.this.getLocationOnScreen(adviewLoc);
+                    container_size = new Point(AdView.this.getMeasuredWidth(),
+                                                  AdView.this.getMeasuredHeight());
+                }
+                int max_x = (container_size.x-buttonNormalWidth);
+                int max_y = (container_size.y-buttonNormalWidth);
+                int min_x = 0;
+                int min_y = 0;
+
+                if(useScreenSizeForAddedAccuracy){
+                    max_x = adviewLoc[0]+Math.min(screen_size.x, container_size.x)-buttonNormalWidth;
+                    max_y = adviewLoc[1]+Math.min(screen_size.y, container_size.y)-buttonNormalWidth;
+                    min_x = adviewLoc[0];
+                    min_y = adviewLoc[1];
+                }
+
+                if(i[0]<min_x || i[0]> max_x ||
+                   i[1]<min_y || i[1]> max_y){
                     //Button is off screen, and must be relocated on screen
-
-                    //Ensure there is a minimum 50x50 area to place the close button
-                    if(caller.owner.getLeft() > 0 && caller.owner.getRight() > screen_size.x-fifty_dp_as_px &&
-                       caller.owner.getTop() > 0 && caller.owner.getBottom() > screen_size.y-fifty_dp_as_px){
-                        //Run like a chicken with no head
-                        return; //Here be dragons
-                    }
-
-                    //Determine which edges particularly are clipped
-                    boolean leftClipped=false;
-                    boolean rightClipped=false;
-                    boolean topClipped=false;
-                    boolean bottomClipped=false;
-
-                    if(caller.owner.getLeft()<0){
-                        leftClipped=true;
-                    }
-                    if(caller.owner.getRight()>screen_size.x){
-                        rightClipped=true;
-                    }
-                    if(caller.owner.getTop()<0){
-                        topClipped=true;
-                    }
-                    if(caller.owner.getBottom()>screen_size.y){
-                        bottomClipped=true;
-                    }
-
-                    //Just return if there's no clipping
-                    if(!(leftClipped || rightClipped || topClipped || bottomClipped)){
-                        return;
-                    }
-
                     FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(this.getLayoutParams());
+                    lp.topMargin = 0;
+                    lp.leftMargin = 0;
+                    lp.rightMargin = 0;
+                    lp.bottomMargin = 0;
+                    lp.gravity = Gravity.TOP  | Gravity.LEFT;
+                    final FrameLayout.LayoutParams flp = new FrameLayout.LayoutParams(lp);
+                    this.post(new Runnable(){
+                        public void run(){
+                            setLayoutParams(flp);
+                        }
+                    });
 
-                    if(bottomClipped && rightClipped && !topClipped && !leftClipped){
-                        //Top-left
-                        lp.gravity = Gravity.TOP | Gravity.LEFT;
-                    }else if(bottomClipped && leftClipped && !topClipped && !rightClipped){
-                        //Top-right
-                        lp.gravity = Gravity.TOP | Gravity.RIGHT;
-                    }else if(topClipped && rightClipped && !bottomClipped && !leftClipped){
-                        //Bottom-left
-                        lp.gravity = Gravity.BOTTOM | Gravity.LEFT;
-                    }else if(topClipped && leftClipped && !bottomClipped && !rightClipped){
-                        //Bottom-right
-                        lp.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-                    }else if(!topClipped){
-                        //Top center
-                        lp.gravity = Gravity.TOP | Gravity.CENTER;
-                    }else if(!bottomClipped){
-                        //Bottom center
-                        lp.gravity = Gravity.BOTTOM | Gravity.CENTER;
-                    }else if(!rightClipped){
-                        //Right center
-                        lp.gravity = Gravity.RIGHT | Gravity.CENTER;
-                    }else if(!leftClipped){
-                        //Left center
-                        lp.gravity = Gravity.LEFT | Gravity.CENTER;
-                    }else{
-                        lp.gravity = Gravity.CENTER;
-                    }
-
-                    this.setLayoutParams(lp);
                     close_button.setImageDrawable(getResources().getDrawable(
                             android.R.drawable.ic_menu_close_clear_cancel));
                 }
             }
         };
 
-        int grav = Gravity.RIGHT | Gravity.TOP;
-        switch (custom_close_position) {
-            case bottom_center:
-                grav = Gravity.BOTTOM | Gravity.CENTER;
-                break;
-            case bottom_left:
-                grav = Gravity.BOTTOM | Gravity.LEFT;
-                break;
-            case bottom_right:
-                grav = Gravity.BOTTOM | Gravity.RIGHT;
-                break;
-            case center:
-                grav = Gravity.CENTER;
-                break;
-            case top_center:
-                grav = Gravity.TOP | Gravity.CENTER;
-                break;
-            case top_left:
-                grav = Gravity.TOP | Gravity.LEFT;
-                break;
-            case top_right:
-                grav = Gravity.TOP | Gravity.RIGHT;
-                break;
+        int grav;
 
-        }
-
-        if(!(fiftyPxAsDP>0)){
-            final float scale = caller.owner.getContext().getResources().getDisplayMetrics().density;
-            fiftyPxAsDP = (int)(50*scale);
-        }
+        grav = Gravity.CENTER;
 
         FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT, grav);
+                buttonNormalWidth,
+                buttonNormalWidth, grav);
+
+        //Offsets from dead center
+        int btn_offset_y= h/2-buttonNormalWidth/2;
+        int btn_offset_x = w/2-buttonNormalWidth/2;
+        switch (custom_close_position) {
+            case bottom_center:
+                blp.topMargin = btn_offset_y;
+                break;
+            case bottom_left:
+                blp.rightMargin = btn_offset_x;
+                blp.topMargin = btn_offset_y;
+                break;
+            case bottom_right:
+                blp.leftMargin = btn_offset_x;
+                blp.topMargin = btn_offset_y;
+                break;
+            case center:
+                break;
+            case top_center:
+                blp.bottomMargin = btn_offset_y;
+                break;
+            case top_left:
+                blp.rightMargin = btn_offset_x;
+                blp.bottomMargin = btn_offset_y;
+                break;
+            case top_right:
+                blp.leftMargin = btn_offset_x;
+                blp.bottomMargin = btn_offset_y;
+                break;
+
+        }
 
         close_button.setLayoutParams(blp);
         close_button.setBackgroundColor(Color.TRANSPARENT);
