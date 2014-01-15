@@ -349,6 +349,7 @@ public abstract class AdView extends FrameLayout {
 	}
 
     // Used only by MRAID
+    boolean closing = false;
     ImageButton close_button;
     View oldContent;
     Activity unexpandedActivity;
@@ -366,6 +367,7 @@ public abstract class AdView extends FrameLayout {
 
         }
         expand(w, h, true, null);
+        closing = true;
     }
     protected void expand(int w, int h, boolean custom_close,
                           final MRAIDImplementation caller) {

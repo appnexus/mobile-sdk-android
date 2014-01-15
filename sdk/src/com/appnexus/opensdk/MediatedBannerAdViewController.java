@@ -73,6 +73,9 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
                         currentAd.getHeight(),
                         tp);
                 mediatedDisplayable.setView(viewFromMediatedAdaptor);
+            }else{
+                Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_null_activity));
+                errorCode = RESULT.INTERNAL_ERROR;
             }
         } catch (Exception e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);

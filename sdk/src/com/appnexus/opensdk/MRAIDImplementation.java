@@ -504,6 +504,10 @@ class MRAIDImplementation {
 
         if(!StringUtil.isEmpty(uri)){
             this.owner.loadURLInCorrectBrowser(uri);
+            //Call onAdClicked
+            if(owner.owner.adListener!=null){
+                owner.owner.adListener.onAdClicked(owner.owner);
+            }
         }
     }
 
@@ -598,6 +602,11 @@ class MRAIDImplementation {
                     }else{
                         Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
                     }
+                }
+
+                //Call onAdClicked
+                if(owner.owner.adListener!=null){
+                    owner.owner.adListener.onAdClicked(owner.owner);
                 }
             }
         });

@@ -106,6 +106,7 @@
 	<string formatted="false" name="mediated_owner_null">AdView was null</string>
 	<string formatted="false" name="mediated_request_exception">requestAd threw an exception</string>
 	<string formatted="false" name="mediated_request_error">requestAd threw an error</string>
+	<string formatted="false" name="mediated_request_null_activity">A mediated request was made with null activity parameter</string>
 	<string formatted="false" name="mediated_no_ads">The server responded with ads, but none were valid</string>
 	<string formatted="false" name="fire_cb_requester_null">firing result cb with null requester</string>
 	<string formatted="false" name="result_cb_bad_response">result cb returned a bad response</string>
