@@ -774,7 +774,7 @@ class MRAIDImplementation {
             }
         }
         //If the resized ad is larger than the screen, reject with great prejudice
-        if(w>screenWidth || h>screenHeight){
+        if(w>screenWidth && h>screenHeight){
             this.owner.loadUrl("javascript:mraid.util.errorEvent('Resize called with resizeProperties larger than the screen.', 'mraid.resize()')");
             return;
         }

@@ -130,6 +130,9 @@ public abstract class AdView extends FrameLayout {
 				Clog.getString(R.string.appid, Settings.getSettings().app_id));
 
 		Clog.v(Clog.baseLogTag, Clog.getString(R.string.making_adman));
+
+        // Some AdMob creatives won't load unless we set their parent's viewgroup's padding to 0-0-0-0
+        setPadding(0,0,0,0);
 		// Make an AdFetcher - Continue the creation pass
 		mAdFetcher = new AdFetcher(this);
 		// Load user variables only if attrs isn't null
