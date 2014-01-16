@@ -172,7 +172,7 @@ class AdFetcher implements AdRequester {
             }
 
             // Update last fetch time once
-            if((int) (System.currentTimeMillis() - fetcher.lastFetchTime)>0){
+            if(fetcher.lastFetchTime!=-1){
                 Clog.d(Clog.baseLogTag,
                         Clog.getString(
                                 R.string.new_ad_since,
