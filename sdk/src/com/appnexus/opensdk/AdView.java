@@ -23,6 +23,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
@@ -454,7 +455,7 @@ public abstract class AdView extends FrameLayout {
     }
 
 
-    int buttonNormalWidth = 0;
+    int buttonPxSideLength = 0;
 
     public void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean,
                        final MRAIDImplementation caller) {
@@ -466,36 +467,40 @@ public abstract class AdView extends FrameLayout {
                 getLayoutParams().height = h;
         }
         // Add a stock close_button button to the top right corner
-        if(close_button!=null && ((ViewGroup)close_button.getParent())!=null){
+        if(close_button!=null && close_button.getParent()!=null){
             ((ViewGroup)close_button.getParent()).removeView(close_button);
             close_button.setVisibility(GONE);
         }
 
-        if(!(buttonNormalWidth >0)){
+        if(!(buttonPxSideLength >0)){
             final float scale = caller.owner.getContext().getResources().getDisplayMetrics().density;
-            buttonNormalWidth = (int)(50*scale);
+            buttonPxSideLength = (int)(50*scale);
         }
 
         close_button = new ImageButton(this.getContext()){
 
             @Override
             public void onLayout(boolean changed, int left, int top, int right, int bottom){
-                int i[] = new int[2];
-                this.getLocationOnScreen(i);
-                float scale = caller.owner.getContext().getResources().getDisplayMetrics().density;
+                int close_button_loc[] = new int[2];
+                this.getLocationOnScreen(close_button_loc);
 
                 //Determine container width and height
                 Point container_size;
                 Point screen_size=new Point(0,0);
-                Activity a;
+                Activity a = null;
                 boolean useScreenSizeForAddedAccuracy = true;
                 try{
                     a = (Activity)caller.owner.getContext();
-                    a.getWindowManager().getDefaultDisplay().getSize(screen_size);
                 }catch (ClassCastException e){
                     useScreenSizeForAddedAccuracy = false;
                 }
 
+                if(Build.VERSION.SDK_INT>=13 && useScreenSizeForAddedAccuracy){
+                    a.getWindowManager().getDefaultDisplay().getSize(screen_size);
+                }else if(useScreenSizeForAddedAccuracy){
+                    screen_size.x = a.getWindowManager().getDefaultDisplay().getWidth();
+                    screen_size.y = a.getWindowManager().getDefaultDisplay().getHeight();
+                }
 
                 int adviewLoc[] = new int[2];
                 if(AdView.this instanceof InterstitialAdView){
@@ -509,20 +514,20 @@ public abstract class AdView extends FrameLayout {
                     container_size = new Point(AdView.this.getMeasuredWidth(),
                                                   AdView.this.getMeasuredHeight());
                 }
-                int max_x = (container_size.x-buttonNormalWidth);
-                int max_y = (container_size.y-buttonNormalWidth);
+                int max_x = (container_size.x- buttonPxSideLength);
+                int max_y = (container_size.y- buttonPxSideLength);
                 int min_x = 0;
                 int min_y = 0;
 
                 if(useScreenSizeForAddedAccuracy){
-                    max_x = adviewLoc[0]+Math.min(screen_size.x, container_size.x)-buttonNormalWidth;
-                    max_y = adviewLoc[1]+Math.min(screen_size.y, container_size.y)-buttonNormalWidth;
+                    max_x = adviewLoc[0]+Math.min(screen_size.x, container_size.x)- buttonPxSideLength;
+                    max_y = adviewLoc[1]+Math.min(screen_size.y, container_size.y)- buttonPxSideLength;
                     min_x = adviewLoc[0];
                     min_y = adviewLoc[1];
                 }
 
-                if(i[0]<min_x || i[0]> max_x ||
-                   i[1]<min_y || i[1]> max_y){
+                if(close_button_loc[0]<min_x || close_button_loc[0]> max_x ||
+                   close_button_loc[1]<min_y || close_button_loc[1]> max_y){
                     //Button is off screen, and must be relocated on screen
                     FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(this.getLayoutParams());
                     lp.topMargin = 0;
@@ -543,17 +548,13 @@ public abstract class AdView extends FrameLayout {
             }
         };
 
-        int grav;
-
-        grav = Gravity.CENTER;
-
         FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
-                buttonNormalWidth,
-                buttonNormalWidth, grav);
+                buttonPxSideLength,
+                buttonPxSideLength, Gravity.CENTER);
 
         //Offsets from dead center
-        int btn_offset_y= h/2-buttonNormalWidth/2;
-        int btn_offset_x = w/2-buttonNormalWidth/2;
+        int btn_offset_y= h/2- buttonPxSideLength /2;
+        int btn_offset_x = w/2- buttonPxSideLength /2;
         switch (custom_close_position) {
             case bottom_center:
                 blp.topMargin = btn_offset_y;
