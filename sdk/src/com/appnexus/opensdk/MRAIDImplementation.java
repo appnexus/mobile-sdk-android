@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+
+import android.view.View;
 import com.appnexus.opensdk.utils.StringUtil;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -219,8 +221,15 @@ class MRAIDImplementation {
                     int[] location = new int[2];
                     owner.getLocationOnScreen(location);
 
+                    owner.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+
                     int height = owner.getMeasuredHeight();
                     int width = owner.getMeasuredWidth();
+
+                    //Convert to DPs
+                    final float scale = owner.getContext().getResources().getDisplayMetrics().density;
+                    height = (int)((height/scale)+0.5f);
+                    width = (int)((width/scale)+0.5f);
 
                     view.loadUrl("javascript:window.mraid.util.setDefaultPosition(" + location[0] + ", " + location[1] + ", " + width + ", " + height + ")");
                 }
@@ -249,6 +258,11 @@ class MRAIDImplementation {
                     int contentViewTop = a.getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
                     height -= contentViewTop;
 
+                    //Convert to DPs
+                    final float scale = owner.getContext().getResources().getDisplayMetrics().density;
+                    height = (int)((height/scale)+0.5f);
+                    width = (int)((width/scale)+0.5f);
+
                     view.loadUrl("javascript:window.mraid.util.setMaxSize(" + width + ", " + height + ")");
                 }
 
@@ -272,7 +286,12 @@ class MRAIDImplementation {
                         height = d.getHeight();
                     }
 
-                    view.loadUrl("javascript:window.mraid.util.setScreenSize("+width + ", " + height + ")");
+                    //Convert to DPs
+                    final float scale = owner.getContext().getResources().getDisplayMetrics().density;
+                    height = (int)((height/scale)+0.5f);
+                    width = (int)((width/scale)+0.5f);
+
+                    view.loadUrl("javascript:window.mraid.util.setScreenSize("+ width + ", " + height + ")");
                 }
             }
 
@@ -359,6 +378,11 @@ class MRAIDImplementation {
     protected void setCurrentPosition(int left, int top, int right, int bottom, WebView view) {
         int width = right-left;
         int height = bottom-top;
+
+        //Convert to DPs
+        final float scale = owner.getContext().getResources().getDisplayMetrics().density;
+        height = (int)((height/scale)+0.5f);
+        width = (int)((width/scale)+0.5f);
 
         if(readyFired){
             owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent(" + width + "," + height + ")");
