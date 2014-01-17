@@ -16,19 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-
-import android.view.View;
-import com.appnexus.opensdk.utils.StringUtil;
-import org.apache.http.message.BasicNameValuePair;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -51,18 +38,19 @@ import android.provider.CalendarContract;
 import android.util.Base64;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.View;
 import android.view.Window;
-import android.webkit.ConsoleMessage;
-import android.webkit.JsResult;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.webkit.*;
 import android.widget.Toast;
-
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Hex;
+import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.W3CEvent;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.io.*;
+import java.net.URLDecoder;
+import java.util.ArrayList;
 
 @SuppressLint("InlinedApi")
 class MRAIDImplementation {
@@ -426,6 +414,8 @@ class MRAIDImplementation {
             int height = owner.getLayoutParams().height;
             boolean useCustomClose = false;
             String uri = null;
+            boolean allowOrientationChange = true;
+            AdActivity.OrientationEnum forceOrientation = AdActivity.OrientationEnum.none;
             for (BasicNameValuePair bnvp : parameters) {
                 if (bnvp.getName().equals("w"))
                     try {
@@ -443,6 +433,10 @@ class MRAIDImplementation {
                     useCustomClose = Boolean.parseBoolean(bnvp.getValue());
                 else if (bnvp.getName().equals("url")){
                     uri = Uri.decode(bnvp.getValue());
+                } else if (bnvp.getName().equals("allowOrientationChange")) {
+                    allowOrientationChange = Boolean.parseBoolean(bnvp.getValue());
+                } else if (bnvp.getName().equals("forceOrientation")) {
+                    forceOrientation = parseForceOrientation(bnvp.getValue());
                 }
             }
 
@@ -460,8 +454,16 @@ class MRAIDImplementation {
                 this.owner.owner.adListener.onAdExpanded(this.owner.owner);
             }
 
-            // Lock the orientation
-            AdActivity.lockOrientation((Activity) this.owner.getContext());
+            if (forceOrientation != AdActivity.OrientationEnum.none) {
+                AdActivity.setOrientation((Activity) owner.getContext(), forceOrientation);
+            }
+
+            if (allowOrientationChange) {
+                AdActivity.unlockOrientation((Activity) this.owner.getContext());
+            } else if (forceOrientation == AdActivity.OrientationEnum.none) {
+                // if forceOrientation was not none, it would have locked the orientation already
+                AdActivity.lockOrientation((Activity) this.owner.getContext());
+            }
 
         } else {
             owner.show();
@@ -704,6 +706,15 @@ class MRAIDImplementation {
 
     }
 
+    private AdActivity.OrientationEnum parseForceOrientation(String value) {
+        AdActivity.OrientationEnum orientation = AdActivity.OrientationEnum.none;
+        if (value.equals("landscape")) {
+            orientation = AdActivity.OrientationEnum.landscape;
+        } else if (value.equals("portrait")) {
+            orientation = AdActivity.OrientationEnum.portrait;
+        } // default is none anyway, so no need to check
+        return orientation;
+    }
 
     private void setOrientationProperties(ArrayList<BasicNameValuePair> parameters) {
         boolean allow_orientation_change = true;
@@ -713,27 +724,20 @@ class MRAIDImplementation {
             if (bnvp.getName().equals("allow_orientation_change")) {
                 allow_orientation_change = Boolean.parseBoolean(bnvp.getValue());
             } else if (bnvp.getName().equals("force_orientation")) {
-                String val = bnvp.getValue();
-                if(val.equals("landscape")){
-                    orientation = AdActivity.OrientationEnum.landscape;
-                }else if(val.equals("portrait")){
-                    orientation = AdActivity.OrientationEnum.portrait;
-                }else{
-                    orientation = AdActivity.OrientationEnum.none;
-                }
+                orientation = parseForceOrientation(bnvp.getValue());
             }
         }
 
-        if (!allow_orientation_change) {
-            AdActivity.setOrientation((Activity) owner.getContext(), AdActivity.OrientationEnum.none);
-            AdActivity.setOrientation((Activity) owner.getContext(), orientation);
-        } else {
-            AdActivity.setOrientation((Activity) owner.getContext(), AdActivity.OrientationEnum.none);
+        // orientationProperties only affects expanded state
+        if (expanded) {
+            if (allow_orientation_change) {
+                AdActivity.unlockOrientation((Activity) this.owner.getContext());
+            } else {
+                AdActivity.lockOrientation((Activity) this.owner.getContext());
+            }
         }
 
         Clog.d(Clog.mraidLogTag, Clog.getString(R.string.set_orientation_properties, allow_orientation_change, orientation.ordinal()));
-
-
     }
 
     public enum CUSTOM_CLOSE_POSITION {
