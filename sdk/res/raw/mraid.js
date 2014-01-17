@@ -128,8 +128,8 @@
             +"&h="+mraid.getExpandProperties().height
             +"&useCustomClose="+mraid.getExpandProperties().useCustomClose
             +(url!=null ? "&url="+url:"")
-            +"&allowOrientationChange="+orientation_properties.allowOrientationChange
-            +"&forceOrientation="+orientation_properties.forceOrientation);
+            +"&allow_orientation_change="+orientation_properties.allowOrientationChange
+            +"&force_orientation="+orientation_properties.forceOrientation);
             break;
 		case 'expanded':
 			mraid.util.errorEvent("mraid.expand() called while state is 'expanded'.", "mraid.expand()");

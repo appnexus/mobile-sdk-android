@@ -433,9 +433,9 @@ class MRAIDImplementation {
                     useCustomClose = Boolean.parseBoolean(bnvp.getValue());
                 else if (bnvp.getName().equals("url")){
                     uri = Uri.decode(bnvp.getValue());
-                } else if (bnvp.getName().equals("allowOrientationChange")) {
+                } else if (bnvp.getName().equals("allow_orientation_change")) {
                     allowOrientationChange = Boolean.parseBoolean(bnvp.getValue());
-                } else if (bnvp.getName().equals("forceOrientation")) {
+                } else if (bnvp.getName().equals("force_orientation")) {
                     forceOrientation = parseForceOrientation(bnvp.getValue());
                 }
             }
