@@ -455,14 +455,14 @@ class MRAIDImplementation {
             }
 
             if (forceOrientation != AdActivity.OrientationEnum.none) {
-                AdActivity.setOrientation((Activity) owner.getContext(), forceOrientation);
+                AdActivity.lockToMRAIDOrientation((Activity) owner.getContext(), forceOrientation);
             }
 
             if (allowOrientationChange) {
                 AdActivity.unlockOrientation((Activity) this.owner.getContext());
             } else if (forceOrientation == AdActivity.OrientationEnum.none) {
                 // if forceOrientation was not none, it would have locked the orientation already
-                AdActivity.lockOrientation((Activity) this.owner.getContext());
+                AdActivity.lockToCurrentOrientation((Activity) this.owner.getContext());
             }
 
         } else {
@@ -733,7 +733,7 @@ class MRAIDImplementation {
             if (allow_orientation_change) {
                 AdActivity.unlockOrientation((Activity) this.owner.getContext());
             } else {
-                AdActivity.lockOrientation((Activity) this.owner.getContext());
+                AdActivity.lockToCurrentOrientation((Activity) this.owner.getContext());
             }
         }
 

@@ -79,7 +79,7 @@ public class AdActivity extends Activity {
         layout = new FrameLayout(this);
 
         // Lock the orientation
-        AdActivity.lockOrientation(this);
+        AdActivity.lockToCurrentOrientation(this);
 
         setContentView(layout);
 
@@ -198,7 +198,7 @@ public class AdActivity extends Activity {
     }
 
     @SuppressLint({"InlinedApi", "DefaultLocale"})
-    static void lockOrientation(Activity a) {
+    static void lockToCurrentOrientation(Activity a) {
         final int orientation = a.getResources().getConfiguration().orientation;
         setOrientation(a, orientation);
     }
@@ -264,27 +264,20 @@ public class AdActivity extends Activity {
     }
 
     @SuppressLint({"InlinedApi", "DefaultLocale"})
-    protected static void setOrientation(Activity a, OrientationEnum e) {
+    protected static void lockToMRAIDOrientation(Activity a, OrientationEnum e) {
         int orientation = a.getResources().getConfiguration().orientation;
 
         switch (e) {
+            // none is currently never passed
             case none:
                 a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                 return;
             case landscape:
-                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    break;
-                } else {
-                    orientation = Configuration.ORIENTATION_LANDSCAPE;
-                    break;
-                }
+                orientation = Configuration.ORIENTATION_LANDSCAPE;
+                break;
             case portrait:
-                if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    break;
-                } else {
-                    orientation = Configuration.ORIENTATION_PORTRAIT;
-                    break;
-                }
+                orientation = Configuration.ORIENTATION_PORTRAIT;
+                break;
         }
 
         setOrientation(a, orientation);
