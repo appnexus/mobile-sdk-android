@@ -17,92 +17,71 @@
 package com.appnexus.opensdk;
 
 import android.app.Activity;
-
-import com.google.ads.Ad;
-import com.google.ads.AdListener;
-import com.google.ads.AdRequest.ErrorCode;
+import com.appnexus.opensdk.utils.Clog;
 import com.google.ads.mediation.MediationAdRequest;
 import com.google.ads.mediation.customevent.CustomEventInterstitial;
 import com.google.ads.mediation.customevent.CustomEventInterstitialListener;
 
-public class AdMobMediationInterstitial implements CustomEventInterstitial,
-		AdListener, com.appnexus.opensdk.AdListener {
-	InterstitialAdView iav=null;
-	CustomEventInterstitialListener listener;
+public class AdMobMediationInterstitial implements CustomEventInterstitial, com.appnexus.opensdk.AdListener {
+    InterstitialAdView iav;
+    CustomEventInterstitialListener listener;
 
-	@Override
-	public void destroy() {
-		if(iav!=null) iav.destroy();
-	}
+    @Override
+    public void requestInterstitialAd(CustomEventInterstitialListener listener,
+                                      Activity activity, String label, String placement_id, MediationAdRequest adRequest,
+                                      Object extra) {
+        Clog.d(Clog.mediationLogTag, "Initializing ANInterstitial via AdMob SDK");
+        this.listener = listener;
 
-	@Override
-	public void onDismissScreen(Ad arg0) {
-		if(listener!=null) listener.onDismissScreen();
-	}
+        iav = new InterstitialAdView(activity);
+        iav.setPlacementID(placement_id);
+        iav.setShouldServePSAs(false);
+        iav.setAdListener(this);
 
-	@Override
-	public void onFailedToReceiveAd(Ad arg0, ErrorCode arg1) {
-		if(listener!=null) listener.onFailedToReceiveAd();
-	}
+        Clog.d(Clog.mediationLogTag, "Fetch ANInterstitial");
+        iav.loadAd();
+    }
 
-	@Override
-	public void onLeaveApplication(Ad arg0) {
-		if(listener!=null) listener.onLeaveApplication();
-	}
+    @Override
+    public void destroy() {
+        if (iav != null) iav.destroy();
+    }
 
-	@Override
-	public void onPresentScreen(Ad arg0) {
-		if(listener!=null) listener.onPresentScreen();
-	}
+    @Override
+    public void showInterstitial() {
+        if (iav != null) iav.show();
+    }
 
-	@Override
-	public void onReceiveAd(Ad arg0) {
-		if(listener!=null) listener.onReceivedAd();
-	}
+    // AppNexus SDK events
 
-	@Override
-	public void requestInterstitialAd(CustomEventInterstitialListener listener,
-			Activity activity, String label, String placement_id, MediationAdRequest adRequest,
-			Object extra) {
-		iav=new InterstitialAdView(activity);
-		iav.setPlacementID(placement_id);
-		iav.setAdListener(this);
-		iav.setShouldServePSAs(false);
-		this.listener=listener;
-		iav.loadAd();
-	}
+    @Override
+    public void onAdLoaded(AdView adView) {
+        Clog.d(Clog.mediationLogTag, "ANInterstitial loaded successfully");
+        if (listener != null) listener.onReceivedAd();
+    }
 
-	@Override
-	public void showInterstitial() {
-		if(iav!=null) iav.show();
-	}
+    @Override
+    public void onAdRequestFailed(AdView adView) {
+        Clog.d(Clog.mediationLogTag, "ANInterstitial failed to load");
+        if (listener != null) listener.onFailedToReceiveAd();
+    }
 
-	@Override
-	public void onAdLoaded(AdView adView) {
-		onReceiveAd(null);
-	}
+    @Override
+    public void onAdExpanded(AdView adView) {
+        Clog.d(Clog.mediationLogTag, "ANInterstitial expanded");
+        if (listener != null) listener.onPresentScreen();
+    }
 
-	@Override
-	public void onAdRequestFailed(AdView adView) {
-		onFailedToReceiveAd(null, null);
-	}
+    @Override
+    public void onAdCollapsed(AdView adView) {
+        Clog.d(Clog.mediationLogTag, "ANInterstitial collapsed");
+        if (listener != null) listener.onDismissScreen();
+    }
 
-	@Override
-	public void onAdExpanded(AdView adView) {
-		onPresentScreen(null);
-		
-	}
-
-	@Override
-	public void onAdCollapsed(AdView adView) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onAdClicked(AdView adView) {
-		onLeaveApplication(null);
-		
-	}
+    @Override
+    public void onAdClicked(AdView adView) {
+        Clog.d(Clog.mediationLogTag, "ANInterstitial was clicked");
+        if (listener != null) listener.onLeaveApplication();
+    }
 
 }

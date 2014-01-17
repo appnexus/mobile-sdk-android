@@ -62,22 +62,13 @@ public class DFPBanner implements MediatedBannerAdView, AdListener {
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String adUnitID,
                           int width, int height, TargetingParameters targetingParameters) {
 
-        if (mBC == null) {
-            Clog.e(Clog.mediationLogTag, "DFPBanner - requestAd called with null controller");
-            return null;
-        }
-
-        if (activity == null) {
-            Clog.e(Clog.mediationLogTag, "DFPBanner - requestAd called with null activity");
-            return null;
-        }
         Clog.d(Clog.mediationLogTag, String.format("DFPBanner - requesting an ad: [%s, %s, %dx%d]", parameter, adUnitID, width, height));
 
         DFBBannerSSParameters ssparm = new DFBBannerSSParameters(parameter);
         AdSize adSize = ssparm.isSmartBanner ? AdSize.SMART_BANNER : new AdSize(width,height);
 
         DfpAdView v ;
-        if (ssparm.isSwipable) {
+        if (ssparm.isSwipeable) {
             v = new SwipeableDfpAdView(activity, adSize, adUnitID);
         } else {
             v = new DfpAdView(activity, adSize, adUnitID);
@@ -175,8 +166,8 @@ public class DFPBanner implements MediatedBannerAdView, AdListener {
     }
 
     /**
-     * Class to extract optional server side parameters from passed in json string. 
-     * Supports 
+     * Class to extract optional server side parameters from passed in json string.
+     * Supports
      * {
      *  "swipeable" : 1,
      *  "smartbanner" : 1
@@ -207,7 +198,7 @@ public class DFPBanner implements MediatedBannerAdView, AdListener {
                 }
 
                 try {
-                    isSwipable = req.getBoolean(SWIPEABLE);
+                    isSwipeable = req.getBoolean(SWIPEABLE);
                 }   catch (JSONException e) {}
                 try {
                     isSmartBanner = req.getBoolean(SMARTBANNER);
@@ -217,7 +208,7 @@ public class DFPBanner implements MediatedBannerAdView, AdListener {
         }
 
 
-        public boolean isSwipable;
+        public boolean isSwipeable;
         public String test_device;
         public boolean isSmartBanner;
 

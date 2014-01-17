@@ -26,13 +26,10 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Pair;
-import android.view.Gravity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
@@ -463,7 +460,7 @@ public class InterstitialAdView extends AdView {
 
     @Override
     boolean isMRAIDExpanded() {
-        return mraid_expand;
+        return mraid_changing_size_or_visibility;
     }
 
     @Override

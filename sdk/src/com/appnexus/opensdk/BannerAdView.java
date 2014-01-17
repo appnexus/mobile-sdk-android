@@ -489,8 +489,6 @@ public class BannerAdView extends AdView {
         this.shouldReloadOnResume = shouldReloadOnResume;
     }
 
-    private boolean requesting_visible = true;
-
 
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
@@ -504,13 +502,11 @@ public class BannerAdView extends AdView {
                 receiversRegistered = true;
             }
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.unhidden));
-            if (!isMRAIDExpanded() && mAdFetcher != null
-                    && (!requesting_visible || running || shouldReloadOnResume || auto_refresh))
+            if (!closing && !mraid_changing_size_or_visibility && !isMRAIDExpanded() && mAdFetcher != null
+                    && (running || shouldReloadOnResume || auto_refresh)){
                 start();
-            else {
-                // Were' not displaying the adview, the system is
-                requesting_visible = false;
             }
+            closing = false;
 
             if (getChildAt(0) instanceof WebView) {
                 WebView webView = (WebView) getChildAt(0);
@@ -541,7 +537,6 @@ public class BannerAdView extends AdView {
     @Override
     protected void unhide() {
         super.unhide();
-        this.requesting_visible = true;
     }
 
     @Override

@@ -44,12 +44,11 @@ class AdWebView extends WebView implements Displayable {
     public AdWebView(AdView owner) {
         super(owner.getContext());
         destination = owner;
+        setupSettings();
         setup();
     }
 
-    @SuppressWarnings("deprecation")
-	@SuppressLint("SetJavaScriptEnabled")
-    private void setup() {
+    protected void setupSettings(){
         Settings.getSettings().ua = this.getSettings().getUserAgentString();
         this.getSettings().setJavaScriptEnabled(true);
         this.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
@@ -69,6 +68,11 @@ class AdWebView extends WebView implements Displayable {
 
         setBackgroundColor(Color.TRANSPARENT);
         setScrollBarStyle(WebView.SCROLLBARS_INSIDE_OVERLAY);
+    }
+
+    @SuppressWarnings("deprecation")
+	@SuppressLint("SetJavaScriptEnabled")
+    protected void setup() {
 
         setWebChromeClient(new VideoEnabledWebChromeClient((Activity) destination.getContext()));
 
@@ -94,54 +98,86 @@ class AdWebView extends WebView implements Displayable {
                 if (url.startsWith("javascript:") || url.startsWith("mraid:"))
                     return false;
 
-                Intent intent;
-                // open the in-app browser
-                if (!AdWebView.this.destination.getOpensNativeBrowser() && url.startsWith("http")) {
-                    Clog.d(Clog.baseLogTag,
-                            Clog.getString(R.string.opening_inapp));
-                    intent = new Intent(AdWebView.this.destination.getContext(),
-                            BrowserActivity.class);
-                    intent.putExtra("url", url);
-                    if (AdWebView.this.destination.getBrowserStyle() != null) {
-                        String i = "" + this.hashCode();
-                        intent.putExtra("bridgeid", i);
-                        AdView.BrowserStyle.bridge
-                                .add(new Pair<String, BrowserStyle>(i,
-                                        AdWebView.this.destination.getBrowserStyle()));
-                    }
-                } else {
-                    Clog.d(Clog.baseLogTag,
-                            Clog.getString(R.string.opening_native));
-                    intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(url));
-                }
+                loadURLInCorrectBrowser(url);
 
-                try {
-                    AdWebView.this.destination.getContext().startActivity(intent);
-                } catch (ActivityNotFoundException e) {
-                    Clog.w(Clog.baseLogTag,
-                            Clog.getString(R.string.opening_url_failed, url));
-                }
-
-                // If a listener is defined, call its onClicked
-                if (AdWebView.this.destination.adListener != null) {
-                    AdWebView.this.destination.adListener
-                            .onAdClicked(AdWebView.this.destination);
-                }
-
-                // If it's an IAV, prevent it from closing
-                if (AdWebView.this.destination instanceof InterstitialAdView) {
-                    InterstitialAdView iav = (InterstitialAdView) AdWebView.this.destination;
-                    if (iav != null) {
-                        iav.interacted();
-                    }
-                }
+                fireAdClicked();
 
                 return true;
             }
 
+            @Override
+            public void onLoadResource (WebView view, String url) {
+                if (url.startsWith("http")) {
+                    if (getHitTestResult() == null) {
+                        return;
+                    }
+
+                    switch(getHitTestResult().getType()){
+                        default:
+                            break;
+                        case HitTestResult.ANCHOR_TYPE:
+                        case HitTestResult.IMAGE_ANCHOR_TYPE:
+                        case HitTestResult.SRC_ANCHOR_TYPE:
+                        case HitTestResult.SRC_IMAGE_ANCHOR_TYPE:
+
+                            loadURLInCorrectBrowser(url);
+                            view.stopLoading();
+
+                            fireAdClicked();
+
+                            break;
+                    }
+                }
+            }
         });
 
+    }
+
+    private void fireAdClicked(){
+        // If a listener is defined, call its onClicked
+        if (AdWebView.this.destination.adListener != null) {
+            AdWebView.this.destination.adListener
+                    .onAdClicked(AdWebView.this.destination);
+        }
+
+        // If it's an IAV, prevent it from closing
+        if (AdWebView.this.destination instanceof InterstitialAdView) {
+            InterstitialAdView iav = (InterstitialAdView) AdWebView.this.destination;
+            if (iav != null) {
+                iav.interacted();
+            }
+        }
+    }
+
+    protected void loadURLInCorrectBrowser(String url){
+        Intent intent;
+        // open the in-app browser
+        if (!AdWebView.this.destination.getOpensNativeBrowser() && url.startsWith("http")) {
+            Clog.d(Clog.baseLogTag,
+                    Clog.getString(R.string.opening_inapp));
+            intent = new Intent(AdWebView.this.destination.getContext(),
+                    BrowserActivity.class);
+            intent.putExtra("url", url);
+            if (AdWebView.this.destination.getBrowserStyle() != null) {
+                String i = "" + super.hashCode();
+                intent.putExtra("bridgeid", i);
+                AdView.BrowserStyle.bridge
+                        .add(new Pair<String, BrowserStyle>(i,
+                                AdWebView.this.destination.getBrowserStyle()));
+            }
+        } else {
+            Clog.d(Clog.baseLogTag,
+                    Clog.getString(R.string.opening_native));
+            intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(url));
+        }
+
+        try {
+            AdWebView.this.destination.getContext().startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Clog.w(Clog.baseLogTag,
+                    Clog.getString(R.string.opening_url_failed, url));
+        }
     }
 
     public void loadAd(AdResponse ad) {

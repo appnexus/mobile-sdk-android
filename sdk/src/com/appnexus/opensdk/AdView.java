@@ -20,8 +20,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
@@ -63,7 +65,7 @@ public abstract class AdView extends FrameLayout {
 	GENDER gender = GENDER.UNKNOWN;
 	ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
     private Location location = null;
-	boolean mraid_expand = false;
+	boolean mraid_changing_size_or_visibility = false;
 	AdListener adListener;
 	private BrowserStyle browserStyle;
 	private LinkedList<MediatedAd> mediatedAds;
@@ -128,6 +130,9 @@ public abstract class AdView extends FrameLayout {
 				Clog.getString(R.string.appid, Settings.getSettings().app_id));
 
 		Clog.v(Clog.baseLogTag, Clog.getString(R.string.making_adman));
+
+        // Some AdMob creatives won't load unless we set their parent's viewgroup's padding to 0-0-0-0
+        setPadding(0,0,0,0);
 		// Make an AdFetcher - Continue the creation pass
 		mAdFetcher = new AdFetcher(this);
 		// Load user variables only if attrs isn't null
@@ -145,8 +150,8 @@ public abstract class AdView extends FrameLayout {
 	protected void onLayout(boolean changed, int left, int top, int right,
 			int bottom) {
 		super.onLayout(changed, left, top, right, bottom);
-		if (mraid_expand) {
-			mraid_expand = false;
+		if (mraid_changing_size_or_visibility) {
+			mraid_changing_size_or_visibility = false;
 			return;
 		}
 		if (!measured || changed) {
@@ -348,6 +353,7 @@ public abstract class AdView extends FrameLayout {
 	}
 
     // Used only by MRAID
+    boolean closing = false;
     ImageButton close_button;
     View oldContent;
     Activity unexpandedActivity;
@@ -365,10 +371,11 @@ public abstract class AdView extends FrameLayout {
 
         }
         expand(w, h, true, null);
+        closing = true;
     }
     protected void expand(int w, int h, boolean custom_close,
                           final MRAIDImplementation caller) {
-        mraid_expand = true;
+        mraid_changing_size_or_visibility = true;
 
         if (getLayoutParams() != null) {
             if (getLayoutParams().width > 0)
@@ -429,8 +436,14 @@ public abstract class AdView extends FrameLayout {
             if(caller!=null && caller.owner.isFullScreen){
                 //Make a new framelayout to contain webview and button
                 FrameLayout fslayout = new FrameLayout(this.getContext());
-                if(this.getChildCount()>0){
-                    this.removeAllViews();
+
+                if (this instanceof InterstitialAdView) {
+                    AdActivity aa = AdActivity.getCurrent_ad_activity();
+                    aa.layout.removeAllViews();
+                } else {
+                    if(this.getChildCount()>0){
+                        this.removeAllViews();
+                    }
                 }
                 fslayout.addView(caller.owner);
                 if (this instanceof InterstitialAdView) {
@@ -444,9 +457,12 @@ public abstract class AdView extends FrameLayout {
         }
     }
 
+
+    int buttonPxSideLength = 0;
+
     public void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean,
                        final MRAIDImplementation caller) {
-        mraid_expand = true;
+        mraid_changing_size_or_visibility = true;
         if (getLayoutParams() != null) {
             if (getLayoutParams().width > 0)
                 getLayoutParams().width = w;
@@ -454,47 +470,122 @@ public abstract class AdView extends FrameLayout {
                 getLayoutParams().height = h;
         }
         // Add a stock close_button button to the top right corner
-        if(close_button!=null && ((ViewGroup)close_button.getParent())!=null){
+        if(close_button!=null && close_button.getParent()!=null){
             ((ViewGroup)close_button.getParent()).removeView(close_button);
             close_button.setVisibility(GONE);
         }
-        close_button = new ImageButton(this.getContext());
-        close_button.setImageDrawable(getResources().getDrawable(
-                android.R.drawable.ic_menu_close_clear_cancel));
 
-        int grav = Gravity.RIGHT | Gravity.TOP;
-        switch (custom_close_position) {
-            case bottom_center:
-                grav = Gravity.BOTTOM | Gravity.CENTER;
-                break;
-            case bottom_left:
-                grav = Gravity.BOTTOM | Gravity.LEFT;
-                break;
-            case bottom_right:
-                grav = Gravity.BOTTOM | Gravity.RIGHT;
-                break;
-            case center:
-                grav = Gravity.CENTER;
-                break;
-            case top_center:
-                grav = Gravity.TOP | Gravity.CENTER;
-                break;
-            case top_left:
-                grav = Gravity.TOP | Gravity.LEFT;
-                break;
-            case top_right:
-                grav = Gravity.TOP | Gravity.RIGHT;
-                break;
-
+        if(!(buttonPxSideLength >0)){
+            final float scale = caller.owner.getContext().getResources().getDisplayMetrics().density;
+            buttonPxSideLength = (int)(50*scale);
         }
+
+        close_button = new ImageButton(this.getContext()){
+
+            @Override
+            public void onLayout(boolean changed, int left, int top, int right, int bottom){
+                int close_button_loc[] = new int[2];
+                this.getLocationOnScreen(close_button_loc);
+
+                //Determine container width and height
+                Point container_size;
+                Point screen_size=new Point(0,0);
+                Activity a = null;
+                boolean useScreenSizeForAddedAccuracy = true;
+                try{
+                    a = (Activity)caller.owner.getContext();
+                }catch (ClassCastException e){
+                    useScreenSizeForAddedAccuracy = false;
+                }
+
+                if(Build.VERSION.SDK_INT>=13 && useScreenSizeForAddedAccuracy){
+                    a.getWindowManager().getDefaultDisplay().getSize(screen_size);
+                }else if(useScreenSizeForAddedAccuracy){
+                    screen_size.x = a.getWindowManager().getDefaultDisplay().getWidth();
+                    screen_size.y = a.getWindowManager().getDefaultDisplay().getHeight();
+                }
+
+                int adviewLoc[] = new int[2];
+                if(AdView.this instanceof InterstitialAdView){
+                    InterstitialAdView.INTERSTITIALADVIEW_TO_USE.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+                    InterstitialAdView.INTERSTITIALADVIEW_TO_USE.getLocationOnScreen(adviewLoc);
+                    container_size = new Point(InterstitialAdView.INTERSTITIALADVIEW_TO_USE.getMeasuredWidth(),
+                                                  InterstitialAdView.INTERSTITIALADVIEW_TO_USE.getMeasuredHeight());
+                }else{
+                    AdView.this.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+                    AdView.this.getLocationOnScreen(adviewLoc);
+                    container_size = new Point(AdView.this.getMeasuredWidth(),
+                                                  AdView.this.getMeasuredHeight());
+                }
+                int max_x = (container_size.x- buttonPxSideLength);
+                int max_y = (container_size.y- buttonPxSideLength);
+                int min_x = 0;
+                int min_y = 0;
+
+                if(useScreenSizeForAddedAccuracy){
+                    max_x = adviewLoc[0]+Math.min(screen_size.x, container_size.x)- buttonPxSideLength;
+                    max_y = adviewLoc[1]+Math.min(screen_size.y, container_size.y)- buttonPxSideLength;
+                    min_x = adviewLoc[0];
+                    min_y = adviewLoc[1];
+                }
+
+                if(close_button_loc[0]<min_x || close_button_loc[0]> max_x ||
+                   close_button_loc[1]<min_y || close_button_loc[1]> max_y){
+                    //Button is off screen, and must be relocated on screen
+                    FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(this.getLayoutParams());
+                    lp.topMargin = 0;
+                    lp.leftMargin = 0;
+                    lp.rightMargin = 0;
+                    lp.bottomMargin = 0;
+                    lp.gravity = Gravity.TOP  | Gravity.LEFT;
+                    final FrameLayout.LayoutParams flp = new FrameLayout.LayoutParams(lp);
+                    this.post(new Runnable(){
+                        public void run(){
+                            setLayoutParams(flp);
+                        }
+                    });
+
+                    close_button.setImageDrawable(getResources().getDrawable(
+                            android.R.drawable.ic_menu_close_clear_cancel));
+                }
+            }
+        };
 
         FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT, grav);
-        if (this.getChildCount() > 0) {
-            blp.rightMargin = (this.getMeasuredWidth() - this.getChildAt(0)
-                    .getMeasuredWidth()) / 2;
+                buttonPxSideLength,
+                buttonPxSideLength, Gravity.CENTER);
+
+        //Offsets from dead center
+        int btn_offset_y= h/2- buttonPxSideLength /2;
+        int btn_offset_x = w/2- buttonPxSideLength /2;
+        switch (custom_close_position) {
+            case bottom_center:
+                blp.topMargin = btn_offset_y;
+                break;
+            case bottom_left:
+                blp.rightMargin = btn_offset_x;
+                blp.topMargin = btn_offset_y;
+                break;
+            case bottom_right:
+                blp.leftMargin = btn_offset_x;
+                blp.topMargin = btn_offset_y;
+                break;
+            case center:
+                break;
+            case top_center:
+                blp.bottomMargin = btn_offset_y;
+                break;
+            case top_left:
+                blp.rightMargin = btn_offset_x;
+                blp.bottomMargin = btn_offset_y;
+                break;
+            case top_right:
+                blp.leftMargin = btn_offset_x;
+                blp.bottomMargin = btn_offset_y;
+                break;
+
         }
+
         close_button.setLayoutParams(blp);
         close_button.setBackgroundColor(Color.TRANSPARENT);
         close_button.setOnClickListener(new View.OnClickListener() {
@@ -542,7 +633,7 @@ public abstract class AdView extends FrameLayout {
 	 */
 	public AdListener getAdListener() {
 		Clog.d(Clog.publicFunctionsLogTag,
-				Clog.getString(R.string.get_ad_listener));
+                Clog.getString(R.string.get_ad_listener));
 		return adListener;
 	}
 

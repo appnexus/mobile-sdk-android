@@ -48,15 +48,6 @@ public class MillennialMediaBanner implements MediatedBannerAdView {
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
                           int width, int height, TargetingParameters targetingParameters) {
-        if (mBC == null) {
-            Clog.e(Clog.mediationLogTag, "MillennialMediaBanner - requestAd called with null controller");
-            return null;
-        }
-
-        if (activity == null) {
-            Clog.e(Clog.mediationLogTag, "MillennialMediaBanner - requestAd called with null activity");
-            return null;
-        }
         Clog.d(Clog.mediationLogTag, String.format("MillennialMediaBanner - requesting an ad: [%s, %s, %dx%d]", parameter, uid, width, height));
 
         MMSDK.initialize(activity);

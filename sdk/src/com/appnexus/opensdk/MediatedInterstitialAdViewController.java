@@ -54,7 +54,7 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
                 tp = av.getTargetingParameters();
             }
         }catch(ClassCastException e){
-            
+
         } finally {
             if (tp == null) {
                 tp = new TargetingParameters();
@@ -63,11 +63,16 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
 
         startTimeout();
         try {
-            ((MediatedInterstitialAdView) mAV).requestAd(this,
-                    activity,
-                    currentAd.getParam(),
-                    currentAd.getId(),
-                    tp);
+            if(activity!=null){
+                ((MediatedInterstitialAdView) mAV).requestAd(this,
+                        activity,
+                        currentAd.getParam(),
+                        currentAd.getId(),
+                        tp);
+            }else{
+                Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_null_activity));
+                errorCode = RESULT.INTERNAL_ERROR;
+            }
         } catch (Exception e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
             errorCode = RESULT.INVALID_REQUEST;

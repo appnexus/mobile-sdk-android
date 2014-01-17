@@ -22,7 +22,9 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.os.*;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Pair;
 import android.view.*;
 import android.webkit.CookieSyncManager;
@@ -51,7 +53,7 @@ import java.util.Locale;
  */
 public class AdActivity extends Activity {
 
-    FrameLayout layout;
+    protected FrameLayout layout;
     private WebView webView;
     private long now;
     private boolean close_added = false;
@@ -77,7 +79,7 @@ public class AdActivity extends Activity {
         layout = new FrameLayout(this);
 
         // Lock the orientation
-        AdActivity.lockOrientation(this);
+        AdActivity.lockToCurrentOrientation(this);
 
         setContentView(layout);
 
@@ -196,7 +198,16 @@ public class AdActivity extends Activity {
     }
 
     @SuppressLint({"InlinedApi", "DefaultLocale"})
-    static void lockOrientation(Activity a) {
+    static void lockToCurrentOrientation(Activity a) {
+        final int orientation = a.getResources().getConfiguration().orientation;
+        setOrientation(a, orientation);
+    }
+
+    protected static void unlockOrientation(Activity a) {
+        a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    }
+
+    private static void setOrientation(Activity a, int orientation) {
         // Fix an accelerometer bug with kindle fire HDs
         boolean isKindleFireHD = false;
         String device = Settings.getSettings().deviceModel
@@ -209,7 +220,6 @@ public class AdActivity extends Activity {
         }
         Display d = ((WindowManager) a.getSystemService(Context.WINDOW_SERVICE))
                 .getDefaultDisplay();
-        final int orientation = a.getResources().getConfiguration().orientation;
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO) {
@@ -254,77 +264,23 @@ public class AdActivity extends Activity {
     }
 
     @SuppressLint({"InlinedApi", "DefaultLocale"})
-    protected static void setOrientation(Activity a, OrientationEnum e) {
-        // Fix an accelerometer bug with kindle fire HDs
-        boolean isKindleFireHD = false;
-        String device = Settings.getSettings().deviceModel
-                .toUpperCase(Locale.US);
-        String make = Settings.getSettings().deviceMake.toUpperCase(Locale.US);
-        if (make.equals("AMAZON")
-                && (device.equals("KFTT") || device.equals("KFJWI") || device
-                .equals("KFJWA"))) {
-            isKindleFireHD = true;
-        }
-        Display d = ((WindowManager) a.getSystemService(Context.WINDOW_SERVICE))
-                .getDefaultDisplay();
-
+    protected static void lockToMRAIDOrientation(Activity a, OrientationEnum e) {
         int orientation = a.getResources().getConfiguration().orientation;
 
         switch (e) {
+            // none is currently never passed
             case none:
                 a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                 return;
             case landscape:
-                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    break;
-                } else {
-                    orientation = Configuration.ORIENTATION_LANDSCAPE;
-                    break;
-                }
+                orientation = Configuration.ORIENTATION_LANDSCAPE;
+                break;
             case portrait:
-                if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    break;
-                } else {
-                    orientation = Configuration.ORIENTATION_PORTRAIT;
-                    break;
-                }
+                orientation = Configuration.ORIENTATION_PORTRAIT;
+                break;
         }
 
-
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO) {
-                a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            } else {
-                int rotation = d.getRotation();
-                if (rotation == android.view.Surface.ROTATION_90
-                        || rotation == android.view.Surface.ROTATION_180) {
-                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
-                } else {
-                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                }
-            }
-        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO) {
-                a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            } else {
-                int rotation = d.getRotation();
-                if (!isKindleFireHD) {
-                    if (rotation == android.view.Surface.ROTATION_0
-                            || rotation == android.view.Surface.ROTATION_90) {
-                        a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                    } else {
-                        a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-                    }
-                } else {
-                    if (rotation == android.view.Surface.ROTATION_0
-                            || rotation == android.view.Surface.ROTATION_90) {
-                        a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-                    } else {
-                        a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                    }
-                }
-            }
-        }
+        setOrientation(a, orientation);
     }
 
     @Override
