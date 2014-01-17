@@ -441,6 +441,18 @@ class MRAIDImplementation {
             }
 
             owner.expand(width, height, useCustomClose, this);
+
+            if (forceOrientation != AdActivity.OrientationEnum.none) {
+                AdActivity.lockToMRAIDOrientation((Activity) owner.getContext(), forceOrientation);
+            }
+
+            if (allowOrientationChange) {
+                AdActivity.unlockOrientation((Activity) this.owner.getContext());
+            } else if (forceOrientation == AdActivity.OrientationEnum.none) {
+                // if forceOrientation was not none, it would have locked the orientation already
+                AdActivity.lockToCurrentOrientation((Activity) this.owner.getContext());
+            }
+
             // Fire the stateChange to MRAID
             if(!StringUtil.isEmpty(uri)){
                 this.owner.loadUrl(uri);
@@ -452,17 +464,6 @@ class MRAIDImplementation {
             // Fire the AdListener event
             if (this.owner.owner.adListener != null) {
                 this.owner.owner.adListener.onAdExpanded(this.owner.owner);
-            }
-
-            if (forceOrientation != AdActivity.OrientationEnum.none) {
-                AdActivity.lockToMRAIDOrientation((Activity) owner.getContext(), forceOrientation);
-            }
-
-            if (allowOrientationChange) {
-                AdActivity.unlockOrientation((Activity) this.owner.getContext());
-            } else if (forceOrientation == AdActivity.OrientationEnum.none) {
-                // if forceOrientation was not none, it would have locked the orientation already
-                AdActivity.lockToCurrentOrientation((Activity) this.owner.getContext());
             }
 
         } else {
