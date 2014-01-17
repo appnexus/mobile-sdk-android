@@ -204,6 +204,7 @@
     mraid.setResizeProperties=function(props){
         if(props.width<50 || props.height<50){
             mraid.util.errorEvent("Resize properties contains a dimension below the minimum 50 pixels", "mraid.setResizeProperties()");
+            return;
         }
         resize_properties=props;
     }
@@ -221,18 +222,18 @@
     // Takes an object... {allowOrientationChange:true, forceOrientation:"none"};
     mraid.setOrientationProperties=function(properties){
         if (typeof properties === "undefined") {
-            mraid.util.errorEvent("Invalid orientationProperties", "mraid.setOrientationProperties()");
-           return;
-        }
+            mraid.util.errorEvent("Invalid orientationProperties. Setting to default properties", "mraid.setOrientationProperties()");
+            properties={allowOrientationChange:true, forceOrientation:"none"};
+        } else {
+            if(properties.forceOrientation!=='portrait' && properties.forceOrientation!=='landscape' && properties.forceOrientation!=='none' ){
+                mraid.util.errorEvent("Invalid orientationProperties forceOrientation property", "mraid.setOrientationProperties()");
+                properties.forceOrientation='none';
+            }
 
-        if(properties.forceOrientation!=='portrait' && properties.forceOrientation!=='landscape' && properties.forceOrientation!=='none' ){
-            mraid.util.errorEvent("Invalid orientationProperties forceOrientation property", "mraid.setOrientationProperties()");
-            properties.forceOrientation='none';
-        }
-
-        if(typeof properties.allowOrientationChange !== "boolean"){
-            mraid.util.errorEvent("Invalid orientationProperties allowOrientationChange property", "mraid.setOrientationProperties()");
-            properties.allowOrientationChange=true;
+            if(typeof properties.allowOrientationChange !== "boolean"){
+                mraid.util.errorEvent("Invalid orientationProperties allowOrientationChange property", "mraid.setOrientationProperties()");
+                properties.allowOrientationChange=true;
+            }
         }
 
         orientation_properties=properties;
