@@ -16,10 +16,10 @@
  -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.appnexus.opensdkapp"
-          android:versionCode="3"
-          android:versionName="1.2" >
+          android:versionCode="4"
+          android:versionName="1.8">
 
-    <uses-sdk
+<uses-sdk
             android:minSdkVersion="8"
             android:targetSdkVersion="17" />
 
@@ -55,11 +55,5 @@
                   android:theme="@android:style/Theme.Translucent.NoTitleBar"
                   android:configChanges="keyboardHidden|orientation|keyboard" />
     </application>
-
-
-
-    <instrumentation android:name="android.test.InstrumentationTestRunner"
-                     android:targetPackage="com.appnexus.opensdkdemo"
-                     android:label="OpenSDK Unit and Instrumentation Tests" />
 
 </manifest>
