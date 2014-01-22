@@ -57,35 +57,35 @@ import com.appnexus.opensdk.utils.WebviewUtil;
 class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
     private AdView owner;
-    private final AdRequester requester;
-    private AdListener adListener;
+    private final AdRequester requester; // The instance of AdRequester which is filing this request.
     private Context context;
     private String hidmd5;
     private String hidsha1;
     private String devMake;
     private String devModel;
-    private String carrier;
+    private String carrier; // The carrier to pass, such as 'AT&T'
     private boolean firstlaunch;
-    private String lat;
-    private String lon;
+    private String lat; // The latitude to pass.
+    private String lon; // the longitude to pass
     private String locDataAge;
     private String locDataPrecision;
     private String ua;
-    private String orientation;
+    private String orientation; // The device orientation to pass, 'vertical' or 'horizontal'
     private String allowedSizes;
-    private String mcc;
-    private String mnc;
-    private String connection_type;
+    private String mcc; // The MCC to pass.
+    private String mnc; // The MNC to pass.
+    private String connection_type; // The type of connection, 'wifi' or 'wan'
     private String dev_time; // Set at the time of the request
     private String dev_timezone;
     private String language;
-    private final String placementId;
-    private String nativeBrowser;
+    private final String placementId; // The AppNexus placement id to use
+    private String nativeBrowser; // Whether this ad space will open the landing page in the native
+    // browser ('1') or the in-app browser ('0').
     private String psa;
-    private int width = -1;
-    private int height = -1;
-    private int maxWidth = -1;
-    private int maxHeight = -1;
+    private int width = -1; // The width to request, in pixels. -1 for none.
+    private int height = -1; // The height to request, in pixels. -1 for none.
+    private int maxWidth = -1; // The maximum width, if no width is specified.
+    private int maxHeight = -1; // The maximum height, if no height is specified.
     private float reserve = 0.00f;
     private String age;
     private String gender;
@@ -143,78 +143,12 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     private static final AdResponse HTTP_ERROR
             = new AdResponse(true);
 
-    /**
-     * Creates a new AdRequest with the given parameters
-     *
-     * @param requester       The instance of AdRequester which is filing this request.
-     * @param aid             The ANDROID_ID to hash and pass.
-     * @param lat             The lattitude to pass.
-     * @param lon             The longistude to pass.
-     * @param placementId     The AppNexus placement id to use
-     * @param orientation     The device orientation to pass, 'portrait' or 'landscape'
-     * @param carrier         The carrier to pass, such as 'AT&T'
-     * @param width           The width to request, in pixels. -1 for none.
-     * @param height          The height to request, in pixels. -1 for none.
-     * @param maxWidth        The maximum width, if no width is specified.
-     * @param maxHeight       The maximum height, if no height is specified.
-     * @param mcc             The MCC to pass.
-     * @param mnc             The MNC to pass
-     * @param connectionType  The type of connection, 'wifi' or 'wan'
-     * @param isNativeBrowser Whether this ad space will open the landing page in the native
-     *                        browser ('1') or the in-app browser ('0').
-     * @param adListener      The instance of AdListener to use.
-     * @param shouldServePSAs Whether this ad space accepts PSAs ('1') or only wants ads
-     *                        ('0')
-     */
-    public AdRequest(AdRequester requester, String aid, String lat, String lon,
-                     String placementId, String orientation, String carrier, int width,
-                     int height, int maxWidth, int maxHeight, String mcc, String mnc,
-                     String connectionType, boolean isNativeBrowser,
-                     AdListener adListener, boolean shouldServePSAs, boolean shouldRetry) {
-        this.adListener = adListener;
-        this.requester = requester;
-        if (aid != null) {
-            hidmd5 = HashingFunctions.md5(aid);
-            hidsha1 = HashingFunctions.sha1(aid);
-        }
-        devMake = Settings.getSettings().deviceMake;
-        devModel = Settings.getSettings().deviceModel;
-
-        // Get firstlaunch and convert it to a string
-        firstlaunch = Settings.getSettings().first_launch;
-        // Get ua, the user agent...
-        ua = Settings.getSettings().ua;
-
-        this.lat = lat;
-        this.lon = lon;
-
-        this.carrier = carrier;
-
-        this.mnc = mnc;
-        this.mcc = mcc;
-
-        this.width = width;
-        this.height = height;
-        this.maxWidth = maxWidth;
-        this.maxHeight = maxHeight;
-
-        this.connection_type = connectionType;
-        this.dev_time = "" + System.currentTimeMillis();
-
-        this.dev_timezone = Settings.getSettings().dev_timezone;
-        this.language = Settings.getSettings().language;
-
-        this.placementId = placementId;
-        this.psa = shouldServePSAs ? "1" : "0";
-
-        this.nativeBrowser = isNativeBrowser ? "1" : "0";
-    }
-
     public AdRequest(AdRequester adRequester) {
         owner = adRequester.getOwner();
         this.requester = adRequester;
         this.placementId = owner.getPlacementID();
         context = owner.getContext();
+        // The ANDROID_ID to hash and pass.
         String aid = android.provider.Settings.Secure.getString(
                 context.getContentResolver(), Secure.ANDROID_ID);
 
@@ -366,8 +300,6 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     private void fail() {
         if (requester != null)
             requester.failed(this);
-        if (adListener != null)
-            adListener.onAdRequestFailed(this.owner);
         Clog.clearLastResponse();
     }
 
@@ -562,9 +494,6 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
         if (requester != null)
             requester.onReceiveResponse(result);
-        // for unit testing
-        if (adListener != null)
-            adListener.onAdLoaded(owner);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)

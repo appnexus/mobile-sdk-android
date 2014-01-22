@@ -23,43 +23,41 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
-@Config(shadows = {ShadowWebSettings.class})
 @RunWith(RobolectricTestRunner.class)
-public class TestAdListener implements AdListener {
+public class TestAdRequestToAdRequester implements AdRequester {
     BannerAdView bannerAdView;
     AdRequest adRequest;
-    boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked;
+    boolean requesterFailed, requesterReceivedResponse, requesterReturnedOwner;
 
     @Before
     public void setup() {
         Clog.clogged = true;
         Robolectric.shadowOf(Robolectric.application).grantPermissions("android.permission.ACCESS_NETWORK_STATE");
         bannerAdView = new BannerAdView(Robolectric.application);
-        bannerAdView.setAdListener(this);
 
-        adRequest = new AdRequest(bannerAdView.mAdFetcher);
-
-        adLoaded = false;
-        adFailed = false;
-        adExpanded = false;
-        adCollapsed = false;
-        adClicked = false;
+        requesterFailed = false;
+        requesterReceivedResponse = false;
+        requesterReturnedOwner = false;
 
         Robolectric.getBackgroundScheduler().pause();
         Robolectric.getUiThreadScheduler().pause();
     }
 
     private void assertCallbacks(boolean success) {
-        assertEquals(success, adLoaded);
-        assertEquals(!success, adFailed);
+        assertTrue(requesterReturnedOwner);
+        assertEquals(success, requesterReceivedResponse);
+        assertEquals(!success, requesterFailed);
     }
 
     @Test
-    public void testAdLoaded() {
+    public void testRequestSucceeded() {
+        // adRequest initialization goes here because getOwner is called in the constructor
+        adRequest = new AdRequest(this);
+
         Robolectric.addPendingHttpResponse(200, TestResponses.banner());
         adRequest.execute();
         Robolectric.runBackgroundTasks();
@@ -69,7 +67,9 @@ public class TestAdListener implements AdListener {
     }
 
     @Test
-    public void testAdFailed() {
+    public void testRequestFailed() {
+        adRequest = new AdRequest(this);
+
         Robolectric.addPendingHttpResponse(200, TestResponses.blank());
         adRequest.execute();
         Robolectric.runBackgroundTasks();
@@ -79,27 +79,18 @@ public class TestAdListener implements AdListener {
     }
 
     @Override
-    public void onAdLoaded(AdView adView) {
-        adLoaded = true;
+    public void failed(AdRequest request) {
+        requesterFailed = true;
     }
 
     @Override
-    public void onAdRequestFailed(AdView adView) {
-        adFailed = true;
+    public void onReceiveResponse(AdResponse response) {
+        requesterReceivedResponse = true;
     }
 
     @Override
-    public void onAdExpanded(AdView adView) {
-        adExpanded = true;
-    }
-
-    @Override
-    public void onAdCollapsed(AdView adView) {
-        adCollapsed = true;
-    }
-
-    @Override
-    public void onAdClicked(AdView adView) {
-        adClicked = true;
+    public AdView getOwner() {
+        requesterReturnedOwner = true;
+        return bannerAdView;
     }
 }
