@@ -112,7 +112,7 @@ public class Clog {
     public static Context error_context;
 
     public static String getString(int id) {
-        if (error_context == null)
+        if (clogged || error_context == null)
             return null;
         return error_context.getString(id);
     }
@@ -177,7 +177,7 @@ public class Clog {
         return String.format(error_context.getString(id), w, h, offset_x, offset_y, custom_close_position, allow_offscrean);
     }
 
-    public static String getString(int id, boolean b, int i){
+    public static String getString(int id, boolean b, int i) {
         if (clogged || error_context == null)
             return null;
         return String.format(error_context.getString(id), b, i);
@@ -240,7 +240,7 @@ public class Clog {
     }
 
     private synchronized static void notifyListener(LOG_LEVEL level, String LogTag, String message, Throwable tr) {
-        for (ClogListener listener: listeners) {
+        for (ClogListener listener : listeners) {
             if (level.ordinal() >= listener.getLogLevel().ordinal()) {
                 if (tr != null)
                     listener.onReceiveMessage(level, LogTag, message, tr);

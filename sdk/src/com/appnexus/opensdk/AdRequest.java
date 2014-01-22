@@ -237,17 +237,17 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                 if (lastLocation == null) {
                     lastLocation = l;
                 } else {
-                    if ( l.getTime() > 0 && lastLocation.getTime()>0) {
+                    if (l.getTime() > 0 && lastLocation.getTime() > 0) {
                         if (l.getTime() > lastLocation.getTime()) {
                             lastLocation = l;
                         }
                     }
                 }
             }
-            if(lastLocation!=null){
-                lat = ""+lastLocation.getLatitude();
-                lon = ""+lastLocation.getLongitude();
-                locDataPrecision = ""+lastLocation.getAccuracy();
+            if (lastLocation != null) {
+                lat = "" + lastLocation.getLatitude();
+                lon = "" + lastLocation.getLongitude();
+                locDataPrecision = "" + lastLocation.getAccuracy();
                 locDataAge = "" + (System.currentTimeMillis() - lastLocation.getTime());
             }
         } else {
@@ -269,11 +269,11 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         orientation = context.getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE ? "h" : "v";
         // Get hidmd5, hidsha1, the device ID hashed
-        if (Settings.getSettings().hidmd5 == null) {
+        if ((Settings.getSettings().hidmd5 == null) && (aid != null)) {
             Settings.getSettings().hidmd5 = HashingFunctions.md5(aid);
         }
         hidmd5 = Settings.getSettings().hidmd5;
-        if (Settings.getSettings().hidsha1 == null) {
+        if ((Settings.getSettings().hidsha1 == null) && (aid != null)) {
             Settings.getSettings().hidsha1 = HashingFunctions.sha1(aid);
         }
         hidsha1 = Settings.getSettings().hidsha1;
@@ -293,14 +293,13 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         ua = Settings.getSettings().ua;
         // Get wxh
 
-        if(owner.isBanner()){
-            this.width = ((BannerAdView)owner).getAdWidth();
-            this.height = ((BannerAdView)owner).getAdHeight();
+        if (owner.isBanner()) {
+            this.width = ((BannerAdView) owner).getAdWidth();
+            this.height = ((BannerAdView) owner).getAdHeight();
         }
 
         maxHeight = owner.getContainerHeight();
         maxWidth = owner.getContainerWidth();
-
 
 
         if (Settings.getSettings().mcc == null
@@ -319,7 +318,10 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo wifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        connection_type = wifi.isConnected() ? "wifi" : "wan";
+        if (wifi != null) {
+            connection_type = wifi.isConnected() ? "wifi" : "wan";
+        }
+
         dev_time = "" + System.currentTimeMillis();
 
         if (owner instanceof InterstitialAdView) {
@@ -338,9 +340,9 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
         //Reserve price
         reserve = owner.getReserve();
-        if(reserve<=0){
+        if (reserve <= 0) {
             this.psa = owner.shouldServePSAs ? "1" : "0";
-        }else{
+        } else {
             this.psa = "0";
         }
 
@@ -348,11 +350,9 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (owner.getGender() != null) {
             if (owner.getGender() == AdView.GENDER.MALE) {
                 gender = "m";
-            }
-            else if (owner.getGender() == AdView.GENDER.FEMALE) {
+            } else if (owner.getGender() == AdView.GENDER.FEMALE) {
                 gender = "f";
-            }
-            else {
+            } else {
                 gender = null;
             }
         }
@@ -384,7 +384,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (!StringUtil.isEmpty(hidsha1)) sb.append("&sha1udid=").append(Uri.encode(hidsha1));
         if (!StringUtil.isEmpty(devMake)) sb.append("&devmake=").append(Uri.encode(devMake));
         if (!StringUtil.isEmpty(devModel)) sb.append("&devmodel=").append(Uri.encode(devModel));
-        if (!StringUtil.isEmpty(carrier)) sb.append( "&carrier=").append(Uri.encode(carrier));
+        if (!StringUtil.isEmpty(carrier)) sb.append("&carrier=").append(Uri.encode(carrier));
         sb.append("&appid=");
         if (!StringUtil.isEmpty(Settings.getSettings().app_id)) {
             sb.append(Uri.encode(Settings.getSettings().app_id));
@@ -392,7 +392,8 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             sb.append("NO-APP-ID");
         }
         if (firstlaunch) sb.append("&firstlaunch=true");
-        if (!StringUtil.isEmpty(lat) && !StringUtil.isEmpty(lon)) sb.append("&loc=").append(lat).append(",").append(lon);
+        if (!StringUtil.isEmpty(lat) && !StringUtil.isEmpty(lon))
+            sb.append("&loc=").append(lat).append(",").append(lon);
         if (!StringUtil.isEmpty(locDataAge)) sb.append("&loc_age=").append(locDataAge);
         if (!StringUtil.isEmpty(locDataPrecision)) sb.append("&loc_prec=").append(locDataPrecision);
         if (Settings.getSettings().test_mode) sb.append("&istest=true");
@@ -416,10 +417,10 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (!StringUtil.isEmpty(language)) sb.append("&language=").append(Uri.encode(language));
         if (!StringUtil.isEmpty(dev_timezone)) sb.append("&devtz=").append(Uri.encode(dev_timezone));
         if (!StringUtil.isEmpty(dev_time)) sb.append("&devtime=").append(Uri.encode(dev_time));
-        if (!StringUtil.isEmpty(connection_type)) sb.append("&connection_type=").append( Uri.encode(connection_type));
+        if (!StringUtil.isEmpty(connection_type)) sb.append("&connection_type=").append(Uri.encode(connection_type));
         if (!StringUtil.isEmpty(nativeBrowser)) sb.append("&native_browser=").append(nativeBrowser);
-        if (!StringUtil.isEmpty(psa)) sb.append( "&psa=").append(psa);
-        if (reserve>0) sb.append("&reserve=").append(reserve);
+        if (!StringUtil.isEmpty(psa)) sb.append("&psa=").append(psa);
+        if (reserve > 0) sb.append("&reserve=").append(reserve);
         if (!StringUtil.isEmpty(age)) sb.append("&age=").append(Uri.encode(age));
         if (!StringUtil.isEmpty(gender)) sb.append("&gender=").append(Uri.encode(gender));
         sb.append("&format=json");
@@ -502,7 +503,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             Clog.e(Clog.baseLogTag,
                     Clog.getString(R.string.permissions_internet));
             return null;
-        } catch(IllegalArgumentException ie) {
+        } catch (IllegalArgumentException ie) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unknown));
             return null;
         } catch (Exception e) {
@@ -572,10 +573,4 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         super.onCancelled(adResponse);
         Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.cancel_request));
     }
-
-
-//   // Uncomment for unit tests
-//   public void setContext(Context context) {
-//       this.context = context;
-//   }
 }
