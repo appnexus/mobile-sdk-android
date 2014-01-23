@@ -373,6 +373,10 @@ public abstract class AdView extends FrameLayout {
                 caller.getFullscreenActivity().MRAIDClose();
             }
         }
+        // null these out for safety
+        mraidFullscreenContainer = null;
+        mraidFullscreenImplementation = null;
+
         MRAIDChangeSize(w, h);
         closing = true;
         isMRAIDExpanded = false;
@@ -448,6 +452,8 @@ public abstract class AdView extends FrameLayout {
                 getContext().startActivity(i);
             } catch (ActivityNotFoundException e) {
                 Clog.e(Clog.baseLogTag, "Did you insert com.appneus.opensdk.AdActivity into AndroidManifest.xml ?");
+                mraidFullscreenContainer = null;
+                mraidFullscreenImplementation = null;
             }
         } else {
             // if not fullscreen, just add the close button

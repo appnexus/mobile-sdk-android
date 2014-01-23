@@ -101,11 +101,19 @@ public class AdActivity extends Activity {
             // Add a close button after a delay.
             closeButtonHandler.sendEmptyMessageDelayed(CLOSE_BUTTON_MESSAGE_ID, closeButtonDelay);
         } else if (activityType.equals(InterstitialAdView.ACTIVITY_TYPE_MRAID)) {
+            if ((AdView.mraidFullscreenContainer == null) || (AdView.mraidFullscreenImplementation == null)) {
+                Clog.e(Clog.baseLogTag, "Launched MRAID Fullscreen activity with invalid properties");
+                finish();
+            }
+
+            // remove from any old parents to be safe
+            if (AdView.mraidFullscreenContainer.getParent() != null) {
+                ((ViewGroup) AdView.mraidFullscreenContainer.getParent())
+                        .removeView(AdView.mraidFullscreenContainer);
+            }
             setContentView(AdView.mraidFullscreenContainer);
             mraidFullscreenImplementation = AdView.mraidFullscreenImplementation;
             mraidFullscreenImplementation.setFullscreenActivity(this);
-            AdView.mraidFullscreenContainer = null;
-            AdView.mraidFullscreenImplementation = null;
         }
 
         CookieSyncManager.createInstance(this);
