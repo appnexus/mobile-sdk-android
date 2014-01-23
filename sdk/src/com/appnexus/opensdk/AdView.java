@@ -369,8 +369,8 @@ public abstract class AdView extends FrameLayout {
                 this.addView(caller.owner);
             }
 
-            if (AdActivity.getMraidFullscreenActivity() != null) {
-                AdActivity.getMraidFullscreenActivity().MRAIDClose();
+            if (caller.getFullscreenActivity() != null) {
+                caller.getFullscreenActivity().MRAIDClose();
             }
         }
         MRAIDChangeSize(w, h);

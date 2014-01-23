@@ -59,7 +59,6 @@ public class AdActivity extends Activity {
     private long now;
     private boolean close_added = false;
     private static AdActivity current_ad_activity = null;
-    private static AdActivity mraidFullscreenActivity = null;
     private MRAIDImplementation mraidFullscreenImplementation = null;
     private InterstitialAdView adView;
     static final int CLOSE_BUTTON_MESSAGE_ID = 8000;
@@ -70,14 +69,6 @@ public class AdActivity extends Activity {
 
     private static void setCurrent_ad_activity(AdActivity current_ad_activity) {
         AdActivity.current_ad_activity = current_ad_activity;
-    }
-
-    public static AdActivity getMraidFullscreenActivity() {
-        return mraidFullscreenActivity;
-    }
-
-    public static void setMraidFullscreenActivity(AdActivity mraidFullscreenActivity) {
-        AdActivity.mraidFullscreenActivity = mraidFullscreenActivity;
     }
 
     @SuppressLint({"InlinedApi", "NewApi"})
@@ -110,9 +101,9 @@ public class AdActivity extends Activity {
             // Add a close button after a delay.
             closeButtonHandler.sendEmptyMessageDelayed(CLOSE_BUTTON_MESSAGE_ID, closeButtonDelay);
         } else if (activityType.equals(InterstitialAdView.ACTIVITY_TYPE_MRAID)) {
-            setMraidFullscreenActivity(this);
             setContentView(AdView.mraidFullscreenContainer);
             mraidFullscreenImplementation = AdView.mraidFullscreenImplementation;
+            mraidFullscreenImplementation.setFullscreenActivity(this);
             AdView.mraidFullscreenContainer = null;
             AdView.mraidFullscreenImplementation = null;
         }
@@ -342,13 +333,12 @@ public class AdActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (this == mraidFullscreenActivity) {
-            mraidFullscreenActivity = null;
-            if (mraidFullscreenImplementation != null) {
-                mraidFullscreenImplementation.close();
-            }
-            mraidFullscreenImplementation = null;
+        if (mraidFullscreenImplementation != null) {
+            mraidFullscreenImplementation.setFullscreenActivity(null);
+            mraidFullscreenImplementation.close();
         }
+        mraidFullscreenImplementation = null;
+
         super.onBackPressed();
     }
 }

@@ -61,6 +61,7 @@ class MRAIDImplementation {
     int default_width, default_height;
     boolean supportsPictureAPI = false;
     boolean supportsCalendar = false;
+    AdActivity fullscreenActivity;
 
     public MRAIDImplementation(MRAIDWebView owner) {
         this.owner = owner;
@@ -778,5 +779,13 @@ class MRAIDImplementation {
                 .loadUrl("javascript:window.mraid.util.stateChangeEvent('resized');");
         resized = true;
 
+    }
+
+    public AdActivity getFullscreenActivity() {
+        return fullscreenActivity;
+    }
+
+    public void setFullscreenActivity(AdActivity fullscreenActivity) {
+        this.fullscreenActivity = fullscreenActivity;
     }
 }
