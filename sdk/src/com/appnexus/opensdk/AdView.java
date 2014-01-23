@@ -291,8 +291,12 @@ public abstract class AdView extends FrameLayout {
 		if (d.getView() == null) {
 			return;
 		}
-		this.addView(d.getView());
-		lastDisplayable = d;
+        View displayableView = d.getView();
+        this.addView(displayableView);
+
+        // center the displayable view in AdView
+        ((LayoutParams) displayableView.getLayoutParams()).gravity = Gravity.CENTER;
+        lastDisplayable = d;
 		unhide();
 	}
 
