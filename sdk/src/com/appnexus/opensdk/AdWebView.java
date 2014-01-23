@@ -33,6 +33,7 @@ import android.webkit.WebViewClient;
 import com.appnexus.opensdk.AdView.BrowserStyle;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.WebviewUtil;
 
 @SuppressLint("ViewConstructor")
 // This will only be constructed by AdFetcher.
@@ -200,6 +201,16 @@ class AdWebView extends WebView implements Displayable {
         AdView.LayoutParams resize = new AdView.LayoutParams(rwidth, rheight,
                 rgravity);
         this.setLayoutParams(resize);
+    }
+
+    @Override
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+        if (visibility == VISIBLE) {
+            WebviewUtil.onResume(this);
+        } else {
+            WebviewUtil.onPause(this);
+        }
     }
 
     @Override

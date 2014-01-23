@@ -104,6 +104,7 @@ public class AdActivity extends Activity {
             if ((AdView.mraidFullscreenContainer == null) || (AdView.mraidFullscreenImplementation == null)) {
                 Clog.e(Clog.baseLogTag, "Launched MRAID Fullscreen activity with invalid properties");
                 finish();
+                return;
             }
 
             // remove from any old parents to be safe
@@ -112,6 +113,9 @@ public class AdActivity extends Activity {
                         .removeView(AdView.mraidFullscreenContainer);
             }
             setContentView(AdView.mraidFullscreenContainer);
+            if (AdView.mraidFullscreenContainer.getChildAt(0) instanceof WebView) {
+                webView = (WebView) AdView.mraidFullscreenContainer.getChildAt(0);
+            }
             mraidFullscreenImplementation = AdView.mraidFullscreenImplementation;
             mraidFullscreenImplementation.setFullscreenActivity(this);
         }
@@ -302,7 +306,7 @@ public class AdActivity extends Activity {
 
     @Override
     protected void onPause() {
-        if (webView != null) WebviewUtil.onPause(webView);
+        WebviewUtil.onPause(webView);
         CookieSyncManager csm = CookieSyncManager.getInstance();
         if (csm != null) {
             csm.stopSync();
@@ -312,7 +316,7 @@ public class AdActivity extends Activity {
 
     @Override
     protected void onResume() {
-        if (webView != null) WebviewUtil.onResume(webView);
+        WebviewUtil.onResume(webView);
         CookieSyncManager csm = CookieSyncManager.getInstance();
         if (csm != null) {
             csm.startSync();
@@ -322,7 +326,7 @@ public class AdActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        if (webView != null) {
+        if ((mraidFullscreenImplementation != null) && (webView != null)) {
             if (webView.getParent() != null)
                 ((ViewGroup) webView.getParent()).removeView(webView);
             webView.destroy();
@@ -332,11 +336,6 @@ public class AdActivity extends Activity {
         }
 
         super.onDestroy();
-    }
-
-    protected void MRAIDClose() {
-        mraidFullscreenImplementation = null;
-        this.finish();
     }
 
     @Override

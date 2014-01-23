@@ -360,7 +360,9 @@ public abstract class AdView extends FrameLayout {
     protected void close(int w, int h, MRAIDImplementation caller){
         //For closing
         if (caller.owner.isFullScreen) {
-            ((FrameLayout)caller.owner.getParent()).removeAllViews();
+            if (caller.owner.getParent() != null) {
+                ((FrameLayout) caller.owner.getParent()).removeAllViews();
+            }
             caller.owner.removeFromParent();
             if (this instanceof InterstitialAdView) {
                 AdActivity.getCurrent_ad_activity().layout.addView(caller.owner);
@@ -370,7 +372,7 @@ public abstract class AdView extends FrameLayout {
             }
 
             if (caller.getFullscreenActivity() != null) {
-                caller.getFullscreenActivity().MRAIDClose();
+                caller.getFullscreenActivity().finish();
             }
         }
         // null these out for safety
