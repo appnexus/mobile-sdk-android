@@ -373,7 +373,12 @@ public abstract class AdView extends FrameLayout {
                 this.addView(caller.owner);
             }
 
-            AdActivity.getMraidFullscreenActivity().finish();
+            if (AdActivity.getMraidFullscreenActivity() != null) {
+                // set implementation to null before calling
+                // finish to prevent repeating close calls
+                AdActivity.setMraidFullscreenImplementation(null);
+                AdActivity.getMraidFullscreenActivity().finish();
+            }
             mraidFullscreenContainer = null;
             mraidFullscreenImplementation = null;
         }

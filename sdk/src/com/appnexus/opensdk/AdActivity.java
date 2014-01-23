@@ -80,6 +80,14 @@ public class AdActivity extends Activity {
         AdActivity.mraidFullscreenActivity = mraidFullscreenActivity;
     }
 
+    public static MRAIDImplementation getMraidFullscreenImplementation() {
+        return mraidFullscreenImplementation;
+    }
+
+    public static void setMraidFullscreenImplementation(MRAIDImplementation mraidFullscreenImplementation) {
+        AdActivity.mraidFullscreenImplementation = mraidFullscreenImplementation;
+    }
+
     @SuppressLint({"InlinedApi", "NewApi"})
     @Override
     public void onCreate(Bundle b) {
@@ -337,8 +345,8 @@ public class AdActivity extends Activity {
                 mraidFullscreenImplementation.close();
             }
         }
-        mraidFullscreenImplementation = null;
         mraidFullscreenActivity = null;
+        mraidFullscreenImplementation = null;
 
         super.onDestroy();
     }
