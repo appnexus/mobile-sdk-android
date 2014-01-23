@@ -457,9 +457,4 @@ public class InterstitialAdView extends AdView {
             return h < height && w < width;
         }
     }
-
-    @Override
-    boolean isMRAIDExpanded() {
-        return mraid_changing_size_or_visibility;
-    }
 }

@@ -75,8 +75,9 @@ public abstract class AdView extends FrameLayout {
 	private Displayable lastDisplayable;
 	private AdListenerDispatch dispatcher;
     boolean loadedOffscreen = false;
+    boolean isMRAIDExpanded = false;
 
-	/**
+    /**
 	 * Begin Construction
 	 */
 	@SuppressWarnings("javadoc")
@@ -185,16 +186,12 @@ public abstract class AdView extends FrameLayout {
 		}
 	}
 
-	boolean isMRAIDExpanded() {
-		if (this.getChildCount() > 0
-				&& this.getChildAt(0) instanceof MRAIDWebView
-				&& ((MRAIDWebView) getChildAt(0)).getImplementation().expanded) {
-			return true;
-		}
-		return false;
-	}
 
-	boolean isReadyToStart() {
+    boolean isMRAIDExpanded() {
+        return isMRAIDExpanded;
+    }
+
+    boolean isReadyToStart() {
 		if (isMRAIDExpanded()) {
 			Clog.e(Clog.baseLogTag, Clog.getString(R.string.already_expanded));
 			return false;
@@ -357,7 +354,6 @@ public abstract class AdView extends FrameLayout {
     // Used only by MRAID
     boolean closing = false;
     ImageButton close_button;
-    Activity unexpandedActivity;
     static FrameLayout mraidFullscreenContainer;
     static MRAIDImplementation mraidFullscreenImplementation;
 
@@ -368,22 +364,18 @@ public abstract class AdView extends FrameLayout {
             caller.owner.removeFromParent();
             if (this instanceof InterstitialAdView) {
                 AdActivity.getCurrent_ad_activity().layout.addView(caller.owner);
-                AdActivity.getCurrent_ad_activity().showCloseButton();
+                AdActivity.getCurrent_ad_activity().addCloseButton();
             } else {
                 this.addView(caller.owner);
             }
 
             if (AdActivity.getMraidFullscreenActivity() != null) {
-                // set implementation to null before calling
-                // finish to prevent repeating close calls
-                AdActivity.setMraidFullscreenImplementation(null);
-                AdActivity.getMraidFullscreenActivity().finish();
+                AdActivity.getMraidFullscreenActivity().MRAIDClose();
             }
-            mraidFullscreenContainer = null;
-            mraidFullscreenImplementation = null;
         }
         MRAIDChangeSize(w, h);
         closing = true;
+        isMRAIDExpanded = false;
     }
 
     private void MRAIDChangeSize(int w, int h) {
@@ -427,11 +419,6 @@ public abstract class AdView extends FrameLayout {
                     caller.close();
                 }
             });
-        } else {
-            // otherwise, hide the existing close button
-            if (close_button != null) {
-                close_button.setVisibility(GONE);
-            }
         }
 
         if (caller.owner.isFullScreen) {
@@ -446,16 +433,10 @@ public abstract class AdView extends FrameLayout {
                 this.removeAllViews();
             }
 
-            // remove the webview from its parent and add it back to this container
+            // remove the webview from its parent and add it back to the fullscreen container
             caller.owner.removeFromParent();
             fslayout.addView(caller.owner);
             if (!custom_close) fslayout.addView(close_button);
-
-            if (this instanceof InterstitialAdView) {
-                unexpandedActivity = AdActivity.getCurrent_ad_activity();
-            } else {
-                unexpandedActivity = (Activity) this.getContext();
-            }
 
             mraidFullscreenContainer = fslayout;
             mraidFullscreenImplementation = caller;
@@ -470,8 +451,10 @@ public abstract class AdView extends FrameLayout {
             }
         } else {
             // if not fullscreen, just add the close button
-            this.addView(close_button);
+            if (!custom_close) this.addView(close_button);
         }
+
+        isMRAIDExpanded = true;
     }
 
 
@@ -479,13 +462,8 @@ public abstract class AdView extends FrameLayout {
 
     public void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean,
                        final MRAIDImplementation caller) {
-        mraid_changing_size_or_visibility = true;
-        if (getLayoutParams() != null) {
-            if (getLayoutParams().width > 0)
-                getLayoutParams().width = w;
-            if (getLayoutParams().height > 0)
-                getLayoutParams().height = h;
-        }
+        MRAIDChangeSize(w, h);
+
         // Add a stock close_button button to the top right corner
         if(close_button!=null && close_button.getParent()!=null){
             ((ViewGroup)close_button.getParent()).removeView(close_button);

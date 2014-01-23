@@ -60,7 +60,7 @@ public class AdActivity extends Activity {
     private boolean close_added = false;
     private static AdActivity current_ad_activity = null;
     private static AdActivity mraidFullscreenActivity = null;
-    private static MRAIDImplementation mraidFullscreenImplementation = null;
+    private MRAIDImplementation mraidFullscreenImplementation = null;
     private InterstitialAdView adView;
     static final int CLOSE_BUTTON_MESSAGE_ID = 8000;
 
@@ -78,14 +78,6 @@ public class AdActivity extends Activity {
 
     public static void setMraidFullscreenActivity(AdActivity mraidFullscreenActivity) {
         AdActivity.mraidFullscreenActivity = mraidFullscreenActivity;
-    }
-
-    public static MRAIDImplementation getMraidFullscreenImplementation() {
-        return mraidFullscreenImplementation;
-    }
-
-    public static void setMraidFullscreenImplementation(MRAIDImplementation mraidFullscreenImplementation) {
-        AdActivity.mraidFullscreenImplementation = mraidFullscreenImplementation;
     }
 
     @SuppressLint({"InlinedApi", "NewApi"})
@@ -118,9 +110,11 @@ public class AdActivity extends Activity {
             // Add a close button after a delay.
             closeButtonHandler.sendEmptyMessageDelayed(CLOSE_BUTTON_MESSAGE_ID, closeButtonDelay);
         } else if (activityType.equals(InterstitialAdView.ACTIVITY_TYPE_MRAID)) {
+            setMraidFullscreenActivity(this);
             setContentView(AdView.mraidFullscreenContainer);
             mraidFullscreenImplementation = AdView.mraidFullscreenImplementation;
-            setMraidFullscreenActivity(this);
+            AdView.mraidFullscreenContainer = null;
+            AdView.mraidFullscreenImplementation = null;
         }
 
         CookieSyncManager.createInstance(this);
@@ -162,12 +156,17 @@ public class AdActivity extends Activity {
 
     ImageButton close;
     void addCloseButton() {
-        if(close==null){
-            close = new ImageButton(this);
-        }
-        if (close_added || layout == null) {
+        if (layout == null) return;
+
+        if ((close != null) && close_added) {
+            if (close.getParent() == null) {
+                layout.addView(close);
+            }
+            close.setVisibility(View.VISIBLE);
             return;
         }
+
+        close = new ImageButton(this);
         close_added = true;
         close.setImageDrawable(getResources().getDrawable(
                 android.R.drawable.ic_menu_close_clear_cancel));
@@ -178,11 +177,9 @@ public class AdActivity extends Activity {
         close.setLayoutParams(blp);
         close.setBackgroundColor(Color.TRANSPARENT);
         close.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 finish();
-
             }
         });
 
@@ -191,12 +188,6 @@ public class AdActivity extends Activity {
             close.setVisibility(View.GONE);
         }
         layout.addView(close);
-    }
-
-    void showCloseButton(){
-        if(close!=null && close_added){
-            close.setVisibility(View.VISIBLE);
-        }
     }
 
     private void setIAdView(InterstitialAdView av) {
@@ -340,14 +331,24 @@ public class AdActivity extends Activity {
         if (adView != null) {
             adView.close_button = null;
         }
+
+        super.onDestroy();
+    }
+
+    protected void MRAIDClose() {
+        mraidFullscreenImplementation = null;
+        this.finish();
+    }
+
+    @Override
+    public void onBackPressed() {
         if (this == mraidFullscreenActivity) {
+            mraidFullscreenActivity = null;
             if (mraidFullscreenImplementation != null) {
                 mraidFullscreenImplementation.close();
             }
+            mraidFullscreenImplementation = null;
         }
-        mraidFullscreenActivity = null;
-        mraidFullscreenImplementation = null;
-
-        super.onDestroy();
+        super.onBackPressed();
     }
 }
