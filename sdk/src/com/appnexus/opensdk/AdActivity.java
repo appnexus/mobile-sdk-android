@@ -33,6 +33,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
 
 import java.lang.ref.WeakReference;
@@ -58,6 +59,8 @@ public class AdActivity extends Activity {
     private long now;
     private boolean close_added = false;
     private static AdActivity current_ad_activity = null;
+    private static AdActivity mraidFullscreenActivity = null;
+    private static MRAIDImplementation mraidFullscreenImplementation = null;
     private InterstitialAdView adView;
     static final int CLOSE_BUTTON_MESSAGE_ID = 8000;
 
@@ -69,35 +72,52 @@ public class AdActivity extends Activity {
         AdActivity.current_ad_activity = current_ad_activity;
     }
 
+    public static AdActivity getMraidFullscreenActivity() {
+        return mraidFullscreenActivity;
+    }
+
+    public static void setMraidFullscreenActivity(AdActivity mraidFullscreenActivity) {
+        AdActivity.mraidFullscreenActivity = mraidFullscreenActivity;
+    }
+
     @SuppressLint({"InlinedApi", "NewApi"})
     @Override
     public void onCreate(Bundle b) {
         super.onCreate(b);
 
-        setCurrent_ad_activity(this);
+        String activityType = getIntent().
+                getStringExtra(InterstitialAdView.INTENT_KEY_ACTIVITY_TYPE);
+        if (StringUtil.isEmpty(activityType)) {
+            Clog.e(Clog.baseLogTag, "AdActivity launched with no type");
+            finish();
+        } else if (activityType.equals(InterstitialAdView.ACTIVITY_TYPE_INTERSTITIAL)) {
+            setCurrent_ad_activity(this);
 
-        layout = new FrameLayout(this);
+            layout = new FrameLayout(this);
 
-        // Lock the orientation
-        AdActivity.lockToCurrentOrientation(this);
+            // Lock the orientation
+            AdActivity.lockToCurrentOrientation(this);
 
-        setContentView(layout);
+            setContentView(layout);
 
-        setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
-        now = getIntent().getLongExtra(InterstitialAdView.INTENT_KEY_TIME,
-                System.currentTimeMillis());
-        int closeButtonDelay = getIntent().getIntExtra(
-                InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY,
-                Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
+            setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
+            now = getIntent().getLongExtra(InterstitialAdView.INTENT_KEY_TIME,
+                    System.currentTimeMillis());
+            int closeButtonDelay = getIntent().getIntExtra(
+                    InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY,
+                    Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
 
-        // Add a close button after a 10 second delay.
-        closeButtonHandler.sendEmptyMessageDelayed(CLOSE_BUTTON_MESSAGE_ID, closeButtonDelay);
-        CookieSyncManager.createInstance(this);
-        CookieSyncManager csm = CookieSyncManager.getInstance();
-        if (csm != null) {
-            csm.startSync();
+            // Add a close button after a delay.
+            closeButtonHandler.sendEmptyMessageDelayed(CLOSE_BUTTON_MESSAGE_ID, closeButtonDelay);
+        } else if (activityType.equals(InterstitialAdView.ACTIVITY_TYPE_MRAID)) {
+            setContentView(AdView.mraidFullscreenContainer);
+            mraidFullscreenImplementation = AdView.mraidFullscreenImplementation;
+            setMraidFullscreenActivity(this);
         }
 
+        CookieSyncManager.createInstance(this);
+        CookieSyncManager csm = CookieSyncManager.getInstance();
+        if (csm != null) csm.startSync();
     }
 
     /**
@@ -263,7 +283,6 @@ public class AdActivity extends Activity {
         none
     }
 
-    @SuppressLint({"InlinedApi", "DefaultLocale"})
     protected static void lockToMRAIDOrientation(Activity a, OrientationEnum e) {
         int orientation = a.getResources().getConfiguration().orientation;
 
@@ -313,6 +332,14 @@ public class AdActivity extends Activity {
         if (adView != null) {
             adView.close_button = null;
         }
+        if (this == mraidFullscreenActivity) {
+            if (mraidFullscreenImplementation != null) {
+                mraidFullscreenImplementation.close();
+            }
+        }
+        mraidFullscreenImplementation = null;
+        mraidFullscreenActivity = null;
+
         super.onDestroy();
     }
 }
