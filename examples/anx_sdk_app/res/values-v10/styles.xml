@@ -7,10 +7,10 @@
     <style name="AppBaseTheme" parent="android:Theme.Light">
     </style>
 
-      <style name="header" parent="widthFillheightWrap">
-        <item name="android:textColor">@color/black</item>
-     </style>
-    
+    <!--<style name="header" parent="widthFillheightWrap">-->
+    <!--<item name="android:textColor">@color/black</item>-->
+    <!--</style>-->
+
     <style name="settingsTextItem">
         <item name="android:textSize">18sp</item>
         <item name="android:layout_width">108dp</item>
