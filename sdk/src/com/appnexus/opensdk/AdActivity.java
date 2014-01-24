@@ -120,6 +120,10 @@ public class AdActivity extends Activity {
             }
             mraidFullscreenImplementation = AdView.mraidFullscreenImplementation;
             mraidFullscreenImplementation.setFullscreenActivity(this);
+
+            if (AdView.mraidFullscreenListener != null) {
+                AdView.mraidFullscreenListener.onCreateCompleted();
+            }
         }
 
         CookieSyncManager.createInstance(this);

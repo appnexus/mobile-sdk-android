@@ -360,6 +360,7 @@ public abstract class AdView extends FrameLayout {
     ImageButton close_button;
     static FrameLayout mraidFullscreenContainer;
     static MRAIDImplementation mraidFullscreenImplementation;
+    static MRAIDWebView.MRAIDFullscreenListener mraidFullscreenListener;
 
     protected void close(int w, int h, MRAIDImplementation caller){
         //For closing
@@ -382,6 +383,7 @@ public abstract class AdView extends FrameLayout {
         // null these out for safety
         mraidFullscreenContainer = null;
         mraidFullscreenImplementation = null;
+        mraidFullscreenListener = null;
 
         MRAIDChangeSize(w, h);
         closing = true;
@@ -400,7 +402,8 @@ public abstract class AdView extends FrameLayout {
     }
 
     protected void expand(int w, int h, boolean custom_close,
-                          final MRAIDImplementation caller) {
+                          final MRAIDImplementation caller,
+                          MRAIDWebView.MRAIDFullscreenListener listener) {
         MRAIDChangeSize(w, h);
 
         if (!custom_close) {
@@ -450,6 +453,7 @@ public abstract class AdView extends FrameLayout {
 
             mraidFullscreenContainer = fslayout;
             mraidFullscreenImplementation = caller;
+            mraidFullscreenListener = listener;
 
             try {
                 Intent i = new Intent(getContext(), AdActivity.class);
@@ -460,6 +464,7 @@ public abstract class AdView extends FrameLayout {
                 Clog.e(Clog.baseLogTag, "Did you insert com.appneus.opensdk.AdActivity into AndroidManifest.xml ?");
                 mraidFullscreenContainer = null;
                 mraidFullscreenImplementation = null;
+                mraidFullscreenListener = null;
             }
         } else {
             // if not fullscreen, just add the close button
