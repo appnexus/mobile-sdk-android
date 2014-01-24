@@ -18,14 +18,11 @@ package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.widget.FrameLayout;
 
 @SuppressLint("ViewConstructor")
@@ -108,7 +105,7 @@ class MRAIDWebView extends AdWebView implements Displayable {
         default_width = lp.width;
         default_height = lp.height;
 
-        if (h == -1 || w == -1) {
+        if ((h == -1) && (w == -1)) {
             if (owner != null) {
                 isFullScreen = true;
             }
