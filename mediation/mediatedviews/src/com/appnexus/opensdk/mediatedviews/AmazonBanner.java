@@ -69,7 +69,9 @@ public class AmazonBanner implements MediatedBannerAdView,  AdListener{
         AdTargetingOptions targetingOptions = new AdTargetingOptions();
         if(tp!=null){
             if(!StringUtil.isEmpty(tp.getAge())){
-                targetingOptions.setAge(Integer.parseInt(tp.getAge()));
+                try{
+                    targetingOptions.setAge(Integer.parseInt(tp.getAge()));
+                }catch (NumberFormatException e){}
             }
 
             switch(tp.getGender()){
@@ -126,22 +128,26 @@ public class AmazonBanner implements MediatedBannerAdView,  AdListener{
     public void onAdFailedToLoad(AdLayout adLayout, AdError adError) {
         Clog.d(Clog.mediationLogTag, "AmazonBanner - onAdFailedToLoad: "+adError.getMessage());
         if(mediatedBannerAdViewController!=null){
-            switch(adError.getCode()){
-                case INTERNAL_ERROR:
-                    mediatedBannerAdViewController.onAdFailed(MediatedAdViewController.RESULT.INTERNAL_ERROR);
-                    break;
-                case NETWORK_ERROR:
-                    mediatedBannerAdViewController.onAdFailed(MediatedAdViewController.RESULT.NETWORK_ERROR);
-                    break;
-                case NO_FILL:
-                    mediatedBannerAdViewController.onAdFailed(MediatedAdViewController.RESULT.UNABLE_TO_FILL);
-                    break;
-                case REQUEST_ERROR:
-                    mediatedBannerAdViewController.onAdFailed(MediatedAdViewController.RESULT.INVALID_REQUEST);
-                    break;
-                default:
-                    mediatedBannerAdViewController.onAdFailed(MediatedAdViewController.RESULT.INTERNAL_ERROR);
-                    break;
+            if(adError!=null){
+                switch(adError.getCode()){
+                    case INTERNAL_ERROR:
+                        mediatedBannerAdViewController.onAdFailed(MediatedAdViewController.RESULT.INTERNAL_ERROR);
+                        break;
+                    case NETWORK_ERROR:
+                        mediatedBannerAdViewController.onAdFailed(MediatedAdViewController.RESULT.NETWORK_ERROR);
+                        break;
+                    case NO_FILL:
+                        mediatedBannerAdViewController.onAdFailed(MediatedAdViewController.RESULT.UNABLE_TO_FILL);
+                        break;
+                    case REQUEST_ERROR:
+                        mediatedBannerAdViewController.onAdFailed(MediatedAdViewController.RESULT.INVALID_REQUEST);
+                        break;
+                    default:
+                        mediatedBannerAdViewController.onAdFailed(MediatedAdViewController.RESULT.INTERNAL_ERROR);
+                        break;
+                }
+            }else{
+                mediatedBannerAdViewController.onAdFailed(MediatedAdViewController.RESULT.INTERNAL_ERROR);
             }
         }
     }
