@@ -17,7 +17,10 @@ package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
 import android.util.Pair;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import com.amazon.device.ads.*;
 import com.appnexus.opensdk.MediatedAdViewController;
 import com.appnexus.opensdk.MediatedBannerAdView;
@@ -85,6 +88,9 @@ public class AmazonBanner implements MediatedBannerAdView,  AdListener{
                 targetingOptions.setAdvancedOption(p.first, p.second);
             }
         }
+
+        //Amazon won't load ads unless layout parameters are set
+        adView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
 
         adView.loadAd(targetingOptions);
 

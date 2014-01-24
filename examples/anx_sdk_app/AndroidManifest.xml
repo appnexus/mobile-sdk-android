@@ -54,6 +54,7 @@
         <activity android:name="com.millennialmedia.android.MMActivity"
                   android:theme="@android:style/Theme.Translucent.NoTitleBar"
                   android:configChanges="keyboardHidden|orientation|keyboard" />
+        <activity android:name="com.amazon.device.ads.AdActivity" android:configChanges="keyboardHidden|orientation|screenSize"/>
     </application>
 
 </manifest>
