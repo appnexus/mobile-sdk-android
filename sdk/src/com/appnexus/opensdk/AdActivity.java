@@ -33,6 +33,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
 
 import java.lang.ref.WeakReference;
@@ -58,6 +59,7 @@ public class AdActivity extends Activity {
     private long now;
     private boolean close_added = false;
     private static AdActivity current_ad_activity = null;
+    private MRAIDImplementation mraidFullscreenImplementation = null;
     private InterstitialAdView adView;
     static final int CLOSE_BUTTON_MESSAGE_ID = 8000;
 
@@ -74,30 +76,53 @@ public class AdActivity extends Activity {
     public void onCreate(Bundle b) {
         super.onCreate(b);
 
-        setCurrent_ad_activity(this);
+        String activityType = getIntent().
+                getStringExtra(InterstitialAdView.INTENT_KEY_ACTIVITY_TYPE);
+        if (StringUtil.isEmpty(activityType)) {
+            Clog.e(Clog.baseLogTag, "AdActivity launched with no type");
+            finish();
+        } else if (activityType.equals(InterstitialAdView.ACTIVITY_TYPE_INTERSTITIAL)) {
+            setCurrent_ad_activity(this);
 
-        layout = new FrameLayout(this);
+            layout = new FrameLayout(this);
 
-        // Lock the orientation
-        AdActivity.lockToCurrentOrientation(this);
+            // Lock the orientation
+            AdActivity.lockToCurrentOrientation(this);
 
-        setContentView(layout);
+            setContentView(layout);
 
-        setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
-        now = getIntent().getLongExtra(InterstitialAdView.INTENT_KEY_TIME,
-                System.currentTimeMillis());
-        int closeButtonDelay = getIntent().getIntExtra(
-                InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY,
-                Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
+            setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
+            now = getIntent().getLongExtra(InterstitialAdView.INTENT_KEY_TIME,
+                    System.currentTimeMillis());
+            int closeButtonDelay = getIntent().getIntExtra(
+                    InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY,
+                    Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
 
-        // Add a close button after a 10 second delay.
-        closeButtonHandler.sendEmptyMessageDelayed(CLOSE_BUTTON_MESSAGE_ID, closeButtonDelay);
-        CookieSyncManager.createInstance(this);
-        CookieSyncManager csm = CookieSyncManager.getInstance();
-        if (csm != null) {
-            csm.startSync();
+            // Add a close button after a delay.
+            closeButtonHandler.sendEmptyMessageDelayed(CLOSE_BUTTON_MESSAGE_ID, closeButtonDelay);
+        } else if (activityType.equals(InterstitialAdView.ACTIVITY_TYPE_MRAID)) {
+            if ((AdView.mraidFullscreenContainer == null) || (AdView.mraidFullscreenImplementation == null)) {
+                Clog.e(Clog.baseLogTag, "Launched MRAID Fullscreen activity with invalid properties");
+                finish();
+                return;
+            }
+
+            // remove from any old parents to be safe
+            if (AdView.mraidFullscreenContainer.getParent() != null) {
+                ((ViewGroup) AdView.mraidFullscreenContainer.getParent())
+                        .removeView(AdView.mraidFullscreenContainer);
+            }
+            setContentView(AdView.mraidFullscreenContainer);
+            if (AdView.mraidFullscreenContainer.getChildAt(0) instanceof WebView) {
+                webView = (WebView) AdView.mraidFullscreenContainer.getChildAt(0);
+            }
+            mraidFullscreenImplementation = AdView.mraidFullscreenImplementation;
+            mraidFullscreenImplementation.setFullscreenActivity(this);
         }
 
+        CookieSyncManager.createInstance(this);
+        CookieSyncManager csm = CookieSyncManager.getInstance();
+        if (csm != null) csm.startSync();
     }
 
     /**
@@ -134,12 +159,17 @@ public class AdActivity extends Activity {
 
     ImageButton close;
     void addCloseButton() {
-        if(close==null){
-            close = new ImageButton(this);
-        }
-        if (close_added || layout == null) {
+        if (layout == null) return;
+
+        if ((close != null) && close_added) {
+            if (close.getParent() == null) {
+                layout.addView(close);
+            }
+            close.setVisibility(View.VISIBLE);
             return;
         }
+
+        close = new ImageButton(this);
         close_added = true;
         close.setImageDrawable(getResources().getDrawable(
                 android.R.drawable.ic_menu_close_clear_cancel));
@@ -150,11 +180,9 @@ public class AdActivity extends Activity {
         close.setLayoutParams(blp);
         close.setBackgroundColor(Color.TRANSPARENT);
         close.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 finish();
-
             }
         });
 
@@ -163,12 +191,6 @@ public class AdActivity extends Activity {
             close.setVisibility(View.GONE);
         }
         layout.addView(close);
-    }
-
-    void showCloseButton(){
-        if(close!=null && close_added){
-            close.setVisibility(View.VISIBLE);
-        }
     }
 
     private void setIAdView(InterstitialAdView av) {
@@ -263,7 +285,6 @@ public class AdActivity extends Activity {
         none
     }
 
-    @SuppressLint({"InlinedApi", "DefaultLocale"})
     protected static void lockToMRAIDOrientation(Activity a, OrientationEnum e) {
         int orientation = a.getResources().getConfiguration().orientation;
 
@@ -285,7 +306,7 @@ public class AdActivity extends Activity {
 
     @Override
     protected void onPause() {
-        if (webView != null) WebviewUtil.onPause(webView);
+        WebviewUtil.onPause(webView);
         CookieSyncManager csm = CookieSyncManager.getInstance();
         if (csm != null) {
             csm.stopSync();
@@ -295,7 +316,7 @@ public class AdActivity extends Activity {
 
     @Override
     protected void onResume() {
-        if (webView != null) WebviewUtil.onResume(webView);
+        WebviewUtil.onResume(webView);
         CookieSyncManager csm = CookieSyncManager.getInstance();
         if (csm != null) {
             csm.startSync();
@@ -305,7 +326,7 @@ public class AdActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        if (webView != null) {
+        if ((mraidFullscreenImplementation != null) && (webView != null)) {
             if (webView.getParent() != null)
                 ((ViewGroup) webView.getParent()).removeView(webView);
             webView.destroy();
@@ -313,6 +334,18 @@ public class AdActivity extends Activity {
         if (adView != null) {
             adView.close_button = null;
         }
+
         super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mraidFullscreenImplementation != null) {
+            mraidFullscreenImplementation.setFullscreenActivity(null);
+            mraidFullscreenImplementation.close();
+        }
+        mraidFullscreenImplementation = null;
+
+        super.onBackPressed();
     }
 }
