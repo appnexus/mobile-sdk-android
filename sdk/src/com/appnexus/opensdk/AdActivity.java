@@ -62,6 +62,7 @@ public class AdActivity extends Activity {
     private MRAIDImplementation mraidFullscreenImplementation = null;
     private InterstitialAdView adView;
     static final int CLOSE_BUTTON_MESSAGE_ID = 8000;
+    private boolean isMRAID = false;
 
     static AdActivity getCurrent_ad_activity() {
         return current_ad_activity;
@@ -101,6 +102,7 @@ public class AdActivity extends Activity {
             // Add a close button after a delay.
             closeButtonHandler.sendEmptyMessageDelayed(CLOSE_BUTTON_MESSAGE_ID, closeButtonDelay);
         } else if (activityType.equals(InterstitialAdView.ACTIVITY_TYPE_MRAID)) {
+            isMRAID = true;
             if ((AdView.mraidFullscreenContainer == null) || (AdView.mraidFullscreenImplementation == null)) {
                 Clog.e(Clog.baseLogTag, "Launched MRAID Fullscreen activity with invalid properties");
                 finish();
@@ -326,7 +328,13 @@ public class AdActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        if ((mraidFullscreenImplementation != null) && (webView != null)) {
+        // handling mraid fullscreen rotations
+        if (isMRAID) {
+            super.onDestroy();
+            return;
+        }
+
+        if (webView != null) {
             if (webView.getParent() != null)
                 ((ViewGroup) webView.getParent()).removeView(webView);
             webView.destroy();
