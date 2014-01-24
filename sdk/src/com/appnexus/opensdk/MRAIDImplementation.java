@@ -435,18 +435,7 @@ class MRAIDImplementation {
             }
         }
 
-        owner.expand(width, height, useCustomClose, this);
-
-        if (forceOrientation != AdActivity.OrientationEnum.none) {
-            AdActivity.lockToMRAIDOrientation((Activity) owner.getContext(), forceOrientation);
-        }
-
-        if (allowOrientationChange) {
-            AdActivity.unlockOrientation((Activity) this.owner.getContext());
-        } else if (forceOrientation == AdActivity.OrientationEnum.none) {
-            // if forceOrientation was not none, it would have locked the orientation already
-            AdActivity.lockToCurrentOrientation((Activity) this.owner.getContext());
-        }
+        owner.expand(width, height, useCustomClose, this, allowOrientationChange, forceOrientation);
 
         // Fire the stateChange to MRAID
         if (!StringUtil.isEmpty(uri)) {
@@ -709,10 +698,12 @@ class MRAIDImplementation {
 
         // orientationProperties only affects expanded state
         if (expanded) {
+            Activity containerActivity = owner.isFullScreen
+                    ? getFullscreenActivity() : (Activity) owner.getContext();
             if (allow_orientation_change) {
-                AdActivity.unlockOrientation((Activity) this.owner.getContext());
+                AdActivity.unlockOrientation(containerActivity);
             } else {
-                AdActivity.lockToCurrentOrientation((Activity) this.owner.getContext());
+                AdActivity.lockToCurrentOrientation(containerActivity);
             }
         }
 

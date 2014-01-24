@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -120,6 +121,10 @@ public class AdActivity extends Activity {
             }
             mraidFullscreenImplementation = AdView.mraidFullscreenImplementation;
             mraidFullscreenImplementation.setFullscreenActivity(this);
+
+            if (AdView.mraidFullscreenListener != null) {
+                AdView.mraidFullscreenListener.onCreateCompleted();
+            }
         }
 
         CookieSyncManager.createInstance(this);
@@ -246,7 +251,7 @@ public class AdActivity extends Activity {
                 .getDefaultDisplay();
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO) {
+            if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
                 a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             } else {
                 int rotation = d.getRotation();
@@ -258,7 +263,7 @@ public class AdActivity extends Activity {
                 }
             }
         } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.FROYO) {
+            if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
                 a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             } else {
                 int rotation = d.getRotation();
