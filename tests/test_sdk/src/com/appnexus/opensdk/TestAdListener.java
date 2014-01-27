@@ -29,16 +29,11 @@ import static junit.framework.Assert.assertEquals;
 
 @Config(shadows = {ShadowWebSettings.class})
 @RunWith(RobolectricTestRunner.class)
-public class TestAdListener implements AdListener {
-    BannerAdView bannerAdView;
-    AdRequest adRequest;
-    boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked;
+public class TestAdListener extends BaseRoboTest {
 
-    @Before
+    @Override
     public void setup() {
-        Clog.clogged = true;
-        Robolectric.shadowOf(Robolectric.application).grantPermissions("android.permission.ACCESS_NETWORK_STATE");
-        bannerAdView = new BannerAdView(Robolectric.application);
+        super.setup();
         bannerAdView.setAdListener(this);
 
         adRequest = new AdRequest(bannerAdView.mAdFetcher);
@@ -48,14 +43,6 @@ public class TestAdListener implements AdListener {
         adExpanded = false;
         adCollapsed = false;
         adClicked = false;
-
-        Robolectric.getBackgroundScheduler().pause();
-        Robolectric.getUiThreadScheduler().pause();
-    }
-
-    private void assertCallbacks(boolean success) {
-        assertEquals(success, adLoaded);
-        assertEquals(!success, adFailed);
     }
 
     @Test
@@ -76,30 +63,5 @@ public class TestAdListener implements AdListener {
 
         Robolectric.runUiThreadTasks();
         assertCallbacks(false);
-    }
-
-    @Override
-    public void onAdLoaded(AdView adView) {
-        adLoaded = true;
-    }
-
-    @Override
-    public void onAdRequestFailed(AdView adView) {
-        adFailed = true;
-    }
-
-    @Override
-    public void onAdExpanded(AdView adView) {
-        adExpanded = true;
-    }
-
-    @Override
-    public void onAdCollapsed(AdView adView) {
-        adCollapsed = true;
-    }
-
-    @Override
-    public void onAdClicked(AdView adView) {
-        adClicked = true;
     }
 }

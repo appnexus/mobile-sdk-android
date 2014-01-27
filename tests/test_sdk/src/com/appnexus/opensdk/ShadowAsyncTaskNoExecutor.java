@@ -14,22 +14,18 @@
  *    limitations under the License.
  */
 
-package com.appnexus.opensdk.testviews;
+package com.appnexus.opensdk;
 
-import android.content.Context;
-import android.view.View;
+import android.os.AsyncTask;
+import org.robolectric.annotation.Implements;
+import org.robolectric.shadows.ShadowAsyncTask;
 
-public class DummyView {
-    public static View dummyView;
+import java.util.concurrent.Executor;
 
-    public static void createView(Context context) {
-        dummyView = new View(context);
-    }
-
-    public static View getDummyView(Context context) {
-        if (dummyView == null) {
-            dummyView = new View(context);
-        }
-        return dummyView;
+@Implements(AsyncTask.class)
+public class ShadowAsyncTaskNoExecutor extends ShadowAsyncTask {
+    @Override
+    public AsyncTask executeOnExecutor(Executor executor, Object[] params) {
+        return super.execute(params);
     }
 }

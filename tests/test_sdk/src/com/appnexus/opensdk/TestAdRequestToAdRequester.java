@@ -28,26 +28,19 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-public class TestAdRequestToAdRequester implements AdRequester {
-    BannerAdView bannerAdView;
-    AdRequest adRequest;
+public class TestAdRequestToAdRequester extends BaseRoboTest implements AdRequester {
     boolean requesterFailed, requesterReceivedResponse, requesterReturnedOwner;
 
-    @Before
+    @Override
     public void setup() {
-        Clog.clogged = true;
-        Robolectric.shadowOf(Robolectric.application).grantPermissions("android.permission.ACCESS_NETWORK_STATE");
-        bannerAdView = new BannerAdView(Robolectric.application);
-
+        super.setup();
         requesterFailed = false;
         requesterReceivedResponse = false;
         requesterReturnedOwner = false;
-
-        Robolectric.getBackgroundScheduler().pause();
-        Robolectric.getUiThreadScheduler().pause();
     }
 
-    private void assertCallbacks(boolean success) {
+    @Override
+    public void assertCallbacks(boolean success) {
         assertTrue(requesterReturnedOwner);
         assertEquals(success, requesterReceivedResponse);
         assertEquals(!success, requesterFailed);
@@ -61,7 +54,6 @@ public class TestAdRequestToAdRequester implements AdRequester {
         Robolectric.addPendingHttpResponse(200, TestResponses.banner());
         adRequest.execute();
         Robolectric.runBackgroundTasks();
-
         Robolectric.runUiThreadTasks();
         assertCallbacks(true);
     }
@@ -73,7 +65,6 @@ public class TestAdRequestToAdRequester implements AdRequester {
         Robolectric.addPendingHttpResponse(200, TestResponses.blank());
         adRequest.execute();
         Robolectric.runBackgroundTasks();
-
         Robolectric.runUiThreadTasks();
         assertCallbacks(false);
     }
