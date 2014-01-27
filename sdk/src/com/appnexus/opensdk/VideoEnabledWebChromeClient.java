@@ -1,10 +1,13 @@
 package com.appnexus.opensdk;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.GeolocationPermissions;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
@@ -14,10 +17,14 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     CustomViewCallback customViewCallback;
     FrameLayout frame;
     Activity context;
+    AdListener listener;
+    AdView adView;
 
 
-    public VideoEnabledWebChromeClient(Activity context) {
-        this.context = context;
+    public VideoEnabledWebChromeClient(AdView adView) {
+        this.context = (Activity) adView.getContext();
+        this.listener = adView.adListener;
+        this.adView = adView;
     }
 
     @Override
@@ -104,6 +111,45 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
             }
         });
         layout.addView(close);
+    }
+
+    //HTML5 Location Callbacks
+    @Override
+    public void onGeolocationPermissionsShowPrompt(final String origin, final GeolocationPermissions.Callback callback){
+        AlertDialog.Builder adb = new AlertDialog.Builder(this.context);
+
+        String title = String.format(this.context.getResources().getString(R.string.html5_geo_permission_prompt_title), origin);
+
+        adb.setTitle(title);
+        adb.setMessage(R.string.html5_geo_permission_prompt);
+
+        adb.setPositiveButton(R.string.allow, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                callback.invoke(origin, true, true);
+            }
+        });
+
+        adb.setNegativeButton(R.string.deny, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                callback.invoke(origin, false, false);
+            }
+        });
+
+        adb.create().show();
+
+        //We're presenting a modal dialog view, so this is equivalent to an expand
+        if(this.listener!=null){
+            this.listener.onAdExpanded(adView);
+        }
+    }
+
+    @Override
+    public void onGeolocationPermissionsHidePrompt(){
+        if(this.listener!=null){
+            this.listener.onAdCollapsed(adView);
+        }
     }
 
 }

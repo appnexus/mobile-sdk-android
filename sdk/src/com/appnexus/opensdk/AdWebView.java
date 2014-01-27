@@ -75,7 +75,7 @@ class AdWebView extends WebView implements Displayable {
 	@SuppressLint("SetJavaScriptEnabled")
     protected void setup() {
 
-        setWebChromeClient(new VideoEnabledWebChromeClient((Activity) destination.getContext()));
+        setWebChromeClient(new VideoEnabledWebChromeClient(destination));
 
         setWebViewClient(new WebViewClient() {
             @Override

@@ -26,5 +26,9 @@
     <string name="store_picture_decline">Decline</string>
     <string name="action_cant_be_completed">The requested action could not be completed.</string>
     <string name="open_browser">Open current page in native browser</string>
+    <string name="html5_geo_permission_prompt">Would you like to allow this app to access your location?</string>
+    <string name="html5_geo_permission_prompt_title">%s would like to access your location</string>
+    <string name="allow">Allow</string>
+    <string name="deny">Deny</string>
 
 </resources>
