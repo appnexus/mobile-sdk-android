@@ -89,6 +89,60 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     private String age;
     private String gender;
     private ArrayList<Pair<String, String>> customKeywords;
+    static String[] pNames = null;
+
+    private static String[] getParamNames(){
+        if(pNames == null){
+            String[] out = new String[31];
+            out[0]="id";
+            out[1]="md5udid";
+            out[2]="sha1udid";
+            out[3]="devmake";
+            out[4]="devmodel";
+            out[5]="carrier";
+            out[6]="appid";
+            out[7]="firstlaunch";
+            out[8]="loc";
+            out[9]="loc_age";
+            out[10]="loc_prec";
+            out[11]="istest";
+            out[12]="ua";
+            out[13]="orientation";
+            out[14]="size";
+            out[15]="max_size";
+            out[16]="promo_sizes";
+            out[17]="mcc";
+            out[18]="mnc";
+            out[19]="language";
+            out[20]="devtz";
+            out[21]="devtime";
+            out[22]="connection_type";
+            out[23]="native_browser";
+            out[24]="psa";
+            out[25]="reserve";
+            out[26]="age";
+            out[27]="gender";
+            out[28]="format";
+            out[29]="st";
+            out[30]="sdkver";
+
+            pNames = out;
+
+            return out;
+        }else{
+            return pNames;
+        }
+    }
+
+    private static boolean stringNotInParamNames(String s){
+        String[] params = AdRequest.getParamNames();
+        for(String s2 : params){
+            if(s2.equals(s)){
+                return false;
+            }
+        }
+        return true;
+    }
 
     private static final AdResponse HTTP_ERROR
             = new AdResponse(true);
@@ -380,10 +434,14 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (customKeywords != null) {
             for (Pair<String, String> pair : customKeywords) {
                 if (!StringUtil.isEmpty(pair.first) && (pair.second != null)) {
-                    sb.append("&")
-                            .append(pair.first)
-                            .append("=")
-                            .append(Uri.encode(pair.second));
+                    if(AdRequest.stringNotInParamNames(pair.first)){
+                        sb.append("&")
+                                .append(pair.first)
+                                .append("=")
+                                .append(Uri.encode(pair.second));
+                    }else{
+                        Clog.w(Clog.httpReqLogTag, Clog.getString(R.string.request_parameter_override_attempt, pair.second));
+                    }
                 }
             }
         }
@@ -518,6 +576,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         super.onCancelled(adResponse);
         Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.cancel_request));
     }
+
 
 //   // Uncomment for unit tests
 //   public void setContext(Context context) {
