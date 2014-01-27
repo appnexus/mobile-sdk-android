@@ -326,7 +326,7 @@ class MRAIDImplementation {
 
 
     WebChromeClient getWebChromeClient() {
-        return new VideoEnabledWebChromeClient((Activity) owner.getContext()) {
+        return new VideoEnabledWebChromeClient(owner.owner) {
             @Override
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
                 // super.onConsoleMessage(consoleMessage);

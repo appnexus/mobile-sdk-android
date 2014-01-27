@@ -20,6 +20,9 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     AdListener listener;
     AdView adView;
 
+    public VideoEnabledWebChromeClient(Activity activity){
+        this.context = activity;
+    }
 
     public VideoEnabledWebChromeClient(AdView adView) {
         this.context = (Activity) adView.getContext();
@@ -140,14 +143,14 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
         adb.create().show();
 
         //We're presenting a modal dialog view, so this is equivalent to an expand
-        if(this.listener!=null){
+        if(this.listener!=null && adView!=null){
             this.listener.onAdExpanded(adView);
         }
     }
 
     @Override
     public void onGeolocationPermissionsHidePrompt(){
-        if(this.listener!=null){
+        if(this.listener!=null && adView !=null){
             this.listener.onAdCollapsed(adView);
         }
     }

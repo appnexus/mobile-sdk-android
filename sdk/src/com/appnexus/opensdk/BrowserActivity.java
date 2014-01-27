@@ -181,7 +181,7 @@ public class BrowserActivity extends Activity {
             }
         });
 
-        webview.setWebChromeClient(new WebChromeClient() {
+        webview.setWebChromeClient(new VideoEnabledWebChromeClient(this) {
             @Override
             public void onShowCustomView(View view, CustomViewCallback callback) {
                 super.onShowCustomView(view, callback);
