@@ -122,5 +122,6 @@
 	<string formatted="false" name="xml_set_expands_to_full_screen_width">setExpandsToFullScreenWidth set to %b in xml</string>
 	<string formatted="false" name="mediation_finish">Mediation Controller has finished.</string>
 	<string formatted="false" name="unsupported_mraid">Mraid function %s unsupported.</string>
+	<string formatted="false" name="request_parameter_override_attempt">Parameter %s cannot be overridden by custom keywords</string>
 	<string formatted="false" name="mediation_timeout">Mediation network timed out.</string>
 </resources>
