@@ -16,6 +16,8 @@
 
 package com.appnexus.opensdk;
 
+import java.util.ArrayList;
+
 public class TestResponses {
 
     public static final String RESULTCB = "http://result.com/";
@@ -25,9 +27,11 @@ public class TestResponses {
 
     private static final String RESPONSE = "{\"status\":\"%s\",\"ads\": %s,\"mediated\": %s}";
     private static final String ADS = "[{ \"type\": \"%s\", \"width\": %d, \"height\": %d, \"content\": \"%s\" }]";
-    private static final String MEDIATED = "[{ \"type\": \"%s\", \"width\": %d, \"height\": %d, \"content\": \"%s\" }]";
     private static final String MEDIATED_AD = "{\"type\":\"%s\",\"class\":\"%s\",\"param\":\"%s\",\"width\":\"%d\",\"height\":\"%d\",\"id\":\"%s\"}";
     private static final String MEDIATED_ARRAY_SINGLE_AD = "[{ \"handler\": [{\"type\":\"%s\",\"class\":\"%s\",\"param\":\"%s\",\"width\":\"%d\",\"height\":\"%d\",\"id\":\"%s\"}],\"result_cb\":\"%s\"}]";
+    private static final String HANDLER = "{ \"handler\": [%s],\"result_cb\":\"%s\"}";
+    private static final String HANDLER_NO_RESULTCB = "{ \"handler\": [%s]}";
+    private static final String MEDIATED_ARRAY = "[%s]";
 
     public static String blank() {
         return "";
@@ -73,6 +77,23 @@ public class TestResponses {
         return String.format(RESULTCB + "&reason=%d", code);
     }
 
+    public static String waterfall(String[] classNames, String[] resultCBs) {
+        if (classNames.length != resultCBs.length) {
+            System.err.println("different numbers of class names and resultCBs");
+            return "";
+        }
+
+        ArrayList<String> handlers = new ArrayList<String>(classNames.length);
+
+        for (int i = 0; i < classNames.length; i++) {
+            String[] mediatedAds = {templateMediatedAd(createClassName(classNames[i]))};
+            String handler = templateHandlerFromMediatedAds(mediatedAds, resultCBs[i]);
+            handlers.add(handler);
+        }
+
+        return templateMediatedResponseFromHandlers(handlers.toArray(new String[handlers.size()]));
+    }
+
     // templates
 
     public static String templateResponse(String status, String ads, String mediated) {
@@ -85,12 +106,39 @@ public class TestResponses {
     }
 
     public static String templateSingleMediatedAdResponse(String className, String resultCB) {
-        String mediatedAd = String.format(MEDIATED_ARRAY_SINGLE_AD, "android", className, "", 320, 50, "", resultCB);
-        return templateResponse("ok", "[]", mediatedAd);
+        return templateSingleMediatedAdResponse("android", className, "", 320, 50, "", resultCB);
     }
 
     public static String templateSingleMediatedAdResponse(String type, String className, String param, int width, int height, String id, String resultCB) {
         String mediatedAd = String.format(MEDIATED_ARRAY_SINGLE_AD, type, className, param, width, height, id, resultCB);
         return templateResponse("ok", "[]", mediatedAd);
+    }
+
+    public static String templateMediatedAd(String className) {
+        return templateMediatedAd("android", className, "", 320, 50, "");
+    }
+
+    public static String templateMediatedAd(String type, String className, String param, int width, int height, String id) {
+        return String.format(MEDIATED_AD, type, className, param, width, height, id);
+    }
+
+    public static String templateHandlerFromMediatedAds(String[] mediatedAds, String resultCB) {
+        StringBuilder sb = new StringBuilder();
+        for (String mediatedAd : mediatedAds) {
+            sb.append(mediatedAd).append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+
+        if (resultCB == null) return String.format(HANDLER_NO_RESULTCB, sb.toString());
+        return String.format(HANDLER, sb.toString(), resultCB);
+    }
+
+    public static String templateMediatedResponseFromHandlers(String[] handlers) {
+        StringBuilder sb = new StringBuilder();
+        for (String handler : handlers) {
+            sb.append(handler).append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1);
+        return templateResponse("ok", "[]", String.format(MEDIATED_ARRAY, sb.toString()));
     }
 }

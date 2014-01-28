@@ -22,7 +22,7 @@ import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
 
-public class SuccessfulBanner implements MediatedBannerAdView {
+public class SuccessfulBanner2 implements MediatedBannerAdView {
 
     public static boolean didPass;
 

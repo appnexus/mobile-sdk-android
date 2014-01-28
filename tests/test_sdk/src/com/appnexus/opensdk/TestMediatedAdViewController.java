@@ -18,6 +18,8 @@ package com.appnexus.opensdk;
 
 import android.view.View;
 import com.appnexus.opensdk.testviews.NoRequestBannerView;
+import com.appnexus.opensdk.testviews.SuccessfulBanner;
+import com.appnexus.opensdk.testviews.SuccessfulBanner2;
 import com.appnexus.opensdk.util.Lock;
 import com.appnexus.opensdk.utils.Settings;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -28,6 +30,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import static com.appnexus.opensdk.MediatedAdViewController.RESULT.*;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 @Config(shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class})
@@ -51,26 +54,25 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         assertTrue(resultCBUri.startsWith(result));
     }
 
-    private void executeMediationRequest() {
+    private  void executeMediationAdRequest() {
         adRequest.execute();
         // execute main ad request
         Robolectric.getBackgroundScheduler().runOneTask();
         Robolectric.runUiThreadTasks();
+    }
 
+    private void executeResultCBRequest() {
         Robolectric.getUiThreadScheduler().advanceBy(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT);
         // execute result cb request
         Robolectric.getBackgroundScheduler().runOneTask();
         Robolectric.runUiThreadTasks();
-
-        Lock.pause(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT + 1000);
     }
 
     // common code between all tests
     public void runBasicResultCBTest(MediatedAdViewController.RESULT errorCode, boolean success) {
-        // for the result cb call
-        Robolectric.addPendingHttpResponse(200, TestResponses.blank());
-
-        executeMediationRequest();
+        executeMediationAdRequest();
+        executeResultCBRequest();
+        Lock.pause(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT + 1000);
 
         assertResultCB(1, errorCode);
         assertCallbacks(success);
@@ -81,6 +83,7 @@ public class TestMediatedAdViewController extends BaseRoboTest {
     @Test
     public void test1SucceedingMediationCall() {
         Robolectric.addPendingHttpResponse(200, TestResponses.mediatedSuccessfulBanner());
+        Robolectric.addPendingHttpResponse(200, TestResponses.blank());
         runBasicResultCBTest(SUCCESS, true);
     }
 
@@ -89,6 +92,7 @@ public class TestMediatedAdViewController extends BaseRoboTest {
     @Test
     public void test2NoClassMediationCall() {
         Robolectric.addPendingHttpResponse(200, TestResponses.mediatedFakeClass());
+        Robolectric.addPendingHttpResponse(200, TestResponses.blank());
         runBasicResultCBTest(MEDIATED_SDK_UNAVAILABLE, false);
     }
 
@@ -97,6 +101,7 @@ public class TestMediatedAdViewController extends BaseRoboTest {
     @Test
     public void test3BadClassMediationCall() {
         Robolectric.addPendingHttpResponse(200, TestResponses.mediatedDummyClass());
+        Robolectric.addPendingHttpResponse(200, TestResponses.blank());
         runBasicResultCBTest(MEDIATED_SDK_UNAVAILABLE, false);
     }
 
@@ -107,9 +112,8 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         // Create an AdRequest which will request a mediated response
         // that returns an class which does not make an ad request
         // then verify that the correct fail URL request was made
-        NoRequestBannerView.didInstantiate = false;
-
         Robolectric.addPendingHttpResponse(200, TestResponses.mediatedNoRequest());
+        Robolectric.addPendingHttpResponse(200, TestResponses.blank());
         runBasicResultCBTest(INTERNAL_ERROR, false);
         assertTrue(NoRequestBannerView.didInstantiate);
     }
@@ -119,6 +123,7 @@ public class TestMediatedAdViewController extends BaseRoboTest {
     @Test
     public void test5ErrorThrownMediationCall() {
         Robolectric.addPendingHttpResponse(200, TestResponses.mediatedOutOfMemory());
+        Robolectric.addPendingHttpResponse(200, TestResponses.blank());
         runBasicResultCBTest(MEDIATED_SDK_UNAVAILABLE, false);
     }
 
@@ -130,6 +135,7 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         // that succeeds in instantiation but fails to return an ad
         // verify that the correct fail URL request was made
         Robolectric.addPendingHttpResponse(200, TestResponses.mediatedNoFill());
+        Robolectric.addPendingHttpResponse(200, TestResponses.blank());
         runBasicResultCBTest(UNABLE_TO_FILL, false);
     }
 
@@ -139,6 +145,7 @@ public class TestMediatedAdViewController extends BaseRoboTest {
     public void test7NoFillMediationWithStandardResultCB() {
         Robolectric.addPendingHttpResponse(200, TestResponses.mediatedNoFill());
         Robolectric.addPendingHttpResponse(200, TestResponses.banner());
+        Robolectric.addPendingHttpResponse(200, TestResponses.blank());
         runBasicResultCBTest(UNABLE_TO_FILL, true);
         // check that the standard ad was loaded
         View view = bannerAdView.getChildAt(0);
@@ -150,7 +157,8 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         Robolectric.addPendingHttpResponse(200, TestResponses.mediatedSuccessfulBanner());
         Robolectric.addPendingHttpResponse(404, TestResponses.blank());
 
-        executeMediationRequest();
+        executeMediationAdRequest();
+        executeResultCBRequest();
 
         assertResultCB(1, SUCCESS);
         assertCallbacks(true);
@@ -161,10 +169,107 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         Robolectric.addPendingHttpResponse(200, TestResponses.mediatedNoFill());
         Robolectric.addPendingHttpResponse(404, TestResponses.blank());
 
-        executeMediationRequest();
+        executeMediationAdRequest();
+        executeResultCBRequest();
 
         assertResultCB(1, UNABLE_TO_FILL);
         assertCallbacks(false);
+    }
+
+    @Test
+    public void test11FirstSuccessfulSkipSecond() {
+        String[] classNames = {"SuccessfulBanner", "SuccessfulBanner2"};
+        String[] resultCBs = {TestResponses.RESULTCB, TestResponses.RESULTCB};
+        Robolectric.addPendingHttpResponse(200, TestResponses.waterfall(classNames, resultCBs));
+        Robolectric.addPendingHttpResponse(404, TestResponses.blank());
+
+        runBasicResultCBTest(SUCCESS, true);
+        assertTrue(SuccessfulBanner.didPass);
+        assertFalse(SuccessfulBanner2.didPass);
+    }
+
+    @Test
+    public void test12SkipFirstSuccessfulSecond() {
+        String[] classNames = {"NoFillView", "SuccessfulBanner2"};
+        String[] resultCBs = {TestResponses.RESULTCB, TestResponses.RESULTCB};
+        Robolectric.addPendingHttpResponse(200, TestResponses.waterfall(classNames, resultCBs));
+        Robolectric.addPendingHttpResponse(200, TestResponses.blank());
+        Robolectric.addPendingHttpResponse(200, TestResponses.blank());
+
+        executeMediationAdRequest();
+        executeResultCBRequest();
+        executeResultCBRequest();
+
+        Lock.pause(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT + 1000);
+
+        assertResultCB(1, UNABLE_TO_FILL);
+        assertResultCB(2, SUCCESS);
+        assertCallbacks(true);
+
+        assertTrue(SuccessfulBanner2.didPass);
+    }
+
+    @Test
+    public void test13FirstFailsIntoOverrideStd() {
+        String[] classNames = {"NoFillView", "SuccessfulBanner2"};
+        String[] resultCBs = {TestResponses.RESULTCB, TestResponses.RESULTCB};
+        Robolectric.addPendingHttpResponse(200, TestResponses.waterfall(classNames, resultCBs));
+        Robolectric.addPendingHttpResponse(200, TestResponses.banner());
+
+        runBasicResultCBTest(UNABLE_TO_FILL, true);
+
+        assertFalse(SuccessfulBanner2.didPass);
+    }
+
+    @Test
+    public void test14FirstFailsIntoOverrideMediated() {
+        String[] classNames = {"NoFillView", "SuccessfulBanner2"};
+        String[] resultCBs = {TestResponses.RESULTCB, TestResponses.RESULTCB};
+        Robolectric.addPendingHttpResponse(200, TestResponses.waterfall(classNames, resultCBs));
+        Robolectric.addPendingHttpResponse(200, TestResponses.mediatedSuccessfulBanner());
+        Robolectric.addPendingHttpResponse(200, TestResponses.blank());
+
+        executeMediationAdRequest();
+        executeResultCBRequest();
+        executeResultCBRequest();
+
+        Lock.pause(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT + 1000);
+
+        assertResultCB(1, UNABLE_TO_FILL);
+        assertResultCB(2, SUCCESS);
+        assertCallbacks(true);
+
+        assertFalse(SuccessfulBanner2.didPass);
+        assertTrue(SuccessfulBanner.didPass);
+    }
+
+    @Test
+    public void test15TestNoFill() {
+        Robolectric.addPendingHttpResponse(200, TestResponses.mediatedNoFill());
+        Robolectric.addPendingHttpResponse(200, TestResponses.mediatedNoFill());
+        Robolectric.addPendingHttpResponse(200, TestResponses.blank());
+
+        executeMediationAdRequest();
+        executeResultCBRequest();
+        executeResultCBRequest();
+
+        Lock.pause(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT + 1000);
+
+        assertResultCB(1, UNABLE_TO_FILL);
+        assertResultCB(2, UNABLE_TO_FILL);
+        assertCallbacks(false);
+    }
+
+    @Test
+    public void test16NoResultCB() {
+        String[] classNames = {"FakeClass", "NoFillView", "SuccessfulBanner"};
+        String[] resultCBs = {"", null, TestResponses.RESULTCB};
+        Robolectric.addPendingHttpResponse(200, TestResponses.waterfall(classNames, resultCBs));
+        Robolectric.addPendingHttpResponse(200, TestResponses.blank());
+
+        runBasicResultCBTest(SUCCESS, true);
+
+        assertTrue(SuccessfulBanner.didPass);
     }
 
     @Override
