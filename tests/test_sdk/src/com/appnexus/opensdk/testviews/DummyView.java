@@ -18,17 +18,17 @@ package com.appnexus.opensdk.testviews;
 
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 
 public class DummyView {
     public static View dummyView;
 
-    public static void createView(Context context) {
-        dummyView = new View(context);
-    }
-
     public static View getDummyView(Context context) {
         if (dummyView == null) {
             dummyView = new View(context);
+        }
+        if (dummyView.getParent() != null) {
+            ((ViewGroup) dummyView.getParent()).removeView(dummyView);
         }
         return dummyView;
     }
