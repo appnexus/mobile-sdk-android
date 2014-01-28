@@ -18,6 +18,7 @@ package com.appnexus.opensdk;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -89,57 +90,52 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     private String age;
     private String gender;
     private ArrayList<Pair<String, String>> customKeywords;
-    static String[] pNames = null;
+    static HashSet<String> pNames = null;
 
-    private static String[] getParamNames(){
+    private static HashSet<String> getParamNames(){
         if(pNames == null){
-            String[] out = new String[31];
-            out[0]="id";
-            out[1]="md5udid";
-            out[2]="sha1udid";
-            out[3]="devmake";
-            out[4]="devmodel";
-            out[5]="carrier";
-            out[6]="appid";
-            out[7]="firstlaunch";
-            out[8]="loc";
-            out[9]="loc_age";
-            out[10]="loc_prec";
-            out[11]="istest";
-            out[12]="ua";
-            out[13]="orientation";
-            out[14]="size";
-            out[15]="max_size";
-            out[16]="promo_sizes";
-            out[17]="mcc";
-            out[18]="mnc";
-            out[19]="language";
-            out[20]="devtz";
-            out[21]="devtime";
-            out[22]="connection_type";
-            out[23]="native_browser";
-            out[24]="psa";
-            out[25]="reserve";
-            out[26]="age";
-            out[27]="gender";
-            out[28]="format";
-            out[29]="st";
-            out[30]="sdkver";
+            pNames = new HashSet<String>();
+            pNames.add("id");
+            pNames.add("md5udid");
+            pNames.add("sha1udid");
+            pNames.add("devmake");
+            pNames.add("devmodel");
+            pNames.add("carrier");
+            pNames.add("appid");
+            pNames.add("firstlaunch");
+            pNames.add("loc");
+            pNames.add("loc_age");
+            pNames.add("loc_prec");
+            pNames.add("istest");
+            pNames.add("ua");
+            pNames.add("orientation");
+            pNames.add("size");
+            pNames.add("max_size");
+            pNames.add("promo_sizes");
+            pNames.add("mcc");
+            pNames.add("mnc");
+            pNames.add("language");
+            pNames.add("devtz");
+            pNames.add("devtime");
+            pNames.add("connection_type");
+            pNames.add("native_browser");
+            pNames.add("psa");
+            pNames.add("reserve");
+            pNames.add("age");
+            pNames.add("gender");
+            pNames.add("format");
+            pNames.add("st");
+            pNames.add("sdkver");
 
-            pNames = out;
-
-            return out;
+            return pNames;
         }else{
             return pNames;
         }
     }
 
     private static boolean stringNotInParamNames(String s){
-        String[] params = AdRequest.getParamNames();
-        for(String s2 : params){
-            if(s2.equals(s)){
-                return false;
-            }
+        if(getParamNames().contains(s)){
+            return false;
         }
         return true;
     }
