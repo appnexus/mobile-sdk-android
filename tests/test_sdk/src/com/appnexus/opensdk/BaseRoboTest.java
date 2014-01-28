@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.util.Scheduler;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -37,6 +38,8 @@ public class BaseRoboTest implements AdListener {
     AdRequest adRequest;
     boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked;
 
+    Scheduler uiScheduler, bgScheduler;
+
     @Before
     public void setup() {
         Clog.clogged = true;
@@ -45,8 +48,10 @@ public class BaseRoboTest implements AdListener {
         bannerAdView = new BannerAdView(activity);
         bannerAdView.setPlacementID("0");
 
-        Robolectric.getBackgroundScheduler().pause();
-        Robolectric.getUiThreadScheduler().pause();
+        bgScheduler = Robolectric.getBackgroundScheduler();
+        uiScheduler = Robolectric.getUiThreadScheduler();
+        bgScheduler.pause();
+        uiScheduler.pause();
 
         adLoaded = false;
         adFailed = false;

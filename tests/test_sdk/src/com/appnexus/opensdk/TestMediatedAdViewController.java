@@ -62,7 +62,7 @@ public class TestMediatedAdViewController extends BaseRoboTest {
     }
 
     private void executeResultCBRequest() {
-        Robolectric.getUiThreadScheduler().advanceBy(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT);
+        Robolectric.getUiThreadScheduler().advanceToLastPostedRunnable();
         // execute result cb request
         Robolectric.getBackgroundScheduler().runOneTask();
         Robolectric.runUiThreadTasks();

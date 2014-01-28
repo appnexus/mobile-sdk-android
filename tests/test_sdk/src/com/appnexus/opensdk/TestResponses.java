@@ -94,6 +94,11 @@ public class TestResponses {
         return templateMediatedResponseFromHandlers(handlers.toArray(new String[handlers.size()]));
     }
 
+    public static String callbacks(int testNumber) {
+        return templateSingleMediatedAdResponse("android", createClassName("CallbacksTestView"), "",
+                320, 50, String.valueOf(testNumber), RESULTCB);
+    }
+
     // templates
 
     public static String templateResponse(String status, String ads, String mediated) {
