@@ -16,6 +16,8 @@
 
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
+import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.util.Lock;
 import com.appnexus.opensdk.utils.Settings;
 import org.junit.Test;
@@ -62,7 +64,6 @@ public class TestMediationCallbacks extends BaseRoboTest implements AdListener {
         assertFalse(adFailedMultiple);
     }
 
-    //
     public void runCallbacksTest(int testNumber, boolean success) {
         Robolectric.addPendingHttpResponse(200, TestResponses.callbacks(testNumber));
         Robolectric.addPendingHttpResponse(200, TestResponses.blank());
@@ -85,30 +86,38 @@ public class TestMediationCallbacks extends BaseRoboTest implements AdListener {
     }
 
     /**
-     * These tests ensure that callbacks (app events) that are returned from mediation networks improperly
-     * do not make it to the app developer callback level (AdListener).
+     * These tests ensure that callbacks (app events) that are returned from mediation networks
+     * at the wrong times do not make it to the app developer callback level (AdListener).
      */
 
+    // Verifies that multiple onAdLoaded calls only call AdListener.onAdLoaded once
     @Test
     public void test18AdLoadedMultiple() {
         runCallbacksTest(18, true);
     }
 
+    // Verifies that a timed-out network call to onAdLoaded fails
     @Test
     public void test19Timeout() {
         runCallbacksTest(19, false);
     }
 
+    // Verifies that the SDK ignores a call to onAdFailed if onAdLoaded
+    // was already called by the network
     @Test
     public void test20LoadThenFail() {
         runCallbacksTest(20, true);
     }
 
+    // Verifies that the SDK ignores a call to onAdLoaded if onAdFailed
+    // was already called by the network
     @Test
     public void test21FailThenLoad() {
         runCallbacksTest(21, false);
     }
 
+    // Verifies that a network that calls to onAdLoaded and then calls
+    // the non-essential callbacks does so successfully
     @Test
     public void test22LoadAndHitOtherCallbacks() {
         runCallbacksTest(22, true);
@@ -117,6 +126,8 @@ public class TestMediationCallbacks extends BaseRoboTest implements AdListener {
         assertTrue(adClicked);
     }
 
+    // Verifies that the SDK ignores any extra callbacks onAdFailed
+    // was already called by the network
     @Test
     public void test23FailAndHitOtherCallbacks() {
         runCallbacksTest(23, false);
@@ -125,11 +136,14 @@ public class TestMediationCallbacks extends BaseRoboTest implements AdListener {
         assertFalse(adClicked);
     }
 
+    // Verifies that multiple onAdFailed calls only call AdListener.onAdFailed once
     @Test
     public void test24AdFailedMultiple() {
         runCallbacksTest(24, false);
     }
 
+    // Verifies that the SDK ignores any extra callbacks called by
+    // a network from a previous ad
     @Test
     public void test25LoadThenLoadNewAndHitOtherCallbacks() {
         Robolectric.addPendingHttpResponse(200, TestResponses.callbacks(22));

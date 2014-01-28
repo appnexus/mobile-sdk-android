@@ -32,7 +32,7 @@ import org.robolectric.util.Scheduler;
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(RobolectricTestRunner.class)
-public class BaseRoboTest implements AdListener {
+public abstract class BaseRoboTest implements AdListener {
     Activity activity;
     BannerAdView bannerAdView;
     AdRequest adRequest;

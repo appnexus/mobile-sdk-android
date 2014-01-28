@@ -14,18 +14,20 @@
  *    limitations under the License.
  */
 
-package com.appnexus.opensdk;
+package com.appnexus.opensdk.shadows;
 
-import android.os.AsyncTask;
+import android.webkit.WebSettings;
+import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
-import org.robolectric.shadows.ShadowAsyncTask;
 
-import java.util.concurrent.Executor;
+@Implements(value = WebSettings.class, callThroughByDefault = true)
+public class ShadowWebSettings {
 
-@Implements(AsyncTask.class)
-public class ShadowAsyncTaskNoExecutor extends ShadowAsyncTask {
-    @Override
-    public AsyncTask executeOnExecutor(Executor executor, Object[] params) {
-        return super.execute(params);
+    @Implementation
+    public synchronized void setJavaScriptCanOpenWindowsAutomatically(boolean flag) {
+    }
+
+    @Implementation
+    public synchronized void setLoadsImagesAutomatically(boolean flag) {
     }
 }

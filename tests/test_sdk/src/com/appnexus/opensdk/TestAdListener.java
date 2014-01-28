@@ -16,16 +16,12 @@
 
 package com.appnexus.opensdk;
 
-import android.app.Activity;
-import com.appnexus.opensdk.utils.Clog;
-import org.junit.Before;
+import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-
-import static junit.framework.Assert.assertEquals;
 
 @Config(shadows = {ShadowWebSettings.class})
 @RunWith(RobolectricTestRunner.class)

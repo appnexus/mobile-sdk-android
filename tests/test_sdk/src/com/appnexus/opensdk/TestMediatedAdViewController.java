@@ -17,6 +17,9 @@
 package com.appnexus.opensdk;
 
 import android.view.View;
+import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
+import com.appnexus.opensdk.shadows.ShadowWebSettings;
+import com.appnexus.opensdk.testviews.DummyView;
 import com.appnexus.opensdk.testviews.NoRequestBannerView;
 import com.appnexus.opensdk.testviews.SuccessfulBanner;
 import com.appnexus.opensdk.testviews.SuccessfulBanner2;
@@ -30,8 +33,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import static com.appnexus.opensdk.MediatedAdViewController.RESULT.*;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 @Config(shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class})
 @RunWith(RobolectricTestRunner.class)
@@ -68,7 +70,7 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         Robolectric.runUiThreadTasks();
     }
 
-    // common code between all tests
+    // common format for several of the basic mediation tests
     public void runBasicResultCBTest(MediatedAdViewController.RESULT errorCode, boolean success) {
         executeMediationAdRequest();
         executeResultCBRequest();
@@ -77,6 +79,10 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         assertResultCB(1, errorCode);
         assertCallbacks(success);
     }
+
+    /**
+     * Basic Mediation tests, in particular, testing the resultCB
+     */
 
     // Verify that a successful mediation response,
     // makes the resultCB call with SUCCESS code
@@ -152,6 +158,47 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         assertTrue(view instanceof AdWebView);
     }
 
+    // Verify that a standard ad can transition to a mediated ad successfully
+    @Test
+    public void test8StandardThenMediated() {
+        Robolectric.addPendingHttpResponse(200, TestResponses.banner());
+        Robolectric.addPendingHttpResponse(200, TestResponses.mediatedSuccessfulBanner());
+        Robolectric.addPendingHttpResponse(200, TestResponses.blank());
+
+        // load a standard ad
+        adRequest.execute();
+
+        Robolectric.getBackgroundScheduler().runOneTask();
+        Robolectric.runUiThreadTasks();
+
+        Lock.pause(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT);
+
+        View view = bannerAdView.getChildAt(0);
+        assertTrue(view instanceof AdWebView);
+        assertCallbacks(true);
+
+        adLoaded = false;
+
+        // load a mediated ad
+        adRequest = new AdRequest(bannerAdView.mAdFetcher);
+        adRequest.execute();
+
+        Robolectric.getBackgroundScheduler().runOneTask();
+        Robolectric.runUiThreadTasks();
+
+        Robolectric.getUiThreadScheduler().advanceToLastPostedRunnable();
+        Robolectric.getBackgroundScheduler().runOneTask();
+        Robolectric.runUiThreadTasks();
+
+        Lock.pause(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT);
+
+        View mediatedView = bannerAdView.getChildAt(0);
+        assertNotNull(mediatedView);
+        assertEquals(DummyView.dummyView, mediatedView);
+        assertCallbacks(true);
+    }
+
+    // Verify that a 404 resultCB is handled properly
     @Test
     public void test9Http404ErrorResponseFromSuccess() {
         Robolectric.addPendingHttpResponse(200, TestResponses.mediatedSuccessfulBanner());
@@ -164,6 +211,7 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         assertCallbacks(true);
     }
 
+    // Verify that a 404 resultCB is handled properly
     @Test
     public void test9Http404ErrorResponseFromFailure() {
         Robolectric.addPendingHttpResponse(200, TestResponses.mediatedNoFill());
@@ -176,6 +224,11 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         assertCallbacks(false);
     }
 
+    /**
+     * Mediation Waterfall tests
+     */
+
+    // Verify that a response with 2 mediated ads stops after the first (successful) ad
     @Test
     public void test11FirstSuccessfulSkipSecond() {
         String[] classNames = {"SuccessfulBanner", "SuccessfulBanner2"};
@@ -188,6 +241,8 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         assertFalse(SuccessfulBanner2.didPass);
     }
 
+    // Verify that a response with 2 mediated ads continues after the first (failure) ad
+    // to succeeds on the second ad
     @Test
     public void test12SkipFirstSuccessfulSecond() {
         String[] classNames = {"NoFillView", "SuccessfulBanner2"};
@@ -209,6 +264,8 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         assertTrue(SuccessfulBanner2.didPass);
     }
 
+    // Verify that a response with 2 mediated ads with an overriding resultCB
+    // skips the second ad and follows the result (standard ad)
     @Test
     public void test13FirstFailsIntoOverrideStd() {
         String[] classNames = {"NoFillView", "SuccessfulBanner2"};
@@ -221,6 +278,8 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         assertFalse(SuccessfulBanner2.didPass);
     }
 
+    // Verify that a response with 2 mediated ads with an overriding resultCB
+    // skips the second ad and follows the result (mediated ad)
     @Test
     public void test14FirstFailsIntoOverrideMediated() {
         String[] classNames = {"NoFillView", "SuccessfulBanner2"};
@@ -243,6 +302,8 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         assertTrue(SuccessfulBanner.didPass);
     }
 
+    // Verify that a response with 1 invalid mediated ads with a resultCB that
+    // also responds with 1 invalid ad returns failure (UNABLE_TO_FILL)
     @Test
     public void test15TestNoFill() {
         Robolectric.addPendingHttpResponse(200, TestResponses.mediatedNoFill());
@@ -260,6 +321,8 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         assertCallbacks(false);
     }
 
+    // Verify that the waterfall continues normally if the resultCB is empty
+    // or non-existent.
     @Test
     public void test16NoResultCB() {
         String[] classNames = {"FakeClass", "NoFillView", "SuccessfulBanner"};
