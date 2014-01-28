@@ -18,6 +18,7 @@ package com.appnexus.opensdk;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -89,6 +90,55 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     private String age;
     private String gender;
     private ArrayList<Pair<String, String>> customKeywords;
+    static HashSet<String> pNames = null;
+
+    private static HashSet<String> getParamNames(){
+        if(pNames == null){
+            pNames = new HashSet<String>();
+            pNames.add("id");
+            pNames.add("md5udid");
+            pNames.add("sha1udid");
+            pNames.add("devmake");
+            pNames.add("devmodel");
+            pNames.add("carrier");
+            pNames.add("appid");
+            pNames.add("firstlaunch");
+            pNames.add("loc");
+            pNames.add("loc_age");
+            pNames.add("loc_prec");
+            pNames.add("istest");
+            pNames.add("ua");
+            pNames.add("orientation");
+            pNames.add("size");
+            pNames.add("max_size");
+            pNames.add("promo_sizes");
+            pNames.add("mcc");
+            pNames.add("mnc");
+            pNames.add("language");
+            pNames.add("devtz");
+            pNames.add("devtime");
+            pNames.add("connection_type");
+            pNames.add("native_browser");
+            pNames.add("psa");
+            pNames.add("reserve");
+            pNames.add("age");
+            pNames.add("gender");
+            pNames.add("format");
+            pNames.add("st");
+            pNames.add("sdkver");
+
+            return pNames;
+        }else{
+            return pNames;
+        }
+    }
+
+    private static boolean stringNotInParamNames(String s){
+        if(getParamNames().contains(s)){
+            return false;
+        }
+        return true;
+    }
 
     private static final AdResponse HTTP_ERROR
             = new AdResponse(true);
@@ -380,10 +430,14 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (customKeywords != null) {
             for (Pair<String, String> pair : customKeywords) {
                 if (!StringUtil.isEmpty(pair.first) && (pair.second != null)) {
-                    sb.append("&")
-                            .append(pair.first)
-                            .append("=")
-                            .append(Uri.encode(pair.second));
+                    if(AdRequest.stringNotInParamNames(pair.first)){
+                        sb.append("&")
+                                .append(pair.first)
+                                .append("=")
+                                .append(Uri.encode(pair.second));
+                    }else{
+                        Clog.w(Clog.httpReqLogTag, Clog.getString(R.string.request_parameter_override_attempt, pair.second));
+                    }
                 }
             }
         }
@@ -518,6 +572,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         super.onCancelled(adResponse);
         Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.cancel_request));
     }
+
 
 //   // Uncomment for unit tests
 //   public void setContext(Context context) {

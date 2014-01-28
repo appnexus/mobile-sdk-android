@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 
+<!--
    Copyright 2013 APPNEXUS INC
-   
+
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
@@ -33,6 +33,13 @@
             android:id="@+id/debug_btn_close"
             android:layout_alignParentRight="true"
             android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:layout_height="44dp"
+            android:layout_width="44dp"/>
+
+    <ImageButton
+            android:id="@+id/debug_btn_jmp_to_btm"
+            android:layout_toLeftOf="@id/debug_btn_close"
+            android:src="@android:drawable/ic_menu_more"
             android:layout_height="44dp"
             android:layout_width="44dp"/>
 
