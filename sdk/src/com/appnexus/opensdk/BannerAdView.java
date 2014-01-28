@@ -87,7 +87,7 @@ import com.appnexus.opensdk.utils.WebviewUtil;
 public class BannerAdView extends AdView {
 
     private int period;
-    private boolean auto_refresh;
+    private boolean auto_refresh = true;
     private boolean running;
     private boolean shouldReloadOnResume;
     private BroadcastReceiver receiver;
@@ -99,7 +99,7 @@ public class BannerAdView extends AdView {
 
     private void setDefaultsBeforeXML() {
         running = false;
-        auto_refresh = false;
+        auto_refresh = true;
         shouldReloadOnResume = false;
         receiversRegistered = false;
     }
@@ -176,7 +176,7 @@ public class BannerAdView extends AdView {
         super.setup(context, attrs);
         onFirstLayout();
         mAdFetcher.setPeriod(period);
-        mAdFetcher.setAutoRefresh(getAutoRefresh());
+        mAdFetcher.setAutoRefresh(auto_refresh);
     }
 
     void setupBroadcast(Context context) {
