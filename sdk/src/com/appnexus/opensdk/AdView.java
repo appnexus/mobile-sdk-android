@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -494,6 +495,7 @@ public abstract class AdView extends FrameLayout {
 
         close_button = new ImageButton(this.getContext()){
 
+            @SuppressLint("NewApi")
             @Override
             public void onLayout(boolean changed, int left, int top, int right, int bottom){
                 int close_button_loc[] = new int[2];

@@ -88,7 +88,7 @@ public class BannerAdView extends AdView {
 
     private int period;
     private boolean auto_refresh = true;
-    private boolean running;
+    private boolean loadAdHasBeenCalled;
     private boolean shouldReloadOnResume;
     private BroadcastReceiver receiver;
     private boolean receiversRegistered;
@@ -98,7 +98,7 @@ public class BannerAdView extends AdView {
     private int height = -1;
 
     private void setDefaultsBeforeXML() {
-        running = false;
+        loadAdHasBeenCalled = false;
         auto_refresh = true;
         shouldReloadOnResume = false;
         receiversRegistered = false;
@@ -212,7 +212,7 @@ public class BannerAdView extends AdView {
         super.onLayout(changed, left, top, right, bottom);
 
         // Are we coming back from a screen/user presence change?
-        if (running) {
+        if (loadAdHasBeenCalled) {
             if (!receiversRegistered) {
                 setupBroadcast(getContext());
                 receiversRegistered = true;
@@ -246,8 +246,13 @@ public class BannerAdView extends AdView {
      */
     @Override
     public boolean loadAd() {
-        running = true;
-        return super.loadAd();
+        loadAdHasBeenCalled = true;
+        if(super.loadAd())
+            return true;
+        else{
+            loadAdHasBeenCalled = false;
+            return false;
+        }
     }
 
     /**
@@ -273,13 +278,13 @@ public class BannerAdView extends AdView {
     void start() {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.start));
         mAdFetcher.start();
-        running = true;
+        loadAdHasBeenCalled = true;
     }
 
     void stop() {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.stop));
         mAdFetcher.stop();
-        running = false;
+        loadAdHasBeenCalled = false;
     }
 
     @Override
@@ -459,7 +464,7 @@ public class BannerAdView extends AdView {
             mAdFetcher.setAutoRefresh(auto_refresh);
             mAdFetcher.clearDurations();
         }
-        if (this.auto_refresh && !running && mAdFetcher != null) {
+        if (this.auto_refresh && !loadAdHasBeenCalled && mAdFetcher != null) {
             start();
         }
     }
@@ -502,9 +507,15 @@ public class BannerAdView extends AdView {
                 receiversRegistered = true;
             }
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.unhidden));
-            if (!closing && !mraid_changing_size_or_visibility && !isMRAIDExpanded() && mAdFetcher != null
-                    && (running || shouldReloadOnResume || auto_refresh)){
-                start();
+            //The only time we want to request on visibility changes is if an ad hasn't been loaded yet (loadAdHasBeenCalled)
+            // shouldReloadOnResume is true
+            // OR auto_refresh is enabled
+            if(loadAdHasBeenCalled || shouldReloadOnResume || auto_refresh){
+
+                //If we're MRAID closing or expanding, don't load.
+                if (!closing && !mraid_changing_size_or_visibility && !isMRAIDExpanded() && mAdFetcher != null){
+                    start();
+                }
             }
             closing = false;
 
@@ -519,7 +530,7 @@ public class BannerAdView extends AdView {
                 receiversRegistered = false;
             }
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.hidden));
-            if (mAdFetcher != null && running) {
+            if (mAdFetcher != null && loadAdHasBeenCalled) {
                 stop();
             }
 
