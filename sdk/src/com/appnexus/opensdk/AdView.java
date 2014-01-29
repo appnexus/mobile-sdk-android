@@ -370,8 +370,9 @@ public abstract class AdView extends FrameLayout {
             }
             caller.owner.removeFromParent();
             if (this instanceof InterstitialAdView) {
-                AdActivity.getCurrent_ad_activity().layout.addView(caller.owner);
-                AdActivity.getCurrent_ad_activity().addCloseButton();
+                AdActivity adActivity = ((InterstitialAdView) this).getAdActivity();
+                adActivity.layout.addView(caller.owner);
+                adActivity.addCloseButton();
             } else {
                 this.addView(caller.owner);
             }
@@ -440,8 +441,7 @@ public abstract class AdView extends FrameLayout {
 
             // remove all the children of the adView
             if (this instanceof InterstitialAdView) {
-                AdActivity aa = AdActivity.getCurrent_ad_activity();
-                aa.layout.removeAllViews();
+                ((InterstitialAdView) this).getAdActivity().layout.removeAllViews();
             } else {
                 this.removeAllViews();
             }
@@ -611,7 +611,7 @@ public abstract class AdView extends FrameLayout {
         if(this instanceof BannerAdView){
             this.addView(close_button);
         }else{
-            AdActivity.getCurrent_ad_activity().layout.addView(close_button);
+            ((InterstitialAdView) this).getAdActivity().layout.addView(close_button);
         }
     }
 	/**

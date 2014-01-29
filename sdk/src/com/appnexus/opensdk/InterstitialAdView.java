@@ -210,9 +210,7 @@ public class InterstitialAdView extends AdView {
 
     void interacted() {
         interacted = true;
-        if (getAdActivity() != null) {
-            getAdActivity().addCloseButton();
-        }
+        if (adActivity != null) adActivity.addCloseButton();
     }
 
     @Override
