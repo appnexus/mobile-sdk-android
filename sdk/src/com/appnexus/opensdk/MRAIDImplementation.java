@@ -445,7 +445,7 @@ class MRAIDImplementation {
         expanded = true;
 
         // Fire the AdListener event
-        if(!this.owner.owner.isInterstitial()){
+        if(owner.owner!= null && !this.owner.owner.isInterstitial()){
             this.owner.owner.getAdDispatcher().onAdExpanded();
         }
     }
