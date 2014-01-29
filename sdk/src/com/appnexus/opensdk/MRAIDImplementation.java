@@ -387,7 +387,7 @@ class MRAIDImplementation {
             owner.close();
             owner.loadUrl("javascript:window.mraid.util.stateChangeEvent('default');");
 
-            if (owner.owner != null) {
+            if (owner.owner != null && !owner.owner.isInterstitial()) {
                 owner.owner.getAdDispatcher().onAdCollapsed();
             }
 
@@ -445,7 +445,9 @@ class MRAIDImplementation {
         expanded = true;
 
         // Fire the AdListener event
-        this.owner.owner.getAdDispatcher().onAdExpanded();
+        if(!this.owner.owner.isInterstitial()){
+            this.owner.owner.getAdDispatcher().onAdExpanded();
+        }
     }
 
     void dispatch_mraid_call(String url) {
