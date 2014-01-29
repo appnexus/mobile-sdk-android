@@ -10,8 +10,9 @@ import android.view.ViewGroup;
 import android.webkit.GeolocationPermissions;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-
 import com.appnexus.opensdk.utils.Clog;
+
+import java.util.HashMap;
 
 class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     CustomViewCallback customViewCallback;
@@ -19,6 +20,7 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     Activity context;
     AdListener listener;
     AdView adView;
+    HashMap<View, Integer> views = new HashMap<View, Integer>();
 
     public VideoEnabledWebChromeClient(Activity activity){
         this.context = activity;
@@ -51,12 +53,15 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
             }
 
             // hide other children so that the only view shown is the custom view
-            for (int i = 0; i < root.getChildCount(); i++)
+            for (int i = 0; i < root.getChildCount(); i++) {
+                views.put(root.getChildAt(i), root.getChildAt(i).getVisibility());
                 root.getChildAt(i).setVisibility(View.GONE);
-
+            }
             try {
                 addCloseButton(frame);
-                context.addContentView(frame, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                context.addContentView(frame,
+                        new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT));
             } catch (Exception e) {
                 Clog.d(Clog.baseLogTag, e.toString());
             }
@@ -89,7 +94,7 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
 
         // restore the views that were originally there
         for (int i = 0; i < root.getChildCount(); i++) {
-            root.getChildAt(i).setVisibility(View.VISIBLE);
+            root.getChildAt(i).setVisibility(views.get(root.getChildAt(i)));
         }
 
         if (customViewCallback != null)
