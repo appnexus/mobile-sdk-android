@@ -18,17 +18,15 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     CustomViewCallback customViewCallback;
     FrameLayout frame;
     Activity context;
-    AdListener listener;
     AdView adView;
     HashMap<View, Integer> views;
 
-    public VideoEnabledWebChromeClient(Activity activity){
+    public VideoEnabledWebChromeClient(Activity activity) {
         this.context = activity;
     }
 
     public VideoEnabledWebChromeClient(AdView adView) {
         this.context = (Activity) adView.getContext();
-        this.listener = adView.adListener;
         this.adView = adView;
     }
 
@@ -118,7 +116,7 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
 
     //HTML5 Location Callbacks
     @Override
-    public void onGeolocationPermissionsShowPrompt(final String origin, final GeolocationPermissions.Callback callback){
+    public void onGeolocationPermissionsShowPrompt(final String origin, final GeolocationPermissions.Callback callback) {
         AlertDialog.Builder adb = new AlertDialog.Builder(this.context);
 
         String title = String.format(this.context.getResources().getString(R.string.html5_geo_permission_prompt_title), origin);
@@ -142,18 +140,17 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
 
         adb.create().show();
 
-        //We're presenting a modal dialog view, so this is equivalent to an expand
-        if(this.listener!=null && adView!=null && !adView.isInterstitial()){
-            if(!adView.isMRAIDExpanded())
-                this.listener.onAdExpanded(adView);
+        // We're presenting a modal dialog view, so this is equivalent to an expand
+        // suppress if already expanded in MRAID
+        if ((adView != null) && !adView.isInterstitial() && !adView.isMRAIDExpanded()) {
+            this.adView.getAdDispatcher().onAdExpanded();
         }
     }
 
     @Override
-    public void onGeolocationPermissionsHidePrompt(){
-        if(this.listener!=null && adView !=null && !adView.isInterstitial()){
-            if(!adView.isMRAIDExpanded())
-                this.listener.onAdCollapsed(adView);
+    public void onGeolocationPermissionsHidePrompt() {
+        if ((adView != null) && !adView.isInterstitial() && !adView.isMRAIDExpanded()) {
+            this.adView.getAdDispatcher().onAdCollapsed();
         }
     }
 
