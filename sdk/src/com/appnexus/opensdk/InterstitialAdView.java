@@ -48,17 +48,12 @@ public class InterstitialAdView extends AdView {
     private ArrayList<Size> allowedSizes;
     private int backgroundColor = Color.BLACK;
     private int closeButtonDelay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
-    boolean interacted = false;
     static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
     private Queue<Pair<Long, Displayable>> adQueue = new LinkedList<Pair<Long, Displayable>>();
 
     //Intent Keys
     static final String INTENT_KEY_TIME = "TIME";
-    private static final String INTENT_KEY_ORIENTATION = "ORIENTATION";
     static final String INTENT_KEY_CLOSE_BUTTON_DELAY = "CLOSE_BUTTON_DELAY";
-    static final String INTENT_KEY_ACTIVITY_TYPE = "ACTIVITY_TYPE";
-    static final String ACTIVITY_TYPE_INTERSTITIAL = "INTERSTITIAL";
-    static final String ACTIVITY_TYPE_MRAID = "MRAID";
 
     //To let the activity show the button.
     private AdActivity adActivity = null;
@@ -205,7 +200,6 @@ public class InterstitialAdView extends AdView {
     }
 
     void interacted() {
-        interacted = true;
         addCloseButton();
     }
 
@@ -319,11 +313,9 @@ public class InterstitialAdView extends AdView {
         // otherwise, launch our adActivity
         if (validAdExists) {
             Intent i = new Intent(getContext(), AdActivity.class);
-            i.putExtra(InterstitialAdView.INTENT_KEY_ACTIVITY_TYPE,
-                    InterstitialAdView.ACTIVITY_TYPE_INTERSTITIAL);
+            i.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE,
+                    AdActivity.ACTIVITY_TYPE_INTERSTITIAL);
             i.putExtra(InterstitialAdView.INTENT_KEY_TIME, now);
-            i.putExtra(InterstitialAdView.INTENT_KEY_ORIENTATION, getContext().getResources()
-                    .getConfiguration().orientation);
             i.putExtra(InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY, closeButtonDelay);
 
             INTERSTITIALADVIEW_TO_USE = this;

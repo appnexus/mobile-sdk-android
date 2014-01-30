@@ -153,7 +153,8 @@ class AdWebView extends WebView implements Displayable {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(R.string.opening_inapp));
             intent = new Intent(AdWebView.this.destination.getContext(),
-                    BrowserActivity.class);
+                    AdActivity.class);
+            intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
             intent.putExtra("url", url);
             if (AdWebView.this.destination.getBrowserStyle() != null) {
                 String i = "" + super.hashCode();

@@ -440,8 +440,8 @@ public abstract class AdView extends FrameLayout {
 
             try {
                 Intent i = new Intent(getContext(), AdActivity.class);
-                i.putExtra(InterstitialAdView.INTENT_KEY_ACTIVITY_TYPE,
-                        InterstitialAdView.ACTIVITY_TYPE_MRAID);
+                i.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE,
+                        AdActivity.ACTIVITY_TYPE_MRAID);
                 getContext().startActivity(i);
             } catch (ActivityNotFoundException e) {
                 Clog.e(Clog.baseLogTag, "Did you insert com.appneus.opensdk.AdActivity into AndroidManifest.xml ?");

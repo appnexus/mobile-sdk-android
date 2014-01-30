@@ -128,7 +128,8 @@ class MRAIDImplementation {
                         }
                     } else {
                         intent = new Intent(owner.getContext(),
-                                BrowserActivity.class);
+                                AdActivity.class);
+                        intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
                         intent.putExtra("url", url);
                         try {
                             owner.getContext().startActivity(intent);
