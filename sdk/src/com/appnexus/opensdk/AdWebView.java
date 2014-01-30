@@ -17,7 +17,6 @@
 package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Color;
@@ -135,18 +134,13 @@ class AdWebView extends WebView implements Displayable {
     }
 
     private void fireAdClicked(){
-        // If a listener is defined, call its onClicked
-        if (AdWebView.this.destination.adListener != null) {
-            AdWebView.this.destination.adListener
-                    .onAdClicked(AdWebView.this.destination);
+        if (destination != null) {
+            destination.getAdDispatcher().onAdClicked();
         }
 
         // If it's an IAV, prevent it from closing
-        if (AdWebView.this.destination instanceof InterstitialAdView) {
-            InterstitialAdView iav = (InterstitialAdView) AdWebView.this.destination;
-            if (iav != null) {
-                iav.interacted();
-            }
+        if (destination instanceof InterstitialAdView) {
+            ((InterstitialAdView) destination).interacted();
         }
     }
 

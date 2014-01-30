@@ -336,6 +336,7 @@ public class AdActivity extends Activity {
         }
         if (adView != null) {
             adView.close_button = null;
+            adView.setAdActivity(null);
         }
 
         super.onDestroy();

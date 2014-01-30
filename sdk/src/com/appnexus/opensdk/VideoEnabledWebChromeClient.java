@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +13,14 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.Clog;
 
-import java.util.HashMap;
+import java.util.LinkedList;
 
 class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     CustomViewCallback customViewCallback;
     FrameLayout frame;
     Activity context;
     AdView adView;
-    HashMap<View, Integer> views;
+    LinkedList<Pair<View, Integer>> views;
 
     public VideoEnabledWebChromeClient(Activity activity) {
         this.context = activity;
@@ -28,6 +29,12 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     public VideoEnabledWebChromeClient(AdView adView) {
         this.context = (Activity) adView.getContext();
         this.adView = adView;
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onShowCustomView(View view, int requestedOrientation, CustomViewCallback callback) {
+        onShowCustomView(view, callback);
     }
 
     @Override
@@ -48,11 +55,12 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
         if (view instanceof FrameLayout) {
             frame = (FrameLayout) view;
 
-            views = new HashMap<View, Integer>();
+            views = new LinkedList<Pair<View, Integer>>();
             // hide other children so that the only view shown is the custom view
             for (int i = 0; i < root.getChildCount(); i++) {
-                views.put(root.getChildAt(i), root.getChildAt(i).getVisibility());
-                root.getChildAt(i).setVisibility(View.GONE);
+                View child = root.getChildAt(i);
+                views.add(new Pair<View, Integer>(child, child.getVisibility()));
+                child.setVisibility(View.GONE);
             }
             try {
                 addCloseButton(frame);
@@ -84,8 +92,8 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
 
         if (views != null) {
             // restore the views that were originally there
-            for (int i = 0; i < root.getChildCount(); i++) {
-                root.getChildAt(i).setVisibility(views.get(root.getChildAt(i)));
+            for (Pair<View, Integer> child : views) {
+                child.first.setVisibility(child.second);
             }
         }
         views = null;
