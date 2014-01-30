@@ -267,38 +267,21 @@ public abstract class AdView extends FrameLayout {
 	 * End Construction
 	 */
 
-	void display(Displayable d) {
-		if ((d == null) || d.failed()) {
-			// The displayable has failed to be parsed or turned into a View.
-			fail();
-			return;
-		}
-		if (lastDisplayable != null) {
+    void display(Displayable d) {
+        if ((d == null) || d.failed() || (d.getView() == null)) {
+            // The displayable has failed to be parsed or turned into a View.
+            fail();
+            return;
+        }
+        // call destroy on any old mediated views
+        if (lastDisplayable != null) {
             if (lastDisplayable instanceof MediatedDisplayable) {
                 lastDisplayable.destroy();
-			}
-			lastDisplayable = null;
-		}
-
-		WebView webView = null;
-		if (getChildAt(0) instanceof WebView) {
-			webView = (WebView) getChildAt(0);
-		}
-
-		this.removeAllViews();
-		if (webView != null)
-			webView.destroy();
-		if (d.getView() == null) {
-			return;
-		}
-        View displayableView = d.getView();
-        this.addView(displayableView);
-
-        // center the displayable view in AdView
-        ((LayoutParams) displayableView.getLayoutParams()).gravity = Gravity.CENTER;
+            }
+            lastDisplayable = null;
+        }
         lastDisplayable = d;
-		unhide();
-	}
+    }
 
 	void unhide() {
 		if (getVisibility() != VISIBLE) {

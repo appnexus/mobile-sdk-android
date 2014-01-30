@@ -201,27 +201,27 @@ public class AdActivity extends Activity {
     }
 
     private void setIAdView(InterstitialAdView av) {
-        if (layout != null) {
-            layout.setBackgroundColor(av.getBackgroundColor());
-            layout.removeAllViews();
-            if (av.getParent() != null) {
-                ((ViewGroup) av.getParent()).removeAllViews();
-            }
-            Pair<Long, Displayable> p = InterstitialAdView.q.poll();
-            while (p != null && p.second != null
-                    && now - p.first > InterstitialAdView.MAX_AGE) {
-                Clog.w(Clog.baseLogTag, Clog.getString(R.string.too_old));
-                p = InterstitialAdView.q.poll();
-            }
-            if ((p == null) || (p.second == null)
-                    || !(p.second.getView() instanceof WebView))
-                return;
-            webView = (WebView) p.second.getView();
-            layout.addView(webView);
-        }
-
         if (av != null) {
             av.setAdActivity(this);
+
+            if (layout != null) {
+                layout.setBackgroundColor(av.getBackgroundColor());
+                layout.removeAllViews();
+                if (av.getParent() != null) {
+                    ((ViewGroup) av.getParent()).removeAllViews();
+                }
+                Pair<Long, Displayable> p = av.getAdQueue().poll();
+                while ((p != null) && (p.second != null)
+                        && ((now - p.first) > InterstitialAdView.MAX_AGE)) {
+                    Clog.w(Clog.baseLogTag, Clog.getString(R.string.too_old));
+                    p = av.getAdQueue().poll();
+                }
+                if ((p == null) || (p.second == null)
+                        || !(p.second.getView() instanceof WebView))
+                    return;
+                webView = (WebView) p.second.getView();
+                layout.addView(webView);
+            }
         }
         adView = av;
     }
