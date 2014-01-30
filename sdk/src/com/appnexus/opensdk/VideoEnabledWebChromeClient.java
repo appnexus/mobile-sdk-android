@@ -20,7 +20,7 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     Activity context;
     AdListener listener;
     AdView adView;
-    HashMap<View, Integer> views = new HashMap<View, Integer>();
+    HashMap<View, Integer> views;
 
     public VideoEnabledWebChromeClient(Activity activity){
         this.context = activity;
@@ -35,10 +35,14 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     @Override
     public void onShowCustomView(View view, CustomViewCallback callback) {
         super.onShowCustomView(view, callback);
-        Clog.d(Clog.baseLogTag, "Entering onShowCustomView");
 
         if (context == null) {
-            Clog.e(Clog.baseLogTag, "onShowCustomView: context was null");
+            Clog.w(Clog.baseLogTag, Clog.getString(R.string.fullscreen_video_show_error));
+            return;
+        }
+        ViewGroup root = (ViewGroup) context.findViewById(android.R.id.content);
+        if (root == null) {
+            Clog.w(Clog.baseLogTag, Clog.getString(R.string.fullscreen_video_show_error));
             return;
         }
 
@@ -46,12 +50,7 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
         if (view instanceof FrameLayout) {
             frame = (FrameLayout) view;
 
-            ViewGroup root = (ViewGroup) context.findViewById(android.R.id.content);
-            if (root == null) {
-                Clog.e(Clog.baseLogTag, "onShowCustomView: could not find root view");
-                return;
-            }
-
+            views = new HashMap<View, Integer>();
             // hide other children so that the only view shown is the custom view
             for (int i = 0; i < root.getChildCount(); i++) {
                 views.put(root.getChildAt(i), root.getChildAt(i).getVisibility());
@@ -72,30 +71,26 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     @Override
     public void onHideCustomView() {
         super.onHideCustomView();
-        Clog.d(Clog.baseLogTag, "Entering onHideCustomView");
 
-        if (context == null) {
-            Clog.e(Clog.baseLogTag, "onHideCustomView: context was null");
+        if ((context == null) || (frame == null)) {
+            Clog.w(Clog.baseLogTag, Clog.getString(R.string.fullscreen_video_hide_error));
             return;
         }
-
-        ViewGroup root = ((ViewGroup) context.findViewById(android.R.id.content));
+        ViewGroup root = (ViewGroup) context.findViewById(android.R.id.content);
         if (root == null) {
-            Clog.e(Clog.baseLogTag, "onHideCustomView: could not find root view");
-            return;
-        }
-
-        if (frame == null) {
-            Clog.e(Clog.baseLogTag, "onHideCustomView: frame was null");
+            Clog.w(Clog.baseLogTag, Clog.getString(R.string.fullscreen_video_hide_error));
             return;
         }
 
         root.removeView(frame);
 
-        // restore the views that were originally there
-        for (int i = 0; i < root.getChildCount(); i++) {
-            root.getChildAt(i).setVisibility(views.get(root.getChildAt(i)));
+        if (views != null) {
+            // restore the views that were originally there
+            for (int i = 0; i < root.getChildCount(); i++) {
+                root.getChildAt(i).setVisibility(views.get(root.getChildAt(i)));
+            }
         }
+        views = null;
 
         if (customViewCallback != null)
             customViewCallback.onCustomViewHidden();
