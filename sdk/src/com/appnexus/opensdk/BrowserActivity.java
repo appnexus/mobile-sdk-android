@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -25,25 +26,20 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.webkit.ConsoleMessage;
-import android.webkit.CookieSyncManager;
-import android.webkit.JsResult;
-import android.webkit.WebChromeClient;
+import android.webkit.*;
 import android.webkit.WebSettings.PluginState;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView.ScaleType;
 import android.widget.ProgressBar;
 import android.widget.VideoView;
-
 import com.appnexus.opensdk.AdView.BrowserStyle;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.WebviewUtil;
@@ -68,6 +64,7 @@ public class BrowserActivity extends Activity {
 
     private ProgressBar progressBar;
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @SuppressWarnings("deprecation")
     @SuppressLint({"SetJavaScriptEnabled", "NewApi"})
     @Override
@@ -96,7 +93,7 @@ public class BrowserActivity extends Activity {
                     forward.setImageBitmap(pbmp);
                     Matrix x = new Matrix();
                     back.setScaleType(ScaleType.MATRIX);
-                    x.postRotate((float) 180.0f);
+                    x.postRotate(180.0f);
 
                     Bitmap rotated = Bitmap.createBitmap(pbmp, 0, 0,
                             pbmp.getWidth(), pbmp.getHeight(), x, true);

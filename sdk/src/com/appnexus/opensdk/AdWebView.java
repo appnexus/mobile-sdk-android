@@ -17,7 +17,6 @@
 package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Color;
@@ -49,6 +48,8 @@ class AdWebView extends WebView implements Displayable {
         setup();
     }
 
+    @SuppressWarnings("deprecation")
+    @SuppressLint("SetJavaScriptEnabled")
     protected void setupSettings(){
         Settings.getSettings().ua = this.getSettings().getUserAgentString();
         this.getSettings().setJavaScriptEnabled(true);

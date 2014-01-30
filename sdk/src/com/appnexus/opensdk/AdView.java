@@ -495,7 +495,8 @@ public abstract class AdView extends FrameLayout {
 
         close_button = new ImageButton(this.getContext()){
 
-            @SuppressLint("NewApi")
+            @SuppressWarnings("deprecation")
+            @SuppressLint({"NewApi", "DrawAllocation"})
             @Override
             public void onLayout(boolean changed, int left, int top, int right, int bottom){
                 int close_button_loc[] = new int[2];
@@ -512,11 +513,13 @@ public abstract class AdView extends FrameLayout {
                     useScreenSizeForAddedAccuracy = false;
                 }
 
-                if(Build.VERSION.SDK_INT>=13 && useScreenSizeForAddedAccuracy){
-                    a.getWindowManager().getDefaultDisplay().getSize(screen_size);
-                }else if(useScreenSizeForAddedAccuracy){
-                    screen_size.x = a.getWindowManager().getDefaultDisplay().getWidth();
-                    screen_size.y = a.getWindowManager().getDefaultDisplay().getHeight();
+                if (useScreenSizeForAddedAccuracy) {
+                    if (Build.VERSION.SDK_INT >= 13) {
+                        a.getWindowManager().getDefaultDisplay().getSize(screen_size);
+                    } else {
+                        screen_size.x = a.getWindowManager().getDefaultDisplay().getWidth();
+                        screen_size.y = a.getWindowManager().getDefaultDisplay().getHeight();
+                    }
                 }
 
                 int adviewLoc[] = new int[2];
