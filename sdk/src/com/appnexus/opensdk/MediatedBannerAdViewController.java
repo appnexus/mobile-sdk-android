@@ -86,7 +86,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
             errorCode = RESULT.MEDIATED_SDK_UNAVAILABLE;
         }
 
-        if (mediatedDisplayable.getView() == null) {
+        if ((errorCode == null) && (mediatedDisplayable.getView() == null)) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_view_null));
             errorCode = RESULT.UNABLE_TO_FILL;
         }
