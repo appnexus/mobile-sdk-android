@@ -49,7 +49,7 @@ public class InterstitialAdView extends AdView {
     private int closeButtonDelay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
     boolean interacted = false;
     static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
-    Queue<Pair<Long, Displayable>> adQueue = new LinkedList<Pair<Long, Displayable>>();
+    private Queue<Pair<Long, Displayable>> adQueue = new LinkedList<Pair<Long, Displayable>>();
 
     //Intent Keys
     static final String INTENT_KEY_TIME = "TIME";
@@ -415,7 +415,7 @@ public class InterstitialAdView extends AdView {
         this.adActivity = adActivity;
     }
 
-    public Queue<Pair<Long, Displayable>> getAdQueue() {
+    Queue<Pair<Long, Displayable>> getAdQueue() {
         return adQueue;
     }
 
