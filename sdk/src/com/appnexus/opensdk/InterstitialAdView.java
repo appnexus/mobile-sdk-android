@@ -108,7 +108,6 @@ public class InterstitialAdView extends AdView {
     @Override
     protected void setup(Context context, AttributeSet attrs) {
         super.setup(context, attrs);
-        INTERSTITIALADVIEW_TO_USE = this;
         mAdFetcher.setAutoRefresh(false);
 
         // Get the screen size
@@ -310,9 +309,11 @@ public class InterstitialAdView extends AdView {
                     .getConfiguration().orientation);
             i.putExtra(InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY, closeButtonDelay);
 
+            INTERSTITIALADVIEW_TO_USE = this;
             try {
                 getContext().startActivity(i);
             } catch (ActivityNotFoundException e) {
+                INTERSTITIALADVIEW_TO_USE = null;
                 Clog.e(Clog.baseLogTag, "Did you insert com.appneus.opensdk.AdActivity into AndroidManifest.xml ?");
             }
 
