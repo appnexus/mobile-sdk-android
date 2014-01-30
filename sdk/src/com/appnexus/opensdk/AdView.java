@@ -274,8 +274,8 @@ public abstract class AdView extends FrameLayout {
 			return;
 		}
 		if (lastDisplayable != null) {
-			if (lastDisplayable instanceof MediatedAdViewController) {
-				lastDisplayable.destroy();
+            if (lastDisplayable instanceof MediatedDisplayable) {
+                lastDisplayable.destroy();
 			}
 			lastDisplayable = null;
 		}
