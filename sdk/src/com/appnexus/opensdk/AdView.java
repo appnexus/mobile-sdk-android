@@ -357,7 +357,7 @@ public abstract class AdView extends FrameLayout {
 	}
 
     // Used only by MRAID
-    boolean closing = false;
+    boolean mraid_is_closing = false;
     ImageButton close_button;
     static FrameLayout mraidFullscreenContainer;
     static MRAIDImplementation mraidFullscreenImplementation;
@@ -387,7 +387,7 @@ public abstract class AdView extends FrameLayout {
         mraidFullscreenListener = null;
 
         MRAIDChangeSize(w, h);
-        closing = true;
+        mraid_is_closing = true;
         isMRAIDExpanded = false;
     }
 

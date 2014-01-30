@@ -512,12 +512,12 @@ public class BannerAdView extends AdView {
             // OR auto_refresh is enabled
             if(loadAdHasBeenCalled || shouldReloadOnResume || auto_refresh){
 
-                //If we're MRAID closing or expanding, don't load.
-                if (!closing && !mraid_changing_size_or_visibility && !isMRAIDExpanded() && mAdFetcher != null){
+                //If we're MRAID mraid_is_closing or expanding, don't load.
+                if (!mraid_is_closing && !mraid_changing_size_or_visibility && !isMRAIDExpanded() && mAdFetcher != null){
                     start();
                 }
             }
-            closing = false;
+            mraid_is_closing = false;
 
             if (getChildAt(0) instanceof WebView) {
                 WebView webView = (WebView) getChildAt(0);
