@@ -60,19 +60,10 @@ public class AdActivity extends Activity {
     private WebView webView;
     private long now;
     private boolean close_added = false;
-    private static AdActivity current_ad_activity = null;
     private MRAIDImplementation mraidFullscreenImplementation = null;
     private InterstitialAdView adView;
     static final int CLOSE_BUTTON_MESSAGE_ID = 8000;
     private boolean isMRAID = false;
-
-    static AdActivity getCurrent_ad_activity() {
-        return current_ad_activity;
-    }
-
-    private static void setCurrent_ad_activity(AdActivity current_ad_activity) {
-        AdActivity.current_ad_activity = current_ad_activity;
-    }
 
     @SuppressLint({"InlinedApi", "NewApi"})
     @Override
@@ -85,8 +76,6 @@ public class AdActivity extends Activity {
             Clog.e(Clog.baseLogTag, "AdActivity launched with no type");
             finish();
         } else if (activityType.equals(InterstitialAdView.ACTIVITY_TYPE_INTERSTITIAL)) {
-            setCurrent_ad_activity(this);
-
             layout = new FrameLayout(this);
 
             // Lock the orientation
@@ -202,28 +191,29 @@ public class AdActivity extends Activity {
     }
 
     private void setIAdView(InterstitialAdView av) {
-        if (layout != null) {
-            layout.setBackgroundColor(av.getBackgroundColor());
-            layout.removeAllViews();
-            if (av.getParent() != null) {
-                ((ViewGroup) av.getParent()).removeAllViews();
-            }
-            Pair<Long, Displayable> p = InterstitialAdView.q.poll();
-            while (p != null && p.second != null
-                    && now - p.first > InterstitialAdView.MAX_AGE) {
-                Clog.w(Clog.baseLogTag, Clog.getString(R.string.too_old));
-                p = InterstitialAdView.q.poll();
-            }
-            if ((p == null) || (p.second == null)
-                    || !(p.second.getView() instanceof WebView))
-                return;
-            webView = (WebView) p.second.getView();
-            layout.addView(webView);
-        }
-
         if (av != null) {
             av.setAdActivity(this);
+
+            if (layout != null) {
+                layout.setBackgroundColor(av.getBackgroundColor());
+                layout.removeAllViews();
+                if (av.getParent() != null) {
+                    ((ViewGroup) av.getParent()).removeAllViews();
+                }
+                Pair<Long, Displayable> p = InterstitialAdView.q.poll();
+                while (p != null && p.second != null
+                        && now - p.first > InterstitialAdView.MAX_AGE) {
+                    Clog.w(Clog.baseLogTag, Clog.getString(R.string.too_old));
+                    p = InterstitialAdView.q.poll();
+                }
+                if ((p == null) || (p.second == null)
+                        || !(p.second.getView() instanceof WebView))
+                    return;
+                webView = (WebView) p.second.getView();
+                layout.addView(webView);
+            }
         }
+
         adView = av;
     }
 
@@ -347,6 +337,7 @@ public class AdActivity extends Activity {
         }
         if (adView != null) {
             adView.close_button = null;
+            adView.setAdActivity(null);
         }
 
         super.onDestroy();

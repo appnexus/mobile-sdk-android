@@ -26,6 +26,7 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Pair;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -210,8 +211,24 @@ public class InterstitialAdView extends AdView {
 
     void interacted() {
         interacted = true;
-        if (getAdActivity() != null) {
-            getAdActivity().addCloseButton();
+        addCloseButton();
+    }
+
+    void addCloseButton() {
+        if (adActivity != null) {
+            adActivity.addCloseButton();
+        }
+    }
+
+    void addViewToActivity(View view) {
+        if ((adActivity != null) && (adActivity.layout != null)) {
+            adActivity.layout.addView(view);
+        }
+    }
+
+    void removeViewsFromAdActivity() {
+        if ((adActivity != null) && (adActivity.layout != null)) {
+            adActivity.layout.removeAllViews();
         }
     }
 
@@ -408,10 +425,6 @@ public class InterstitialAdView extends AdView {
      */
     public void setCloseButtonDelay(int closeButtonDelay) {
         this.closeButtonDelay = Math.min(closeButtonDelay, Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
-    }
-
-    AdActivity getAdActivity() {
-        return adActivity;
     }
 
     void setAdActivity(AdActivity adActivity) {
