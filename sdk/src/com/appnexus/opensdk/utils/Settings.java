@@ -17,6 +17,7 @@
 package com.appnexus.opensdk.utils;
 
 import android.os.Build;
+import com.appnexus.opensdk.R;
 
 import java.util.Locale;
 import java.util.TimeZone;
@@ -63,8 +64,7 @@ public class Settings {
     public static Settings getSettings() {
         if (settings_instance == null) {
             settings_instance = new Settings();
-            Clog.v(Clog.baseLogTag, "The AppNexus " + Clog.baseLogTag
-                    + " is initializing.");
+            Clog.v(Clog.baseLogTag, Clog.getString(R.string.init));
         }
         return settings_instance;
     }

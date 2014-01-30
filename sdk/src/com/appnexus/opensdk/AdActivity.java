@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -226,7 +227,6 @@ public class AdActivity extends Activity {
         adView = av;
     }
 
-    @SuppressLint({"InlinedApi", "DefaultLocale"})
     static void lockToCurrentOrientation(Activity a) {
         final int orientation = a.getResources().getConfiguration().orientation;
         setOrientation(a, orientation);
@@ -236,6 +236,7 @@ public class AdActivity extends Activity {
         a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
 
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     private static void setOrientation(Activity a, int orientation) {
         // Fix an accelerometer bug with kindle fire HDs
         boolean isKindleFireHD = false;

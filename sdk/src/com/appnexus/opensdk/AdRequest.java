@@ -16,22 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.util.EntityUtils;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -46,13 +30,23 @@ import android.os.Build;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.util.Pair;
-
 import com.appnexus.opensdk.InterstitialAdView.Size;
-import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.HashingFunctions;
-import com.appnexus.opensdk.utils.Settings;
-import com.appnexus.opensdk.utils.StringUtil;
-import com.appnexus.opensdk.utils.WebviewUtil;
+import com.appnexus.opensdk.utils.*;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.HttpHostConnectException;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
@@ -134,10 +128,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     }
 
     private static boolean stringNotInParamNames(String s){
-        if(getParamNames().contains(s)){
-            return false;
-        }
-        return true;
+        return !getParamNames().contains(s);
     }
 
     private static final AdResponse HTTP_ERROR

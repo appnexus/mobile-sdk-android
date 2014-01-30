@@ -240,7 +240,7 @@ class AdFetcher implements AdRequester {
             // standard
             if (owner.isBanner()) {
                 BannerAdView bav = (BannerAdView) owner;
-                if (bav.getExpandsToFitScreenWidth() == true) {
+                if (bav.getExpandsToFitScreenWidth() && (response != null)) {
                     bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), output);
                 }
             }
