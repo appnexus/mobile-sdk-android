@@ -26,9 +26,7 @@ import android.content.res.TypedArray;
 import android.graphics.Point;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.view.Display;
-import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.view.*;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import com.appnexus.opensdk.utils.Clog;
@@ -273,6 +271,28 @@ public class BannerAdView extends AdView {
         setAdSize(width, height);
         this.setPlacementID(placementID);
         return loadAd();
+    }
+
+    @Override
+    void display(Displayable d) {
+        super.display(d);
+
+        WebView webView = null;
+        if (getChildAt(0) instanceof WebView) {
+            webView = (WebView) getChildAt(0);
+        }
+
+        this.removeAllViews();
+        if (webView != null)
+            webView.destroy();
+
+        View displayableView = d.getView();
+        this.addView(displayableView);
+
+        // center the displayable view in AdView
+        ((LayoutParams) displayableView.getLayoutParams()).gravity = Gravity.CENTER;
+
+        unhide();
     }
 
     void start() {
