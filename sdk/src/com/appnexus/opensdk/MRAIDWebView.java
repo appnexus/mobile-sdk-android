@@ -22,7 +22,6 @@ import android.content.Context;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
@@ -88,12 +87,6 @@ class MRAIDWebView extends AdWebView implements Displayable {
         super.scrollTo(0, 0);
     }
 
-    protected void removeFromParent(){
-        if(this.getParent() !=null){
-            ((ViewGroup) this.getParent()).removeView(this);
-        }
-    }
-
     // w,h in dips. this function converts to pixels
     void expand(int w, int h, boolean cust_close, final MRAIDImplementation caller,
                 final boolean allowOrientationChange, final AdActivity.OrientationEnum forceOrientation) {
@@ -147,7 +140,6 @@ class MRAIDWebView extends AdWebView implements Displayable {
             owner.expand(w, h, cust_close, caller, mraidFullscreenListener);
         }
 
-        //If it's an IAV, prevent it from closing
         if (owner instanceof InterstitialAdView) {
             ((InterstitialAdView) owner).interacted();
         }
@@ -243,7 +235,6 @@ class MRAIDWebView extends AdWebView implements Displayable {
             owner.resize(w, h, offset_x, offset_y, custom_close_position, allow_offscrean, implementation);
         }
 
-        //If it's an IAV, prevent it from closing
         if (owner instanceof InterstitialAdView) {
             ((InterstitialAdView) owner).interacted();
         }

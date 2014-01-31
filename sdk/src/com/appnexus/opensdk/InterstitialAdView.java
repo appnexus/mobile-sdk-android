@@ -26,7 +26,6 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Pair;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -200,25 +199,7 @@ public class InterstitialAdView extends AdView {
     }
 
     void interacted() {
-        addCloseButton();
-    }
-
-    void addCloseButton() {
-        if (adActivity != null) {
-            adActivity.addCloseButton();
-        }
-    }
-
-    void addViewToActivity(View view) {
-        if ((adActivity != null) && (adActivity.layout != null)) {
-            adActivity.layout.addView(view);
-        }
-    }
-
-    void removeViewsFromAdActivity() {
-        if ((adActivity != null) && (adActivity.layout != null)) {
-            adActivity.layout.removeAllViews();
-        }
+        if (adActivity != null) adActivity.interacted();
     }
 
     @Override
