@@ -35,6 +35,7 @@ import static junit.framework.Assert.assertEquals;
 public abstract class BaseRoboTest implements AdListener {
     Activity activity;
     BannerAdView bannerAdView;
+    InterstitialAdView interstitialAdView;
     AdRequest adRequest;
     boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked;
 
@@ -45,8 +46,12 @@ public abstract class BaseRoboTest implements AdListener {
         Clog.clogged = true;
         activity = Robolectric.buildActivity(Activity.class).create().get();
         Robolectric.shadowOf(activity).grantPermissions("android.permission.ACCESS_NETWORK_STATE");
+
         bannerAdView = new BannerAdView(activity);
         bannerAdView.setPlacementID("0");
+
+        interstitialAdView = new InterstitialAdView(activity);
+        interstitialAdView.setPlacementID("0");
 
         bgScheduler = Robolectric.getBackgroundScheduler();
         uiScheduler = Robolectric.getUiThreadScheduler();
