@@ -16,9 +16,9 @@
 
 package com.appnexus.opensdk;
 
-import android.view.ViewGroup;
 import android.webkit.WebView;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.ViewUtil;
 
 public class MRAIDAdActivity implements AdActivity.AdActivityImplementation {
     private AdActivity adActivity;
@@ -39,10 +39,7 @@ public class MRAIDAdActivity implements AdActivity.AdActivityImplementation {
         }
 
         // remove from any old parents to be safe
-        if (AdView.mraidFullscreenContainer.getParent() != null) {
-            ((ViewGroup) AdView.mraidFullscreenContainer.getParent())
-                    .removeView(AdView.mraidFullscreenContainer);
-        }
+        ViewUtil.removeChildFromParent(AdView.mraidFullscreenContainer);
         adActivity.setContentView(AdView.mraidFullscreenContainer);
         if (AdView.mraidFullscreenContainer.getChildAt(0) instanceof WebView) {
             webView = (WebView) AdView.mraidFullscreenContainer.getChildAt(0);
