@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 import android.app.Activity;
+import android.os.Looper;
 import com.appnexus.opensdk.testviews.DummyView;
 import com.appnexus.opensdk.testviews.NoRequestBannerView;
 import com.appnexus.opensdk.testviews.SuccessfulBanner;
@@ -39,7 +40,7 @@ public abstract class BaseRoboTest implements AdListener {
     AdRequest adRequest;
     boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked;
 
-    Scheduler uiScheduler, bgScheduler;
+    Scheduler uiScheduler, bgScheduler, looperScheduler;
 
     @Before
     public void setup() {
@@ -53,6 +54,7 @@ public abstract class BaseRoboTest implements AdListener {
         interstitialAdView = new InterstitialAdView(activity);
         interstitialAdView.setPlacementID("0");
 
+        looperScheduler = Robolectric.shadowOf(Looper.getMainLooper()).getScheduler();
         bgScheduler = Robolectric.getBackgroundScheduler();
         uiScheduler = Robolectric.getUiThreadScheduler();
         bgScheduler.pause();

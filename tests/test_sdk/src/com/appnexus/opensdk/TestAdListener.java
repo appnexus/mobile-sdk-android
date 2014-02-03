@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +24,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-@Config(shadows = {ShadowWebSettings.class})
+@Config(shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class})
 @RunWith(RobolectricTestRunner.class)
 public class TestAdListener extends BaseRoboTest {
 
