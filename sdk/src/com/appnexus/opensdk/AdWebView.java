@@ -181,7 +181,7 @@ class AdWebView extends WebView implements Displayable {
                 public void onPageFinished(WebView view, String url){
                     Intent intent = new Intent(AdWebView.this.destination.getContext(),
                             BrowserActivity.class);
-                    intent.putExtra("url", url);
+                    intent.putExtra("isForward", true);
                     if (AdWebView.this.destination.getBrowserStyle() != null) {
                         String i = "" + super.hashCode();
                         intent.putExtra("bridgeid", i);
