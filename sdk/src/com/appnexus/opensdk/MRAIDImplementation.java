@@ -36,10 +36,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.CalendarContract;
 import android.util.Base64;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.View;
-import android.view.Window;
+import android.view.*;
 import android.webkit.*;
 import android.widget.Toast;
 import com.appnexus.opensdk.utils.Clog;
@@ -61,7 +58,8 @@ class MRAIDImplementation {
     int default_width, default_height;
     boolean supportsPictureAPI = false;
     boolean supportsCalendar = false;
-    AdActivity fullscreenActivity;
+    private AdActivity fullscreenActivity;
+    private ViewGroup defaultContainer;
 
     public MRAIDImplementation(MRAIDWebView owner) {
         this.owner = owner;
@@ -128,7 +126,8 @@ class MRAIDImplementation {
                         }
                     } else {
                         intent = new Intent(owner.getContext(),
-                                BrowserActivity.class);
+                                AdActivity.class);
+                        intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
                         intent.putExtra("url", url);
                         try {
                             owner.getContext().startActivity(intent);
@@ -152,7 +151,6 @@ class MRAIDImplementation {
                     //Call onAdClicked
                     owner.owner.getAdDispatcher().onAdClicked();
 
-                    // If it's an IAV, prevent it from closing
                     if (owner.owner instanceof InterstitialAdView) {
                         ((InterstitialAdView) (owner.owner)).interacted();
                     }
@@ -780,5 +778,13 @@ class MRAIDImplementation {
 
     public void setFullscreenActivity(AdActivity fullscreenActivity) {
         this.fullscreenActivity = fullscreenActivity;
+    }
+
+    public ViewGroup getDefaultContainer() {
+        return defaultContainer;
+    }
+
+    public void setDefaultContainer(ViewGroup defaultContainer) {
+        this.defaultContainer = defaultContainer;
     }
 }

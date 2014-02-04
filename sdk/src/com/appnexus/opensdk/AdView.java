@@ -41,6 +41,7 @@ import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
+import com.appnexus.opensdk.utils.ViewUtil;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -267,38 +268,21 @@ public abstract class AdView extends FrameLayout {
 	 * End Construction
 	 */
 
-	void display(Displayable d) {
-		if ((d == null) || d.failed()) {
-			// The displayable has failed to be parsed or turned into a View.
-			fail();
-			return;
-		}
-		if (lastDisplayable != null) {
+    void display(Displayable d) {
+        if ((d == null) || d.failed() || (d.getView() == null)) {
+            // The displayable has failed to be parsed or turned into a View.
+            fail();
+            return;
+        }
+        // call destroy on any old mediated views
+        if (lastDisplayable != null) {
             if (lastDisplayable instanceof MediatedDisplayable) {
                 lastDisplayable.destroy();
-			}
-			lastDisplayable = null;
-		}
-
-		WebView webView = null;
-		if (getChildAt(0) instanceof WebView) {
-			webView = (WebView) getChildAt(0);
-		}
-
-		this.removeAllViews();
-		if (webView != null)
-			webView.destroy();
-		if (d.getView() == null) {
-			return;
-		}
-        View displayableView = d.getView();
-        this.addView(displayableView);
-
-        // center the displayable view in AdView
-        ((LayoutParams) displayableView.getLayoutParams()).gravity = Gravity.CENTER;
+            }
+            lastDisplayable = null;
+        }
         lastDisplayable = d;
-		unhide();
-	}
+    }
 
 	void unhide() {
 		if (getVisibility() != VISIBLE) {
@@ -356,7 +340,9 @@ public abstract class AdView extends FrameLayout {
 		return measuredHeight;
 	}
 
-    // Used only by MRAID
+    /**
+     * MRAID functions and variables
+     */
     boolean mraid_is_closing = false;
     ImageButton close_button;
     static FrameLayout mraidFullscreenContainer;
@@ -364,17 +350,14 @@ public abstract class AdView extends FrameLayout {
     static MRAIDWebView.MRAIDFullscreenListener mraidFullscreenListener;
 
     protected void close(int w, int h, MRAIDImplementation caller){
-        //For closing
+        // Remove MRAID close button
+        ViewUtil.removeChildFromParent(close_button);
+        close_button = null;
+
         if (caller.owner.isFullScreen) {
-            if (caller.owner.getParent() != null) {
-                ((FrameLayout) caller.owner.getParent()).removeAllViews();
-            }
-            caller.owner.removeFromParent();
-            if (this instanceof InterstitialAdView) {
-                ((InterstitialAdView) this).addViewToActivity(caller.owner);
-                ((InterstitialAdView) this).addCloseButton();
-            } else {
-                this.addView(caller.owner);
+            ViewUtil.removeChildFromParent(caller.owner);
+            if (caller.getDefaultContainer() != null) {
+                caller.getDefaultContainer().addView(caller.owner, 0);
             }
 
             if (caller.getFullscreenActivity() != null) {
@@ -409,13 +392,8 @@ public abstract class AdView extends FrameLayout {
 
         if (!custom_close) {
             // Add a stock close_button button to the top right corner
-            close_button = new ImageButton(this.getContext());
-            close_button.setImageDrawable(getResources().getDrawable(
-                    android.R.drawable.ic_menu_close_clear_cancel));
-            FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.WRAP_CONTENT,
-                    FrameLayout.LayoutParams.WRAP_CONTENT,
-                    Gravity.RIGHT | Gravity.TOP);
+            close_button = ViewUtil.createCloseButton(this.getContext());
+            FrameLayout.LayoutParams blp = (LayoutParams) close_button.getLayoutParams();
 
             // place the close button at the top right of the adview if it isn't fullscreen
             if (!caller.owner.isFullScreen) {
@@ -426,7 +404,6 @@ public abstract class AdView extends FrameLayout {
             }
 
             close_button.setLayoutParams(blp);
-            close_button.setBackgroundColor(Color.TRANSPARENT);
             close_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -436,18 +413,13 @@ public abstract class AdView extends FrameLayout {
         }
 
         if (caller.owner.isFullScreen) {
+            caller.setDefaultContainer((ViewGroup) caller.owner.getParent());
+
             //Make a new framelayout to contain webview and button
             FrameLayout fslayout = new FrameLayout(this.getContext());
 
-            // remove all the children of the adView
-            if (this instanceof InterstitialAdView) {
-                ((InterstitialAdView) this).removeViewsFromAdActivity();
-            } else {
-                this.removeAllViews();
-            }
-
-            // remove the webview from its parent and add it back to the fullscreen container
-            caller.owner.removeFromParent();
+            // remove the webview from its parent and add it to the fullscreen container
+            ViewUtil.removeChildFromParent(caller.owner);
             fslayout.addView(caller.owner);
             if (!custom_close) fslayout.addView(close_button);
 
@@ -457,8 +429,8 @@ public abstract class AdView extends FrameLayout {
 
             try {
                 Intent i = new Intent(getContext(), AdActivity.class);
-                i.putExtra(InterstitialAdView.INTENT_KEY_ACTIVITY_TYPE,
-                        InterstitialAdView.ACTIVITY_TYPE_MRAID);
+                i.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE,
+                        AdActivity.ACTIVITY_TYPE_MRAID);
                 getContext().startActivity(i);
             } catch (ActivityNotFoundException e) {
                 Clog.e(Clog.baseLogTag, "Did you insert com.appneus.opensdk.AdActivity into AndroidManifest.xml ?");
@@ -482,10 +454,7 @@ public abstract class AdView extends FrameLayout {
         MRAIDChangeSize(w, h);
 
         // Add a stock close_button button to the top right corner
-        if(close_button!=null && close_button.getParent()!=null){
-            ((ViewGroup)close_button.getParent()).removeView(close_button);
-            close_button.setVisibility(GONE);
-        }
+        ViewUtil.removeChildFromParent(close_button);
 
         if(!(buttonPxSideLength >0)){
             final float scale = caller.owner.getContext().getResources().getDisplayMetrics().density;
@@ -612,10 +581,9 @@ public abstract class AdView extends FrameLayout {
 
             }
         });
-        if(this instanceof BannerAdView){
-            this.addView(close_button);
-        }else{
-            ((InterstitialAdView) this).addViewToActivity(close_button);
+
+        if (caller.owner.getParent() != null) {
+            ((ViewGroup) caller.owner.getParent()).addView(close_button);
         }
     }
 	/**
@@ -974,6 +942,4 @@ public abstract class AdView extends FrameLayout {
 	MediatedAd popMediatedAd() {
 		return mediatedAds != null ? mediatedAds.removeFirst() : null;
 	}
-
-
 }

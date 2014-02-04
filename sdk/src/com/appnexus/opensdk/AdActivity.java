@@ -16,105 +16,72 @@
 
 package com.appnexus.opensdk;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Pair;
-import android.view.*;
+import android.view.Display;
+import android.view.Menu;
+import android.view.WindowManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
 
-import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 /**
  * This is the main ad activity.  You must add a reference to this to
- * your app's AndroidManifest.xml file.  {@link BrowserActivity} also
- * needs to be added allow the in-app browser functionality:
+ * your app's AndroidManifest.xml file:
  * <pre>
  * {@code
  * <application>
  *   <activity android:name="com.appnexus.opensdk.AdActivity" />
- *   <activity android:name="com.appnexus.opensdk.BrowserActivity" />
  * </application>
  * }
  * </pre>
  */
 public class AdActivity extends Activity {
 
-    protected FrameLayout layout;
-    private WebView webView;
-    private long now;
-    private boolean close_added = false;
-    private MRAIDImplementation mraidFullscreenImplementation = null;
-    private InterstitialAdView adView;
-    static final int CLOSE_BUTTON_MESSAGE_ID = 8000;
-    private boolean isMRAID = false;
+    interface AdActivityImplementation {
+        void create();
+        void backPressed();
+        void destroy();
+        void interacted();
+        WebView getWebView();
+    }
 
-    @SuppressLint({"InlinedApi", "NewApi"})
+    private AdActivityImplementation implementation;
+
+    //Intent Keys
+    static final String INTENT_KEY_ACTIVITY_TYPE = "ACTIVITY_TYPE";
+    static final String ACTIVITY_TYPE_INTERSTITIAL = "INTERSTITIAL";
+    static final String ACTIVITY_TYPE_BROWSER = "BROWSER";
+    static final String ACTIVITY_TYPE_MRAID = "MRAID";
+
     @Override
     public void onCreate(Bundle b) {
         super.onCreate(b);
 
         String activityType = getIntent().
-                getStringExtra(InterstitialAdView.INTENT_KEY_ACTIVITY_TYPE);
+                getStringExtra(INTENT_KEY_ACTIVITY_TYPE);
         if (StringUtil.isEmpty(activityType)) {
             Clog.e(Clog.baseLogTag, "AdActivity launched with no type");
             finish();
-        } else if (activityType.equals(InterstitialAdView.ACTIVITY_TYPE_INTERSTITIAL)) {
-            layout = new FrameLayout(this);
-
-            // Lock the orientation
-            AdActivity.lockToCurrentOrientation(this);
-
-            setContentView(layout);
-
-            setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
-            now = getIntent().getLongExtra(InterstitialAdView.INTENT_KEY_TIME,
-                    System.currentTimeMillis());
-            int closeButtonDelay = getIntent().getIntExtra(
-                    InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY,
-                    Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
-
-            // Add a close button after a delay.
-            closeButtonHandler.sendEmptyMessageDelayed(CLOSE_BUTTON_MESSAGE_ID, closeButtonDelay);
-        } else if (activityType.equals(InterstitialAdView.ACTIVITY_TYPE_MRAID)) {
-            isMRAID = true;
-            if ((AdView.mraidFullscreenContainer == null) || (AdView.mraidFullscreenImplementation == null)) {
-                Clog.e(Clog.baseLogTag, "Launched MRAID Fullscreen activity with invalid properties");
-                finish();
-                return;
-            }
-
-            // remove from any old parents to be safe
-            if (AdView.mraidFullscreenContainer.getParent() != null) {
-                ((ViewGroup) AdView.mraidFullscreenContainer.getParent())
-                        .removeView(AdView.mraidFullscreenContainer);
-            }
-            setContentView(AdView.mraidFullscreenContainer);
-            if (AdView.mraidFullscreenContainer.getChildAt(0) instanceof WebView) {
-                webView = (WebView) AdView.mraidFullscreenContainer.getChildAt(0);
-            }
-            mraidFullscreenImplementation = AdView.mraidFullscreenImplementation;
-            mraidFullscreenImplementation.setFullscreenActivity(this);
-
-            if (AdView.mraidFullscreenListener != null) {
-                AdView.mraidFullscreenListener.onCreateCompleted();
-            }
+        } else if (activityType.equals(ACTIVITY_TYPE_INTERSTITIAL)) {
+            implementation = new InterstitialAdActivity(this);
+            implementation.create();
+        } else if (activityType.equals(ACTIVITY_TYPE_BROWSER)) {
+            implementation = new BrowserAdActivity(this);
+            implementation.create();
+        } else if (activityType.equals(ACTIVITY_TYPE_MRAID)) {
+            implementation = new MRAIDAdActivity(this);
+            implementation.create();
         }
 
         CookieSyncManager.createInstance(this);
@@ -122,102 +89,46 @@ public class AdActivity extends Activity {
         if (csm != null) csm.startSync();
     }
 
-    /**
-     * Keep a weak reference to the AdActivity to prevent circular dependency
-     * between handler and Activity
-     *
-     */
-    static class CloseButtonHandler extends Handler {
-        WeakReference<AdActivity> activity_weak;
-        public CloseButtonHandler(AdActivity activity) {
-            activity_weak = new WeakReference<AdActivity>(activity);
-        }
-        @Override
-        public void handleMessage(Message msg) {
-            AdActivity activity = activity_weak.get();
-            if (activity != null && msg.what == CLOSE_BUTTON_MESSAGE_ID) {
-                activity.addCloseButton();
-            }
-        }
+    @Override
+    protected void onPause() {
+        WebviewUtil.onPause(implementation.getWebView());
+        CookieSyncManager csm = CookieSyncManager.getInstance();
+        if (csm != null) csm.stopSync();
+        super.onPause();
     }
 
-    private final CloseButtonHandler closeButtonHandler = new CloseButtonHandler(this);
-
-    protected void finishIfNoInteraction() {
-        if ((adView != null) && !adView.interacted) {
-            finish();
-        }
-
+    @Override
+    protected void onResume() {
+        WebviewUtil.onResume(implementation.getWebView());
+        CookieSyncManager csm = CookieSyncManager.getInstance();
+        if (csm != null) csm.startSync();
+        super.onResume();
     }
 
-    void handleMRAIDCollapse(MRAIDWebView m) {
-        layout.addView(m);
+    @Override
+    protected void onDestroy() {
+        implementation.destroy();
+        super.onDestroy();
     }
 
-    ImageButton close;
-    void addCloseButton() {
-        if (layout == null) return;
-
-        if ((close != null) && close_added) {
-            if (close.getParent() == null) {
-                layout.addView(close);
-            }
-            close.setVisibility(View.VISIBLE);
-            return;
-        }
-
-        close = new ImageButton(this);
-        close_added = true;
-        close.setImageDrawable(getResources().getDrawable(
-                android.R.drawable.ic_menu_close_clear_cancel));
-        FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.RIGHT
-                | Gravity.TOP);
-        close.setLayoutParams(blp);
-        close.setBackgroundColor(Color.TRANSPARENT);
-        close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        //If this button is being added because the ad was clicked, and the ad is an expandable mraid ad, don't show the button until the ad is collapsed
-        if(adView.isMRAIDExpanded()){
-            close.setVisibility(View.GONE);
-        }
-        layout.addView(close);
+    @Override
+    public void onBackPressed() {
+        implementation.backPressed();
+        super.onBackPressed();
     }
 
-    private void setIAdView(InterstitialAdView av) {
-        if (av != null) {
-            av.setAdActivity(this);
-
-            if (layout != null) {
-                layout.setBackgroundColor(av.getBackgroundColor());
-                layout.removeAllViews();
-                if (av.getParent() != null) {
-                    ((ViewGroup) av.getParent()).removeAllViews();
-                }
-                Pair<Long, Displayable> p = InterstitialAdView.q.poll();
-                while (p != null && p.second != null
-                        && now - p.first > InterstitialAdView.MAX_AGE) {
-                    Clog.w(Clog.baseLogTag, Clog.getString(R.string.too_old));
-                    p = InterstitialAdView.q.poll();
-                }
-                if ((p == null) || (p.second == null)
-                        || !(p.second.getView() instanceof WebView))
-                    return;
-                webView = (WebView) p.second.getView();
-                layout.addView(webView);
-            }
-        }
-
-        adView = av;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return false;
     }
 
-    static void lockToCurrentOrientation(Activity a) {
+    protected void interacted() {
+        implementation.interacted();
+    }
+
+    // Static methods for locking orientation
+
+    protected static void lockToCurrentOrientation(Activity a) {
         final int orientation = a.getResources().getConfiguration().orientation;
         setOrientation(a, orientation);
     }
@@ -300,57 +211,5 @@ public class AdActivity extends Activity {
         }
 
         setOrientation(a, orientation);
-    }
-
-    @Override
-    protected void onPause() {
-        WebviewUtil.onPause(webView);
-        CookieSyncManager csm = CookieSyncManager.getInstance();
-        if (csm != null) {
-            csm.stopSync();
-        }
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        WebviewUtil.onResume(webView);
-        CookieSyncManager csm = CookieSyncManager.getInstance();
-        if (csm != null) {
-            csm.startSync();
-        }
-        super.onResume();
-    }
-
-    @Override
-    protected void onDestroy() {
-        // handling mraid fullscreen rotations
-        if (isMRAID) {
-            super.onDestroy();
-            return;
-        }
-
-        if (webView != null) {
-            if (webView.getParent() != null)
-                ((ViewGroup) webView.getParent()).removeView(webView);
-            webView.destroy();
-        }
-        if (adView != null) {
-            adView.close_button = null;
-            adView.setAdActivity(null);
-        }
-
-        super.onDestroy();
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mraidFullscreenImplementation != null) {
-            mraidFullscreenImplementation.setFullscreenActivity(null);
-            mraidFullscreenImplementation.close();
-        }
-        mraidFullscreenImplementation = null;
-
-        super.onBackPressed();
     }
 }

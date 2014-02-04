@@ -140,7 +140,6 @@ class AdWebView extends WebView implements Displayable {
             destination.getAdDispatcher().onAdClicked();
         }
 
-        // If it's an IAV, prevent it from closing
         if (destination instanceof InterstitialAdView) {
             ((InterstitialAdView) destination).interacted();
         }
@@ -180,7 +179,8 @@ class AdWebView extends WebView implements Displayable {
                 @Override
                 public void onPageFinished(WebView view, String url){
                     Intent intent = new Intent(AdWebView.this.destination.getContext(),
-                            BrowserActivity.class);
+                            AdActivity.class);
+                    intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
                     intent.putExtra("isForward", true);
                     if (AdWebView.this.destination.getBrowserStyle() != null) {
                         String i = "" + super.hashCode();
