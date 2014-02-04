@@ -147,21 +147,59 @@ class AdWebView extends WebView implements Displayable {
     }
 
     protected void loadURLInCorrectBrowser(String url){
-        Intent intent;
+        Intent intent = null;
         // open the in-app browser
         if (!AdWebView.this.destination.getOpensNativeBrowser() && url.startsWith("http")) {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(R.string.opening_inapp));
-            intent = new Intent(AdWebView.this.destination.getContext(),
-                    BrowserActivity.class);
-            intent.putExtra("url", url);
-            if (AdWebView.this.destination.getBrowserStyle() != null) {
-                String i = "" + super.hashCode();
-                intent.putExtra("bridgeid", i);
-                AdView.BrowserStyle.bridge
-                        .add(new Pair<String, BrowserStyle>(i,
-                                AdWebView.this.destination.getBrowserStyle()));
-            }
+            //Create a 1x1 webview somewhere invisible to load the landing page and detect if we're redirecting to a market url
+
+            WebView fwdWebView = new WebView(this.getContext());
+
+            fwdWebView.setWebViewClient(new WebViewClient(){
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url){
+                    if(url.contains("play.google.com") || url.contains("market://")){
+
+                        Clog.d(Clog.baseLogTag,
+                                Clog.getString(R.string.opening_app_store));
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse(url));
+
+                        try {
+                            AdWebView.this.destination.getContext().startActivity(intent);
+                        } catch (ActivityNotFoundException e) {
+                            Clog.w(Clog.baseLogTag,
+                                    Clog.getString(R.string.opening_url_failed, url));
+                        }
+                        return true;
+                    }
+                    return false;
+                }
+
+                @Override
+                public void onPageFinished(WebView view, String url){
+                    Intent intent = new Intent(AdWebView.this.destination.getContext(),
+                            BrowserActivity.class);
+                    intent.putExtra("url", url);
+                    if (AdWebView.this.destination.getBrowserStyle() != null) {
+                        String i = "" + super.hashCode();
+                        intent.putExtra("bridgeid", i);
+                        AdView.BrowserStyle.bridge
+                                .add(new Pair<String, BrowserStyle>(i,
+                                        AdWebView.this.destination.getBrowserStyle()));
+                    }
+                    try {
+                        AdWebView.this.destination.getContext().startActivity(intent);
+                    } catch (ActivityNotFoundException e) {
+                        Clog.w(Clog.baseLogTag,
+                                Clog.getString(R.string.opening_url_failed, url));
+                    }
+                }
+            });
+
+            fwdWebView.loadUrl(url);
+
         } else {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(R.string.opening_native));
@@ -169,11 +207,13 @@ class AdWebView extends WebView implements Displayable {
             intent.setData(Uri.parse(url));
         }
 
-        try {
-            AdWebView.this.destination.getContext().startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-            Clog.w(Clog.baseLogTag,
-                    Clog.getString(R.string.opening_url_failed, url));
+        if(intent!=null){
+            try {
+                AdWebView.this.destination.getContext().startActivity(intent);
+            } catch (ActivityNotFoundException e) {
+                Clog.w(Clog.baseLogTag,
+                        Clog.getString(R.string.opening_url_failed, url));
+            }
         }
     }
 
