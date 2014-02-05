@@ -76,6 +76,13 @@ public abstract class BaseRoboTest implements AdListener {
     public void tearDown() {
         Robolectric.clearHttpResponseRules();
         Robolectric.clearPendingHttpResponses();
+
+        looperScheduler.reset();
+        bgScheduler.reset();
+        uiScheduler.reset();
+
+        bgScheduler.pause();
+        uiScheduler.pause();
     }
 
     public void assertCallbacks(boolean success) {

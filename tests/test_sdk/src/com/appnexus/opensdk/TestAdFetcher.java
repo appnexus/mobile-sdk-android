@@ -29,6 +29,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 @Config(shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class})
 @RunWith(RobolectricTestRunner.class)
@@ -40,8 +41,19 @@ public class TestAdFetcher extends BaseRoboTest {
     public void setup() {
         super.setup();
         adView = new BannerAdView(activity);
+        adView.setAdListener(this);
         adView.setPlacementID("0");
         adFetcher = new AdFetcher(adView);
+    }
+
+    @Override
+    public void tearDown() {
+        super.tearDown();
+        if (adFetcher != null) {
+            adFetcher.stop();
+            adFetcher.clearDurations();
+        }
+        adFetcher = null;
     }
 
     private void schedulerTimerToCheckForTasks() {
@@ -111,5 +123,64 @@ public class TestAdFetcher extends BaseRoboTest {
         adFetcher.start();
         adFetcher.setPeriod(0);
         runStartTest(0);
+    }
+
+    @Test
+    public void testStartTwiceBeforeAdRequestQueued() {
+        adFetcher.start();
+
+        // wait for the first start to queue its UI thread task
+        schedulerTimerToCheckForTasks();
+        Lock.pause();
+
+        // the second start should fail (and dispatch a UI thread call to adFailed)
+        adFetcher.start();
+        runStartTest(1);
+        assertTrue(adFailed);
+    }
+
+    @Test
+    public void testStartTwiceAfterAdRequestQueued() {
+        adFetcher.start();
+
+        // wait for the first start to queue AdRequest task
+        runStartTest(1);
+
+        // the second start should fail (and dispatch a UI thread call to adFailed)
+        adFetcher.start();
+        runStartTest(1);
+        assertTrue(adFailed);
+    }
+
+    @Test
+    public void testStop() {
+        // not needed, but in case AdRequest is run
+        Robolectric.addPendingHttpResponse(200, TestResponses.blank());
+
+        // start an AdFetcher normally, until an AdRequest is queued
+        adFetcher.start();
+        runStartTest(1);
+
+        adFetcher.stop();
+
+        // pause until a scheduler has a task in queue
+        schedulerTimerToCheckForTasks();
+        Lock.pause();
+        // Run the cancel command on AdRequest
+        Robolectric.runUiThreadTasks();
+        // Run the pending AdRequest from start() -- should have been canceled
+        Robolectric.getBackgroundScheduler().runOneTask();
+
+        // A normally executed AdRequest will queue onPostExecute call to the UI thread,
+        // but it should be canceled, and queue nothing
+        int uiTaskCount = Robolectric.getUiThreadScheduler().enqueuedTaskCount();
+        assertEquals(0, uiTaskCount);
+    }
+
+    @Test
+    public void testPeriod() {
+        int period = 30000;
+        adFetcher.setPeriod(period);
+        assertEquals(period, adFetcher.getPeriod());
     }
 }
