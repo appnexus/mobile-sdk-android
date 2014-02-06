@@ -71,6 +71,8 @@
     <string name="settings_txt_zip">Zip:</string>
     <string name="settings_txt_custom_keywords">Custom Keywords:</string>
     <string name="settings_txt_custom_keywords_button">Edit</string>
+    <string name="settings_btn_advanced_show">Show</string>
+    <string name="settings_btn_advanced_hide">Hide</string>
 
     <string-array name="sizes">
         <item>320x50</item>

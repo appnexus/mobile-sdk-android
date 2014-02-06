@@ -210,14 +210,14 @@
                         />
                 <Button
                         android:id="@+id/btn_advanced_yes"
-                        android:text="@string/settings_btn_psas_yes"
+                        android:text="@string/settings_btn_advanced_show"
                         android:enabled="false"
                         android:layout_toLeftOf="@id/mid_advanced"
                         style="@style/switchButtonItem"
                         />
                 <Button
                         android:id="@+id/btn_advanced_no"
-                        android:text="@string/settings_btn_psas_no"
+                        android:text="@string/settings_btn_advanced_hide"
                         style="@style/switchButtonItem"
                         android:layout_toRightOf="@id/mid_advanced"
                         />
