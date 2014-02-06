@@ -64,7 +64,13 @@
 
     <string name="log_title_applogs">App Logs</string>
     <string name="log_btn_email">Email Logs</string>
-    <string name="settings_txt_advanced">Advanced</string>
+    <string name="settings_txt_advanced">Advanced:</string>
+    <string name="settings_title_advanced">Advanced Targeting</string>
+    <string name="settings_txt_gender">Gender:</string>
+    <string name="settings_txt_age">Age:</string>
+    <string name="settings_txt_zip">Zip:</string>
+    <string name="settings_txt_custom_keywords">Custom Keywords:</string>
+    <string name="settings_txt_custom_keywords_button">Edit</string>
 
     <string-array name="sizes">
         <item>320x50</item>
