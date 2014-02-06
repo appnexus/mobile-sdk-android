@@ -16,17 +16,16 @@
 
 package com.appnexus.opensdk;
 
-import android.app.Activity;
-import com.appnexus.opensdk.utils.Clog;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
+@Config(manifest = "../sdk/AndroidManifest.xml")
 @RunWith(RobolectricTestRunner.class)
 public class TestAdRequestToAdRequester extends BaseRoboTest implements AdRequester {
     boolean requesterFailed, requesterReceivedResponse, requesterReturnedOwner;

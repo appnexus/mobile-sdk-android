@@ -35,14 +35,14 @@ import org.robolectric.annotation.Config;
 import static com.appnexus.opensdk.MediatedAdViewController.RESULT.*;
 import static junit.framework.Assert.*;
 
-@Config(shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class})
+@Config(shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class},
+        manifest = "../sdk/AndroidManifest.xml")
 @RunWith(RobolectricTestRunner.class)
 public class TestMediatedAdViewController extends BaseRoboTest {
 
     @Override
     public void setup() {
         super.setup();
-        bannerAdView.setAdListener(this);
         adRequest = new AdRequest(bannerAdView.mAdFetcher);
     }
 

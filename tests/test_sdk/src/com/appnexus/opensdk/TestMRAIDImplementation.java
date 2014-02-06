@@ -28,7 +28,8 @@ import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.*;
 
-@Config(shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class})
+@Config(shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class},
+        manifest = "../sdk/AndroidManifest.xml")
 @RunWith(RobolectricTestRunner.class)
 public class TestMRAIDImplementation extends BaseRoboTest {
     MRAIDImplementation implementation;

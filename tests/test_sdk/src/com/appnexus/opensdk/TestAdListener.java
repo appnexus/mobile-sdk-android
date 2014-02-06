@@ -24,21 +24,14 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-@Config(shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class})
+@Config(shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class},
+        manifest = "../sdk/AndroidManifest.xml")
 @RunWith(RobolectricTestRunner.class)
 public class TestAdListener extends BaseRoboTest {
 
     @Override
     public void setup() {
         super.setup();
-        bannerAdView.setAdListener(this);
-        interstitialAdView.setAdListener(this);
-
-        adLoaded = false;
-        adFailed = false;
-        adExpanded = false;
-        adCollapsed = false;
-        adClicked = false;
     }
 
     // Banner Testing

@@ -18,32 +18,25 @@ package com.appnexus.opensdk;
 
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
-import com.appnexus.opensdk.util.Lock;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
-@Config(shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class})
+@Config(shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class},
+        manifest = "../sdk/AndroidManifest.xml")
 @RunWith(RobolectricTestRunner.class)
 public class TestAdFetcher extends BaseRoboTest {
     private AdFetcher adFetcher;
-    private BannerAdView adView;
 
     @Override
     public void setup() {
         super.setup();
-        adView = new BannerAdView(activity);
-        adView.setAdListener(this);
-        adView.setPlacementID("0");
-        adFetcher = new AdFetcher(adView);
+        adFetcher = new AdFetcher(bannerAdView);
     }
 
     @Override
@@ -56,25 +49,9 @@ public class TestAdFetcher extends BaseRoboTest {
         adFetcher = null;
     }
 
-    private void schedulerTimerToCheckForTasks() {
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if ((looperScheduler.enqueuedTaskCount() > 0)
-                        || (uiScheduler.enqueuedTaskCount() > 0)
-                        || (bgScheduler.enqueuedTaskCount() > 0)) {
-                    Lock.unpause();
-                    this.cancel();
-                }
-            }
-        }, 0, 100);
-    }
-
     private void runStartTest(int expectedBgTaskCount) {
         // pause until a scheduler has a task in queue
-        schedulerTimerToCheckForTasks();
-        Lock.pause();
+        waitForTasks();
 
         // AdFetcher posts to a Handler which executes (queues) an AdRequest -- run the handler message
         Robolectric.runUiThreadTasks();
@@ -113,7 +90,7 @@ public class TestAdFetcher extends BaseRoboTest {
 
     @Test
     public void testStartWithBadPlacementId() {
-        adView.setPlacementID("");
+        bannerAdView.setPlacementID("");
         adFetcher.start();
         runStartTest(0);
     }
@@ -130,8 +107,7 @@ public class TestAdFetcher extends BaseRoboTest {
         adFetcher.start();
 
         // wait for the first start to queue its UI thread task
-        schedulerTimerToCheckForTasks();
-        Lock.pause();
+        waitForTasks();
 
         // the second start should fail (and dispatch a UI thread call to adFailed)
         adFetcher.start();
@@ -164,8 +140,7 @@ public class TestAdFetcher extends BaseRoboTest {
         adFetcher.stop();
 
         // pause until a scheduler has a task in queue
-        schedulerTimerToCheckForTasks();
-        Lock.pause();
+        waitForTasks();
         // Run the cancel command on AdRequest
         Robolectric.runUiThreadTasks();
         // Run the pending AdRequest from start() -- should have been canceled
