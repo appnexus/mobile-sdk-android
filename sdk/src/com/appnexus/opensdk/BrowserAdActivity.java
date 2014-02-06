@@ -29,6 +29,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.Pair;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.*;
 import android.widget.*;
 import com.appnexus.opensdk.utils.Clog;
@@ -51,7 +52,14 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     public void create() {
         adActivity.setContentView(R.layout.activity_in_app_browser);
 
-        webView = (WebView) adActivity.findViewById(R.id.web_view);
+
+        webView = AdWebView.REDIRECT_WEBVIEW;
+        WebView webViewSpace = (WebView) adActivity.findViewById(R.id.web_view);
+        ViewGroup webViewSpaceParent = ((ViewGroup) webViewSpace.getParent());
+        int index = webViewSpaceParent.indexOfChild(webViewSpace);
+        webViewSpaceParent.removeView(webViewSpace);
+        webViewSpaceParent.addView(webView, index);
+
         final ImageButton back = (ImageButton) adActivity.findViewById(R.id.browser_back);
         final ImageButton forward = (ImageButton) adActivity.findViewById(R.id.browser_forward);
         ImageButton openBrowser = (ImageButton) adActivity.findViewById(R.id.open_browser);
@@ -87,7 +95,7 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
             });
         }
 
-        String url = adActivity.getIntent().getStringExtra("url");
+        //String url = adActivity.getIntent().getStringExtra("url");
         String id = adActivity.getIntent().getStringExtra("bridgeid");
 
         if (id != null) {
@@ -230,7 +238,7 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
             }
         });
 
-        webView.loadUrl(url);
+        //webView.loadUrl(url);
     }
 
     @Override

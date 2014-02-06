@@ -37,6 +37,7 @@ import com.appnexus.opensdk.utils.WebviewUtil;
 @SuppressLint("ViewConstructor")
 // This will only be constructed by AdFetcher.
 class AdWebView extends WebView implements Displayable {
+    protected static WebView REDIRECT_WEBVIEW;
     private boolean failed = false;
     private AdView destination;
 
@@ -151,11 +152,30 @@ class AdWebView extends WebView implements Displayable {
         if (!AdWebView.this.destination.getOpensNativeBrowser() && url.startsWith("http")) {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(R.string.opening_inapp));
+
+            //If it's a direct URL to the play store, just open it.
+            if(url.contains("play.google.com") || url.contains("market://")){
+
+                Clog.d(Clog.baseLogTag,
+                        Clog.getString(R.string.opening_app_store));
+                Intent intent2 = new Intent(Intent.ACTION_VIEW);
+                intent2.setData(Uri.parse(url));
+
+                try {
+                    AdWebView.this.destination.getContext().startActivity(intent2);
+                } catch (ActivityNotFoundException e) {
+                    Clog.w(Clog.baseLogTag,
+                            Clog.getString(R.string.opening_url_failed, url));
+                }
+                return;
+            }
+
             //Create a 1x1 webview somewhere invisible to load the landing page and detect if we're redirecting to a market url
 
-            WebView fwdWebView = new WebView(this.getContext());
+            final WebView fwdWebView = new WebView(this.getContext());
 
             fwdWebView.setWebViewClient(new WebViewClient(){
+                boolean isOpeningAppStore = false;
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url){
                     if(url.contains("play.google.com") || url.contains("market://")){
@@ -167,21 +187,27 @@ class AdWebView extends WebView implements Displayable {
 
                         try {
                             AdWebView.this.destination.getContext().startActivity(intent);
+                            isOpeningAppStore=true;
                         } catch (ActivityNotFoundException e) {
                             Clog.w(Clog.baseLogTag,
                                     Clog.getString(R.string.opening_url_failed, url));
                         }
                         return true;
+                    }else{
+                        return false;
                     }
-                    return false;
                 }
 
                 @Override
                 public void onPageFinished(WebView view, String url){
+                    if(isOpeningAppStore){
+                        isOpeningAppStore = false;
+                        return;
+                    }
                     Intent intent = new Intent(AdWebView.this.destination.getContext(),
                             AdActivity.class);
                     intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
-                    intent.putExtra("isForward", true);
+                    AdWebView.REDIRECT_WEBVIEW = fwdWebView;
                     if (AdWebView.this.destination.getBrowserStyle() != null) {
                         String i = "" + super.hashCode();
                         intent.putExtra("bridgeid", i);
