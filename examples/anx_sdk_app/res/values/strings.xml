@@ -64,6 +64,7 @@
 
     <string name="log_title_applogs">App Logs</string>
     <string name="log_btn_email">Email Logs</string>
+    <string name="settings_txt_advanced">Advanced</string>
 
     <string-array name="sizes">
         <item>320x50</item>
