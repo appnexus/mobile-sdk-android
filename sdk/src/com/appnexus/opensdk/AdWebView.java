@@ -154,7 +154,7 @@ class AdWebView extends WebView implements Displayable {
                     Clog.getString(R.string.opening_inapp));
 
             //If it's a direct URL to the play store, just open it.
-            if(url.contains("play.google.com") || url.contains("market://")){
+            if(url.contains("://play.google.com") || url.contains("market://")){
 
                 Clog.d(Clog.baseLogTag,
                         Clog.getString(R.string.opening_app_store));
@@ -178,7 +178,7 @@ class AdWebView extends WebView implements Displayable {
                 boolean isOpeningAppStore = false;
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url){
-                    if(url.contains("play.google.com") || url.contains("market://")){
+                    if(url.contains("://play.google.com") || url.contains("market://")){
 
                         Clog.d(Clog.baseLogTag,
                                 Clog.getString(R.string.opening_app_store));
