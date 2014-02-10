@@ -250,6 +250,14 @@ public abstract class AdView extends FrameLayout {
 		return loadAd();
 	}
 
+    protected void loadAdFromHtml(String html, int width, int height) {
+        // load all ads in MRAIDWebViews
+        MRAIDWebView output = new MRAIDWebView(this);
+        AdResponse response = new AdResponse(html, width, height);
+        output.loadAd(response);
+        display(output);
+    }
+
 	void loadHtml(String content, int width, int height) {
 		this.mAdFetcher.stop();
 
