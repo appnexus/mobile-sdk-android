@@ -147,7 +147,6 @@ class AdWebView extends WebView implements Displayable {
     }
 
     protected void loadURLInCorrectBrowser(String url){
-        Intent intent = null;
         // open the in-app browser
         if (!AdWebView.this.destination.getOpensNativeBrowser() && url.startsWith("http")) {
             Clog.d(Clog.baseLogTag,
@@ -220,6 +219,7 @@ class AdWebView extends WebView implements Displayable {
                     } catch (ActivityNotFoundException e) {
                         Clog.w(Clog.baseLogTag,
                                 Clog.getString(R.string.opening_url_failed, url));
+                        AdWebView.REDIRECT_WEBVIEW = null;
                     }
                 }
             });
@@ -229,11 +229,8 @@ class AdWebView extends WebView implements Displayable {
         } else {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(R.string.opening_native));
-            intent = new Intent(Intent.ACTION_VIEW);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(url));
-        }
-
-        if(intent!=null){
             try {
                 AdWebView.this.destination.getContext().startActivity(intent);
             } catch (ActivityNotFoundException e) {

@@ -52,13 +52,18 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     public void create() {
         adActivity.setContentView(R.layout.activity_in_app_browser);
 
-
+        if(AdWebView.REDIRECT_WEBVIEW == null){
+            adActivity.finish();
+            return;
+        }
         webView = AdWebView.REDIRECT_WEBVIEW;
         WebView webViewSpace = (WebView) adActivity.findViewById(R.id.web_view);
         ViewGroup webViewSpaceParent = ((ViewGroup) webViewSpace.getParent());
         int index = webViewSpaceParent.indexOfChild(webViewSpace);
         webViewSpaceParent.removeView(webViewSpace);
         webViewSpaceParent.addView(webView, index);
+
+        AdWebView.REDIRECT_WEBVIEW = null;
 
         final ImageButton back = (ImageButton) adActivity.findViewById(R.id.browser_back);
         final ImageButton forward = (ImageButton) adActivity.findViewById(R.id.browser_forward);
@@ -95,7 +100,6 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
             });
         }
 
-        //String url = adActivity.getIntent().getStringExtra("url");
         String id = adActivity.getIntent().getStringExtra("bridgeid");
 
         if (id != null) {
@@ -237,8 +241,6 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
                 }
             }
         });
-
-        //webView.loadUrl(url);
     }
 
     @Override
