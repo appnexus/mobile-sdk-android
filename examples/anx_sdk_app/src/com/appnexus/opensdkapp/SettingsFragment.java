@@ -16,19 +16,27 @@
 
 package com.appnexus.opensdkapp;
 
-import android.app.Activity;
+import android.app.*;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.utils.Clog;
+import android.support.v4.app.DialogFragment;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class SettingsFragment extends Fragment {
     private GradientDrawable colorViewBackground;
@@ -36,7 +44,7 @@ public class SettingsFragment extends Fragment {
 
     private Button btnAdTypeBanner, btnAdTypeInterstitial,
             btnPSAsYes, btnPSAsNo,
-            btnBrowserInApp, btnBrowserNative, btnShowAdvanced, btnHideAdvanced;
+            btnBrowserInApp, btnBrowserNative, btnShowAdvanced, btnHideAdvanced, btnEditCustomKeywords;
 
     private TextView txtSize, txtRefresh,
             txtBackgroundColor;
@@ -51,6 +59,7 @@ public class SettingsFragment extends Fragment {
     boolean savedAdType, savedPSAs, savedBrowser;
     String savedPlacement, savedSize, savedRefresh, savedColor, savedMemberId, savedDongle, savedAge, savedZip;
     AdView.GENDER savedGender;
+    HashMap<String, String> customKeywords;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,6 +75,7 @@ public class SettingsFragment extends Fragment {
         btnBrowserNative = (Button) out.findViewById(R.id.btn_browser_native);
         btnShowAdvanced = (Button) out.findViewById(R.id.btn_advanced_yes);
         btnHideAdvanced = (Button) out.findViewById(R.id.btn_advanced_no);
+        btnEditCustomKeywords = (Button) out.findViewById(R.id.edit_custom_keywords);
 
         txtSize = (TextView) out.findViewById(R.id.txt_size);
         txtRefresh = (TextView) out.findViewById(R.id.txt_refresh);
@@ -100,6 +110,7 @@ public class SettingsFragment extends Fragment {
         btnBrowserNative.setOnClickListener(new BrowserListener(false));
         btnShowAdvanced.setOnClickListener(new ShowAdvancedListener(true, this));
         btnHideAdvanced.setOnClickListener(new ShowAdvancedListener(false, this));
+        btnEditCustomKeywords.setOnClickListener(new CustomKeywordsListener(this));
 
         btnLoadAd.setOnClickListener(new LoadAdOnClickListener());
 
@@ -194,7 +205,9 @@ public class SettingsFragment extends Fragment {
         savedZip = Prefs.getZip(getActivity());
         editZip.setText(savedZip);
 
-        //Load Zip
+        //Load Keywords
+        customKeywords = Prefs.getCustomKeywords(getActivity());
+
 
     }
 
@@ -363,6 +376,9 @@ public class SettingsFragment extends Fragment {
                 prefs.writeString(Prefs.KEY_ZIP, savedZip);
             }
 
+
+            prefs.writeHashMap(Prefs.KEY_CUSTOM_KEYWORDS, customKeywords);
+
             prefs.applyChanges();
 
             if (callback != null)
@@ -469,6 +485,104 @@ public class SettingsFragment extends Fragment {
             btnHideAdvanced.setEnabled(show);
             btnShowAdvanced.setEnabled(!show);
         }
+    }
+
+    private class CustomKeywordsListener implements View.OnClickListener{
+        Fragment f;
+        private CustomKeywordsListener(Fragment f){
+            this.f=f;
+        }
+
+        @Override
+        public void onClick(View v){
+            CustomKeywordsDialog customKeywordsDialog = new CustomKeywordsDialog();
+            customKeywordsDialog.show(f.getFragmentManager(), "ckd");
+        }
+    }
+
+    private class CustomKeywordsDialog extends DialogFragment{
+
+        HashMap<String, String> currentKeywords = new HashMap<String, String>();
+        ArrayList<Pair<EditText, EditText>> pairs = new ArrayList<Pair<EditText, EditText>>();
+
+        public CustomKeywordsDialog(){
+
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+
+            View view = inflater.inflate(R.layout.dialog_fragment_custom_keywords, container);
+            getDialog().setTitle("Edit Custom Keywords");
+
+            final LinearLayout keywords_ll = (LinearLayout) view.findViewById(R.id.keyword_layout);
+            Button done = (Button) view.findViewById(R.id.done_editing);
+            done.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    for(Pair<EditText, EditText> p : pairs){
+                        currentKeywords.put(p.first.getText().toString(), p.second.getText().toString());
+                    }
+                    SettingsFragment.this.customKeywords = currentKeywords;
+                    getDialog().dismiss();
+                }
+            });
+
+            //Add current keywords
+            for(String s : customKeywords.keySet()){
+                addKeyword(keywords_ll, s, customKeywords.get(s));
+            }
+
+            Button add = (Button) view.findViewById(R.id.add_keyword);
+            add.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    addKeyword(keywords_ll, "KEY", "VALUE");
+                }
+            });
+            return view;
+        }
+
+        public void addKeyword(final LinearLayout l, String k, String v){
+            Context context = CustomKeywordsDialog.this.getActivity();
+            final LinearLayout new_keyword = new LinearLayout(context);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            new_keyword.setLayoutParams(lp);
+
+            Button minus = new Button(context);
+            final EditText key = new EditText(context);
+            EditText value = new EditText(context);
+            minus.setText("-");
+            minus.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            minus.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    l.removeView(new_keyword);
+                    for(Pair<EditText, EditText> p : pairs){
+                        if(p.first == key){
+                            pairs.remove(p);
+                        }
+                    }
+                }
+            });
+            new_keyword.addView(minus);
+
+
+            key.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            key.setText(k);
+            new_keyword.addView(key);
+
+
+            value.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            value.setText(v);
+            new_keyword.addView(value);
+
+            pairs.add(new Pair<EditText, EditText>(key, value));
+
+            l.addView(new_keyword);
+        }
+
     }
 
     /**

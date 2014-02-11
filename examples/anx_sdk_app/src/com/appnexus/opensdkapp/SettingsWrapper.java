@@ -19,6 +19,8 @@ package com.appnexus.opensdkapp;
 import android.content.Context;
 import com.appnexus.opensdk.AdView;
 
+import java.util.HashMap;
+
 public class SettingsWrapper {
     private boolean isAdTypeBanner;
     private boolean isAllowPsas;
@@ -33,6 +35,7 @@ public class SettingsWrapper {
     private String age;
     private String zip;
     private int width, height;
+    private HashMap<String, String> customKeywords;
 
     public AdView.GENDER getGender(){ return gender;}
     public String getAge(){return age;}
@@ -128,6 +131,7 @@ public class SettingsWrapper {
         settingsWrapper.gender = AdView.GENDER.values()[Prefs.getGender(context)];
         settingsWrapper.age = Prefs.getAge(context);
         settingsWrapper.zip = Prefs.getZip(context);
+        settingsWrapper.customKeywords = Prefs.getCustomKeywords(context);
 
         return settingsWrapper;
     }
@@ -161,6 +165,10 @@ public class SettingsWrapper {
 
     public int getHeight() {
         return height;
+    }
+
+    public HashMap<String, String> getCustomKeywords(){
+        return customKeywords;
     }
 
     @Override

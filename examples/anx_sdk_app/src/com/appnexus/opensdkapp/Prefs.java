@@ -24,6 +24,9 @@ import android.os.Build;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.utils.Clog;
 
+import java.util.HashMap;
+import java.util.HashSet;
+
 public class Prefs {
 
     public static final String KEY_ADTYPE_IS_BANNER = "ADTYPE";
@@ -38,6 +41,7 @@ public class Prefs {
     public static final String KEY_GENDER = "GENDER";
     public static final String KEY_AGE = "AGE";
     public static final String KEY_ZIP = "ZIP";
+    public static final String KEY_CUSTOM_KEYWORDS = "CUSTOM_KEYWORDS";
 
     public static final String KEY_LAST_LOG_UPLOAD = "LAST_LOG_UPLOAD";
 
@@ -124,6 +128,32 @@ public class Prefs {
         editor.putLong(key, value);
     }
 
+    public void writeHashMap(String key, HashMap<String, String> value){
+        HashSet<String> s = new HashSet<String>();
+        for(String k : value.keySet()){
+            s.add(k+":"+value.get(k));
+        }
+        if(Build.VERSION.SDK_INT>=11){
+            editor.putStringSet(key, s);
+        }else{
+            Clog.w(Constants.BASE_LOG_TAG, "Can't save your custom keywords because your android version is below 11.");
+        }
+    }
+
+    public static HashMap<String, String> getHashMap(Context context, String key){
+        HashMap<String, String> return_value = new HashMap<String, String>();
+        HashSet<String> out = (HashSet<String>) getPreferences(context).getStringSet(key, new HashSet<String>());
+        for(String s : out){
+            String[] split = s.split(":");
+            try{
+                return_value.put(split[0], split[1]);
+            }catch(ArrayIndexOutOfBoundsException e){
+                continue;
+            }
+        }
+        return return_value;
+    }
+
     @SuppressLint("NewApi")
     public void applyChanges() {
         if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
@@ -187,5 +217,9 @@ public class Prefs {
 
     public static long getLastLogUpload(Context context) {
         return getLong(context, Prefs.KEY_LAST_LOG_UPLOAD, Prefs.DEF_LAST_LOG_UPLOAD);
+    }
+
+    public static HashMap<String, String> getCustomKeywords(Context context){
+        return getHashMap(context, Prefs.KEY_CUSTOM_KEYWORDS);
     }
 }
