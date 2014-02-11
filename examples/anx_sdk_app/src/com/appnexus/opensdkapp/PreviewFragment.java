@@ -109,7 +109,7 @@ public class PreviewFragment extends Fragment {
             bav.setPlacementID(settingsWrapper.getPlacementId());
             bav.setGender(settingsWrapper.getGender());
             bav.setAge(settingsWrapper.getAge());
-            //bav.setZip(settingsWrapper.getZip()); // TODO unsupported
+            bav.addCustomKeywords("pcode", settingsWrapper.getZip());
 
             if (!bav.loadAd()) {
                 adListener.onAdRequestFailed(null);
@@ -124,7 +124,7 @@ public class PreviewFragment extends Fragment {
             iav.setPlacementID(settingsWrapper.getPlacementId());
             iav.setGender(settingsWrapper.getGender());
             iav.setAge(settingsWrapper.getAge());
-            //iav.setZip(settingsWrapper.getZip()); // TODO unsupported
+            iav.addCustomKeywords("pcode", settingsWrapper.getZip());
 
             int color = DEF_COLOR;
 
