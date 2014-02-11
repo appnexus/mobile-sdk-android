@@ -17,6 +17,7 @@
 package com.appnexus.opensdkapp;
 
 import android.content.Context;
+import com.appnexus.opensdk.AdView;
 
 public class SettingsWrapper {
     private boolean isAdTypeBanner;
@@ -28,8 +29,16 @@ public class SettingsWrapper {
     private String backgroundColor;
     private String memberId;
     private String dongle;
-
+    private AdView.GENDER gender;
+    private String age;
+    private String zip;
     private int width, height;
+
+    public AdView.GENDER getGender(){ return gender;}
+    public String getAge(){return age;}
+    public String getZip(){return zip;}
+
+    public void setGender(AdView.GENDER gender){this.gender=gender;}
 
     public boolean isAdTypeBanner() {
         return isAdTypeBanner;
@@ -116,6 +125,9 @@ public class SettingsWrapper {
         settingsWrapper.backgroundColor = Prefs.getColor(context);
         settingsWrapper.memberId = Prefs.getMemberId(context);
         settingsWrapper.dongle = Prefs.getDongle(context);
+        settingsWrapper.gender = AdView.GENDER.values()[Prefs.getGender(context)];
+        settingsWrapper.age = Prefs.getAge(context);
+        settingsWrapper.zip = Prefs.getZip(context);
 
         return settingsWrapper;
     }

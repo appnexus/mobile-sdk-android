@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 
+import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.utils.Clog;
 
 public class Prefs {
@@ -34,6 +35,9 @@ public class Prefs {
     public static final String KEY_COLOR_HEX = "COLOR";
     public static final String KEY_MEMBERID = "MEMBERID";
     public static final String KEY_DONGLE = "DONGLE";
+    public static final String KEY_GENDER = "GENDER";
+    public static final String KEY_AGE = "AGE";
+    public static final String KEY_ZIP = "ZIP";
 
     public static final String KEY_LAST_LOG_UPLOAD = "LAST_LOG_UPLOAD";
 
@@ -47,6 +51,9 @@ public class Prefs {
     public static final String DEF_COLOR_HEX = "FF000000";
     public static final String DEF_MEMBERID = "";
     public static final String DEF_DONGLE = "";
+    public static final String DEF_AGE = "";
+    public static final String DEF_ZIP = "";
+    public static final AdView.GENDER DEF_GENDER = AdView.GENDER.UNKNOWN;
 
     public static final long DEF_LAST_LOG_UPLOAD = 0;
 
@@ -129,6 +136,18 @@ public class Prefs {
     /**
      * Convenience methods
      */
+
+    public static String getAge(Context context){
+        return getString(context, Prefs.KEY_AGE, Prefs.DEF_AGE);
+    }
+
+    public static String getZip(Context context){
+        return getString(context, Prefs.KEY_ZIP, Prefs.DEF_ZIP);
+    }
+
+    public static int getGender(Context context){
+        return getInt(context, Prefs.KEY_GENDER, Prefs.DEF_GENDER.ordinal());
+    }
 
     public static boolean getAdType(Context context) {
         return getBoolean(context, Prefs.KEY_ADTYPE_IS_BANNER, Prefs.DEF_ADTYPE_IS_BANNER);

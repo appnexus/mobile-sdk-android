@@ -267,7 +267,9 @@
         </RelativeLayout>
 
         <!-- Advanced -->
-
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/advanced_block">
         <TextView
                 style="@style/header"
                 android:text="@string/settings_title_advanced"
@@ -336,7 +338,7 @@
                     android:text="@string/settings_txt_custom_keywords_button"
                     />
         </RelativeLayout>
-
+        </LinearLayout>
         <!-- Banner -->
 
         <TextView

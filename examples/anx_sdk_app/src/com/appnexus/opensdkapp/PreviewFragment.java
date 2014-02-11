@@ -107,6 +107,10 @@ public class PreviewFragment extends Fragment {
             bav.setShouldServePSAs(settingsWrapper.isAllowPsas());
             bav.setOpensNativeBrowser(!settingsWrapper.isBrowserInApp());
             bav.setPlacementID(settingsWrapper.getPlacementId());
+            bav.setGender(settingsWrapper.getGender());
+            bav.setAge(settingsWrapper.getAge());
+            //bav.setZip(settingsWrapper.getZip()); // TODO unsupported
+
             if (!bav.loadAd()) {
                 adListener.onAdRequestFailed(null);
             }
@@ -118,6 +122,9 @@ public class PreviewFragment extends Fragment {
             iav.setShouldServePSAs(settingsWrapper.isAllowPsas());
             iav.setOpensNativeBrowser(!settingsWrapper.isBrowserInApp());
             iav.setPlacementID(settingsWrapper.getPlacementId());
+            iav.setGender(settingsWrapper.getGender());
+            iav.setAge(settingsWrapper.getAge());
+            //iav.setZip(settingsWrapper.getZip()); // TODO unsupported
 
             int color = DEF_COLOR;
 
