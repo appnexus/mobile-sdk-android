@@ -19,11 +19,13 @@ package com.appnexus.opensdk;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import com.appnexus.opensdk.utils.ViewUtil;
 
 @SuppressLint("ViewConstructor")
 class MRAIDWebView extends AdWebView implements Displayable {
@@ -31,11 +33,18 @@ class MRAIDWebView extends AdWebView implements Displayable {
     final AdView owner;
     private int default_width;
     private int default_height;
-    protected boolean isFullScreen = false;
+    boolean isFullScreen = false;
+
+    // for viewable event
+    private boolean isOnscreen = false;
+    private boolean isVisible = false;
+    private Handler handler = new Handler();
+    private boolean viewableCheckPaused = false;
 
     public MRAIDWebView(AdView owner) {
         super(owner);
         this.owner = owner;
+        if (this.getVisibility()== VISIBLE) startCheckViewable();
     }
 
     void setImplementation(MRAIDImplementation imp) {
@@ -73,13 +82,14 @@ class MRAIDWebView extends AdWebView implements Displayable {
 
     @Override
     public void onVisibilityChanged(View view, int visibility) {
-        if (implementation != null) {
-            if (visibility == View.VISIBLE) {
-                implementation.onVisible();
-            } else {
-                implementation.onInvisible();
-            }
+        if (visibility == VISIBLE) {
+            isVisible = true;
+            startCheckViewable();
+        } else {
+            isVisible = false;
+            stopCheckViewable();
         }
+        fireViewableChangeEvent();
     }
 
     @Override
@@ -199,11 +209,44 @@ class MRAIDWebView extends AdWebView implements Displayable {
         return false;
     }
 
+    private void checkPosition() {
+        if (!(this.getContext() instanceof Activity)) return;
+
+        // check whether newly drawn view is onscreen or not,
+        // fires a viewableChangeEvent with the result
+        int viewLocation[] = new int[2];
+        this.getLocationOnScreen(viewLocation);
+        this.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+
+        int left = viewLocation[0];
+        int right = viewLocation[0] + this.getMeasuredWidth();
+        int top = viewLocation[1];
+        int bottom = viewLocation[1] + this.getMeasuredHeight();
+
+        int[] screenSize = ViewUtil.getScreenSizeAsPixels((Activity) this.getContext());
+
+        this.isOnscreen = (right > 0) && (left < screenSize[0])
+                && (bottom > 0) && (top < screenSize[1]);
+        this.fireViewableChangeEvent();
+
+        // update current position
+        if (implementation != null) {
+            implementation.setCurrentPosition(left, top, this.getMeasuredWidth(), this.getMeasuredHeight());
+        }
+    }
+
+    void fireViewableChangeEvent() {
+        if (implementation != null) {
+            implementation.onViewableChange(isOnscreen && isVisible);
+        }
+    }
+
     @Override
-    public void onLayout(boolean changed, int left, int top, int right,
-                         int bottom) {
-        if (changed) {
-            implementation.setCurrentPosition(left, top, right, bottom, this);
+    public void destroy() {
+        super.destroy();
+        stopCheckViewable();
+        if (implementation != null) {
+            implementation.destroy();
         }
     }
 
@@ -245,4 +288,27 @@ class MRAIDWebView extends AdWebView implements Displayable {
     interface MRAIDFullscreenListener {
         void onCreateCompleted();
     }
+
+    // Viewable timer code
+
+    private final Runnable checkViewableRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (viewableCheckPaused) return;
+            checkPosition();
+            handler.postDelayed(this, 1000);
+        }
+    };
+
+    private void startCheckViewable() {
+        viewableCheckPaused = false;
+        handler.removeCallbacks(checkViewableRunnable);
+        handler.post(checkViewableRunnable);
+    }
+
+    private void stopCheckViewable() {
+        viewableCheckPaused = true;
+        handler.removeCallbacks(checkViewableRunnable);
+    }
+
 }

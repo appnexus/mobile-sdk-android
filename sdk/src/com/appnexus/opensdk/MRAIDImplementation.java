@@ -21,28 +21,23 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
-import android.content.ActivityNotFoundException;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.*;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.CalendarContract;
 import android.util.Base64;
-import android.view.*;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.webkit.*;
 import android.widget.Toast;
-import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.Hex;
-import com.appnexus.opensdk.utils.StringUtil;
-import com.appnexus.opensdk.utils.W3CEvent;
+import com.appnexus.opensdk.utils.*;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.*;
@@ -56,10 +51,12 @@ class MRAIDImplementation {
     boolean expanded = false;
     boolean resized = false;
     int default_width, default_height;
+    private int screenWidth, screenHeight;
     boolean supportsPictureAPI = false;
     boolean supportsCalendar = false;
     private AdActivity fullscreenActivity;
     private ViewGroup defaultContainer;
+    private OrientationBroadcastReceiver orientationBroadcastReceiver = new OrientationBroadcastReceiver();
 
     public MRAIDImplementation(MRAIDWebView owner) {
         this.owner = owner;
@@ -103,9 +100,6 @@ class MRAIDImplementation {
         Clog.w(Clog.mraidLogTag, Clog.getString(
                 R.string.webview_received_error, errorCode, desc, failingUrl));
     }
-
-    int screenWidth;
-    int screenHeight;
 
     WebViewClient getWebViewClient() {
         return new WebViewClient() {
@@ -182,12 +176,11 @@ class MRAIDImplementation {
                     String adType = owner.owner.isBanner() ? "inline" : "interstitial";
                     view.loadUrl("javascript:window.mraid.util.setPlacementType('"
                             + adType + "')");
-                    view.loadUrl("javascript:window.mraid.util.setIsViewable(true)");
 
                     setSupportsValues(view);
-                    setScreenSize(view);
-                    setMaxSize(view);
-                    setDefaultPosition(view);
+                    setScreenSize();
+                    setMaxSize();
+                    setDefaultPosition();
 
                     view.loadUrl("javascript:window.mraid.util.stateChangeEvent('default')");
                     view.loadUrl("javascript:window.mraid.util.readyEvent();");
@@ -197,85 +190,32 @@ class MRAIDImplementation {
                     default_height = owner.getLayoutParams().height;
 
                     readyFired = true;
+                    owner.fireViewableChangeEvent();
+                    orientationBroadcastReceiver.register(MRAIDImplementation.this);
                 }
             }
 
-            private void setDefaultPosition(WebView view) {
-                if (readyFired) {
-                    int[] location = new int[2];
-                    owner.getLocationOnScreen(location);
+            private void setDefaultPosition() {
+                if (!readyFired) return;
 
-                    owner.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                Activity a = (Activity) owner.getContext();
 
-                    int height = owner.getMeasuredHeight();
-                    int width = owner.getMeasuredWidth();
+                int[] location = new int[2];
+                owner.getLocationOnScreen(location);
 
-                    //Convert to DPs
-                    final float scale = owner.getContext().getResources().getDisplayMetrics().density;
-                    height = (int) ((height / scale) + 0.5f);
-                    width = (int) ((width / scale) + 0.5f);
+                // current position is relative to max size, so subtract the status bar from y
+                int contentViewTop = a.getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
+                location[1] -= contentViewTop;
 
-                    view.loadUrl("javascript:window.mraid.util.setDefaultPosition(" + location[0] + ", " + location[1] + ", " + width + ", " + height + ")");
-                }
-            }
+                owner.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 
-            @SuppressLint("NewApi")
-            @SuppressWarnings("deprecation")
-            private void setMaxSize(WebView view) {
-                if (owner.getContext() instanceof Activity) {
-                    Activity a = ((Activity) owner.getContext());
-                    Display d = a.getWindowManager().getDefaultDisplay();
-                    Point p = new Point();
-                    int width;
-                    int height;
-                    if (Build.VERSION.SDK_INT >= 13) {
-                        d.getSize(p);
-                        width = p.x;
-                        height = p.y;
-                    } else {
-                        width = d.getWidth();
-                        height = d.getHeight();
-                    }
+                int width = owner.getMeasuredWidth();
+                int height = owner.getMeasuredHeight();
+                int[] size = { width, height };
+                ViewUtil.convertFromPixelsToDP(a, size);
 
-                    Rect r = new Rect();
-                    a.getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
-                    int contentViewTop = a.getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
-                    height -= contentViewTop;
-
-                    //Convert to DPs
-                    final float scale = owner.getContext().getResources().getDisplayMetrics().density;
-                    height = (int) ((height / scale) + 0.5f);
-                    width = (int) ((width / scale) + 0.5f);
-
-                    view.loadUrl("javascript:window.mraid.util.setMaxSize(" + width + ", " + height + ")");
-                }
-
-
-            }
-
-            @SuppressLint("NewApi")
-            @SuppressWarnings("deprecation")
-            private void setScreenSize(WebView view) {
-                if (owner.getContext() instanceof Activity) {
-                    Display d = ((Activity) owner.getContext()).getWindowManager().getDefaultDisplay();
-                    Point p = new Point();
-
-                    if (Build.VERSION.SDK_INT >= 13) {
-                        d.getSize(p);
-                        screenWidth = p.x;
-                        screenHeight = p.y;
-                    } else {
-                        screenWidth = d.getWidth();
-                        screenHeight = d.getHeight();
-                    }
-
-                    //Convert to DPs
-                    final float scale = owner.getContext().getResources().getDisplayMetrics().density;
-                    screenHeight = (int) ((screenHeight / scale) + 0.5f);
-                    screenWidth = (int) ((screenWidth / scale) + 0.5f);
-
-                    view.loadUrl("javascript:window.mraid.util.setScreenSize(" + screenWidth + ", " + screenHeight + ")");
-                }
+                owner.loadUrl(String.format("javascript:window.mraid.util.setDefaultPosition(%d, %d, %d, %d)",
+                        location[0], location[1], size[0], size[1]));
             }
 
             @SuppressLint("NewApi")
@@ -349,29 +289,34 @@ class MRAIDImplementation {
         };
     }
 
-    void onVisible() {
-        if (readyFired)
-            owner.loadUrl("javascript:window.mraid.util.setIsViewable(true)");
+    void onViewableChange(boolean viewable) {
+        if (!readyFired) return;
+
+        owner.loadUrl("javascript:window.mraid.util.setIsViewable(" + viewable + ")");
     }
 
-    void onInvisible() {
-        if (readyFired)
-            owner.loadUrl("javascript:window.mraid.util.setIsViewable(false)");
-    }
+    // parameters are view properties in pixels
+    void setCurrentPosition(int left, int top, int width, int height) {
+        if (!readyFired) return;
 
-    protected void setCurrentPosition(int left, int top, int right, int bottom, WebView view) {
-        int width = right - left;
-        int height = bottom - top;
+        Activity a = (Activity) owner.getContext();
+        // current position is relative to max size, so subtract the status bar from y
+        int contentViewTop = a.getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
+        top -= contentViewTop;
 
-        //Convert to DPs
-        final float scale = owner.getContext().getResources().getDisplayMetrics().density;
-        height = (int) ((height / scale) + 0.5f);
-        width = (int) ((width / scale) + 0.5f);
+        int[] properties = { left, top, width, height };
 
-        if (readyFired) {
-            owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent(" + width + "," + height + ")");
-            owner.loadUrl("javascript:window.mraid.util.setCurrentPosition(" + left + ", " + top + ", " + width + ", " + height + ")");
-        }
+        // convert properties to DP
+        ViewUtil.convertFromPixelsToDP(a, properties);
+        left = properties[0];
+        top = properties[1];
+        width = properties[2];
+        height = properties[3];
+
+        owner.loadUrl(String.format("javascript:window.mraid.util.sizeChangeEvent(%d, %d)",
+                width, height));
+        owner.loadUrl(String.format("javascript:window.mraid.util.setCurrentPosition(%d, %d, %d, %d)",
+                left, top, width, height));
     }
 
     void close() {
@@ -772,19 +717,98 @@ class MRAIDImplementation {
 
     }
 
-    protected AdActivity getFullscreenActivity() {
+    private void setMaxSize() {
+        if (owner.getContext() instanceof Activity) {
+            Activity a = ((Activity) owner.getContext());
+
+            int[] screenSize = ViewUtil.getScreenSizeAsPixels(a);
+            int maxWidth = screenSize[0];
+            int maxHeight = screenSize[1];
+
+            // subtract status bar from total screen size
+            int contentViewTop = a.getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
+            maxHeight -= contentViewTop;
+
+            //Convert to DPs
+            final float scale = a.getResources().getDisplayMetrics().density;
+            maxHeight = (int) ((maxHeight / scale) + 0.5f);
+            maxWidth = (int) ((maxWidth / scale) + 0.5f);
+
+            owner.loadUrl("javascript:window.mraid.util.setMaxSize(" + maxWidth + ", " + maxHeight + ")");
+        }
+    }
+
+    private void setScreenSize() {
+        if (owner.getContext() instanceof Activity) {
+            int[] screenSize = ViewUtil.getScreenSizeAsDP(((Activity) owner.getContext()));
+            screenWidth = screenSize[0];
+            screenHeight = screenSize[1];
+
+            owner.loadUrl("javascript:window.mraid.util.setScreenSize(" + screenWidth + ", " + screenHeight + ")");
+        }
+    }
+
+    void destroy() {
+        if (orientationBroadcastReceiver != null) orientationBroadcastReceiver.unregister();
+        orientationBroadcastReceiver = null;
+    }
+    private void onOrientationChanged() {
+        setMaxSize();
+        setScreenSize();
+    }
+
+    class OrientationBroadcastReceiver extends BroadcastReceiver {
+        private int lastRotation;
+        private Context context;
+        private MRAIDImplementation implementation;
+        private boolean isRegistered;
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if ((this.context == null) || !(this.context instanceof Activity)) return;
+            String action = intent.getAction();
+            if (action.equals(Intent.ACTION_CONFIGURATION_CHANGED)) {
+                Activity activity = (Activity) context;
+                int orientation = activity.getResources().getConfiguration().orientation;
+                if (orientation != lastRotation) {
+                    lastRotation = orientation;
+                    implementation.onOrientationChanged();
+                }
+            }
+        }
+
+        void register(MRAIDImplementation implementation) {
+            if (isRegistered) return;
+            this.context = implementation.owner.getContext();
+            if (context != null) {
+                isRegistered = true;
+                this.implementation = implementation;
+                context.registerReceiver(this,
+                        new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED));
+            }
+        }
+
+        void unregister() {
+            isRegistered = false;
+            if (context != null) context.unregisterReceiver(this);
+            context = null;
+            implementation = null;
+        }
+    }
+
+    AdActivity getFullscreenActivity() {
         return fullscreenActivity;
     }
 
-    protected void setFullscreenActivity(AdActivity fullscreenActivity) {
+    void setFullscreenActivity(AdActivity fullscreenActivity) {
         this.fullscreenActivity = fullscreenActivity;
     }
 
-    protected ViewGroup getDefaultContainer() {
+    ViewGroup getDefaultContainer() {
         return defaultContainer;
     }
 
-    protected void setDefaultContainer(ViewGroup defaultContainer) {
+    void setDefaultContainer(ViewGroup defaultContainer) {
         this.defaultContainer = defaultContainer;
     }
 }
