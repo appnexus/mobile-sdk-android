@@ -93,4 +93,10 @@
         <item>120 seconds</item>
     </string-array>
 
+    <string-array name="gender">
+        <item>Unknown</item>
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+
 </resources>
