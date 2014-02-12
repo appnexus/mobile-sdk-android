@@ -558,12 +558,13 @@ public class SettingsFragment extends Fragment {
             minus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    l.removeView(new_keyword);
-                    for(Pair<EditText, EditText> p : pairs){
-                        if(p.first == key){
-                            pairs.remove(p);
+                    for(int j = 0; j<pairs.size();j++){
+                        if(pairs.get(j).first == key){
+                            pairs.remove(j);
+                            j--;
                         }
                     }
+                    l.removeView(new_keyword);
                 }
             });
             new_keyword.addView(minus);
