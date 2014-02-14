@@ -80,7 +80,7 @@ public class CreativePreviewActivity extends Activity {
         });
 
         // default is banner
-        adView = "interstitial".equals(adType) ? new InterstitialAdView(this) : new BannerAdView(this, 0);
+        adView = INTERSTITIAL.equals(adType) ? new InterstitialAdView(this) : new BannerAdView(this, 0);
         adView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT));
 
@@ -131,7 +131,7 @@ public class CreativePreviewActivity extends Activity {
             width = Integer.parseInt(w);
         } catch (NumberFormatException e) {
             width = 0;
-            errorSB.append("Error parsing required 'width' parameter\n");
+            errorSB.append("Error parsing required 'w' width parameter \n");
             failed = true;
         }
 
@@ -139,7 +139,7 @@ public class CreativePreviewActivity extends Activity {
             height = Integer.parseInt(h);
         } catch (NumberFormatException e) {
             height = 0;
-            errorSB.append("Error parsing required 'height' parameter\n");
+            errorSB.append("Error parsing required 'h' height parameter\n");
             failed = true;
         }
 
