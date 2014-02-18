@@ -1,12 +1,12 @@
 /*
  *    Copyright 2013 APPNEXUS INC
- *
+ *    
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
  *        http://www.apache.org/licenses/LICENSE-2.0
- *
+ *    
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,50 +16,39 @@
 
 package com.appnexus.opensdkapp;
 
-import android.app.*;
-import android.content.Context;
-import android.content.DialogInterface;
+import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.utils.Clog;
-import android.support.v4.app.DialogFragment;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 
 public class SettingsFragment extends Fragment {
     private GradientDrawable colorViewBackground;
-    private Spinner dropSize, dropRefresh, dropGender;
+    private Spinner dropSize, dropRefresh;
 
     private Button btnAdTypeBanner, btnAdTypeInterstitial,
             btnPSAsYes, btnPSAsNo,
-            btnBrowserInApp, btnBrowserNative, btnShowAdvanced, btnHideAdvanced, btnEditCustomKeywords;
+            btnBrowserInApp, btnBrowserNative;
 
     private TextView txtSize, txtRefresh,
             txtBackgroundColor;
     private EditText editPlacementId,
             editBackgroundColor,
-            editMemberId, editDongle, editAge, editZip;
+            editMemberId, editDongle;
     private String currentValidColor;
 
     private OnLoadAdClickedListener callback;
 
     // keep saved settings in memory in order to optimize writes
     boolean savedAdType, savedPSAs, savedBrowser;
-    String savedPlacement, savedSize, savedRefresh, savedColor, savedMemberId, savedDongle, savedAge, savedZip;
-    AdView.GENDER savedGender;
-    HashMap<String, String> customKeywords;
+    String savedPlacement, savedSize, savedRefresh, savedColor, savedMemberId, savedDongle;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,29 +62,23 @@ public class SettingsFragment extends Fragment {
         btnPSAsNo = (Button) out.findViewById(R.id.btn_psa_no);
         btnBrowserInApp = (Button) out.findViewById(R.id.btn_browser_inapp);
         btnBrowserNative = (Button) out.findViewById(R.id.btn_browser_native);
-        btnShowAdvanced = (Button) out.findViewById(R.id.btn_advanced_yes);
-        btnHideAdvanced = (Button) out.findViewById(R.id.btn_advanced_no);
-        btnEditCustomKeywords = (Button) out.findViewById(R.id.edit_custom_keywords);
 
         txtSize = (TextView) out.findViewById(R.id.txt_size);
         txtRefresh = (TextView) out.findViewById(R.id.txt_refresh);
         txtBackgroundColor = (TextView) out.findViewById(R.id.txt_interstitial_color);
-
+    
         colorViewBackground = (GradientDrawable) out.findViewById(R.id.view_color).getBackground();
 
         editPlacementId = (EditText) out.findViewById(R.id.edit_placementid);
         editBackgroundColor = (EditText) out.findViewById(R.id.edit_interstitial_color);
         editMemberId = (EditText) out.findViewById(R.id.edit_memberid);
         editDongle = (EditText) out.findViewById(R.id.edit_dongle);
-        editAge = (EditText) out.findViewById(R.id.edit_age);
-        editZip = (EditText) out.findViewById(R.id.edit_zip);
 
         Button btnLoadAd = (Button) out.findViewById(R.id.btn_load_ad);
 
         // create dropdowns
         dropSize = initDropdown(out, container, R.id.dropdown_size, R.array.sizes);
         dropRefresh = initDropdown(out, container, R.id.dropdown_refresh, R.array.refresh);
-        dropGender = initDropdown(out, container, R.id.dropdown_gender, R.array.gender);
 
         /*
          * SET LISTENERS
@@ -108,9 +91,6 @@ public class SettingsFragment extends Fragment {
         btnPSAsNo.setOnClickListener(new PSAListener(false));
         btnBrowserInApp.setOnClickListener(new BrowserListener(true));
         btnBrowserNative.setOnClickListener(new BrowserListener(false));
-        btnShowAdvanced.setOnClickListener(new ShowAdvancedListener(true, this));
-        btnHideAdvanced.setOnClickListener(new ShowAdvancedListener(false, this));
-        btnEditCustomKeywords.setOnClickListener(new CustomKeywordsListener(this));
 
         btnLoadAd.setOnClickListener(new LoadAdOnClickListener());
 
@@ -119,12 +99,9 @@ public class SettingsFragment extends Fragment {
                 getResources().getStringArray(R.array.sizes)));
         dropRefresh.setOnItemSelectedListener(new RefreshSelectedListener(
                 getResources().getStringArray(R.array.refresh)));
-        dropGender.setOnItemSelectedListener(new GenderSelectedListener(getResources().getStringArray(R.array.gender)));
 
         // listeners for editText
         editBackgroundColor.addTextChangedListener(new BackgroundColorTextWatcher());
-        editAge.addTextChangedListener(new AgeTextWatcher());
-        editZip.addTextChangedListener(new ZipTextWatcher());
 
         // load saved or default settings
         loadSettings();
@@ -193,22 +170,6 @@ public class SettingsFragment extends Fragment {
         savedDongle = Prefs.getDongle(getActivity());
         editDongle.setText(savedDongle);
 
-        //Load Gender
-        savedGender = AdView.GENDER.values()[Prefs.getGender(getActivity())];
-        dropGender.setSelection(savedGender.ordinal());
-
-        //Load Age
-        savedAge = Prefs.getAge(getActivity());
-        editAge.setText(savedAge);
-
-        //Load Zip
-        savedZip = Prefs.getZip(getActivity());
-        editZip.setText(savedZip);
-
-        //Load Keywords
-        customKeywords = Prefs.getCustomKeywords(getActivity());
-
-
     }
 
     // generic function to create dropdown views
@@ -269,26 +230,6 @@ public class SettingsFragment extends Fragment {
 
         @Override
         public void onNothingSelected(AdapterView<?> arg0) {
-        }
-    }
-
-    private class GenderSelectedListener implements AdapterView.OnItemSelectedListener{
-        String[] genderStrings;
-
-        private GenderSelectedListener(String[]genderStrings){
-            this.genderStrings=genderStrings;
-        }
-
-        @Override
-        public void onItemSelected(AdapterView<?> parents, View view, int position, long id){
-            if(position > genderStrings.length) return;
-
-            Clog.d(Constants.BASE_LOG_TAG, "Gender set to: " + genderStrings[position]);
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> viewOfAdapter){
-
         }
     }
 
@@ -360,24 +301,6 @@ public class SettingsFragment extends Fragment {
                 savedDongle = editDongle.getText().toString();
                 prefs.writeString(Prefs.KEY_DONGLE, savedDongle);
             }
-
-            if(savedGender != AdView.GENDER.values()[dropGender.getSelectedItemPosition()]){
-                savedGender = AdView.GENDER.values()[dropGender.getSelectedItemPosition()];
-                prefs.writeInt(Prefs.KEY_GENDER, savedGender.ordinal());
-            }
-
-            if(!savedAge.equals(editAge.getText().toString())){
-                savedAge = editAge.getText().toString();
-                prefs.writeString(Prefs.KEY_AGE, savedAge);
-            }
-
-            if(!savedZip.equals(editZip.getText().toString())){
-                savedZip = editZip.getText().toString();
-                prefs.writeString(Prefs.KEY_ZIP, savedZip);
-            }
-
-
-            prefs.writeHashMap(Prefs.KEY_CUSTOM_KEYWORDS, customKeywords);
 
             prefs.applyChanges();
 
@@ -466,126 +389,6 @@ public class SettingsFragment extends Fragment {
         }
     }
 
-    private class ShowAdvancedListener implements View.OnClickListener{
-        boolean show;
-        Fragment f;
-        private ShowAdvancedListener(boolean show, Fragment f){
-            this.show=show;
-            this.f=f;
-        }
-
-        @Override
-        public void onClick(View v){
-            ViewGroup viewGroup = (ViewGroup) f.getActivity().findViewById(R.id.advanced_block);
-            if(show){
-                viewGroup.setVisibility(View.VISIBLE);
-            }else{
-                viewGroup.setVisibility(View.GONE);
-            }
-            btnHideAdvanced.setEnabled(show);
-            btnShowAdvanced.setEnabled(!show);
-        }
-    }
-
-    private class CustomKeywordsListener implements View.OnClickListener{
-        Fragment f;
-        private CustomKeywordsListener(Fragment f){
-            this.f=f;
-        }
-
-        @Override
-        public void onClick(View v){
-            CustomKeywordsDialog customKeywordsDialog = new CustomKeywordsDialog();
-            customKeywordsDialog.show(f.getFragmentManager(), "ckd");
-        }
-    }
-
-    private class CustomKeywordsDialog extends DialogFragment{
-
-        HashMap<String, String> currentKeywords = new HashMap<String, String>();
-        ArrayList<Pair<EditText, EditText>> pairs = new ArrayList<Pair<EditText, EditText>>();
-
-        public CustomKeywordsDialog(){
-
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-
-            View view = inflater.inflate(R.layout.dialog_fragment_custom_keywords, container);
-            getDialog().setTitle("Edit Custom Keywords");
-
-            final LinearLayout keywords_ll = (LinearLayout) view.findViewById(R.id.keyword_layout);
-            Button done = (Button) view.findViewById(R.id.done_editing);
-            done.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    for(Pair<EditText, EditText> p : pairs){
-                        currentKeywords.put(p.first.getText().toString(), p.second.getText().toString());
-                    }
-                    SettingsFragment.this.customKeywords = currentKeywords;
-                    getDialog().dismiss();
-                }
-            });
-
-            //Add current keywords
-            for(String s : customKeywords.keySet()){
-                addKeyword(keywords_ll, s, customKeywords.get(s));
-            }
-
-            Button add = (Button) view.findViewById(R.id.add_keyword);
-            add.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    addKeyword(keywords_ll, "KEY", "VALUE");
-                }
-            });
-            return view;
-        }
-
-        public void addKeyword(final LinearLayout l, String k, String v){
-            Context context = CustomKeywordsDialog.this.getActivity();
-            final LinearLayout new_keyword = new LinearLayout(context);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            new_keyword.setLayoutParams(lp);
-
-            Button minus = new Button(context);
-            final EditText key = new EditText(context);
-            EditText value = new EditText(context);
-            minus.setText("-");
-            minus.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            minus.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    for(int j = 0; j<pairs.size();j++){
-                        if(pairs.get(j).first == key){
-                            pairs.remove(j);
-                            j--;
-                        }
-                    }
-                    l.removeView(new_keyword);
-                }
-            });
-            new_keyword.addView(minus);
-
-
-            key.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            key.setText(k);
-            new_keyword.addView(key);
-
-
-            value.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            value.setText(v);
-            new_keyword.addView(value);
-
-            pairs.add(new Pair<EditText, EditText>(key, value));
-
-            l.addView(new_keyword);
-        }
-
-    }
-
     /**
      * TextWatchers for EditTexts
      */
@@ -604,36 +407,6 @@ public class SettingsFragment extends Fragment {
                     Clog.d(Constants.BASE_LOG_TAG, "Invalid hex color");
                 }
             }
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-        }
-    }
-
-    private class AgeTextWatcher implements TextWatcher{
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count){
-            Clog.d(Constants.BASE_LOG_TAG, "Age set to: "+s.toString());
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-        }
-    }
-
-    private class ZipTextWatcher implements TextWatcher{
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count){
-            Clog.d(Constants.BASE_LOG_TAG, "Zip set to: "+s.toString());
         }
 
         @Override

@@ -21,11 +21,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 
-import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.utils.Clog;
-
-import java.util.HashMap;
-import java.util.HashSet;
 
 public class Prefs {
 
@@ -38,10 +34,6 @@ public class Prefs {
     public static final String KEY_COLOR_HEX = "COLOR";
     public static final String KEY_MEMBERID = "MEMBERID";
     public static final String KEY_DONGLE = "DONGLE";
-    public static final String KEY_GENDER = "GENDER";
-    public static final String KEY_AGE = "AGE";
-    public static final String KEY_ZIP = "ZIP";
-    public static final String KEY_CUSTOM_KEYWORDS = "CUSTOM_KEYWORDS";
 
     public static final String KEY_LAST_LOG_UPLOAD = "LAST_LOG_UPLOAD";
 
@@ -55,9 +47,6 @@ public class Prefs {
     public static final String DEF_COLOR_HEX = "FF000000";
     public static final String DEF_MEMBERID = "";
     public static final String DEF_DONGLE = "";
-    public static final String DEF_AGE = "";
-    public static final String DEF_ZIP = "";
-    public static final AdView.GENDER DEF_GENDER = AdView.GENDER.UNKNOWN;
 
     public static final long DEF_LAST_LOG_UPLOAD = 0;
 
@@ -128,32 +117,6 @@ public class Prefs {
         editor.putLong(key, value);
     }
 
-    public void writeHashMap(String key, HashMap<String, String> value){
-        HashSet<String> s = new HashSet<String>();
-        for(String k : value.keySet()){
-            s.add(k+":"+value.get(k));
-        }
-        if(Build.VERSION.SDK_INT>=11){
-            editor.putStringSet(key, s);
-        }else{
-            Clog.w(Constants.BASE_LOG_TAG, "Can't save your custom keywords because your android version is below 11.");
-        }
-    }
-
-    public static HashMap<String, String> getHashMap(Context context, String key){
-        HashMap<String, String> return_value = new HashMap<String, String>();
-        HashSet<String> out = (HashSet<String>) getPreferences(context).getStringSet(key, new HashSet<String>());
-        for(String s : out){
-            String[] split = s.split(":");
-            try{
-                return_value.put(split[0], split[1]);
-            }catch(ArrayIndexOutOfBoundsException e){
-                continue;
-            }
-        }
-        return return_value;
-    }
-
     @SuppressLint("NewApi")
     public void applyChanges() {
         if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
@@ -166,18 +129,6 @@ public class Prefs {
     /**
      * Convenience methods
      */
-
-    public static String getAge(Context context){
-        return getString(context, Prefs.KEY_AGE, Prefs.DEF_AGE);
-    }
-
-    public static String getZip(Context context){
-        return getString(context, Prefs.KEY_ZIP, Prefs.DEF_ZIP);
-    }
-
-    public static int getGender(Context context){
-        return getInt(context, Prefs.KEY_GENDER, Prefs.DEF_GENDER.ordinal());
-    }
 
     public static boolean getAdType(Context context) {
         return getBoolean(context, Prefs.KEY_ADTYPE_IS_BANNER, Prefs.DEF_ADTYPE_IS_BANNER);
@@ -217,9 +168,5 @@ public class Prefs {
 
     public static long getLastLogUpload(Context context) {
         return getLong(context, Prefs.KEY_LAST_LOG_UPLOAD, Prefs.DEF_LAST_LOG_UPLOAD);
-    }
-
-    public static HashMap<String, String> getCustomKeywords(Context context){
-        return getHashMap(context, Prefs.KEY_CUSTOM_KEYWORDS);
     }
 }

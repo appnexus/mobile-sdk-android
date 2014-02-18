@@ -181,130 +181,14 @@
                         android:layout_toRightOf="@id/mid_browser"
                         />
             </RelativeLayout>
-
-            <!-- Advanced "Switch" -->
-
-            <TextView
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_below="@id/txt_browser"
-                    android:layout_centerVertical="false"
-                    android:id="@+id/txt_advanced"
-                    android:layout_alignBottom="@+id/btns_advanced"
-                    android:layout_alignTop="@+id/btns_advanced"
-                    android:text="@string/settings_txt_advanced"
-                    style="@style/settingsTextItem"
-                    />
-
-            <RelativeLayout
-                    style="@style/switchContainer"
-                    android:id="@+id/btns_advanced"
-                    android:layout_below="@id/txt_browser"
-                    android:layout_toRightOf="@id/txt_advanced"
-                    >
-                <View
-                        android:id="@+id/mid_advanced"
-                        android:layout_alignTop="@+id/btn_advanced_yes"
-                        android:layout_alignBottom="@+id/btn_advanced_yes"
-                        style="@style/switchButtonMiddle"
-                        />
-                <Button
-                        android:id="@+id/btn_advanced_yes"
-                        android:text="@string/settings_btn_advanced_show"
-                        android:enabled="false"
-                        android:layout_toLeftOf="@id/mid_advanced"
-                        style="@style/switchButtonItem"
-                        />
-                <Button
-                        android:id="@+id/btn_advanced_no"
-                        android:text="@string/settings_btn_advanced_hide"
-                        style="@style/switchButtonItem"
-                        android:layout_toRightOf="@id/mid_advanced"
-                        />
-            </RelativeLayout>
-
         </RelativeLayout>
 
-        <!-- Advanced -->
-        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/advanced_block">
-        <TextView
-                style="@style/header"
-                android:text="@string/settings_title_advanced"
-                />
-
-        <RelativeLayout
-                style="@style/itemContainer">
-            <TextView
-                    android:id="@+id/txt_gender"
-                    style="@style/settingsTextItem"
-                    android:text="@string/settings_txt_gender"/>
-
-            <Spinner
-                    android:id="@+id/dropdown_gender"
-                    style="@style/settingsEditItem"
-                    android:layout_alignTop="@id/txt_gender"
-                    android:layout_alignBottom="@id/txt_gender"
-                    />
-        </RelativeLayout>
-        <RelativeLayout
-                style="@style/itemContainer">
-            <TextView
-                    android:id="@+id/txt_age"
-                    style="@style/settingsTextItem"
-                    android:text="@string/settings_txt_age"
-                    />
-
-            <EditText
-                    android:id="@+id/edit_age"
-                    android:inputType="number"
-                    style="@style/settingsEditItem"
-                    android:layout_alignTop="@id/txt_age"
-                    android:layout_alignBottom="@id/txt_age"
-                    />
-        </RelativeLayout>
-        <RelativeLayout
-                style="@style/itemContainer">
-            <TextView
-                    android:id="@+id/txt_zip"
-                    style="@style/settingsTextItem"
-                    android:text="@string/settings_txt_zip"
-                    />
-
-            <EditText
-                    android:id="@+id/edit_zip"
-                    android:inputType="number"
-                    style="@style/settingsEditItem"
-                    android:layout_alignTop="@id/txt_zip"
-                    android:layout_alignBottom="@id/txt_zip"
-                    />
-        </RelativeLayout>
-        <RelativeLayout
-                style="@style/itemContainer">
-            <TextView
-                    android:id="@+id/txt_custom_keywords"
-                    style="@style/settingsTextItem"
-                    android:text="@string/settings_txt_custom_keywords"
-                    />
-
-            <Button
-                    android:id="@+id/edit_custom_keywords"
-                    android:inputType="number"
-                    style="@style/settingsEditItem"
-                    android:layout_alignTop="@id/txt_custom_keywords"
-                    android:layout_alignBottom="@id/txt_custom_keywords"
-                    android:text="@string/settings_txt_custom_keywords_button"
-                    />
-        </RelativeLayout>
-        </LinearLayout>
         <!-- Banner -->
 
         <TextView
                 style="@style/header"
                 android:text="@string/settings_title_banner"
                 />
-
 
         <!-- Size -->
 

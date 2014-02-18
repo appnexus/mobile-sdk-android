@@ -64,15 +64,6 @@
 
     <string name="log_title_applogs">App Logs</string>
     <string name="log_btn_email">Email Logs</string>
-    <string name="settings_txt_advanced">Advanced:</string>
-    <string name="settings_title_advanced">Advanced Targeting</string>
-    <string name="settings_txt_gender">Gender:</string>
-    <string name="settings_txt_age">Age:</string>
-    <string name="settings_txt_zip">Zip:</string>
-    <string name="settings_txt_custom_keywords">Custom Keywords:</string>
-    <string name="settings_txt_custom_keywords_button">Edit</string>
-    <string name="settings_btn_advanced_show">Show</string>
-    <string name="settings_btn_advanced_hide">Hide</string>
 
     <string-array name="sizes">
         <item>320x50</item>
@@ -91,12 +82,6 @@
         <item>30 seconds</item>
         <item>60 seconds</item>
         <item>120 seconds</item>
-    </string-array>
-
-    <string-array name="gender">
-        <item>Unknown</item>
-        <item>Male</item>
-        <item>Female</item>
     </string-array>
 
 </resources>
