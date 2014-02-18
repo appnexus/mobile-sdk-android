@@ -525,16 +525,12 @@ public abstract class AdView extends FrameLayout {
                 if(close_button_loc[0]<min_x || close_button_loc[0]> max_x ||
                    close_button_loc[1]<min_y || close_button_loc[1]> max_y){
                     //Button is off screen, and must be relocated on screen
-                    FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(this.getLayoutParams());
-                    lp.topMargin = 0;
-                    lp.leftMargin = 0;
-                    lp.rightMargin = 0;
-                    lp.bottomMargin = 0;
+                    final FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(this.getLayoutParams());
+                    lp.setMargins(0,0,0,0);
                     lp.gravity = Gravity.TOP  | Gravity.LEFT;
-                    final FrameLayout.LayoutParams flp = new FrameLayout.LayoutParams(lp);
                     this.post(new Runnable(){
                         public void run(){
-                            setLayoutParams(flp);
+                            setLayoutParams(lp);
                         }
                     });
 
