@@ -772,19 +772,19 @@ class MRAIDImplementation {
 
     }
 
-    public AdActivity getFullscreenActivity() {
+    protected AdActivity getFullscreenActivity() {
         return fullscreenActivity;
     }
 
-    public void setFullscreenActivity(AdActivity fullscreenActivity) {
+    protected void setFullscreenActivity(AdActivity fullscreenActivity) {
         this.fullscreenActivity = fullscreenActivity;
     }
 
-    public ViewGroup getDefaultContainer() {
+    protected ViewGroup getDefaultContainer() {
         return defaultContainer;
     }
 
-    public void setDefaultContainer(ViewGroup defaultContainer) {
+    protected void setDefaultContainer(ViewGroup defaultContainer) {
         this.defaultContainer = defaultContainer;
     }
 }

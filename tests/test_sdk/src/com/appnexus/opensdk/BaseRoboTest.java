@@ -17,37 +17,49 @@
 package com.appnexus.opensdk;
 
 import android.app.Activity;
+import android.os.Looper;
 import com.appnexus.opensdk.testviews.DummyView;
 import com.appnexus.opensdk.testviews.NoRequestBannerView;
 import com.appnexus.opensdk.testviews.SuccessfulBanner;
 import com.appnexus.opensdk.testviews.SuccessfulBanner2;
-import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.util.Lock;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.util.Scheduler;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static junit.framework.Assert.assertEquals;
 
-@RunWith(RobolectricTestRunner.class)
 public abstract class BaseRoboTest implements AdListener {
     Activity activity;
     BannerAdView bannerAdView;
+    InterstitialAdView interstitialAdView;
     AdRequest adRequest;
     boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked;
 
-    Scheduler uiScheduler, bgScheduler;
+    Scheduler uiScheduler, bgScheduler, looperScheduler;
 
     @Before
     public void setup() {
-        Clog.clogged = true;
-        activity = Robolectric.buildActivity(Activity.class).create().get();
+        activity = Robolectric.buildActivity(Activity.class).create().visible().get();
         Robolectric.shadowOf(activity).grantPermissions("android.permission.ACCESS_NETWORK_STATE");
+        Robolectric.shadowOf(activity).grantPermissions("android.permission.ACCESS_COARSE_LOCATION");
+        Robolectric.shadowOf(activity).grantPermissions("android.permission.ACCESS_FINE_LOCATION");
+        Robolectric.shadowOf(activity).grantPermissions("android.permission.INTERNET");
+
         bannerAdView = new BannerAdView(activity);
         bannerAdView.setPlacementID("0");
+        bannerAdView.setAdListener(this);
+        bannerAdView.setAutoRefreshInterval(0);
 
+        interstitialAdView = new InterstitialAdView(activity);
+        interstitialAdView.setPlacementID("0");
+        interstitialAdView.setAdListener(this);
+
+        looperScheduler = Robolectric.shadowOf(Looper.getMainLooper()).getScheduler();
         bgScheduler = Robolectric.getBackgroundScheduler();
         uiScheduler = Robolectric.getUiThreadScheduler();
         bgScheduler.pause();
@@ -63,17 +75,45 @@ public abstract class BaseRoboTest implements AdListener {
         SuccessfulBanner2.didPass = false;
         NoRequestBannerView.didInstantiate = false;
         DummyView.dummyView = null;
+        System.out.println("Base setup complete.");
     }
 
     @After
     public void tearDown() {
         Robolectric.clearHttpResponseRules();
         Robolectric.clearPendingHttpResponses();
+
+        looperScheduler.reset();
+        bgScheduler.reset();
+        uiScheduler.reset();
+
+        bgScheduler.pause();
+        uiScheduler.pause();
     }
 
     public void assertCallbacks(boolean success) {
         assertEquals(success, adLoaded);
         assertEquals(!success, adFailed);
+    }
+
+    public void scheduleTimerToCheckForTasks() {
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if ((looperScheduler.enqueuedTaskCount() > 0)
+                        || (uiScheduler.enqueuedTaskCount() > 0)
+                        || (bgScheduler.enqueuedTaskCount() > 0)) {
+                    Lock.unpause();
+                    this.cancel();
+                }
+            }
+        }, 0, 100);
+    }
+
+    public void waitForTasks() {
+        scheduleTimerToCheckForTasks();
+        Lock.pause();
     }
 
     @Override

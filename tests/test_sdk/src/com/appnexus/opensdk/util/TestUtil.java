@@ -25,9 +25,6 @@ import java.lang.reflect.Method;
 
 public class TestUtil {
     public static final String testLogTag = "OPENSDK-TEST";
-    public static final String MEDIATION_TEST_URL = "http://rlissack.adnxs.net:8080/mobile/utest?";
-
-    public static final long SHORT_RETRY_INTERVAL = 2000;
 
 
     public static void setWifi(boolean state, Context context) {

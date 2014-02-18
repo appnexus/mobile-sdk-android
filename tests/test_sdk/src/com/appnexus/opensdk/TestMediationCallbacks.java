@@ -29,7 +29,8 @@ import org.robolectric.annotation.Config;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
-@Config(shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class})
+@Config(shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class},
+        manifest = "../sdk/AndroidManifest.xml")
 @RunWith(RobolectricTestRunner.class)
 public class TestMediationCallbacks extends BaseRoboTest implements AdListener {
 
@@ -38,7 +39,6 @@ public class TestMediationCallbacks extends BaseRoboTest implements AdListener {
     @Override
     public void setup() {
         super.setup();
-        bannerAdView.setAdListener(this);
         adRequest = new AdRequest(bannerAdView.mAdFetcher);
 
         adLoadedMultiple = false;

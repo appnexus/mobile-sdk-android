@@ -1,0 +1,2 @@
+Run Configuration should be JUnit application, not Android test application
+Robolectric by default kills Android's Log statements. Add "-Drobolectric.logging=stdout" to VM options to redirect to stdout.

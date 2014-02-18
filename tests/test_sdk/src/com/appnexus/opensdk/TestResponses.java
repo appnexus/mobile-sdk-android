@@ -33,6 +33,8 @@ public class TestResponses {
     private static final String HANDLER_NO_RESULTCB = "{ \"handler\": [%s]}";
     private static final String MEDIATED_ARRAY = "[%s]";
 
+    private static final String MRAID_CONTENT = "<script type=\\\"text/javascript\\\" src=\\\"mraid.js\\\"></script><script type=\\\"text/javascript\\\">document.write('<div style=\\\"background-color:#EF8200;height:1000px;width:1000px;\\\"><p>%s</p></div>');</script>";
+
     public static String blank() {
         return "";
     }
@@ -43,6 +45,15 @@ public class TestResponses {
 
     public static String blankBanner() {
         return templateAdsResponse("banner", 320, 50, "");
+    }
+
+    public static String mraidBanner(String name) {
+        return mraidBanner(name, 320, 50);
+    }
+
+    public static String mraidBanner(String name, int width, int height) {
+        String content = String.format(MRAID_CONTENT, name);
+        return templateAdsResponse("banner", width, height, content);
     }
 
     public static String mediatedSuccessfulBanner() {

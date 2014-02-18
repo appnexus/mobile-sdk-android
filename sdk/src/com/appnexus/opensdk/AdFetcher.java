@@ -100,7 +100,7 @@ class AdFetcher implements AdRequester {
         // Get the period from the settings
         final int msPeriod = period <= 0 ? 30 * 1000 : period;
 
-        if (!getAutoRefresh()) {
+        if (!autoRefresh) {
             Clog.v(Clog.baseLogTag,
                     Clog.getString(R.string.fetcher_start_single));
             // Request an ad once
