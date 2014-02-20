@@ -53,7 +53,7 @@ public class AdMobBanner implements MediatedBannerAdView, AdListener {
      * Interface called by the AN SDK to request an ad from the mediating SDK.
      *
      * @param mBC the object which will be called with events from the 3d party SDK
-     * @param Activity the activity from which this is launched
+     * @param activity the activity from which this is launched
      * @param parameter String parameter received from the server for instantiation of this object
      * @param adUnitID The 3rd party placement , in adMob this is the adUnitID
      * @param width Width of the ad

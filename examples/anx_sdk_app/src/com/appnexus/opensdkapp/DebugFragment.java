@@ -1,12 +1,12 @@
 /*
  *    Copyright 2013 APPNEXUS INC
- *    
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
  *
  *        http://www.apache.org/licenses/LICENSE-2.0
- *    
+ *
  *    Unless required by applicable law or agreed to in writing, software
  *    distributed under the License is distributed on an "AS IS" BASIS,
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -96,6 +96,17 @@ public class DebugFragment extends Fragment {
         // hacked to be fullscreen with minHeight. see xml
         RelativeLayout frame = (RelativeLayout) getActivity().getLayoutInflater().inflate(R.layout.dialog_debug, null, false);
         View placeholderView = frame.findViewById(R.id.debug_auction_view);
+
+        ImageButton jump = (ImageButton) frame.findViewById(R.id.debug_btn_jmp_to_btm);
+
+        jump.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WebView wv = pullToRefreshView.getRefreshableView();
+                float end = wv.getContentHeight()*wv.getScale() - wv.getHeight();
+                wv.scrollTo(0, (int)end);
+            }
+        });
 
         pullToRefreshView = new PullToRefreshWebView(getActivity().getApplicationContext());
         WebView webView = pullToRefreshView.getRefreshableView();

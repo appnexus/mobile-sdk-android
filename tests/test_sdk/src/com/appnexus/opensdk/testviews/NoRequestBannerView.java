@@ -20,8 +20,9 @@ import android.app.Activity;
 import android.view.View;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
-import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.util.TestUtil;
+import com.appnexus.opensdk.utils.Clog;
 
 public class NoRequestBannerView implements MediatedBannerAdView {
     public static boolean didInstantiate;
@@ -33,7 +34,7 @@ public class NoRequestBannerView implements MediatedBannerAdView {
     }
 
     @Override
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height) {
-        return null;
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
+        return DummyView.getDummyView(activity);
     }
 }

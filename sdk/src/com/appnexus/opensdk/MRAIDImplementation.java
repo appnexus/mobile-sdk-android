@@ -36,10 +36,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.CalendarContract;
 import android.util.Base64;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.View;
-import android.view.Window;
+import android.view.*;
 import android.webkit.*;
 import android.widget.Toast;
 import com.appnexus.opensdk.utils.Clog;
@@ -58,10 +55,11 @@ class MRAIDImplementation {
     private boolean readyFired = false;
     boolean expanded = false;
     boolean resized = false;
-    boolean hidden = false;
     int default_width, default_height;
     boolean supportsPictureAPI = false;
     boolean supportsCalendar = false;
+    private AdActivity fullscreenActivity;
+    private ViewGroup defaultContainer;
 
     public MRAIDImplementation(MRAIDWebView owner) {
         this.owner = owner;
@@ -91,7 +89,7 @@ class MRAIDImplementation {
         InputStream ins = r.openRawResource(R.raw.mraid);
         try {
             byte[] buffer = new byte[ins.available()];
-            if ( ins.read(buffer) > 0) {
+            if (ins.read(buffer) > 0) {
                 return new String(buffer, "UTF-8");
             }
         } catch (IOException e) {
@@ -108,6 +106,7 @@ class MRAIDImplementation {
 
     int screenWidth;
     int screenHeight;
+
     WebViewClient getWebViewClient() {
         return new WebViewClient() {
 
@@ -118,28 +117,25 @@ class MRAIDImplementation {
                     if (url.startsWith("sms:") || url.startsWith("tel:") || owner.owner.getOpensNativeBrowser()) {
                         intent = new Intent(Intent.ACTION_VIEW,
                                 Uri.parse(url));
-                        try{
+                        try {
                             owner.getContext().startActivity(intent);
                             //Call onAdClicked
-                            if(owner.owner.adListener!=null){
-                                owner.owner.adListener.onAdClicked(owner.owner);
-                            }
-                        }catch (Exception e){
-                            Toast.makeText(owner.getContext(),R.string.action_cant_be_completed, Toast.LENGTH_SHORT).show();
+                            owner.owner.getAdDispatcher().onAdClicked();
+                        } catch (Exception e) {
+                            Toast.makeText(owner.getContext(), R.string.action_cant_be_completed, Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         intent = new Intent(owner.getContext(),
-                                BrowserActivity.class);
+                                AdActivity.class);
+                        intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
                         intent.putExtra("url", url);
                         try {
                             owner.getContext().startActivity(intent);
-                        } catch(ActivityNotFoundException e) {
-                            Clog.w(Clog.mraidLogTag, Clog.getString(R.string.opening_url_failed,url));
+                        } catch (ActivityNotFoundException e) {
+                            Clog.w(Clog.mraidLogTag, Clog.getString(R.string.opening_url_failed, url));
                         }
                         //Call onAdClicked
-                        if(owner.owner.adListener!=null){
-                            owner.owner.adListener.onAdClicked(owner.owner);
-                        }
+                        owner.owner.getAdDispatcher().onAdClicked();
                     }
                     return true;
                 } else if (url.startsWith("mraid://")) {
@@ -153,10 +149,8 @@ class MRAIDImplementation {
                     owner.getContext().startActivity(
                             new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                     //Call onAdClicked
-                    if(owner.owner.adListener!=null){
-                        owner.owner.adListener.onAdClicked(owner.owner);
-                    }
-                    // If it's an IAV, prevent it from closing
+                    owner.owner.getAdDispatcher().onAdClicked();
+
                     if (owner.owner instanceof InterstitialAdView) {
                         ((InterstitialAdView) (owner.owner)).interacted();
                     }
@@ -207,7 +201,7 @@ class MRAIDImplementation {
             }
 
             private void setDefaultPosition(WebView view) {
-                if(readyFired){
+                if (readyFired) {
                     int[] location = new int[2];
                     owner.getLocationOnScreen(location);
 
@@ -218,8 +212,8 @@ class MRAIDImplementation {
 
                     //Convert to DPs
                     final float scale = owner.getContext().getResources().getDisplayMetrics().density;
-                    height = (int)((height/scale)+0.5f);
-                    width = (int)((width/scale)+0.5f);
+                    height = (int) ((height / scale) + 0.5f);
+                    width = (int) ((width / scale) + 0.5f);
 
                     view.loadUrl("javascript:window.mraid.util.setDefaultPosition(" + location[0] + ", " + location[1] + ", " + width + ", " + height + ")");
                 }
@@ -234,11 +228,11 @@ class MRAIDImplementation {
                     Point p = new Point();
                     int width;
                     int height;
-                    if(Build.VERSION.SDK_INT>=13){
+                    if (Build.VERSION.SDK_INT >= 13) {
                         d.getSize(p);
                         width = p.x;
                         height = p.y;
-                    }else{
+                    } else {
                         width = d.getWidth();
                         height = d.getHeight();
                     }
@@ -250,8 +244,8 @@ class MRAIDImplementation {
 
                     //Convert to DPs
                     final float scale = owner.getContext().getResources().getDisplayMetrics().density;
-                    height = (int)((height/scale)+0.5f);
-                    width = (int)((width/scale)+0.5f);
+                    height = (int) ((height / scale) + 0.5f);
+                    width = (int) ((width / scale) + 0.5f);
 
                     view.loadUrl("javascript:window.mraid.util.setMaxSize(" + width + ", " + height + ")");
                 }
@@ -266,21 +260,21 @@ class MRAIDImplementation {
                     Display d = ((Activity) owner.getContext()).getWindowManager().getDefaultDisplay();
                     Point p = new Point();
 
-                    if(Build.VERSION.SDK_INT>=13){
+                    if (Build.VERSION.SDK_INT >= 13) {
                         d.getSize(p);
                         screenWidth = p.x;
                         screenHeight = p.y;
-                    }else{
+                    } else {
                         screenWidth = d.getWidth();
                         screenHeight = d.getHeight();
                     }
 
                     //Convert to DPs
                     final float scale = owner.getContext().getResources().getDisplayMetrics().density;
-                    screenHeight = (int)((screenHeight/scale)+0.5f);
-                    screenWidth = (int)((screenWidth/scale)+0.5f);
+                    screenHeight = (int) ((screenHeight / scale) + 0.5f);
+                    screenWidth = (int) ((screenWidth / scale) + 0.5f);
 
-                    view.loadUrl("javascript:window.mraid.util.setScreenSize("+ screenWidth + ", " + screenHeight + ")");
+                    view.loadUrl("javascript:window.mraid.util.setScreenSize(" + screenWidth + ", " + screenHeight + ")");
                 }
             }
 
@@ -301,7 +295,7 @@ class MRAIDImplementation {
                         && hasIntent(new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI))) {
                     view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
                     supportsCalendar = true;
-                }else if(hasIntent(new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event"))){
+                } else if (hasIntent(new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event"))) {
                     view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
                     supportsCalendar = true;
                     W3CEvent.useMIME = true;
@@ -309,7 +303,7 @@ class MRAIDImplementation {
 
                 //Store Picture only if on API 11 or above
                 PackageManager pm = owner.getContext().getPackageManager();
-                if(pm.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, owner.getContext().getPackageName()) == PackageManager.PERMISSION_GRANTED){
+                if (pm.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, owner.getContext().getPackageName()) == PackageManager.PERMISSION_GRANTED) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                         view.loadUrl("javascript:window.mraid.util.setSupportsStorePicture(true)");
                         supportsPictureAPI = true;
@@ -329,8 +323,8 @@ class MRAIDImplementation {
     }
 
 
-	WebChromeClient getWebChromeClient() {
-		return new VideoEnabledWebChromeClient((Activity) owner.getContext()){
+    WebChromeClient getWebChromeClient() {
+        return new VideoEnabledWebChromeClient(owner.owner) {
             @Override
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
                 // super.onConsoleMessage(consoleMessage);
@@ -353,7 +347,8 @@ class MRAIDImplementation {
             }
 
         };
-	}
+    }
+
     void onVisible() {
         if (readyFired)
             owner.loadUrl("javascript:window.mraid.util.setIsViewable(true)");
@@ -365,15 +360,15 @@ class MRAIDImplementation {
     }
 
     protected void setCurrentPosition(int left, int top, int right, int bottom, WebView view) {
-        int width = right-left;
-        int height = bottom-top;
+        int width = right - left;
+        int height = bottom - top;
 
         //Convert to DPs
         final float scale = owner.getContext().getResources().getDisplayMetrics().density;
-        height = (int)((height/scale)+0.5f);
-        width = (int)((width/scale)+0.5f);
+        height = (int) ((height / scale) + 0.5f);
+        width = (int) ((width / scale) + 0.5f);
 
-        if(readyFired){
+        if (readyFired) {
             owner.loadUrl("javascript:window.mraid.util.sizeChangeEvent(" + width + "," + height + ")");
             owner.loadUrl("javascript:window.mraid.util.setCurrentPosition(" + left + ", " + top + ", " + width + ", " + height + ")");
         }
@@ -389,8 +384,9 @@ class MRAIDImplementation {
             owner.setLayoutParams(lp);
             owner.close();
             owner.loadUrl("javascript:window.mraid.util.stateChangeEvent('default');");
-            if (owner.owner!=null && owner.owner.adListener!=null) {
-                owner.owner.adListener.onAdCollapsed(this.owner.owner);
+
+            if (owner.owner != null && !owner.owner.isInterstitial()) {
+                owner.owner.getAdDispatcher().onAdCollapsed();
             }
 
             // Allow orientation changes
@@ -402,73 +398,53 @@ class MRAIDImplementation {
         } else {
             // state must be default
             owner.hide();
-            hidden = true;
         }
     }
 
     void expand(ArrayList<BasicNameValuePair> parameters) {
-        if (!hidden) {
-            int width = owner.getLayoutParams().width;// Use current height and
-            // width as expansion
-            // defaults.
-            int height = owner.getLayoutParams().height;
-            boolean useCustomClose = false;
-            String uri = null;
-            boolean allowOrientationChange = true;
-            AdActivity.OrientationEnum forceOrientation = AdActivity.OrientationEnum.none;
-            for (BasicNameValuePair bnvp : parameters) {
-                if (bnvp.getName().equals("w"))
-                    try {
-                        width = Integer.parseInt(bnvp.getValue());
-                    } catch (NumberFormatException e) {
-                        // Do nothing
-                    }
-                else if (bnvp.getName().equals("h"))
-                    try {
-                        height = Integer.parseInt(bnvp.getValue());
-                    } catch (NumberFormatException e) {
-                        // Do nothing
-                    }
-                else if (bnvp.getName().equals("useCustomClose"))
-                    useCustomClose = Boolean.parseBoolean(bnvp.getValue());
-                else if (bnvp.getName().equals("url")){
-                    uri = Uri.decode(bnvp.getValue());
-                } else if (bnvp.getName().equals("allow_orientation_change")) {
-                    allowOrientationChange = Boolean.parseBoolean(bnvp.getValue());
-                } else if (bnvp.getName().equals("force_orientation")) {
-                    forceOrientation = parseForceOrientation(bnvp.getValue());
+        // Use current height and width as expand defaults
+        int width = owner.getLayoutParams().width;
+        int height = owner.getLayoutParams().height;
+        boolean useCustomClose = false;
+        String uri = null;
+        boolean allowOrientationChange = true;
+        AdActivity.OrientationEnum forceOrientation = AdActivity.OrientationEnum.none;
+        for (BasicNameValuePair bnvp : parameters) {
+            if (bnvp.getName().equals("w"))
+                try {
+                    width = Integer.parseInt(bnvp.getValue());
+                } catch (NumberFormatException e) {
+                    // Do nothing
                 }
+            else if (bnvp.getName().equals("h"))
+                try {
+                    height = Integer.parseInt(bnvp.getValue());
+                } catch (NumberFormatException e) {
+                    // Do nothing
+                }
+            else if (bnvp.getName().equals("useCustomClose"))
+                useCustomClose = Boolean.parseBoolean(bnvp.getValue());
+            else if (bnvp.getName().equals("url")) {
+                uri = Uri.decode(bnvp.getValue());
+            } else if (bnvp.getName().equals("allow_orientation_change")) {
+                allowOrientationChange = Boolean.parseBoolean(bnvp.getValue());
+            } else if (bnvp.getName().equals("force_orientation")) {
+                forceOrientation = parseForceOrientation(bnvp.getValue());
             }
+        }
 
-            owner.expand(width, height, useCustomClose, this);
+        owner.expand(width, height, useCustomClose, this, allowOrientationChange, forceOrientation);
 
-            if (forceOrientation != AdActivity.OrientationEnum.none) {
-                AdActivity.lockToMRAIDOrientation((Activity) owner.getContext(), forceOrientation);
-            }
+        // Fire the stateChange to MRAID
+        if (!StringUtil.isEmpty(uri)) {
+            this.owner.loadUrl(uri);
+        }
+        this.owner.loadUrl("javascript:window.mraid.util.stateChangeEvent('expanded');");
+        expanded = true;
 
-            if (allowOrientationChange) {
-                AdActivity.unlockOrientation((Activity) this.owner.getContext());
-            } else if (forceOrientation == AdActivity.OrientationEnum.none) {
-                // if forceOrientation was not none, it would have locked the orientation already
-                AdActivity.lockToCurrentOrientation((Activity) this.owner.getContext());
-            }
-
-            // Fire the stateChange to MRAID
-            if(!StringUtil.isEmpty(uri)){
-                this.owner.loadUrl(uri);
-            }
-            this.owner
-                    .loadUrl("javascript:window.mraid.util.stateChangeEvent('expanded');");
-            expanded = true;
-
-            // Fire the AdListener event
-            if (this.owner.owner.adListener != null) {
-                this.owner.owner.adListener.onAdExpanded(this.owner.owner);
-            }
-
-        } else {
-            owner.show();
-            hidden = false;
+        // Fire the AdListener event
+        if(owner.owner!= null && !this.owner.owner.isInterstitial()){
+            this.owner.owner.getAdDispatcher().onAdExpanded();
         }
     }
 
@@ -485,7 +461,7 @@ class MRAIDImplementation {
             params = url.substring(url.indexOf("?") + 1);
 
             for (String s : params.split("&")) {
-                String [] pair = s.split("=");
+                String[] pair = s.split("=");
                 if (pair.length < 2) {
                     continue;
                 }
@@ -513,7 +489,7 @@ class MRAIDImplementation {
             playVideo(parameters);
         } else if (supportsPictureAPI && func.equals("storePicture")) {
             storePicture(parameters);
-        } else if (func.equals("open")){
+        } else if (func.equals("open")) {
             open(parameters);
         } else {
             Clog.d(Clog.mraidLogTag, Clog.getString(R.string.unsupported_mraid, func));
@@ -521,20 +497,18 @@ class MRAIDImplementation {
         }
     }
 
-    private void open(ArrayList<BasicNameValuePair> parameters){
+    private void open(ArrayList<BasicNameValuePair> parameters) {
         String uri = null;
-        for (BasicNameValuePair bnvp : parameters){
-            if(bnvp.getName().equals("uri")){
+        for (BasicNameValuePair bnvp : parameters) {
+            if (bnvp.getName().equals("uri")) {
                 uri = Uri.decode(bnvp.getValue());
             }
         }
 
-        if(!StringUtil.isEmpty(uri)){
+        if (!StringUtil.isEmpty(uri)) {
             this.owner.loadURLInCorrectBrowser(uri);
             //Call onAdClicked
-            if(owner.owner.adListener!=null){
-                owner.owner.adListener.onAdClicked(owner.owner);
-            }
+            owner.owner.getAdDispatcher().onAdClicked();
         }
     }
 
@@ -580,14 +554,14 @@ class MRAIDImplementation {
                         isBase64 = true;
                     }
                     File out = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), System.currentTimeMillis() + ext);
-                    FileOutputStream outstream=null;
+                    FileOutputStream outstream = null;
                     try {
                         byte[] out_array;
                         outstream = new FileOutputStream(out);
-                        if(out.canWrite()){
+                        if (out.canWrite()) {
                             if (!isBase64) {
                                 out_array = Hex.hexStringToByteArray(uri_final.substring(uri_final.lastIndexOf(",") + 1, uri_final.length()));
-                            }else{
+                            } else {
                                 out_array = Base64.decode(uri_final.substring(uri_final.lastIndexOf(",") + 1, uri_final.length()), Base64.DEFAULT);
                             }
 
@@ -599,9 +573,8 @@ class MRAIDImplementation {
                         Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
                     } catch (IllegalArgumentException e) {
                         Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
-                    }
-                    finally{
-                        if(outstream!=null){
+                    } finally {
+                        if (outstream != null) {
                             try {
                                 outstream.close();
                             } catch (IOException e) {
@@ -617,8 +590,8 @@ class MRAIDImplementation {
 
                     //Check if we're writing to internal or external
                     PackageManager pm = owner.getContext().getPackageManager();
-                    if(pm.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, owner.getContext().getPackageName()) == PackageManager.PERMISSION_GRANTED){
-                        r.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, uri_final.split("/")[uri_final.split("/").length-1]);
+                    if (pm.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, owner.getContext().getPackageName()) == PackageManager.PERMISSION_GRANTED) {
+                        r.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, uri_final.split("/")[uri_final.split("/").length - 1]);
                         try {
                             r.allowScanningByMediaScanner();
                             r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
@@ -626,15 +599,13 @@ class MRAIDImplementation {
                         } catch (IllegalStateException ex) {
                             Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
                         }
-                    }else{
+                    } else {
                         Clog.d(Clog.mraidLogTag, Clog.getString(R.string.store_picture_error));
                     }
                 }
 
                 //Call onAdClicked
-                if(owner.owner.adListener!=null){
-                    owner.owner.adListener.onAdClicked(owner.owner);
-                }
+                owner.owner.getAdDispatcher().onAdClicked();
             }
         });
 
@@ -669,13 +640,11 @@ class MRAIDImplementation {
             Clog.d(Clog.mraidLogTag, Clog.getString(R.string.unsupported_encoding));
             return;
         }
-        try{
+        try {
             owner.getContext().startActivity(i);
             //Call onAdClicked
-            if(owner.owner.adListener!=null){
-                owner.owner.adListener.onAdClicked(owner.owner);
-            }
-        }catch(ActivityNotFoundException e){
+            owner.owner.getAdDispatcher().onAdClicked();
+        } catch (ActivityNotFoundException e) {
             return;
         }
     }
@@ -683,7 +652,7 @@ class MRAIDImplementation {
     private void createCalendarEvent(ArrayList<BasicNameValuePair> parameters) {
         W3CEvent event = null;
         try {
-            if(parameters != null && parameters.size()>0){
+            if (parameters != null && parameters.size() > 0) {
                 event = W3CEvent.createFromJSON(URLDecoder.decode(parameters.get(0).getValue(), "UTF-8"));
             }
         } catch (UnsupportedEncodingException e) {
@@ -696,9 +665,7 @@ class MRAIDImplementation {
                 Intent i = event.getInsertIntent();
                 owner.getContext().startActivity(i);
                 // Call onAdClicked
-                if (owner.owner.adListener != null) {
-                    owner.owner.adListener.onAdClicked(owner.owner);
-                }
+                this.owner.owner.getAdDispatcher().onAdClicked();
                 Clog.d(Clog.mraidLogTag, Clog.getString(R.string.create_calendar_event));
             } catch (ActivityNotFoundException e) {
 
@@ -731,10 +698,12 @@ class MRAIDImplementation {
 
         // orientationProperties only affects expanded state
         if (expanded) {
+            Activity containerActivity = owner.isFullScreen
+                    ? getFullscreenActivity() : (Activity) owner.getContext();
             if (allow_orientation_change) {
-                AdActivity.unlockOrientation((Activity) this.owner.getContext());
+                AdActivity.unlockOrientation(containerActivity);
             } else {
-                AdActivity.lockToCurrentOrientation((Activity) this.owner.getContext());
+                AdActivity.lockToCurrentOrientation(containerActivity);
             }
         }
 
@@ -759,7 +728,7 @@ class MRAIDImplementation {
         String custom_close_position = "top-right";
         boolean allow_offscrean = true;
         for (BasicNameValuePair bnvp : parameters) {
-            try{
+            try {
                 if (bnvp.getName().equals("w")) {
                     w = Integer.parseInt(bnvp.getValue());
                 } else if (bnvp.getName().equals("h")) {
@@ -773,34 +742,49 @@ class MRAIDImplementation {
                 } else if (bnvp.getName().equals("allow_offscreen")) {
                     allow_offscrean = Boolean.parseBoolean(bnvp.getValue());
                 }
-            }catch(NumberFormatException e){
+            } catch (NumberFormatException e) {
                 Clog.d(Clog.mraidLogTag, Clog.getString(R.string.number_format));
                 return;
             }
         }
         //If the resized ad is larger than the screen, reject with great prejudice
-        if(w>screenWidth && h>screenHeight){
+        if (w > screenWidth && h > screenHeight) {
             this.owner.loadUrl("javascript:mraid.util.errorEvent('Resize called with resizeProperties larger than the screen.', 'mraid.resize()')");
             return;
         }
 
         CUSTOM_CLOSE_POSITION cp_enum = CUSTOM_CLOSE_POSITION.top_right;
-        try{
+        try {
             cp_enum = CUSTOM_CLOSE_POSITION.valueOf(custom_close_position.replace('-', '_'));
-        }catch(IllegalArgumentException e){} //Default case is used
+        } catch (IllegalArgumentException e) {
+        } //Default case is used
 
 
         Clog.d(Clog.mraidLogTag, Clog.getString(R.string.resize, w, h, offset_x, offset_y, custom_close_position, allow_offscrean));
         this.owner.resize(w, h, offset_x, offset_y, cp_enum, allow_offscrean);
 
         //Call onAdClicked
-        if(owner.owner.adListener!=null){
-            owner.owner.adListener.onAdExpanded(owner.owner);
-        }
+        this.owner.owner.getAdDispatcher().onAdClicked();
 
         this.owner
                 .loadUrl("javascript:window.mraid.util.stateChangeEvent('resized');");
         resized = true;
 
+    }
+
+    protected AdActivity getFullscreenActivity() {
+        return fullscreenActivity;
+    }
+
+    protected void setFullscreenActivity(AdActivity fullscreenActivity) {
+        this.fullscreenActivity = fullscreenActivity;
+    }
+
+    protected ViewGroup getDefaultContainer() {
+        return defaultContainer;
+    }
+
+    protected void setDefaultContainer(ViewGroup defaultContainer) {
+        this.defaultContainer = defaultContainer;
     }
 }

@@ -100,7 +100,7 @@ class AdFetcher implements AdRequester {
         // Get the period from the settings
         final int msPeriod = period <= 0 ? 30 * 1000 : period;
 
-        if (!getAutoRefresh()) {
+        if (!autoRefresh) {
             Clog.v(Clog.baseLogTag,
                     Clog.getString(R.string.fetcher_start_single));
             // Request an ad once
@@ -172,7 +172,7 @@ class AdFetcher implements AdRequester {
             }
 
             // Update last fetch time once
-            if(fetcher.lastFetchTime!=-1){
+            if (fetcher.lastFetchTime != -1) {
                 Clog.d(Clog.baseLogTag,
                         Clog.getString(
                                 R.string.new_ad_since,
@@ -238,9 +238,9 @@ class AdFetcher implements AdRequester {
             AdWebView output = new AdWebView(owner);
             output.loadAd(response);
             // standard
-            if(owner.isBanner()){
+            if (owner.isBanner()) {
                 BannerAdView bav = (BannerAdView) owner;
-                if(bav.getExpandsToFitScreenWidth() == true){
+                if (bav.getExpandsToFitScreenWidth() && (response != null)) {
                     bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), output);
                 }
             }
@@ -260,16 +260,9 @@ class AdFetcher implements AdRequester {
         }
 
         //If we're about to dispatch a creative to a banneradview that has been resized by ad stretching, reset it's size
-        if(owner.isBanner()){
-            BannerAdView bav = (BannerAdView)owner;
+        if (owner.isBanner()) {
+            BannerAdView bav = (BannerAdView) owner;
             bav.resetContainerIfNeeded();
-        }
-
-        // no ads in the response and no old ads means no fill
-        if (!responseHasAds && !ownerHasAds) {
-            Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
-            requestFailed();
-            return;
         }
 
         if (responseHasAds) {

@@ -20,7 +20,6 @@ import android.annotation.SuppressLint;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.StringUtil;
-
 import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -83,6 +82,15 @@ class AdResponse {
 
     public AdResponse(boolean isHttpError) {
         this.isHttpError = isHttpError;
+    }
+
+    // minimal constructor for protected loadAdFromHtml function
+    protected AdResponse(String content, int width, int height) {
+        this.content = content;
+        this.width = width;
+        this.height = height;
+        // set for MRAIDWebView
+        this.isMraid = true;
     }
 
     private void printHeaders(Header[] headers) {

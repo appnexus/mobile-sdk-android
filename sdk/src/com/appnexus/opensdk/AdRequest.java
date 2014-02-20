@@ -16,21 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.util.EntityUtils;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -45,126 +30,116 @@ import android.os.Build;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.util.Pair;
-
 import com.appnexus.opensdk.InterstitialAdView.Size;
-import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.HashingFunctions;
-import com.appnexus.opensdk.utils.Settings;
-import com.appnexus.opensdk.utils.StringUtil;
-import com.appnexus.opensdk.utils.WebviewUtil;
+import com.appnexus.opensdk.utils.*;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.HttpHostConnectException;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
     private AdView owner;
-    private final AdRequester requester;
-    private AdListener adListener;
+    private final AdRequester requester; // The instance of AdRequester which is filing this request.
     private Context context;
     private String hidmd5;
     private String hidsha1;
     private String devMake;
     private String devModel;
-    private String carrier;
+    private String carrier; // The carrier to pass, such as 'AT&T'
     private boolean firstlaunch;
-    private String lat;
-    private String lon;
+    private String lat; // The latitude to pass.
+    private String lon; // the longitude to pass
     private String locDataAge;
     private String locDataPrecision;
     private String ua;
-    private String orientation;
+    private String orientation; // The device orientation to pass, 'vertical' or 'horizontal'
     private String allowedSizes;
-    private String mcc;
-    private String mnc;
-    private String connection_type;
+    private String mcc; // The MCC to pass.
+    private String mnc; // The MNC to pass.
+    private String connection_type; // The type of connection, 'wifi' or 'wan'
     private String dev_time; // Set at the time of the request
     private String dev_timezone;
     private String language;
-    private final String placementId;
-    private String nativeBrowser;
+    private final String placementId; // The AppNexus placement id to use
+    private String nativeBrowser; // Whether this ad space will open the landing page in the native
+    // browser ('1') or the in-app browser ('0').
     private String psa;
-    private int width = -1;
-    private int height = -1;
-    private int maxWidth = -1;
-    private int maxHeight = -1;
+    private int width = -1; // The width to request, in pixels. -1 for none.
+    private int height = -1; // The height to request, in pixels. -1 for none.
+    private int maxWidth = -1; // The maximum width, if no width is specified.
+    private int maxHeight = -1; // The maximum height, if no height is specified.
     private float reserve = 0.00f;
     private String age;
     private String gender;
     private ArrayList<Pair<String, String>> customKeywords;
+    static HashSet<String> pNames = null;
+
+    private static HashSet<String> getParamNames(){
+        if(pNames == null){
+            pNames = new HashSet<String>();
+            pNames.add("id");
+            pNames.add("md5udid");
+            pNames.add("sha1udid");
+            pNames.add("devmake");
+            pNames.add("devmodel");
+            pNames.add("carrier");
+            pNames.add("appid");
+            pNames.add("firstlaunch");
+            pNames.add("loc");
+            pNames.add("loc_age");
+            pNames.add("loc_prec");
+            pNames.add("istest");
+            pNames.add("ua");
+            pNames.add("orientation");
+            pNames.add("size");
+            pNames.add("max_size");
+            pNames.add("promo_sizes");
+            pNames.add("mcc");
+            pNames.add("mnc");
+            pNames.add("language");
+            pNames.add("devtz");
+            pNames.add("devtime");
+            pNames.add("connection_type");
+            pNames.add("native_browser");
+            pNames.add("psa");
+            pNames.add("reserve");
+            pNames.add("age");
+            pNames.add("gender");
+            pNames.add("format");
+            pNames.add("st");
+            pNames.add("sdkver");
+
+            return pNames;
+        }else{
+            return pNames;
+        }
+    }
+
+    private static boolean stringNotInParamNames(String s){
+        return !getParamNames().contains(s);
+    }
 
     private static final AdResponse HTTP_ERROR
             = new AdResponse(true);
-
-    /**
-     * Creates a new AdRequest with the given parameters
-     *
-     * @param requester       The instance of AdRequester which is filing this request.
-     * @param aid             The ANDROID_ID to hash and pass.
-     * @param lat             The lattitude to pass.
-     * @param lon             The longistude to pass.
-     * @param placementId     The AppNexus placement id to use
-     * @param orientation     The device orientation to pass, 'portrait' or 'landscape'
-     * @param carrier         The carrier to pass, such as 'AT&T'
-     * @param width           The width to request, in pixels. -1 for none.
-     * @param height          The height to request, in pixels. -1 for none.
-     * @param maxWidth        The maximum width, if no width is specified.
-     * @param maxHeight       The maximum height, if no height is specified.
-     * @param mcc             The MCC to pass.
-     * @param mnc             The MNC to pass
-     * @param connectionType  The type of connection, 'wifi' or 'wan'
-     * @param isNativeBrowser Whether this ad space will open the landing page in the native
-     *                        browser ('1') or the in-app browser ('0').
-     * @param adListener      The instance of AdListener to use.
-     * @param shouldServePSAs Whether this ad space accepts PSAs ('1') or only wants ads
-     *                        ('0')
-     */
-    public AdRequest(AdRequester requester, String aid, String lat, String lon,
-                     String placementId, String orientation, String carrier, int width,
-                     int height, int maxWidth, int maxHeight, String mcc, String mnc,
-                     String connectionType, boolean isNativeBrowser,
-                     AdListener adListener, boolean shouldServePSAs, boolean shouldRetry) {
-        this.adListener = adListener;
-        this.requester = requester;
-        if (aid != null) {
-            hidmd5 = HashingFunctions.md5(aid);
-            hidsha1 = HashingFunctions.sha1(aid);
-        }
-        devMake = Settings.getSettings().deviceMake;
-        devModel = Settings.getSettings().deviceModel;
-
-        // Get firstlaunch and convert it to a string
-        firstlaunch = Settings.getSettings().first_launch;
-        // Get ua, the user agent...
-        ua = Settings.getSettings().ua;
-
-        this.lat = lat;
-        this.lon = lon;
-
-        this.carrier = carrier;
-
-        this.mnc = mnc;
-        this.mcc = mcc;
-
-        this.width = width;
-        this.height = height;
-        this.maxWidth = maxWidth;
-        this.maxHeight = maxHeight;
-
-        this.connection_type = connectionType;
-        this.dev_time = "" + System.currentTimeMillis();
-
-        this.dev_timezone = Settings.getSettings().dev_timezone;
-        this.language = Settings.getSettings().language;
-
-        this.placementId = placementId;
-        this.psa = shouldServePSAs ? "1" : "0";
-
-        this.nativeBrowser = isNativeBrowser ? "1" : "0";
-    }
 
     public AdRequest(AdRequester adRequester) {
         owner = adRequester.getOwner();
         this.requester = adRequester;
         this.placementId = owner.getPlacementID();
         context = owner.getContext();
+        // The ANDROID_ID to hash and pass.
         String aid = android.provider.Settings.Secure.getString(
                 context.getContentResolver(), Secure.ANDROID_ID);
 
@@ -187,17 +162,17 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                 if (lastLocation == null) {
                     lastLocation = l;
                 } else {
-                    if ( l.getTime() > 0 && lastLocation.getTime()>0) {
+                    if (l.getTime() > 0 && lastLocation.getTime() > 0) {
                         if (l.getTime() > lastLocation.getTime()) {
                             lastLocation = l;
                         }
                     }
                 }
             }
-            if(lastLocation!=null){
-                lat = ""+lastLocation.getLatitude();
-                lon = ""+lastLocation.getLongitude();
-                locDataPrecision = ""+lastLocation.getAccuracy();
+            if (lastLocation != null) {
+                lat = "" + lastLocation.getLatitude();
+                lon = "" + lastLocation.getLongitude();
+                locDataPrecision = "" + lastLocation.getAccuracy();
                 locDataAge = "" + (System.currentTimeMillis() - lastLocation.getTime());
             }
         } else {
@@ -219,11 +194,11 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         orientation = context.getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE ? "h" : "v";
         // Get hidmd5, hidsha1, the device ID hashed
-        if (Settings.getSettings().hidmd5 == null) {
+        if ((Settings.getSettings().hidmd5 == null) && (aid != null)) {
             Settings.getSettings().hidmd5 = HashingFunctions.md5(aid);
         }
         hidmd5 = Settings.getSettings().hidmd5;
-        if (Settings.getSettings().hidsha1 == null) {
+        if ((Settings.getSettings().hidsha1 == null) && (aid != null)) {
             Settings.getSettings().hidsha1 = HashingFunctions.sha1(aid);
         }
         hidsha1 = Settings.getSettings().hidsha1;
@@ -243,14 +218,13 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         ua = Settings.getSettings().ua;
         // Get wxh
 
-        if(owner.isBanner()){
-            this.width = ((BannerAdView)owner).getAdWidth();
-            this.height = ((BannerAdView)owner).getAdHeight();
+        if (owner.isBanner()) {
+            this.width = ((BannerAdView) owner).getAdWidth();
+            this.height = ((BannerAdView) owner).getAdHeight();
         }
 
         maxHeight = owner.getContainerHeight();
         maxWidth = owner.getContainerWidth();
-
 
 
         if (Settings.getSettings().mcc == null
@@ -269,7 +243,10 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo wifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        connection_type = wifi.isConnected() ? "wifi" : "wan";
+        if (wifi != null) {
+            connection_type = wifi.isConnected() ? "wifi" : "wan";
+        }
+
         dev_time = "" + System.currentTimeMillis();
 
         if (owner instanceof InterstitialAdView) {
@@ -288,9 +265,9 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
         //Reserve price
         reserve = owner.getReserve();
-        if(reserve<=0){
+        if (reserve <= 0) {
             this.psa = owner.shouldServePSAs ? "1" : "0";
-        }else{
+        } else {
             this.psa = "0";
         }
 
@@ -298,11 +275,9 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (owner.getGender() != null) {
             if (owner.getGender() == AdView.GENDER.MALE) {
                 gender = "m";
-            }
-            else if (owner.getGender() == AdView.GENDER.FEMALE) {
+            } else if (owner.getGender() == AdView.GENDER.FEMALE) {
                 gender = "f";
-            }
-            else {
+            } else {
                 gender = null;
             }
         }
@@ -316,8 +291,6 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     private void fail() {
         if (requester != null)
             requester.failed(this);
-        if (adListener != null)
-            adListener.onAdRequestFailed(this.owner);
         Clog.clearLastResponse();
     }
 
@@ -334,7 +307,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (!StringUtil.isEmpty(hidsha1)) sb.append("&sha1udid=").append(Uri.encode(hidsha1));
         if (!StringUtil.isEmpty(devMake)) sb.append("&devmake=").append(Uri.encode(devMake));
         if (!StringUtil.isEmpty(devModel)) sb.append("&devmodel=").append(Uri.encode(devModel));
-        if (!StringUtil.isEmpty(carrier)) sb.append( "&carrier=").append(Uri.encode(carrier));
+        if (!StringUtil.isEmpty(carrier)) sb.append("&carrier=").append(Uri.encode(carrier));
         sb.append("&appid=");
         if (!StringUtil.isEmpty(Settings.getSettings().app_id)) {
             sb.append(Uri.encode(Settings.getSettings().app_id));
@@ -342,7 +315,8 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             sb.append("NO-APP-ID");
         }
         if (firstlaunch) sb.append("&firstlaunch=true");
-        if (!StringUtil.isEmpty(lat) && !StringUtil.isEmpty(lon)) sb.append("&loc=").append(lat).append(",").append(lon);
+        if (!StringUtil.isEmpty(lat) && !StringUtil.isEmpty(lon))
+            sb.append("&loc=").append(lat).append(",").append(lon);
         if (!StringUtil.isEmpty(locDataAge)) sb.append("&loc_age=").append(locDataAge);
         if (!StringUtil.isEmpty(locDataPrecision)) sb.append("&loc_prec=").append(locDataPrecision);
         if (Settings.getSettings().test_mode) sb.append("&istest=true");
@@ -366,10 +340,10 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (!StringUtil.isEmpty(language)) sb.append("&language=").append(Uri.encode(language));
         if (!StringUtil.isEmpty(dev_timezone)) sb.append("&devtz=").append(Uri.encode(dev_timezone));
         if (!StringUtil.isEmpty(dev_time)) sb.append("&devtime=").append(Uri.encode(dev_time));
-        if (!StringUtil.isEmpty(connection_type)) sb.append("&connection_type=").append( Uri.encode(connection_type));
+        if (!StringUtil.isEmpty(connection_type)) sb.append("&connection_type=").append(Uri.encode(connection_type));
         if (!StringUtil.isEmpty(nativeBrowser)) sb.append("&native_browser=").append(nativeBrowser);
-        if (!StringUtil.isEmpty(psa)) sb.append( "&psa=").append(psa);
-        if (reserve>0) sb.append("&reserve=").append(reserve);
+        if (!StringUtil.isEmpty(psa)) sb.append("&psa=").append(psa);
+        if (reserve > 0) sb.append("&reserve=").append(reserve);
         if (!StringUtil.isEmpty(age)) sb.append("&age=").append(Uri.encode(age));
         if (!StringUtil.isEmpty(gender)) sb.append("&gender=").append(Uri.encode(gender));
         sb.append("&format=json");
@@ -380,10 +354,14 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (customKeywords != null) {
             for (Pair<String, String> pair : customKeywords) {
                 if (!StringUtil.isEmpty(pair.first) && (pair.second != null)) {
-                    sb.append("&")
-                            .append(pair.first)
-                            .append("=")
-                            .append(Uri.encode(pair.second));
+                    if(AdRequest.stringNotInParamNames(pair.first)){
+                        sb.append("&")
+                                .append(pair.first)
+                                .append("=")
+                                .append(Uri.encode(pair.second));
+                    }else{
+                        Clog.w(Clog.httpReqLogTag, Clog.getString(R.string.request_parameter_override_attempt, pair.second));
+                    }
                 }
             }
         }
@@ -448,7 +426,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             Clog.e(Clog.baseLogTag,
                     Clog.getString(R.string.permissions_internet));
             return null;
-        } catch(IllegalArgumentException ie) {
+        } catch (IllegalArgumentException ie) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unknown));
             return null;
         } catch (Exception e) {
@@ -507,9 +485,6 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
         if (requester != null)
             requester.onReceiveResponse(result);
-        // for unit testing
-        if (adListener != null)
-            adListener.onAdLoaded(owner);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -518,9 +493,4 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         super.onCancelled(adResponse);
         Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.cancel_request));
     }
-
-//   // Uncomment for unit tests
-//   public void setContext(Context context) {
-//       this.context = context;
-//   }
 }

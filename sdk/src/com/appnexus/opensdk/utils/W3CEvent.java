@@ -298,7 +298,7 @@ public class W3CEvent {
         }
         if (!StringUtil.isEmpty(getTransparency())) {
             if (nativeMethod) {
-                i.putExtra(CalendarContract.Events.VISIBLE, getTransparency().equals("opaque") ? false : true);
+                i.putExtra(CalendarContract.Events.VISIBLE, !getTransparency().equals("opaque"));
             }
         }
         if (!StringUtil.isEmpty(getReminder())) {

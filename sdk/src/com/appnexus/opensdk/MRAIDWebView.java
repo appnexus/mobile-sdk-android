@@ -17,15 +17,12 @@
 package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.widget.FrameLayout;
 
 @SuppressLint("ViewConstructor")
@@ -54,7 +51,7 @@ class MRAIDWebView extends AdWebView implements Displayable {
     public void loadAd(AdResponse ar) {
         String html = ar.getContent();
 
-        if (html.contains("mraid.js")) {
+        if (ar.isMraid()) {
             setImplementation(new MRAIDImplementation(this));
         }
 
@@ -90,15 +87,9 @@ class MRAIDWebView extends AdWebView implements Displayable {
         super.scrollTo(0, 0);
     }
 
-    protected void removeFromParent(){
-        if(this.getParent() !=null){
-            ((ViewGroup) this.getParent()).removeView(this);
-        }
-    }
-
     // w,h in dips. this function converts to pixels
-    void expand(int w, int h, boolean cust_close,
-                MRAIDImplementation caller) {
+    void expand(int w, int h, boolean cust_close, final MRAIDImplementation caller,
+                final boolean allowOrientationChange, final AdActivity.OrientationEnum forceOrientation) {
         DisplayMetrics metrics = new DisplayMetrics();
         ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE))
                 .getDefaultDisplay().getMetrics(metrics);
@@ -108,7 +99,7 @@ class MRAIDWebView extends AdWebView implements Displayable {
         default_width = lp.width;
         default_height = lp.height;
 
-        if (h == -1 || w == -1) {
+        if ((h == -1) && (w == -1)) {
             if (owner != null) {
                 isFullScreen = true;
             }
@@ -125,16 +116,50 @@ class MRAIDWebView extends AdWebView implements Displayable {
         lp.width = w;
         lp.gravity = Gravity.CENTER;
 
-        if (owner != null) {
-            owner.expand(w, h, cust_close, caller);
+        MRAIDFullscreenListener mraidFullscreenListener = null;
+        if (isFullScreen) {
+            // if fullscreen, create a listener to lock the activity when it is created
+            mraidFullscreenListener = new MRAIDFullscreenListener() {
+                @Override
+                public void onCreateCompleted() {
+                    // lock orientation if necessary
+                    if ((caller != null) && (caller.getFullscreenActivity() != null)) {
+                        lockOrientationFromExpand(caller.getFullscreenActivity(),
+                                allowOrientationChange, forceOrientation);
+                        AdView.mraidFullscreenListener = null; // only listen once
+                    }
+                }
+            };
+        } else {
+            // otherwise, lock the current activity
+            lockOrientationFromExpand((Activity) this.getContext(),
+                    allowOrientationChange, forceOrientation);
         }
 
-        //If it's an IAV, prevent it from closing
+        if (owner != null) {
+            owner.expand(w, h, cust_close, caller, mraidFullscreenListener);
+        }
+
         if (owner instanceof InterstitialAdView) {
             ((InterstitialAdView) owner).interacted();
         }
 
         this.setLayoutParams(lp);
+    }
+
+    private void lockOrientationFromExpand(Activity containerActivity,
+                                           boolean allowOrientationChange,
+                                           AdActivity.OrientationEnum forceOrientation) {
+        if (forceOrientation != AdActivity.OrientationEnum.none) {
+            AdActivity.lockToMRAIDOrientation(containerActivity, forceOrientation);
+        }
+
+        if (allowOrientationChange) {
+            AdActivity.unlockOrientation(containerActivity);
+        } else if (forceOrientation == AdActivity.OrientationEnum.none) {
+            // if forceOrientation was not none, it would have locked the orientation already
+            AdActivity.lockToCurrentOrientation(containerActivity);
+        }
     }
 
     void hide() {
@@ -145,7 +170,7 @@ class MRAIDWebView extends AdWebView implements Displayable {
 
     void show() {
         if (owner != null) {
-            owner.expand(default_width, default_height, true, null);
+            owner.expand(default_width, default_height, true, null, null);
         }
     }
 
@@ -210,7 +235,6 @@ class MRAIDWebView extends AdWebView implements Displayable {
             owner.resize(w, h, offset_x, offset_y, custom_close_position, allow_offscrean, implementation);
         }
 
-        //If it's an IAV, prevent it from closing
         if (owner instanceof InterstitialAdView) {
             ((InterstitialAdView) owner).interacted();
         }
@@ -218,4 +242,7 @@ class MRAIDWebView extends AdWebView implements Displayable {
         this.setLayoutParams(lp);
     }
 
+    interface MRAIDFullscreenListener {
+        void onCreateCompleted();
+    }
 }

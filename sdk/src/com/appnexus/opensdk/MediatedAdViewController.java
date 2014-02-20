@@ -15,19 +15,15 @@
  */
 package com.appnexus.opensdk;
 
-import java.lang.ref.WeakReference;
-
 import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.HTTPGet;
-import com.appnexus.opensdk.utils.HTTPResponse;
-import com.appnexus.opensdk.utils.Settings;
-import com.appnexus.opensdk.utils.StringUtil;
+import com.appnexus.opensdk.utils.*;
+
+import java.lang.ref.WeakReference;
 
 /**
  * <p>
@@ -353,7 +349,7 @@ public abstract class MediatedAdViewController {
             Clog.w(Clog.mediationLogTag, Clog.getString(R.string.mediation_timeout));
             avc.onAdFailed(RESULT.INTERNAL_ERROR);
         }
-    };
+    }
     // if the mediated network fails to call us within the timeout period, fail
     private final Handler timeoutHandler = new TimeoutHandler(this);
 

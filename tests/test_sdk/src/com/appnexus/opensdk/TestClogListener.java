@@ -17,28 +17,37 @@
 package com.appnexus.opensdk;
 
 import android.util.Log;
+import com.appnexus.opensdk.util.TestUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ClogListener;
-import com.appnexus.opensdk.util.TestUtil;
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
-public class TestClogListener extends TestCase {
+import static junit.framework.Assert.*;
+
+@Config(manifest = "../sdk/AndroidManifest.xml")
+@RunWith(RobolectricTestRunner.class)
+public class TestClogListener {
 
     boolean didReceiveMessage;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setup() {
+        Clog.clogged = false;
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() {
         Clog.unregisterAllListeners();
-        super.tearDown();
     }
 
     // use Log instead of Clog during testing to prevent deadlock
 
+    @Test
     public void test1Register() throws Exception {
         didReceiveMessage = false;
 
@@ -63,6 +72,7 @@ public class TestClogListener extends TestCase {
         assertTrue(didReceiveMessage);
     }
 
+    @Test
     public void test2Unregister() throws Exception {
         didReceiveMessage = false;
 
@@ -90,6 +100,7 @@ public class TestClogListener extends TestCase {
         assertFalse(didReceiveMessage);
     }
 
+    @Test
     public void test3Filters() throws Exception {
         FilterClogListener vLevel = new FilterClogListener(ClogListener.LOG_LEVEL.V);
         FilterClogListener dLevel = new FilterClogListener(ClogListener.LOG_LEVEL.D);
@@ -148,6 +159,7 @@ public class TestClogListener extends TestCase {
         assertEquals(true, eLevel.didReceiveE);
     }
 
+    @Test
     public void test4HandleNullListeners() throws Exception {
         Clog.registerListener(null);
         Clog.unregisterListener(null);
@@ -157,6 +169,7 @@ public class TestClogListener extends TestCase {
         assertTrue(true);
     }
 
+    @Test
     public void testThrowable() throws Exception {
         didReceiveMessage = false;
 

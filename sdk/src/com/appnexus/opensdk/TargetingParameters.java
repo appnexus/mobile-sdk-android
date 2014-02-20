@@ -34,7 +34,7 @@ public class TargetingParameters {
         this.gender = gender;
         this.customKeywords = customKeywords;
         this.location = location;
-    };
+    }
 
     public String getAge() {
         return age;
