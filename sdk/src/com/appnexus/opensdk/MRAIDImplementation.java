@@ -57,6 +57,8 @@ class MRAIDImplementation {
     private AdActivity fullscreenActivity;
     private ViewGroup defaultContainer;
     private OrientationBroadcastReceiver orientationBroadcastReceiver = new OrientationBroadcastReceiver();
+    boolean isViewable;
+    private int[] position = new int[4];
 
     public MRAIDImplementation(MRAIDWebView owner) {
         this.owner = owner;
@@ -190,7 +192,7 @@ class MRAIDImplementation {
                     default_height = owner.getLayoutParams().height;
 
                     readyFired = true;
-                    owner.fireViewableChangeEvent();
+                    MRAIDImplementation.this.onViewableChange(owner.isViewable());
                     orientationBroadcastReceiver.register(MRAIDImplementation.this);
                 }
             }
@@ -291,6 +293,7 @@ class MRAIDImplementation {
 
     void onViewableChange(boolean viewable) {
         if (!readyFired) return;
+        isViewable = viewable;
 
         owner.loadUrl("javascript:window.mraid.util.setIsViewable(" + viewable + ")");
     }
@@ -298,6 +301,13 @@ class MRAIDImplementation {
     // parameters are view properties in pixels
     void setCurrentPosition(int left, int top, int width, int height) {
         if (!readyFired) return;
+
+        if ((position[0] == left) && (position[1] == top)
+                && (position[2] == width) && (position[3] == height)) return;
+        position[0] = left;
+        position[1] = top;
+        position[2] = width;
+        position[3] = height;
 
         Activity a = (Activity) owner.getContext();
         // current position is relative to max size, so subtract the status bar from y
@@ -752,6 +762,14 @@ class MRAIDImplementation {
         if (orientationBroadcastReceiver != null) orientationBroadcastReceiver.unregister();
         orientationBroadcastReceiver = null;
     }
+
+    void fireViewableChangeEvent() {
+        boolean isCurrentlyViewable = owner.isViewable();
+        if (isViewable != isCurrentlyViewable) {
+            this.onViewableChange(isCurrentlyViewable);
+        }
+    }
+
     private void onOrientationChanged() {
         setMaxSize();
         setScreenSize();

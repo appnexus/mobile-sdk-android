@@ -89,7 +89,9 @@ class MRAIDWebView extends AdWebView implements Displayable {
             isVisible = false;
             stopCheckViewable();
         }
-        fireViewableChangeEvent();
+        if (implementation != null) {
+            implementation.fireViewableChangeEvent();
+        }
     }
 
     @Override
@@ -227,18 +229,16 @@ class MRAIDWebView extends AdWebView implements Displayable {
 
         this.isOnscreen = (right > 0) && (left < screenSize[0])
                 && (bottom > 0) && (top < screenSize[1]);
-        this.fireViewableChangeEvent();
 
         // update current position
         if (implementation != null) {
+            implementation.fireViewableChangeEvent();
             implementation.setCurrentPosition(left, top, this.getMeasuredWidth(), this.getMeasuredHeight());
         }
     }
 
-    void fireViewableChangeEvent() {
-        if (implementation != null) {
-            implementation.onViewableChange(isOnscreen && isVisible);
-        }
+    boolean isViewable() {
+        return isOnscreen && isVisible;
     }
 
     @Override
