@@ -89,7 +89,6 @@ public class BannerAdView extends AdView {
     private boolean loadAdHasBeenCalled;
     private boolean shouldReloadOnResume;
     private BroadcastReceiver receiver;
-    private boolean receiversRegistered;
     protected boolean shouldResetContainer = false;
     private boolean expandsToFitScreenWidth = false;
     private int width = -1;
@@ -99,7 +98,6 @@ public class BannerAdView extends AdView {
         loadAdHasBeenCalled = false;
         auto_refresh = true;
         shouldReloadOnResume = false;
-        receiversRegistered = false;
     }
 
     /**
@@ -177,11 +175,12 @@ public class BannerAdView extends AdView {
         mAdFetcher.setAutoRefresh(auto_refresh);
     }
 
-    void setupBroadcast(Context context) {
+    private void setupBroadcast() {
+        if (receiver != null) return;
+
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_SCREEN_ON);
         receiver = new BroadcastReceiver() {
-
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
@@ -197,11 +196,9 @@ public class BannerAdView extends AdView {
                     Clog.d(Clog.baseLogTag,
                             Clog.getString(R.string.screen_on_start));
                 }
-
             }
-
         };
-        context.registerReceiver(receiver, filter);
+        getContext().registerReceiver(receiver, filter);
     }
 
     @Override
@@ -211,10 +208,7 @@ public class BannerAdView extends AdView {
 
         // Are we coming back from a screen/user presence change?
         if (loadAdHasBeenCalled) {
-            if (!receiversRegistered) {
-                setupBroadcast(getContext());
-                receiversRegistered = true;
-            }
+            setupBroadcast();
             if (shouldReloadOnResume) {
                 start();
             }
@@ -225,10 +219,7 @@ public class BannerAdView extends AdView {
     // Make sure receiver is registered.
     private void onFirstLayout() {
         if (this.auto_refresh) {
-            if (!receiversRegistered) {
-                setupBroadcast(getContext());
-                receiversRegistered = true;
-            }
+            setupBroadcast();
         }
     }
 
@@ -522,10 +513,7 @@ public class BannerAdView extends AdView {
             // Register a broadcast receiver to pause and refresh when the phone
             // is
             // locked
-            if (!receiversRegistered) {
-                setupBroadcast(getContext());
-                receiversRegistered = true;
-            }
+            setupBroadcast();
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.unhidden));
             //The only time we want to request on visibility changes is if an ad hasn't been loaded yet (loadAdHasBeenCalled)
             // shouldReloadOnResume is true
@@ -545,10 +533,7 @@ public class BannerAdView extends AdView {
             }
         } else {
             // Unregister the receiver to prevent a leak.
-            if (receiversRegistered) {
-                dismantleBroadcast();
-                receiversRegistered = false;
-            }
+            dismantleBroadcast();
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.hidden));
             if (mAdFetcher != null && loadAdHasBeenCalled) {
                 stop();
@@ -562,7 +547,9 @@ public class BannerAdView extends AdView {
     }
 
     private void dismantleBroadcast() {
+        if (receiver == null) return;
         getContext().unregisterReceiver(receiver);
+        receiver = null;
     }
 
     @Override

@@ -16,8 +16,12 @@
 
 package com.appnexus.opensdk.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.os.Build;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +45,40 @@ public class ViewUtil {
     public static void removeChildFromParent(View view) {
         if ((view != null) && (view.getParent() != null)) {
             ((ViewGroup) view.getParent()).removeView(view);
+        }
+    }
+
+    // returns screen size as { width, height } in pixels
+    @SuppressWarnings("deprecation")
+    public static int[] getScreenSizeAsPixels(Activity activity) {
+        int screenWidth;
+        int screenHeight;
+        Display d = activity.getWindowManager().getDefaultDisplay();
+
+        if (Build.VERSION.SDK_INT >= 13) {
+            Point p = new Point();
+            d.getSize(p);
+            screenWidth = p.x;
+            screenHeight = p.y;
+        } else {
+            screenWidth = d.getWidth();
+            screenHeight = d.getHeight();
+        }
+
+        return new int[] { screenWidth, screenHeight };
+    }
+
+    // returns screen size as { width, height } in DP
+    public static int[] getScreenSizeAsDP(Activity activity) {
+        int[] screenSize = getScreenSizeAsPixels(activity);
+        convertFromPixelsToDP(activity, screenSize);
+        return screenSize;
+    }
+
+    public static void convertFromPixelsToDP(Activity activity, int[] pixels) {
+        final float scale = activity.getResources().getDisplayMetrics().density;
+        for (int i = 0; i < pixels.length; i++) {
+            pixels[i] = (int) ((pixels[i] / scale) + 0.5f);
         }
     }
 }
