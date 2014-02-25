@@ -16,8 +16,8 @@
  -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.appnexus.opensdkapp"
-          android:versionCode="5"
-          android:versionName="1.9">
+          android:versionCode="6"
+          android:versionName="1.11">
 
     <uses-sdk
             android:minSdkVersion="8"
