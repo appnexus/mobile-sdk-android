@@ -37,6 +37,7 @@ import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.BannerAdView;
 import com.appnexus.opensdk.InterstitialAdView;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.StringUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
 
@@ -109,7 +110,9 @@ public class PreviewFragment extends Fragment {
             bav.setPlacementID(settingsWrapper.getPlacementId());
             bav.setGender(settingsWrapper.getGender());
             bav.setAge(settingsWrapper.getAge());
-            bav.addCustomKeywords("pcode", settingsWrapper.getZip());
+            bav.clearCustomKeywords();
+            if(!StringUtil.isEmpty(settingsWrapper.getZip()))
+                bav.addCustomKeywords("pcode", settingsWrapper.getZip());
             for(String key : settingsWrapper.getCustomKeywords().keySet()){
                 bav.addCustomKeywords(key, settingsWrapper.getCustomKeywords().get(key));
             }
@@ -127,7 +130,9 @@ public class PreviewFragment extends Fragment {
             iav.setPlacementID(settingsWrapper.getPlacementId());
             iav.setGender(settingsWrapper.getGender());
             iav.setAge(settingsWrapper.getAge());
-            iav.addCustomKeywords("pcode", settingsWrapper.getZip());
+            iav.clearCustomKeywords();
+            if(!StringUtil.isEmpty(settingsWrapper.getZip()))
+                iav.addCustomKeywords("pcode", settingsWrapper.getZip());
             for(String key : settingsWrapper.getCustomKeywords().keySet()){
                 iav.addCustomKeywords(key, settingsWrapper.getCustomKeywords().get(key));
             }

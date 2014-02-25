@@ -825,6 +825,14 @@ public abstract class AdView extends FrameLayout {
 		}
 	}
 
+    /**
+     * Clear all custom keywords from the request URL.
+     *
+     */
+    public void clearCustomKeywords(){
+        customKeywords.clear();
+    }
+
     protected TargetingParameters getTargetingParameters(){
         return new TargetingParameters(getAge(), getGender(), getCustomKeywords(), getLocation());
     }

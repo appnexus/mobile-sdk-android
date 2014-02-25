@@ -146,47 +146,6 @@
             <TextView
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
-                    android:layout_below="@id/txt_browser"
-                    android:layout_centerVertical="false"
-                    android:id="@+id/txt_advanced"
-                    android:layout_alignBottom="@+id/btns_advanced"
-                    android:layout_alignTop="@+id/btns_advanced"
-                    android:text="@string/settings_txt_advanced"
-                    style="@style/settingsTextItem"
-                    />
-
-            <RelativeLayout
-                    style="@style/switchContainer"
-                    android:id="@+id/btns_advanced"
-                    android:layout_below="@id/txt_browser"
-                    android:layout_toRightOf="@id/txt_browser"
-                    >
-                <View
-                        android:id="@+id/mid_advanced"
-                        android:layout_alignTop="@+id/btns_advanced_yes"
-                        android:layout_alignBottom="@+id/btn_advanced_no"
-                        style="@style/switchButtonMiddle"
-                        />
-                <Button
-                        android:id="@+id/btns_advanced_yes"
-                        android:text="@string/settings_btn_psas_yes"
-                        android:enabled="false"
-                        android:layout_toLeftOf="@id/mid_advanced"
-                        style="@style/switchButtonItem"
-                        />
-                <Button
-                        android:id="@+id/btn_advanced_no"
-                        android:text="@string/settings_btn_psas_no"
-                        style="@style/switchButtonItem"
-                        android:layout_toRightOf="@id/mid_advanced"
-                        />
-            </RelativeLayout>
-
-            <!-- Advanced "Switch" -->
-
-            <TextView
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
                     android:layout_below="@id/txt_psas"
                     android:layout_centerVertical="false"
                     android:id="@+id/txt_browser"

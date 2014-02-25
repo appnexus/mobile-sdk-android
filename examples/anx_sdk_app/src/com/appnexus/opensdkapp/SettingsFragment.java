@@ -521,6 +521,7 @@ public class SettingsFragment extends Fragment {
             done.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    currentKeywords.clear();
                     for(Pair<EditText, EditText> p : pairs){
                         currentKeywords.put(p.first.getText().toString(), p.second.getText().toString());
                     }
@@ -559,9 +560,9 @@ public class SettingsFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     l.removeView(new_keyword);
-                    for(Pair<EditText, EditText> p : pairs){
-                        if(p.first == key){
-                            pairs.remove(p);
+                    for(int j=0; j<pairs.size();j++){
+                        if(pairs.get(j).first == key){
+                            pairs.remove(j);
                         }
                     }
                 }
