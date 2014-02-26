@@ -27,6 +27,7 @@ public class Settings {
     public String hidsha1 = null;
     public String carrierName = null;
     public String aaid = null;
+    public boolean limitTrackingEnabled = false;
 
     public final String deviceMake = Build.MANUFACTURER;
     public final String deviceModel = Build.MODEL;
@@ -74,8 +75,9 @@ public class Settings {
 
     }
 
-    public static void setAAID(String aaid) {
+    public static void setAAID(String aaid, boolean limitTrackingEnabled) {
         getSettings().aaid = aaid;
+        getSettings().limitTrackingEnabled = limitTrackingEnabled;
     }
 
 }

@@ -47,6 +47,7 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
     private PublisherAdView adView;
     private Activity adViewActivity;
     private Application.ActivityLifecycleCallbacks activityListener;
+    private GooglePlayAdListener adListener;
 
     /**
      * Interface called by the AN SDK to request an ad from the mediating SDK.
@@ -62,7 +63,8 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String adUnitID,
                           int width, int height, TargetingParameters targetingParameters) {
-        printToClog(String.format(" - requesting an ad: [%s, %s, %dx%d]",
+        adListener = new GooglePlayAdListener(mBC, super.getClass().getSimpleName());
+        adListener.printToClog(String.format(" - requesting an ad: [%s, %s, %dx%d]",
                 parameter, adUnitID, width, height));
 
         DFBBannerSSParameters ssparm = new DFBBannerSSParameters(parameter);
@@ -71,7 +73,7 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
         adView = new PublisherAdView(activity);
         adView.setAdUnitId(adUnitID);
         adView.setAdSizes(adSize);
-        adView.setAdListener(new GooglePlayAdListener(mBC, super.getClass()));
+        adView.setAdListener(adListener);
 
         adView.loadAd(buildRequest(ssparm, targetingParameters));
 
@@ -96,7 +98,7 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
         PublisherAdRequest.Builder builder = new PublisherAdRequest.Builder();
 
         if ((ssparm.test_device != null) && (ssparm.test_device.length() > 0)) {
-            printToClog("test device " + ssparm.test_device);
+            adListener.printToClog("test device " + ssparm.test_device);
             builder.addTestDevice(ssparm.test_device);
         }
 
@@ -127,10 +129,6 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
         builder.addNetworkExtras(new AdMobExtras(bundle));
 
         return builder.build();
-    }
-
-    private void printToClog(String s) {
-        Clog.d(Clog.mediationLogTag, super.getClass().getSimpleName() + " - " + s);
     }
 
     /**

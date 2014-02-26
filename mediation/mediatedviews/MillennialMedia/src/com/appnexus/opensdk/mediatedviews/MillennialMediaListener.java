@@ -17,6 +17,7 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import com.appnexus.opensdk.MediatedAdViewController;
+import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
 import com.appnexus.opensdk.utils.Clog;
 import com.millennialmedia.android.MMAd;
@@ -36,40 +37,41 @@ class MillennialMediaListener implements RequestListener {
     public MillennialMediaListener(MediatedAdViewController mediatedAdViewController, String className) {
         this.mediatedAdViewController = mediatedAdViewController;
         this.className = className;
-        Clog.d(Clog.mediationLogTag, String.format("New MillennialMediaListener created for [%s %s]", className, mediatedAdViewController));
     }
 
     // occurs when ad is clicked and browser is launched.
     // or when an interstitial is launched
     @Override
     public void MMAdOverlayLaunched(MMAd mmAd) {
-        Clog.d(Clog.mediationLogTag, String.format("%s - MMAdOverlayLaunched: %s", className, mmAd));
-        if (mediatedAdViewController != null)
+        printToClog("MMAdOverlayLaunched: " + mmAd);
+        if ((mediatedAdViewController != null)
+                && (mediatedAdViewController instanceof MediatedBannerAdViewController))
             mediatedAdViewController.onAdExpanded();
     }
 
     @Override
     public void MMAdOverlayClosed(MMAd mmAd) {
-        Clog.d(Clog.mediationLogTag, String.format("%s - MMAdOverlayClosed: %s", className, mmAd));
-        if (mediatedAdViewController != null)
+        printToClog("MMAdOverlayClosed: " + mmAd);
+        if ((mediatedAdViewController != null)
+                && (mediatedAdViewController instanceof MediatedBannerAdViewController))
             mediatedAdViewController.onAdCollapsed();
     }
 
     @Override
     public void MMAdRequestIsCaching(MMAd mmAd) {
-        Clog.d(Clog.mediationLogTag, String.format("%s - MMAdRequestIsCaching: %s", className, mmAd));
+        printToClog("MMAdRequestIsCaching: " + mmAd);
     }
 
     @Override
     public void requestCompleted(MMAd mmAd) {
-        Clog.d(Clog.mediationLogTag, String.format("%s - requestCompleted: %s", className, mmAd));
+        printToClog("requestCompleted: " + mmAd);
         if (mediatedAdViewController != null)
             mediatedAdViewController.onAdLoaded();
     }
 
     @Override
     public void requestFailed(MMAd mmAd, MMException e) {
-        Clog.d(Clog.mediationLogTag, String.format("%s - requestFailed: %s with error %s", className, mmAd, e));
+        printToClog("requestFailed: " + mmAd + " with error: " + e);
         MediatedAdViewController.RESULT code = MediatedInterstitialAdViewController.RESULT.INTERNAL_ERROR;
 
         boolean shouldCancelFailure = false;
@@ -106,7 +108,7 @@ class MillennialMediaListener implements RequestListener {
                 code = MediatedAdViewController.RESULT.INVALID_REQUEST;
                 break;
             case MMException.CACHE_NOT_EMPTY:
-                Clog.d(Clog.mediationLogTag, "%s - cache not empty, show it");
+                printToClog("cache not empty, show the cached ad");
                 if (mediatedAdViewController instanceof MediatedInterstitialAdViewController) {
                     shouldCancelFailure = true;
                     mediatedAdViewController.onAdLoaded();
@@ -144,8 +146,20 @@ class MillennialMediaListener implements RequestListener {
 
     @Override
     public void onSingleTap(MMAd mmAd) {
-        Clog.d(Clog.mediationLogTag, String.format("%s - onSingleTap: %s", className, mmAd));
+        printToClog("onSingleTap: " + mmAd);
         if (mediatedAdViewController != null)
             mediatedAdViewController.onAdClicked();
+    }
+
+    void printToClog(String s) {
+        Clog.d(Clog.mediationLogTag, className + " - " + s);
+    }
+
+    void printToClogWarn(String s) {
+        Clog.w(Clog.mediationLogTag, className + " - " + s);
+    }
+
+    void printToClogError(String s) {
+        Clog.e(Clog.mediationLogTag, className + " - " + s);
     }
 }

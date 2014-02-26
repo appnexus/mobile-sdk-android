@@ -45,6 +45,7 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
     private AdView adView;
     private Activity adViewActivity;
     private Application.ActivityLifecycleCallbacks activityListener;
+    private GooglePlayAdListener adListener;
 
     /**
      * Interface called by the AN SDK to request an ad from the mediating SDK.
@@ -60,14 +61,14 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter,
                           String adUnitID, int width, int height, TargetingParameters targetingParameters) {
-        Clog.d(Clog.mediationLogTag, super.getClass().getSimpleName()
-                + String.format(" - requesting an ad: [%s, %s, %dx%d]",
+        adListener = new GooglePlayAdListener(mBC, super.getClass().getSimpleName());
+        adListener.printToClog(String.format(" - requesting an ad: [%s, %s, %dx%d]",
                 parameter, adUnitID, width, height));
 
         adView = new AdView(activity);
         adView.setAdUnitId(adUnitID);
         adView.setAdSize(new AdSize(width, height));
-        adView.setAdListener(new GooglePlayAdListener(mBC, super.getClass()));
+        adView.setAdListener(adListener);
 
         adView.loadAd(buildRequest(targetingParameters));
 

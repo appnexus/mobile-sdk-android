@@ -21,7 +21,6 @@ import android.util.Pair;
 import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
-import com.appnexus.opensdk.utils.Clog;
 import com.millennialmedia.android.MMInterstitial;
 import com.millennialmedia.android.MMRequest;
 import com.millennialmedia.android.MMSDK;
@@ -39,12 +38,13 @@ import java.util.HashMap;
  *
  */
 public class MillennialMediaInterstitial implements MediatedInterstitialAdView {
-
     private MMInterstitial iad;
+    private MillennialMediaListener mmListener;
 
     @Override
     public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid, TargetingParameters targetingParameters) {
-        Clog.d(Clog.mediationLogTag, String.format("MillennialMediaInterstitial - requesting an interstitial ad: [%s, %s]", parameter, uid));
+        mmListener = new MillennialMediaListener(mIC, super.getClass().getSimpleName());
+        mmListener.printToClog(String.format("requesting an interstitial ad: [%s, %s]", parameter, uid));
 
         MMSDK.initialize(activity);
 
@@ -81,27 +81,27 @@ public class MillennialMediaInterstitial implements MediatedInterstitialAdView {
         if (!iad.isAdAvailable()) {
             iad.fetch(mmRequest);
         } else {
-            Clog.w(Clog.mediationLogTag, "MillennialMediaInterstitial - ad was available from cache. show it instead of fetching");
+            mmListener.printToClogWarn("ad was available from cache. show it instead of fetching");
             mIC.onAdLoaded();
         }
     }
 
     @Override
     public void show() {
-        Clog.d(Clog.mediationLogTag, "MillennialMediaInterstitial - show called");
+        mmListener.printToClog("show called");
         if (iad == null) {
-            Clog.e(Clog.mediationLogTag, "MillennialMediaInterstitial - show called while interstitial ad view was null");
+            mmListener.printToClogError("show called while interstitial ad view was null");
             return;
         }
         if (!iad.isAdAvailable()) {
-            Clog.e(Clog.mediationLogTag, "MillennialMediaInterstitial - show called while interstitial ad was unavailable");
+            mmListener.printToClogError("show called while interstitial ad view was unavailable");
             return;
         }
 
         if (iad.display(false))
-            Clog.d(Clog.mediationLogTag, "MillennialMediaInterstitial - display called successfully");
+            mmListener.printToClog("display called successfully");
         else
-            Clog.e(Clog.mediationLogTag, "MillennialMediaInterstitial - display failed");
+            mmListener.printToClogError("display call failed");
     }
 
     @Override

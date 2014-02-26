@@ -336,13 +336,13 @@ public class MainActivity extends FragmentActivity implements
             @Override
             public void onRetrievedID(String androidAdvertisingID, boolean isLimitAdTrackingEnabled) {
                 Clog.d(Constants.BASE_LOG_TAG, "Setting aaid: " + androidAdvertisingID + " " + isLimitAdTrackingEnabled);
-                Settings.setAAID(isLimitAdTrackingEnabled ? null : androidAdvertisingID);
+                Settings.setAAID(androidAdvertisingID, isLimitAdTrackingEnabled);
             }
 
             @Override
             public void onFailedToRetrieveID() {
                 Clog.d(Constants.BASE_LOG_TAG, "Failed to retrieve aaid");
-                Settings.setAAID(null);
+                Settings.setAAID(null, false);
             }
         };
         util.getID(this);

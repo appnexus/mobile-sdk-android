@@ -21,7 +21,6 @@ import android.view.View;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
-import com.appnexus.opensdk.utils.Clog;
 import com.google.ads.AdRequest;
 import com.google.ads.AdSize;
 import com.google.ads.AdView;
@@ -37,6 +36,8 @@ import com.google.ads.mediation.admob.AdMobAdapterExtras;
  * SDK.
  */
 public class AdMobBanner implements MediatedBannerAdView {
+    private AdMobAdListener adListener;
+
     /**
      * Interface called by the AN SDK to request an ad from the mediating SDK.
      *
@@ -50,12 +51,12 @@ public class AdMobBanner implements MediatedBannerAdView {
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String adUnitID,
                           int width, int height, TargetingParameters targetingParameters) {
-        Clog.d(Clog.mediationLogTag, super.getClass().getSimpleName()
-                + String.format(" - requesting an ad: [%s, %s, %dx%d]",
+        adListener = new AdMobAdListener(mBC, super.getClass().getSimpleName());
+        adListener.printToClog(String.format(" - requesting an ad: [%s, %s, %dx%d]",
                 parameter, adUnitID, width, height));
 
         AdView admobAV = new AdView(activity, new AdSize(width, height), adUnitID);
-        admobAV.setAdListener(new AdMobAdListener(mBC, this.getClass()));
+        admobAV.setAdListener(adListener);
         AdRequest ar = new AdRequest();
 
         switch (targetingParameters.getGender()) {

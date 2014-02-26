@@ -21,7 +21,6 @@ import android.view.View;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
-import com.appnexus.opensdk.utils.Clog;
 import com.google.ads.AdRequest;
 import com.google.ads.AdSize;
 import com.google.ads.doubleclick.DfpAdView;
@@ -40,6 +39,8 @@ import org.json.JSONObject;
  * SDK.
  */
 public class DFPBanner implements MediatedBannerAdView {
+    private AdMobAdListener adListener;
+
     /**
      * Interface called by the AN SDK to request an ad from the mediating SDK.
      *
@@ -53,7 +54,8 @@ public class DFPBanner implements MediatedBannerAdView {
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String adUnitID,
                           int width, int height, TargetingParameters targetingParameters) {
-        printToClog(String.format("requesting an ad: [%s, %s, %dx%d]", parameter, adUnitID, width, height));
+        adListener = new AdMobAdListener(mBC, super.getClass().getSimpleName());
+        adListener.printToClog(String.format("requesting an ad: [%s, %s, %dx%d]", parameter, adUnitID, width, height));
 
         DFBBannerSSParameters ssparm = new DFBBannerSSParameters(parameter);
         AdSize adSize = ssparm.isSmartBanner ? AdSize.SMART_BANNER : new AdSize(width, height);
@@ -65,11 +67,11 @@ public class DFPBanner implements MediatedBannerAdView {
             v = new DfpAdView(activity, adSize, adUnitID);
         }
 
-        v.setAdListener(new AdMobAdListener(mBC, this.getClass()));
+        v.setAdListener(adListener);
         AdRequest ar = new AdRequest();
 
         if (ssparm.test_device != null && ssparm.test_device.length() > 0) {
-            printToClog("requestAd called with test device " + ssparm.test_device);
+            adListener.printToClog("requestAd called with test device " + ssparm.test_device);
             ar.addTestDevice(ssparm.test_device);
         }
 
@@ -103,10 +105,6 @@ public class DFPBanner implements MediatedBannerAdView {
     @Override
     public void destroy() {
 
-    }
-
-    private void printToClog(String s) {
-        Clog.d(Clog.mediationLogTag, super.getClass().getSimpleName() + " - " + s);
     }
 
     /**

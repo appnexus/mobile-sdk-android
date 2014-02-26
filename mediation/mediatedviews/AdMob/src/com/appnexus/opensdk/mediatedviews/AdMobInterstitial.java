@@ -20,7 +20,6 @@ import android.util.Pair;
 import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
-import com.appnexus.opensdk.utils.Clog;
 import com.google.ads.AdRequest;
 import com.google.ads.InterstitialAd;
 import com.google.ads.mediation.admob.AdMobAdapterExtras;
@@ -37,10 +36,12 @@ import com.google.ads.mediation.admob.AdMobAdapterExtras;
  */
 public class AdMobInterstitial implements MediatedInterstitialAdView {
     private InterstitialAd iad;
+    private AdMobAdListener adListener;
 
     @Override
     public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid, TargetingParameters targetingParameters) {
-        printToClog(String.format("requesting an ad: [%s, %s]", parameter, uid), false);
+        adListener = new AdMobAdListener(mIC, super.getClass().getSimpleName());
+        adListener.printToClog(String.format("requesting an ad: [%s, %s]", parameter, uid));
 
         iad = new InterstitialAd(activity, uid);
 
@@ -68,37 +69,29 @@ public class AdMobInterstitial implements MediatedInterstitialAdView {
         if (targetingParameters.getLocation() != null) {
             ar.setLocation(targetingParameters.getLocation());
         }
-        iad.setAdListener(new AdMobAdListener(mIC, this.getClass()));
+        iad.setAdListener(adListener);
 
         iad.loadAd(ar);
     }
 
     @Override
     public void show() {
-        printToClog("show called", false);
+        adListener.printToClog("show called");
         if (iad == null) {
-            printToClog("show called while interstitial ad view was null", true);
+            adListener.printToClogError("show called while interstitial ad view was null");
             return;
         }
         if (!iad.isReady()) {
-            printToClog("show called while interstitial ad view was not ready", true);
+            adListener.printToClogError("show called while interstitial ad view was not ready");
             return;
         }
 
         iad.show();
-        printToClog("interstitial ad shown", false);
+        adListener.printToClog("interstitial ad shown");
     }
 
     @Override
     public boolean isReady() {
         return (iad != null) && (iad.isReady());
-    }
-
-    private void printToClog(String s, boolean isError) {
-        if (isError) {
-            Clog.e(Clog.mediationLogTag, super.getClass().getSimpleName() + " - " + s);
-        } else {
-            Clog.d(Clog.mediationLogTag, super.getClass().getSimpleName() + " - " + s);
-        }
     }
 }

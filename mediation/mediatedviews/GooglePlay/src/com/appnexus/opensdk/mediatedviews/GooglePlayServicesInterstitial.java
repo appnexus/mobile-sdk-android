@@ -22,7 +22,6 @@ import android.util.Pair;
 import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
-import com.appnexus.opensdk.utils.Clog;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.mediation.admob.AdMobExtras;
@@ -38,33 +37,35 @@ import com.google.android.gms.ads.mediation.admob.AdMobExtras;
  */
 public class GooglePlayServicesInterstitial implements MediatedInterstitialAdView {
     private InterstitialAd interstitialAd;
+    private GooglePlayAdListener adListener;
 
     @Override
     public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity,
                           String parameter, String adUnitId, TargetingParameters targetingParameters) {
-        printToClog(String.format(" - requesting an ad: [%s, %s]", parameter, adUnitId), false);
+        adListener = new GooglePlayAdListener(mIC, super.getClass().getSimpleName());
+        adListener.printToClog(String.format(" - requesting an ad: [%s, %s]", parameter, adUnitId));
 
         interstitialAd = new InterstitialAd(activity);
         interstitialAd.setAdUnitId(adUnitId);
-        interstitialAd.setAdListener(new GooglePlayAdListener(mIC, super.getClass()));
+        interstitialAd.setAdListener(adListener);
 
         interstitialAd.loadAd(buildRequest(targetingParameters));
     }
 
     @Override
     public void show() {
-        printToClog("show called", false);
+        adListener.printToClog("show called");
         if (interstitialAd == null) {
-            printToClog("show called while interstitial ad view was null", true);
+            adListener.printToClogError("show called while interstitial ad view was null");
             return;
         }
         if (!interstitialAd.isLoaded()) {
-            printToClog("show called while interstitial ad view was not ready", true);
+            adListener.printToClogError("show called while interstitial ad view was not ready");
             return;
         }
 
         interstitialAd.show();
-        printToClog("interstitial ad shown", false);
+        adListener.printToClog("interstitial ad shown");
     }
 
     @Override
@@ -102,13 +103,5 @@ public class GooglePlayServicesInterstitial implements MediatedInterstitialAdVie
         builder.addNetworkExtras(new AdMobExtras(bundle));
 
         return builder.build();
-    }
-
-    private void printToClog(String s, boolean isError) {
-        if (isError) {
-            Clog.e(Clog.mediationLogTag, super.getClass().getSimpleName() + " - " + s);
-        } else {
-            Clog.d(Clog.mediationLogTag, super.getClass().getSimpleName() + " - " + s);
-        }
     }
 }

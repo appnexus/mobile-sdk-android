@@ -25,7 +25,6 @@ import android.view.ViewGroup;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
-import com.appnexus.opensdk.utils.Clog;
 import com.millennialmedia.android.MMAdView;
 import com.millennialmedia.android.MMRequest;
 import com.millennialmedia.android.MMSDK;
@@ -43,10 +42,12 @@ import java.util.HashMap;
  *
  */
 public class MillennialMediaBanner implements MediatedBannerAdView {
+
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
                           int width, int height, TargetingParameters targetingParameters) {
-        Clog.d(Clog.mediationLogTag, String.format("MillennialMediaBanner - requesting an ad: [%s, %s, %dx%d]", parameter, uid, width, height));
+        MillennialMediaListener mmListener = new MillennialMediaListener(mBC, super.getClass().getSimpleName());
+        mmListener.printToClog(String.format("requesting an ad: [%s, %s, %dx%d]", parameter, uid, width, height));
 
         MMSDK.initialize(activity);
 
@@ -56,7 +57,7 @@ public class MillennialMediaBanner implements MediatedBannerAdView {
         adView.setHeight(height);
 
         DisplayMetrics displayMetrics = activity.getResources().getDisplayMetrics();
-		int wpx = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, width, displayMetrics);
+        int wpx = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, width, displayMetrics);
         int hpx = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, height, displayMetrics);
 
         //Fix the AdView dimensions so we don't show any white padding to the left and right
@@ -93,7 +94,7 @@ public class MillennialMediaBanner implements MediatedBannerAdView {
         mmRequest.setMetaValues(mv);
 
         adView.setMMRequest(mmRequest);
-        adView.setListener(new MillennialMediaListener(mBC, super.getClass().getSimpleName()));
+        adView.setListener(mmListener);
         adView.getAd();
 
         return adView;

@@ -24,6 +24,7 @@ import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
 
 public class NoFillView implements MediatedBannerAdView {
+    public static boolean didDestroy = false;
 
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
@@ -34,6 +35,6 @@ public class NoFillView implements MediatedBannerAdView {
 
     @Override
     public void destroy() {
-
+        didDestroy = true;
     }
 }

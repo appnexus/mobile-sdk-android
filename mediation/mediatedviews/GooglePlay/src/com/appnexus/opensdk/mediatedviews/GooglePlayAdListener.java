@@ -24,11 +24,11 @@ import com.google.android.gms.ads.AdRequest;
 
 public class GooglePlayAdListener extends AdListener {
     MediatedAdViewController mediatedAdViewController;
-    Class clazz;
+    String className;
 
-    public GooglePlayAdListener(MediatedAdViewController mediatedAdViewController, Class clazz) {
+    public GooglePlayAdListener(MediatedAdViewController mediatedAdViewController, String className) {
         this.mediatedAdViewController = mediatedAdViewController;
-        this.clazz = clazz;
+        this.className = className;
     }
 
     @Override
@@ -100,7 +100,11 @@ public class GooglePlayAdListener extends AdListener {
         }
     }
 
-    private void printToClog(String s) {
-        Clog.d(Clog.mediationLogTag, clazz.getSimpleName() + " - " + s);
+    void printToClog(String s) {
+        Clog.d(Clog.mediationLogTag, className + " - " + s);
+    }
+
+    void printToClogError(String s) {
+        Clog.e(Clog.mediationLogTag, className + " - " + s);
     }
 }
