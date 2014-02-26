@@ -37,4 +37,9 @@ public class NoRequestBannerView implements MediatedBannerAdView {
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
         return DummyView.getDummyView(activity);
     }
+
+    @Override
+    public void destroy() {
+
+    }
 }

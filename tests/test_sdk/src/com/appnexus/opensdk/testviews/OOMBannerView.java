@@ -27,4 +27,9 @@ public class OOMBannerView implements MediatedBannerAdView {
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
         throw new OutOfMemoryError("Out of memory!");
     }
+
+    @Override
+    public void destroy() {
+
+    }
 }

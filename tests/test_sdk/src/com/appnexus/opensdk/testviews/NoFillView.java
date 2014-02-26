@@ -31,4 +31,9 @@ public class NoFillView implements MediatedBannerAdView {
         mBC.onAdFailed(MediatedAdViewController.RESULT.UNABLE_TO_FILL);
         return null;
     }
+
+    @Override
+    public void destroy() {
+
+    }
 }

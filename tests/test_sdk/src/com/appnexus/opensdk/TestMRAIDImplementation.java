@@ -99,8 +99,9 @@ public class TestMRAIDImplementation extends BaseRoboTest {
 
     @Test
     public void testMRAIDResizeSuccess() {
-        int width = 10;
-        int height = 10;
+        // set to -1 to get around screen size check
+        int width = -1;
+        int height = -1;
         int offsetX = 5;
         int offsetY = 5;
         String customClosePosition = "top-left";
@@ -109,8 +110,6 @@ public class TestMRAIDImplementation extends BaseRoboTest {
         String mraidCall = String.format("mraid://resize?w=%d&h=%d&offset_x=%d&offset_y=%d&custom_close_position=%s&allow_offscreen=%s",
                 width, height, offsetX, offsetY, customClosePosition, allowOffscreen);
 
-        implementation.screenWidth = 1000;
-        implementation.screenHeight = 1000;
         implementation.dispatch_mraid_call(mraidCall);
 
         assertEquals(mockMRAIDWebView.width, width);

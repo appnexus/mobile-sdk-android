@@ -95,4 +95,12 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
             onAdFailed(errorCode);
         }
     }
+
+    @Override
+    protected void finishController() {
+        if (mAV != null) {
+            ((MediatedBannerAdView) mAV).destroy();
+        }
+        super.finishController();
+    }
 }

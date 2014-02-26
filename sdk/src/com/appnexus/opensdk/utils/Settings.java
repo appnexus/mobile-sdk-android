@@ -26,6 +26,7 @@ public class Settings {
     public String hidmd5 = null;
     public String hidsha1 = null;
     public String carrierName = null;
+    public String aaid = null;
 
     public final String deviceMake = Build.MANUFACTURER;
     public final String deviceModel = Build.MODEL;
@@ -54,7 +55,7 @@ public class Settings {
 
     public final String COOKIE_DOMAIN = "http://mediation.adnxs.com";
     public final String AN_UUID = "uuid2";
-    public /*final*/ String BASE_URL = "http://mediation.adnxs.com/mob?";
+    public String BASE_URL = "http://mediation.adnxs.com/mob?";
     public final String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
 
 
@@ -71,6 +72,10 @@ public class Settings {
 
     private Settings() {
 
+    }
+
+    public static void setAAID(String aaid) {
+        getSettings().aaid = aaid;
     }
 
 }

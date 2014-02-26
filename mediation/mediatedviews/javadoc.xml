@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="javadoc">
-    <target name="javadoc">
-        <javadoc access="public" author="false" classpath="../../sdk/bin/appnexussdk.jar:libs/GoogleAdMobAdsSdk-6.4.1.jar:libs/MMSDK-5.1.0-13.08.12.a.jar" destdir="doc" doctitle="AppNexus SDK Mediation adaptor" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="com.appnexus.opensdk.mediatedviews" source="1.6" sourcepath="gen:src" splitindex="true" use="true" version="true"/>
-    </target>
-</project>

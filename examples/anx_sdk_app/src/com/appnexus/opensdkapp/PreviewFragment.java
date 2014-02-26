@@ -104,7 +104,6 @@ public class PreviewFragment extends Fragment {
             bav.setAutoRefreshInterval(settingsWrapper.getRefreshPeriod());
             bav.setAdSize(settingsWrapper.getWidth(),settingsWrapper.getHeight());
 
-
             bav.setShouldServePSAs(settingsWrapper.isAllowPsas());
             bav.setOpensNativeBrowser(!settingsWrapper.isBrowserInApp());
             bav.setPlacementID(settingsWrapper.getPlacementId());
