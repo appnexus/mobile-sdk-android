@@ -88,6 +88,10 @@
 
 	// ----- MRAID JS TO NATIVE FUNCTIONS -----
 
+    mraid.enable=function(){
+        mraid.util.nativeCall("mraid://enable/");
+    };
+
 	//Closes an expanded ad or hides an ad in default state
 	mraid.close=function(){
 		switch(mraid.getState()){

@@ -56,7 +56,8 @@ public class Settings {
 
     public final String COOKIE_DOMAIN = "http://mediation.adnxs.com";
     public final String AN_UUID = "uuid2";
-    public String BASE_URL = "http://mediation.adnxs.com/mob?";
+    public final String BASE_URL = "http://mediation.adnxs.com/";
+    public final String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
     public final String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
 
 

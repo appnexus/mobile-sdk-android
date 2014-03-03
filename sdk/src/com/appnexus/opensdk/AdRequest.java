@@ -300,7 +300,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
     String getRequestUrl() {
         StringBuilder sb;
-        sb = new StringBuilder(Settings.getSettings().BASE_URL);
+        sb = new StringBuilder(Settings.getSettings().REQUEST_BASE_URL);
         sb.append("id=");
         if (placementId != null) {
             sb.append(Uri.encode(placementId));
