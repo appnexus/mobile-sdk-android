@@ -33,6 +33,27 @@ import java.lang.ref.WeakReference;
  * onRetrievedID() or onFailedToRetrieveID(), for success/failure respectively,
  * on the UIThread.
  *
+ * Example code usage to put into your Activity class:
+ *
+ * {@code
+ *
+ * private void getAAID() {
+ *      AndroidAdvertisingIDUtil util = new AndroidAdvertisingIDUtil() {
+ *          @Override
+ *          public void onRetrievedID(String androidAdvertisingID, boolean isLimitAdTrackingEnabled) {
+ *              Log.d("OPENSDK-AAID', "Setting aaid: " + androidAdvertisingID + " " + isLimitAdTrackingEnabled);
+ *              Settings.setAAID(androidAdvertisingID, isLimitAdTrackingEnabled);
+ *          }
+ *
+ *          @Override
+ *          public void onFailedToRetrieveID() {
+ *              Log.d("OPENSDK-AAID', "Failed to retrieve aaid");
+ *              Settings.setAAID(null, false);
+ *          }
+ *      };
+ *      util.getID(this);
+ *  }
+ *
  */
 public abstract class AndroidAdvertisingIDUtil {
 
