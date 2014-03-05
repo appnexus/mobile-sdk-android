@@ -383,8 +383,10 @@ class AdWebView extends WebView implements Displayable {
 
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 this.getLayoutParams());
-        default_width = lp.width;
-        default_height = lp.height;
+        if (!implementation.resized) {
+            default_width = lp.width;
+            default_height = lp.height;
+        }
 
         if ((h == -1) && (w == -1)) {
             if (adView != null) {
@@ -483,12 +485,11 @@ class AdWebView extends WebView implements Displayable {
         // fires a viewableChangeEvent with the result
         int viewLocation[] = new int[2];
         this.getLocationOnScreen(viewLocation);
-        this.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
 
         int left = viewLocation[0];
-        int right = viewLocation[0] + this.getMeasuredWidth();
+        int right = viewLocation[0] + this.getWidth();
         int top = viewLocation[1];
-        int bottom = viewLocation[1] + this.getMeasuredHeight();
+        int bottom = viewLocation[1] + this.getHeight();
 
         int[] screenSize = ViewUtil.getScreenSizeAsPixels((Activity) this.getContext());
 
@@ -498,7 +499,7 @@ class AdWebView extends WebView implements Displayable {
         // update current position
         if (implementation != null) {
             implementation.fireViewableChangeEvent();
-            implementation.setCurrentPosition(left, top, this.getMeasuredWidth(), this.getMeasuredHeight());
+            implementation.setCurrentPosition(left, top, this.getWidth(), this.getHeight());
         }
     }
 
