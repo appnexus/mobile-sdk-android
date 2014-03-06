@@ -120,7 +120,7 @@ public class Clog {
     public static String getString(int id, long l) {
         if (clogged || error_context == null)
             return null;
-        return String.format(error_context.getString(id), l);
+        return String.format(error_context.getString(id), (int)l);
     }
 
     public static String getString(int id, String s) {

@@ -183,6 +183,7 @@ public abstract class AdView extends FrameLayout {
 				hide();
 			}
 
+            loadedOffscreen = false;
 			measured = true;
 
 		}

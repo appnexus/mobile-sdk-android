@@ -156,14 +156,15 @@ class MRAIDImplementation {
         }
 
         //Calendar
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH
-                && hasIntent(new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI))) {
-            view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
-            supportsCalendar = true;
-        } else if (hasIntent(new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event"))) {
-            view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
-            supportsCalendar = true;
-            W3CEvent.useMIME = true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            if (hasIntent(new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI))) {
+                view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
+                supportsCalendar = true;
+            } else if (hasIntent(new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event"))) {
+                view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
+                supportsCalendar = true;
+                W3CEvent.useMIME = true;
+            }
         }
 
         //Store Picture only if on API 11 or above
@@ -340,8 +341,11 @@ class MRAIDImplementation {
         } else if (func.equals("open")) {
             open(parameters);
         } else {
+            if (func.equals("enable")) {
+                // suppress error for enable command
+                return;
+            }
             Clog.d(Clog.mraidLogTag, Clog.getString(R.string.unsupported_mraid, func));
-
         }
     }
 

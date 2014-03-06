@@ -1,0 +1,11 @@
+<lint>
+	<issue id="StringFormatInvalid" severity="ignore" />
+	<issue id="UnusedResources" severity="ignore">
+		<ignore path="res/values/errors.xml" />
+		<ignore path="res/values/strings.xml" />
+	</issue>
+	<issue id="Typos" severity="ignore">
+		<ignore path="res/values/errors.xml" />
+		<ignore path="res/values/strings.xml" />
+	</issue>
+</lint>

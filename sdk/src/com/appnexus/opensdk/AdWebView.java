@@ -120,7 +120,8 @@ class AdWebView extends WebView implements Displayable {
                 Gravity.CENTER);
         this.setLayoutParams(resize);
 
-        this.loadDataWithBaseURL(Settings.getSettings().BASE_URL, html, "text/html", "UTF-8", null);
+        String baseUrl = isMRAIDEnabled ? null : Settings.getSettings().BASE_URL;
+        this.loadDataWithBaseURL(baseUrl, html, "text/html", "UTF-8", null);
     }
 
     /**

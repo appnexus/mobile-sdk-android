@@ -17,10 +17,10 @@
 package com.appnexus.opensdkapp;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
-
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.utils.Clog;
 
@@ -140,9 +140,16 @@ public class Prefs {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static HashMap<String, String> getHashMap(Context context, String key){
         HashMap<String, String> return_value = new HashMap<String, String>();
-        HashSet<String> out = (HashSet<String>) getPreferences(context).getStringSet(key, new HashSet<String>());
+        HashSet<String> out;
+        if (Build.VERSION.SDK_INT >= 11) {
+            out = (HashSet<String>) getPreferences(context).getStringSet(key, new HashSet<String>());
+        } else {
+            out = new HashSet<String>();
+        }
+
         for(String s : out){
             String[] split = s.split(":");
             try{
