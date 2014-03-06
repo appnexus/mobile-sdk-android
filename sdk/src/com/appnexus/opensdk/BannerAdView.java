@@ -525,6 +525,7 @@ public class BannerAdView extends AdView {
                 }
             }
             mraid_is_closing = false;
+            loadedOffscreen = false;
 
             if (getChildAt(0) instanceof WebView) {
                 WebView webView = (WebView) getChildAt(0);
