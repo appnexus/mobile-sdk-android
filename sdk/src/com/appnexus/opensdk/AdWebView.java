@@ -165,14 +165,21 @@ class AdWebView extends WebView implements Displayable {
             }
         }
 
+        @SuppressWarnings("deprecation")
         @Override
         public void onLoadResource(WebView view, String url) {
             if (url.startsWith("http")) {
-                if (getHitTestResult() == null) {
+                HitTestResult hitTestResult;
+                try {
+                    hitTestResult = getHitTestResult();
+                    if (hitTestResult == null) {
+                        return;
+                    }
+                } catch (NullPointerException e) {
                     return;
                 }
 
-                switch (getHitTestResult().getType()) {
+                switch (hitTestResult.getType()) {
                     default:
                         break;
                     case HitTestResult.ANCHOR_TYPE:
