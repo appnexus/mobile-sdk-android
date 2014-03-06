@@ -98,7 +98,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
 
     @Override
     protected void finishController() {
-        if (mAV != null) {
+        if (mAV instanceof MediatedBannerAdView) {
             ((MediatedBannerAdView) mAV).destroy();
         }
         super.finishController();

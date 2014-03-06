@@ -16,8 +16,8 @@
  -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.appnexus.opensdkapp"
-          android:versionCode="6"
-          android:versionName="1.11">
+          android:versionCode="7"
+          android:versionName="1.12">
 
     <uses-sdk
             android:minSdkVersion="8"
@@ -59,8 +59,10 @@
 
         <activity android:name="com.appnexus.opensdk.AdActivity"/>
 
-        <activity android:name="com.google.ads.AdActivity"
-                  android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
+        <!--Admob-->
+        <!--<activity android:name="com.google.ads.AdActivity"-->
+                  <!--android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>-->
+
         <activity android:name="com.google.android.gms.ads.AdActivity"
                   android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
         <activity android:name="com.amazon.device.ads.AdActivity"
@@ -70,7 +72,7 @@
                   android:configChanges="keyboardHidden|orientation|keyboard"/>
 
         <meta-data android:name="com.google.android.gms.version"
-                   android:value="4242000"/>
+                   android:value="@integer/google_play_services_version"/>
     </application>
 
 </manifest>
