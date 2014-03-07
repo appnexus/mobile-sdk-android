@@ -182,7 +182,7 @@ class AdResponse {
                                 // we only care about handlers for android
                                 String type = getJSONString(handlerElement, RESPONSE_KEY_TYPE);
                                 if (type != null) {
-                                    type.toLowerCase(Locale.US);
+                                    type = type.toLowerCase(Locale.US);
                                 }
                                 if ((type != null) && type.equals(RESPONSE_VALUE_ANDROID)) {
                                     String className = getJSONString(handlerElement, RESPONSE_KEY_CLASS);

@@ -120,8 +120,7 @@ class AdWebView extends WebView implements Displayable {
                 Gravity.CENTER);
         this.setLayoutParams(resize);
 
-        String baseUrl = isMRAIDEnabled ? null : Settings.getSettings().BASE_URL;
-        this.loadDataWithBaseURL(baseUrl, html, "text/html", "UTF-8", null);
+        this.loadDataWithBaseURL(Settings.getSettings().BASE_URL, html, "text/html", "UTF-8", null);
     }
 
     /**
@@ -157,6 +156,7 @@ class AdWebView extends WebView implements Displayable {
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
             if (!firstPageFinished) {
+                view.loadUrl("javascript:window.mraid.util.pageFinished()");
                 if (isMRAIDEnabled) {
                     implementation.webViewFinishedLoading(AdWebView.this);
                     startCheckViewable();
