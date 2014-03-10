@@ -18,10 +18,7 @@ package com.appnexus.opensdk;
 
 import android.app.Activity;
 import android.os.Looper;
-import com.appnexus.opensdk.testviews.DummyView;
-import com.appnexus.opensdk.testviews.NoRequestBannerView;
-import com.appnexus.opensdk.testviews.SuccessfulBanner;
-import com.appnexus.opensdk.testviews.SuccessfulBanner2;
+import com.appnexus.opensdk.testviews.*;
 import com.appnexus.opensdk.util.Lock;
 import org.junit.After;
 import org.junit.Before;
@@ -74,6 +71,7 @@ public abstract class BaseRoboTest implements AdListener {
         SuccessfulBanner.didPass = false;
         SuccessfulBanner2.didPass = false;
         NoRequestBannerView.didInstantiate = false;
+        NoFillView.didDestroy = false;
         DummyView.dummyView = null;
         System.out.println("Base setup complete.");
     }

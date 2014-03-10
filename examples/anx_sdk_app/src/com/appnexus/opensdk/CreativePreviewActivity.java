@@ -32,6 +32,7 @@ import android.widget.LinearLayout;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
+import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdkapp.R;
 
 import java.net.URLDecoder;
@@ -41,6 +42,7 @@ public class CreativePreviewActivity extends Activity {
     private String adType, url;
     int width, height;
 
+    LinearLayout adFrame;
     AdView adView;
 
     private AlertDialog errorDialog;
@@ -70,7 +72,7 @@ public class CreativePreviewActivity extends Activity {
 
         setContentView(R.layout.activity_creativepreview);
 
-        LinearLayout adFrame = (LinearLayout) findViewById(R.id.creativepreview_adframe);
+        adFrame = (LinearLayout) findViewById(R.id.creativepreview_adframe);
         Button reloadButton = (Button) findViewById(R.id.creativepreview_btn_reload);
         reloadButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,16 +80,6 @@ public class CreativePreviewActivity extends Activity {
                 runGetAdContent();
             }
         });
-
-        // default is banner
-        adView = INTERSTITIAL.equals(adType) ? new InterstitialAdView(this) : new BannerAdView(this, 0);
-        adView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
-
-        if (adView instanceof BannerAdView) {
-            adFrame.addView(adView);
-            ((LinearLayout.LayoutParams) adView.getLayoutParams()).gravity = Gravity.CENTER;
-        }
 
         runGetAdContent();
     }
@@ -167,6 +159,21 @@ public class CreativePreviewActivity extends Activity {
             @Override
             protected void onPostExecute(HTTPResponse response) {
                 Clog.d(Clog.baseLogTag, "Opening Creative Preview for: " + url);
+
+                ViewUtil.removeChildFromParent(adView);
+
+                // default is banner
+                adView = INTERSTITIAL.equals(adType)
+                        ? new InterstitialAdView(CreativePreviewActivity.this)
+                        : new BannerAdView(CreativePreviewActivity.this, 0);
+
+                if (adView instanceof BannerAdView) {
+                    adView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT));
+                    ((LinearLayout.LayoutParams) adView.getLayoutParams()).gravity = Gravity.CENTER;
+                    adFrame.addView(adView);
+                }
+
                 adView.loadAdFromHtml(response.getResponseBody(), width, height);
                 if (adView instanceof InterstitialAdView) {
                     ((InterstitialAdView) adView).show();

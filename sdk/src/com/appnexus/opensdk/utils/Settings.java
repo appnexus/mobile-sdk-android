@@ -26,6 +26,8 @@ public class Settings {
     public String hidmd5 = null;
     public String hidsha1 = null;
     public String carrierName = null;
+    public String aaid = null;
+    public boolean limitTrackingEnabled = false;
 
     public final String deviceMake = Build.MANUFACTURER;
     public final String deviceModel = Build.MODEL;
@@ -35,7 +37,7 @@ public class Settings {
     public boolean test_mode = false;
     public String ua = null;
     public boolean first_launch;
-    public final String sdkVersion = "1.11";
+    public final String sdkVersion = "1.12";
 
     public String mcc;
     public String mnc;
@@ -54,7 +56,8 @@ public class Settings {
 
     public final String COOKIE_DOMAIN = "http://mediation.adnxs.com";
     public final String AN_UUID = "uuid2";
-    public /*final*/ String BASE_URL = "http://mediation.adnxs.com/mob?";
+    public final String BASE_URL = "http://mediation.adnxs.com/";
+    public final String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
     public final String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
 
 
@@ -71,6 +74,11 @@ public class Settings {
 
     private Settings() {
 
+    }
+
+    public static void setAAID(String aaid, boolean limitTrackingEnabled) {
+        getSettings().aaid = aaid;
+        getSettings().limitTrackingEnabled = limitTrackingEnabled;
     }
 
 }

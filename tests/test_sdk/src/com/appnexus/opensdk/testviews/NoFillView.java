@@ -24,11 +24,17 @@ import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
 
 public class NoFillView implements MediatedBannerAdView {
+    public static boolean didDestroy = false;
 
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
         // ad request returned nothing!
         mBC.onAdFailed(MediatedAdViewController.RESULT.UNABLE_TO_FILL);
         return null;
+    }
+
+    @Override
+    public void destroy() {
+        didDestroy = true;
     }
 }

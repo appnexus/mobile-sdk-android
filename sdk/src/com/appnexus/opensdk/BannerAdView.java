@@ -108,7 +108,6 @@ public class BannerAdView extends AdView {
      */
     public BannerAdView(Context context) {
         super(context);
-        setup(context, null);
     }
 
     /**
@@ -122,7 +121,6 @@ public class BannerAdView extends AdView {
      */
     public BannerAdView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setup(context, attrs);
     }
 
     /**
@@ -143,7 +141,6 @@ public class BannerAdView extends AdView {
      */
     public BannerAdView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        setup(context, attrs);
     }
 
     /**
@@ -521,11 +518,14 @@ public class BannerAdView extends AdView {
             if(loadAdHasBeenCalled || shouldReloadOnResume || auto_refresh){
 
                 //If we're MRAID mraid_is_closing or expanding, don't load.
-                if (!mraid_is_closing && !mraid_changing_size_or_visibility && !isMRAIDExpanded() && mAdFetcher != null){
+                if (!mraid_is_closing && !mraid_changing_size_or_visibility
+                        && !isMRAIDExpanded() && (mAdFetcher != null)
+                        && !loadedOffscreen) {
                     start();
                 }
             }
             mraid_is_closing = false;
+            loadedOffscreen = false;
 
             if (getChildAt(0) instanceof WebView) {
                 WebView webView = (WebView) getChildAt(0);

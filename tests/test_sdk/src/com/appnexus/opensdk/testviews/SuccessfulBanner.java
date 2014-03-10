@@ -33,4 +33,9 @@ public class SuccessfulBanner implements MediatedBannerAdView {
 
         return DummyView.getDummyView(activity);
     }
+
+    @Override
+    public void destroy() {
+
+    }
 }

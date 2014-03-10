@@ -120,4 +120,6 @@
 	<string formatted="false" name="mediation_timeout">Mediation network timed out.</string>
 	<string formatted="false" name="fullscreen_video_show_error">Error showing custom fullscreen view</string>
 	<string formatted="false" name="fullscreen_video_hide_error">Error hiding custom fullscreen view</string>
+	<string formatted="false" name="adactivity_missing">com.appneus.opensdk.AdActivity was not detected in AndroidManifest.xml!</string>
+	<string formatted="false" name="adactivity_no_type">AdActivity launched with no type.</string>
 </resources>

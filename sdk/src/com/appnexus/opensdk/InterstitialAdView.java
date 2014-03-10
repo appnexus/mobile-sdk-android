@@ -304,7 +304,7 @@ public class InterstitialAdView extends AdView {
                 getContext().startActivity(i);
             } catch (ActivityNotFoundException e) {
                 INTERSTITIALADVIEW_TO_USE = null;
-                Clog.e(Clog.baseLogTag, "Did you insert com.appneus.opensdk.AdActivity into AndroidManifest.xml ?");
+                Clog.e(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing));
             }
 
             return adQueue.size() - 1; // Return the number of ads remaining, less the one we're about to show

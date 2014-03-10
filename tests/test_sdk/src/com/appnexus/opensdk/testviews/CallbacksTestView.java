@@ -110,4 +110,9 @@ public class CallbacksTestView implements MediatedBannerAdView {
 
         return DummyView.getDummyView(activity);
     }
+
+    @Override
+    public void destroy() {
+
+    }
 }

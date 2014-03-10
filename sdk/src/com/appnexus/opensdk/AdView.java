@@ -183,11 +183,21 @@ public abstract class AdView extends FrameLayout {
 				hide();
 			}
 
+            loadedOffscreen = false;
 			measured = true;
 
 		}
 	}
 
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (lastDisplayable != null) {
+            lastDisplayable.destroy();
+            ViewUtil.removeChildFromParent(lastDisplayable.getView());
+        }
+        lastDisplayable = null;
+    }
 
     boolean isMRAIDExpanded() {
         return isMRAIDExpanded;
@@ -251,8 +261,8 @@ public abstract class AdView extends FrameLayout {
 	}
 
     protected void loadAdFromHtml(String html, int width, int height) {
-        // load all ads in MRAIDWebViews
-        MRAIDWebView output = new MRAIDWebView(this);
+        // load an ad directly from html
+        AdWebView output = new AdWebView(this);
         AdResponse response = new AdResponse(html, width, height);
         output.loadAd(response);
         display(output);
@@ -355,7 +365,7 @@ public abstract class AdView extends FrameLayout {
     ImageButton close_button;
     static FrameLayout mraidFullscreenContainer;
     static MRAIDImplementation mraidFullscreenImplementation;
-    static MRAIDWebView.MRAIDFullscreenListener mraidFullscreenListener;
+    static AdWebView.MRAIDFullscreenListener mraidFullscreenListener;
 
     protected void close(int w, int h, MRAIDImplementation caller){
         // Remove MRAID close button
@@ -395,7 +405,7 @@ public abstract class AdView extends FrameLayout {
 
     protected void expand(int w, int h, boolean custom_close,
                           final MRAIDImplementation caller,
-                          MRAIDWebView.MRAIDFullscreenListener listener) {
+                          AdWebView.MRAIDFullscreenListener listener) {
         MRAIDChangeSize(w, h);
 
         if (!custom_close) {
@@ -441,7 +451,7 @@ public abstract class AdView extends FrameLayout {
                         AdActivity.ACTIVITY_TYPE_MRAID);
                 getContext().startActivity(i);
             } catch (ActivityNotFoundException e) {
-                Clog.e(Clog.baseLogTag, "Did you insert com.appneus.opensdk.AdActivity into AndroidManifest.xml ?");
+                Clog.e(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing));
                 mraidFullscreenContainer = null;
                 mraidFullscreenImplementation = null;
                 mraidFullscreenListener = null;
@@ -824,6 +834,14 @@ public abstract class AdView extends FrameLayout {
 			}
 		}
 	}
+
+    /**
+     * Clear all custom keywords from the request URL.
+     *
+     */
+    public void clearCustomKeywords(){
+        customKeywords.clear();
+    }
 
     protected TargetingParameters getTargetingParameters(){
         return new TargetingParameters(getAge(), getGender(), getCustomKeywords(), getLocation());

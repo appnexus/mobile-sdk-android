@@ -55,6 +55,8 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     private Context context;
     private String hidmd5;
     private String hidsha1;
+    private String aaid;
+    private boolean limitTrackingEnabled;
     private String devMake;
     private String devModel;
     private String carrier; // The carrier to pass, such as 'AT&T'
@@ -205,6 +207,8 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         // Get devMake, devModel, the Make and Model of the current device
         devMake = Settings.getSettings().deviceMake;
         devModel = Settings.getSettings().deviceModel;
+        aaid = Settings.getSettings().aaid;
+        limitTrackingEnabled = Settings.getSettings().limitTrackingEnabled;
         // Get carrier
         if (Settings.getSettings().carrierName == null) {
             Settings.getSettings().carrierName = ((TelephonyManager) context
@@ -296,7 +300,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
     String getRequestUrl() {
         StringBuilder sb;
-        sb = new StringBuilder(Settings.getSettings().BASE_URL);
+        sb = new StringBuilder(Settings.getSettings().REQUEST_BASE_URL);
         sb.append("id=");
         if (placementId != null) {
             sb.append(Uri.encode(placementId));
@@ -305,6 +309,10 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         }
         if (!StringUtil.isEmpty(hidmd5)) sb.append("&md5udid=").append(Uri.encode(hidmd5));
         if (!StringUtil.isEmpty(hidsha1)) sb.append("&sha1udid=").append(Uri.encode(hidsha1));
+        if (!StringUtil.isEmpty(aaid)) {
+            sb.append("&aaid=").append(Uri.encode(aaid));
+            sb.append(limitTrackingEnabled ? "&dnt=1" : "&dnt=0");
+        }
         if (!StringUtil.isEmpty(devMake)) sb.append("&devmake=").append(Uri.encode(devMake));
         if (!StringUtil.isEmpty(devModel)) sb.append("&devmodel=").append(Uri.encode(devModel));
         if (!StringUtil.isEmpty(carrier)) sb.append("&carrier=").append(Uri.encode(carrier));

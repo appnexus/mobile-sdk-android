@@ -26,7 +26,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
-import android.net.http.SslError;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.CalendarContract;
@@ -35,8 +34,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.webkit.*;
-import android.widget.Toast;
+import android.webkit.WebView;
 import com.appnexus.opensdk.utils.*;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -46,7 +44,7 @@ import java.util.ArrayList;
 
 @SuppressLint("InlinedApi")
 class MRAIDImplementation {
-    protected final MRAIDWebView owner;
+    protected final AdWebView owner;
     private boolean readyFired = false;
     boolean expanded = false;
     boolean resized = false;
@@ -60,7 +58,7 @@ class MRAIDImplementation {
     boolean isViewable;
     private int[] position = new int[4];
 
-    public MRAIDImplementation(MRAIDWebView owner) {
+    public MRAIDImplementation(AdWebView owner) {
         this.owner = owner;
     }
 
@@ -97,198 +95,95 @@ class MRAIDImplementation {
         return null;
     }
 
-    protected void onReceivedError(WebView view, int errorCode, String desc,
-                                   String failingUrl) {
-        Clog.w(Clog.mraidLogTag, Clog.getString(
-                R.string.webview_received_error, errorCode, desc, failingUrl));
+    void webViewFinishedLoading(WebView view) {
+        // Fire the ready event only once
+        if (!readyFired) {
+            String adType = owner.adView.isBanner() ? "inline" : "interstitial";
+            view.loadUrl("javascript:window.mraid.util.setPlacementType('"
+                    + adType + "')");
+
+            setSupportsValues(view);
+            setScreenSize();
+            setMaxSize();
+            setDefaultPosition();
+
+            view.loadUrl("javascript:window.mraid.util.stateChangeEvent('default')");
+            view.loadUrl("javascript:window.mraid.util.readyEvent();");
+
+            // Store width and height for close()
+            default_width = owner.getLayoutParams().width;
+            default_height = owner.getLayoutParams().height;
+
+            readyFired = true;
+            onViewableChange(owner.isViewable());
+            orientationBroadcastReceiver.register(MRAIDImplementation.this);
+        }
     }
 
-    WebViewClient getWebViewClient() {
-        return new WebViewClient() {
+    private void setDefaultPosition() {
+        if (!readyFired) return;
 
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (!url.startsWith("mraid:") && !url.startsWith("javascript:")) {
-                    Intent intent;
-                    if (url.startsWith("sms:") || url.startsWith("tel:") || owner.owner.getOpensNativeBrowser()) {
-                        intent = new Intent(Intent.ACTION_VIEW,
-                                Uri.parse(url));
-                        try {
-                            owner.getContext().startActivity(intent);
-                            //Call onAdClicked
-                            owner.owner.getAdDispatcher().onAdClicked();
-                        } catch (Exception e) {
-                            Toast.makeText(owner.getContext(), R.string.action_cant_be_completed, Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        intent = new Intent(owner.getContext(),
-                                AdActivity.class);
-                        intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
-                        intent.putExtra("url", url);
-                        try {
-                            owner.getContext().startActivity(intent);
-                        } catch (ActivityNotFoundException e) {
-                            Clog.w(Clog.mraidLogTag, Clog.getString(R.string.opening_url_failed, url));
-                        }
-                        //Call onAdClicked
-                        owner.owner.getAdDispatcher().onAdClicked();
-                    }
-                    return true;
-                } else if (url.startsWith("mraid://")) {
-                    MRAIDImplementation.this.dispatch_mraid_call(url);
+        Activity a = (Activity) owner.getContext();
 
-                    return true;
-                }
+        int[] location = new int[2];
+        owner.getLocationOnScreen(location);
 
-                // See if any native activities can handle the Url
-                try {
-                    owner.getContext().startActivity(
-                            new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                    //Call onAdClicked
-                    owner.owner.getAdDispatcher().onAdClicked();
+        // current position is relative to max size, so subtract the status bar from y
+        int contentViewTop = a.getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
+        location[1] -= contentViewTop;
 
-                    if (owner.owner instanceof InterstitialAdView) {
-                        ((InterstitialAdView) (owner.owner)).interacted();
-                    }
-                    return true;
-                } catch (ActivityNotFoundException e) {
-                    return false;
-                }
-            }
+        owner.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 
-            @Override
-            public void onReceivedSslError(WebView view,
-                                           SslErrorHandler handler, SslError error) {
-                Clog.e(Clog.httpRespLogTag,
-                        Clog.getString(R.string.webclient_error,
-                                error.getPrimaryError(), error.toString()));
-            }
+        int width = owner.getMeasuredWidth();
+        int height = owner.getMeasuredHeight();
+        int[] size = {width, height};
+        ViewUtil.convertFromPixelsToDP(a, size);
 
-            @Override
-            public void onReceivedError(WebView view, int errorCode,
-                                        String description, String failingURL) {
-                Clog.e(Clog.httpRespLogTag, Clog.getString(
-                        R.string.webclient_error, errorCode, description));
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                // Fire the ready event only once
-                if (!readyFired) {
-                    String adType = owner.owner.isBanner() ? "inline" : "interstitial";
-                    view.loadUrl("javascript:window.mraid.util.setPlacementType('"
-                            + adType + "')");
-
-                    setSupportsValues(view);
-                    setScreenSize();
-                    setMaxSize();
-                    setDefaultPosition();
-
-                    view.loadUrl("javascript:window.mraid.util.stateChangeEvent('default')");
-                    view.loadUrl("javascript:window.mraid.util.readyEvent();");
-
-                    // Store width and height for close()
-                    default_width = owner.getLayoutParams().width;
-                    default_height = owner.getLayoutParams().height;
-
-                    readyFired = true;
-                    MRAIDImplementation.this.onViewableChange(owner.isViewable());
-                    orientationBroadcastReceiver.register(MRAIDImplementation.this);
-                }
-            }
-
-            private void setDefaultPosition() {
-                if (!readyFired) return;
-
-                Activity a = (Activity) owner.getContext();
-
-                int[] location = new int[2];
-                owner.getLocationOnScreen(location);
-
-                // current position is relative to max size, so subtract the status bar from y
-                int contentViewTop = a.getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
-                location[1] -= contentViewTop;
-
-                owner.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-
-                int width = owner.getMeasuredWidth();
-                int height = owner.getMeasuredHeight();
-                int[] size = { width, height };
-                ViewUtil.convertFromPixelsToDP(a, size);
-
-                owner.loadUrl(String.format("javascript:window.mraid.util.setDefaultPosition(%d, %d, %d, %d)",
-                        location[0], location[1], size[0], size[1]));
-            }
-
-            @SuppressLint("NewApi")
-            private void setSupportsValues(WebView view) {
-                //SMS
-                if (hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("sms:5555555555")))) {
-                    view.loadUrl("javascript:window.mraid.util.setSupportsSMS(true)");
-                }
-
-                //Tel
-                if (hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("tel:5555555555")))) {
-                    view.loadUrl("javascript:window.mraid.util.setSupportsTel(true)");
-                }
-
-                //Calendar
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH
-                        && hasIntent(new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI))) {
-                    view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
-                    supportsCalendar = true;
-                } else if (hasIntent(new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event"))) {
-                    view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
-                    supportsCalendar = true;
-                    W3CEvent.useMIME = true;
-                }
-
-                //Store Picture only if on API 11 or above
-                PackageManager pm = owner.getContext().getPackageManager();
-                if (pm.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, owner.getContext().getPackageName()) == PackageManager.PERMISSION_GRANTED) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                        view.loadUrl("javascript:window.mraid.util.setSupportsStorePicture(true)");
-                        supportsPictureAPI = true;
-                    }
-                }
-
-                //Video should always work inline.
-                view.loadUrl("javascript:window.mraid.util.setSupportsInlineVideo(true)");
-
-            }
-
-            boolean hasIntent(Intent i) {
-                PackageManager pm = owner.getContext().getPackageManager();
-                return pm.queryIntentActivities(i, 0).size() > 0;
-            }
-        };
+        owner.loadUrl(String.format("javascript:window.mraid.util.setDefaultPosition(%d, %d, %d, %d)",
+                location[0], location[1], size[0], size[1]));
     }
 
+    @SuppressLint("NewApi")
+    private void setSupportsValues(WebView view) {
+        //SMS
+        if (hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("sms:5555555555")))) {
+            view.loadUrl("javascript:window.mraid.util.setSupportsSMS(true)");
+        }
 
-    WebChromeClient getWebChromeClient() {
-        return new VideoEnabledWebChromeClient(owner.owner) {
-            @Override
-            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                // super.onConsoleMessage(consoleMessage);
-                Clog.w(Clog.mraidLogTag,
-                        Clog.getString(R.string.console_message,
-                                consoleMessage.message(),
-                                consoleMessage.lineNumber(),
-                                consoleMessage.sourceId()));
-                return true;
+        //Tel
+        if (hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("tel:5555555555")))) {
+            view.loadUrl("javascript:window.mraid.util.setSupportsTel(true)");
+        }
+
+        //Calendar
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            if (hasIntent(new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI))) {
+                view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
+                supportsCalendar = true;
+            } else if (hasIntent(new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event"))) {
+                view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
+                supportsCalendar = true;
+                W3CEvent.useMIME = true;
             }
+        }
 
-            @Override
-            public boolean onJsAlert(WebView view, String url, String message,
-                                     JsResult result) {
-                // /super.onJsAlert(view, url, message, result);
-                Clog.w(Clog.mraidLogTag,
-                        Clog.getString(R.string.js_alert, message, url));
-                result.confirm();
-                return true;
+        //Store Picture only if on API 11 or above
+        PackageManager pm = owner.getContext().getPackageManager();
+        if (pm.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, owner.getContext().getPackageName()) == PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                view.loadUrl("javascript:window.mraid.util.setSupportsStorePicture(true)");
+                supportsPictureAPI = true;
             }
+        }
 
-        };
+        //Video should always work inline.
+        view.loadUrl("javascript:window.mraid.util.setSupportsInlineVideo(true)");
+
+    }
+
+    boolean hasIntent(Intent i) {
+        PackageManager pm = owner.getContext().getPackageManager();
+        return pm.queryIntentActivities(i, 0).size() > 0;
     }
 
     void onViewableChange(boolean viewable) {
@@ -314,7 +209,7 @@ class MRAIDImplementation {
         int contentViewTop = a.getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
         top -= contentViewTop;
 
-        int[] properties = { left, top, width, height };
+        int[] properties = {left, top, width, height};
 
         // convert properties to DP
         ViewUtil.convertFromPixelsToDP(a, properties);
@@ -340,8 +235,8 @@ class MRAIDImplementation {
             owner.close();
             owner.loadUrl("javascript:window.mraid.util.stateChangeEvent('default');");
 
-            if (owner.owner != null && !owner.owner.isInterstitial()) {
-                owner.owner.getAdDispatcher().onAdCollapsed();
+            if (!owner.adView.isInterstitial()) {
+                owner.adView.getAdDispatcher().onAdCollapsed();
             }
 
             // Allow orientation changes
@@ -398,8 +293,8 @@ class MRAIDImplementation {
         expanded = true;
 
         // Fire the AdListener event
-        if(owner.owner!= null && !this.owner.owner.isInterstitial()){
-            this.owner.owner.getAdDispatcher().onAdExpanded();
+        if (!this.owner.adView.isInterstitial()) {
+            this.owner.adView.getAdDispatcher().onAdExpanded();
         }
     }
 
@@ -425,8 +320,7 @@ class MRAIDImplementation {
                     continue;
                 }
 
-                parameters.add(new BasicNameValuePair(s.split("=")[0], s
-                        .split("=")[1]));
+                parameters.add(new BasicNameValuePair(pair[0], pair[1]));
             }
         }
 
@@ -447,8 +341,11 @@ class MRAIDImplementation {
         } else if (func.equals("open")) {
             open(parameters);
         } else {
+            if (func.equals("enable")) {
+                // suppress error for enable command
+                return;
+            }
             Clog.d(Clog.mraidLogTag, Clog.getString(R.string.unsupported_mraid, func));
-
         }
     }
 
@@ -462,8 +359,7 @@ class MRAIDImplementation {
 
         if (!StringUtil.isEmpty(uri)) {
             this.owner.loadURLInCorrectBrowser(uri);
-            //Call onAdClicked
-            owner.owner.getAdDispatcher().onAdClicked();
+            this.owner.fireAdClicked();
         }
     }
 
@@ -481,7 +377,7 @@ class MRAIDImplementation {
 
         final String uri_final = Uri.decode(uri);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(owner.owner.getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(owner.adView.getContext());
         builder.setTitle(R.string.store_picture_title);
         builder.setMessage(R.string.store_picture_message);
         builder.setPositiveButton(R.string.store_picture_accept, new DialogInterface.OnClickListener() {
@@ -559,8 +455,7 @@ class MRAIDImplementation {
                     }
                 }
 
-                //Call onAdClicked
-                owner.owner.getAdDispatcher().onAdClicked();
+                owner.fireAdClicked();
             }
         });
 
@@ -597,8 +492,7 @@ class MRAIDImplementation {
         }
         try {
             owner.getContext().startActivity(i);
-            //Call onAdClicked
-            owner.owner.getAdDispatcher().onAdClicked();
+            owner.fireAdClicked();
         } catch (ActivityNotFoundException e) {
             return;
         }
@@ -619,8 +513,7 @@ class MRAIDImplementation {
             try {
                 Intent i = event.getInsertIntent();
                 owner.getContext().startActivity(i);
-                // Call onAdClicked
-                this.owner.owner.getAdDispatcher().onAdClicked();
+                owner.fireAdClicked();
                 Clog.d(Clog.mraidLogTag, Clog.getString(R.string.create_calendar_event));
             } catch (ActivityNotFoundException e) {
 
@@ -718,8 +611,7 @@ class MRAIDImplementation {
         Clog.d(Clog.mraidLogTag, Clog.getString(R.string.resize, w, h, offset_x, offset_y, custom_close_position, allow_offscrean));
         this.owner.resize(w, h, offset_x, offset_y, cp_enum, allow_offscrean);
 
-        //Call onAdClicked
-        this.owner.owner.getAdDispatcher().onAdClicked();
+        owner.fireAdClicked();
 
         this.owner
                 .loadUrl("javascript:window.mraid.util.stateChangeEvent('resized');");

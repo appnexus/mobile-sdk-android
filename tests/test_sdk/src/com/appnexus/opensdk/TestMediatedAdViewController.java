@@ -19,10 +19,7 @@ package com.appnexus.opensdk;
 import android.view.View;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
-import com.appnexus.opensdk.testviews.DummyView;
-import com.appnexus.opensdk.testviews.NoRequestBannerView;
-import com.appnexus.opensdk.testviews.SuccessfulBanner;
-import com.appnexus.opensdk.testviews.SuccessfulBanner2;
+import com.appnexus.opensdk.testviews.*;
 import com.appnexus.opensdk.util.Lock;
 import com.appnexus.opensdk.utils.Settings;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -333,6 +330,30 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         runBasicResultCBTest(SUCCESS, true);
 
         assertTrue(SuccessfulBanner.didPass);
+    }
+
+    // Verify that the destroy() function gets called on a mediatedBanner
+    // when a new banner is being created
+    @Test
+    public void testDestroy() {
+        String[] classNames = {"NoFillView", "SuccessfulBanner2"};
+        String[] resultCBs = {TestResponses.RESULTCB, TestResponses.RESULTCB};
+        Robolectric.addPendingHttpResponse(200, TestResponses.waterfall(classNames, resultCBs));
+        Robolectric.addPendingHttpResponse(200, TestResponses.blank());
+        Robolectric.addPendingHttpResponse(200, TestResponses.blank());
+
+        executeMediationAdRequest();
+        executeResultCBRequest();
+        executeResultCBRequest();
+
+        Lock.pause(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT + 1000);
+
+        assertResultCB(1, UNABLE_TO_FILL);
+        assertResultCB(2, SUCCESS);
+        assertCallbacks(true);
+
+        assertTrue(SuccessfulBanner2.didPass);
+        assertTrue(NoFillView.didDestroy);
     }
 
     @Override

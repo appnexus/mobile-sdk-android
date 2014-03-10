@@ -37,6 +37,8 @@
 	var current_position={};
 	var size_event_width = 0;
 	var size_event_height = 0;
+	var mraid_enable_called=false;
+	var page_finished=false;
 
 	// ----- MRAID AD API FUNCTIONS -----
 
@@ -87,6 +89,16 @@
 	};
 
 	// ----- MRAID JS TO NATIVE FUNCTIONS -----
+
+    mraid.enable=function(){
+        if (mraid_enable_called) {
+            return;
+        }
+        mraid_enable_called = true;
+        if (page_finished) {
+            mraid.util.nativeCall("mraid://enable/");
+        }
+    };
 
 	//Closes an expanded ad or hides an ad in default state
 	mraid.close=function(){
@@ -384,6 +396,13 @@
           	}
         }
 	}
+
+    mraid.util.pageFinished=function(){
+        page_finished=true;
+        if (mraid_enable_called) {
+            mraid.util.nativeCall("mraid://enable/");
+        }
+    }
 
 	var supports_sms = false;
 	var supports_tel = false;

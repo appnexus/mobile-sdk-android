@@ -37,6 +37,7 @@ import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.BannerAdView;
 import com.appnexus.opensdk.InterstitialAdView;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.StringUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
 
@@ -103,10 +104,18 @@ public class PreviewFragment extends Fragment {
             bav.setAutoRefreshInterval(settingsWrapper.getRefreshPeriod());
             bav.setAdSize(settingsWrapper.getWidth(),settingsWrapper.getHeight());
 
-
             bav.setShouldServePSAs(settingsWrapper.isAllowPsas());
             bav.setOpensNativeBrowser(!settingsWrapper.isBrowserInApp());
             bav.setPlacementID(settingsWrapper.getPlacementId());
+            bav.setGender(settingsWrapper.getGender());
+            bav.setAge(settingsWrapper.getAge());
+            bav.clearCustomKeywords();
+            if(!StringUtil.isEmpty(settingsWrapper.getZip()))
+                bav.addCustomKeywords("pcode", settingsWrapper.getZip());
+            for(String key : settingsWrapper.getCustomKeywords().keySet()){
+                bav.addCustomKeywords(key, settingsWrapper.getCustomKeywords().get(key));
+            }
+
             if (!bav.loadAd()) {
                 adListener.onAdRequestFailed(null);
             }
@@ -118,6 +127,14 @@ public class PreviewFragment extends Fragment {
             iav.setShouldServePSAs(settingsWrapper.isAllowPsas());
             iav.setOpensNativeBrowser(!settingsWrapper.isBrowserInApp());
             iav.setPlacementID(settingsWrapper.getPlacementId());
+            iav.setGender(settingsWrapper.getGender());
+            iav.setAge(settingsWrapper.getAge());
+            iav.clearCustomKeywords();
+            if(!StringUtil.isEmpty(settingsWrapper.getZip()))
+                iav.addCustomKeywords("pcode", settingsWrapper.getZip());
+            for(String key : settingsWrapper.getCustomKeywords().keySet()){
+                iav.addCustomKeywords(key, settingsWrapper.getCustomKeywords().get(key));
+            }
 
             int color = DEF_COLOR;
 

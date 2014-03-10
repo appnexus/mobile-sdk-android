@@ -71,7 +71,7 @@ public class AdActivity extends Activity {
         String activityType = getIntent().
                 getStringExtra(INTENT_KEY_ACTIVITY_TYPE);
         if (StringUtil.isEmpty(activityType)) {
-            Clog.e(Clog.baseLogTag, "AdActivity launched with no type");
+            Clog.e(Clog.baseLogTag, Clog.getString(R.string.adactivity_no_type));
             finish();
         } else if (activityType.equals(ACTIVITY_TYPE_INTERSTITIAL)) {
             implementation = new InterstitialAdActivity(this);

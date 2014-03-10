@@ -228,12 +228,6 @@ class AdFetcher implements AdRequester {
                         owner.popMediatedAd(),
                         owner.getAdDispatcher());
             }
-        } else if ((response != null)
-                && response.isMraid()) {
-            // mraid
-            MRAIDWebView output = new MRAIDWebView(owner);
-            output.loadAd(response);
-            owner.getAdDispatcher().onAdLoaded(output);
         } else {
             AdWebView output = new AdWebView(owner);
             output.loadAd(response);

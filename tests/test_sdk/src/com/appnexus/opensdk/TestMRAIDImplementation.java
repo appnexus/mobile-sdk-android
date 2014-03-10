@@ -33,20 +33,20 @@ import static junit.framework.Assert.*;
 @RunWith(RobolectricTestRunner.class)
 public class TestMRAIDImplementation extends BaseRoboTest {
     MRAIDImplementation implementation;
-    MockMRAIDWebView mockMRAIDWebView;
+    MockAdWebView mockAdWebView;
 
     @Override
     public void setup() {
         super.setup();
-        mockMRAIDWebView = new MockMRAIDWebView(bannerAdView);
-        implementation = new MRAIDImplementation(mockMRAIDWebView);
+        mockAdWebView = new MockAdWebView(bannerAdView);
+        implementation = new MRAIDImplementation(mockAdWebView);
         implementation.supportsPictureAPI = true;
         implementation.supportsCalendar = true;
     }
 
     @Test
     public void testInitialization() {
-        assertEquals(implementation.owner, mockMRAIDWebView);
+        assertEquals(implementation.owner, mockAdWebView);
     }
 
     @Test
@@ -54,9 +54,9 @@ public class TestMRAIDImplementation extends BaseRoboTest {
         String uri = "http://www.appnexus.com";
         String mraidCall = String.format("mraid://open?uri=%s", uri);
         implementation.dispatch_mraid_call(mraidCall);
-        assertEquals(mockMRAIDWebView.testString, uri);
+        assertEquals(mockAdWebView.testString, uri);
 
-        MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockMRAIDWebView.owner.getAdDispatcher();
+        MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
         assertTrue(mockAdDispatcher.adClicked);
     }
 
@@ -65,9 +65,9 @@ public class TestMRAIDImplementation extends BaseRoboTest {
         String uri = "";
         String mraidCall = String.format("mraid://open?uri=%s", uri);
         implementation.dispatch_mraid_call(mraidCall);
-        assertEquals(mockMRAIDWebView.testString, "default");
+        assertEquals(mockAdWebView.testString, "default");
 
-        MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockMRAIDWebView.owner.getAdDispatcher();
+        MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
         assertFalse(mockAdDispatcher.adClicked);
     }
 
@@ -84,23 +84,24 @@ public class TestMRAIDImplementation extends BaseRoboTest {
                 width, height, useCustomClose, url, allowOrientationChange, forceOrientation);
         implementation.dispatch_mraid_call(mraidCall);
 
-        assertEquals(mockMRAIDWebView.width, width);
-        assertEquals(mockMRAIDWebView.height, height);
-        assertEquals(mockMRAIDWebView.customClose, false);
-        assertEquals(mockMRAIDWebView.allowOrientationChange, true);
-        assertEquals(mockMRAIDWebView.orientation, AdActivity.OrientationEnum.none);
-        assertEquals(mockMRAIDWebView.testString, url);
+        assertEquals(mockAdWebView.width, width);
+        assertEquals(mockAdWebView.height, height);
+        assertEquals(mockAdWebView.customClose, false);
+        assertEquals(mockAdWebView.allowOrientationChange, true);
+        assertEquals(mockAdWebView.orientation, AdActivity.OrientationEnum.none);
+        assertEquals(mockAdWebView.testString, url);
 
         assertTrue(implementation.expanded);
 
-        MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockMRAIDWebView.owner.getAdDispatcher();
+        MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
         assertTrue(mockAdDispatcher.adExpanded);
     }
 
     @Test
     public void testMRAIDResizeSuccess() {
-        int width = 10;
-        int height = 10;
+        // set to -1 to get around screen size check
+        int width = -1;
+        int height = -1;
         int offsetX = 5;
         int offsetY = 5;
         String customClosePosition = "top-left";
@@ -109,20 +110,18 @@ public class TestMRAIDImplementation extends BaseRoboTest {
         String mraidCall = String.format("mraid://resize?w=%d&h=%d&offset_x=%d&offset_y=%d&custom_close_position=%s&allow_offscreen=%s",
                 width, height, offsetX, offsetY, customClosePosition, allowOffscreen);
 
-        implementation.screenWidth = 1000;
-        implementation.screenHeight = 1000;
         implementation.dispatch_mraid_call(mraidCall);
 
-        assertEquals(mockMRAIDWebView.width, width);
-        assertEquals(mockMRAIDWebView.height, height);
-        assertEquals(mockMRAIDWebView.offsetX, offsetX);
-        assertEquals(mockMRAIDWebView.offsetY, offsetY);
-        assertEquals(mockMRAIDWebView.customClosePosition, MRAIDImplementation.CUSTOM_CLOSE_POSITION.top_left);
-        assertEquals(mockMRAIDWebView.allowOffscreen, true);
+        assertEquals(mockAdWebView.width, width);
+        assertEquals(mockAdWebView.height, height);
+        assertEquals(mockAdWebView.offsetX, offsetX);
+        assertEquals(mockAdWebView.offsetY, offsetY);
+        assertEquals(mockAdWebView.customClosePosition, MRAIDImplementation.CUSTOM_CLOSE_POSITION.top_left);
+        assertEquals(mockAdWebView.allowOffscreen, true);
 
         assertTrue(implementation.resized);
 
-        MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockMRAIDWebView.owner.getAdDispatcher();
+        MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
         assertTrue(mockAdDispatcher.adClicked);
     }
 
@@ -132,7 +131,7 @@ public class TestMRAIDImplementation extends BaseRoboTest {
         String mraidCall = String.format("mraid://close");
         implementation.dispatch_mraid_call(mraidCall);
 
-        assertTrue(mockMRAIDWebView.hidden);
+        assertTrue(mockAdWebView.hidden);
     }
 
     // storePicture: creates popup dialog, cannot test
@@ -144,7 +143,7 @@ public class TestMRAIDImplementation extends BaseRoboTest {
         String mraidCall = String.format("mraid://playVideo?uri=%s", uri);
         implementation.dispatch_mraid_call(mraidCall);
 
-        MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockMRAIDWebView.owner.getAdDispatcher();
+        MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
         assertTrue(mockAdDispatcher.adClicked);
     }
 
@@ -154,7 +153,7 @@ public class TestMRAIDImplementation extends BaseRoboTest {
         String mraidCall = String.format("mraid://playVideo?uri=%s", uri);
         implementation.dispatch_mraid_call(mraidCall);
 
-        MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockMRAIDWebView.owner.getAdDispatcher();
+        MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
         assertFalse(mockAdDispatcher.adClicked);
     }
 
@@ -164,7 +163,7 @@ public class TestMRAIDImplementation extends BaseRoboTest {
         String mraidCall = String.format("mraid://createCalendarEvent?p=%s", event);
         implementation.dispatch_mraid_call(mraidCall);
 
-        MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockMRAIDWebView.owner.getAdDispatcher();
+        MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
         assertTrue(mockAdDispatcher.adClicked);
     }
 
@@ -174,7 +173,7 @@ public class TestMRAIDImplementation extends BaseRoboTest {
         String mraidCall = String.format("mraid://createCalendarEvent?p=%s", event);
         implementation.dispatch_mraid_call(mraidCall);
 
-        MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockMRAIDWebView.owner.getAdDispatcher();
+        MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
         assertFalse(mockAdDispatcher.adClicked);
     }
 
@@ -189,7 +188,7 @@ public class TestMRAIDImplementation extends BaseRoboTest {
         implementation.dispatch_mraid_call(mraidCall);
     }
 
-    static class MockMRAIDWebView extends MRAIDWebView {
+    static class MockAdWebView extends AdWebView {
         String testString = "default";
         int width, height, offsetX, offsetY;
         boolean customClose, allowOrientationChange, allowOffscreen;
@@ -197,7 +196,7 @@ public class TestMRAIDImplementation extends BaseRoboTest {
         MRAIDImplementation.CUSTOM_CLOSE_POSITION customClosePosition;
         boolean hidden;
 
-        public MockMRAIDWebView(AdView owner) {
+        public MockAdWebView(AdView owner) {
             super(new MockBannerAdView(owner.getContext()));
             this.setLayoutParams(new ViewGroup.LayoutParams(0, 0));
         }

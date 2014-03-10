@@ -165,7 +165,7 @@ public abstract class MediatedAdViewController {
         return false;
     }
 
-    void finishController() {
+    protected void finishController() {
         mAV = null;
         requester = null;
         currentAd = null;

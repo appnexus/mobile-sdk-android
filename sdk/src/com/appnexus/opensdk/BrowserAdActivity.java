@@ -63,8 +63,6 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
         webViewSpaceParent.removeView(webViewSpace);
         webViewSpaceParent.addView(webView, index);
 
-        AdWebView.REDIRECT_WEBVIEW = null;
-
         final ImageButton back = (ImageButton) adActivity.findViewById(R.id.browser_back);
         final ImageButton forward = (ImageButton) adActivity.findViewById(R.id.browser_forward);
         ImageButton openBrowser = (ImageButton) adActivity.findViewById(R.id.open_browser);
@@ -245,7 +243,7 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
 
     @Override
     public void backPressed() {
-        // do nothing
+        AdWebView.REDIRECT_WEBVIEW = null;
     }
 
     @Override
