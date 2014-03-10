@@ -894,6 +894,7 @@ public abstract class AdView extends FrameLayout {
 				@Override
 				public void run() {
 					display(d);
+                    printMediatedClasses();
 					if (adListener != null)
 						adListener.onAdLoaded(AdView.this);
 				}
@@ -909,6 +910,7 @@ public abstract class AdView extends FrameLayout {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
+                    printMediatedClasses();
 					if (adListener != null)
 						adListener.onAdRequestFailed(AdView.this);
 				}
@@ -961,8 +963,26 @@ public abstract class AdView extends FrameLayout {
 		this.mediatedAds = mediatedAds;
 	}
 
-	// returns the first mediated ad if available
-	MediatedAd popMediatedAd() {
-		return mediatedAds != null ? mediatedAds.removeFirst() : null;
-	}
+    // returns the first mediated ad if available
+    MediatedAd popMediatedAd() {
+        if ((mediatedAds != null) && (mediatedAds.getFirst() != null)) {
+            mediatedClasses.add(mediatedAds.getFirst().getClassName());
+            return mediatedAds.removeFirst();
+        }
+        return null;
+    }
+
+    // For logging mediated classes
+    private ArrayList<String> mediatedClasses = new ArrayList<String>();
+
+    private void printMediatedClasses() {
+        if (mediatedClasses.isEmpty()) return;
+
+        StringBuilder sb = new StringBuilder("Mediated Classes: \n");
+        for (int i = mediatedClasses.size(); i > 0; i--) {
+            sb.append(String.format("%d: %s\n", i, mediatedClasses.get(i-1)));
+        }
+        Clog.i(Clog.mediationLogTag, sb.toString());
+        mediatedClasses.clear();
+    }
 }
