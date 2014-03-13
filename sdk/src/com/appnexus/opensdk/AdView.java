@@ -262,6 +262,7 @@ public abstract class AdView extends FrameLayout {
 
     protected void loadAdFromHtml(String html, int width, int height) {
         // load an ad directly from html
+        loadedOffscreen = true;
         AdWebView output = new AdWebView(this);
         AdResponse response = new AdResponse(html, width, height);
         output.loadAd(response);
