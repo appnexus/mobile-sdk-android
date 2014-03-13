@@ -146,41 +146,42 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                 context.getContentResolver(), Secure.ANDROID_ID);
 
         // Do we have access to location?
-        if (context
-                .checkCallingOrSelfPermission("android.permission.ACCESS_FINE_LOCATION") == PackageManager.PERMISSION_GRANTED
-                || context
-                .checkCallingOrSelfPermission("android.permission.ACCESS_COARSE_LOCATION") == PackageManager.PERMISSION_GRANTED) {
-            // Get lat, long from any GPS information that might be currently
-            // available
-            LocationManager lm = (LocationManager) context
-                    .getSystemService(Context.LOCATION_SERVICE);
-            Location lastLocation = null;
-            for (String provider_name : lm.getProviders(true)) {
-                Location l = lm.getLastKnownLocation(provider_name);
-                if (l == null) {
-                    continue;
-                }
+        if (Settings.getSettings().locationEnabled) {
+            if (context.checkCallingOrSelfPermission("android.permission.ACCESS_FINE_LOCATION") == PackageManager.PERMISSION_GRANTED
+                    || context.checkCallingOrSelfPermission("android.permission.ACCESS_COARSE_LOCATION") == PackageManager.PERMISSION_GRANTED) {
+                // Get lat, long from any GPS information that might be currently
+                // available
+                LocationManager lm = (LocationManager) context
+                        .getSystemService(Context.LOCATION_SERVICE);
+                Location lastLocation = null;
+                for (String provider_name : lm.getProviders(true)) {
+                    Location l = lm.getLastKnownLocation(provider_name);
+                    if (l == null) {
+                        continue;
+                    }
 
-                if (lastLocation == null) {
-                    lastLocation = l;
-                } else {
-                    if (l.getTime() > 0 && lastLocation.getTime() > 0) {
-                        if (l.getTime() > lastLocation.getTime()) {
-                            lastLocation = l;
+                    if (lastLocation == null) {
+                        lastLocation = l;
+                    } else {
+                        if (l.getTime() > 0 && lastLocation.getTime() > 0) {
+                            if (l.getTime() > lastLocation.getTime()) {
+                                lastLocation = l;
+                            }
                         }
                     }
                 }
+                if (lastLocation != null) {
+                    lat = "" + lastLocation.getLatitude();
+                    lon = "" + lastLocation.getLongitude();
+                    locDataPrecision = "" + lastLocation.getAccuracy();
+                    locDataAge = "" + (System.currentTimeMillis() - lastLocation.getTime());
+                }
+            } else {
+                Clog.w(Clog.baseLogTag,
+                        Clog.getString(R.string.permissions_missing_location));
             }
-            if (lastLocation != null) {
-                lat = "" + lastLocation.getLatitude();
-                lon = "" + lastLocation.getLongitude();
-                locDataPrecision = "" + lastLocation.getAccuracy();
-                locDataAge = "" + (System.currentTimeMillis() - lastLocation.getTime());
-            }
-        } else {
-            Clog.w(Clog.baseLogTag,
-                    Clog.getString(R.string.permissions_missing_location));
         }
+
 
         // Do we have permission ACCESS_NETWORK_STATE?
         if (context
