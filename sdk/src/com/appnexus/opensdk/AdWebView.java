@@ -414,6 +414,7 @@ class AdWebView extends WebView implements Displayable {
         lp.gravity = Gravity.CENTER;
 
         MRAIDFullscreenListener mraidFullscreenListener = null;
+        // only lock orientation if we're in fullscreen mode
         if (isFullScreen) {
             // if fullscreen, create a listener to lock the activity when it is created
             mraidFullscreenListener = new MRAIDFullscreenListener() {
@@ -427,10 +428,6 @@ class AdWebView extends WebView implements Displayable {
                     }
                 }
             };
-        } else {
-            // otherwise, lock the current activity
-            lockOrientationFromExpand((Activity) this.getContext(),
-                    allowOrientationChange, forceOrientation);
         }
 
         if (adView != null) {
