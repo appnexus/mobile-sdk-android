@@ -491,6 +491,9 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             return;
         }
 
+        // add the orientation extra for interstitial ads
+        result.addToExtras(AdResponse.EXTRAS_KEY_ORIENTATION, orientation);
+
         if (requester != null)
             requester.onReceiveResponse(result);
     }

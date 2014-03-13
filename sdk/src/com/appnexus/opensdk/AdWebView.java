@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.net.http.SslError;
@@ -38,6 +39,8 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 import com.appnexus.opensdk.AdView.BrowserStyle;
 import com.appnexus.opensdk.utils.*;
+
+import java.util.HashMap;
 
 @SuppressLint("ViewConstructor")
 class AdWebView extends WebView implements Displayable {
@@ -57,6 +60,7 @@ class AdWebView extends WebView implements Displayable {
     private boolean isVisible = false;
     private Handler handler = new Handler();
     private boolean viewableCheckPaused = false;
+    private int orientation;
 
     public AdWebView(AdView adView) {
         super(adView.getContext());
@@ -106,9 +110,7 @@ class AdWebView extends WebView implements Displayable {
 
         Clog.v(Clog.baseLogTag, Clog.getString(R.string.webview_loading, html));
 
-        if (ad.isMraid()) {
-            isMRAIDEnabled = true;
-        }
+        parseAdResponseExtras(ad.getExtras());
 
         html = implementation.onPreLoadContent(this, html);
 
@@ -121,6 +123,23 @@ class AdWebView extends WebView implements Displayable {
         this.setLayoutParams(resize);
 
         this.loadDataWithBaseURL(Settings.getSettings().BASE_URL, html, "text/html", "UTF-8", null);
+    }
+
+    private void parseAdResponseExtras(HashMap extras) {
+        if(extras.isEmpty()) {
+            return;
+        }
+
+        if (extras.containsKey(AdResponse.EXTRAS_KEY_MRAID)) {
+            isMRAIDEnabled = (Boolean) extras.get(AdResponse.EXTRAS_KEY_MRAID);
+        }
+
+        if (extras.containsKey(AdResponse.EXTRAS_KEY_ORIENTATION)
+                && extras.get(AdResponse.EXTRAS_KEY_ORIENTATION).equals("h")) {
+            this.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        } else {
+            this.orientation = Configuration.ORIENTATION_PORTRAIT;
+        }
     }
 
     /**
@@ -318,6 +337,12 @@ class AdWebView extends WebView implements Displayable {
 
     private void fail() {
         failed = true;
+    }
+
+    // For interstitial ads
+
+    public int getOrientation() {
+        return orientation;
     }
 
     // Displayable methods

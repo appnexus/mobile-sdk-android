@@ -30,7 +30,7 @@ import com.appnexus.opensdk.utils.ViewUtil;
 
 public class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
     private AdActivity adActivity;
-    private WebView webView;
+    private AdWebView webView;
 
     private FrameLayout layout;
     private long now;
@@ -47,8 +47,7 @@ public class InterstitialAdActivity implements AdActivity.AdActivityImplementati
         layout = new FrameLayout(adActivity);
         adActivity.setContentView(layout);
 
-        AdActivity.lockToCurrentOrientation(adActivity);
-
+        // set 'now' variable to filter expired ads
         now = adActivity.getIntent().getLongExtra(InterstitialAdView.INTENT_KEY_TIME,
                 System.currentTimeMillis());
         setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
@@ -116,7 +115,11 @@ public class InterstitialAdActivity implements AdActivity.AdActivityImplementati
         if ((p == null) || (p.second == null)
                 || !(p.second.getView() instanceof WebView))
             return;
-        webView = (WebView) p.second.getView();
+        webView = (AdWebView) p.second.getView();
+
+        // lock orientation to ad request orientation
+        AdActivity.lockToConfigOrientation(adActivity, webView.getOrientation());
+
         layout.addView(webView);
     }
 

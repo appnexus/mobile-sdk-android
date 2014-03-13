@@ -133,6 +133,10 @@ public class AdActivity extends Activity {
         setOrientation(a, orientation);
     }
 
+    protected static void lockToConfigOrientation(Activity a, int orientation) {
+        setOrientation(a, orientation);
+    }
+
     protected static void unlockOrientation(Activity a) {
         a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
