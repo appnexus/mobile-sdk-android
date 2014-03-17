@@ -52,7 +52,8 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     public void create() {
         adActivity.setContentView(R.layout.activity_in_app_browser);
 
-        if(AdWebView.REDIRECT_WEBVIEW == null){
+        if ((AdWebView.REDIRECT_WEBVIEW == null)
+                || (AdWebView.REDIRECT_WEBVIEW.getSettings() == null)) {
             adActivity.finish();
             return;
         }
@@ -244,15 +245,16 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     @Override
     public void backPressed() {
         AdWebView.REDIRECT_WEBVIEW = null;
-    }
-
-    @Override
-    public void destroy() {
         // clean up webView
         if (webView != null) {
             ViewUtil.removeChildFromParent(webView);
             webView.destroy();
         }
+    }
+
+    @Override
+    public void destroy() {
+        ViewUtil.removeChildFromParent(webView);
     }
 
     @Override
