@@ -319,16 +319,21 @@ class AdWebView extends WebView implements Displayable {
                 @Override
                 public void onPageFinished(WebView view, String url) {
                     Clog.v(Clog.browserLogTag, "Opening URL: " + url);
+                    ViewUtil.removeChildFromParent(fwdWebView);
+
                     if (isOpeningAppStore) {
                         isOpeningAppStore = false;
                         return;
                     }
 
+                    fwdWebView.setVisibility(View.VISIBLE);
                     openInAppBrowser(fwdWebView);
                 }
             });
 
             fwdWebView.loadUrl(url);
+            fwdWebView.setVisibility(View.GONE);
+            adView.addView(fwdWebView);
         } else {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(R.string.opening_native));
