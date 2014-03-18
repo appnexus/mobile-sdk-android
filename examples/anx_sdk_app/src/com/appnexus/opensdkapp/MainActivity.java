@@ -34,6 +34,7 @@ import android.view.*;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import android.widget.TabHost.TabContentFactory;
+import com.amazon.device.ads.AdRegistration;
 import com.appnexus.opensdk.AndroidAdvertisingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ClogListener;
@@ -122,6 +123,9 @@ public class MainActivity extends FragmentActivity implements
         Clog.registerListener(logTabClogListener);
 
         getAAID();
+
+        // for testing Amazon
+        AdRegistration.setAppKey("56474f45464d345646505037394f474b");
     }
 
     @Override
