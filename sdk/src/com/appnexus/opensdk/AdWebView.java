@@ -81,8 +81,6 @@ class AdWebView extends WebView implements Displayable {
         this.getSettings().setLoadsImagesAutomatically(true);
         this.getSettings().setSupportZoom(false);
         this.getSettings().setUseWideViewPort(false);
-        this.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        // this.setInitialScale(100);
 
         setHorizontalScrollbarOverlay(false);
         setHorizontalScrollBarEnabled(false);
@@ -148,6 +146,7 @@ class AdWebView extends WebView implements Displayable {
     private class AdWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            Clog.v(Clog.browserLogTag, "Loading URL: " + url);
             if (url.startsWith("javascript:")) {
                 return false;
             }
@@ -312,12 +311,14 @@ class AdWebView extends WebView implements Displayable {
 
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    Clog.v(Clog.browserLogTag, "Redirecting to URL: " + url);
                     isOpeningAppStore = checkStore(url);
                     return isOpeningAppStore;
                 }
 
                 @Override
                 public void onPageFinished(WebView view, String url) {
+                    Clog.v(Clog.browserLogTag, "Opening URL: " + url);
                     if (isOpeningAppStore) {
                         isOpeningAppStore = false;
                         return;
