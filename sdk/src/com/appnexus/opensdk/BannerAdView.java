@@ -525,7 +525,6 @@ public class BannerAdView extends AdView {
                 }
             }
             mraid_is_closing = false;
-            loadedOffscreen = false;
 
             if (getChildAt(0) instanceof WebView) {
                 WebView webView = (WebView) getChildAt(0);
@@ -610,16 +609,15 @@ public class BannerAdView extends AdView {
             width=display.getWidth();
         }
         float ratio_delta = ((float) width)/((float) adWidth);
-        int new_height = (int)(adHeight*ratio_delta);
+        int new_height = (int)Math.floor(adHeight*ratio_delta);
         oldH = getLayoutParams().height;
         oldW = getLayoutParams().width;
 
         //Adjust width of container
-        if(getLayoutParams().width>0){
-            getLayoutParams().width=(int)(adWidth*ratio_delta);
-        }else if(getLayoutParams().width==ViewGroup.LayoutParams.WRAP_CONTENT){
-            getLayoutParams().width=(int)(adWidth*ratio_delta);
+        if(getLayoutParams().width>0 || getLayoutParams().width==ViewGroup.LayoutParams.WRAP_CONTENT){
+            getLayoutParams().width=width;
         }
+
         //Adjust height of container
         getLayoutParams().height=new_height;
 
@@ -631,7 +629,7 @@ public class BannerAdView extends AdView {
             webview.getLayoutParams().height = FrameLayout.LayoutParams.MATCH_PARENT;
         }
 
-        webview.setInitialScale((int)(ratio_delta*100));
+        webview.setInitialScale((int)Math.ceil(ratio_delta*100));
 
         webview.invalidate();
 

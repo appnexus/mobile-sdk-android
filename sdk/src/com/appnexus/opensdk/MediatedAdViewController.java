@@ -24,6 +24,7 @@ import android.os.Message;
 import com.appnexus.opensdk.utils.*;
 
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 
 /**
  * <p>
@@ -268,7 +269,7 @@ public abstract class MediatedAdViewController {
         }
 
         //fire call to result cb url
-        ResultCBRequest cb = new ResultCBRequest(requester, currentAd.getResultCB(), result);
+        ResultCBRequest cb = new ResultCBRequest(requester, currentAd.getResultCB(), result, currentAd.getExtras());
 
         // Spawn GET call
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -282,11 +283,13 @@ public abstract class MediatedAdViewController {
         final AdRequester requester;
         private final String resultCB;
         final RESULT result;
+        private final HashMap<String, Object> extras;
 
-        private ResultCBRequest(AdRequester requester, String resultCB, RESULT result) {
+        private ResultCBRequest(AdRequester requester, String resultCB, RESULT result, HashMap<String, Object> extras) {
             this.requester = requester;
             this.resultCB = resultCB;
             this.result = result;
+            this.extras = extras;
         }
 
         @Override
@@ -302,6 +305,10 @@ public abstract class MediatedAdViewController {
             AdResponse response = null;
             if ((httpResponse != null) && httpResponse.getSucceeded()) {
                 response = new AdResponse(httpResponse);
+                if (extras.containsKey(AdResponse.EXTRAS_KEY_ORIENTATION)) {
+                    response.addToExtras(AdResponse.EXTRAS_KEY_ORIENTATION,
+                            extras.get(AdResponse.EXTRAS_KEY_ORIENTATION));
+                }
             } else {
                 Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_bad_response));
             }

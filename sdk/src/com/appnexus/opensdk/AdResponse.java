@@ -25,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
 
@@ -34,9 +35,10 @@ class AdResponse {
     private int height;
     private int width;
     private String type;
-    private boolean isMraid = false;
 
     private LinkedList<MediatedAd> mediatedAds;
+
+    private HashMap<String, Object> extras = new HashMap<String, Object>();
 
     private boolean containsAds = false;
 
@@ -59,6 +61,9 @@ class AdResponse {
 
     private static final String RESPONSE_VALUE_ERROR = "error";
     private static final String RESPONSE_VALUE_ANDROID = "android";
+
+    static final String EXTRAS_KEY_MRAID = "MRAID";
+    static final String EXTRAS_KEY_ORIENTATION = "ORIENTATION";
 
     public AdResponse(String body, Header[] headers) {
         if (StringUtil.isEmpty(body)) {
@@ -89,8 +94,6 @@ class AdResponse {
         this.content = content;
         this.width = width;
         this.height = height;
-        // set for MRAIDWebView
-        this.isMraid = true;
     }
 
     private void printHeaders(Header[] headers) {
@@ -156,7 +159,9 @@ class AdResponse {
                         Clog.getString(R.string.blank_ad));
             }
             else {
-                isMraid = content.contains(MRAID_JS_FILENAME);
+                if (content.contains(MRAID_JS_FILENAME)) {
+                    addToExtras(EXTRAS_KEY_MRAID, true);
+                }
                 containsAds = true;
                 return true;
             }
@@ -237,12 +242,16 @@ class AdResponse {
         return containsAds;
     }
 
-    public boolean isMraid() {
-        return isMraid;
-    }
-
     public boolean isHttpError() {
         return isHttpError;
+    }
+
+    public HashMap<String, Object> getExtras() {
+        return extras;
+    }
+
+    public void addToExtras(String key, Object value) {
+        extras.put(key, value);
     }
 
     // also returns null if array is empty

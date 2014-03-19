@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.net.http.SslError;
@@ -31,13 +32,14 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.SslErrorHandler;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 import com.appnexus.opensdk.AdView.BrowserStyle;
 import com.appnexus.opensdk.utils.*;
+
+import java.util.HashMap;
 
 @SuppressLint("ViewConstructor")
 class AdWebView extends WebView implements Displayable {
@@ -57,6 +59,7 @@ class AdWebView extends WebView implements Displayable {
     private boolean isVisible = false;
     private Handler handler = new Handler();
     private boolean viewableCheckPaused = false;
+    private int orientation;
 
     public AdWebView(AdView adView) {
         super(adView.getContext());
@@ -71,14 +74,11 @@ class AdWebView extends WebView implements Displayable {
         Settings.getSettings().ua = this.getSettings().getUserAgentString();
         this.getSettings().setJavaScriptEnabled(true);
         this.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        this.getSettings().setPluginState(WebSettings.PluginState.ON);
         this.getSettings().setBuiltInZoomControls(false);
         this.getSettings().setLightTouchEnabled(false);
         this.getSettings().setLoadsImagesAutomatically(true);
         this.getSettings().setSupportZoom(false);
         this.getSettings().setUseWideViewPort(false);
-        this.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        // this.setInitialScale(100);
 
         setHorizontalScrollbarOverlay(false);
         setHorizontalScrollBarEnabled(false);
@@ -106,9 +106,7 @@ class AdWebView extends WebView implements Displayable {
 
         Clog.v(Clog.baseLogTag, Clog.getString(R.string.webview_loading, html));
 
-        if (ad.isMraid()) {
-            isMRAIDEnabled = true;
-        }
+        parseAdResponseExtras(ad.getExtras());
 
         html = implementation.onPreLoadContent(this, html);
 
@@ -123,12 +121,30 @@ class AdWebView extends WebView implements Displayable {
         this.loadDataWithBaseURL(Settings.getSettings().BASE_URL, html, "text/html", "UTF-8", null);
     }
 
+    private void parseAdResponseExtras(HashMap extras) {
+        if(extras.isEmpty()) {
+            return;
+        }
+
+        if (extras.containsKey(AdResponse.EXTRAS_KEY_MRAID)) {
+            isMRAIDEnabled = (Boolean) extras.get(AdResponse.EXTRAS_KEY_MRAID);
+        }
+
+        if (extras.containsKey(AdResponse.EXTRAS_KEY_ORIENTATION)
+                && extras.get(AdResponse.EXTRAS_KEY_ORIENTATION).equals("h")) {
+            this.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        } else {
+            this.orientation = Configuration.ORIENTATION_PORTRAIT;
+        }
+    }
+
     /**
      * AdWebViewClient for the webview
      */
     private class AdWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            Clog.v(Clog.browserLogTag, "Loading URL: " + url);
             if (url.startsWith("javascript:")) {
                 return false;
             }
@@ -293,22 +309,29 @@ class AdWebView extends WebView implements Displayable {
 
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    Clog.v(Clog.browserLogTag, "Redirecting to URL: " + url);
                     isOpeningAppStore = checkStore(url);
                     return isOpeningAppStore;
                 }
 
                 @Override
                 public void onPageFinished(WebView view, String url) {
+                    Clog.v(Clog.browserLogTag, "Opening URL: " + url);
+                    ViewUtil.removeChildFromParent(fwdWebView);
+
                     if (isOpeningAppStore) {
                         isOpeningAppStore = false;
                         return;
                     }
 
+                    fwdWebView.setVisibility(View.VISIBLE);
                     openInAppBrowser(fwdWebView);
                 }
             });
 
             fwdWebView.loadUrl(url);
+            fwdWebView.setVisibility(View.GONE);
+            adView.addView(fwdWebView);
         } else {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(R.string.opening_native));
@@ -318,6 +341,12 @@ class AdWebView extends WebView implements Displayable {
 
     private void fail() {
         failed = true;
+    }
+
+    // For interstitial ads
+
+    public int getOrientation() {
+        return orientation;
     }
 
     // Displayable methods
@@ -414,6 +443,7 @@ class AdWebView extends WebView implements Displayable {
         lp.gravity = Gravity.CENTER;
 
         MRAIDFullscreenListener mraidFullscreenListener = null;
+        // only lock orientation if we're in fullscreen mode
         if (isFullScreen) {
             // if fullscreen, create a listener to lock the activity when it is created
             mraidFullscreenListener = new MRAIDFullscreenListener() {
@@ -427,10 +457,6 @@ class AdWebView extends WebView implements Displayable {
                     }
                 }
             };
-        } else {
-            // otherwise, lock the current activity
-            lockOrientationFromExpand((Activity) this.getContext(),
-                    allowOrientationChange, forceOrientation);
         }
 
         if (adView != null) {

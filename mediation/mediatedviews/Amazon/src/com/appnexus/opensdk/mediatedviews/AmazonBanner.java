@@ -53,8 +53,6 @@ public class AmazonBanner implements MediatedBannerAdView, AdListener {
      */
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
-        AdRegistration.setAppKey(uid);
-
         AdLayout adView = new AdLayout(activity, new AdSize(width, height));
 
         this.mediatedBannerAdViewController = mBC;

@@ -91,7 +91,9 @@ public class AdActivity extends Activity {
 
     @Override
     protected void onPause() {
-        WebviewUtil.onPause(implementation.getWebView());
+        if (implementation != null) {
+            WebviewUtil.onPause(implementation.getWebView());
+        }
         CookieSyncManager csm = CookieSyncManager.getInstance();
         if (csm != null) csm.stopSync();
         super.onPause();
@@ -99,7 +101,9 @@ public class AdActivity extends Activity {
 
     @Override
     protected void onResume() {
-        WebviewUtil.onResume(implementation.getWebView());
+        if (implementation != null) {
+            WebviewUtil.onResume(implementation.getWebView());
+        }
         CookieSyncManager csm = CookieSyncManager.getInstance();
         if (csm != null) csm.startSync();
         super.onResume();
@@ -107,13 +111,17 @@ public class AdActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        implementation.destroy();
+        if (implementation != null) {
+            implementation.destroy();
+        }
         super.onDestroy();
     }
 
     @Override
     public void onBackPressed() {
-        implementation.backPressed();
+        if (implementation != null) {
+            implementation.backPressed();
+        }
         super.onBackPressed();
     }
 
@@ -123,13 +131,19 @@ public class AdActivity extends Activity {
     }
 
     protected void interacted() {
-        implementation.interacted();
+        if (implementation != null) {
+            implementation.interacted();
+        }
     }
 
     // Static methods for locking orientation
 
     protected static void lockToCurrentOrientation(Activity a) {
         final int orientation = a.getResources().getConfiguration().orientation;
+        setOrientation(a, orientation);
+    }
+
+    protected static void lockToConfigOrientation(Activity a, int orientation) {
         setOrientation(a, orientation);
     }
 

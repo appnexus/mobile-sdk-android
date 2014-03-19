@@ -40,10 +40,11 @@ import java.net.URLDecoder;
 public class CreativePreviewActivity extends Activity {
 
     private String adType, url;
-    int width, height;
+    private int width, height;
 
-    LinearLayout adFrame;
-    AdView adView;
+    private LinearLayout adFrame;
+    private AdView adView;
+    private HTTPGet<Void, Void, HTTPResponse> contentRequest;
 
     private AlertDialog errorDialog;
 
@@ -66,6 +67,12 @@ public class CreativePreviewActivity extends Activity {
         if (errorDialog != null) {
             errorDialog.dismiss();
             errorDialog = null;
+        }
+
+        // override any requests from previous data
+        if (contentRequest != null) {
+            contentRequest.cancel(true);
+            showErrorDialog("Cancelled old data because new data was received.");
         }
 
         if (parseIntentData(intent)) return;
@@ -102,6 +109,9 @@ public class CreativePreviewActivity extends Activity {
         Clog.d(Clog.baseLogTag, "Creative Preview launched with data: " + intent.getDataString());
 
         Uri data = intent.getData();
+        if (data == null) {
+            return true;
+        }
 
         adType = data.getHost();
         String w = data.getQueryParameter("w");
@@ -155,9 +165,12 @@ public class CreativePreviewActivity extends Activity {
     }
 
     private void runGetAdContent() {
-        HTTPGet<Void, Void, HTTPResponse> request = new HTTPGet<Void, Void, HTTPResponse>() {
+        contentRequest = new HTTPGet<Void, Void, HTTPResponse>() {
             @Override
             protected void onPostExecute(HTTPResponse response) {
+                if (this.isCancelled() || (response == null)) {
+                    return;
+                }
                 Clog.d(Clog.baseLogTag, "Opening Creative Preview for: " + url);
 
                 ViewUtil.removeChildFromParent(adView);
@@ -168,9 +181,10 @@ public class CreativePreviewActivity extends Activity {
                         : new BannerAdView(CreativePreviewActivity.this, 0);
 
                 if (adView instanceof BannerAdView) {
-                    adView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT));
-                    ((LinearLayout.LayoutParams) adView.getLayoutParams()).gravity = Gravity.CENTER;
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT);
+                    lp.gravity = Gravity.CENTER;
+                    adView.setLayoutParams(lp);
                     adFrame.addView(adView);
                 }
 
@@ -178,6 +192,8 @@ public class CreativePreviewActivity extends Activity {
                 if (adView instanceof InterstitialAdView) {
                     ((InterstitialAdView) adView).show();
                 }
+
+                contentRequest = null;
             }
 
             @Override
@@ -185,10 +201,11 @@ public class CreativePreviewActivity extends Activity {
                 return url;
             }
         };
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            request.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            contentRequest.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
-            request.execute();
+            contentRequest.execute();
         }
     }
 

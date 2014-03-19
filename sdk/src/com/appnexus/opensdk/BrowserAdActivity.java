@@ -39,8 +39,6 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     private AdActivity adActivity;
     private WebView webView;
 
-    private ProgressBar progressBar;
-
     public BrowserAdActivity(AdActivity adActivity) {
         this.adActivity = adActivity;
     }
@@ -52,7 +50,8 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     public void create() {
         adActivity.setContentView(R.layout.activity_in_app_browser);
 
-        if(AdWebView.REDIRECT_WEBVIEW == null){
+        if ((AdWebView.REDIRECT_WEBVIEW == null)
+                || (AdWebView.REDIRECT_WEBVIEW.getSettings() == null)) {
             adActivity.finish();
             return;
         }
@@ -67,7 +66,7 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
         final ImageButton forward = (ImageButton) adActivity.findViewById(R.id.browser_forward);
         ImageButton openBrowser = (ImageButton) adActivity.findViewById(R.id.open_browser);
         ImageButton refresh = (ImageButton) adActivity.findViewById(R.id.browser_refresh);
-        progressBar = (ProgressBar) adActivity.findViewById(R.id.progress_bar);
+        final ProgressBar progressBar = (ProgressBar) adActivity.findViewById(R.id.progress_bar);
 
         // button settings
         back.setEnabled(false);
@@ -145,12 +144,9 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
         openBrowser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Clog.d(Clog.baseLogTag,
+                Clog.d(Clog.browserLogTag,
                         Clog.getString(R.string.opening_native_current));
-                Intent i = new Intent(Intent.ACTION_VIEW,
-                        Uri.parse(webView.getUrl()));
-                adActivity.startActivity(i);
-                adActivity.finish();
+                openNativeIntent(webView.getUrl());
             }
         });
 
@@ -160,25 +156,16 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
         webView.getSettings().setUseWideViewPort(true);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
-        webView.getSettings().setPluginState(WebSettings.PluginState.ON_DEMAND);
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url.startsWith("http")) {
-                    Clog.d(Clog.baseLogTag,
+                    Clog.d(Clog.browserLogTag,
                             Clog.getString(R.string.opening_url, url));
                     return false;
                 } else {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(url));
-                    try {
-                        adActivity.startActivity(i);
-                        adActivity.finish();
-                    } catch (ActivityNotFoundException e) {
-                        Clog.w(Clog.browserLogTag,
-                                Clog.getString(R.string.opening_url_failed, url));
-                    }
+                    openNativeIntent(url);
                     return true;
                 }
             }
@@ -241,18 +228,30 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
         });
     }
 
-    @Override
-    public void backPressed() {
-        AdWebView.REDIRECT_WEBVIEW = null;
+    private void openNativeIntent(String url) {
+        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        try {
+            adActivity.startActivity(i);
+            adActivity.finish();
+        } catch (ActivityNotFoundException e) {
+            Clog.w(Clog.browserLogTag,
+                    Clog.getString(R.string.opening_url_failed, url));
+        }
     }
 
     @Override
-    public void destroy() {
+    public void backPressed() {
+        AdWebView.REDIRECT_WEBVIEW = null;
         // clean up webView
         if (webView != null) {
             ViewUtil.removeChildFromParent(webView);
             webView.destroy();
         }
+    }
+
+    @Override
+    public void destroy() {
+        ViewUtil.removeChildFromParent(webView);
     }
 
     @Override

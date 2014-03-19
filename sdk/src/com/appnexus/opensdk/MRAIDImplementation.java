@@ -252,9 +252,9 @@ class MRAIDImplementation {
     }
 
     void expand(ArrayList<BasicNameValuePair> parameters) {
-        // Use current height and width as expand defaults
-        int width = owner.getLayoutParams().width;
-        int height = owner.getLayoutParams().height;
+        // Default value is fullscreen.
+        int width = -1;
+        int height = -1;
         boolean useCustomClose = false;
         String uri = null;
         boolean allowOrientationChange = true;

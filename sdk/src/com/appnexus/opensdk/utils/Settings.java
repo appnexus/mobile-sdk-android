@@ -37,12 +37,13 @@ public class Settings {
     public boolean test_mode = false;
     public String ua = null;
     public boolean first_launch;
-    public final String sdkVersion = "1.12";
+    public final String sdkVersion = "1.13";
 
     public String mcc;
     public String mnc;
     public final String dev_timezone = TimeZone.getDefault().getID();
     public final String language = Locale.getDefault().getLanguage();
+    public boolean locationEnabled = true;
 
     public final int HTTP_CONNECTION_TIMEOUT = 15000;
     public final int HTTP_SOCKET_TIMEOUT = 20000;
@@ -60,7 +61,6 @@ public class Settings {
     public final String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
     public final String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
 
-
     // STATICS
     private static Settings settings_instance = null;
 
@@ -76,9 +76,24 @@ public class Settings {
 
     }
 
+    /**
+     * Sets the Android Advertising ID to be passed in the ad request.
+     *
+     * @param aaid the android advertising id value.
+     * @param limitTrackingEnabled whether limitTracking is enabled or not.
+     */
     public static void setAAID(String aaid, boolean limitTrackingEnabled) {
         getSettings().aaid = aaid;
         getSettings().limitTrackingEnabled = limitTrackingEnabled;
     }
 
+    /**
+     * Sets whether or not location (latitude, longitude) is retrieved and
+     * passed in the ad request.
+     *
+     * @param enabled whether to enable location or not. default is true
+     */
+    public static void setLocationEnabled(boolean enabled) {
+        getSettings().locationEnabled = enabled;
+    }
 }
