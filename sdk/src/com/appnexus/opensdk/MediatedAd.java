@@ -16,6 +16,8 @@
 
 package com.appnexus.opensdk;
 
+import java.util.HashMap;
+
 class MediatedAd {
     private String className;
     private String param;
@@ -23,6 +25,7 @@ class MediatedAd {
     private int height;
     private String id;
     private String resultCB;
+    private HashMap<String, Object> extras = new HashMap<String, Object>();
 
     public MediatedAd(String className, String param, int width, int height, String id, String resultCB) {
         this.className = className;
@@ -79,5 +82,13 @@ class MediatedAd {
 
     public void setResultCB(String resultCB) {
         this.resultCB = resultCB;
+    }
+
+    public HashMap<String, Object> getExtras() {
+        return extras;
+    }
+
+    public void setExtras(HashMap<String, Object> extras) {
+        this.extras = extras;
     }
 }
