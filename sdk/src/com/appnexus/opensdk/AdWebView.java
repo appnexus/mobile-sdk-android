@@ -32,7 +32,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.SslErrorHandler;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -75,7 +74,6 @@ class AdWebView extends WebView implements Displayable {
         Settings.getSettings().ua = this.getSettings().getUserAgentString();
         this.getSettings().setJavaScriptEnabled(true);
         this.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        this.getSettings().setPluginState(WebSettings.PluginState.ON);
         this.getSettings().setBuiltInZoomControls(false);
         this.getSettings().setLightTouchEnabled(false);
         this.getSettings().setLoadsImagesAutomatically(true);
