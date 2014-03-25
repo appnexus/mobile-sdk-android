@@ -215,7 +215,7 @@ class AdFetcher implements AdRequester {
 
         if ((owner.getMediatedAds() != null) && !owner.getMediatedAds().isEmpty()) {
             MediatedAd mediatedAd = owner.popMediatedAd();
-            if (mediatedAd != null) {
+            if ((mediatedAd != null) && (response != null)) {
                 mediatedAd.setExtras(response.getExtras());
             }
             // mediated

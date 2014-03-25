@@ -40,10 +40,11 @@ import com.appnexus.opensdk.AdView.BrowserStyle;
 import com.appnexus.opensdk.utils.*;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 
 @SuppressLint("ViewConstructor")
 class AdWebView extends WebView implements Displayable {
-    protected static WebView REDIRECT_WEBVIEW;
+    static LinkedList<WebView> BROWSER_QUEUE = new LinkedList<WebView>();
     private boolean failed = false;
     AdView adView;
 
@@ -271,7 +272,7 @@ class AdWebView extends WebView implements Displayable {
         Intent intent = new Intent(adView.getContext(), AdActivity.class);
         intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
 
-        AdWebView.REDIRECT_WEBVIEW = fwdWebView;
+        AdWebView.BROWSER_QUEUE.add(fwdWebView);
         if (adView.getBrowserStyle() != null) {
             String i = "" + super.hashCode();
             intent.putExtra("bridgeid", i);
@@ -284,7 +285,7 @@ class AdWebView extends WebView implements Displayable {
             AdWebView.this.adView.getContext().startActivity(intent);
         } catch (ActivityNotFoundException e) {
             Clog.w(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing));
-            AdWebView.REDIRECT_WEBVIEW = null;
+            AdWebView.BROWSER_QUEUE.remove();
         }
     }
 

@@ -73,13 +73,13 @@ public class AdActivity extends Activity {
         if (StringUtil.isEmpty(activityType)) {
             Clog.e(Clog.baseLogTag, Clog.getString(R.string.adactivity_no_type));
             finish();
-        } else if (activityType.equals(ACTIVITY_TYPE_INTERSTITIAL)) {
+        } else if (ACTIVITY_TYPE_INTERSTITIAL.equals(activityType)) {
             implementation = new InterstitialAdActivity(this);
             implementation.create();
-        } else if (activityType.equals(ACTIVITY_TYPE_BROWSER)) {
+        } else if (ACTIVITY_TYPE_BROWSER.equals(activityType)) {
             implementation = new BrowserAdActivity(this);
             implementation.create();
-        } else if (activityType.equals(ACTIVITY_TYPE_MRAID)) {
+        } else if (ACTIVITY_TYPE_MRAID.equals(activityType)) {
             implementation = new MRAIDAdActivity(this);
             implementation.create();
         }
