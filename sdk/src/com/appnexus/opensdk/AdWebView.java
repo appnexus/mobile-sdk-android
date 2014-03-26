@@ -185,7 +185,7 @@ class AdWebView extends WebView implements Displayable {
         @SuppressWarnings("deprecation")
         @Override
         public void onLoadResource(WebView view, String url) {
-            if (url.startsWith("http")) {
+            if (Settings.isLoadResourceEnabled() && url.startsWith("http")) {
                 HitTestResult hitTestResult;
                 try {
                     hitTestResult = getHitTestResult();
