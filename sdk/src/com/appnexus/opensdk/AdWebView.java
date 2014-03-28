@@ -303,33 +303,7 @@ class AdWebView extends WebView implements Displayable {
 
             // Otherwise, create an invisible 1x1 webview to load the landing
             // page and detect if we're redirecting to a market url
-            final WebView fwdWebView = new WebView(this.getContext());
-
-            fwdWebView.setWebViewClient(new WebViewClient() {
-                private boolean isOpeningAppStore = false;
-
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    Clog.v(Clog.browserLogTag, "Redirecting to URL: " + url);
-                    isOpeningAppStore = checkStore(url);
-                    return isOpeningAppStore;
-                }
-
-                @Override
-                public void onPageFinished(WebView view, String url) {
-                    Clog.v(Clog.browserLogTag, "Opening URL: " + url);
-                    ViewUtil.removeChildFromParent(fwdWebView);
-
-                    if (isOpeningAppStore) {
-                        isOpeningAppStore = false;
-                        return;
-                    }
-
-                    fwdWebView.setVisibility(View.VISIBLE);
-                    openInAppBrowser(fwdWebView);
-                }
-            });
-
+            final WebView fwdWebView = new RedirectWebView(this.getContext());
             fwdWebView.loadUrl(url);
             fwdWebView.setVisibility(View.GONE);
             adView.addView(fwdWebView);
@@ -603,5 +577,44 @@ class AdWebView extends WebView implements Displayable {
     private void stopCheckViewable() {
         viewableCheckPaused = true;
         handler.removeCallbacks(checkViewableRunnable);
+    }
+
+    private class RedirectWebView extends WebView {
+
+        @SuppressLint("SetJavaScriptEnabled")
+        public RedirectWebView(Context context) {
+            super(context);
+
+            // webView settings
+            this.getSettings().setBuiltInZoomControls(false);
+            this.getSettings().setSupportZoom(true);
+            this.getSettings().setUseWideViewPort(true);
+            this.getSettings().setJavaScriptEnabled(true);
+            this.getSettings().setDomStorageEnabled(true);
+            this.setWebViewClient(new WebViewClient() {
+                private boolean isOpeningAppStore = false;
+
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    Clog.v(Clog.browserLogTag, "Redirecting to URL: " + url);
+                    isOpeningAppStore = checkStore(url);
+                    return isOpeningAppStore;
+                }
+
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    Clog.v(Clog.browserLogTag, "Opening URL: " + url);
+                    ViewUtil.removeChildFromParent(RedirectWebView.this);
+
+                    if (isOpeningAppStore) {
+                        isOpeningAppStore = false;
+                        return;
+                    }
+
+                    RedirectWebView.this.setVisibility(View.VISIBLE);
+                    openInAppBrowser(RedirectWebView.this);
+                }
+            });
+        }
     }
 }

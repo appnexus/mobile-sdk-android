@@ -152,13 +152,6 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
             }
         });
 
-        // webView settings
-        webView.getSettings().setBuiltInZoomControls(false);
-        webView.getSettings().setSupportZoom(true);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setDomStorageEnabled(true);
-
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
