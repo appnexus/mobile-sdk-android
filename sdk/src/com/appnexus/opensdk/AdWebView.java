@@ -216,7 +216,7 @@ class AdWebView extends WebView implements Displayable {
         public void onReceivedError(WebView view, int errorCode,
                                     String description, String failingURL) {
             Clog.w(Clog.httpRespLogTag, Clog.getString(
-                    R.string.webview_received_error, errorCode, description));
+                    R.string.webview_received_error, errorCode, description, failingURL));
         }
 
         @Override
