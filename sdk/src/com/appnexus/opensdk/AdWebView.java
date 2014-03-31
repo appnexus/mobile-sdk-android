@@ -340,9 +340,6 @@ class AdWebView extends WebView implements Displayable {
     public void destroy() {
         super.destroy();
         stopCheckViewable();
-        if (implementation != null) {
-            implementation.destroy();
-        }
     }
 
     // MRAID code
@@ -509,6 +506,8 @@ class AdWebView extends WebView implements Displayable {
         if (implementation != null) {
             implementation.fireViewableChangeEvent();
             implementation.setCurrentPosition(left, top, this.getWidth(), this.getHeight());
+            int orientation = this.getContext().getResources().getConfiguration().orientation;
+            implementation.onOrientationChanged(orientation);
         }
     }
 
