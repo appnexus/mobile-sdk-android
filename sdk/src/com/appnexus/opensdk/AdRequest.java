@@ -369,7 +369,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                                 .append("=")
                                 .append(Uri.encode(pair.second));
                     }else{
-                        Clog.w(Clog.httpReqLogTag, Clog.getString(R.string.request_parameter_override_attempt, pair.second));
+                        Clog.w(Clog.httpReqLogTag, Clog.getString(R.string.request_parameter_override_attempt, pair.first));
                     }
                 }
             }

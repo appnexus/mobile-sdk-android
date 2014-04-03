@@ -40,10 +40,11 @@ import com.appnexus.opensdk.AdView.BrowserStyle;
 import com.appnexus.opensdk.utils.*;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 
 @SuppressLint("ViewConstructor")
 class AdWebView extends WebView implements Displayable {
-    protected static WebView REDIRECT_WEBVIEW;
+    static LinkedList<WebView> BROWSER_QUEUE = new LinkedList<WebView>();
     private boolean failed = false;
     AdView adView;
 
@@ -144,7 +145,7 @@ class AdWebView extends WebView implements Displayable {
     private class AdWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            Clog.v(Clog.browserLogTag, "Loading URL: " + url);
+            Clog.v(Clog.baseLogTag, "Loading URL: " + url);
             if (url.startsWith("javascript:")) {
                 return false;
             }
@@ -191,6 +192,11 @@ class AdWebView extends WebView implements Displayable {
                     if (hitTestResult == null) {
                         return;
                     }
+                    // check that the hitTestResult matches the url
+                    if (hitTestResult.getExtra() == null
+                            || !hitTestResult.getExtra().equals(url)) {
+                        return;
+                    }
                 } catch (NullPointerException e) {
                     return;
                 }
@@ -215,7 +221,7 @@ class AdWebView extends WebView implements Displayable {
         public void onReceivedError(WebView view, int errorCode,
                                     String description, String failingURL) {
             Clog.w(Clog.httpRespLogTag, Clog.getString(
-                    R.string.webview_received_error, errorCode, description));
+                    R.string.webview_received_error, errorCode, description, failingURL));
         }
 
         @Override
@@ -271,7 +277,7 @@ class AdWebView extends WebView implements Displayable {
         Intent intent = new Intent(adView.getContext(), AdActivity.class);
         intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
 
-        AdWebView.REDIRECT_WEBVIEW = fwdWebView;
+        AdWebView.BROWSER_QUEUE.add(fwdWebView);
         if (adView.getBrowserStyle() != null) {
             String i = "" + super.hashCode();
             intent.putExtra("bridgeid", i);
@@ -284,7 +290,7 @@ class AdWebView extends WebView implements Displayable {
             AdWebView.this.adView.getContext().startActivity(intent);
         } catch (ActivityNotFoundException e) {
             Clog.w(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing));
-            AdWebView.REDIRECT_WEBVIEW = null;
+            AdWebView.BROWSER_QUEUE.remove();
         }
     }
 
@@ -302,33 +308,7 @@ class AdWebView extends WebView implements Displayable {
 
             // Otherwise, create an invisible 1x1 webview to load the landing
             // page and detect if we're redirecting to a market url
-            final WebView fwdWebView = new WebView(this.getContext());
-
-            fwdWebView.setWebViewClient(new WebViewClient() {
-                private boolean isOpeningAppStore = false;
-
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    Clog.v(Clog.browserLogTag, "Redirecting to URL: " + url);
-                    isOpeningAppStore = checkStore(url);
-                    return isOpeningAppStore;
-                }
-
-                @Override
-                public void onPageFinished(WebView view, String url) {
-                    Clog.v(Clog.browserLogTag, "Opening URL: " + url);
-                    ViewUtil.removeChildFromParent(fwdWebView);
-
-                    if (isOpeningAppStore) {
-                        isOpeningAppStore = false;
-                        return;
-                    }
-
-                    fwdWebView.setVisibility(View.VISIBLE);
-                    openInAppBrowser(fwdWebView);
-                }
-            });
-
+            final WebView fwdWebView = new RedirectWebView(this.getContext());
             fwdWebView.loadUrl(url);
             fwdWebView.setVisibility(View.GONE);
             adView.addView(fwdWebView);
@@ -365,9 +345,6 @@ class AdWebView extends WebView implements Displayable {
     public void destroy() {
         super.destroy();
         stopCheckViewable();
-        if (implementation != null) {
-            implementation.destroy();
-        }
     }
 
     // MRAID code
@@ -534,6 +511,8 @@ class AdWebView extends WebView implements Displayable {
         if (implementation != null) {
             implementation.fireViewableChangeEvent();
             implementation.setCurrentPosition(left, top, this.getWidth(), this.getHeight());
+            int orientation = this.getContext().getResources().getConfiguration().orientation;
+            implementation.onOrientationChanged(orientation);
         }
     }
 
@@ -602,5 +581,44 @@ class AdWebView extends WebView implements Displayable {
     private void stopCheckViewable() {
         viewableCheckPaused = true;
         handler.removeCallbacks(checkViewableRunnable);
+    }
+
+    private class RedirectWebView extends WebView {
+
+        @SuppressLint("SetJavaScriptEnabled")
+        public RedirectWebView(Context context) {
+            super(context);
+
+            // webView settings
+            this.getSettings().setBuiltInZoomControls(false);
+            this.getSettings().setSupportZoom(true);
+            this.getSettings().setUseWideViewPort(true);
+            this.getSettings().setJavaScriptEnabled(true);
+            this.getSettings().setDomStorageEnabled(true);
+            this.setWebViewClient(new WebViewClient() {
+                private boolean isOpeningAppStore = false;
+
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    Clog.v(Clog.browserLogTag, "Redirecting to URL: " + url);
+                    isOpeningAppStore = checkStore(url);
+                    return isOpeningAppStore;
+                }
+
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    Clog.v(Clog.browserLogTag, "Opening URL: " + url);
+                    ViewUtil.removeChildFromParent(RedirectWebView.this);
+
+                    if (isOpeningAppStore) {
+                        isOpeningAppStore = false;
+                        return;
+                    }
+
+                    RedirectWebView.this.setVisibility(View.VISIBLE);
+                    openInAppBrowser(RedirectWebView.this);
+                }
+            });
+        }
     }
 }

@@ -38,6 +38,7 @@ import com.appnexus.opensdk.utils.ViewUtil;
 public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     private AdActivity adActivity;
     private WebView webView;
+    private boolean shouldDestroyActivity = false;
 
     public BrowserAdActivity(AdActivity adActivity) {
         this.adActivity = adActivity;
@@ -50,16 +51,17 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     public void create() {
         adActivity.setContentView(R.layout.activity_in_app_browser);
 
-        if ((AdWebView.REDIRECT_WEBVIEW == null)
-                || (AdWebView.REDIRECT_WEBVIEW.getSettings() == null)) {
-            adActivity.finish();
+        webView = AdWebView.BROWSER_QUEUE.poll();
+        if ((webView == null) || (webView.getSettings() == null)) {
+            finishAdActivity();
             return;
         }
-        webView = AdWebView.REDIRECT_WEBVIEW;
         WebView webViewSpace = (WebView) adActivity.findViewById(R.id.web_view);
         ViewGroup webViewSpaceParent = ((ViewGroup) webViewSpace.getParent());
         int index = webViewSpaceParent.indexOfChild(webViewSpace);
         webViewSpaceParent.removeView(webViewSpace);
+        // remove from any parents, just in case
+        ViewUtil.removeChildFromParent(webView);
         webViewSpaceParent.addView(webView, index);
 
         final ImageButton back = (ImageButton) adActivity.findViewById(R.id.browser_back);
@@ -150,13 +152,6 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
             }
         });
 
-        // webView settings
-        webView.getSettings().setBuiltInZoomControls(false);
-        webView.getSettings().setSupportZoom(true);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setDomStorageEnabled(true);
-
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -232,7 +227,7 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
         Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         try {
             adActivity.startActivity(i);
-            adActivity.finish();
+            finishAdActivity();
         } catch (ActivityNotFoundException e) {
             Clog.w(Clog.browserLogTag,
                     Clog.getString(R.string.opening_url_failed, url));
@@ -241,17 +236,22 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
 
     @Override
     public void backPressed() {
-        AdWebView.REDIRECT_WEBVIEW = null;
-        // clean up webView
-        if (webView != null) {
-            ViewUtil.removeChildFromParent(webView);
-            webView.destroy();
-        }
+        shouldDestroyActivity = true;
     }
 
     @Override
     public void destroy() {
+        if (webView == null) {
+            return;
+        }
         ViewUtil.removeChildFromParent(webView);
+        if (shouldDestroyActivity) {
+            // clean up webView
+            webView.destroy();
+        } else {
+            // activity is just rotating, push webView to recreate
+            AdWebView.BROWSER_QUEUE.addFirst(webView);
+        }
     }
 
     @Override
@@ -262,5 +262,10 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     @Override
     public WebView getWebView() {
         return webView;
+    }
+
+    private void finishAdActivity() {
+        shouldDestroyActivity = true;
+        adActivity.finish();
     }
 }

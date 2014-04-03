@@ -21,7 +21,10 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
-import android.content.*;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -54,9 +57,9 @@ class MRAIDImplementation {
     boolean supportsCalendar = false;
     private AdActivity fullscreenActivity;
     private ViewGroup defaultContainer;
-    private OrientationBroadcastReceiver orientationBroadcastReceiver = new OrientationBroadcastReceiver();
     boolean isViewable;
     private int[] position = new int[4];
+    private int lastRotation;
 
     public MRAIDImplementation(AdWebView owner) {
         this.owner = owner;
@@ -116,7 +119,6 @@ class MRAIDImplementation {
 
             readyFired = true;
             onViewableChange(owner.isViewable());
-            orientationBroadcastReceiver.register(MRAIDImplementation.this);
         }
     }
 
@@ -650,11 +652,6 @@ class MRAIDImplementation {
         }
     }
 
-    void destroy() {
-        if (orientationBroadcastReceiver != null) orientationBroadcastReceiver.unregister();
-        orientationBroadcastReceiver = null;
-    }
-
     void fireViewableChangeEvent() {
         boolean isCurrentlyViewable = owner.isViewable();
         if (isViewable != isCurrentlyViewable) {
@@ -662,47 +659,11 @@ class MRAIDImplementation {
         }
     }
 
-    private void onOrientationChanged() {
-        setMaxSize();
-        setScreenSize();
-    }
-
-    class OrientationBroadcastReceiver extends BroadcastReceiver {
-        private int lastRotation;
-        private Context context;
-        private MRAIDImplementation implementation;
-        private boolean isRegistered;
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if ((this.context == null) || !(this.context instanceof Activity)) return;
-            String action = intent.getAction();
-            if (action.equals(Intent.ACTION_CONFIGURATION_CHANGED)) {
-                Activity activity = (Activity) context;
-                int orientation = activity.getResources().getConfiguration().orientation;
-                if (orientation != lastRotation) {
-                    lastRotation = orientation;
-                    implementation.onOrientationChanged();
-                }
-            }
-        }
-
-        void register(MRAIDImplementation implementation) {
-            if (isRegistered) return;
-            this.context = implementation.owner.getContext();
-            if (context != null) {
-                isRegistered = true;
-                this.implementation = implementation;
-                context.registerReceiver(this,
-                        new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED));
-            }
-        }
-
-        void unregister() {
-            isRegistered = false;
-            if (context != null) context.unregisterReceiver(this);
-            context = null;
-            implementation = null;
+    void onOrientationChanged(int orientation) {
+        if (lastRotation != orientation) {
+            lastRotation = orientation;
+            setMaxSize();
+            setScreenSize();
         }
     }
 

@@ -37,7 +37,7 @@ public class Settings {
     public boolean test_mode = false;
     public String ua = null;
     public boolean first_launch;
-    public final String sdkVersion = "1.13";
+    public final String sdkVersion = "1.14";
 
     public String mcc;
     public String mnc;

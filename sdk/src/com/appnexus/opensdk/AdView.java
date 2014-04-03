@@ -189,16 +189,6 @@ public abstract class AdView extends FrameLayout {
 		}
 	}
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        if (lastDisplayable != null) {
-            lastDisplayable.destroy();
-            ViewUtil.removeChildFromParent(lastDisplayable.getView());
-        }
-        lastDisplayable = null;
-    }
-
     boolean isMRAIDExpanded() {
         return isMRAIDExpanded;
     }
