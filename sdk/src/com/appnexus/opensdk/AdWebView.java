@@ -145,7 +145,7 @@ class AdWebView extends WebView implements Displayable {
     private class AdWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            Clog.v(Clog.browserLogTag, "Loading URL: " + url);
+            Clog.v(Clog.baseLogTag, "Loading URL: " + url);
             if (url.startsWith("javascript:")) {
                 return false;
             }
@@ -185,11 +185,16 @@ class AdWebView extends WebView implements Displayable {
         @SuppressWarnings("deprecation")
         @Override
         public void onLoadResource(WebView view, String url) {
-            if (Settings.isLoadResourceEnabled() && url.startsWith("http")) {
+            if (url.startsWith("http")) {
                 HitTestResult hitTestResult;
                 try {
                     hitTestResult = getHitTestResult();
                     if (hitTestResult == null) {
+                        return;
+                    }
+                    // check that the hitTestResult matches the url
+                    if (hitTestResult.getExtra() == null
+                            || !hitTestResult.getExtra().equals(url)) {
                         return;
                     }
                 } catch (NullPointerException e) {
