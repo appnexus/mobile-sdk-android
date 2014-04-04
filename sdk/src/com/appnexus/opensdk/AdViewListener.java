@@ -52,4 +52,10 @@ package com.appnexus.opensdk;
      * SDK of an ad being clicked
      */
     public void onAdClicked();
+
+    /**
+     * Called when the ad has sent the app an event via the
+     * AppNexus Javascript API for Mobile
+     */
+    public void onAppEvent(String name, String data);
 }

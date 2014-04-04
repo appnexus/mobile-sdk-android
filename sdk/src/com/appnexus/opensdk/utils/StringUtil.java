@@ -15,6 +15,13 @@
  */
 package com.appnexus.opensdk.utils;
 
+import android.content.res.Resources;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+
 public class StringUtil {
 
 	/**
@@ -25,4 +32,29 @@ public class StringUtil {
 	public static boolean isEmpty(String s) {
 		return s == null || s.length() == 0;
 	}
+
+    // returns true if success, false if exception
+    public static boolean appendRes(StringBuilder sb, Resources res, int resId) {
+        Reader reader = null;
+        try {
+            InputStream inputStream = res.openRawResource(resId);
+            reader = new InputStreamReader(inputStream, "UTF-8");
+
+            char[] buffer = new char[inputStream.available()];
+            reader.read(buffer);
+
+            sb.append(buffer);
+        } catch (IOException e) {
+            return false;
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+
+        return true;
+    }
 }

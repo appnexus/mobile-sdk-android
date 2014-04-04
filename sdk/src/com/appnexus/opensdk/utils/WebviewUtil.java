@@ -15,6 +15,7 @@
  */
 package com.appnexus.opensdk.utils;
 
+import android.annotation.SuppressLint;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
@@ -26,6 +27,23 @@ import java.util.Date;
 import java.util.List;
 
 public class WebviewUtil {
+
+    /**
+     * Convenience method to set generic WebView settings
+     *
+     * @param webView webView to apply settings to
+     */
+    @SuppressLint("SetJavaScriptEnabled")
+    public static void setWebViewSettings(WebView webView) {
+        if (webView == null) {
+            return;
+        }
+        webView.getSettings().setBuiltInZoomControls(false);
+        webView.getSettings().setSupportZoom(true);
+        webView.getSettings().setUseWideViewPort(true);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setDomStorageEnabled(true);
+    }
 
     /**
      * Call WebView onResume in API version safe manner

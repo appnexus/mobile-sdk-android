@@ -57,11 +57,13 @@ public class PreviewFragment extends Fragment {
 
         bav = (BannerAdView) out.findViewById(R.id.banner);
         bav.setAdListener(adListener);
+        bav.setAppEventListener(appEventListener);
 
         bannerText = (TextView) out.findViewById(R.id.bannertext);
 
         iav = new InterstitialAdView(getActivity());
         iav.setAdListener(adListener);
+        iav.setAppEventListener(appEventListener);
 
         pullToRefreshView = (PullToRefreshScrollView) out.findViewById(R.id.pull_to_refresh);
         pullToRefreshView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ScrollView>() {
@@ -151,23 +153,18 @@ public class PreviewFragment extends Fragment {
         }
     }
 
-    private void resetBanner() {
-        if (bav != null) {
-            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) bav.getLayoutParams();
-            adFrame.removeView(bav);
-            if(!bav.getExpandsToFitScreenWidth()){
-                bav = new BannerAdView(getActivity());
-                bav.setAdListener(adListener);
-                bav.setLayoutParams(lp);
-            }else{
-                bav = new BannerAdView(getActivity());
-                bav.setExpandsToFitScreenWidth(true);
-                bav.setAdListener(adListener);
-                bav.setLayoutParams(lp);
-            }
-            adFrame.addView(bav, 0);
+    final private AppEventListener appEventListener = new AppEventListener() {
+        @Override
+        public void onAppEvent(AdView adView, String name, String data) {
+            toast("AppEvent received: " + name + ", " + data);
         }
-    }
+
+        private void toast(String message) {
+            if (getActivity() != null)
+                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+            Clog.d(Constants.BASE_LOG_TAG, message);
+        }
+    };
 
     final private AdListener adListener = new AdListener() {
         @Override
