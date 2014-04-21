@@ -117,6 +117,9 @@
         version="true" >
 	<header><![CDATA[<a target="_blank" href="http://www.appnexus.com">AppNexus</a>]]></header>
 	<footer><![CDATA[<font size="-2">AppNexus SDK</font>]]></footer>
+	<fileset dir="${source.dir}">
+		<filename name="**/Settings.java"/>
+	</fileset>
 </javadoc>
 
     <jar

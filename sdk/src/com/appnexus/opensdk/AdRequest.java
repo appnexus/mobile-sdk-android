@@ -145,15 +145,22 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         String aid = android.provider.Settings.Secure.getString(
                 context.getContentResolver(), Secure.ANDROID_ID);
 
+        Location lastLocation = null;
+        Location appLocation = owner.getLocation();
         // Do we have access to location?
         if (Settings.getSettings().locationEnabled) {
-            if (context.checkCallingOrSelfPermission("android.permission.ACCESS_FINE_LOCATION") == PackageManager.PERMISSION_GRANTED
+
+            // First priority is the app supplied location
+            if (appLocation != null) {
+                lastLocation = appLocation;
+            }
+            else if (context.checkCallingOrSelfPermission("android.permission.ACCESS_FINE_LOCATION") == PackageManager.PERMISSION_GRANTED
                     || context.checkCallingOrSelfPermission("android.permission.ACCESS_COARSE_LOCATION") == PackageManager.PERMISSION_GRANTED) {
                 // Get lat, long from any GPS information that might be currently
                 // available
                 LocationManager lm = (LocationManager) context
                         .getSystemService(Context.LOCATION_SERVICE);
-                Location lastLocation = null;
+
                 for (String provider_name : lm.getProviders(true)) {
                     Location l = lm.getLastKnownLocation(provider_name);
                     if (l == null) {
@@ -170,18 +177,28 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                         }
                     }
                 }
-                if (lastLocation != null) {
-                    lat = "" + lastLocation.getLatitude();
-                    lon = "" + lastLocation.getLongitude();
-                    locDataPrecision = "" + lastLocation.getAccuracy();
-                    locDataAge = "" + (System.currentTimeMillis() - lastLocation.getTime());
-                }
             } else {
                 Clog.w(Clog.baseLogTag,
                         Clog.getString(R.string.permissions_missing_location));
             }
         }
 
+        // Set the location info back to the application
+        if (appLocation != lastLocation) {
+            owner.setLocation(lastLocation);
+        }
+
+        if (lastLocation != null) {
+            lat = "" + lastLocation.getLatitude();
+            lon = "" + lastLocation.getLongitude();
+            locDataPrecision = "" + lastLocation.getAccuracy();
+            locDataAge = "" + (System.currentTimeMillis() - lastLocation.getTime());
+        } else {
+            lat = "";
+            lon = "";
+            locDataAge = "";
+            locDataPrecision = "";
+        }
 
         // Do we have permission ACCESS_NETWORK_STATE?
         if (context

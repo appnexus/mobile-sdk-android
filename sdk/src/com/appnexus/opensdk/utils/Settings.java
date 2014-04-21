@@ -89,11 +89,20 @@ public class Settings {
 
     /**
      * Sets whether or not location (latitude, longitude) is retrieved and
-     * passed in the ad request.
+     * passed in the ad request. This includes whether location is sent to any
+     * 3rd party networks.
      *
      * @param enabled whether to enable location or not. default is true
      */
     public static void setLocationEnabled(boolean enabled) {
         getSettings().locationEnabled = enabled;
+    }
+
+    /**
+     * Returns true if the ad server calls will include location information
+     * or false otherwise. The
+     */
+    public static boolean getLocationEnabled() {
+        return getSettings().locationEnabled;
     }
 }
