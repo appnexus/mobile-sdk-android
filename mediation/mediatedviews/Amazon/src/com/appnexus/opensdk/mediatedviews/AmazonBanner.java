@@ -83,6 +83,8 @@ public class AmazonBanner implements MediatedBannerAdView, AdListener {
             for (Pair<String, String> p : tp.getCustomKeywords()) {
                 targetingOptions.setAdvancedOption(p.first, p.second);
             }
+
+            targetingOptions.enableGeoLocation (tp.getLocation() != null);
         }
 
         //Amazon won't load ads unless layout parameters are set
