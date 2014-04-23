@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk.utils;
 
+import android.location.Location;
 import android.os.Build;
 import com.appnexus.opensdk.R;
 
@@ -43,23 +44,25 @@ public class Settings {
     public String mnc;
     public final String dev_timezone = TimeZone.getDefault().getID();
     public final String language = Locale.getDefault().getLanguage();
+
     public boolean locationEnabled = true;
+    public Location location = null;
 
-    public final int HTTP_CONNECTION_TIMEOUT = 15000;
-    public final int HTTP_SOCKET_TIMEOUT = 20000;
+    public static final int HTTP_CONNECTION_TIMEOUT = 15000;
+    public static final int HTTP_SOCKET_TIMEOUT = 20000;
 
-    public final int FETCH_THREAD_COUNT = 4;
+    public static final int FETCH_THREAD_COUNT = 4;
 
-    public final int MIN_REFRESH_MILLISECONDS = 15000;
-    public final int DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY = 10000;
+    public static final int MIN_REFRESH_MILLISECONDS = 15000;
+    public static final int DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY = 10000;
 
-    public final long MEDIATED_NETWORK_TIMEOUT = 15000;
+    public static final long MEDIATED_NETWORK_TIMEOUT = 15000;
 
-    public final String COOKIE_DOMAIN = "http://mediation.adnxs.com";
-    public final String AN_UUID = "uuid2";
-    public final String BASE_URL = "http://mediation.adnxs.com/";
-    public final String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
-    public final String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
+    public static final String COOKIE_DOMAIN = "http://mediation.adnxs.com";
+    public static final String AN_UUID = "uuid2";
+    public static final String BASE_URL = "http://mediation.adnxs.com/";
+    public static final String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
+    public static final String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
 
     // STATICS
     private static Settings settings_instance = null;
@@ -74,35 +77,5 @@ public class Settings {
 
     private Settings() {
 
-    }
-
-    /**
-     * Sets the Android Advertising ID to be passed in the ad request.
-     *
-     * @param aaid the android advertising id value.
-     * @param limitTrackingEnabled whether limitTracking is enabled or not.
-     */
-    public static void setAAID(String aaid, boolean limitTrackingEnabled) {
-        getSettings().aaid = aaid;
-        getSettings().limitTrackingEnabled = limitTrackingEnabled;
-    }
-
-    /**
-     * Sets whether or not location (latitude, longitude) is retrieved and
-     * passed in the ad request. This includes whether location is sent to any
-     * 3rd party networks.
-     *
-     * @param enabled whether to enable location or not. default is true
-     */
-    public static void setLocationEnabled(boolean enabled) {
-        getSettings().locationEnabled = enabled;
-    }
-
-    /**
-     * Returns true if the ad server calls will include location information
-     * or false otherwise. The
-     */
-    public static boolean getLocationEnabled() {
-        return getSettings().locationEnabled;
     }
 }

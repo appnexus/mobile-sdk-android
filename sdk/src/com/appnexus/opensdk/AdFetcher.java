@@ -95,7 +95,7 @@ class AdFetcher implements AdRequester {
     private void makeTasker() {
         // Start a Scheduler to execute recurring tasks
         tasker = Executors
-                .newScheduledThreadPool(Settings.getSettings().FETCH_THREAD_COUNT);
+                .newScheduledThreadPool(Settings.FETCH_THREAD_COUNT);
 
         // Get the period from the settings
         final int msPeriod = period <= 0 ? 30 * 1000 : period;

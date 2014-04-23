@@ -65,7 +65,7 @@ public class AdActivity extends Activity {
     static final String ACTIVITY_TYPE_MRAID = "MRAID";
 
     @Override
-    public void onCreate(Bundle b) {
+    protected void onCreate(Bundle b) {
         super.onCreate(b);
 
         String activityType = getIntent().

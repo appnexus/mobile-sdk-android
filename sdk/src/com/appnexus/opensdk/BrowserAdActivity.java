@@ -35,7 +35,7 @@ import android.widget.*;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ViewUtil;
 
-public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
+class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     private AdActivity adActivity;
     private WebView webView;
     private boolean shouldDestroyActivity = false;

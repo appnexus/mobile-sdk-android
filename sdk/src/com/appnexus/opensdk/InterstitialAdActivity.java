@@ -28,7 +28,7 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.ViewUtil;
 
-public class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
+class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
     private AdActivity adActivity;
     private AdWebView webView;
 
@@ -55,7 +55,7 @@ public class InterstitialAdActivity implements AdActivity.AdActivityImplementati
         // Add a close button after a delay.
         int closeButtonDelay = adActivity.getIntent().getIntExtra(
                 InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY,
-                Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
+                Settings.DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
 
         Handler closeButtonHandler = new Handler() {
             @Override

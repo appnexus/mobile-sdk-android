@@ -119,7 +119,7 @@ class AdWebView extends WebView implements Displayable {
                 Gravity.CENTER);
         this.setLayoutParams(resize);
 
-        this.loadDataWithBaseURL(Settings.getSettings().BASE_URL, html, "text/html", "UTF-8", null);
+        this.loadDataWithBaseURL(Settings.BASE_URL, html, "text/html", "UTF-8", null);
     }
 
     private void parseAdResponseExtras(HashMap extras) {

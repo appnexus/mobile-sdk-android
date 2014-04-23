@@ -46,7 +46,7 @@ public class InterstitialAdView extends AdView {
     static final long MAX_AGE = 60000;
     private ArrayList<Size> allowedSizes;
     private int backgroundColor = Color.BLACK;
-    private int closeButtonDelay = Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
+    private int closeButtonDelay = Settings.DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
     static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
     private Queue<Pair<Long, Displayable>> adQueue = new LinkedList<Pair<Long, Displayable>>();
 
@@ -394,7 +394,7 @@ public class InterstitialAdView extends AdView {
      *                         close button is displayed to the user.
      */
     public void setCloseButtonDelay(int closeButtonDelay) {
-        this.closeButtonDelay = Math.min(closeButtonDelay, Settings.getSettings().DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
+        this.closeButtonDelay = Math.min(closeButtonDelay, Settings.DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
     }
 
     void setAdActivity(AdActivity adActivity) {

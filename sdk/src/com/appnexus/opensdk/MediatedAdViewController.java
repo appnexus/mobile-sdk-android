@@ -334,7 +334,7 @@ public abstract class MediatedAdViewController {
 
     void startTimeout() {
         if (hasSucceeded || hasFailed) return;
-        timeoutHandler.sendEmptyMessageDelayed(0, Settings.getSettings().MEDIATED_NETWORK_TIMEOUT);
+        timeoutHandler.sendEmptyMessageDelayed(0, Settings.MEDIATED_NETWORK_TIMEOUT);
     }
 
     void cancelTimeout() {

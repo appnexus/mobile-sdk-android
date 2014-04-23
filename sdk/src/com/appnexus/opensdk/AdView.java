@@ -458,7 +458,7 @@ public abstract class AdView extends FrameLayout {
 
     int buttonPxSideLength = 0;
 
-    public void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean,
+    void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean,
                        final MRAIDImplementation caller) {
         MRAIDChangeSize(w, h);
 
@@ -743,33 +743,6 @@ public abstract class AdView extends FrameLayout {
 	}
 
     /**
-     * Retrieve the current location reported to the ad server
-     * If the value is null either location has not yet been retrieved
-     * or location reporting has been disabled via
-     * {@link com.appnexus.opensdk.utils.Settings#setLocationEnabled(boolean)}
-     * @return The location used in the last ad call.
-     */
-    public Location getLocation() {
-        return location;
-    }
-
-    /**
-     * Overrides the SDKs automatic location retrieval.
-     * If the passed in location value is not null and location is enabled,
-     * then the passed in location value will be sent to the ad server.
-     * If the location parameter is null then the automatic location retrieval
-     * will be used if and only if {@link com.appnexus.opensdk.utils.Settings#getLocationEnabled()}.
-     * @param location The location value to use in the ad call (may be null)
-     */
-    public void setLocation(Location location) {
-        if (Settings.getLocationEnabled()) {
-            this.location = location;
-        } else {
-            this.location = null;
-        }
-    }
-
-    /**
 	 *
 	 * The user's gender.
 	 *
@@ -858,7 +831,7 @@ public abstract class AdView extends FrameLayout {
      * @return The parameters passed to the 3rd party network
      */
     protected TargetingParameters getTargetingParameters(){
-        return new TargetingParameters(getAge(), getGender(), getCustomKeywords(), getLocation());
+        return new TargetingParameters(getAge(), getGender(), getCustomKeywords(), SDKSettings.getLocation());
     }
 
 	/**
