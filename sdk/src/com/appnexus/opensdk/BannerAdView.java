@@ -274,13 +274,15 @@ public class BannerAdView extends AdView {
         if (webView != null)
             webView.destroy();
 
-        View displayableView = d.getView();
-        this.addView(displayableView);
+        if ((d != null) && (d.getView() != null)) {
+            View displayableView = d.getView();
+            this.addView(displayableView);
 
-        // center the displayable view in AdView
-        ((LayoutParams) displayableView.getLayoutParams()).gravity = Gravity.CENTER;
+            // center the displayable view in AdView
+            ((LayoutParams) displayableView.getLayoutParams()).gravity = Gravity.CENTER;
 
-        unhide();
+            unhide();
+        }
     }
 
     void start() {

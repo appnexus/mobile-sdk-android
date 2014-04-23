@@ -179,7 +179,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                     }
                 }
             } else {
-                Clog.w(Clog.baseLogTag,
+                Clog.w(Clog.httpReqLogTag,
                         Clog.getString(R.string.permissions_missing_location));
             }
         }
@@ -204,7 +204,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         // Do we have permission ACCESS_NETWORK_STATE?
         if (context
                 .checkCallingOrSelfPermission("android.permission.ACCESS_NETWORK_STATE") != PackageManager.PERMISSION_GRANTED) {
-            Clog.e(Clog.baseLogTag,
+            Clog.e(Clog.httpReqLogTag,
                     Clog.getString(R.string.permissions_missing_network_state));
             fail();
             this.cancel(true);
@@ -452,7 +452,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_io));
             return null;
         } catch (SecurityException se) {
-            Clog.e(Clog.baseLogTag,
+            Clog.e(Clog.httpReqLogTag,
                     Clog.getString(R.string.permissions_internet));
             return null;
         } catch (IllegalArgumentException ie) {
@@ -460,12 +460,14 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             return null;
         } catch (Exception e) {
             e.printStackTrace();
-            Clog.e(Clog.baseLogTag, Clog.getString(R.string.unknown_exception));
+            Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.unknown_exception));
             return null;
         }
+
         if (out.equals("")) {
+            // just log and return a valid AdResponse object so that it is
+            // marked as UNABLE_TO_FILL
             Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
-            return null;
         }
         return new AdResponse(out, r.getAllHeaders());
     }

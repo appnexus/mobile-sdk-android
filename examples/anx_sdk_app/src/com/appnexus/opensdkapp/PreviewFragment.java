@@ -32,10 +32,7 @@ import android.widget.FrameLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.appnexus.opensdk.AdListener;
-import com.appnexus.opensdk.AdView;
-import com.appnexus.opensdk.BannerAdView;
-import com.appnexus.opensdk.InterstitialAdView;
+import com.appnexus.opensdk.*;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -117,7 +114,7 @@ public class PreviewFragment extends Fragment {
             }
 
             if (!bav.loadAd()) {
-                adListener.onAdRequestFailed(null);
+                adListener.onAdRequestFailed(null, null);
             }
         } else {
             bav.setAutoRefreshInterval(0);
@@ -149,7 +146,7 @@ public class PreviewFragment extends Fragment {
             }
             iav.setBackgroundColor(color);
             if (!iav.loadAd()) {
-                adListener.onAdRequestFailed(null);
+                adListener.onAdRequestFailed(null, null);
             }
         }
     }
@@ -174,9 +171,13 @@ public class PreviewFragment extends Fragment {
 
     final private AdListener adListener = new AdListener() {
         @Override
-        public void onAdRequestFailed(AdView adView) {
+        public void onAdRequestFailed(AdView adView, ResultCode errorCode) {
             pullToRefreshView.onRefreshComplete();
-            toast("Ad request failed");
+            if (errorCode == null) {
+                toast("Call to loadAd failed");
+            } else {
+                toast("Ad request failed: " + errorCode);
+            }
         }
 
         @Override

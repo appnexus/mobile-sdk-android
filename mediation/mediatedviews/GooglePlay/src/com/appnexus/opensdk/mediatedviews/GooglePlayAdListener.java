@@ -18,6 +18,7 @@ package com.appnexus.opensdk.mediatedviews;
 
 import com.appnexus.opensdk.MediatedAdViewController;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
+import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.utils.Clog;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -47,20 +48,20 @@ public class GooglePlayAdListener extends AdListener {
         super.onAdFailedToLoad(errorCode);
         printToClog("onAdFailedToLoad with error code " + errorCode);
 
-        MediatedAdViewController.RESULT code = MediatedAdViewController.RESULT.INTERNAL_ERROR;
+        ResultCode code = ResultCode.INTERNAL_ERROR;
 
         switch (errorCode) {
             case AdRequest.ERROR_CODE_INTERNAL_ERROR:
-                code = MediatedAdViewController.RESULT.INTERNAL_ERROR;
+                code = ResultCode.INTERNAL_ERROR;
                 break;
             case AdRequest.ERROR_CODE_INVALID_REQUEST:
-                code = MediatedAdViewController.RESULT.INVALID_REQUEST;
+                code = ResultCode.INVALID_REQUEST;
                 break;
             case AdRequest.ERROR_CODE_NETWORK_ERROR:
-                code = MediatedAdViewController.RESULT.NETWORK_ERROR;
+                code = ResultCode.NETWORK_ERROR;
                 break;
             case AdRequest.ERROR_CODE_NO_FILL:
-                code = MediatedAdViewController.RESULT.UNABLE_TO_FILL;
+                code = ResultCode.UNABLE_TO_FILL;
                 break;
             default:
                 break;

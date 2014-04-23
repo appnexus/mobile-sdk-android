@@ -30,12 +30,10 @@ package com.appnexus.opensdk;
     public void onAdLoaded(Displayable d);
 
     /**
-     * Called when the third-party mediation network has alerted the
-     * SDK of a failed ad request
-     * @param noMoreAds true if the response contains no more ads
-     *                  and we should call onAdRequestFailed
+     * Called when the mediation waterfall has ended in a failure
+     * @param errorCode the error code describing the failure.
      */
-    public void onAdFailed(boolean noMoreAds);
+    public void onAdFailed(ResultCode errorCode);
 
     /**
      * Called when the third-party mediation network has alerted the

@@ -195,7 +195,9 @@ public class InterstitialAdView extends AdView {
     @Override
     void display(Displayable d) {
         super.display(d);
-        adQueue.add(new Pair<Long, Displayable>(System.currentTimeMillis(), d));
+        if (d != null) {
+            adQueue.add(new Pair<Long, Displayable>(System.currentTimeMillis(), d));
+        }
     }
 
     void interacted() {

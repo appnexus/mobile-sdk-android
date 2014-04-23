@@ -278,9 +278,11 @@ public abstract class AdView extends FrameLayout {
 	 */
 
     void display(Displayable d) {
+        // safety check: this should never evaluate to true
         if ((d == null) || d.failed() || (d.getView() == null)) {
             // The displayable has failed to be parsed or turned into a View.
-            fail();
+            // We're already calling onAdLoaded, so don't call onAdFailed; just log
+            Clog.e(Clog.baseLogTag, "Loaded an ad with an invalid displayable");
             return;
         }
         // call destroy on any old mediated views
@@ -626,8 +628,8 @@ public abstract class AdView extends FrameLayout {
 		return adListener;
 	}
 
-	void fail() {
-		this.getAdDispatcher().onAdFailed(true);
+	void fail(ResultCode errorCode) {
+		this.getAdDispatcher().onAdFailed(errorCode);
 	}
 
 	/**
@@ -888,17 +890,13 @@ public abstract class AdView extends FrameLayout {
 		}
 
 		@Override
-		public void onAdFailed(boolean noMoreAds) {
-			// wait until mediation waterfall is complete before calling
-			// adListener
-			if (!noMoreAds)
-				return;
+		public void onAdFailed(final ResultCode errorCode) {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
                     printMediatedClasses();
 					if (adListener != null)
-						adListener.onAdRequestFailed(AdView.this);
+						adListener.onAdRequestFailed(AdView.this, errorCode);
 				}
 			});
 		}
