@@ -23,7 +23,7 @@ import com.google.ads.mediation.MediationAdRequest;
 import com.google.ads.mediation.customevent.CustomEventBanner;
 import com.google.ads.mediation.customevent.CustomEventBannerListener;
 
-public class AdMobMediationBanner implements CustomEventBanner, com.appnexus.opensdk.AdListener {
+public class AdMobMediationBanner implements CustomEventBanner, AdListener {
 
     CustomEventBannerListener listener;
 
@@ -39,6 +39,23 @@ public class AdMobMediationBanner implements CustomEventBanner, com.appnexus.ope
         appNexusAdView.setAdSize(adSize.getWidth(), adSize.getHeight());
         appNexusAdView.setShouldServePSAs(false);
         appNexusAdView.setAdListener(this);
+
+        switch (mediationAdRequest.getGender()) {
+            case MALE:
+                appNexusAdView.setGender(AdView.GENDER.MALE);
+                break;
+            case FEMALE:
+                appNexusAdView.setGender(AdView.GENDER.FEMALE);
+                break;
+            default:
+                // unknown case passes nothing
+                break;
+        }
+
+        if (mediationAdRequest.getAgeInYears() != null) {
+            appNexusAdView.setAge(String.valueOf(mediationAdRequest.getAgeInYears()));
+        }
+        SDKSettings.setLocation(mediationAdRequest.getLocation());
 
         Clog.d(Clog.mediationLogTag, "Load ANBanner");
         appNexusAdView.loadAdOffscreen();
