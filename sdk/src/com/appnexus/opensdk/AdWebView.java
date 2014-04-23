@@ -247,6 +247,7 @@ class AdWebView extends WebView implements Displayable {
     // returns success or failure
     private boolean openNativeIntent(String url) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             adView.getContext().startActivity(intent);
             return true;
@@ -275,6 +276,7 @@ class AdWebView extends WebView implements Displayable {
     private void openInAppBrowser(WebView fwdWebView) {
         // open the in-app browser
         Intent intent = new Intent(adView.getContext(), AdActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
 
         AdWebView.BROWSER_QUEUE.add(fwdWebView);
@@ -325,7 +327,7 @@ class AdWebView extends WebView implements Displayable {
 
     // For interstitial ads
 
-    public int getOrientation() {
+    int getOrientation() {
         return orientation;
     }
 

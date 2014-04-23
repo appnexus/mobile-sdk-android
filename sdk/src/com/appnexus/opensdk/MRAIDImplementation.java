@@ -486,6 +486,7 @@ class MRAIDImplementation {
             return;
         }
         Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             i.setDataAndType(Uri.parse(URLDecoder.decode(uri, "UTF-8")), "video/mp4");
         } catch (UnsupportedEncodingException e) {
@@ -514,6 +515,7 @@ class MRAIDImplementation {
         if (event != null) {
             try {
                 Intent i = event.getInsertIntent();
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 owner.getContext().startActivity(i);
                 owner.fireAdClicked();
                 Clog.d(Clog.mraidLogTag, Clog.getString(R.string.create_calendar_event));
