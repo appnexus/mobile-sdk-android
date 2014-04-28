@@ -19,6 +19,9 @@ package com.appnexus.opensdk;
 import android.location.Location;
 import com.appnexus.opensdk.utils.Settings;
 
+/**
+ * Global static functions that apply to all SDK views and calls.
+ */
 public class SDKSettings {
 
     private SDKSettings() {

@@ -18,7 +18,8 @@ package com.appnexus.opensdk;
 
 /**
  * This enum contains the result codes sent to the
- * <code>onAdFailed</code> method, except for SUCCESS.
+ * <code>onAdRequestFailed</code> method in {@link AdListener},
+ * except for <code>SUCCESS</code>.
  *
  * Mediation adaptors should use these result codes to
  * inform the AppNexus SDK of success or failure.

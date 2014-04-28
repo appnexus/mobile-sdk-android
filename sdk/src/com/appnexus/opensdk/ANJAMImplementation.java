@@ -32,7 +32,7 @@ import org.apache.http.message.BasicNameValuePair;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ANJAMImplementation {
+class ANJAMImplementation {
     private static final String CALL_MAYDEEPLINK = "MayDeepLink";
     private static final String CALL_DEEPLINK = "DeepLink";
     private static final String CALL_EXTERNALBROWSER = "ExternalBrowser";

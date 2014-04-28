@@ -27,15 +27,17 @@ public interface AppEventListener {
      * 'anjam.DispatchAppEvent(name, data);'
      *
      * A simple example:
-     * {@code
+     * <pre>
+     * <code>
      *
-     *  final private AppEventListener appEventListener = new AppEventListener() {
-     *      @Override
+     *  AppEventListener appEventListener = new AppEventListener() {
+     *      {@literal @}Override
      *      public void onAppEvent(AdView adView, String name, String data) {
-     *      Log.d("APP_TAG", "AppEvent received: " + name + ", " + data);
+     *          Log.d("APP_TAG", "AppEvent received: " + name + ", " + data);
      *      }
      *  }
-     *}
+     * </code>
+     * </pre>
      *
      * @param adView The {@link AdView} that loaded the ad.
      * @param name the event name passed by the ad

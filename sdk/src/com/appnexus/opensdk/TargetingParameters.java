@@ -20,6 +20,11 @@ import android.util.Pair;
 
 import java.util.ArrayList;
 
+/**
+ * An object of this type is sent to the third-party SDK's {@link
+ * MediatedAdView} object.  The third-party SDK uses this object
+ * to retrieve local targeting extras that were sent to the AppNexus SDK.
+ */
 public class TargetingParameters {
     private String age = null;
     private ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
