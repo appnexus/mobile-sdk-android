@@ -52,9 +52,9 @@ public class TestMediationCallbacks extends BaseRoboTest implements AdListener {
     }
 
     @Override
-    public void onAdRequestFailed(AdView adView) {
+    public void onAdRequestFailed(AdView adView, ResultCode resultCode) {
         if (adFailed) adFailedMultiple = true;
-        super.onAdRequestFailed(adView);
+        super.onAdRequestFailed(adView, resultCode);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class TestMediationCallbacks extends BaseRoboTest implements AdListener {
         Robolectric.getBackgroundScheduler().runOneTask();
         Robolectric.runUiThreadTasksIncludingDelayedTasks();
 
-        Lock.pause(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT + 1000);
+        Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT + 1000);
 
         assertCallbacks(success);
     }
@@ -176,7 +176,7 @@ public class TestMediationCallbacks extends BaseRoboTest implements AdListener {
         Robolectric.getBackgroundScheduler().runOneTask();
         Robolectric.runUiThreadTasksIncludingDelayedTasks();
 
-        Lock.pause(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT + 1000);
+        Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT + 1000);
 
         assertCallbacks(true);
 

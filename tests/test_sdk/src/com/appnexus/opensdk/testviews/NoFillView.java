@@ -18,9 +18,9 @@ package com.appnexus.opensdk.testviews;
 
 import android.app.Activity;
 import android.view.View;
-import com.appnexus.opensdk.MediatedAdViewController;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
+import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
 
 public class NoFillView implements MediatedBannerAdView {
@@ -29,7 +29,7 @@ public class NoFillView implements MediatedBannerAdView {
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
         // ad request returned nothing!
-        mBC.onAdFailed(MediatedAdViewController.RESULT.UNABLE_TO_FILL);
+        mBC.onAdFailed(ResultCode.UNABLE_TO_FILL);
         return null;
     }
 

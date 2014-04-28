@@ -120,7 +120,7 @@ public abstract class BaseRoboTest implements AdListener {
     }
 
     @Override
-    public void onAdRequestFailed(AdView adView) {
+    public void onAdRequestFailed(AdView adView, ResultCode resultCode) {
         adFailed = true;
     }
 

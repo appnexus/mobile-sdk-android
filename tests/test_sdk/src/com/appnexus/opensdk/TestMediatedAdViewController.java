@@ -29,7 +29,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import static com.appnexus.opensdk.MediatedAdViewController.RESULT.*;
+import static com.appnexus.opensdk.ResultCode.*;
 import static junit.framework.Assert.*;
 
 @Config(shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class},
@@ -44,7 +44,7 @@ public class TestMediatedAdViewController extends BaseRoboTest {
     }
 
     // checks that the resultCB appends the reason code correctly
-    private void assertResultCB(int requestNumber, MediatedAdViewController.RESULT errorCode) {
+    private void assertResultCB(int requestNumber, ResultCode errorCode) {
         HttpUriRequest sentResultCBRequest = (HttpUriRequest) Robolectric.getSentHttpRequest(requestNumber);
         String resultCBUri = sentResultCBRequest.getURI().toString();
         String result = TestResponses.resultCB(errorCode.ordinal());
@@ -68,10 +68,10 @@ public class TestMediatedAdViewController extends BaseRoboTest {
     }
 
     // common format for several of the basic mediation tests
-    public void runBasicResultCBTest(MediatedAdViewController.RESULT errorCode, boolean success) {
+    public void runBasicResultCBTest(ResultCode errorCode, boolean success) {
         executeMediationAdRequest();
         executeResultCBRequest();
-        Lock.pause(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT + 1000);
+        Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT + 1000);
 
         assertResultCB(1, errorCode);
         assertCallbacks(success);
@@ -127,7 +127,7 @@ public class TestMediatedAdViewController extends BaseRoboTest {
     public void test5ErrorThrownMediationCall() {
         Robolectric.addPendingHttpResponse(200, TestResponses.mediatedOutOfMemory());
         Robolectric.addPendingHttpResponse(200, TestResponses.blank());
-        runBasicResultCBTest(MEDIATED_SDK_UNAVAILABLE, false);
+        runBasicResultCBTest(INTERNAL_ERROR, false);
     }
 
     // Verify that a response with a class that hits callback UNABLE_TO_FILL,
@@ -168,7 +168,7 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         Robolectric.getBackgroundScheduler().runOneTask();
         Robolectric.runUiThreadTasks();
 
-        Lock.pause(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT);
+        Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT);
 
         View view = bannerAdView.getChildAt(0);
         assertTrue(view instanceof AdWebView);
@@ -187,7 +187,7 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         Robolectric.getBackgroundScheduler().runOneTask();
         Robolectric.runUiThreadTasks();
 
-        Lock.pause(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT);
+        Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT);
 
         View mediatedView = bannerAdView.getChildAt(0);
         assertNotNull(mediatedView);
@@ -252,7 +252,7 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         executeResultCBRequest();
         executeResultCBRequest();
 
-        Lock.pause(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT + 1000);
+        Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT + 1000);
 
         assertResultCB(1, UNABLE_TO_FILL);
         assertResultCB(2, SUCCESS);
@@ -289,7 +289,7 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         executeResultCBRequest();
         executeResultCBRequest();
 
-        Lock.pause(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT + 1000);
+        Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT + 1000);
 
         assertResultCB(1, UNABLE_TO_FILL);
         assertResultCB(2, SUCCESS);
@@ -311,7 +311,7 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         executeResultCBRequest();
         executeResultCBRequest();
 
-        Lock.pause(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT + 1000);
+        Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT + 1000);
 
         assertResultCB(1, UNABLE_TO_FILL);
         assertResultCB(2, UNABLE_TO_FILL);
@@ -346,7 +346,7 @@ public class TestMediatedAdViewController extends BaseRoboTest {
         executeResultCBRequest();
         executeResultCBRequest();
 
-        Lock.pause(Settings.getSettings().MEDIATED_NETWORK_TIMEOUT + 1000);
+        Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT + 1000);
 
         assertResultCB(1, UNABLE_TO_FILL);
         assertResultCB(2, SUCCESS);
@@ -363,8 +363,8 @@ public class TestMediatedAdViewController extends BaseRoboTest {
     }
 
     @Override
-    public void onAdRequestFailed(AdView adView) {
-        super.onAdRequestFailed(adView);
+    public void onAdRequestFailed(AdView adView, ResultCode resultCode) {
+        super.onAdRequestFailed(adView, resultCode);
         Lock.unpause();
     }
 }

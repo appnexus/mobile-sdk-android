@@ -285,7 +285,7 @@ public class TestMRAIDImplementation extends BaseRoboTest {
         }
 
         @Override
-        public void onAdFailed(boolean noMoreAds) {
+        public void onAdFailed(ResultCode errorCode) {
             adFailed = true;
         }
 
@@ -302,6 +302,11 @@ public class TestMRAIDImplementation extends BaseRoboTest {
         @Override
         public void onAdClicked() {
             adClicked = true;
+        }
+
+        @Override
+        public void onAppEvent(String name, String data) {
+
         }
     }
 }
