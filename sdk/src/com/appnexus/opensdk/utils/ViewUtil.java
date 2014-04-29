@@ -21,10 +21,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
@@ -46,6 +43,25 @@ public class ViewUtil {
         if ((view != null) && (view.getParent() != null)) {
             ((ViewGroup) view.getParent()).removeView(view);
         }
+    }
+
+    public static Context getTopContext(View view) {
+        if (view == null) {
+            return null;
+        }
+        ViewParent parent = view.getParent();
+
+        if ((parent == null) || !(parent instanceof View)) {
+            return view.getContext();
+        }
+
+        //noinspection ConstantConditions
+        while ((parent.getParent() != null)
+                && (parent.getParent() instanceof View)) {
+            parent = parent.getParent();
+        }
+
+        return ((View) parent).getContext();
     }
 
     // returns screen size as { width, height } in pixels

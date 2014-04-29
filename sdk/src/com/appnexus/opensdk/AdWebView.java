@@ -95,7 +95,7 @@ class AdWebView extends WebView implements Displayable {
     @SuppressLint("SetJavaScriptEnabled")
     protected void setup() {
         implementation = new MRAIDImplementation(this);
-        setWebChromeClient(new VideoEnabledWebChromeClient(adView));
+        setWebChromeClient(new VideoEnabledWebChromeClient(this));
         setWebViewClient(new AdWebViewClient());
     }
 

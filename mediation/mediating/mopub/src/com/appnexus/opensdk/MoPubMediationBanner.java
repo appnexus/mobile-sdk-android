@@ -85,8 +85,8 @@ public class MoPubMediationBanner extends CustomEventBanner implements AdListene
     }
 
     @Override
-    public void onAdRequestFailed(AdView adView) {
-        Clog.d(Clog.mediationLogTag, "ANBanner failed to load");
+    public void onAdRequestFailed(AdView adView, ResultCode resultCode) {
+        Clog.d(Clog.mediationLogTag, "ANBanner failed to load: " + resultCode);
         if (listener != null) listener.onBannerFailed(MoPubErrorCode.UNSPECIFIED);
     }
 

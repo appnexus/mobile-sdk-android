@@ -2,6 +2,7 @@ package com.appnexus.opensdk;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.util.Pair;
@@ -12,6 +13,7 @@ import android.webkit.GeolocationPermissions;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.ViewUtil;
 
 import java.util.LinkedList;
 
@@ -20,15 +22,17 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     FrameLayout frame;
     Activity context;
     AdView adView;
+    private AdWebView adWebView;
     LinkedList<Pair<View, Integer>> views;
 
     public VideoEnabledWebChromeClient(Activity activity) {
         this.context = activity;
     }
 
-    public VideoEnabledWebChromeClient(AdView adView) {
-        this.context = (Activity) adView.getContext();
-        this.adView = adView;
+    public VideoEnabledWebChromeClient(AdWebView adWebView) {
+        this.context = (Activity) adWebView.getContext();
+        this.adWebView = adWebView;
+        this.adView = this.adWebView.adView;
     }
 
     @SuppressWarnings("deprecation")
@@ -125,7 +129,8 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     //HTML5 Location Callbacks
     @Override
     public void onGeolocationPermissionsShowPrompt(final String origin, final GeolocationPermissions.Callback callback) {
-        AlertDialog.Builder adb = new AlertDialog.Builder(this.context);
+        Context dialogContext = (adWebView != null) ? ViewUtil.getTopContext(adWebView) : context;
+        AlertDialog.Builder adb = new AlertDialog.Builder(dialogContext);
 
         String title = String.format(this.context.getResources().getString(R.string.html5_geo_permission_prompt_title), origin);
 

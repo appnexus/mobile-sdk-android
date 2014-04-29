@@ -348,7 +348,7 @@ class MRAIDImplementation {
 
         final String uri_final = Uri.decode(uri);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(owner.adView.getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(ViewUtil.getTopContext(owner));
         builder.setTitle(R.string.store_picture_title);
         builder.setMessage(R.string.store_picture_message);
         builder.setPositiveButton(R.string.store_picture_accept, new DialogInterface.OnClickListener() {
@@ -505,6 +505,7 @@ class MRAIDImplementation {
         return orientation;
     }
 
+    @SuppressWarnings({"UnusedDeclaration", "UnusedAssignment"})
     private void setOrientationProperties(ArrayList<BasicNameValuePair> parameters) {
         boolean allow_orientation_change = true;
         AdActivity.OrientationEnum orientation = AdActivity.OrientationEnum.none;
@@ -520,15 +521,14 @@ class MRAIDImplementation {
         // orientationProperties only affects expanded state
         if (expanded) {
             Activity containerActivity = owner.isFullScreen
-                    ? getFullscreenActivity() : (Activity) owner.getContext();
+                    ? getFullscreenActivity() : (Activity) ViewUtil.getTopContext(owner);
             if (allow_orientation_change) {
                 AdActivity.unlockOrientation(containerActivity);
             } else {
+                // forceOrientation only applies to pre-expansion, so don't use here
                 AdActivity.lockToCurrentOrientation(containerActivity);
             }
         }
-
-        Clog.d(Clog.mraidLogTag, Clog.getString(R.string.set_orientation_properties, allow_orientation_change, orientation.ordinal()));
     }
 
     public enum CUSTOM_CLOSE_POSITION {

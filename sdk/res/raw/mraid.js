@@ -319,7 +319,7 @@
             mraid.util.errorEvent("Method 'mraid.supports()' called during loading state.", "mraid.supports()");
             return;
         }
-        if (supports[feature] !== "boolean") {
+        if ((typeof supports[feature]) !== "boolean") {
             mraid.util.errorEvent("Unknown feature to check for support: " + feature, "mraid.supports()");
             return false;
         }
@@ -402,7 +402,7 @@
     };
 
     mraid.util.errorEvent = function (message, what_doing) {
-        mraid.util.fireEvent('error', what_doing);
+        mraid.util.fireEvent('error', message, what_doing);
     };
 
     mraid.util.viewableChangeEvent = function (is_viewable_now) {

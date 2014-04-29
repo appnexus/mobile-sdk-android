@@ -74,8 +74,8 @@ public class AdMobMediationBanner implements CustomEventBanner, AdListener {
     }
 
     @Override
-    public void onAdRequestFailed(AdView adView) {
-        Clog.d(Clog.mediationLogTag, "ANBanner failed to load");
+    public void onAdRequestFailed(AdView adView, ResultCode code) {
+        Clog.d(Clog.mediationLogTag, "ANBanner failed to load: " + code);
         if (listener != null) listener.onFailedToReceiveAd();
     }
 
