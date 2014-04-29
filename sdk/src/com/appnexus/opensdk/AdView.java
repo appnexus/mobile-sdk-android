@@ -104,7 +104,7 @@ public abstract class AdView extends FrameLayout {
 		dispatcher = new AdView.AdListenerDispatch(handler);
 
 		// Store self.context in the settings for errors
-		Clog.error_context = this.getContext();
+		Clog.setErrorContext(this.getContext());
 
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.new_adview));
 

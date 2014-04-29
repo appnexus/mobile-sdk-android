@@ -55,7 +55,7 @@ class InstallTrackerPixel extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, final Intent intent) {
         this.context = context;
-        Clog.error_context = context;
+        Clog.setErrorContext(context);
         Bundle extras = intent.getExtras();
 
         new PixelHttpTask(0).execute(extras);
