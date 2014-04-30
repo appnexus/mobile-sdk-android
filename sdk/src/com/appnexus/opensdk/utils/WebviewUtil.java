@@ -15,18 +15,35 @@
  */
 package com.appnexus.opensdk.utils;
 
+import android.annotation.SuppressLint;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
+import android.webkit.WebView;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.cookie.DateUtils;
+
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.cookie.DateUtils;
-
-import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
-import android.webkit.WebView;
-
 public class WebviewUtil {
+
+    /**
+     * Convenience method to set generic WebView settings
+     *
+     * @param webView webView to apply settings to
+     */
+    @SuppressLint("SetJavaScriptEnabled")
+    public static void setWebViewSettings(WebView webView) {
+        if (webView == null) {
+            return;
+        }
+        webView.getSettings().setBuiltInZoomControls(false);
+        webView.getSettings().setSupportZoom(true);
+        webView.getSettings().setUseWideViewPort(true);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setDomStorageEnabled(true);
+    }
 
     /**
      * Call WebView onResume in API version safe manner
@@ -68,16 +85,13 @@ public class WebviewUtil {
      * @param cookies
      */
     public static void cookieSync(List<Cookie> cookies) {
-
-        Settings settings = Settings.getSettings();
-
         try {
             CookieManager cm = CookieManager.getInstance();
             if (cm == null) {
                 Clog.i(Clog.httpRespLogTag, "Unable to find a CookieManager");
                 return;
             }
-            String wvcookie = cm.getCookie(settings.BASE_URL);
+            String wvcookie = cm.getCookie(Settings.BASE_URL);
             if (!StringUtil.isEmpty(wvcookie)) {
                 Clog.d(Clog.httpRespLogTag, "Webview already has our cookie");
                 return;
@@ -90,7 +104,7 @@ public class WebviewUtil {
             }
             StringBuilder sb = new StringBuilder();
             for (Cookie c : cookies) {
-                if (!settings.AN_UUID.equals(c.getName())) {
+                if (!Settings.AN_UUID.equals(c.getName())) {
                     continue;
                 }
                 if (!StringUtil.isEmpty(c.getDomain())) {
@@ -113,7 +127,7 @@ public class WebviewUtil {
                     sb.append("HttpOnly");
                 }
                 Clog.d(Clog.httpRespLogTag, "set-cookie: " + sb.toString());
-                cm.setCookie(settings.COOKIE_DOMAIN, sb.toString());
+                cm.setCookie(Settings.COOKIE_DOMAIN, sb.toString());
                 csm.sync();
             }
         } catch (IllegalStateException ise) {

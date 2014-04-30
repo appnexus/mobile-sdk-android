@@ -70,7 +70,8 @@ public abstract class AdView extends FrameLayout {
 	ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
     private Location location = null;
 	boolean mraid_changing_size_or_visibility = false;
-	AdListener adListener;
+	private AdListener adListener;
+    private AppEventListener appEventListener;
 	private BrowserStyle browserStyle;
 	private LinkedList<MediatedAd> mediatedAds;
 	final Handler handler = new Handler(Looper.getMainLooper());
@@ -103,7 +104,7 @@ public abstract class AdView extends FrameLayout {
 		dispatcher = new AdView.AdListenerDispatch(handler);
 
 		// Store self.context in the settings for errors
-		Clog.error_context = this.getContext();
+		Clog.setErrorContext(this.getContext());
 
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.new_adview));
 
@@ -278,17 +279,16 @@ public abstract class AdView extends FrameLayout {
 	 */
 
     void display(Displayable d) {
+        // safety check: this should never evaluate to true
         if ((d == null) || d.failed() || (d.getView() == null)) {
             // The displayable has failed to be parsed or turned into a View.
-            fail();
+            // We're already calling onAdLoaded, so don't call onAdFailed; just log
+            Clog.e(Clog.baseLogTag, "Loaded an ad with an invalid displayable");
             return;
         }
-        // call destroy on any old mediated views
+        // call destroy on any old views
         if (lastDisplayable != null) {
-            if (lastDisplayable instanceof MediatedDisplayable) {
-                lastDisplayable.destroy();
-            }
-            lastDisplayable = null;
+            lastDisplayable.destroy();
         }
         lastDisplayable = d;
     }
@@ -458,7 +458,7 @@ public abstract class AdView extends FrameLayout {
 
     int buttonPxSideLength = 0;
 
-    public void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean,
+    void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean,
                        final MRAIDImplementation caller) {
         MRAIDChangeSize(w, h);
 
@@ -626,8 +626,28 @@ public abstract class AdView extends FrameLayout {
 		return adListener;
 	}
 
-	void fail() {
-		this.getAdDispatcher().onAdFailed(true);
+    /**
+     * Gets the currently installed app event listener that the SDK will send
+     * custom events to.
+     *
+     * @return the {@link AppEventListener} object in use.
+     */
+    public AppEventListener getAppEventListener() {
+        return appEventListener;
+    }
+
+    /**
+     * Sets the currently installed app event listener that the SDK will send
+     * custom events to.
+     *
+     * @param appEventListener The {@link AppEventListener} object to use.
+     */
+    public void setAppEventListener(AppEventListener appEventListener) {
+        this.appEventListener = appEventListener;
+    }
+
+    void fail(ResultCode errorCode) {
+        this.getAdDispatcher().onAdFailed(errorCode);
 	}
 
 	/**
@@ -742,14 +762,6 @@ public abstract class AdView extends FrameLayout {
 		this.age = age;
 	}
 
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
     /**
 	 *
 	 * The user's gender.
@@ -834,8 +846,12 @@ public abstract class AdView extends FrameLayout {
         customKeywords.clear();
     }
 
+    /**
+     * Pass the targeting parameters to the mediated networks.
+     * @return The parameters passed to the 3rd party network
+     */
     protected TargetingParameters getTargetingParameters(){
-        return new TargetingParameters(getAge(), getGender(), getCustomKeywords(), getLocation());
+        return new TargetingParameters(getAge(), getGender(), getCustomKeywords(), SDKSettings.getLocation());
     }
 
 	/**
@@ -892,17 +908,13 @@ public abstract class AdView extends FrameLayout {
 		}
 
 		@Override
-		public void onAdFailed(boolean noMoreAds) {
-			// wait until mediation waterfall is complete before calling
-			// adListener
-			if (!noMoreAds)
-				return;
+		public void onAdFailed(final ResultCode errorCode) {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
                     printMediatedClasses();
 					if (adListener != null)
-						adListener.onAdRequestFailed(AdView.this);
+						adListener.onAdRequestFailed(AdView.this, errorCode);
 				}
 			});
 		}
@@ -939,7 +951,19 @@ public abstract class AdView extends FrameLayout {
 				}
 			});
 		}
-	}
+
+        @Override
+        public void onAppEvent(final String name, final String data) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (appEventListener != null) {
+                        appEventListener.onAppEvent(AdView.this, name, data);
+                    }
+                }
+            });
+        }
+    }
 
 	AdViewListener getAdDispatcher() {
 		return this.dispatcher;

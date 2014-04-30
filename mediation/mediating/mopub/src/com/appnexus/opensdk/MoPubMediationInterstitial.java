@@ -83,8 +83,8 @@ public class MoPubMediationInterstitial extends CustomEventInterstitial implemen
     }
 
     @Override
-    public void onAdRequestFailed(AdView adView) {
-        Clog.d(Clog.mediationLogTag, "ANInterstitial failed to load");
+    public void onAdRequestFailed(AdView adView, ResultCode resultCode) {
+        Clog.d(Clog.mediationLogTag, "ANInterstitial failed to load: " + resultCode);
         if (listener != null) listener.onInterstitialFailed(MoPubErrorCode.UNSPECIFIED);
     }
 

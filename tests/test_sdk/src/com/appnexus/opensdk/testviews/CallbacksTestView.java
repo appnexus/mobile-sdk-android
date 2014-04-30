@@ -25,7 +25,7 @@ import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.util.Lock;
 import com.appnexus.opensdk.utils.Settings;
 
-import static com.appnexus.opensdk.MediatedAdViewController.RESULT.UNABLE_TO_FILL;
+import static com.appnexus.opensdk.ResultCode.UNABLE_TO_FILL;
 
 public class CallbacksTestView implements MediatedBannerAdView {
 
@@ -55,7 +55,7 @@ public class CallbacksTestView implements MediatedBannerAdView {
                         controller.onAdLoaded();
                         Lock.unpause();
                     }
-                }, Settings.getSettings().MEDIATED_NETWORK_TIMEOUT + defaultWaitTime);
+                }, Settings.MEDIATED_NETWORK_TIMEOUT + defaultWaitTime);
                 break;
             // load then fail
             case 20:
@@ -80,7 +80,7 @@ public class CallbacksTestView implements MediatedBannerAdView {
                         controller.onAdCollapsed();
                         Lock.unpause();
                     }
-                }, Settings.getSettings().MEDIATED_NETWORK_TIMEOUT + defaultWaitTime);
+                }, Settings.MEDIATED_NETWORK_TIMEOUT + defaultWaitTime);
                 break;
             // fail then extra
             case 23:
@@ -93,7 +93,7 @@ public class CallbacksTestView implements MediatedBannerAdView {
                         controller.onAdCollapsed();
                         Lock.unpause();
                     }
-                }, Settings.getSettings().MEDIATED_NETWORK_TIMEOUT + defaultWaitTime);
+                }, Settings.MEDIATED_NETWORK_TIMEOUT + defaultWaitTime);
                 break;
             // fail multiple
             case 24:

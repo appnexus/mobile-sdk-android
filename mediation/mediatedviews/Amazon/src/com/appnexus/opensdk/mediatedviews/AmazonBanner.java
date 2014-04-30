@@ -22,9 +22,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.amazon.device.ads.*;
-import com.appnexus.opensdk.MediatedAdViewController;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
+import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.StringUtil;
@@ -83,6 +83,8 @@ public class AmazonBanner implements MediatedBannerAdView, AdListener {
             for (Pair<String, String> p : tp.getCustomKeywords()) {
                 targetingOptions.setAdvancedOption(p.first, p.second);
             }
+
+            targetingOptions.enableGeoLocation (tp.getLocation() != null);
         }
 
         //Amazon won't load ads unless layout parameters are set
@@ -126,28 +128,29 @@ public class AmazonBanner implements MediatedBannerAdView, AdListener {
     @Override
     public void onAdFailedToLoad(AdLayout adLayout, AdError adError) {
         Clog.d(Clog.mediationLogTag, "AmazonBanner - onAdFailedToLoad: " + adError.getMessage());
-        if (mediatedBannerAdViewController != null) {
-            if (adError != null) {
-                switch (adError.getCode()) {
-                    case INTERNAL_ERROR:
-                        mediatedBannerAdViewController.onAdFailed(MediatedAdViewController.RESULT.INTERNAL_ERROR);
-                        break;
-                    case NETWORK_ERROR:
-                        mediatedBannerAdViewController.onAdFailed(MediatedAdViewController.RESULT.NETWORK_ERROR);
-                        break;
-                    case NO_FILL:
-                        mediatedBannerAdViewController.onAdFailed(MediatedAdViewController.RESULT.UNABLE_TO_FILL);
-                        break;
-                    case REQUEST_ERROR:
-                        mediatedBannerAdViewController.onAdFailed(MediatedAdViewController.RESULT.INVALID_REQUEST);
-                        break;
-                    default:
-                        mediatedBannerAdViewController.onAdFailed(MediatedAdViewController.RESULT.INTERNAL_ERROR);
-                        break;
-                }
-            } else {
-                mediatedBannerAdViewController.onAdFailed(MediatedAdViewController.RESULT.INTERNAL_ERROR);
+        ResultCode code = ResultCode.INTERNAL_ERROR;
+
+        if (adError != null) {
+            switch (adError.getCode()) {
+                case INTERNAL_ERROR:
+                    code = ResultCode.INTERNAL_ERROR;
+                    break;
+                case NETWORK_ERROR:
+                    code = ResultCode.NETWORK_ERROR;
+                    break;
+                case NO_FILL:
+                    code = ResultCode.UNABLE_TO_FILL;
+                    break;
+                case REQUEST_ERROR:
+                    code = ResultCode.INVALID_REQUEST;
+                    break;
+                default:
+                    break;
             }
+        }
+
+        if (mediatedBannerAdViewController != null) {
+            mediatedBannerAdViewController.onAdFailed(code);
         }
     }
 }

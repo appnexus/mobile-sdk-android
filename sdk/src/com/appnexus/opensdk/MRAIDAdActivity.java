@@ -20,7 +20,7 @@ import android.webkit.WebView;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ViewUtil;
 
-public class MRAIDAdActivity implements AdActivity.AdActivityImplementation {
+class MRAIDAdActivity implements AdActivity.AdActivityImplementation {
     private AdActivity adActivity;
     private WebView webView;
 

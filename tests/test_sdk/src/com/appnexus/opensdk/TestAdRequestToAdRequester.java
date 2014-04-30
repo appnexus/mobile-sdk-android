@@ -58,10 +58,22 @@ public class TestAdRequestToAdRequester extends BaseRoboTest implements AdReques
     }
 
     @Test
-    public void testRequestFailed() {
+    public void testRequestBlank() {
         adRequest = new AdRequest(this);
 
+        // blanks are handled by requester
         Robolectric.addPendingHttpResponse(200, TestResponses.blank());
+        adRequest.execute();
+        Robolectric.runBackgroundTasks();
+        Robolectric.runUiThreadTasks();
+        assertCallbacks(true);
+    }
+
+    @Test
+    public void testRequestStatusError() {
+        adRequest = new AdRequest(this);
+
+        Robolectric.addPendingHttpResponse(404, TestResponses.banner());
         adRequest.execute();
         Robolectric.runBackgroundTasks();
         Robolectric.runUiThreadTasks();

@@ -22,6 +22,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
 import android.net.http.SslError;
@@ -94,12 +95,13 @@ class AdWebView extends WebView implements Displayable {
     @SuppressLint("SetJavaScriptEnabled")
     protected void setup() {
         implementation = new MRAIDImplementation(this);
-        setWebChromeClient(new VideoEnabledWebChromeClient(adView));
+        setWebChromeClient(new VideoEnabledWebChromeClient(this));
         setWebViewClient(new AdWebViewClient());
     }
 
     public void loadAd(AdResponse ad) {
         String html = ad.getContent();
+        // Safety Check: content is verified in AdResponse, so this should never be empty
         if (StringUtil.isEmpty(html)) {
             fail();
             return;
@@ -109,7 +111,8 @@ class AdWebView extends WebView implements Displayable {
 
         parseAdResponseExtras(ad.getExtras());
 
-        html = implementation.onPreLoadContent(this, html);
+        html = preLoadContent(html);
+        html = prependRawResources(html);
 
         final float scale = adView.getContext().getResources()
                 .getDisplayMetrics().density;
@@ -119,7 +122,39 @@ class AdWebView extends WebView implements Displayable {
                 Gravity.CENTER);
         this.setLayoutParams(resize);
 
-        this.loadDataWithBaseURL(Settings.getSettings().BASE_URL, html, "text/html", "UTF-8", null);
+        this.loadDataWithBaseURL(Settings.BASE_URL, html, "text/html", "UTF-8", null);
+    }
+
+    // The webview about to load the ad, and the html ad content
+    private String preLoadContent(String html) {
+        // Check to ensure <html> tags are present
+        if (!html.contains("<html>")) {
+            html = "<html><head></head><body style='padding:0;margin:0;'>"
+                    + html + "</body></html>";
+        } else if (!html.contains("<head>")) {
+            // The <html> tags are present, but there is no <head> section to
+            // inject the mraid js
+            html = html.replace("<html>", "<html><head></head>");
+        }
+        return html;
+    }
+
+    private String prependRawResources(String html) {
+        Resources res = getResources();
+        StringBuilder htmlSB = new StringBuilder("<head><script>");
+
+        // retrieve source from raw resources
+        // insert sdkjs, anjam, mraid into html content, in that order
+        if (res == null
+                || !StringUtil.appendRes(htmlSB, res, R.raw.sdkjs)
+                || !StringUtil.appendRes(htmlSB, res, R.raw.anjam)
+                || !StringUtil.appendRes(htmlSB, res, R.raw.mraid)) {
+            Clog.e(Clog.baseLogTag, "Error reading SDK's raw resources.");
+            return html;
+        }
+        htmlSB.append("</script>");
+
+        return html.replace("<head>", htmlSB.toString());
     }
 
     private void parseAdResponseExtras(HashMap extras) {
@@ -160,6 +195,9 @@ class AdWebView extends WebView implements Displayable {
                         fireMRAIDEnabled();
                     }
                 }
+                return true;
+            } else if (url.startsWith("anjam://")) {
+                ANJAMImplementation.handleUrl(AdWebView.this, url);
                 return true;
             }
 
@@ -247,6 +285,7 @@ class AdWebView extends WebView implements Displayable {
     // returns success or failure
     private boolean openNativeIntent(String url) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             adView.getContext().startActivity(intent);
             return true;
@@ -275,6 +314,7 @@ class AdWebView extends WebView implements Displayable {
     private void openInAppBrowser(WebView fwdWebView) {
         // open the in-app browser
         Intent intent = new Intent(adView.getContext(), AdActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
 
         AdWebView.BROWSER_QUEUE.add(fwdWebView);
@@ -308,7 +348,7 @@ class AdWebView extends WebView implements Displayable {
 
             // Otherwise, create an invisible 1x1 webview to load the landing
             // page and detect if we're redirecting to a market url
-            final WebView fwdWebView = new RedirectWebView(this.getContext());
+            WebView fwdWebView = new RedirectWebView(this.getContext());
             fwdWebView.loadUrl(url);
             fwdWebView.setVisibility(View.GONE);
             adView.addView(fwdWebView);
@@ -325,7 +365,7 @@ class AdWebView extends WebView implements Displayable {
 
     // For interstitial ads
 
-    public int getOrientation() {
+    int getOrientation() {
         return orientation;
     }
 
@@ -344,6 +384,7 @@ class AdWebView extends WebView implements Displayable {
     @Override
     public void destroy() {
         super.destroy();
+        this.removeAllViews();
         stopCheckViewable();
     }
 
@@ -589,12 +630,8 @@ class AdWebView extends WebView implements Displayable {
         public RedirectWebView(Context context) {
             super(context);
 
-            // webView settings
-            this.getSettings().setBuiltInZoomControls(false);
-            this.getSettings().setSupportZoom(true);
-            this.getSettings().setUseWideViewPort(true);
-            this.getSettings().setJavaScriptEnabled(true);
-            this.getSettings().setDomStorageEnabled(true);
+            WebviewUtil.setWebViewSettings(this);
+
             this.setWebViewClient(new WebViewClient() {
                 private boolean isOpeningAppStore = false;
 

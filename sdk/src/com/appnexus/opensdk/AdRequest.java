@@ -92,6 +92,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if(pNames == null){
             pNames = new HashSet<String>();
             pNames.add("id");
+            pNames.add("aaid");
             pNames.add("md5udid");
             pNames.add("sha1udid");
             pNames.add("devmake");
@@ -145,15 +146,22 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         String aid = android.provider.Settings.Secure.getString(
                 context.getContentResolver(), Secure.ANDROID_ID);
 
+        Location lastLocation = null;
+        Location appLocation = SDKSettings.getLocation();
         // Do we have access to location?
-        if (Settings.getSettings().locationEnabled) {
-            if (context.checkCallingOrSelfPermission("android.permission.ACCESS_FINE_LOCATION") == PackageManager.PERMISSION_GRANTED
+        if (SDKSettings.getLocationEnabled()) {
+
+            // First priority is the app supplied location
+            if (appLocation != null) {
+                lastLocation = appLocation;
+            }
+            else if (context.checkCallingOrSelfPermission("android.permission.ACCESS_FINE_LOCATION") == PackageManager.PERMISSION_GRANTED
                     || context.checkCallingOrSelfPermission("android.permission.ACCESS_COARSE_LOCATION") == PackageManager.PERMISSION_GRANTED) {
                 // Get lat, long from any GPS information that might be currently
                 // available
                 LocationManager lm = (LocationManager) context
                         .getSystemService(Context.LOCATION_SERVICE);
-                Location lastLocation = null;
+
                 for (String provider_name : lm.getProviders(true)) {
                     Location l = lm.getLastKnownLocation(provider_name);
                     if (l == null) {
@@ -170,57 +178,69 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                         }
                     }
                 }
-                if (lastLocation != null) {
-                    lat = "" + lastLocation.getLatitude();
-                    lon = "" + lastLocation.getLongitude();
-                    locDataPrecision = "" + lastLocation.getAccuracy();
-                    locDataAge = "" + (System.currentTimeMillis() - lastLocation.getTime());
-                }
             } else {
-                Clog.w(Clog.baseLogTag,
+                Clog.w(Clog.httpReqLogTag,
                         Clog.getString(R.string.permissions_missing_location));
             }
         }
 
+        // Set the location info back to the application
+        if (appLocation != lastLocation) {
+            SDKSettings.setLocation(lastLocation);
+        }
+
+        if (lastLocation != null) {
+            lat = "" + lastLocation.getLatitude();
+            lon = "" + lastLocation.getLongitude();
+            locDataPrecision = "" + lastLocation.getAccuracy();
+            locDataAge = "" + (System.currentTimeMillis() - lastLocation.getTime());
+        } else {
+            lat = "";
+            lon = "";
+            locDataAge = "";
+            locDataPrecision = "";
+        }
 
         // Do we have permission ACCESS_NETWORK_STATE?
         if (context
                 .checkCallingOrSelfPermission("android.permission.ACCESS_NETWORK_STATE") != PackageManager.PERMISSION_GRANTED) {
-            Clog.e(Clog.baseLogTag,
+            Clog.e(Clog.httpReqLogTag,
                     Clog.getString(R.string.permissions_missing_network_state));
             fail();
             this.cancel(true);
             return;
         }
 
+        Settings settings = Settings.getSettings();
+
         // Get orientation, the current rotation of the device
         orientation = context.getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE ? "h" : "v";
         // Get hidmd5, hidsha1, the device ID hashed
-        if ((Settings.getSettings().hidmd5 == null) && (aid != null)) {
-            Settings.getSettings().hidmd5 = HashingFunctions.md5(aid);
+        if ((settings.hidmd5 == null) && (aid != null)) {
+            settings.hidmd5 = HashingFunctions.md5(aid);
         }
-        hidmd5 = Settings.getSettings().hidmd5;
-        if ((Settings.getSettings().hidsha1 == null) && (aid != null)) {
-            Settings.getSettings().hidsha1 = HashingFunctions.sha1(aid);
+        hidmd5 = settings.hidmd5;
+        if ((settings.hidsha1 == null) && (aid != null)) {
+            settings.hidsha1 = HashingFunctions.sha1(aid);
         }
-        hidsha1 = Settings.getSettings().hidsha1;
+        hidsha1 = settings.hidsha1;
         // Get devMake, devModel, the Make and Model of the current device
-        devMake = Settings.getSettings().deviceMake;
-        devModel = Settings.getSettings().deviceModel;
-        aaid = Settings.getSettings().aaid;
-        limitTrackingEnabled = Settings.getSettings().limitTrackingEnabled;
+        devMake = settings.deviceMake;
+        devModel = settings.deviceModel;
+        aaid = settings.aaid;
+        limitTrackingEnabled = settings.limitTrackingEnabled;
         // Get carrier
-        if (Settings.getSettings().carrierName == null) {
-            Settings.getSettings().carrierName = ((TelephonyManager) context
+        if (settings.carrierName == null) {
+            settings.carrierName = ((TelephonyManager) context
                     .getSystemService(Context.TELEPHONY_SERVICE))
                     .getNetworkOperatorName();
         }
-        carrier = Settings.getSettings().carrierName;
+        carrier = settings.carrierName;
         // Get firstlaunch and convert it to a string
-        firstlaunch = Settings.getSettings().first_launch;
+        firstlaunch = settings.first_launch;
         // Get ua, the user agent...
-        ua = Settings.getSettings().ua;
+        ua = settings.ua;
         // Get wxh
 
         if (owner.isBanner()) {
@@ -232,18 +252,18 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         maxWidth = owner.getContainerWidth();
 
 
-        if (Settings.getSettings().mcc == null
-                || Settings.getSettings().mnc == null) {
+        if (settings.mcc == null
+                || settings.mnc == null) {
             TelephonyManager tm = (TelephonyManager) context
                     .getSystemService(Context.TELEPHONY_SERVICE);
             String networkOperator = tm.getNetworkOperator();
             if (networkOperator != null && networkOperator.length() >= 6) {
-                Settings.getSettings().mcc = networkOperator.substring(0, 3);
-                Settings.getSettings().mnc = networkOperator.substring(3);
+                settings.mcc = networkOperator.substring(0, 3);
+                settings.mnc = networkOperator.substring(3);
             }
         }
-        mcc = Settings.getSettings().mcc;
-        mnc = Settings.getSettings().mnc;
+        mcc = settings.mcc;
+        mnc = settings.mnc;
 
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -288,9 +308,9 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         }
         customKeywords = owner.getCustomKeywords();
 
-        mcc = Settings.getSettings().mcc;
-        mnc = Settings.getSettings().mnc;
-        language = Settings.getSettings().language;
+        mcc = settings.mcc;
+        mnc = settings.mnc;
+        language = settings.language;
     }
 
     private void fail() {
@@ -301,7 +321,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
     String getRequestUrl() {
         StringBuilder sb;
-        sb = new StringBuilder(Settings.getSettings().REQUEST_BASE_URL);
+        sb = new StringBuilder(Settings.REQUEST_BASE_URL);
         sb.append("id=");
         if (placementId != null) {
             sb.append(Uri.encode(placementId));
@@ -403,9 +423,9 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         try {
             HttpParams p = new BasicHttpParams();
             HttpConnectionParams.setConnectionTimeout(p,
-                    Settings.getSettings().HTTP_CONNECTION_TIMEOUT);
+                    Settings.HTTP_CONNECTION_TIMEOUT);
             HttpConnectionParams.setSoTimeout(p,
-                    Settings.getSettings().HTTP_SOCKET_TIMEOUT);
+                    Settings.HTTP_SOCKET_TIMEOUT);
             HttpConnectionParams.setSocketBufferSize(p, 8192);
             DefaultHttpClient h = new DefaultHttpClient(p);
 
@@ -432,7 +452,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_io));
             return null;
         } catch (SecurityException se) {
-            Clog.e(Clog.baseLogTag,
+            Clog.e(Clog.httpReqLogTag,
                     Clog.getString(R.string.permissions_internet));
             return null;
         } catch (IllegalArgumentException ie) {
@@ -440,12 +460,14 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             return null;
         } catch (Exception e) {
             e.printStackTrace();
-            Clog.e(Clog.baseLogTag, Clog.getString(R.string.unknown_exception));
+            Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.unknown_exception));
             return null;
         }
+
         if (out.equals("")) {
+            // just log and return a valid AdResponse object so that it is
+            // marked as UNABLE_TO_FILL
             Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
-            return null;
         }
         return new AdResponse(out, r.getAllHeaders());
     }

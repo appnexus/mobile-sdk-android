@@ -19,6 +19,7 @@ package com.appnexus.opensdk.utils;
 import android.content.Context;
 import android.util.Log;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import static com.appnexus.opensdk.utils.ClogListener.LOG_LEVEL;
@@ -109,84 +110,115 @@ public class Clog {
     public static final String jsLogTag = baseLogTag + "-JS";
     public static final String mraidLogTag = baseLogTag + "-MRAID";
     public static final String browserLogTag = baseLogTag + "-APPBROWSER";
-    public static Context error_context;
+
+    public static void setErrorContext(Context c) {
+        Clog.clog_context = new WeakReference<Context>(c);
+    }
+
+    private static WeakReference<Context> clog_context;
 
     public static String getString(int id) {
+        Context error_context = clog_context.get();
+
         if (clogged || error_context == null)
             return null;
         return error_context.getString(id);
     }
 
     public static String getString(int id, long l) {
+        Context error_context = clog_context.get();
+
         if (clogged || error_context == null)
             return null;
-        return String.format(error_context.getString(id), l);
+        return error_context.getString(id, l);
     }
 
     public static String getString(int id, String s) {
+        Context error_context = clog_context.get();
+
         if (clogged || error_context == null)
             return null;
-        return String.format(error_context.getString(id), s);
+        return error_context.getString(id, s);
     }
 
     public static String getString(int id, String s, int i) {
+        Context error_context = clog_context.get();
+
         if (clogged || error_context == null)
             return null;
-        return String.format(error_context.getString(id), s, i);
+        return error_context.getString(id, s, i);
     }
 
     public static String getString(int id, int a, int b, int c, int d) {
+        Context error_context = clog_context.get();
+
         if (clogged || error_context == null)
             return null;
-        return String.format(error_context.getString(id), a, b, c, d);
+        return error_context.getString(id, a, b, c, d);
     }
 
     public static String getString(int id, boolean b) {
+        Context error_context = clog_context.get();
+
         if (clogged || error_context == null)
             return null;
-        return String.format(error_context.getString(id), b);
+        return error_context.getString(id, b);
     }
 
     public static String getString(int id, String s, String ss) {
+        Context error_context = clog_context.get();
+
         if (clogged || error_context == null)
             return null;
-        return String.format(error_context.getString(id), s, ss);
+        return error_context.getString(id, s, ss);
     }
 
     public static String getString(int id, int i, String s, String ss) {
+        Context error_context = clog_context.get();
+
         if (clogged || error_context == null)
             return null;
-        return String.format(error_context.getString(id), i, s, ss);
+        return error_context.getString(id, i, s, ss);
     }
 
     public static String getString(int id, String s, int i, String ss) {
+        Context error_context = clog_context.get();
+
         if (clogged || error_context == null)
             return null;
-        return String.format(error_context.getString(id), s, i, ss);
+        return error_context.getString(id, s, i, ss);
     }
 
     public static String getString(int id, int i, String s) {
+        Context error_context = clog_context.get();
+
         if (clogged || error_context == null)
             return null;
-        return String.format(error_context.getString(id), i, s);
+        return error_context.getString(id, i, s);
     }
 
-    public static String getString(int id, int w, int h, int offset_x, int offset_y, String custom_close_position, boolean allow_offscrean) {
+    public static String getString(int id, int w, int h, int offset_x, int offset_y, String custom_close_position, boolean allow_offscreen) {
+        Context error_context = clog_context.get();
+
         if (clogged || error_context == null)
             return null;
-        return String.format(error_context.getString(id), w, h, offset_x, offset_y, custom_close_position, allow_offscrean);
+        return error_context.getString(id, w, h, offset_x, offset_y, custom_close_position, allow_offscreen);
     }
 
     public static String getString(int id, boolean b, int i) {
+        Context error_context = clog_context.get();
+
         if (clogged || error_context == null)
             return null;
-        return String.format(error_context.getString(id), b, i);
+        return error_context.getString(id, b, i);
     }
 
     public static String getString(int id, int i, int j) {
+        Context error_context = clog_context.get();
+
         if (clogged || error_context == null)
             return null;
-        return String.format(error_context.getString(id), i, j);
+        return error_context.getString(id, i, j);
     }
 
     /**

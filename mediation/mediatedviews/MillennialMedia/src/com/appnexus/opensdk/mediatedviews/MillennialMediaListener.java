@@ -19,6 +19,7 @@ package com.appnexus.opensdk.mediatedviews;
 import com.appnexus.opensdk.MediatedAdViewController;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
+import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.utils.Clog;
 import com.millennialmedia.android.MMAd;
 import com.millennialmedia.android.MMException;
@@ -72,40 +73,40 @@ class MillennialMediaListener implements RequestListener {
     @Override
     public void requestFailed(MMAd mmAd, MMException e) {
         printToClog("requestFailed: " + mmAd + " with error: " + e);
-        MediatedAdViewController.RESULT code = MediatedInterstitialAdViewController.RESULT.INTERNAL_ERROR;
+        ResultCode code = ResultCode.INTERNAL_ERROR;
 
         boolean shouldCancelFailure = false;
 
         switch (e.getCode()) {
             case MMException.INVALID_PARAMETER:
-                code = MediatedAdViewController.RESULT.INVALID_REQUEST;
+                code = ResultCode.INVALID_REQUEST;
                 break;
             case MMException.INNER_EXCEPTION:
-                code = MediatedAdViewController.RESULT.INTERNAL_ERROR;
+                code = ResultCode.INTERNAL_ERROR;
                 break;
             case MMException.MAIN_THREAD_REQUIRED:
-                code = MediatedAdViewController.RESULT.INTERNAL_ERROR;
+                code = ResultCode.INTERNAL_ERROR;
                 break;
             case MMException.REQUEST_TIMEOUT:
-                code = MediatedAdViewController.RESULT.NETWORK_ERROR;
+                code = ResultCode.NETWORK_ERROR;
                 break;
             case MMException.REQUEST_NO_NETWORK:
-                code = MediatedAdViewController.RESULT.NETWORK_ERROR;
+                code = ResultCode.NETWORK_ERROR;
                 break;
             case MMException.REQUEST_IN_PROGRESS:
-                code = MediatedAdViewController.RESULT.INVALID_REQUEST;
+                code = ResultCode.INVALID_REQUEST;
                 break;
             case MMException.REQUEST_ALREADY_CACHING:
-                code = MediatedAdViewController.RESULT.INVALID_REQUEST;
+                code = ResultCode.INVALID_REQUEST;
                 break;
             case MMException.REQUEST_NOT_FILLED:
-                code = MediatedAdViewController.RESULT.UNABLE_TO_FILL;
+                code = ResultCode.UNABLE_TO_FILL;
                 break;
             case MMException.REQUEST_BAD_RESPONSE:
-                code = MediatedAdViewController.RESULT.INVALID_REQUEST;
+                code = ResultCode.INVALID_REQUEST;
                 break;
             case MMException.REQUEST_NOT_PERMITTED:
-                code = MediatedAdViewController.RESULT.INVALID_REQUEST;
+                code = ResultCode.INVALID_REQUEST;
                 break;
             case MMException.CACHE_NOT_EMPTY:
                 printToClog("cache not empty, show the cached ad");
@@ -115,28 +116,28 @@ class MillennialMediaListener implements RequestListener {
                 }
                 break;
             case MMException.DISPLAY_AD_NOT_READY:
-                code = MediatedAdViewController.RESULT.UNABLE_TO_FILL;
+                code = ResultCode.UNABLE_TO_FILL;
                 break;
             case MMException.DISPLAY_AD_EXPIRED:
-                code = MediatedAdViewController.RESULT.UNABLE_TO_FILL;
+                code = ResultCode.UNABLE_TO_FILL;
                 break;
             case MMException.DISPLAY_AD_NOT_FOUND:
-                code = MediatedAdViewController.RESULT.UNABLE_TO_FILL;
+                code = ResultCode.UNABLE_TO_FILL;
                 break;
             case MMException.DISPLAY_AD_ALREADY_DISPLAYED:
-                code = MediatedAdViewController.RESULT.UNABLE_TO_FILL;
+                code = ResultCode.UNABLE_TO_FILL;
                 break;
             case MMException.DISPLAY_AD_NOT_PERMITTED:
-                code = MediatedAdViewController.RESULT.UNABLE_TO_FILL;
+                code = ResultCode.UNABLE_TO_FILL;
                 break;
             case MMException.AD_BROKEN_REFERENCE:
-                code = MediatedAdViewController.RESULT.INTERNAL_ERROR;
+                code = ResultCode.INTERNAL_ERROR;
                 break;
             case MMException.AD_NO_ACTIVITY:
-                code = MediatedAdViewController.RESULT.INTERNAL_ERROR;
+                code = ResultCode.INTERNAL_ERROR;
                 break;
             case MMException.UNKNOWN_ERROR:
-                code = MediatedAdViewController.RESULT.INTERNAL_ERROR;
+                code = ResultCode.INTERNAL_ERROR;
                 break;
         }
 

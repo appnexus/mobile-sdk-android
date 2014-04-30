@@ -274,13 +274,15 @@ public class BannerAdView extends AdView {
         if (webView != null)
             webView.destroy();
 
-        View displayableView = d.getView();
-        this.addView(displayableView);
+        if ((d != null) && (d.getView() != null)) {
+            View displayableView = d.getView();
+            this.addView(displayableView);
 
-        // center the displayable view in AdView
-        ((LayoutParams) displayableView.getLayoutParams()).gravity = Gravity.CENTER;
+            // center the displayable view in AdView
+            ((LayoutParams) displayableView.getLayoutParams()).gravity = Gravity.CENTER;
 
-        unhide();
+            unhide();
+        }
     }
 
     void start() {
@@ -433,7 +435,7 @@ public class BannerAdView extends AdView {
      * @param period The auto-refresh interval, in milliseconds.
      */
     public void setAutoRefreshInterval(int period) {
-        this.period = Math.max(Settings.getSettings().MIN_REFRESH_MILLISECONDS,
+        this.period = Math.max(Settings.MIN_REFRESH_MILLISECONDS,
                 period);
         if (period > 0) {
             Clog.d(Clog.publicFunctionsLogTag,

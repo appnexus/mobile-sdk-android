@@ -27,7 +27,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -63,39 +62,6 @@ class MRAIDImplementation {
 
     public MRAIDImplementation(AdWebView owner) {
         this.owner = owner;
-    }
-
-    // The webview about to load the ad, and the html ad content
-    String onPreLoadContent(WebView wv, String html) {
-        // Check to ensure <html> tags are present
-        if (!html.contains("<html>")) {
-            html = "<html><head></head><body style='padding:0;margin:0;'>"
-                    + html + "</body></html>";
-        } else if (!html.contains("<head>")) {
-            // The <html> tags are present, but there is no <head> section to
-            // inject the mraid js
-            html = html.replace("<html>", "<html><head></head>");
-        }
-
-        // Insert mraid script source
-        html = html.replace("<head>",
-                "<head><script>" + getMraidDotJS(wv.getResources())
-                        + "</script>");
-
-        return html;
-    }
-
-    String getMraidDotJS(Resources r) {
-        InputStream ins = r.openRawResource(R.raw.mraid);
-        try {
-            byte[] buffer = new byte[ins.available()];
-            if (ins.read(buffer) > 0) {
-                return new String(buffer, "UTF-8");
-            }
-        } catch (IOException e) {
-
-        }
-        return null;
     }
 
     void webViewFinishedLoading(WebView view) {
@@ -145,25 +111,29 @@ class MRAIDImplementation {
                 location[0], location[1], size[0], size[1]));
     }
 
+    private void setSupports(WebView view, String feature, boolean value) {
+        view.loadUrl(String.format("javascript:window.mraid.util.setSupports(\'%s\', %s)", feature, String.valueOf(value)));
+    }
+
     @SuppressLint("NewApi")
     private void setSupportsValues(WebView view) {
         //SMS
         if (hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("sms:5555555555")))) {
-            view.loadUrl("javascript:window.mraid.util.setSupportsSMS(true)");
+            setSupports(view, "sms", true);
         }
 
         //Tel
         if (hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("tel:5555555555")))) {
-            view.loadUrl("javascript:window.mraid.util.setSupportsTel(true)");
+            setSupports(view, "tel", true);
         }
 
         //Calendar
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             if (hasIntent(new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI))) {
-                view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
+                setSupports(view, "calendar", true);
                 supportsCalendar = true;
             } else if (hasIntent(new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event"))) {
-                view.loadUrl("javascript:window.mraid.util.setSupportsCalendar(true)");
+                setSupports(view, "calendar", true);
                 supportsCalendar = true;
                 W3CEvent.useMIME = true;
             }
@@ -173,14 +143,13 @@ class MRAIDImplementation {
         PackageManager pm = owner.getContext().getPackageManager();
         if (pm.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, owner.getContext().getPackageName()) == PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                view.loadUrl("javascript:window.mraid.util.setSupportsStorePicture(true)");
+                setSupports(view, "storePicture", true);
                 supportsPictureAPI = true;
             }
         }
 
         //Video should always work inline.
-        view.loadUrl("javascript:window.mraid.util.setSupportsInlineVideo(true)");
-
+        setSupports(view, "inlineVideo", true);
     }
 
     boolean hasIntent(Intent i) {
@@ -379,7 +348,7 @@ class MRAIDImplementation {
 
         final String uri_final = Uri.decode(uri);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(owner.adView.getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(ViewUtil.getTopContext(owner));
         builder.setTitle(R.string.store_picture_title);
         builder.setMessage(R.string.store_picture_message);
         builder.setPositiveButton(R.string.store_picture_accept, new DialogInterface.OnClickListener() {
@@ -486,6 +455,7 @@ class MRAIDImplementation {
             return;
         }
         Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             i.setDataAndType(Uri.parse(URLDecoder.decode(uri, "UTF-8")), "video/mp4");
         } catch (UnsupportedEncodingException e) {
@@ -514,6 +484,7 @@ class MRAIDImplementation {
         if (event != null) {
             try {
                 Intent i = event.getInsertIntent();
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 owner.getContext().startActivity(i);
                 owner.fireAdClicked();
                 Clog.d(Clog.mraidLogTag, Clog.getString(R.string.create_calendar_event));
@@ -534,6 +505,7 @@ class MRAIDImplementation {
         return orientation;
     }
 
+    @SuppressWarnings({"UnusedDeclaration", "UnusedAssignment"})
     private void setOrientationProperties(ArrayList<BasicNameValuePair> parameters) {
         boolean allow_orientation_change = true;
         AdActivity.OrientationEnum orientation = AdActivity.OrientationEnum.none;
@@ -549,15 +521,14 @@ class MRAIDImplementation {
         // orientationProperties only affects expanded state
         if (expanded) {
             Activity containerActivity = owner.isFullScreen
-                    ? getFullscreenActivity() : (Activity) owner.getContext();
+                    ? getFullscreenActivity() : (Activity) ViewUtil.getTopContext(owner);
             if (allow_orientation_change) {
                 AdActivity.unlockOrientation(containerActivity);
             } else {
+                // forceOrientation only applies to pre-expansion, so don't use here
                 AdActivity.lockToCurrentOrientation(containerActivity);
             }
         }
-
-        Clog.d(Clog.mraidLogTag, Clog.getString(R.string.set_orientation_properties, allow_orientation_change, orientation.ordinal()));
     }
 
     public enum CUSTOM_CLOSE_POSITION {

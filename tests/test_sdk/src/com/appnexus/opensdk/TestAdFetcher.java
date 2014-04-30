@@ -25,7 +25,6 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 
 @Config(shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class},
         manifest = "../sdk/AndroidManifest.xml")
@@ -102,6 +101,9 @@ public class TestAdFetcher extends BaseRoboTest {
         runStartTest(0);
     }
 
+    /*
+    Does not call UI thread anymore
+
     @Test
     public void testStartTwiceBeforeAdRequestQueued() {
         adFetcher.start();
@@ -112,7 +114,6 @@ public class TestAdFetcher extends BaseRoboTest {
         // the second start should fail (and dispatch a UI thread call to adFailed)
         adFetcher.start();
         runStartTest(1);
-        assertTrue(adFailed);
     }
 
     @Test
@@ -125,8 +126,8 @@ public class TestAdFetcher extends BaseRoboTest {
         // the second start should fail (and dispatch a UI thread call to adFailed)
         adFetcher.start();
         runStartTest(1);
-        assertTrue(adFailed);
     }
+    */
 
     @Test
     public void testStop() {

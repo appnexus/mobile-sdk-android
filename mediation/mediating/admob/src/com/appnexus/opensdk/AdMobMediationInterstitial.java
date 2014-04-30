@@ -22,13 +22,13 @@ import com.google.ads.mediation.MediationAdRequest;
 import com.google.ads.mediation.customevent.CustomEventInterstitial;
 import com.google.ads.mediation.customevent.CustomEventInterstitialListener;
 
-public class AdMobMediationInterstitial implements CustomEventInterstitial, com.appnexus.opensdk.AdListener {
+public class AdMobMediationInterstitial implements CustomEventInterstitial, AdListener {
     InterstitialAdView iav;
     CustomEventInterstitialListener listener;
 
     @Override
     public void requestInterstitialAd(CustomEventInterstitialListener listener,
-                                      Activity activity, String label, String placement_id, MediationAdRequest adRequest,
+                                      Activity activity, String label, String placement_id, MediationAdRequest mediationAdRequest,
                                       Object extra) {
         Clog.d(Clog.mediationLogTag, "Initializing ANInterstitial via AdMob SDK");
         this.listener = listener;
@@ -37,6 +37,23 @@ public class AdMobMediationInterstitial implements CustomEventInterstitial, com.
         iav.setPlacementID(placement_id);
         iav.setShouldServePSAs(false);
         iav.setAdListener(this);
+
+        switch (mediationAdRequest.getGender()) {
+            case MALE:
+                iav.setGender(AdView.GENDER.MALE);
+                break;
+            case FEMALE:
+                iav.setGender(AdView.GENDER.FEMALE);
+                break;
+            default:
+                // unknown case passes nothing
+                break;
+        }
+        if (mediationAdRequest.getAgeInYears() != null) {
+            iav.setAge(String.valueOf(mediationAdRequest.getAgeInYears()));
+        }
+        SDKSettings.setLocation(mediationAdRequest.getLocation());
+
 
         Clog.d(Clog.mediationLogTag, "Fetch ANInterstitial");
         iav.loadAd();
@@ -61,8 +78,8 @@ public class AdMobMediationInterstitial implements CustomEventInterstitial, com.
     }
 
     @Override
-    public void onAdRequestFailed(AdView adView) {
-        Clog.d(Clog.mediationLogTag, "ANInterstitial failed to load");
+    public void onAdRequestFailed(AdView adView, ResultCode resultCode) {
+        Clog.d(Clog.mediationLogTag, "ANInterstitial failed to load: " + resultCode);
         if (listener != null) listener.onFailedToReceiveAd();
     }
 

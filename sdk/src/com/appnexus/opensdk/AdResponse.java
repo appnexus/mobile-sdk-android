@@ -154,7 +154,7 @@ class AdResponse {
             height = getJSONInt(firstAd, RESPONSE_KEY_HEIGHT);
             width = getJSONInt(firstAd, RESPONSE_KEY_WIDTH);
             content = getJSONString(firstAd, RESPONSE_KEY_CONTENT);
-            if (content == null || content.equals("")) {
+            if (StringUtil.isEmpty(content)) {
                 Clog.e(Clog.httpRespLogTag,
                         Clog.getString(R.string.blank_ad));
             }

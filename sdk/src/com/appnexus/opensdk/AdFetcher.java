@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 class AdFetcher implements AdRequester {
     private ScheduledExecutorService tasker;
-    private final AdView owner;
+    private final AdView owner; // assume not null
     private int period = -1;
     private boolean autoRefresh;
     private final RequestHandler handler;
@@ -78,15 +78,11 @@ class AdFetcher implements AdRequester {
 
     }
 
-    private void requestFailed() {
-        owner.fail();
-    }
-
     void start() {
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.start));
         if (tasker != null) {
+            // only print log, don't call onAdFailed callback
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.moot_restart));
-            requestFailed();
             return;
         }
         makeTasker();
@@ -95,7 +91,7 @@ class AdFetcher implements AdRequester {
     private void makeTasker() {
         // Start a Scheduler to execute recurring tasks
         tasker = Executors
-                .newScheduledThreadPool(Settings.getSettings().FETCH_THREAD_COUNT);
+                .newScheduledThreadPool(Settings.FETCH_THREAD_COUNT);
 
         // Get the period from the settings
         final int msPeriod = period <= 0 ? 30 * 1000 : period;
@@ -208,7 +204,8 @@ class AdFetcher implements AdRequester {
 
     @Override
     public void failed(AdRequest request) {
-        owner.fail();
+        // AdRequest failed
+        owner.fail(ResultCode.NETWORK_ERROR);
     }
 
     public void dispatchResponse(final AdResponse response) {
@@ -253,7 +250,7 @@ class AdFetcher implements AdRequester {
         // no ads in the response and no old ads means no fill
         if (!responseHasAds && !ownerHasAds) {
             Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
-            requestFailed();
+            owner.fail(ResultCode.UNABLE_TO_FILL);
             return;
         }
 

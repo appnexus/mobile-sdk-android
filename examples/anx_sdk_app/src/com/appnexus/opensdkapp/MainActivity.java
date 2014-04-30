@@ -36,9 +36,9 @@ import android.widget.*;
 import android.widget.TabHost.TabContentFactory;
 import com.amazon.device.ads.AdRegistration;
 import com.appnexus.opensdk.AndroidAdvertisingIDUtil;
+import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ClogListener;
-import com.appnexus.opensdk.utils.Settings;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -340,13 +340,13 @@ public class MainActivity extends FragmentActivity implements
             @Override
             public void onRetrievedID(String androidAdvertisingID, boolean isLimitAdTrackingEnabled) {
                 Clog.d(Constants.BASE_LOG_TAG, "Setting aaid: " + androidAdvertisingID + " " + isLimitAdTrackingEnabled);
-                Settings.setAAID(androidAdvertisingID, isLimitAdTrackingEnabled);
+                SDKSettings.setAAID(androidAdvertisingID, isLimitAdTrackingEnabled);
             }
 
             @Override
             public void onFailedToRetrieveID() {
                 Clog.d(Constants.BASE_LOG_TAG, "Failed to retrieve aaid");
-                Settings.setAAID(null, false);
+                SDKSettings.setAAID(null, false);
             }
         };
         util.getID(this);

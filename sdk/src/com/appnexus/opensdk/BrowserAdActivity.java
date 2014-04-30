@@ -35,7 +35,7 @@ import android.widget.*;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ViewUtil;
 
-public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
+class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     private AdActivity adActivity;
     private WebView webView;
     private boolean shouldDestroyActivity = false;
@@ -155,9 +155,9 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                Clog.v(Clog.browserLogTag,
+                        Clog.getString(R.string.opening_url, url));
                 if (url.startsWith("http")) {
-                    Clog.d(Clog.browserLogTag,
-                            Clog.getString(R.string.opening_url, url));
                     return false;
                 } else {
                     openNativeIntent(url);
@@ -225,6 +225,7 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
 
     private void openNativeIntent(String url) {
         Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             adActivity.startActivity(i);
             finishAdActivity();

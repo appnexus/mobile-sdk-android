@@ -18,6 +18,7 @@ package com.appnexus.opensdk.mediatedviews;
 
 import com.appnexus.opensdk.MediatedAdViewController;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
+import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.utils.Clog;
 import com.google.ads.Ad;
 import com.google.ads.AdListener;
@@ -44,20 +45,20 @@ public class AdMobAdListener implements AdListener {
     public void onFailedToReceiveAd(Ad ad, AdRequest.ErrorCode errorCode) {
         printToClog("onFailedToReceiveAd: " + ad + " error code: " + errorCode);
 
-        MediatedAdViewController.RESULT code = MediatedAdViewController.RESULT.INTERNAL_ERROR;
+        ResultCode code = ResultCode.INTERNAL_ERROR;
 
         switch (errorCode) {
             case INTERNAL_ERROR:
-                code = MediatedAdViewController.RESULT.INTERNAL_ERROR;
+                code = ResultCode.INTERNAL_ERROR;
                 break;
             case INVALID_REQUEST:
-                code = MediatedAdViewController.RESULT.INVALID_REQUEST;
+                code = ResultCode.INVALID_REQUEST;
                 break;
             case NETWORK_ERROR:
-                code = MediatedAdViewController.RESULT.NETWORK_ERROR;
+                code = ResultCode.NETWORK_ERROR;
                 break;
             case NO_FILL:
-                code = MediatedAdViewController.RESULT.UNABLE_TO_FILL;
+                code = ResultCode.UNABLE_TO_FILL;
                 break;
             default:
                 break;

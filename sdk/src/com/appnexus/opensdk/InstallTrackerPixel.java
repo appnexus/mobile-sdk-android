@@ -55,7 +55,7 @@ class InstallTrackerPixel extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, final Intent intent) {
         this.context = context;
-        Clog.error_context = context;
+        Clog.setErrorContext(context);
         Bundle extras = intent.getExtras();
 
         new PixelHttpTask(0).execute(extras);
@@ -77,7 +77,7 @@ class InstallTrackerPixel extends BroadcastReceiver {
         }
 
         StringBuilder urlBuilder = new StringBuilder(
-                Settings.getSettings().INSTALL_BASE_URL);
+                Settings.INSTALL_BASE_URL);
         urlBuilder.append(pid != null && !pid.equals("") ? "&id="
                 + Uri.encode(pid) : "");
         urlBuilder.append(params != null ? "&" + params : "");
@@ -128,9 +128,9 @@ class InstallTrackerPixel extends BroadcastReceiver {
             try {
                 HttpParams p = new BasicHttpParams();
                 HttpConnectionParams.setConnectionTimeout(p,
-                        Settings.getSettings().HTTP_CONNECTION_TIMEOUT);
+                        Settings.HTTP_CONNECTION_TIMEOUT);
                 HttpConnectionParams.setSoTimeout(p,
-                        Settings.getSettings().HTTP_SOCKET_TIMEOUT);
+                        Settings.HTTP_SOCKET_TIMEOUT);
                 HttpConnectionParams.setSocketBufferSize(p, 8192);
                 HttpClient client = new DefaultHttpClient(p);
                 HttpGet get = new HttpGet(url);
