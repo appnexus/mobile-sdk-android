@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk;
 
+import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Pair;
@@ -24,12 +25,13 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.ViewUtil;
 
 class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
-    private AdActivity adActivity;
+    private Activity adActivity;
     private AdWebView webView;
 
     private FrameLayout layout;
@@ -38,7 +40,7 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
     private static final int CLOSE_BUTTON_MESSAGE_ID = 8000;
     private ImageButton closeButton;
 
-    public InterstitialAdActivity(AdActivity adActivity) {
+    public InterstitialAdActivity(Activity adActivity) {
         this.adActivity = adActivity;
     }
 
@@ -81,7 +83,7 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
 
         // cleanup adView
         if (adView != null) {
-            adView.setAdActivity(null);
+            adView.setAdImplementation(null);
         }
     }
 
@@ -99,7 +101,7 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
         adView = av;
         if (adView == null) return;
 
-        adView.setAdActivity(adActivity);
+        adView.setAdImplementation(this);
 
         layout.setBackgroundColor(adView.getBackgroundColor());
         layout.removeAllViews();

@@ -55,7 +55,7 @@ public class InterstitialAdView extends AdView {
     static final String INTENT_KEY_CLOSE_BUTTON_DELAY = "CLOSE_BUTTON_DELAY";
 
     //To let the activity show the button.
-    private AdActivity adActivity = null;
+    private AdActivity.AdActivityImplementation adImplementation = null;
 
     /**
      * Creates a new interstitial ad view in which to load and show
@@ -201,7 +201,9 @@ public class InterstitialAdView extends AdView {
     }
 
     void interacted() {
-        if (adActivity != null) adActivity.interacted();
+        if (adImplementation != null) {
+            adImplementation.interacted();
+        }
     }
 
     @Override
@@ -295,7 +297,8 @@ public class InterstitialAdView extends AdView {
 
         // otherwise, launch our adActivity
         if (validAdExists) {
-            Intent i = new Intent(getContext(), AdActivity.class);
+            Class<?> activity_clz = AdActivity.getActivityClass();
+            Intent i = new Intent(getContext(), activity_clz);
             i.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE,
                     AdActivity.ACTIVITY_TYPE_INTERSTITIAL);
             i.putExtra(InterstitialAdView.INTENT_KEY_TIME, now);
@@ -306,7 +309,7 @@ public class InterstitialAdView extends AdView {
                 getContext().startActivity(i);
             } catch (ActivityNotFoundException e) {
                 INTERSTITIALADVIEW_TO_USE = null;
-                Clog.e(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing));
+                Clog.e(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing,activity_clz.getName()));
             }
 
             return adQueue.size() - 1; // Return the number of ads remaining, less the one we're about to show
@@ -399,8 +402,8 @@ public class InterstitialAdView extends AdView {
         this.closeButtonDelay = Math.min(closeButtonDelay, Settings.DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
     }
 
-    void setAdActivity(AdActivity adActivity) {
-        this.adActivity = adActivity;
+    void setAdImplementation(AdActivity.AdActivityImplementation adImplementation) {
+        this.adImplementation = adImplementation;
     }
 
     Queue<Pair<Long, Displayable>> getAdQueue() {
@@ -410,14 +413,16 @@ public class InterstitialAdView extends AdView {
     /**
      * A convenience class which holds a width and height in integers.
      */
-    public class Size {
+    public static class Size {
         private final int w;
         private final int h;
 
-        Size(int w, int h) {
+        public Size(int w, int h) {
             this.w = w;
             this.h = h;
         }
+        
+        
 
         /**
          * @return The width, in pixels.

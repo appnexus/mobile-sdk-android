@@ -64,6 +64,12 @@ public class AdActivity extends Activity {
     static final String ACTIVITY_TYPE_BROWSER = "BROWSER";
     static final String ACTIVITY_TYPE_MRAID = "MRAID";
 
+    static Class overrideActivity = AdActivity.class;
+
+    static Class getActivityClass() {
+        return overrideActivity;
+    }
+
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);

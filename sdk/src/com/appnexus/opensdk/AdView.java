@@ -436,13 +436,14 @@ public abstract class AdView extends FrameLayout {
             mraidFullscreenImplementation = caller;
             mraidFullscreenListener = listener;
 
+            Class<?> activity_clz = AdActivity.getActivityClass();
             try {
-                Intent i = new Intent(getContext(), AdActivity.class);
+                Intent i = new Intent(getContext(), activity_clz);
                 i.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE,
                         AdActivity.ACTIVITY_TYPE_MRAID);
                 getContext().startActivity(i);
             } catch (ActivityNotFoundException e) {
-                Clog.e(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing));
+                Clog.e(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing, activity_clz.getName()));
                 mraidFullscreenContainer = null;
                 mraidFullscreenImplementation = null;
                 mraidFullscreenListener = null;

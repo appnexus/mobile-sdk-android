@@ -312,8 +312,9 @@ class AdWebView extends WebView implements Displayable {
     }
 
     private void openInAppBrowser(WebView fwdWebView) {
-        // open the in-app browser
-        Intent intent = new Intent(adView.getContext(), AdActivity.class);
+        Class<?> activity_clz = AdActivity.getActivityClass();
+
+        Intent intent = new Intent(adView.getContext(), activity_clz);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
 
@@ -329,7 +330,7 @@ class AdWebView extends WebView implements Displayable {
         try {
             AdWebView.this.adView.getContext().startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            Clog.w(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing));
+            Clog.w(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing, activity_clz.getName()));
             AdWebView.BROWSER_QUEUE.remove();
         }
     }

@@ -36,11 +36,11 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ViewUtil;
 
 class BrowserAdActivity implements AdActivity.AdActivityImplementation {
-    private AdActivity adActivity;
+    private Activity adActivity;
     private WebView webView;
     private boolean shouldDestroyActivity = false;
 
-    public BrowserAdActivity(AdActivity adActivity) {
+    public BrowserAdActivity(Activity adActivity) {
         this.adActivity = adActivity;
     }
 
