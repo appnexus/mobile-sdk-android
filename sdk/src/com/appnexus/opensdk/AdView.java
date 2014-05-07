@@ -80,27 +80,25 @@ public abstract class AdView extends FrameLayout {
     boolean loadedOffscreen = false;
     boolean isMRAIDExpanded = false;
 
+    private boolean shouldResizeParent = false;
+
     /**
-	 * Begin Construction
-	 */
-	@SuppressWarnings("javadoc")
-	AdView(Context context) {
-		super(context, null);
-		setup(context, null);
-	}
+     * Begin Construction
+     */
+    AdView(Context context) {
+        this(context, (AttributeSet) null);
+    }
 
-	AdView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		setup(context, attrs);
+    AdView(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
 
-	}
+    AdView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        setup(context, attrs);
+    }
 
-	AdView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		setup(context, attrs);
-	}
-
-	void setup(Context context, AttributeSet attrs) {
+    void setup(Context context, AttributeSet attrs) {
 		dispatcher = new AdView.AdListenerDispatch(handler);
 
 		// Store self.context in the settings for errors
@@ -349,6 +347,10 @@ public abstract class AdView extends FrameLayout {
 		return measuredHeight;
 	}
 
+    protected void setShouldResizeParent(boolean shouldResizeParent) {
+        this.shouldResizeParent = shouldResizeParent;
+    }
+
     /**
      * MRAID functions and variables
      */
@@ -392,9 +394,19 @@ public abstract class AdView extends FrameLayout {
             if (getLayoutParams().height > 0)
                 getLayoutParams().height = h;
         }
+
+        if (shouldResizeParent && (getParent() instanceof View)) {
+            View parent = (View) getParent();
+            if (parent.getLayoutParams() != null) {
+                if (parent.getLayoutParams().width > 0)
+                    parent.getLayoutParams().width = w;
+                if (parent.getLayoutParams().height > 0)
+                    parent.getLayoutParams().height = h;
+            }
+        }
     }
 
-    protected void expand(int w, int h, boolean custom_close,
+    void expand(int w, int h, boolean custom_close,
                           final MRAIDImplementation caller,
                           AdWebView.MRAIDFullscreenListener listener) {
         MRAIDChangeSize(w, h);

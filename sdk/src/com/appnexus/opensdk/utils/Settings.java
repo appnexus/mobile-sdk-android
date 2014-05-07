@@ -20,6 +20,7 @@ import android.location.Location;
 import android.os.Build;
 import com.appnexus.opensdk.R;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -48,6 +49,9 @@ public class Settings {
     public boolean locationEnabled = true;
     public Location location = null;
 
+    // STATICS
+    public HashMap<String, String> externalMediationClasses = new HashMap<String, String>();
+
     public static final int HTTP_CONNECTION_TIMEOUT = 15000;
     public static final int HTTP_SOCKET_TIMEOUT = 20000;
 
@@ -65,7 +69,6 @@ public class Settings {
     public static final String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
     public static final String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
 
-    // STATICS
     private static Settings settings_instance = null;
 
     public static Settings getSettings() {

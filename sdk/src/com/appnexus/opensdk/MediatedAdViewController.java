@@ -24,6 +24,8 @@ import android.os.Message;
 import com.appnexus.opensdk.utils.*;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 /**
@@ -114,20 +116,59 @@ public abstract class MediatedAdViewController {
                 R.string.instantiating_class, currentAd.getClassName()));
 
         try {
-            Class<?> c = Class.forName(currentAd.getClassName());
-            mAV = (MediatedAdView) c.newInstance();
+            String className = currentAd.getClassName();
+            String intermediaryAdaptorClassName = Settings.getSettings().externalMediationClasses.get(className);
+            Class<?> c;
+
+            if (StringUtil.isEmpty(intermediaryAdaptorClassName)) {
+                c = Class.forName(className);
+                mAV = (MediatedAdView) c.newInstance();
+            } else {
+                c = Class.forName(intermediaryAdaptorClassName);
+                Constructor<?> constructor = c.getConstructor(String.class);
+                mAV = (MediatedAdView) constructor.newInstance(className);
+            }
+
             // exceptions will skip down to return false
             return true;
         } catch (ClassNotFoundException e) {
-            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.class_not_found_exception));
+            // exception in Class.forName
+            handleInstantiationFailure(e);
+        } catch (LinkageError e) {
+            // error in Class.forName
+            // also catches subclass ExceptionInInitializerError
+            handleInstantiationFailure(e);
         } catch (InstantiationException e) {
-            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instantiation_exception));
+            // exception in Class.newInstance
+            handleInstantiationFailure(e);
         } catch (IllegalAccessException e) {
-            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.illegal_access_exception));
+            // exception in Class.newInstance
+            handleInstantiationFailure(e);
         } catch (ClassCastException e) {
-            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.class_cast_exception));
+            // exception in object cast
+            handleInstantiationFailure(e);
+        } catch (NoSuchMethodException e) {
+            // exception in Class.getConstructor
+            // intermediary adaptor case
+            handleInstantiationFailure(e);
+        } catch (InvocationTargetException e) {
+            // exception in Constructor.newInstance
+            // intermediary adaptor case
+            handleInstantiationFailure(e);
         }
         return false;
+    }
+
+    private void handleInstantiationFailure(Exception e) {
+        Clog.e(Clog.mediationLogTag,
+                Clog.getString(R.string.mediation_instantiation_failure,
+                        e.getClass().getSimpleName()));
+    }
+
+    private void handleInstantiationFailure(Error e) {
+        Clog.e(Clog.mediationLogTag,
+                Clog.getString(R.string.mediation_instantiation_failure,
+                        e.getClass().getSimpleName()));
     }
 
     protected void finishController() {

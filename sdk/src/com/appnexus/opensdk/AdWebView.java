@@ -510,12 +510,6 @@ class AdWebView extends WebView implements Displayable {
         }
     }
 
-    void show() {
-        if (adView != null) {
-            adView.expand(default_width, default_height, true, null, null);
-        }
-    }
-
     void close() {
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 this.getLayoutParams());
@@ -573,14 +567,8 @@ class AdWebView extends WebView implements Displayable {
             default_height = lp.height;
         }
 
-
-        if (h != -1) {
-            h = (int) (h * metrics.density + 0.5);
-        }
-        if (w != -1) {
-            w = (int) (w * metrics.density + 0.5);
-        }
-
+        h = (int) (h * metrics.density + 0.5);
+        w = (int) (w * metrics.density + 0.5);
 
         lp.height = h;
         lp.width = w;
