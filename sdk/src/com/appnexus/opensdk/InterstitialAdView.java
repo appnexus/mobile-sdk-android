@@ -193,11 +193,16 @@ public class InterstitialAdView extends AdView {
     }
 
     @Override
-    void display(Displayable d) {
-        super.display(d);
-        if (d != null) {
-            adQueue.add(new Pair<Long, Displayable>(System.currentTimeMillis(), d));
+    protected void display(Displayable d) {
+        // safety check: this should never evaluate to true
+        if ((d == null) || d.failed()) {
+            // The displayable has failed to be parsed or turned into a View.
+            // We're already calling onAdLoaded, so don't call onAdFailed; just log
+            Clog.e(Clog.baseLogTag, "Loaded an ad with an invalid displayable");
+            return;
         }
+
+        adQueue.add(new Pair<Long, Displayable>(System.currentTimeMillis(), d));
     }
 
     void interacted() {

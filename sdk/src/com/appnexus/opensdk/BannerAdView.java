@@ -262,27 +262,31 @@ public class BannerAdView extends AdView {
     }
 
     @Override
-    void display(Displayable d) {
-        super.display(d);
-
-        WebView webView = null;
-        if (getChildAt(0) instanceof WebView) {
-            webView = (WebView) getChildAt(0);
+    protected void display(Displayable d) {
+        // safety check: this should never evaluate to true
+        if ((d == null) || d.failed() || (d.getView() == null)) {
+            // The displayable has failed to be parsed or turned into a View.
+            // We're already calling onAdLoaded, so don't call onAdFailed; just log
+            Clog.e(Clog.baseLogTag, "Loaded an ad with an invalid displayable");
+            return;
         }
 
+        // call destroy on any old views
         this.removeAllViews();
-        if (webView != null)
-            webView.destroy();
-
-        if ((d != null) && (d.getView() != null)) {
-            View displayableView = d.getView();
-            this.addView(displayableView);
-
-            // center the displayable view in AdView
-            ((LayoutParams) displayableView.getLayoutParams()).gravity = Gravity.CENTER;
-
-            unhide();
+        if (lastDisplayable != null) {
+            lastDisplayable.destroy();
         }
+        lastDisplayable = d;
+
+        View displayableView = d.getView();
+        this.addView(displayableView);
+
+        // center the displayable view in AdView
+        if ((displayableView.getLayoutParams()) != null) {
+            ((LayoutParams) displayableView.getLayoutParams()).gravity = Gravity.CENTER;
+        }
+
+        unhide();
     }
 
     void start() {

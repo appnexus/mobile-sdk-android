@@ -115,7 +115,7 @@ public class Clog {
         Clog.clog_context = new WeakReference<Context>(c);
     }
 
-    private static WeakReference<Context> clog_context;
+    private static WeakReference<Context> clog_context = new WeakReference<Context>(null);
 
     public static String getString(int id) {
         Context error_context = clog_context.get();

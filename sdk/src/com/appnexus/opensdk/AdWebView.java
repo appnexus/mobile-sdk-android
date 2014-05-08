@@ -384,6 +384,8 @@ class AdWebView extends WebView implements Displayable {
 
     @Override
     public void destroy() {
+        // in case `this` was not removed when destroy was called
+        ViewUtil.removeChildFromParent(this);
         super.destroy();
         this.removeAllViews();
         stopCheckViewable();

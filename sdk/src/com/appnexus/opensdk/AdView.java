@@ -75,7 +75,7 @@ public abstract class AdView extends FrameLayout {
 	private BrowserStyle browserStyle;
 	private LinkedList<MediatedAd> mediatedAds;
 	final Handler handler = new Handler(Looper.getMainLooper());
-	private Displayable lastDisplayable;
+	protected Displayable lastDisplayable;
 	private AdListenerDispatch dispatcher;
     boolean loadedOffscreen = false;
     boolean isMRAIDExpanded = false;
@@ -276,22 +276,9 @@ public abstract class AdView extends FrameLayout {
 	 * End Construction
 	 */
 
-    void display(Displayable d) {
-        // safety check: this should never evaluate to true
-        if ((d == null) || d.failed() || (d.getView() == null)) {
-            // The displayable has failed to be parsed or turned into a View.
-            // We're already calling onAdLoaded, so don't call onAdFailed; just log
-            Clog.e(Clog.baseLogTag, "Loaded an ad with an invalid displayable");
-            return;
-        }
-        // call destroy on any old views
-        if (lastDisplayable != null) {
-            lastDisplayable.destroy();
-        }
-        lastDisplayable = d;
-    }
+    protected abstract void display(Displayable d);
 
-	void unhide() {
+    void unhide() {
 		if (getVisibility() != VISIBLE) {
 			setVisibility(VISIBLE);
 		}
