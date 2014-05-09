@@ -216,11 +216,6 @@ public class TestMRAIDImplementation extends BaseRoboTest {
         }
 
         @Override
-        void show() {
-            super.show();
-        }
-
-        @Override
         void close() {
             super.close();
         }

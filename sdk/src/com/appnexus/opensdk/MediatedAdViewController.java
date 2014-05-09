@@ -91,10 +91,6 @@ public abstract class MediatedAdViewController {
         if (hasFailed) {
             return false;
         }
-        if (currentAd == null) {
-            onAdFailed(ResultCode.UNABLE_TO_FILL);
-            return false;
-        }
         if ((mAV == null) || (callerClass == null) || !callerClass.isInstance(mAV)) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instance_exception,
                     callerClass != null ? callerClass.getCanonicalName() : "null"));
@@ -133,42 +129,41 @@ public abstract class MediatedAdViewController {
             return true;
         } catch (ClassNotFoundException e) {
             // exception in Class.forName
-            handleInstantiationFailure(e);
+            handleInstantiationFailure(e, currentAd.getClassName());
         } catch (LinkageError e) {
             // error in Class.forName
             // also catches subclass ExceptionInInitializerError
-            handleInstantiationFailure(e);
+            handleInstantiationFailure(e, currentAd.getClassName());
         } catch (InstantiationException e) {
             // exception in Class.newInstance
-            handleInstantiationFailure(e);
+            handleInstantiationFailure(e, currentAd.getClassName());
         } catch (IllegalAccessException e) {
             // exception in Class.newInstance
-            handleInstantiationFailure(e);
+            handleInstantiationFailure(e, currentAd.getClassName());
         } catch (ClassCastException e) {
             // exception in object cast
-            handleInstantiationFailure(e);
+            handleInstantiationFailure(e, currentAd.getClassName());
         } catch (NoSuchMethodException e) {
             // exception in Class.getConstructor
             // intermediary adaptor case
-            handleInstantiationFailure(e);
+            handleInstantiationFailure(e, currentAd.getClassName());
         } catch (InvocationTargetException e) {
             // exception in Constructor.newInstance
             // intermediary adaptor case
-            handleInstantiationFailure(e);
+            handleInstantiationFailure(e, currentAd.getClassName());
         }
         return false;
     }
 
-    private void handleInstantiationFailure(Exception e) {
+    // Accepts both Exceptions and Errors
+    private void handleInstantiationFailure(Throwable throwable, String className) {
         Clog.e(Clog.mediationLogTag,
                 Clog.getString(R.string.mediation_instantiation_failure,
-                        e.getClass().getSimpleName()));
-    }
-
-    private void handleInstantiationFailure(Error e) {
-        Clog.e(Clog.mediationLogTag,
-                Clog.getString(R.string.mediation_instantiation_failure,
-                        e.getClass().getSimpleName()));
+                        throwable.getClass().getSimpleName()));
+        if (!StringUtil.isEmpty(className)) {
+            Clog.w(Clog.mediationLogTag, String.format("Adding %s to invalid networks list", className));
+            Settings.getSettings().invalidNetworks.add(className);
+        }
     }
 
     protected void finishController() {

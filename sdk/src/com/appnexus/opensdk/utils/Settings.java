@@ -21,6 +21,7 @@ import android.os.Build;
 import com.appnexus.opensdk.R;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -49,9 +50,10 @@ public class Settings {
     public boolean locationEnabled = true;
     public Location location = null;
 
-    // STATICS
     public HashMap<String, String> externalMediationClasses = new HashMap<String, String>();
+    public HashSet<String> invalidNetworks = new HashSet<String>();
 
+    // STATICS
     public static final int HTTP_CONNECTION_TIMEOUT = 15000;
     public static final int HTTP_SOCKET_TIMEOUT = 20000;
 
