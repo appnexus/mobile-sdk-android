@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import android.webkit.*;
 import android.widget.*;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.ViewUtil;
 
 class BrowserAdActivity implements AdActivity.AdActivityImplementation {
@@ -224,7 +225,14 @@ class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     }
 
     private void openNativeIntent(String url) {
-        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        Uri launch_url = StringUtil.isEmpty(url) ? null :  Uri.parse(url);
+
+        if (launch_url == null) {
+            Clog.w(Clog.browserLogTag,
+                    Clog.getString(R.string.opening_url_failed, url));
+            return;
+        }
+        Intent i = new Intent(Intent.ACTION_VIEW, launch_url);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             adActivity.startActivity(i);
