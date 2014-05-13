@@ -26,6 +26,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
 import android.net.http.SslError;
+import android.os.Build;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Pair;
@@ -81,6 +82,9 @@ class AdWebView extends WebView implements Displayable {
         this.getSettings().setLoadsImagesAutomatically(true);
         this.getSettings().setSupportZoom(false);
         this.getSettings().setUseWideViewPort(false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            this.getSettings().setMediaPlaybackRequiresUserGesture(false);
+        }
 
         setHorizontalScrollbarOverlay(false);
         setHorizontalScrollBarEnabled(false);
