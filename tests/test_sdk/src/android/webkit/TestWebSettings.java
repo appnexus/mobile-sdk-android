@@ -14,24 +14,27 @@
  *    limitations under the License.
  */
 
-package com.appnexus.opensdk.shadows;
+package android.webkit;
 
-import android.webkit.WebSettings;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
+public class TestWebSettings extends WebSettings {
 
-@Implements(value = WebSettings.class, callThroughByDefault = true)
-public class ShadowWebSettings {
+    @Override
+    public void setAllowUniversalAccessFromFileURLs(boolean flag) {
 
-    @Implementation
-    public synchronized void setJavaScriptCanOpenWindowsAutomatically(boolean flag) {
     }
 
-    @Implementation
-    public synchronized void setLoadsImagesAutomatically(boolean flag) {
+    @Override
+    public void setAllowFileAccessFromFileURLs(boolean flag) {
+
     }
 
-    @Implementation
-    public synchronized void setMediaPlaybackRequiresUserGesture(boolean flag) {
+    @Override
+    public boolean getAllowUniversalAccessFromFileURLs() {
+        return false;
+    }
+
+    @Override
+    public boolean getAllowFileAccessFromFileURLs() {
+        return false;
     }
 }

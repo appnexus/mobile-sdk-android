@@ -16,22 +16,15 @@
 
 package com.appnexus.opensdk.shadows;
 
+import android.webkit.TestWebSettings;
 import android.webkit.WebSettings;
-import org.robolectric.annotation.Implementation;
+import android.webkit.WebView;
 import org.robolectric.annotation.Implements;
 
-@Implements(value = WebSettings.class, callThroughByDefault = true)
-public class ShadowWebSettings {
-
-    @Implementation
-    public synchronized void setJavaScriptCanOpenWindowsAutomatically(boolean flag) {
-    }
-
-    @Implementation
-    public synchronized void setLoadsImagesAutomatically(boolean flag) {
-    }
-
-    @Implementation
-    public synchronized void setMediaPlaybackRequiresUserGesture(boolean flag) {
+@Implements(value = WebView.class, callThroughByDefault = true)
+public class ShadowWebView extends org.robolectric.shadows.ShadowWebView {
+    @Override
+    public WebSettings getSettings() {
+        return new TestWebSettings();
     }
 }

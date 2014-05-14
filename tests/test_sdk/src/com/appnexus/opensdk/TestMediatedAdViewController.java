@@ -19,6 +19,7 @@ package com.appnexus.opensdk;
 import android.view.View;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
+import com.appnexus.opensdk.shadows.ShadowWebView;
 import com.appnexus.opensdk.testviews.*;
 import com.appnexus.opensdk.util.Lock;
 import com.appnexus.opensdk.utils.Settings;
@@ -32,7 +33,8 @@ import org.robolectric.annotation.Config;
 import static com.appnexus.opensdk.ResultCode.*;
 import static junit.framework.Assert.*;
 
-@Config(shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class},
+@Config(shadows = {ShadowAsyncTaskNoExecutor.class,
+        ShadowWebView.class, ShadowWebSettings.class},
         manifest = "../sdk/AndroidManifest.xml")
 @RunWith(RobolectricTestRunner.class)
 public class TestMediatedAdViewController extends BaseRoboTest {

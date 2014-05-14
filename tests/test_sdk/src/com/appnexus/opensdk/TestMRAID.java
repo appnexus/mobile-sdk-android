@@ -19,6 +19,7 @@ package com.appnexus.opensdk;
 import android.webkit.WebView;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
+import com.appnexus.opensdk.shadows.ShadowWebView;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -27,7 +28,8 @@ import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertTrue;
 
-@Config(shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class},
+@Config(shadows = {ShadowAsyncTaskNoExecutor.class,
+        ShadowWebView.class, ShadowWebSettings.class},
         manifest = "../sdk/AndroidManifest.xml")
 @RunWith(RobolectricTestRunner.class)
 public class TestMRAID extends BaseRoboTest {
