@@ -16,6 +16,7 @@
 package com.appnexus.opensdk.utils;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
@@ -43,6 +44,9 @@ public class WebviewUtil {
         webView.getSettings().setUseWideViewPort(true);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
+        }
     }
 
     /**

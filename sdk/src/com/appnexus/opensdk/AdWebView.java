@@ -26,6 +26,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
 import android.net.http.SslError;
+import android.os.Build;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Pair;
@@ -81,6 +82,9 @@ class AdWebView extends WebView implements Displayable {
         this.getSettings().setLoadsImagesAutomatically(true);
         this.getSettings().setSupportZoom(false);
         this.getSettings().setUseWideViewPort(false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            this.getSettings().setMediaPlaybackRequiresUserGesture(false);
+        }
 
         setHorizontalScrollbarOverlay(false);
         setHorizontalScrollBarEnabled(false);
@@ -312,8 +316,9 @@ class AdWebView extends WebView implements Displayable {
     }
 
     private void openInAppBrowser(WebView fwdWebView) {
-        // open the in-app browser
-        Intent intent = new Intent(adView.getContext(), AdActivity.class);
+        Class<?> activity_clz = AdActivity.getActivityClass();
+
+        Intent intent = new Intent(adView.getContext(), activity_clz);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
 
@@ -329,7 +334,7 @@ class AdWebView extends WebView implements Displayable {
         try {
             AdWebView.this.adView.getContext().startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            Clog.w(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing));
+            Clog.w(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing, activity_clz.getName()));
             AdWebView.BROWSER_QUEUE.remove();
         }
     }
@@ -383,6 +388,8 @@ class AdWebView extends WebView implements Displayable {
 
     @Override
     public void destroy() {
+        // in case `this` was not removed when destroy was called
+        ViewUtil.removeChildFromParent(this);
         super.destroy();
         this.removeAllViews();
         stopCheckViewable();
@@ -509,12 +516,6 @@ class AdWebView extends WebView implements Displayable {
         }
     }
 
-    void show() {
-        if (adView != null) {
-            adView.expand(default_width, default_height, true, null, null);
-        }
-    }
-
     void close() {
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                 this.getLayoutParams());
@@ -572,14 +573,8 @@ class AdWebView extends WebView implements Displayable {
             default_height = lp.height;
         }
 
-
-        if (h != -1) {
-            h = (int) (h * metrics.density + 0.5);
-        }
-        if (w != -1) {
-            w = (int) (w * metrics.density + 0.5);
-        }
-
+        h = (int) (h * metrics.density + 0.5);
+        w = (int) (w * metrics.density + 0.5);
 
         lp.height = h;
         lp.width = w;

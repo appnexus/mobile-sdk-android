@@ -140,8 +140,10 @@ class ANJAMImplementation {
         }
 
         String url = Uri.decode(urlParam);
+        Class<?> activity_clz = AdActivity.getActivityClass();
 
-        Intent intent = new Intent(webView.getContext(), AdActivity.class);
+
+        Intent intent = new Intent(webView.getContext(), activity_clz);
         intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
 
         WebView browserWebView = new WebView(webView.getContext());
@@ -163,7 +165,7 @@ class ANJAMImplementation {
             Toast.makeText(webView.getContext(),
                     R.string.action_cant_be_completed,
                     Toast.LENGTH_SHORT).show();
-            Clog.w(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing));
+            Clog.w(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing,activity_clz.getName()));
             AdWebView.BROWSER_QUEUE.remove();
         }
     }

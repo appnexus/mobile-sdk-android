@@ -75,32 +75,30 @@ public abstract class AdView extends FrameLayout {
 	private BrowserStyle browserStyle;
 	private LinkedList<MediatedAd> mediatedAds;
 	final Handler handler = new Handler(Looper.getMainLooper());
-	private Displayable lastDisplayable;
+	protected Displayable lastDisplayable;
 	private AdListenerDispatch dispatcher;
     boolean loadedOffscreen = false;
     boolean isMRAIDExpanded = false;
 
+    private boolean shouldResizeParent = false;
+
     /**
-	 * Begin Construction
-	 */
-	@SuppressWarnings("javadoc")
-	AdView(Context context) {
-		super(context, null);
-		setup(context, null);
-	}
+     * Begin Construction
+     */
+    AdView(Context context) {
+        this(context, (AttributeSet) null);
+    }
 
-	AdView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		setup(context, attrs);
+    AdView(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
 
-	}
+    AdView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        setup(context, attrs);
+    }
 
-	AdView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		setup(context, attrs);
-	}
-
-	void setup(Context context, AttributeSet attrs) {
+    void setup(Context context, AttributeSet attrs) {
 		dispatcher = new AdView.AdListenerDispatch(handler);
 
 		// Store self.context in the settings for errors
@@ -278,22 +276,9 @@ public abstract class AdView extends FrameLayout {
 	 * End Construction
 	 */
 
-    void display(Displayable d) {
-        // safety check: this should never evaluate to true
-        if ((d == null) || d.failed() || (d.getView() == null)) {
-            // The displayable has failed to be parsed or turned into a View.
-            // We're already calling onAdLoaded, so don't call onAdFailed; just log
-            Clog.e(Clog.baseLogTag, "Loaded an ad with an invalid displayable");
-            return;
-        }
-        // call destroy on any old views
-        if (lastDisplayable != null) {
-            lastDisplayable.destroy();
-        }
-        lastDisplayable = d;
-    }
+    protected abstract void display(Displayable d);
 
-	void unhide() {
+    void unhide() {
 		if (getVisibility() != VISIBLE) {
 			setVisibility(VISIBLE);
 		}
@@ -349,6 +334,10 @@ public abstract class AdView extends FrameLayout {
 		return measuredHeight;
 	}
 
+    protected void setShouldResizeParent(boolean shouldResizeParent) {
+        this.shouldResizeParent = shouldResizeParent;
+    }
+
     /**
      * MRAID functions and variables
      */
@@ -392,9 +381,19 @@ public abstract class AdView extends FrameLayout {
             if (getLayoutParams().height > 0)
                 getLayoutParams().height = h;
         }
+
+        if (shouldResizeParent && (getParent() instanceof View)) {
+            View parent = (View) getParent();
+            if (parent.getLayoutParams() != null) {
+                if (parent.getLayoutParams().width > 0)
+                    parent.getLayoutParams().width = w;
+                if (parent.getLayoutParams().height > 0)
+                    parent.getLayoutParams().height = h;
+            }
+        }
     }
 
-    protected void expand(int w, int h, boolean custom_close,
+    void expand(int w, int h, boolean custom_close,
                           final MRAIDImplementation caller,
                           AdWebView.MRAIDFullscreenListener listener) {
         MRAIDChangeSize(w, h);
@@ -436,13 +435,14 @@ public abstract class AdView extends FrameLayout {
             mraidFullscreenImplementation = caller;
             mraidFullscreenListener = listener;
 
+            Class<?> activity_clz = AdActivity.getActivityClass();
             try {
-                Intent i = new Intent(getContext(), AdActivity.class);
+                Intent i = new Intent(getContext(), activity_clz);
                 i.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE,
                         AdActivity.ACTIVITY_TYPE_MRAID);
                 getContext().startActivity(i);
             } catch (ActivityNotFoundException e) {
-                Clog.e(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing));
+                Clog.e(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing, activity_clz.getName()));
                 mraidFullscreenContainer = null;
                 mraidFullscreenImplementation = null;
                 mraidFullscreenListener = null;

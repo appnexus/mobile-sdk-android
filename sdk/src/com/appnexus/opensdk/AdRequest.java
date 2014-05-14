@@ -86,6 +86,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     private String age;
     private String gender;
     private ArrayList<Pair<String, String>> customKeywords;
+    private String nonet;
     static HashSet<String> pNames = null;
 
     private static HashSet<String> getParamNames(){
@@ -311,6 +312,17 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         mcc = settings.mcc;
         mnc = settings.mnc;
         language = settings.language;
+
+        StringBuilder nonetSB = new StringBuilder();
+
+        for (String invalidNetwork : settings.invalidNetworks) {
+            // only add commas when there are additional items
+            if (nonetSB.length() > 0) {
+                nonetSB.append(",");
+            }
+            nonetSB.append(invalidNetwork);
+        }
+        nonet = nonetSB.toString();
     }
 
     private void fail() {
@@ -375,6 +387,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (reserve > 0) sb.append("&reserve=").append(reserve);
         if (!StringUtil.isEmpty(age)) sb.append("&age=").append(Uri.encode(age));
         if (!StringUtil.isEmpty(gender)) sb.append("&gender=").append(Uri.encode(gender));
+        if (!StringUtil.isEmpty(nonet)) sb.append("&nonet=").append(Uri.encode(nonet));
         sb.append("&format=json");
         sb.append("&st=mobile_app");
         sb.append("&sdkver=").append(Uri.encode(Settings.getSettings().sdkVersion));

@@ -101,21 +101,21 @@ public class Clog {
      * Logging helper functions for SDK
      */
 
-    public static final String baseLogTag = "OPENSDK";
-    public static final String mediationLogTag = baseLogTag + "-MEDIATION";
-    public static final String publicFunctionsLogTag = baseLogTag + "-INTERFACE";
-    public static final String httpReqLogTag = baseLogTag + "-REQUEST";
-    public static final String httpRespLogTag = baseLogTag + "-RESPONSE";
-    public static final String xmlLogTag = baseLogTag + "-XML";
-    public static final String jsLogTag = baseLogTag + "-JS";
-    public static final String mraidLogTag = baseLogTag + "-MRAID";
-    public static final String browserLogTag = baseLogTag + "-APPBROWSER";
+    public static String baseLogTag = "OPENSDK";
+    public static String mediationLogTag = baseLogTag + "-MEDIATION";
+    public static String publicFunctionsLogTag = baseLogTag + "-INTERFACE";
+    public static String httpReqLogTag = baseLogTag + "-REQUEST";
+    public static String httpRespLogTag = baseLogTag + "-RESPONSE";
+    public static String xmlLogTag = baseLogTag + "-XML";
+    public static String jsLogTag = baseLogTag + "-JS";
+    public static String mraidLogTag = baseLogTag + "-MRAID";
+    public static String browserLogTag = baseLogTag + "-APPBROWSER";
 
     public static void setErrorContext(Context c) {
         Clog.clog_context = new WeakReference<Context>(c);
     }
 
-    private static WeakReference<Context> clog_context;
+    private static WeakReference<Context> clog_context = new WeakReference<Context>(null);
 
     public static String getString(int id) {
         Context error_context = clog_context.get();

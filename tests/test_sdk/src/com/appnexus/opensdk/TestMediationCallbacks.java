@@ -18,6 +18,7 @@ package com.appnexus.opensdk;
 
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
+import com.appnexus.opensdk.shadows.ShadowWebView;
 import com.appnexus.opensdk.util.Lock;
 import com.appnexus.opensdk.utils.Settings;
 import org.junit.Test;
@@ -29,7 +30,8 @@ import org.robolectric.annotation.Config;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
-@Config(shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class},
+@Config(shadows = {ShadowAsyncTaskNoExecutor.class,
+        ShadowWebView.class, ShadowWebSettings.class},
         manifest = "../sdk/AndroidManifest.xml")
 @RunWith(RobolectricTestRunner.class)
 public class TestMediationCallbacks extends BaseRoboTest implements AdListener {

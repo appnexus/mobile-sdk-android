@@ -54,7 +54,7 @@ class MRAIDImplementation {
     private int screenWidth, screenHeight;
     boolean supportsPictureAPI = false;
     boolean supportsCalendar = false;
-    private AdActivity fullscreenActivity;
+    private Activity fullscreenActivity;
     private ViewGroup defaultContainer;
     boolean isViewable;
     private int[] position = new int[4];
@@ -638,11 +638,11 @@ class MRAIDImplementation {
         }
     }
 
-    AdActivity getFullscreenActivity() {
+    Activity getFullscreenActivity() {
         return fullscreenActivity;
     }
 
-    void setFullscreenActivity(AdActivity fullscreenActivity) {
+    void setFullscreenActivity(Activity fullscreenActivity) {
         this.fullscreenActivity = fullscreenActivity;
     }
 

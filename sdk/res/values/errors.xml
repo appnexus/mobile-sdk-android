@@ -59,7 +59,7 @@
 	<string formatted="false" name="get_width">getAdWidth() returned %d</string>
 	<string formatted="false" name="get_height">getAdHeight() returned %d</string>
 	<string formatted="false" name="set_size">setAdSize() to: %dx%d</string>
-	<string formatted="false" name="init">The AppNexus OpenSDK is initializing</string>
+	<string formatted="false" name="init">The Mobile Advertising SDK is initializing</string>
 	<string formatted="false" name="get_should_resume">getShouldReloadOnResume() returned %b</string>
 	<string formatted="false" name="set_should_resume">setShouldReloadOnResume() to %b</string>
 	<string formatted="false" name="webview_loading">WebView loading body: %s</string>
@@ -90,10 +90,8 @@
 	<string formatted="false" name="opening_app_store">AppStore URL detected, opening the page in the app store</string>
 	<string formatted="false" name="opening_url">Opening %s in in-app browser</string>
 	<string formatted="false" name="opening_url_failed">Failed to launch custom protocol: %s</string>
-	<string formatted="false" name="instantiation_exception">InstantiationException caught while instantiating a Mediated Ad View</string>
-	<string formatted="false" name="illegal_access_exception">IllegalAccessException caught while instantiating a Mediated Ad View</string>
-	<string formatted="false" name="class_not_found_exception">ClassNotFoundException caught while instantiating a Mediated Ad View</string>
-	<string formatted="false" name="class_cast_exception">ClassCastException caught while instantiating a Mediated Ad View</string>
+	<string formatted="false" name="ignoring_url">Currently launching native intent. Ignoring url: %s</string>
+	<string formatted="false" name="mediation_instantiation_failure">Instantiating mediated ad failed due to %s</string>
 	<string formatted="false" name="instantiating_class">Instantiating %s</string>
 	<string formatted="false" name="instance_exception">MediatedAdView is null or not an instance of %s</string>
 	<string formatted="false" name="mediated_request">Requesting a mediated ad.</string>
@@ -120,6 +118,6 @@
 	<string formatted="false" name="mediation_timeout">Mediation network timed out.</string>
 	<string formatted="false" name="fullscreen_video_show_error">Error showing custom fullscreen view</string>
 	<string formatted="false" name="fullscreen_video_hide_error">Error hiding custom fullscreen view</string>
-	<string formatted="false" name="adactivity_missing">com.appneus.opensdk.AdActivity was not detected in AndroidManifest.xml!</string>
+	<string formatted="false" name="adactivity_missing">%s was not detected in AndroidManifest.xml!</string>
 	<string formatted="false" name="adactivity_no_type">AdActivity launched with no type.</string>
 </resources>

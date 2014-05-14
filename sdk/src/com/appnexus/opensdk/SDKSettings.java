@@ -24,6 +24,7 @@ import com.appnexus.opensdk.utils.Settings;
  */
 public class SDKSettings {
 
+    // hide the constructor from javadocs
     private SDKSettings() {
 
     }
@@ -95,4 +96,24 @@ public class SDKSettings {
                 getLocationEnabled() ? location : null;
     }
 
+    /**
+     * Register a mapping for an external mediation class.
+     *
+     * @param className the end class name.
+     * @param customAdaptorName the intermediary class name. The intermediate
+     *                          class needs to have a constructor that
+     *                          takes a single String parameter.
+     */
+    static void registerExternalMediationClass(String className, String customAdaptorName) {
+        Settings.getSettings().externalMediationClasses.put(className, customAdaptorName);
+    }
+
+    /**
+     * Unregister a mapping for an external mediation class.
+     *
+     * @param className the end class name.
+     */
+    static void unregisterExternalMediationClass(String className) {
+        Settings.getSettings().externalMediationClasses.put(className, null);
+    }
 }

@@ -16,17 +16,19 @@
 
 package com.appnexus.opensdk;
 
+import android.app.Activity;
 import android.webkit.WebView;
+
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ViewUtil;
 
 class MRAIDAdActivity implements AdActivity.AdActivityImplementation {
-    private AdActivity adActivity;
+    private Activity adActivity;
     private WebView webView;
 
     private MRAIDImplementation mraidFullscreenImplementation = null;
 
-    public MRAIDAdActivity(AdActivity adActivity) {
+    public MRAIDAdActivity(Activity adActivity) {
         this.adActivity = adActivity;
     }
 

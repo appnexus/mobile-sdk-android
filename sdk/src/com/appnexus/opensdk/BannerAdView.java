@@ -262,27 +262,31 @@ public class BannerAdView extends AdView {
     }
 
     @Override
-    void display(Displayable d) {
-        super.display(d);
-
-        WebView webView = null;
-        if (getChildAt(0) instanceof WebView) {
-            webView = (WebView) getChildAt(0);
+    protected void display(Displayable d) {
+        // safety check: this should never evaluate to true
+        if ((d == null) || d.failed() || (d.getView() == null)) {
+            // The displayable has failed to be parsed or turned into a View.
+            // We're already calling onAdLoaded, so don't call onAdFailed; just log
+            Clog.e(Clog.baseLogTag, "Loaded an ad with an invalid displayable");
+            return;
         }
 
+        // call destroy on any old views
         this.removeAllViews();
-        if (webView != null)
-            webView.destroy();
-
-        if ((d != null) && (d.getView() != null)) {
-            View displayableView = d.getView();
-            this.addView(displayableView);
-
-            // center the displayable view in AdView
-            ((LayoutParams) displayableView.getLayoutParams()).gravity = Gravity.CENTER;
-
-            unhide();
+        if (lastDisplayable != null) {
+            lastDisplayable.destroy();
         }
+        lastDisplayable = d;
+
+        View displayableView = d.getView();
+        this.addView(displayableView);
+
+        // center the displayable view in AdView
+        if ((displayableView.getLayoutParams()) != null) {
+            ((LayoutParams) displayableView.getLayoutParams()).gravity = Gravity.CENTER;
+        }
+
+        unhide();
     }
 
     void start() {
@@ -305,6 +309,9 @@ public class BannerAdView extends AdView {
         TypedArray a = context.obtainStyledAttributes(attrs,
                 R.styleable.BannerAdView);
 
+        int width = -1;
+        int height = -1;
+
         final int N = a.getIndexCount();
         Clog.v(Clog.xmlLogTag, Clog.getString(R.string.found_n_in_xml, N));
         for (int i = 0; i < N; ++i) {
@@ -314,7 +321,7 @@ public class BannerAdView extends AdView {
                 Clog.d(Clog.xmlLogTag, Clog.getString(R.string.placement_id,
                         a.getString(attr)));
             } else if (attr == R.styleable.BannerAdView_auto_refresh_interval) {
-                setAutoRefreshInterval(a.getInt(attr, 30 * 1000));
+                setAutoRefreshInterval(a.getInt(attr, Settings.DEFAULT_REFRESH));
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.xml_set_period, period));
             } else if (attr == R.styleable.BannerAdView_test) {
@@ -327,12 +334,12 @@ public class BannerAdView extends AdView {
                 Clog.d(Clog.xmlLogTag, Clog.getString(
                         R.string.xml_set_auto_refresh, auto_refresh));
             } else if (attr == R.styleable.BannerAdView_adWidth) {
-                setAdWidth(a.getInt(attr, -1));
+                width = a.getInt(attr, -1);
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.xml_ad_width,
                                 a.getInt(attr, -1)));
             } else if (attr == R.styleable.BannerAdView_adHeight) {
-                setAdHeight(a.getInt(attr, -1));
+                height= a.getInt(attr, -1);
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.xml_ad_height,
                                 a.getInt(attr, -1)));
@@ -353,6 +360,11 @@ public class BannerAdView extends AdView {
                 ));
             }
         }
+
+        if ((width != -1) && (height != -1)) {
+            setAdSize(width, height);
+        }
+
         a.recycle();
     }
 
@@ -466,7 +478,7 @@ public class BannerAdView extends AdView {
      * @param auto_refresh If set to true, this view will periodically
      *                     request new ads.
      */
-    private void setAutoRefresh(boolean auto_refresh) {
+    void setAutoRefresh(boolean auto_refresh) {
         Clog.d(Clog.publicFunctionsLogTag,
                 Clog.getString(R.string.set_auto_refresh, auto_refresh));
         this.auto_refresh = auto_refresh;
