@@ -16,37 +16,36 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
-import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import com.amazon.device.ads.*;
+
+import com.amazon.device.ads.AdLayout;
+import com.amazon.device.ads.AdSize;
+import com.amazon.device.ads.AdTargetingOptions;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
-import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.StringUtil;
 
 /**
  * This class is the Amazon banner adaptor it provides the functionality needed to allow
- * an application using the App Nexus SDK to load a banner ad through the Amazon API. The instantiation
- * of this class is done in response from the AppNexus server for a banner placement that is configured
- * to use Amazon to serve it. This class is never instantiated by the developer.
- * <p/>
- * This class also serves as an example of how to write a Mediation adaptor for the AppNexus
- * SDK.
+ * an application using the AppNexus SDK to load a banner ad through the Amazon API. The instantiation
+ * of this class is done in response from the AppNexus server for a banner placement, that is configured
+ * to use the Amazon Network to fill. This class is never instantiated by the developer.
+ *
  */
-public class AmazonBanner implements MediatedBannerAdView, AdListener {
+public class AmazonBanner implements MediatedBannerAdView  {
     MediatedBannerAdViewController mediatedBannerAdViewController = null;
-
+    AmazonListener amazonListener = null;
     /**
-     * Interface called by the AN SDK to request an ad from the mediating SDK.
+     * Called by the AN SDK to request a Banner ad from the Amazon SDK. .
      *
-     * @param mBC       the object which will be called with events from the 3d party SDK
+     * @param mBC       the object which will be called with events from the Amazon SDK
      * @param activity  the activity from which this is launched
      * @param parameter String parameter received from the server for instantiation of this object
+     *      optional server side parameters to control this call.
      * @param uid       The 3rd party placement , in adMob this is the adUnitID
      * @param width     Width of the ad
      * @param height    Height of the ad
@@ -57,100 +56,32 @@ public class AmazonBanner implements MediatedBannerAdView, AdListener {
 
         this.mediatedBannerAdViewController = mBC;
 
-        adView.setListener(this);
+        this.amazonListener = new AmazonListener(mBC,AmazonBanner.class.getSimpleName());
 
-        AdTargetingOptions targetingOptions = new AdTargetingOptions();
-        if (tp != null) {
-            if (!StringUtil.isEmpty(tp.getAge())) {
-                try {
-                    targetingOptions.setAge(Integer.parseInt(tp.getAge()));
-                } catch (NumberFormatException e) {
-                }
-            }
+        adView.setListener(this.amazonListener);
 
-            switch (tp.getGender()) {
-                case MALE:
-                    targetingOptions.setGender(AdTargetingOptions.Gender.MALE);
-                    break;
-                case FEMALE:
-                    targetingOptions.setGender(AdTargetingOptions.Gender.FEMALE);
-                    break;
-                default:
-                    targetingOptions.setGender(AdTargetingOptions.Gender.UNKNOWN);
-                    break;
-            }
-
-            for (Pair<String, String> p : tp.getCustomKeywords()) {
-                targetingOptions.setAdvancedOption(p.first, p.second);
-            }
-
-            targetingOptions.enableGeoLocation (tp.getLocation() != null);
-        }
+        AdTargetingOptions targetingOptions = AmazonTargeting.createTargeting(adView, tp, parameter);
 
         //Amazon won't load ads unless layout parameters are set
         adView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
 
-        adView.loadAd(targetingOptions);
+        if (!adView.loadAd(targetingOptions)) {
+            this.amazonListener.printToClogError("loadAd() call rejected");
+            if (mBC != null) {
+                mBC.onAdFailed(ResultCode.UNABLE_TO_FILL);
+            }
+            adView = null;
+        }
 
         return adView;
     }
 
+    /**
+     * The interface called by the AN SDK to destroy a mediated banner.
+     */
     @Override
     public void destroy() {
 
     }
 
-    @Override
-    public void onAdLoaded(AdLayout adLayout, AdProperties adProperties) {
-        Clog.d(Clog.mediationLogTag, "AmazonBanner - onAdLoaded: " + adLayout);
-        if (mediatedBannerAdViewController != null) {
-            mediatedBannerAdViewController.onAdLoaded();
-        }
-    }
-
-    @Override
-    public void onAdExpanded(AdLayout adLayout) {
-        Clog.d(Clog.mediationLogTag, "AmazonBanner - onAdExpanded: " + adLayout);
-        if (mediatedBannerAdViewController != null) {
-            mediatedBannerAdViewController.onAdExpanded();
-        }
-
-    }
-
-    @Override
-    public void onAdCollapsed(AdLayout adLayout) {
-        Clog.d(Clog.mediationLogTag, "AmazonBanner - onAdCollapsed: " + adLayout);
-        if (mediatedBannerAdViewController != null) {
-            mediatedBannerAdViewController.onAdCollapsed();
-        }
-    }
-
-    @Override
-    public void onAdFailedToLoad(AdLayout adLayout, AdError adError) {
-        Clog.d(Clog.mediationLogTag, "AmazonBanner - onAdFailedToLoad: " + adError.getMessage());
-        ResultCode code = ResultCode.INTERNAL_ERROR;
-
-        if (adError != null) {
-            switch (adError.getCode()) {
-                case INTERNAL_ERROR:
-                    code = ResultCode.INTERNAL_ERROR;
-                    break;
-                case NETWORK_ERROR:
-                    code = ResultCode.NETWORK_ERROR;
-                    break;
-                case NO_FILL:
-                    code = ResultCode.UNABLE_TO_FILL;
-                    break;
-                case REQUEST_ERROR:
-                    code = ResultCode.INVALID_REQUEST;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        if (mediatedBannerAdViewController != null) {
-            mediatedBannerAdViewController.onAdFailed(code);
-        }
-    }
 }
