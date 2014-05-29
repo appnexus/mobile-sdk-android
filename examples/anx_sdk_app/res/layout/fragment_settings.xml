@@ -431,6 +431,24 @@
                     />
         </RelativeLayout>
 
+        <!-- Imp Bus URL -->
+
+        <RelativeLayout
+            style="@style/itemContainer">
+            <TextView
+                android:id="@+id/txt_ib_url"
+                style="@style/settingsTextItem"
+                android:text="@string/settings_txt_ib_url"
+                />
+
+            <Spinner
+                android:id="@+id/spinner_ib_url"
+                style="@style/settingsEditItem"
+                android:layout_alignTop="@id/txt_ib_url"
+                android:layout_alignBottom="@id/txt_ib_url"
+                />
+        </RelativeLayout>
+
         <!-- Load Ad Button -->
 
         <Button
