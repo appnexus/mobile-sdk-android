@@ -65,11 +65,15 @@ public class Settings {
 
     public static final long MEDIATED_NETWORK_TIMEOUT = 15000;
 
-    public static final String COOKIE_DOMAIN = "http://mediation.adnxs.com";
+    //public static final String COOKIE_DOMAIN = "http://mediation.adnxs.com";
     public static final String AN_UUID = "uuid2";
-    public static final String BASE_URL = "http://mediation.adnxs.com/";
-    public static final String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
-    public static final String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
+    //public static final String BASE_URL = "http://mediation.adnxs.com/";
+    //public static final String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
+    //public static final String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
+    public static final String COOKIE_DOMAIN = "http://ib.client-testing.adnxs.net/";
+    public static final String BASE_URL = "http://ib.client-testing.adnxs.net/";
+    public static final String REQUEST_BASE_URL = "http://ib.client-testing.adnxs.net/mob?";
+    public static final String INSTALL_BASE_URL = "http://ib.client-testing.adnxs.net/install?";
 
     private static Settings settings_instance = null;
 
