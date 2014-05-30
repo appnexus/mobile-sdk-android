@@ -284,7 +284,7 @@ public class SettingsFragment extends Fragment {
 
         @Override
         public void onItemSelected(AdapterView<?> parents, View view, int position, long id){
-            if(position > ibNames.length) return;
+            if(position > ibNames.length || position == AdapterView.INVALID_POSITION) return;
 
             if(position==1) {
                 Settings.BASE_URL = "http://ib.client-testing.adnxs.net/";
