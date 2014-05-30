@@ -274,6 +274,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         }
 
         dev_time = "" + System.currentTimeMillis();
+        dev_timezone = "" + Settings.getSettings().dev_timezone;
 
         if (owner instanceof InterstitialAdView) {
             // Make string for allowed_sizes
