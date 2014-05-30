@@ -44,7 +44,7 @@ public class Settings {
 
     public String mcc;
     public String mnc;
-    public final String dev_timezone = TimeZone.getDefault().getID();
+    public final String dev_timezone = TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT);
     public final String language = Locale.getDefault().getLanguage();
 
     public boolean locationEnabled = true;
