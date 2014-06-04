@@ -95,4 +95,7 @@ public class AmazonInterstitial implements MediatedInterstitialAdView {
         return ready;
     }
 
+    @Override
+    public void destroy() {
+    }
 }

@@ -167,6 +167,9 @@ public abstract class MediatedAdViewController {
     }
 
     protected void finishController() {
+        if (mAV != null) {
+            mAV.destroy();
+        }
         mAV = null;
         requester = null;
         currentAd = null;

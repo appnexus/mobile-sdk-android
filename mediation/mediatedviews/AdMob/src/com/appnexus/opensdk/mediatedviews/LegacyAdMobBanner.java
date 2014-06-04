@@ -37,6 +37,7 @@ import com.google.ads.mediation.admob.AdMobAdapterExtras;
  */
 public class LegacyAdMobBanner implements MediatedBannerAdView {
     private AdMobAdListener adListener;
+    private AdView admobAV;
 
     /**
      * Interface called by the AN SDK to request an ad from the mediating SDK.
@@ -55,7 +56,7 @@ public class LegacyAdMobBanner implements MediatedBannerAdView {
         adListener.printToClog(String.format(" - requesting an ad: [%s, %s, %dx%d]",
                 parameter, adUnitID, width, height));
 
-        AdView admobAV = new AdView(activity, new AdSize(width, height), adUnitID);
+        admobAV = new AdView(activity, new AdSize(width, height), adUnitID);
         admobAV.setAdListener(adListener);
         AdRequest ar = new AdRequest();
 
@@ -88,6 +89,8 @@ public class LegacyAdMobBanner implements MediatedBannerAdView {
 
     @Override
     public void destroy() {
-
+        if (admobAV != null) {
+            admobAV.destroy();
+        }
     }
 }

@@ -54,4 +54,11 @@ public class AdMobInterstitial implements MediatedInterstitialAdView {
     public boolean isReady() {
         return (adView != null) && adView.isReady();
     }
+
+    @Override
+    public void destroy() {
+        if (adView != null) {
+            adView.destroy();
+        }
+    }
 }

@@ -92,4 +92,11 @@ public class LegacyDFPInterstitial implements MediatedInterstitialAdView {
     public boolean isReady() {
         return (iad != null) && (iad.isReady());
     }
+
+    @Override
+    public void destroy() {
+        if (iad != null) {
+            iad.stopLoading();
+        }
+    }
 }

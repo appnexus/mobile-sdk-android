@@ -202,6 +202,11 @@ public class InterstitialAdView extends AdView {
             return;
         }
 
+        if (lastDisplayable != null) {
+            lastDisplayable.destroy();
+        }
+        lastDisplayable = d;
+
         adQueue.add(new Pair<Long, Displayable>(System.currentTimeMillis(), d));
     }
 
