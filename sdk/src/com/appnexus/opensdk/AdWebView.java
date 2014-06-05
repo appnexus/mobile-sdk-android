@@ -207,6 +207,9 @@ class AdWebView extends WebView implements Displayable {
             } else if (url.startsWith("anjam://")) {
                 ANJAMImplementation.handleUrl(AdWebView.this, url);
                 return true;
+            } else if (url.startsWith("appnexuspb://")) {
+                PBImplementation.handleUrl(AdWebView.this, url);
+                return true;
             }
 
             loadURLInCorrectBrowser(url);
