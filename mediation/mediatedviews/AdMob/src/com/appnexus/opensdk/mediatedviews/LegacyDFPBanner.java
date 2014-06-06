@@ -38,7 +38,7 @@ import org.json.JSONObject;
  * This class also serves as an example of how to write a Mediation adaptor for the AppNexus
  * SDK.
  */
-public class DFPBanner implements MediatedBannerAdView {
+public class LegacyDFPBanner implements MediatedBannerAdView {
     private AdMobAdListener adListener;
 
     /**

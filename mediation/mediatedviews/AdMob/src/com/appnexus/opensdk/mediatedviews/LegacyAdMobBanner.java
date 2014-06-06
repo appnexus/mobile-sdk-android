@@ -35,7 +35,7 @@ import com.google.ads.mediation.admob.AdMobAdapterExtras;
  * This class also serves as an example of how to write a Mediation adaptor for the AppNexus
  * SDK.
  */
-public class AdMobBanner implements MediatedBannerAdView {
+public class LegacyAdMobBanner implements MediatedBannerAdView {
     private AdMobAdListener adListener;
 
     /**
@@ -88,6 +88,6 @@ public class AdMobBanner implements MediatedBannerAdView {
 
     @Override
     public void destroy() {
-        
+
     }
 }
