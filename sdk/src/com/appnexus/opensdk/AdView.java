@@ -63,7 +63,7 @@ public abstract class AdView extends FrameLayout {
 	private boolean measured = false;
 	private int width = -1;
 	private int height = -1;
-	boolean shouldServePSAs = true;
+	boolean shouldServePSAs = false;
 	private float reserve = 0.00f;
 	String age;
 	GENDER gender = GENDER.UNKNOWN;
