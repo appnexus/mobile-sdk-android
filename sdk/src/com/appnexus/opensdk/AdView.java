@@ -38,10 +38,7 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.Settings;
-import com.appnexus.opensdk.utils.StringUtil;
-import com.appnexus.opensdk.utils.ViewUtil;
+import com.appnexus.opensdk.utils.*;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -100,6 +97,7 @@ public abstract class AdView extends FrameLayout {
 
     void setup(Context context, AttributeSet attrs) {
 		dispatcher = new AdView.AdListenerDispatch(handler);
+        AdvertistingIDUtil.retrieveAndSetAAID(context);
 
 		// Store self.context in the settings for errors
 		Clog.setErrorContext(this.getContext());

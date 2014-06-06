@@ -144,9 +144,6 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         this.requester = adRequester;
         this.placementId = owner.getPlacementID();
         context = owner.getContext();
-        // The ANDROID_ID to hash and pass.
-        String aid = android.provider.Settings.Secure.getString(
-                context.getContentResolver(), Secure.ANDROID_ID);
 
         Location lastLocation = null;
         Location appLocation = SDKSettings.getLocation();
@@ -218,19 +215,27 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         // Get orientation, the current rotation of the device
         orientation = context.getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE ? "h" : "v";
-        // Get hidmd5, hidsha1, the device ID hashed
-        if ((settings.hidmd5 == null) && (aid != null)) {
-            settings.hidmd5 = HashingFunctions.md5(aid);
+
+        aaid = settings.aaid;
+        if (aaid == null) {
+            // Fall back on the hashed ANDROID_ID (device id) if no AAID found
+            if ((settings.hidmd5 == null) || (settings.hidsha1 == null)) {
+                String aid = android.provider.Settings.Secure.getString(
+                        context.getContentResolver(), Secure.ANDROID_ID);
+                if (aid != null) {
+                    settings.hidmd5 = HashingFunctions.md5(aid);
+                    hidmd5 = settings.hidmd5;
+
+                    settings.hidsha1 = HashingFunctions.sha1(aid);
+                    hidsha1 = settings.hidsha1;
+                }
+            }
         }
-        hidmd5 = settings.hidmd5;
-        if ((settings.hidsha1 == null) && (aid != null)) {
-            settings.hidsha1 = HashingFunctions.sha1(aid);
-        }
-        hidsha1 = settings.hidsha1;
+
         // Get devMake, devModel, the Make and Model of the current device
         devMake = settings.deviceMake;
         devModel = settings.deviceModel;
-        aaid = settings.aaid;
+
         limitTrackingEnabled = settings.limitTrackingEnabled;
         // Get carrier
         if (settings.carrierName == null) {

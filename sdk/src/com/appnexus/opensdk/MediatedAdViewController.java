@@ -322,8 +322,12 @@ public abstract class MediatedAdViewController {
             StringBuilder sb = new StringBuilder(this.resultCB);
             sb.append("&reason=").append(this.result.ordinal());
             // append the hashes of the device ID from settings
-            sb.append("&md5udid=").append(Uri.encode(Settings.getSettings().hidmd5));
-            sb.append("&sha1udid=").append(Uri.encode(Settings.getSettings().hidsha1));
+            if (!StringUtil.isEmpty(Settings.getSettings().aaid)) {
+                sb.append("&aaid=").append(Uri.encode(Settings.getSettings().aaid));
+            } else {
+                sb.append("&md5udid=").append(Uri.encode(Settings.getSettings().hidmd5));
+                sb.append("&sha1udid=").append(Uri.encode(Settings.getSettings().hidsha1));
+            }
             return sb.toString();
         }
     }

@@ -35,8 +35,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import android.widget.TabHost.TabContentFactory;
 import com.amazon.device.ads.AdRegistration;
-import com.appnexus.opensdk.AndroidAdvertisingIDUtil;
-import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ClogListener;
 
@@ -121,8 +119,6 @@ public class MainActivity extends FragmentActivity implements
         contentView = getWindow().findViewById(Window.ID_ANDROID_CONTENT);
 
         Clog.registerListener(logTabClogListener);
-
-        getAAID();
 
         // for testing Amazon
         AdRegistration.setAppKey("56474f45464d345646505037394f474b");
@@ -331,26 +327,6 @@ public class MainActivity extends FragmentActivity implements
         }
     };
 
-    /**
-     * Android Advertising ID
-     */
-
-    private void getAAID() {
-        AndroidAdvertisingIDUtil util = new AndroidAdvertisingIDUtil() {
-            @Override
-            public void onRetrievedID(String androidAdvertisingID, boolean isLimitAdTrackingEnabled) {
-                Clog.d(Constants.BASE_LOG_TAG, "Setting aaid: " + androidAdvertisingID + " " + isLimitAdTrackingEnabled);
-                SDKSettings.setAAID(androidAdvertisingID, isLimitAdTrackingEnabled);
-            }
-
-            @Override
-            public void onFailedToRetrieveID() {
-                Clog.d(Constants.BASE_LOG_TAG, "Failed to retrieve aaid");
-                SDKSettings.setAAID(null, false);
-            }
-        };
-        util.getID(this);
-    }
     /**
      * Log file management code
      */
