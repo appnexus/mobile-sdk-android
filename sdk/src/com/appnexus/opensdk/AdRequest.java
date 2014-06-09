@@ -83,6 +83,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     private int maxWidth = -1; // The maximum width, if no width is specified.
     private int maxHeight = -1; // The maximum height, if no height is specified.
     private float reserve = 0.00f;
+    private boolean overrideMaxSize = false;
     private String age;
     private String gender;
     private ArrayList<Pair<String, String>> customKeywords;
@@ -247,10 +248,19 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (owner.isBanner()) {
             this.width = ((BannerAdView) owner).getAdWidth();
             this.height = ((BannerAdView) owner).getAdHeight();
+            this.overrideMaxSize = ((BannerAdView) owner).getOverrideMaxSize();
         }
 
-        maxHeight = owner.getContainerHeight();
-        maxWidth = owner.getContainerWidth();
+        if(this.overrideMaxSize){
+            maxHeight = ((BannerAdView) owner).getMaxHeight();
+            maxWidth = ((BannerAdView) owner).getMaxWidth();
+            if(maxWidth <= 0 || maxHeight <= 0){
+                Clog.w(Clog.httpReqLogTag, Clog.getString(R.string.max_size_not_set));
+            }
+        }else {
+            maxHeight = owner.getContainerHeight();
+            maxWidth = owner.getContainerWidth();
+        }
 
 
         if (settings.mcc == null
@@ -324,6 +334,12 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             nonetSB.append(invalidNetwork);
         }
         nonet = nonetSB.toString();
+
+        if((maxHeight <= 0 || maxWidth <= 0) &&
+               (width <= 0 || height <= 0)){
+            Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.no_size_info));
+            fail();
+        }
     }
 
     private void fail() {
@@ -368,8 +384,8 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         // complicated, don't change
         if (owner != null) {
             if (maxHeight > 0 && maxWidth > 0) {
-                if (!(owner instanceof InterstitialAdView)
-                        && (width < 0 || height < 0)) {
+                if ((!(owner instanceof InterstitialAdView)
+                        && (width < 0 || height < 0))) {
                     sb.append("&max_size=").append(maxWidth).append("x").append(maxHeight);
                 } else if (owner instanceof InterstitialAdView) {
                     sb.append("&size=").append(maxWidth).append("x").append(maxHeight);

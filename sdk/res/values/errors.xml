@@ -92,6 +92,7 @@
 	<string formatted="false" name="opening_url_failed">Failed to launch custom protocol: %s</string>
 	<string formatted="false" name="ignoring_url">Currently launching native intent. Ignoring url: %s</string>
 	<string formatted="false" name="mediation_instantiation_failure">Instantiating mediated ad failed due to %s</string>
+	<string formatted="false" name="mediation_adding_invalid">Adding %s to invalid networks list</string>
 	<string formatted="false" name="instantiating_class">Instantiating %s</string>
 	<string formatted="false" name="instance_exception">MediatedAdView is null or not an instance of %s</string>
 	<string formatted="false" name="mediated_request">Requesting a mediated ad.</string>
@@ -120,4 +121,11 @@
 	<string formatted="false" name="fullscreen_video_hide_error">Error hiding custom fullscreen view</string>
 	<string formatted="false" name="adactivity_missing">%s was not detected in AndroidManifest.xml!</string>
 	<string formatted="false" name="adactivity_no_type">AdActivity launched with no type.</string>
+	<string formatted="false" name="max_size_not_set">overrideMaxSize enabled, but max size not set.</string>
+	<string formatted="false" name="set_max_size">setMaxSize() to %dx%d</string>
+	<string formatted="false" name="set_override_max_size">setOverrideMaxSize() to %b</string>
+	<string formatted="false" name="get_max_height">getMaxHeight() returned %d</string>
+	<string formatted="false" name="get_max_width">getMaxWidth() returned %d</string>
+	<string formatted="false" name="get_override_max_size">getOverrideMaxSize() returned %b</string>
+	<string formatted="false" name="no_size_info">An attempt to request an ad has been made with insufficient size information. Please provide a size, max size, or use fill_parent as the dimensions for your BannerAdView.</string>
 </resources>

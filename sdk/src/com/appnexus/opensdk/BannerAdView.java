@@ -93,6 +93,9 @@ public class BannerAdView extends AdView {
     private boolean expandsToFitScreenWidth = false;
     private int width = -1;
     private int height = -1;
+    private int maximumWidth = -1;
+    private int maximumHeight = -1;
+    private boolean overrideMaxSize = false;
 
     private void setDefaultsBeforeXML() {
         loadAdHasBeenCalled = false;
@@ -415,6 +418,38 @@ public class BannerAdView extends AdView {
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_size, w, h));
         width=w;
         height=h;
+    }
+
+    /**
+     * Set the maximum size of the desired ad. Only works if setOverrideMaxSize(true); has been called.
+     *
+     * @param maxW The maximum width in pixels.
+     * @param maxH The maximum height in pixels.
+     */
+    public void setMaxSize(int maxW, int maxH){
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_max_size, maxW, maxH));
+        maximumHeight=maxH;
+        maximumWidth=maxW;
+    }
+
+    public void setOverrideMaxSize(boolean shouldOverrideMaxSize){
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_override_max_size, shouldOverrideMaxSize));
+        this.overrideMaxSize = shouldOverrideMaxSize;
+    }
+
+    public int getMaxHeight(){
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_max_height, maximumHeight));
+        return maximumHeight;
+    }
+
+    public int getMaxWidth(){
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_max_width, maximumWidth));
+        return maximumWidth;
+    }
+
+    public boolean getOverrideMaxSize(){
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_override_max_size, overrideMaxSize));
+        return this.overrideMaxSize;
     }
 
     /**
