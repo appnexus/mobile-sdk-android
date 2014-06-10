@@ -271,8 +271,18 @@ public abstract class MediatedAdViewController {
             return;
         }
 
+        boolean ignoreResult = false; // default is to not ignore
+        if ((requester != null)
+                && (requester.getOwner() != null)
+                && (requester.getOwner().getMediatedAds() != null)) {
+            // ignore resultCB except on the last mediated ad
+            ignoreResult = requester.getOwner().getMediatedAds().size() > 0;
+        }
+
         //fire call to result cb url
-        ResultCBRequest cb = new ResultCBRequest(requester, currentAd.getResultCB(), result, currentAd.getExtras());
+        ResultCBRequest cb = new ResultCBRequest(requester,
+                currentAd.getResultCB(), result,
+                currentAd.getExtras(), ignoreResult);
 
         // Spawn GET call
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -280,6 +290,13 @@ public abstract class MediatedAdViewController {
         } else {
             cb.execute();
         }
+
+        if (ignoreResult) {
+            if (requester != null) {
+                requester.onReceiveResponse(null);
+            }
+        }
+
     }
 
     private class ResultCBRequest extends HTTPGet<Void, Void, HTTPResponse> {
@@ -287,12 +304,15 @@ public abstract class MediatedAdViewController {
         private final String resultCB;
         final ResultCode result;
         private final HashMap<String, Object> extras;
+        private final boolean ignoreResult;
 
-        private ResultCBRequest(AdRequester requester, String resultCB, ResultCode result, HashMap<String, Object> extras) {
+        private ResultCBRequest(AdRequester requester, String resultCB, ResultCode result,
+                                HashMap<String, Object> extras, boolean ignoreResult) {
             this.requester = requester;
             this.resultCB = resultCB;
             this.result = result;
             this.extras = extras;
+            this.ignoreResult = ignoreResult;
         }
 
         @Override
@@ -301,10 +321,16 @@ public abstract class MediatedAdViewController {
             if (this.result == ResultCode.SUCCESS)
                 return;
 
+            if (this.ignoreResult) {
+                Clog.i(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_ignored));
+                return;
+            }
+
             if (this.requester == null) {
                 Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
                 return;
             }
+
             AdResponse response = null;
             if ((httpResponse != null) && httpResponse.getSucceeded()) {
                 response = new AdResponse(httpResponse);
