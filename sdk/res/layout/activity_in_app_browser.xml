@@ -29,11 +29,17 @@
             />
     <WebView
             android:id="@+id/web_view"
-            android:layout_above="@+id/ll"
+            android:layout_above="@+id/bar"
             android:layout_below="@id/progress_bar"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             />
+
+    <View android:layout_width="fill_parent"
+          android:layout_height="1dp"
+          android:layout_above="@+id/ll"
+          android:id="@id/bar"
+          android:background="@android:color/darker_gray" />
 
     <LinearLayout
             android:id="@id/ll"

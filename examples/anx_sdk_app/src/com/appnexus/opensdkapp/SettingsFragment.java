@@ -32,6 +32,8 @@ import android.view.ViewGroup;
 import android.widget.*;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Settings;
+
 import android.support.v4.app.DialogFragment;
 
 import java.util.ArrayList;
@@ -40,7 +42,7 @@ import java.util.HashSet;
 
 public class SettingsFragment extends Fragment {
     private GradientDrawable colorViewBackground;
-    private Spinner dropSize, dropRefresh, dropGender;
+    private Spinner dropSize, dropRefresh, dropGender, dropIBURL;
 
     private Button btnAdTypeBanner, btnAdTypeInterstitial,
             btnPSAsYes, btnPSAsNo,
@@ -96,6 +98,8 @@ public class SettingsFragment extends Fragment {
         dropSize = initDropdown(out, container, R.id.dropdown_size, R.array.sizes);
         dropRefresh = initDropdown(out, container, R.id.dropdown_refresh, R.array.refresh);
         dropGender = initDropdown(out, container, R.id.dropdown_gender, R.array.gender);
+        dropIBURL = initDropdown(out, container, R.id.spinner_ib_url, R.array.ib_url);
+
 
         /*
          * SET LISTENERS
@@ -120,6 +124,7 @@ public class SettingsFragment extends Fragment {
         dropRefresh.setOnItemSelectedListener(new RefreshSelectedListener(
                 getResources().getStringArray(R.array.refresh)));
         dropGender.setOnItemSelectedListener(new GenderSelectedListener(getResources().getStringArray(R.array.gender)));
+        dropIBURL.setOnItemSelectedListener(new IBURLSelectedListener(getResources().getStringArray(R.array.ib_url)));
 
         // listeners for editText
         editBackgroundColor.addTextChangedListener(new BackgroundColorTextWatcher());
@@ -269,6 +274,37 @@ public class SettingsFragment extends Fragment {
 
         @Override
         public void onNothingSelected(AdapterView<?> arg0) {
+        }
+    }
+
+    private class IBURLSelectedListener implements AdapterView.OnItemSelectedListener{
+        String[] ibNames;
+
+        private IBURLSelectedListener(String[]ibNames){this.ibNames=ibNames;}
+
+        @Override
+        public void onItemSelected(AdapterView<?> parents, View view, int position, long id){
+            if(position > ibNames.length || position == AdapterView.INVALID_POSITION) return;
+
+            if(position==1) {
+                Settings.BASE_URL = "http://ib.client-testing.adnxs.net/";
+                Settings.COOKIE_DOMAIN = "http://ib.client-testing.adnxs.net/";
+                Settings.REQUEST_BASE_URL = "http://ib.client-testing.adnxs.net/mob?";
+                Settings.INSTALL_BASE_URL = "http://ib.client-testing.adnxs.net/install?";
+            }else{
+                Settings.BASE_URL = "http://mediation.adnxs.com/";
+                Settings.COOKIE_DOMAIN = "http://mediation.adnxs.com";
+                Settings.REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
+                Settings.INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
+            }
+
+            Clog.d(Constants.BASE_LOG_TAG, "IB URL Set to "+ibNames[position]);
+        }
+
+
+        @Override
+        public void onNothingSelected(AdapterView<?> viewOfAdapter){
+
         }
     }
 

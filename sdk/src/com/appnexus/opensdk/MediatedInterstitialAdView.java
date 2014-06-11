@@ -57,4 +57,5 @@ public interface MediatedInterstitialAdView extends MediatedAdView {
      */
 
     public boolean isReady();
+
 }

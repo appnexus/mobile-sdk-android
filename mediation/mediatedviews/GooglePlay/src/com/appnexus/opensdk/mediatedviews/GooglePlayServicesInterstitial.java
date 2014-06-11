@@ -104,4 +104,9 @@ public class GooglePlayServicesInterstitial implements MediatedInterstitialAdVie
 
         return builder.build();
     }
+
+    @Override
+    public void destroy() {
+        
+    }
 }

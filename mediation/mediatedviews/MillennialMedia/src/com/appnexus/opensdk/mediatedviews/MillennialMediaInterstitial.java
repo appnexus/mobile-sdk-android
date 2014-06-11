@@ -108,4 +108,9 @@ public class MillennialMediaInterstitial implements MediatedInterstitialAdView {
     public boolean isReady() {
         return (iad != null) && (iad.isAdAvailable());
     }
+
+    @Override
+    public void destroy() {
+
+    }
 }

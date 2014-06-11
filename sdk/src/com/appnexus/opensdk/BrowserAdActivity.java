@@ -58,11 +58,13 @@ class BrowserAdActivity implements AdActivity.AdActivityImplementation {
             return;
         }
         WebView webViewSpace = (WebView) adActivity.findViewById(R.id.web_view);
+        ViewGroup.LayoutParams spaceParams = webViewSpace.getLayoutParams();
         ViewGroup webViewSpaceParent = ((ViewGroup) webViewSpace.getParent());
         int index = webViewSpaceParent.indexOfChild(webViewSpace);
         webViewSpaceParent.removeView(webViewSpace);
         // remove from any parents, just in case
         ViewUtil.removeChildFromParent(webView);
+        webView.setLayoutParams(spaceParams);
         webViewSpaceParent.addView(webView, index);
 
         final ImageButton back = (ImageButton) adActivity.findViewById(R.id.browser_back);

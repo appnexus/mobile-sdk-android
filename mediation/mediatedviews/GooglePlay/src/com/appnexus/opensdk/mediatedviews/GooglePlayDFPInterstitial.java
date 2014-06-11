@@ -104,4 +104,9 @@ public class GooglePlayDFPInterstitial implements MediatedInterstitialAdView {
 
         return builder.build();
     }
+
+    @Override
+    public void destroy() {
+
+    }
 }

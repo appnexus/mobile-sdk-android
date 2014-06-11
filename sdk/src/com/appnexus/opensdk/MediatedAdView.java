@@ -16,4 +16,12 @@
 package com.appnexus.opensdk;
 
 interface MediatedAdView {
+
+    /**
+     * The AppNexus SDK will call this method when the
+     * third-party SDK's view is being removed and should
+     * be cleaned up.
+     */
+    public void destroy();
+
 }

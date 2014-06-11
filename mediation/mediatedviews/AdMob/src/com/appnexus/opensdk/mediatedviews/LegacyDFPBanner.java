@@ -38,8 +38,9 @@ import org.json.JSONObject;
  * This class also serves as an example of how to write a Mediation adaptor for the AppNexus
  * SDK.
  */
-public class DFPBanner implements MediatedBannerAdView {
+public class LegacyDFPBanner implements MediatedBannerAdView {
     private AdMobAdListener adListener;
+    private DfpAdView dfpView;
 
     /**
      * Interface called by the AN SDK to request an ad from the mediating SDK.
@@ -60,14 +61,13 @@ public class DFPBanner implements MediatedBannerAdView {
         DFBBannerSSParameters ssparm = new DFBBannerSSParameters(parameter);
         AdSize adSize = ssparm.isSmartBanner ? AdSize.SMART_BANNER : new AdSize(width, height);
 
-        DfpAdView v;
         if (ssparm.isSwipeable) {
-            v = new SwipeableDfpAdView(activity, adSize, adUnitID);
+            dfpView = new SwipeableDfpAdView(activity, adSize, adUnitID);
         } else {
-            v = new DfpAdView(activity, adSize, adUnitID);
+            dfpView = new DfpAdView(activity, adSize, adUnitID);
         }
 
-        v.setAdListener(adListener);
+        dfpView.setAdListener(adListener);
         AdRequest ar = new AdRequest();
 
         if (ssparm.test_device != null && ssparm.test_device.length() > 0) {
@@ -97,14 +97,16 @@ public class DFPBanner implements MediatedBannerAdView {
         }
         ar.setNetworkExtras(extras);
 
-        v.loadAd(ar);
+        dfpView.loadAd(ar);
 
-        return v;
+        return dfpView;
     }
 
     @Override
     public void destroy() {
-
+        if (dfpView != null) {
+            dfpView.destroy();
+        }
     }
 
     /**

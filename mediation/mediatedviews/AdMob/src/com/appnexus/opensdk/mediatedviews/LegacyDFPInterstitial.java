@@ -17,46 +17,32 @@ package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
 import android.util.Pair;
-import android.view.View;
-import com.appnexus.opensdk.MediatedBannerAdView;
-import com.appnexus.opensdk.MediatedBannerAdViewController;
+import com.appnexus.opensdk.MediatedInterstitialAdView;
+import com.appnexus.opensdk.MediatedInterstitialAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
 import com.google.ads.AdRequest;
-import com.google.ads.AdSize;
-import com.google.ads.AdView;
-import com.google.ads.mediation.admob.AdMobAdapterExtras;
+import com.google.ads.InterstitialAd;
+import com.google.ads.doubleclick.DfpExtras;
 
 /**
- * This class is the Google AdMob banner adaptor it provides the functionality needed to allow
- * an application using the App Nexus SDK to load a banner ad through the Google SDK. The instantiation
+ * This class is the Google DFP interstitial adaptor it provides the functionality needed to allow
+ * an application using the App Nexus SDK to load a banner ad through the Google DFP SDK. The instantiation
  * of this class is done in response from the AppNexus server for a banner placement that is configured
  * to use AdMob to serve it. This class is never instantiated by the developer.
  * <p/>
  * This class also serves as an example of how to write a Mediation adaptor for the AppNexus
  * SDK.
  */
-public class AdMobBanner implements MediatedBannerAdView {
+public class LegacyDFPInterstitial implements MediatedInterstitialAdView {
+    private InterstitialAd iad;
     private AdMobAdListener adListener;
 
-    /**
-     * Interface called by the AN SDK to request an ad from the mediating SDK.
-     *
-     * @param mBC       the object which will be called with events from the 3d party SDK
-     * @param activity  the activity from which this is launched
-     * @param parameter String parameter received from the server for instantiation of this object
-     * @param adUnitID  The 3rd party placement , in adMob this is the adUnitID
-     * @param width     Width of the ad
-     * @param height    Height of the ad
-     */
     @Override
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String adUnitID,
-                          int width, int height, TargetingParameters targetingParameters) {
-        adListener = new AdMobAdListener(mBC, super.getClass().getSimpleName());
-        adListener.printToClog(String.format(" - requesting an ad: [%s, %s, %dx%d]",
-                parameter, adUnitID, width, height));
+    public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid, TargetingParameters targetingParameters) {
+        adListener = new AdMobAdListener(mIC, super.getClass().getSimpleName());
+        adListener.printToClog(String.format("requesting an ad: [%s, %s]", parameter, uid));
+        iad = new InterstitialAd(activity, uid);
 
-        AdView admobAV = new AdView(activity, new AdSize(width, height), adUnitID);
-        admobAV.setAdListener(adListener);
         AdRequest ar = new AdRequest();
 
         switch (targetingParameters.getGender()) {
@@ -69,25 +55,48 @@ public class AdMobBanner implements MediatedBannerAdView {
                 ar.setGender(AdRequest.Gender.MALE);
                 break;
         }
-        AdMobAdapterExtras extras = new AdMobAdapterExtras();
+        DfpExtras extras = new DfpExtras();
         if (targetingParameters.getAge() != null) {
             extras.addExtra("Age", targetingParameters.getAge());
-        }
-
-        for (Pair<String, String> p : targetingParameters.getCustomKeywords()) {
-            extras.addExtra(p.first, p.second);
         }
         if (targetingParameters.getLocation() != null) {
             ar.setLocation(targetingParameters.getLocation());
         }
+        for (Pair<String, String> p : targetingParameters.getCustomKeywords()) {
+            extras.addExtra(p.first, p.second);
+        }
         ar.setNetworkExtras(extras);
 
-        admobAV.loadAd(ar);
-        return admobAV;
+        iad.setAdListener(adListener);
+
+        iad.loadAd(ar);
+    }
+
+    @Override
+    public void show() {
+        adListener.printToClog("show called");
+        if (iad == null) {
+            adListener.printToClogError("show called while interstitial ad view was null");
+            return;
+        }
+        if (!iad.isReady()) {
+            adListener.printToClogError("show called while interstitial ad view was not ready");
+            return;
+        }
+
+        iad.show();
+        adListener.printToClog("interstitial ad shown");
+    }
+
+    @Override
+    public boolean isReady() {
+        return (iad != null) && (iad.isReady());
     }
 
     @Override
     public void destroy() {
-        
+        if (iad != null) {
+            iad.stopLoading();
+        }
     }
 }

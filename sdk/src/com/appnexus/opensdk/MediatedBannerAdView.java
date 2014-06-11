@@ -76,10 +76,4 @@ public interface MediatedBannerAdView extends MediatedAdView {
 
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp);
 
-    /**
-     * The AppNexus SDK will call this method when the
-     * third-party SDK's view is being removed and should
-     * be cleaned up.
-     */
-    public void destroy();
 }

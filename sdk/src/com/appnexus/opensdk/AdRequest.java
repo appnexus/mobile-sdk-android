@@ -83,6 +83,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     private int maxWidth = -1; // The maximum width, if no width is specified.
     private int maxHeight = -1; // The maximum height, if no height is specified.
     private float reserve = 0.00f;
+    private boolean overrideMaxSize = false;
     private String age;
     private String gender;
     private ArrayList<Pair<String, String>> customKeywords;
@@ -143,9 +144,6 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         this.requester = adRequester;
         this.placementId = owner.getPlacementID();
         context = owner.getContext();
-        // The ANDROID_ID to hash and pass.
-        String aid = android.provider.Settings.Secure.getString(
-                context.getContentResolver(), Secure.ANDROID_ID);
 
         Location lastLocation = null;
         Location appLocation = SDKSettings.getLocation();
@@ -217,19 +215,27 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         // Get orientation, the current rotation of the device
         orientation = context.getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE ? "h" : "v";
-        // Get hidmd5, hidsha1, the device ID hashed
-        if ((settings.hidmd5 == null) && (aid != null)) {
-            settings.hidmd5 = HashingFunctions.md5(aid);
+
+        aaid = settings.aaid;
+        if (aaid == null) {
+            // Fall back on the hashed ANDROID_ID (device id) if no AAID found
+            if ((settings.hidmd5 == null) || (settings.hidsha1 == null)) {
+                String aid = android.provider.Settings.Secure.getString(
+                        context.getContentResolver(), Secure.ANDROID_ID);
+                if (aid != null) {
+                    settings.hidmd5 = HashingFunctions.md5(aid);
+                    hidmd5 = settings.hidmd5;
+
+                    settings.hidsha1 = HashingFunctions.sha1(aid);
+                    hidsha1 = settings.hidsha1;
+                }
+            }
         }
-        hidmd5 = settings.hidmd5;
-        if ((settings.hidsha1 == null) && (aid != null)) {
-            settings.hidsha1 = HashingFunctions.sha1(aid);
-        }
-        hidsha1 = settings.hidsha1;
+
         // Get devMake, devModel, the Make and Model of the current device
         devMake = settings.deviceMake;
         devModel = settings.deviceModel;
-        aaid = settings.aaid;
+
         limitTrackingEnabled = settings.limitTrackingEnabled;
         // Get carrier
         if (settings.carrierName == null) {
@@ -247,10 +253,19 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (owner.isBanner()) {
             this.width = ((BannerAdView) owner).getAdWidth();
             this.height = ((BannerAdView) owner).getAdHeight();
+            this.overrideMaxSize = ((BannerAdView) owner).getOverrideMaxSize();
         }
 
-        maxHeight = owner.getContainerHeight();
-        maxWidth = owner.getContainerWidth();
+        if(this.overrideMaxSize){
+            maxHeight = ((BannerAdView) owner).getMaxHeight();
+            maxWidth = ((BannerAdView) owner).getMaxWidth();
+            if(maxWidth <= 0 || maxHeight <= 0){
+                Clog.w(Clog.httpReqLogTag, Clog.getString(R.string.max_size_not_set));
+            }
+        }else {
+            maxHeight = owner.getContainerHeight();
+            maxWidth = owner.getContainerWidth();
+        }
 
 
         if (settings.mcc == null
@@ -274,6 +289,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         }
 
         dev_time = "" + System.currentTimeMillis();
+        dev_timezone = "" + Settings.getSettings().dev_timezone;
 
         if (owner instanceof InterstitialAdView) {
             // Make string for allowed_sizes
@@ -323,6 +339,12 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             nonetSB.append(invalidNetwork);
         }
         nonet = nonetSB.toString();
+
+        if((maxHeight <= 0 || maxWidth <= 0) &&
+               (width <= 0 || height <= 0)){
+            Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.no_size_info));
+            fail();
+        }
     }
 
     private void fail() {
@@ -367,8 +389,8 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         // complicated, don't change
         if (owner != null) {
             if (maxHeight > 0 && maxWidth > 0) {
-                if (!(owner instanceof InterstitialAdView)
-                        && (width < 0 || height < 0)) {
+                if ((!(owner instanceof InterstitialAdView)
+                        && (width < 0 || height < 0))) {
                     sb.append("&max_size=").append(maxWidth).append("x").append(maxHeight);
                 } else if (owner instanceof InterstitialAdView) {
                     sb.append("&size=").append(maxWidth).append("x").append(maxHeight);
