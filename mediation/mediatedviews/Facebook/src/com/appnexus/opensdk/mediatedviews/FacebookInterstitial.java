@@ -70,6 +70,7 @@ public class FacebookInterstitial implements MediatedInterstitialAdView {
     public void destroy() {
         if (interstitialAd != null) {
             interstitialAd.destroy();
+            interstitialAd.setAdListener(null);
         }
     }
 }

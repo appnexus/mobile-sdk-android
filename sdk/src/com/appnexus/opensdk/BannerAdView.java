@@ -421,7 +421,8 @@ public class BannerAdView extends AdView {
     }
 
     /**
-     * Set the maximum size of the desired ad. Only works if setOverrideMaxSize(true); has been called.
+     * Set the maximum size of the desired ad. Used in place of AdSize if
+     * setOverrideMaxSize() has been set to true.
      *
      * @param maxW The maximum width in pixels.
      * @param maxH The maximum height in pixels.
@@ -432,21 +433,48 @@ public class BannerAdView extends AdView {
         maximumWidth=maxW;
     }
 
+    /**
+     * Sets whether to use the size value from {@link #setMaxSize} instead of
+     * values from {@link #setAdSize}. Call with value true in order override
+     * the value from {@link #setAdSize}.
+     *
+     *
+     * @param shouldOverrideMaxSize Whether the ad will request an ad
+     *                              for a maximum size. Default is false.
+     */
     public void setOverrideMaxSize(boolean shouldOverrideMaxSize){
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_override_max_size, shouldOverrideMaxSize));
         this.overrideMaxSize = shouldOverrideMaxSize;
     }
 
+    /**
+     * Check the maximum height of the ad to be requested for this view.
+     * Only used if {@link #setOverrideMaxSize} has been set to true.
+     *
+     * @return The maximum height of the ad to be requested.
+     */
     public int getMaxHeight(){
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_max_height, maximumHeight));
         return maximumHeight;
     }
 
+    /**
+     * Check the maximum width of the ad to be requested for this view.
+     * Only used if {@link #setOverrideMaxSize} has been set to true.
+     *
+     * @return The maximum width of the ad to be requested.
+     */
     public int getMaxWidth(){
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_max_width, maximumWidth));
         return maximumWidth;
     }
 
+    /**
+     * Check whether the ad request will pass the value from
+     * {@link #setAdSize} or from {@link #setMaxSize}.
+     *
+     * @return If the maximum size will be passed instead of the ad size.
+     */
     public boolean getOverrideMaxSize(){
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_override_max_size, overrideMaxSize));
         return this.overrideMaxSize;

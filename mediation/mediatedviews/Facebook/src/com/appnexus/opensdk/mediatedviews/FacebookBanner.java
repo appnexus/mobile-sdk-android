@@ -25,6 +25,7 @@ import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.utils.Clog;
+import com.facebook.ads.AdSettings;
 import com.facebook.ads.AdSize;
 import com.facebook.ads.AdView;
 
@@ -58,6 +59,7 @@ public class FacebookBanner implements MediatedBannerAdView {
     public void destroy() {
         if (adView != null) {
             adView.destroy();
+            adView.setAdListener(null);
         }
     }
 }
