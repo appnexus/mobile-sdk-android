@@ -6,6 +6,9 @@ android {
 
     defaultConfig {
         minSdkVersion 8
+	targetSdkVersion 19
+	versionCode 1
+	versionName "1.0"
     }
 
     sourceSets {
@@ -23,6 +26,7 @@ android {
 }
 
 dependencies {
-    compile project(':examples:libs:google-play-services_lib')
+    compile 'com.google.android.gms:play-services:4.4.52@aar'
     compile project(':sdk')
 }
+
