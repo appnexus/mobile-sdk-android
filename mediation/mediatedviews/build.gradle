@@ -1,0 +1,29 @@
+/**
+AppNexus Android SDK Mediation Adaptors Build
+**/
+
+buildscript {
+    repositories {
+       mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.11.+'
+    }
+}
+
+def isReleaseBuild() {
+    return version.contains("SNAPSHOT") == false
+}
+
+allprojects {
+    repositories {
+       mavenCentral()
+    }
+
+    tasks.withType(Compile) {
+        options.encoding = "UTF-8"
+    }
+
+    evaluationDependsOnChildren()
+}
