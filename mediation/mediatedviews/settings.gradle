@@ -1,0 +1,9 @@
+include ':sdk'
+project(':sdk').projectDir = new File(settingsDir, '../../sdk')
+
+include ':AdMob'
+include ':Amazon'
+include ':Facebook'
+include ':GooglePlay'
+include ':MillennialMedia'
+include ':MoPub' 
