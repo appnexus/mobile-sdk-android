@@ -105,6 +105,9 @@ class AdWebView extends WebView implements Displayable {
     }
 
     public void loadAd(AdResponse ad) {
+        if(ad==null){
+            return;
+        }
         String html = ad.getContent();
         // Safety Check: content is verified in AdResponse, so this should never be empty
         if (StringUtil.isEmpty(html)) {
