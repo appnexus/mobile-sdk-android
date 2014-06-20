@@ -21,7 +21,12 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import com.appnexus.opensdk.utils.*;
+
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.HTTPGet;
+import com.appnexus.opensdk.utils.HTTPResponse;
+import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.StringUtil;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -279,6 +284,11 @@ public abstract class MediatedAdViewController {
             ignoreResult = requester.getOwner().getMediatedAds().size() > 0;
         }
 
+        // ignore resultCB if succeeded already
+        if (result == ResultCode.SUCCESS) {
+            ignoreResult = true;
+        }
+
         //fire call to result cb url
         ResultCBRequest cb = new ResultCBRequest(requester,
                 currentAd.getResultCB(), result,
@@ -317,10 +327,6 @@ public abstract class MediatedAdViewController {
 
         @Override
         protected void onPostExecute(HTTPResponse httpResponse) {
-            // if this was the result of a successful ad, ignore the response and stop looking for more ads
-            if (this.result == ResultCode.SUCCESS)
-                return;
-
             if (this.ignoreResult) {
                 Clog.i(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_ignored));
                 return;
