@@ -16,6 +16,7 @@
 package com.appnexus.opensdk;
 
 import android.app.Activity;
+
 import com.appnexus.opensdk.utils.Clog;
 
 /**
@@ -42,26 +43,22 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
         if (!isValid(MediatedInterstitialAdView.class))
             return;
 
-        // if controller is valid, request an ad.
+        // if controller is valid, request an ad
         Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediated_request));
 
         ResultCode errorCode = null;
 
         TargetingParameters tp = null;
-        try{
-            AdView av = requester.getOwner();
-            if (av!= null){
-                tp = av.getTargetingParameters();
-            }
-        }catch(ClassCastException e){
-
-        } finally {
-            if (tp == null) {
-                tp = new TargetingParameters();
-            }
+        if ((requester != null) && (requester.getOwner() != null)) {
+            tp = requester.getOwner().getTargetingParameters();
+        }
+        if (tp == null) {
+            tp = new TargetingParameters();
         }
 
         startTimeout();
+        markLatencyStart();
+
         try {
             if(activity!=null){
                 ((MediatedInterstitialAdView) mAV).requestAd(this,

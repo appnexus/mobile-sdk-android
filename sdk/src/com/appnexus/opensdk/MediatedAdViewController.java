@@ -193,6 +193,7 @@ public abstract class MediatedAdViewController {
      */
     public void onAdLoaded() {
         if (hasSucceeded || hasFailed) return;
+        markLatencyStop();
         cancelTimeout();
         hasSucceeded = true;
 
@@ -214,6 +215,7 @@ public abstract class MediatedAdViewController {
      */
     public void onAdFailed(ResultCode reason) {
         if (hasSucceeded || hasFailed) return;
+        markLatencyStop();
         cancelTimeout();
 
         // don't call the listener here. the requester will call the listener
@@ -292,7 +294,8 @@ public abstract class MediatedAdViewController {
         //fire call to result cb url
         ResultCBRequest cb = new ResultCBRequest(requester,
                 currentAd.getResultCB(), result,
-                currentAd.getExtras(), ignoreResult);
+                currentAd.getExtras(), ignoreResult,
+                getLatencyParam(), getTotalLatencyParam());
 
         // Spawn GET call
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -315,14 +318,19 @@ public abstract class MediatedAdViewController {
         final ResultCode result;
         private final HashMap<String, Object> extras;
         private final boolean ignoreResult;
+        private final long latency;
+        private final long totalLatency;
 
         private ResultCBRequest(AdRequester requester, String resultCB, ResultCode result,
-                                HashMap<String, Object> extras, boolean ignoreResult) {
+                                HashMap<String, Object> extras, boolean ignoreResult,
+                                long latency, long totalLatency) {
             this.requester = requester;
             this.resultCB = resultCB;
             this.result = result;
             this.extras = extras;
             this.ignoreResult = ignoreResult;
+            this.latency = latency;
+            this.totalLatency = totalLatency;
         }
 
         @Override
@@ -363,6 +371,14 @@ public abstract class MediatedAdViewController {
                 sb.append("&md5udid=").append(Uri.encode(Settings.getSettings().hidmd5));
                 sb.append("&sha1udid=").append(Uri.encode(Settings.getSettings().hidsha1));
             }
+
+            if (latency > 0) {
+                sb.append("&latency=").append(Uri.encode(String.valueOf(latency)));
+            }
+            if (totalLatency > 0) {
+                sb.append("&total_latency=").append(Uri.encode(String.valueOf(totalLatency)));
+            }
+
             return sb.toString();
         }
     }
@@ -399,4 +415,51 @@ public abstract class MediatedAdViewController {
     // if the mediated network fails to call us within the timeout period, fail
     private final Handler timeoutHandler = new TimeoutHandler(this);
 
+    /*
+    Measuring Latency functions
+     */
+
+    // variables for measuring latency.
+    private long latencyStart = -1, latencyStop = -1;
+
+    /**
+     * Should be called immediately after mediated SDK returns
+     * from `requestAd` call.
+     */
+    protected void markLatencyStart() {
+        latencyStart = System.currentTimeMillis();
+    }
+
+    /**
+     * Should be called immediately after mediated SDK
+     * calls either of `onAdLoaded` or `onAdFailed`.
+     */
+    protected void markLatencyStop() {
+        latencyStop = System.currentTimeMillis();
+    }
+
+    /**
+     * The latency of the call to the mediated SDK.
+     * @return the mediated SDK latency, -1 if `latencyStart`
+     * or `latencyStop` not set.
+     */
+    private long getLatencyParam() {
+        if ((latencyStart > 0) && (latencyStop > 0)) {
+            return (latencyStop - latencyStart);
+        }
+        // return -1 if invalid.
+        return -1;
+    }
+
+    /**
+     * The running total latency of the ad call.
+     * @return the running total latency, -1 if `latencyStop` not set.
+     */
+    private long getTotalLatencyParam() {
+        if ((requester != null) && (latencyStop > 0)) {
+            return requester.getLatency(latencyStop);
+        }
+        // return -1 if invalid.
+        return -1;
+    }
 }

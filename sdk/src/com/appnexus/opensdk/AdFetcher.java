@@ -86,6 +86,7 @@ class AdFetcher implements AdRequester {
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.moot_restart));
             return;
         }
+        markLatencyStart();
         makeTasker();
     }
 
@@ -125,6 +126,12 @@ class AdFetcher implements AdRequester {
                 }
             }, stall, TimeUnit.MILLISECONDS);
         }
+    }
+
+    void clearDurations() {
+        lastFetchTime = -1;
+        timePausedAt = -1;
+
     }
 
     private class MessageRunnable implements Runnable {
@@ -285,9 +292,23 @@ class AdFetcher implements AdRequester {
         return owner;
     }
 
-    public void clearDurations() {
-        lastFetchTime = -1;
-        timePausedAt = -1;
+    /*
+    Running Total Latency
+     */
 
+    private long totalLatencyStart = -1;
+
+    @Override
+    public void markLatencyStart() {
+        totalLatencyStart = System.currentTimeMillis();
+    }
+
+    @Override
+    public long getLatency(long now) {
+        if (totalLatencyStart > 0) {
+            return (now - totalLatencyStart);
+        }
+        // return -1 if `totalLatencyStart` was not set.
+        return -1;
     }
 }
