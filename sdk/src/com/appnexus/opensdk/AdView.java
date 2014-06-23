@@ -57,10 +57,7 @@ public abstract class AdView extends FrameLayout {
 	boolean opensNativeBrowser = false;
 	int measuredWidth;
 	int measuredHeight;
-	private boolean measured = false;
-	private int width = -1;
-	private int height = -1;
-	boolean shouldServePSAs = false;
+    boolean shouldServePSAs = false;
 	private float reserve = 0.00f;
 	String age;
 	GENDER gender = GENDER.UNKNOWN;
@@ -145,46 +142,14 @@ public abstract class AdView extends FrameLayout {
 		// sized yet.
 	}
 
-	/**
-	 * The view layout
-	 */
-	@Override
-	protected void onLayout(boolean changed, int left, int top, int right,
-			int bottom) {
-		super.onLayout(changed, left, top, right, bottom);
-		if (mraid_changing_size_or_visibility) {
-			mraid_changing_size_or_visibility = false;
-			return;
-		}
-		if (!measured || changed) {
-			// Convert to dips
-			float density = getContext().getResources().getDisplayMetrics().density;
-			measuredWidth = (int) ((right - left) / density + 0.5f);
-			measuredHeight = (int) ((bottom - top) / density + 0.5f);
-			if ((measuredHeight < height || measuredWidth < width)
-					&& measuredHeight > 0 && measuredWidth > 0) {
-				Clog.e(Clog.baseLogTag, Clog.getString(R.string.adsize_too_big,
-						measuredWidth, measuredHeight, width, height));
-				// Hide the space, since no ad will be loaded due to error
-				hide();
-				// Stop any request in progress
-				if (mAdFetcher != null)
-					mAdFetcher.stop();
-				// Returning here allows the SDK to re-request when the layout
-				// next changes, and maybe the error will be amended.
-				return;
-			}
-
-			// Hide the adview
-			if (!measured && !loadedOffscreen) {
-				hide();
-			}
-
-            loadedOffscreen = false;
-			measured = true;
-
-		}
-	}
+    /**
+     * The view layout
+     */
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right,
+                            int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+    }
 
     boolean isMRAIDExpanded() {
         return isMRAIDExpanded;

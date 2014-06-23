@@ -120,8 +120,6 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             pNames.add("native_browser");
             pNames.add("psa");
             pNames.add("reserve");
-            pNames.add("age");
-            pNames.add("gender");
             pNames.add("format");
             pNames.add("st");
             pNames.add("sdkver");
