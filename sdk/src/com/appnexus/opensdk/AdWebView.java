@@ -417,7 +417,9 @@ class AdWebView extends WebView implements Displayable {
             WebviewUtil.onResume(this);
             isVisible = true;
             // only start checking if MRAID is enabled
-            if (isMRAIDEnabled) startCheckViewable();
+            if (isMRAIDEnabled && firstPageFinished) {
+                startCheckViewable();
+            }
         } else {
             WebviewUtil.onPause(this);
             isVisible = false;
