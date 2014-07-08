@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Handler;
 import android.view.View;
 import com.appnexus.opensdk.utils.Clog;
 import org.json.JSONException;
@@ -47,6 +48,7 @@ class PBImplementation {
             = new LinkedHashMap<String, String>();
 
     private static final int PB_BUFFER_LIMIT = 10;
+    private static final long PB_CAPTURE_DELAY_MS = 1000;
 
     static void handleUrl(AdWebView adWebView, String url) {
         if ((adWebView == null) || (adWebView.getContext() == null)) {
@@ -69,8 +71,7 @@ class PBImplementation {
             if (auctionInfo == null) {
                 return;
             }
-            byte[] imageBytes = BitmapToByte(captureView(adWebView));
-            sendBroadcast(context, auctionInfo, imageBytes);
+            captureImage(context, adWebView, auctionInfo);
         }
     }
 
@@ -113,6 +114,18 @@ class PBImplementation {
             buffer.remove(key);
         }
     }
+
+    private static void captureImage(final Context context, final View view, final String auctionInfo) {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                byte[] imageBytes = BitmapToByte(captureView(view));
+                sendBroadcast(context, auctionInfo, imageBytes);
+            }
+        }, PB_CAPTURE_DELAY_MS);
+    }
+
     private static Bitmap captureView(View view) {
         int quality = view.getDrawingCacheQuality();
 
