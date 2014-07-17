@@ -41,6 +41,7 @@ import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
@@ -64,6 +65,7 @@ public abstract class AdView extends FrameLayout {
 	ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
     private Location location = null;
 	boolean mraid_changing_size_or_visibility = false;
+    HashMap<String, Integer> creativeSize = new HashMap<String, Integer>();
 	private AdListener adListener;
     private AppEventListener appEventListener;
 	private BrowserStyle browserStyle;
@@ -844,6 +846,14 @@ public abstract class AdView extends FrameLayout {
 		static final ArrayList<Pair<String, BrowserStyle>> bridge = new ArrayList<Pair<String, BrowserStyle>>();
 	}
 
+    void setCreativeSize(HashMap<String, Integer> size){
+        creativeSize = size;
+    }
+
+    public HashMap<String, Integer> getCreativeSize(){
+        return creativeSize;
+    }
+
 	/**
 	 * Private class to bridge events from mediation to the user
 	 * AdListener class.
@@ -858,10 +868,11 @@ public abstract class AdView extends FrameLayout {
 		}
 
 		@Override
-		public void onAdLoaded(final Displayable d) {
+		public void onAdLoaded(final Displayable d, final HashMap<String, Integer> size) {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
+                    setCreativeSize(size);
 					display(d);
                     printMediatedClasses();
 					if (adListener != null)

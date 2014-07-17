@@ -198,7 +198,7 @@ public abstract class MediatedAdViewController {
         hasSucceeded = true;
 
         if (listener != null)
-            listener.onAdLoaded(mediatedDisplayable);
+            listener.onAdLoaded(mediatedDisplayable, mediatedDisplayable.getViewSize());
         fireResultCB(ResultCode.SUCCESS);
     }
 

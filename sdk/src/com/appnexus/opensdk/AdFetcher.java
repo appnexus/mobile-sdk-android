@@ -27,6 +27,7 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -274,6 +275,9 @@ class AdFetcher implements AdRequester {
                     // standard ads
                     AdWebView output = new AdWebView(owner);
                     output.loadAd(response);
+                    HashMap<String, Integer> size = new HashMap<String, Integer>();
+                    size.put("width", response.getWidth());
+                    size.put("height", response.getHeight());
 
                     if (owner.isBanner()) {
                         BannerAdView bav = (BannerAdView) owner;
@@ -281,7 +285,7 @@ class AdFetcher implements AdRequester {
                             bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), output);
                         }
                     }
-                    owner.getAdDispatcher().onAdLoaded(output);
+                    owner.getAdDispatcher().onAdLoaded(output, size);
                 }
             }
         });
