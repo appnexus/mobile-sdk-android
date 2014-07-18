@@ -95,6 +95,8 @@ public abstract class AdView extends FrameLayout {
     void setup(Context context, AttributeSet attrs) {
 		dispatcher = new AdView.AdListenerDispatch(handler);
 
+        AdvertistingIDUtil.retrieveAndSetAAID(context);
+
 		// Store self.context in the settings for errors
 		Clog.setErrorContext(this.getContext());
 
