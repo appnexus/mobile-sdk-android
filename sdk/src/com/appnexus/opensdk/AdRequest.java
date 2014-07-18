@@ -120,8 +120,6 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             pNames.add("native_browser");
             pNames.add("psa");
             pNames.add("reserve");
-            pNames.add("age");
-            pNames.add("gender");
             pNames.add("format");
             pNames.add("st");
             pNames.add("sdkver");
@@ -217,12 +215,12 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                 == Configuration.ORIENTATION_LANDSCAPE ? "h" : "v";
 
         aaid = settings.aaid;
-        if (aaid == null) {
+        if (StringUtil.isEmpty(aaid)) {
             // Fall back on the hashed ANDROID_ID (device id) if no AAID found
-            if ((settings.hidmd5 == null) || (settings.hidsha1 == null)) {
+            if (StringUtil.isEmpty(settings.hidmd5) || StringUtil.isEmpty(settings.hidsha1)) {
                 String aid = android.provider.Settings.Secure.getString(
                         context.getContentResolver(), Secure.ANDROID_ID);
-                if (aid != null) {
+                if (!StringUtil.isEmpty(aid)) {
                     settings.hidmd5 = HashingFunctions.md5(aid);
                     hidmd5 = settings.hidmd5;
 
