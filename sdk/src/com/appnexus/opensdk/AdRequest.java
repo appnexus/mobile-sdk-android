@@ -226,9 +226,9 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                     settings.hidmd5 = HashingFunctions.md5(aid);
                     settings.hidsha1 = HashingFunctions.sha1(aid);
                 }
-                hidmd5 = settings.hidmd5;
-                hidsha1 = settings.hidsha1;
             }
+            hidmd5 = settings.hidmd5;
+            hidsha1 = settings.hidsha1;
         }
 
         // Get devMake, devModel, the Make and Model of the current device
