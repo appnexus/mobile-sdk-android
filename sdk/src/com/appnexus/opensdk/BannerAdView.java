@@ -606,7 +606,7 @@ public class BannerAdView extends AdView {
      * @param shouldReloadOnResume Set this to true to reload the ad
      *                             on resume.
      */
-    void setShouldReloadOnResume(boolean shouldReloadOnResume) {
+    public void setShouldReloadOnResume(boolean shouldReloadOnResume) {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
                 R.string.set_should_resume, shouldReloadOnResume));
         this.shouldReloadOnResume = shouldReloadOnResume;

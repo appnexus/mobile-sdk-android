@@ -20,8 +20,11 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.view.View;
 import com.appnexus.opensdk.utils.Clog;
 import org.json.JSONException;
@@ -30,6 +33,9 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.util.LinkedHashMap;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 class PBImplementation {
     private static final String HOST_WEB = "web";
@@ -116,34 +122,28 @@ class PBImplementation {
     }
 
     private static void captureImage(final Context context, final View view, final String auctionInfo) {
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        //Handler was blocking UI thread.
+        ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        scheduledExecutorService.schedule(new Runnable() {
             @Override
             public void run() {
                 byte[] imageBytes = BitmapToByte(captureView(view));
+                Clog.d(Clog.baseLogTag, "PITBULL image size: "+imageBytes.length+" bytes");
                 sendBroadcast(context, auctionInfo, imageBytes);
             }
-        }, PB_CAPTURE_DELAY_MS);
+        }, PB_CAPTURE_DELAY_MS, TimeUnit.MILLISECONDS);
     }
 
     private static Bitmap captureView(View view) {
-        int quality = view.getDrawingCacheQuality();
-
-        view.setDrawingCacheEnabled(true);
-        if (view.getDrawingCache() == null) {
-            return null;
-        }
-        view.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
-        view.setDrawingCacheEnabled(false);
-        view.setDrawingCacheQuality(quality);
-
+        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bitmap);
+        view.draw(c);
         return bitmap;
     }
 
     private static byte[] BitmapToByte(Bitmap bitmap) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        if (bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)) {
+        if (bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream)) {
             return stream.toByteArray();
         }
         return null;
