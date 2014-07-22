@@ -847,36 +847,28 @@ public abstract class AdView extends FrameLayout {
 		static final ArrayList<Pair<String, BrowserStyle>> bridge = new ArrayList<Pair<String, BrowserStyle>>();
 	}
 
-    /**
-     *
-     * @param w
-     */
-
     void setCreativeWidth(int w){
         creativeWidth = w;
     }
 
     /**
+     * Retrieve the width of fetched creative
      *
-     * @return
+     * @return the width
      */
 
     public int getCreativeWidth(){
         return creativeWidth;
     }
 
-    /**
-     *
-     * @param h
-     */
-
     void setCreativeHeight(int h){
         creativeHeight = h;
     }
 
     /**
+     * Retrieve the height of fetched creative
      *
-     * @return
+     * @return the height
      */
 
     public int getCreativeHeight(){

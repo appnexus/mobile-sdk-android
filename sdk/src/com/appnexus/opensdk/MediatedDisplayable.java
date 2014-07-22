@@ -43,12 +43,18 @@ class MediatedDisplayable implements Displayable {
 
     @Override
     public int getCreativeWidth() {
-        return view.getWidth();
+        if (view != null) {
+            return view.getWidth();
+        }
+        return -1;
     }
 
     @Override
     public int getCreativeHeight() {
-        return view.getHeight();
+        if (view != null) {
+            return view.getHeight();
+        }
+        return -1;
     }
 
     void setView(View view) {
