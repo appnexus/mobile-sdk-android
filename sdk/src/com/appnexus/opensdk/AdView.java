@@ -41,7 +41,6 @@ import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
