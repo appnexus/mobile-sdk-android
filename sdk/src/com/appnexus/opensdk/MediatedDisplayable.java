@@ -18,8 +18,6 @@ package com.appnexus.opensdk;
 
 import android.view.View;
 
-import java.util.HashMap;
-
 class MediatedDisplayable implements Displayable {
     private View view;
     private MediatedAdViewController mAVC;
@@ -43,6 +41,16 @@ class MediatedDisplayable implements Displayable {
         mAVC.finishController();
     }
 
+    @Override
+    public int getCreativeWidth() {
+        return view.getWidth();
+    }
+
+    @Override
+    public int getCreativeHeight() {
+        return view.getHeight();
+    }
+
     void setView(View view) {
         this.view = view;
     }
@@ -55,10 +63,4 @@ class MediatedDisplayable implements Displayable {
         this.mAVC = mAVC;
     }
 
-    public HashMap<String, Integer> getViewSize(){
-        HashMap<String, Integer> size = new HashMap<String, Integer>();
-        size.put("width", view.getWidth());
-        size.put("height", view.getHeight());
-        return size;
-    };
 }

@@ -57,6 +57,8 @@ class AdWebView extends WebView implements Displayable {
     private int default_height;
     boolean isFullScreen = false;
     private boolean firstPageFinished;
+    private int creativeWidth;
+    private int creativeHeight;
     // for viewable event
     private boolean isOnscreen = false;
     private boolean isVisible = false;
@@ -109,6 +111,9 @@ class AdWebView extends WebView implements Displayable {
             return;
         }
         String html = ad.getContent();
+        // set creative size
+        setCreativeHeight(ad.getHeight());
+        setCreativeWidth(ad.getWidth());
         // Safety Check: content is verified in AdResponse, so this should never be empty
         if (StringUtil.isEmpty(html)) {
             fail();
@@ -408,6 +413,24 @@ class AdWebView extends WebView implements Displayable {
         super.destroy();
         this.removeAllViews();
         stopCheckViewable();
+    }
+
+    private void setCreativeWidth(int w){
+        this.creativeWidth = w;
+    }
+
+    @Override
+    public int getCreativeWidth() {
+        return this.creativeWidth;
+    }
+
+    private void setCreativeHeight(int h){
+        this.creativeHeight = h;
+    }
+
+    @Override
+    public int getCreativeHeight() {
+        return this.creativeHeight;
     }
 
     // MRAID code

@@ -20,8 +20,6 @@ package com.appnexus.opensdk;
  * Interface for receiving callbacks from a MediatedAdViewController
  */
 
-import java.util.HashMap;
-
 /** package **/ interface AdViewListener {
 
     /**
@@ -30,7 +28,7 @@ import java.util.HashMap;
      *
      * @param d the displayable view to show for banners
      */
-    public void onAdLoaded(Displayable d, HashMap<String, Integer> size);
+    public void onAdLoaded(Displayable d);
 
     /**
      * Called when the mediation waterfall has ended in a failure

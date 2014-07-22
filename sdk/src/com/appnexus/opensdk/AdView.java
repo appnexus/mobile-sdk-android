@@ -65,7 +65,8 @@ public abstract class AdView extends FrameLayout {
 	ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
     private Location location = null;
 	boolean mraid_changing_size_or_visibility = false;
-    HashMap<String, Integer> creativeSize = new HashMap<String, Integer>();
+    int creativeWidth;
+    int creativeHeight;
 	private AdListener adListener;
     private AppEventListener appEventListener;
 	private BrowserStyle browserStyle;
@@ -846,12 +847,40 @@ public abstract class AdView extends FrameLayout {
 		static final ArrayList<Pair<String, BrowserStyle>> bridge = new ArrayList<Pair<String, BrowserStyle>>();
 	}
 
-    void setCreativeSize(HashMap<String, Integer> size){
-        creativeSize = size;
+    /**
+     *
+     * @param w
+     */
+
+    void setCreativeWidth(int w){
+        creativeWidth = w;
     }
 
-    public HashMap<String, Integer> getCreativeSize(){
-        return creativeSize;
+    /**
+     *
+     * @return
+     */
+
+    public int getCreativeWidth(){
+        return creativeWidth;
+    }
+
+    /**
+     *
+     * @param h
+     */
+
+    void setCreativeHeight(int h){
+        creativeHeight = h;
+    }
+
+    /**
+     *
+     * @return
+     */
+
+    public int getCreativeHeight(){
+        return creativeHeight;
     }
 
 	/**
@@ -868,11 +897,12 @@ public abstract class AdView extends FrameLayout {
 		}
 
 		@Override
-		public void onAdLoaded(final Displayable d, final HashMap<String, Integer> size) {
+		public void onAdLoaded(final Displayable d) {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
-                    setCreativeSize(size);
+                    setCreativeWidth(d.getCreativeWidth());
+                    setCreativeHeight(d.getCreativeHeight());
 					display(d);
                     printMediatedClasses();
 					if (adListener != null)
