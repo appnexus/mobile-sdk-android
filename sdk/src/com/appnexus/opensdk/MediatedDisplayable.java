@@ -46,6 +46,7 @@ class MediatedDisplayable implements Displayable {
         if (view != null) {
             return view.getWidth();
         }
+        // 'view' is null for interstitials, return -1
         return -1;
     }
 
@@ -54,6 +55,7 @@ class MediatedDisplayable implements Displayable {
         if (view != null) {
             return view.getHeight();
         }
+        // 'view' is null for interstitials, return -1
         return -1;
     }
 

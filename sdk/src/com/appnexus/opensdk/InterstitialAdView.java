@@ -416,6 +416,18 @@ public class InterstitialAdView extends AdView {
         this.adImplementation = adImplementation;
     }
 
+    @Override
+    public int getCreativeWidth(){
+        // override creative Height for interstitial ad
+        return -1;
+    }
+
+    @Override
+    public int getCreativeHeight(){
+        // override creative Height for interstitial ad
+        return -1;
+    }
+
     Queue<Pair<Long, Displayable>> getAdQueue() {
         return adQueue;
     }
