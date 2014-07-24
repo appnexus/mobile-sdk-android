@@ -103,6 +103,7 @@
 	<string formatted="false" name="mediated_no_ads">The server responded with ads, but none were valid</string>
 	<string formatted="false" name="fire_cb_requester_null">firing result cb with null requester</string>
 	<string formatted="false" name="result_cb_bad_response">result cb returned a bad response</string>
+	<string formatted="false" name="result_cb_ignored">Ignored result cb received response</string>
 	<string formatted="false" name="fire_cb_result_null">firing result cb with null resultCB</string>
 	<string formatted="false" name="cancel_request">Cancelling scheduled request</string>
 	<string formatted="false" name="resize">MRAID resize() called with w:%d, h:%d, offset_x:%d, offset_y:%d, cust_close_position:%s, allow_offscreen:%b</string>
