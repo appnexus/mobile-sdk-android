@@ -416,11 +416,21 @@ public class InterstitialAdView extends AdView {
         this.adImplementation = adImplementation;
     }
 
+    /**
+     * Interstitial ads always return width -1
+     *
+     * @return -1
+     */
     @Override
     public int getCreativeWidth(){
-        // override creative Height for interstitial ad
         return -1;
     }
+
+    /**
+     * Interstitial ads always return height -1
+     *
+     * @return -1
+     */
 
     @Override
     public int getCreativeHeight(){

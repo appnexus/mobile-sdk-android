@@ -851,7 +851,8 @@ public abstract class AdView extends FrameLayout {
     }
 
     /**
-     * Retrieve the width of fetched creative
+     * Retrieve the 'unexpanded' size of the creative .
+     * It does not change if the creative used the MRAID expand or resize calls.
      *
      * @return the width
      */
@@ -865,7 +866,8 @@ public abstract class AdView extends FrameLayout {
     }
 
     /**
-     * Retrieve the height of fetched creative
+     * Retrieve the 'unexpanded' size of the creative .
+     * It does not change if the creative used the MRAID expand or resize calls.
      *
      * @return the height
      */
