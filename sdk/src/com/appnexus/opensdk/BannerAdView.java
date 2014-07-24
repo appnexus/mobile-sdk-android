@@ -400,6 +400,10 @@ public class BannerAdView extends AdView {
                         R.string.xml_set_expands_to_full_screen_width,
                         expandsToFitScreenWidth
                 ));
+            }else if (attr == R.styleable.BannerAdView_show_loading_indicator) {
+                Clog.d(Clog.xmlLogTag,
+                        Clog.getString(R.string.show_loading_indicator_xml));
+                setShowLoadingIndicator(a.getBoolean(attr, false));
             }
         }
 

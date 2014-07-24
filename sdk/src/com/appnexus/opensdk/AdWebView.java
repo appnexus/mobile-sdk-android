@@ -358,15 +358,17 @@ class AdWebView extends WebView implements Displayable {
                 return;
             }
 
-            if (adView instanceof InterstitialAdView) {
-                if (this.getParent() instanceof ViewGroup) {
-                    ViewGroup parentView = (ViewGroup)this.getParent();
-                    clickOverlay = ViewUtil.createClickOverlay(parentView.getContext());
-                    parentView.addView(clickOverlay);
+            if(this.adView.getShowLoadingIndicator()) {
+                if (adView instanceof InterstitialAdView) {
+                    if (this.getParent() instanceof ViewGroup) {
+                        ViewGroup parentView = (ViewGroup) this.getParent();
+                        clickOverlay = ViewUtil.createClickOverlay(parentView.getContext());
+                        parentView.addView(clickOverlay);
+                    }
+                } else if (adView instanceof BannerAdView) {
+                    clickOverlay = ViewUtil.createClickOverlay(this.adView.getContext(), adView.getHeight());
+                    this.adView.addView(clickOverlay);
                 }
-            } else if (adView instanceof BannerAdView) {
-                clickOverlay = ViewUtil.createClickOverlay(this.adView.getContext(), adView.getHeight());
-                this.adView.addView(clickOverlay);
             }
 
             // Otherwise, create an invisible 1x1 webview to load the landing
@@ -656,8 +658,10 @@ class AdWebView extends WebView implements Displayable {
                     isOpeningAppStore = checkStore(url);
 
                     if (isOpeningAppStore) {
-                        ViewUtil.removeChildFromParent(clickOverlay);
-                        clickOverlay = null;
+                        if(clickOverlay != null) {
+                            ViewUtil.removeChildFromParent(clickOverlay);
+                            clickOverlay = null;
+                        }
                     }
 
                     return isOpeningAppStore;
@@ -668,8 +672,10 @@ class AdWebView extends WebView implements Displayable {
                     Clog.v(Clog.browserLogTag, "Opening URL: " + url);
                     ViewUtil.removeChildFromParent(RedirectWebView.this);
 
-                    ViewUtil.removeChildFromParent(clickOverlay);
-                    clickOverlay = null;
+                    if(clickOverlay!=null) {
+                        ViewUtil.removeChildFromParent(clickOverlay);
+                        clickOverlay = null;
+                    }
 
                     if (isOpeningAppStore) {
                         isOpeningAppStore = false;
