@@ -189,13 +189,19 @@ public class BannerAdView extends AdView {
                     Clog.d(Clog.baseLogTag,
                             Clog.getString(R.string.screen_off_stop));
                 } else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
-                    if (auto_refresh)
+                    boolean ad_started = false;
+                    if (auto_refresh) {
                         start();
-                    else if (shouldReloadOnResume)
+                        ad_started = true;
+                    } else if (shouldReloadOnResume) {
                         stop();
-                    start();
-                    Clog.d(Clog.baseLogTag,
-                            Clog.getString(R.string.screen_on_start));
+                        start();
+                        ad_started = true;
+                    }
+                    if (ad_started) {
+                        Clog.d(Clog.baseLogTag,
+                                Clog.getString(R.string.screen_on_start));
+                    }
                 }
             }
         };
@@ -394,6 +400,10 @@ public class BannerAdView extends AdView {
                         R.string.xml_set_expands_to_full_screen_width,
                         expandsToFitScreenWidth
                 ));
+            }else if (attr == R.styleable.BannerAdView_show_loading_indicator) {
+                Clog.d(Clog.xmlLogTag,
+                        Clog.getString(R.string.show_loading_indicator_xml));
+                setShowLoadingIndicator(a.getBoolean(attr, false));
             }
         }
 
@@ -606,7 +616,7 @@ public class BannerAdView extends AdView {
      * @param shouldReloadOnResume Set this to true to reload the ad
      *                             on resume.
      */
-    void setShouldReloadOnResume(boolean shouldReloadOnResume) {
+    public void setShouldReloadOnResume(boolean shouldReloadOnResume) {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
                 R.string.set_should_resume, shouldReloadOnResume));
         this.shouldReloadOnResume = shouldReloadOnResume;

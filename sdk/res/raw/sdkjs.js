@@ -54,6 +54,43 @@
     sdkjs.listener = function (event) {
         // accept all event.origin values, filter based on protocol
 
+        // filter for pitbull based on the presence of 'auction_id' in the raw data
+        if (event.data) {
+            if (event.data.indexOf("auction_id") !== -1) {
+                // tell the pitbull JS to stop refreshing for 'auction_id'
+                var pitbullData = JSON.parse(event.data);
+                var auction_id = pitbullData.auction_id;
+                if (event.source) {
+                    event.source.postMessage("pitbull_stop_refresh:" +
+                        auction_id + ":urlnotset", "*");
+                }
+
+                sdkjs.makeNativeCallWithPrefix("appnexuspb://app?",
+                    "auction_info=" + encodeURIComponent(event.data));
+
+                // capture screenshot when webview becomes visible
+                if (document.hidden) {
+                    var handleVisibilityChange = function () {
+                        if (!document.hidden) {
+                            sdkjs.makeNativeCallWithPrefix(
+                                "appnexuspb://capture?",
+                                "auction_id=" + auction_id);
+                            document.removeEventListener(
+                                handleVisibilityChange);
+                        }
+                    };
+                    document.addEventListener("visibilitychange",
+                        handleVisibilityChange, false);
+                } else {
+                    sdkjs.makeNativeCallWithPrefix("appnexuspb://capture?",
+                        "auction_id=" + auction_id);
+                }
+
+                // send the auction info to native
+                return;
+            }
+        }
+
         // use anchor element for convenient parsing
         var a = document.createElement("a");
         a.href = event.data;
@@ -133,7 +170,11 @@
     }
 
     sdkjs.makeNativeCall = function (uri) {
-        nativeCallQueue.push(NATIVE_CALL_PREFIX + uri);
+        sdkjs.makeNativeCallWithPrefix(NATIVE_CALL_PREFIX, uri);
+    }
+
+    sdkjs.makeNativeCallWithPrefix = function (prefix, uri) {
+        nativeCallQueue.push(prefix + uri);
         if (nativeCallQueue.length == 1) {
             setTimeout(sdkjs.dequeue, 0);
         }

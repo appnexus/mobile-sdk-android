@@ -35,4 +35,15 @@ interface AdRequester {
      * Used to get the owner adview of the request
      */
     public AdView getOwner();
+
+    /**
+     * Mark the beginning of an ad request for latency recording
+     */
+    public void markLatencyStart();
+
+    /**
+     * Returns the difference from latency start to parameter `now`
+     * @param now current time
+     */
+    public long getLatency(long now);
 }

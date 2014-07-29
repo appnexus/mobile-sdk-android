@@ -17,6 +17,7 @@
 <resources>
     <attr name="placement_id" format="string"/>
     <attr name="test" format="boolean"/>
+    <attr name="show_loading_indicator" format="boolean"/>
     <declare-styleable name="BannerAdView">
         <attr name="placement_id"/>
         <attr name="test"/>
@@ -27,6 +28,7 @@
         <attr name="auto_refresh" format="boolean"/>
         <attr name="opens_native_browser" format="boolean"/>
         <attr name="expands_to_fit_screen_width" format="boolean"/>
+        <attr name="show_loading_indicator"/>
     </declare-styleable>
 
     <declare-styleable name="InterstitialAdView">
@@ -34,6 +36,7 @@
         <attr name="test"/>
         <attr name="color" format="integer"/>
         <attr name="opens_native_browser"/>
+        <attr name="show_loading_indicator"/>
     </declare-styleable>
 
 </resources>

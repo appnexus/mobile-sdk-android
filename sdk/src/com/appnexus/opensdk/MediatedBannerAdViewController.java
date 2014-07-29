@@ -17,6 +17,7 @@ package com.appnexus.opensdk;
 
 import android.app.Activity;
 import android.view.View;
+
 import com.appnexus.opensdk.utils.Clog;
 
 /**
@@ -48,20 +49,16 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
 
         ResultCode errorCode = null;
 
-        startTimeout();
-
-        TargetingParameters tp=null;
-        try{
-            AdView av = requester.getOwner();
-            if(av !=null){
-                tp = av.getTargetingParameters();
-            }
-        } catch(ClassCastException e){
-        } finally {
-            if (tp == null) {
-                tp = new TargetingParameters();
-            }
+        TargetingParameters tp = null;
+        if ((requester != null) && (requester.getOwner() != null)) {
+            tp = requester.getOwner().getTargetingParameters();
         }
+        if (tp == null) {
+            tp = new TargetingParameters();
+        }
+
+        startTimeout();
+        markLatencyStart();
 
         try {
             if(activity!=null){

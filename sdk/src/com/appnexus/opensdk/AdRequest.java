@@ -143,6 +143,8 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         this.placementId = owner.getPlacementID();
         context = owner.getContext();
 
+        AdvertistingIDUtil.retrieveAndSetAAID(context);
+
         Location lastLocation = null;
         Location appLocation = SDKSettings.getLocation();
         // Do we have access to location?
@@ -215,19 +217,18 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                 == Configuration.ORIENTATION_LANDSCAPE ? "h" : "v";
 
         aaid = settings.aaid;
-        if (aaid == null) {
+        if (StringUtil.isEmpty(aaid)) {
             // Fall back on the hashed ANDROID_ID (device id) if no AAID found
-            if ((settings.hidmd5 == null) || (settings.hidsha1 == null)) {
+            if (StringUtil.isEmpty(settings.hidmd5) || StringUtil.isEmpty(settings.hidsha1)) {
                 String aid = android.provider.Settings.Secure.getString(
                         context.getContentResolver(), Secure.ANDROID_ID);
-                if (aid != null) {
+                if (!StringUtil.isEmpty(aid)) {
                     settings.hidmd5 = HashingFunctions.md5(aid);
-                    hidmd5 = settings.hidmd5;
-
                     settings.hidsha1 = HashingFunctions.sha1(aid);
-                    hidsha1 = settings.hidsha1;
                 }
             }
+            hidmd5 = settings.hidmd5;
+            hidsha1 = settings.hidsha1;
         }
 
         // Get devMake, devModel, the Make and Model of the current device

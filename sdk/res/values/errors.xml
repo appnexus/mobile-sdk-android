@@ -102,8 +102,8 @@
 	<string formatted="false" name="mediated_request_null_activity">A mediated request was made with null activity parameter</string>
 	<string formatted="false" name="mediated_no_ads">The server responded with ads, but none were valid</string>
 	<string formatted="false" name="fire_cb_requester_null">firing result cb with null requester</string>
-	<string formatted="false" name="result_cb_ignored">Ignored result cb received response</string>
 	<string formatted="false" name="result_cb_bad_response">result cb returned a bad response</string>
+	<string formatted="false" name="result_cb_ignored">Ignored result cb received response</string>
 	<string formatted="false" name="fire_cb_result_null">firing result cb with null resultCB</string>
 	<string formatted="false" name="cancel_request">Cancelling scheduled request</string>
 	<string formatted="false" name="resize">MRAID resize() called with w:%d, h:%d, offset_x:%d, offset_y:%d, cust_close_position:%s, allow_offscreen:%b</string>
@@ -129,4 +129,5 @@
 	<string formatted="false" name="get_max_width">getMaxWidth() returned %d</string>
 	<string formatted="false" name="get_override_max_size">getOverrideMaxSize() returned %b</string>
 	<string formatted="false" name="no_size_info">An attempt to request an ad has been made with insufficient size information. Please provide a size, max size, or use fill_parent as the dimensions for your BannerAdView.</string>
+	<string formatted="false" name="show_loading_indicator_xml">showLoadingIndicator has been set in xml</string>
 </resources>
