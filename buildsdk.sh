@@ -95,6 +95,8 @@ mkdir -p $STAGE
 
 unzip $SDKDIR/$AARPATH/sdk.aar -d $SDKAAR
 cp -f $TMPOUTDIR/classes.jar $SDKAAR/classes.jar
+mkdir -p $SDKAAR/libs
+cp $MEDDIR/MillennialMedia/libs/*.jar $SDKAAR/libs
 cd $SDKAAR
 zip -r $STAGE/ANSDK.aar *
 rm -rf $SDKAAR

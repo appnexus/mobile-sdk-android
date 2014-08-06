@@ -304,7 +304,7 @@ public abstract class MediatedAdViewController {
             cb.execute();
         }
 
-        if (ignoreResult) {
+        if (ignoreResult && result != ResultCode.SUCCESS) {
             if (requester != null) {
                 requester.onReceiveResponse(null);
             }

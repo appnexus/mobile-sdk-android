@@ -143,6 +143,8 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         this.placementId = owner.getPlacementID();
         context = owner.getContext();
 
+        AdvertistingIDUtil.retrieveAndSetAAID(context);
+
         Location lastLocation = null;
         Location appLocation = SDKSettings.getLocation();
         // Do we have access to location?
@@ -222,12 +224,11 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
                         context.getContentResolver(), Secure.ANDROID_ID);
                 if (!StringUtil.isEmpty(aid)) {
                     settings.hidmd5 = HashingFunctions.md5(aid);
-                    hidmd5 = settings.hidmd5;
-
                     settings.hidsha1 = HashingFunctions.sha1(aid);
-                    hidsha1 = settings.hidsha1;
                 }
             }
+            hidmd5 = settings.hidmd5;
+            hidsha1 = settings.hidsha1;
         }
 
         // Get devMake, devModel, the Make and Model of the current device
