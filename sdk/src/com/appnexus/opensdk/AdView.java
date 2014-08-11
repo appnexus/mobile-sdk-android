@@ -64,6 +64,8 @@ public abstract class AdView extends FrameLayout {
 	ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
     private Location location = null;
 	boolean mraid_changing_size_or_visibility = false;
+    int creativeWidth;
+    int creativeHeight;
 	private AdListener adListener;
     private AppEventListener appEventListener;
 	private BrowserStyle browserStyle;
@@ -870,6 +872,36 @@ public abstract class AdView extends FrameLayout {
 		static final ArrayList<Pair<String, BrowserStyle>> bridge = new ArrayList<Pair<String, BrowserStyle>>();
 	}
 
+    void setCreativeWidth(int w){
+        creativeWidth = w;
+    }
+
+    /**
+     * Retrieve the 'unexpanded' size of the creative .
+     * It does not change if the creative used the MRAID expand or resize calls.
+     *
+     * @return the width
+     */
+
+    public int getCreativeWidth(){
+        return creativeWidth;
+    }
+
+    void setCreativeHeight(int h){
+        creativeHeight = h;
+    }
+
+    /**
+     * Retrieve the 'unexpanded' size of the creative .
+     * It does not change if the creative used the MRAID expand or resize calls.
+     *
+     * @return the height
+     */
+
+    public int getCreativeHeight(){
+        return creativeHeight;
+    }
+
 	/**
 	 * Private class to bridge events from mediation to the user
 	 * AdListener class.
@@ -888,6 +920,8 @@ public abstract class AdView extends FrameLayout {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
+                    setCreativeWidth(d.getCreativeWidth());
+                    setCreativeHeight(d.getCreativeHeight());
 					display(d);
                     printMediatedClasses();
 					if (adListener != null)

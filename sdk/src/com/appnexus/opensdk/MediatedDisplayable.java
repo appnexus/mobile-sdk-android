@@ -41,6 +41,24 @@ class MediatedDisplayable implements Displayable {
         mAVC.finishController();
     }
 
+    @Override
+    public int getCreativeWidth() {
+        if (view != null) {
+            return view.getWidth();
+        }
+        // 'view' is null for interstitials, return -1
+        return -1;
+    }
+
+    @Override
+    public int getCreativeHeight() {
+        if (view != null) {
+            return view.getHeight();
+        }
+        // 'view' is null for interstitials, return -1
+        return -1;
+    }
+
     void setView(View view) {
         this.view = view;
     }
@@ -52,4 +70,5 @@ class MediatedDisplayable implements Displayable {
     void setMAVC(MediatedAdViewController mAVC) {
         this.mAVC = mAVC;
     }
+
 }

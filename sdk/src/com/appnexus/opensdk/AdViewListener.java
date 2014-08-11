@@ -19,6 +19,7 @@ package com.appnexus.opensdk;
 /**
  * Interface for receiving callbacks from a MediatedAdViewController
  */
+
 /** package **/ interface AdViewListener {
 
     /**

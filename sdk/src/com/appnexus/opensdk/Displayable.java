@@ -24,4 +24,8 @@ interface Displayable {
     public boolean failed();
 
     public void destroy();
+
+    public int getCreativeWidth();
+
+    public int getCreativeHeight();
 }
