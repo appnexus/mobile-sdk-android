@@ -205,6 +205,7 @@ public class BannerAdView extends AdView {
                 }
             }
         };
+        // for non-sticky filters, registerReceiver always returns null.
         getContext().registerReceiver(receiver, filter);
     }
 
@@ -667,7 +668,10 @@ public class BannerAdView extends AdView {
 
     private void dismantleBroadcast() {
         if (receiver == null) return;
-        getContext().unregisterReceiver(receiver);
+        // Catch exception to protect against receiver failing to be registered.
+        try {
+            getContext().unregisterReceiver(receiver);
+        } catch (IllegalArgumentException ignored) {}
         receiver = null;
     }
 
