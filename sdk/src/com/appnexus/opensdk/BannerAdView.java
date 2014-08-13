@@ -27,11 +27,14 @@ import android.graphics.Point;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.*;
+import android.view.animation.Animation;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ViewAnimator;
 
-import com.appnexus.opensdk.transitionanimation.*;
+import com.appnexus.opensdk.transitionanimation.AnimationFactory;
+import com.appnexus.opensdk.transitionanimation.TransitionType;
+import com.appnexus.opensdk.transitionanimation.TransitionDirection;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.ViewUtil;
@@ -40,14 +43,14 @@ import com.appnexus.opensdk.utils.WebviewUtil;
 /**
  * This view is added to an existing layout in order to display banner
  * ads.  It may be added via XML or code.
- * <p/>
+ *
  * <p>
  * Note that you need a placement ID in order to show ads.  If you
  * don't have a placement ID, you'll need to get one from your
  * AppNexus representative or your ad network.
  * </p>
  * Using XML, you might add it like this:
- * <p/>
+ *
  * <pre>
  * {@code
  *
@@ -67,9 +70,9 @@ import com.appnexus.opensdk.utils.WebviewUtil;
  *           />
  * }
  * </pre>
- * <p/>
+ *
  * In code you can do the following:
- * <p/>
+ *
  * <pre>
  * {@code
  * RelativeLayout rl = (RelativeLayout)(findViewById(R.id.mainview));
@@ -83,6 +86,8 @@ import com.appnexus.opensdk.utils.WebviewUtil;
  * av.loadAd();
  * }
  * </pre>
+ *
+ *
  */
 public class BannerAdView extends AdView {
 
@@ -99,8 +104,8 @@ public class BannerAdView extends AdView {
     private int maximumHeight = -1;
     private boolean overrideMaxSize = false;
     private boolean measured = false;
-    private TransitionType transitionType = TransitionType.None;
-    private TransitionDirection direction = TransitionDirection.Up;
+    private TransitionType transitionType = TransitionType.NONE;
+    private TransitionDirection direction = TransitionDirection.UP;
     private long duration = 1000;
 
     private void setDefaultsBeforeXML() {
@@ -124,8 +129,9 @@ public class BannerAdView extends AdView {
      *
      * @param context The context of the {@link ViewGroup} to which
      *                the BannerAdView is being added.
-     * @param attrs   The {@link AttributeSet} to use when creating the
-     *                BannerAdView.
+     *
+     * @param attrs The {@link AttributeSet} to use when creating the
+     *              BannerAdView.
      */
     public BannerAdView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -134,10 +140,12 @@ public class BannerAdView extends AdView {
     /**
      * Create a new BannerAdView in which to load and show ads.
      *
-     * @param context  The context of the {@link ViewGroup} to which
-     *                 the BannerAdView is being added.
-     * @param attrs    The {@link AttributeSet} to use when creating the
-     *                 BannerAdView.
+     * @param context The context of the {@link ViewGroup} to which
+     *                the BannerAdView is being added.
+     *
+     * @param attrs The {@link AttributeSet} to use when creating the
+     *              BannerAdView.
+
      * @param defStyle The default style to apply to this view.  If 0,
      *                 no style will be applied (beyond what is
      *                 included in the theme).  This may be either an
@@ -152,8 +160,9 @@ public class BannerAdView extends AdView {
     /**
      * Creates a new BannerAdView in which to load and show ads.
      *
-     * @param context          The context of the {@link ViewGroup} to which
-     *                         the BannerAdView is being added.
+     * @param context The context of the {@link ViewGroup} to which
+     *                the BannerAdView is being added.
+     *
      * @param refresh_interval The desired refresh rate, in
      *                         milliseconds.  The default value is 30
      *                         seconds; minimum is 15.  A value of 0
@@ -271,14 +280,14 @@ public class BannerAdView extends AdView {
      * events.
      *
      * @return <code>true</code> if the ad load was successfully
-     * dispatched, false otherwise.
+     *         dispatched, false otherwise.
      */
     @Override
     public boolean loadAd() {
         loadAdHasBeenCalled = true;
-        if (super.loadAd())
+        if(super.loadAd())
             return true;
-        else {
+        else{
             loadAdHasBeenCalled = false;
             return false;
         }
@@ -288,11 +297,15 @@ public class BannerAdView extends AdView {
      * Loads a new ad, if the ad space is visible, and sets the
      * placement ID, ad width, and ad height attributes of the AdView.
      *
-     * @param placementID The placement ID to use in this view.
-     * @param width       The width of the ad.
-     * @param height      The height of the ad.
+     * @param placementID
+     *        The placement ID to use in this view.
+     * @param width
+     *        The width of the ad.
+     * @param height
+     *        The height of the ad.
+     *
      * @return <code>true</code> if the ad will begin loading,
-     * <code>false</code> otherwise.
+     *         <code>false</code> otherwise.
      */
     public boolean loadAd(String placementID, int width, int height) {
         setAdSize(width, height);
@@ -301,7 +314,7 @@ public class BannerAdView extends AdView {
     }
 
     @Override
-    protected void display(final Displayable d) {
+    protected void display(Displayable d) {
         // safety check: this should never evaluate to true
         if ((d == null) || d.failed() || (d.getView() == null)) {
             // The displayable has failed to be parsed or turned into a View.
@@ -310,8 +323,7 @@ public class BannerAdView extends AdView {
             return;
         }
 
-
-        if (transitionType == TransitionType.None)  {
+        if (transitionType == TransitionType.NONE)  {
             // default to show ads without animation
             // call destroy on any old views
             this.removeAllViews();
@@ -339,9 +351,7 @@ public class BannerAdView extends AdView {
             }
             animator.addView(d.getView());
 
-            Transition animation = AnimationFactory.create(transitionType, duration, direction);
-            animator.setInAnimation(animation.getInAnimation());
-            animator.setOutAnimation(animation.getOutAnimation());
+            AnimationFactory.create(animator, transitionType, duration, direction);
 
             this.removeAllViews();
             this.addView(animator);
@@ -409,7 +419,7 @@ public class BannerAdView extends AdView {
                         Clog.getString(R.string.xml_ad_width,
                                 a.getInt(attr, -1)));
             } else if (attr == R.styleable.BannerAdView_adHeight) {
-                height = a.getInt(attr, -1);
+                height= a.getInt(attr, -1);
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.xml_ad_height,
                                 a.getInt(attr, -1)));
@@ -422,12 +432,31 @@ public class BannerAdView extends AdView {
                 Clog.d(Clog.xmlLogTag, Clog.getString(
                         R.string.xml_set_opens_native_browser,
                         opensNativeBrowser));
-            } else if (attr == R.styleable.BannerAdView_expands_to_fit_screen_width) {
+            }else if (attr == R.styleable.BannerAdView_expands_to_fit_screen_width){
                 setExpandsToFitScreenWidth(a.getBoolean(attr, false));
                 Clog.d(Clog.xmlLogTag, Clog.getString(
                         R.string.xml_set_expands_to_full_screen_width,
                         expandsToFitScreenWidth
                 ));
+            }else if (attr == R.styleable.BannerAdView_show_loading_indicator) {
+                Clog.d(Clog.xmlLogTag,
+                        Clog.getString(R.string.show_loading_indicator_xml));
+                setShowLoadingIndicator(a.getBoolean(attr, false));
+            } else if (attr == R.styleable.BannerAdView_transition_type) {
+                Clog.d(Clog.xmlLogTag,
+                        Clog.getString(R.string.transition_type));
+                int test = a.getInt(attr, 0);
+                setTransitionType(TransitionType.getTypeForInt(test));
+                Clog.d("testing", getTransitionType().toString());
+            } else if (attr == R.styleable.BannerAdView_transition_direction) {
+                Clog.d(Clog.xmlLogTag,
+                        Clog.getString(R.string.transition_direction));
+                setTransitionDirection(TransitionDirection.getDirectionForInt(a.getInt(attr, 0)));
+
+            } else if (attr == R.styleable.BannerAdView_transition_duration) {
+                Clog.d(Clog.xmlLogTag,
+                        Clog.getString(R.string.transition_duration));
+                setTransitionDuration((long) a.getInt(attr, 1000));
             }
         }
 
@@ -442,8 +471,8 @@ public class BannerAdView extends AdView {
      * Retrieve the currently set auto-refresh interval.
      *
      * @return The interval, in milliseconds, at which the
-     * BannerAdView will request new ads, if auto-refresh is
-     * enabled.
+     *         BannerAdView will request new ads, if auto-refresh is
+     *         enabled.
      */
     public int getAutoRefreshInterval() {
         Clog.d(Clog.publicFunctionsLogTag,
@@ -454,8 +483,8 @@ public class BannerAdView extends AdView {
     /**
      * Set the height of the ad to request.
      *
-     * @param h The height, in pixels, to use.
      * @deprecated Favor setAdSize(int w, int h)
+     * @param h The height, in pixels, to use.
      */
     @Deprecated
     public void setAdHeight(int h) {
@@ -466,8 +495,8 @@ public class BannerAdView extends AdView {
     /**
      * Set the width of the ad to request.
      *
-     * @param w The width, in pixels, to use.
      * @deprecated Favor setAdSize(int w, int h)
+     * @param w The width, in pixels, to use.
      */
     @Deprecated
     public void setAdWidth(int w) {
@@ -481,10 +510,10 @@ public class BannerAdView extends AdView {
      * @param w The width of the ad, in pixels.
      * @param h The height of the ad, in pixels.
      */
-    public void setAdSize(int w, int h) {
+    public void setAdSize(int w, int h){
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_size, w, h));
-        width = w;
-        height = h;
+        width=w;
+        height=h;
     }
 
     /**
@@ -494,10 +523,10 @@ public class BannerAdView extends AdView {
      * @param maxW The maximum width in pixels.
      * @param maxH The maximum height in pixels.
      */
-    public void setMaxSize(int maxW, int maxH) {
+    public void setMaxSize(int maxW, int maxH){
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_max_size, maxW, maxH));
-        maximumHeight = maxH;
-        maximumWidth = maxW;
+        maximumHeight=maxH;
+        maximumWidth=maxW;
     }
 
     /**
@@ -505,10 +534,11 @@ public class BannerAdView extends AdView {
      * values from {@link #setAdSize}. Call with value true in order override
      * the value from {@link #setAdSize}.
      *
+     *
      * @param shouldOverrideMaxSize Whether the ad will request an ad
      *                              for a maximum size. Default is false.
      */
-    public void setOverrideMaxSize(boolean shouldOverrideMaxSize) {
+    public void setOverrideMaxSize(boolean shouldOverrideMaxSize){
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_override_max_size, shouldOverrideMaxSize));
         this.overrideMaxSize = shouldOverrideMaxSize;
     }
@@ -519,7 +549,7 @@ public class BannerAdView extends AdView {
      *
      * @return The maximum height of the ad to be requested.
      */
-    public int getMaxHeight() {
+    public int getMaxHeight(){
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_max_height, maximumHeight));
         return maximumHeight;
     }
@@ -530,7 +560,7 @@ public class BannerAdView extends AdView {
      *
      * @return The maximum width of the ad to be requested.
      */
-    public int getMaxWidth() {
+    public int getMaxWidth(){
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_max_width, maximumWidth));
         return maximumWidth;
     }
@@ -541,7 +571,7 @@ public class BannerAdView extends AdView {
      *
      * @return If the maximum size will be passed instead of the ad size.
      */
-    public boolean getOverrideMaxSize() {
+    public boolean getOverrideMaxSize(){
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_override_max_size, overrideMaxSize));
         return this.overrideMaxSize;
     }
@@ -658,7 +688,7 @@ public class BannerAdView extends AdView {
             //The only time we want to request on visibility changes is if an ad hasn't been loaded yet (loadAdHasBeenCalled)
             // shouldReloadOnResume is true
             // OR auto_refresh is enabled
-            if (loadAdHasBeenCalled || shouldReloadOnResume || auto_refresh) {
+            if(loadAdHasBeenCalled || shouldReloadOnResume || auto_refresh){
 
                 //If we're MRAID mraid_is_closing or expanding, don't load.
                 if (!mraid_is_closing && !mraid_changing_size_or_visibility
@@ -727,7 +757,7 @@ public class BannerAdView extends AdView {
      * entire ad view.  This feature is disabled by default.
      *
      * @param expandsToFitScreenWidth If true, automatic expansion is
-     *                                enabled.
+     * enabled.
      */
     public void setExpandsToFitScreenWidth(boolean expandsToFitScreenWidth) {
         this.expandsToFitScreenWidth = expandsToFitScreenWidth;
@@ -737,83 +767,61 @@ public class BannerAdView extends AdView {
     protected int oldW;
 
     @SuppressLint("NewApi")
-    @SuppressWarnings("deprecation")
-    protected void expandToFitScreenWidth(int adWidth, int adHeight, AdWebView webview) {
+	@SuppressWarnings("deprecation")
+	protected void expandToFitScreenWidth(int adWidth, int adHeight, AdWebView webview) {
         //Determine the width of the screen
         WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
 
-        int width = -1;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+        int width=-1;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2){
             Point p = new Point();
             display.getSize(p);
-            width = p.x;
-        } else {
-            width = display.getWidth();
+            width=p.x;
+        }else{
+            width=display.getWidth();
         }
-        float ratio_delta = ((float) width) / ((float) adWidth);
-        int new_height = (int) Math.floor(adHeight * ratio_delta);
+        float ratio_delta = ((float) width)/((float) adWidth);
+        int new_height = (int)Math.floor(adHeight*ratio_delta);
         oldH = getLayoutParams().height;
         oldW = getLayoutParams().width;
 
         //Adjust width of container
-        if (getLayoutParams().width > 0 || getLayoutParams().width == ViewGroup.LayoutParams.WRAP_CONTENT) {
-            getLayoutParams().width = width;
+        if(getLayoutParams().width>0 || getLayoutParams().width==ViewGroup.LayoutParams.WRAP_CONTENT){
+            getLayoutParams().width=width;
         }
 
         //Adjust height of container
-        getLayoutParams().height = new_height;
+        getLayoutParams().height=new_height;
 
         //Adjust height of webview
-        if (webview.getLayoutParams() == null) {
+        if(webview.getLayoutParams()==null){
             webview.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
-        } else {
+        }else{
             webview.getLayoutParams().width = FrameLayout.LayoutParams.MATCH_PARENT;
             webview.getLayoutParams().height = FrameLayout.LayoutParams.MATCH_PARENT;
         }
 
-        webview.setInitialScale((int) Math.ceil(ratio_delta * 100));
+        webview.setInitialScale((int)Math.ceil(ratio_delta*100));
 
         webview.invalidate();
 
-        shouldResetContainer = true;
+        shouldResetContainer =true;
 
     }
 
     protected void resetContainer() {
-        shouldResetContainer = false;
-        if (getLayoutParams() != null) {
+        shouldResetContainer =false;
+        if(getLayoutParams()!=null){
             getLayoutParams().height = oldH;
             getLayoutParams().width = oldW;
         }
     }
 
     void resetContainerIfNeeded() {
-        if (this.shouldResetContainer) {
+        if(this.shouldResetContainer){
             resetContainer();
         }
-    }
-
-    /**
-     * Banner Ad View Transition Animation Types
-     */
-    public static enum TransitionType {
-        None,
-        Random,
-        Fade,
-        Push,
-        MoveIn,
-        Reveal
-    }
-
-    /**
-     * Banner Ad View Transition Animation Direction
-     */
-    public static enum TransitionDirection {
-        Up,
-        Down,
-        Left,
-        Right
     }
 
     /**
@@ -827,12 +835,32 @@ public class BannerAdView extends AdView {
     }
 
     /**
+     * Get the type of the transition animation
+     *
+     * @return TransitionType
+     */
+
+    public TransitionType getTransitionType(){
+        return this.transitionType;
+    }
+
+    /**
      * Set the transition animation's direction
      *
      * @param direction transition animation's direction
      */
     public void setTransitionDirection(TransitionDirection direction){
         this.direction = direction;
+    }
+
+    /**
+     * Get the direction of the transition animation
+     *
+     * @return TransionDirection
+     */
+
+    public TransitionDirection getTransitionDirection(){
+        return this.direction;
     }
 
     /**
@@ -844,4 +872,12 @@ public class BannerAdView extends AdView {
         this.duration = duration;
     }
 
+    /**
+     * Get the duration for the transition animation
+     *
+     * @return duration in milliseconds
+     */
+    public long getTransitionDuration(){
+        return this.duration;
+    }
 }

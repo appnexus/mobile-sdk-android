@@ -130,4 +130,7 @@
 	<string formatted="false" name="get_override_max_size">getOverrideMaxSize() returned %b</string>
 	<string formatted="false" name="no_size_info">An attempt to request an ad has been made with insufficient size information. Please provide a size, max size, or use fill_parent as the dimensions for your BannerAdView.</string>
 	<string formatted="false" name="show_loading_indicator_xml">showLoadingIndicator has been set in xml</string>
+    <string formatted="false" name="transition_type">transition type has been set in xml</string>
+    <string formatted="false" name="transition_direction">transition direction has been set in xml</string>
+    <string formatted="false" name="transition_duration">transition duration has been set in xml</string>
 </resources>

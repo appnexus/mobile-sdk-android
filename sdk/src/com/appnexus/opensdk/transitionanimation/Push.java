@@ -5,8 +5,6 @@ import android.view.animation.Animation;
 import android.view.animation.Interpolator;
 import android.view.animation.TranslateAnimation;
 
-import com.appnexus.opensdk.BannerAdView.TransitionDirection;
-
 public class Push implements Transition {
     private Animation inAnimation;
     private Animation outAnimation;
@@ -30,13 +28,13 @@ public class Push implements Transition {
 
     private float[] getInDirection (TransitionDirection direction) {
         switch (direction) {
-            case Up:
+            case UP:
                 return Push.in_up_coordinates;
-            case Down:
+            case DOWN:
                 return Push.in_down_coordinates;
-            case Right:
+            case RIGHT:
                 return Push.in_right_coordinates;
-            case Left:
+            case LEFT:
                 return Push.in_left_coordinates;
         }
         return Push.in_up_coordinates;
@@ -44,13 +42,13 @@ public class Push implements Transition {
 
     private float[] getOutDirection (TransitionDirection direction) {
         switch (direction) {
-            case Up:
+            case UP:
                 return Push.out_up_coordinates;
-            case Down:
+            case DOWN:
                 return Push.out_down_coordinates;
-            case Right:
+            case RIGHT:
                 return Push.out_right_coordinates;
-            case Left:
+            case LEFT:
                 return Push.out_left_coordinates;
         }
         return Push.out_up_coordinates;

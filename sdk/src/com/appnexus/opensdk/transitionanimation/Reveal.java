@@ -7,8 +7,6 @@ import android.view.animation.AnimationSet;
 import android.view.animation.Interpolator;
 import android.view.animation.TranslateAnimation;
 
-import com.appnexus.opensdk.BannerAdView.TransitionDirection;
-
 public class Reveal implements Transition{
     private Animation inAnimation;
     private Animation outAnimation;
@@ -51,13 +49,13 @@ public class Reveal implements Transition{
 
     private float[] getDirection(TransitionDirection direction) {
         switch (direction) {
-            case Up:
+            case UP:
                 return Reveal.up_coordinates;
-            case Down:
+            case DOWN:
                 return Reveal.down_coordinates;
-            case Right:
+            case RIGHT:
                 return Reveal.right_coordinates;
-            case Left:
+            case LEFT:
                 return Reveal.left_coordinates;
         }
         return Reveal.up_coordinates;
