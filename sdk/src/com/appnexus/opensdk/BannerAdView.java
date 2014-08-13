@@ -180,6 +180,19 @@ public class BannerAdView extends AdView {
 
     @Override
     protected void setup(Context context, AttributeSet attrs) {
+        auto_refresh = true;
+        shouldResetContainer = false;
+        expandsToFitScreenWidth = false;
+        width = -1;
+        height = -1;
+        maximumWidth = -1;
+        maximumHeight = -1;
+        overrideMaxSize = false;
+        measured = false;
+        transitionType = TransitionType.NONE;
+        direction = TransitionDirection.UP;
+        duration = 1000;
+
         super.setup(context, attrs);
         onFirstLayout();
         mAdFetcher.setPeriod(period);
