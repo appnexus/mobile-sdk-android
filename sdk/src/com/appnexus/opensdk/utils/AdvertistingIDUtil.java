@@ -22,6 +22,7 @@ import android.os.Build;
 import android.util.Pair;
 import com.appnexus.opensdk.SDKSettings;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -62,10 +63,10 @@ public class AdvertistingIDUtil {
         private static final String cAdvertisingIdClientInfoName
                 = "com.google.android.gms.ads.identifier.AdvertisingIdClient$Info";
 
-        private final Context context;
+        private WeakReference<Context> context;
 
         private AAIDTask(Context context) {
-            this.context = context;
+            this.context = new WeakReference<Context>(context);
         }
 
         @Override
@@ -76,18 +77,21 @@ public class AdvertistingIDUtil {
             // attempt to retrieve AAID from GooglePlayServices via reflection
             do {
                 try {
-                    // NPE catches null objects
-                    Class<?> cInfo = Class.forName(cAdvertisingIdClientInfoName);
-                    Class<?> cClient = Class.forName(cAdvertisingIdClientName);
+                    Context callcontext = context.get();
+                    if (callcontext != null) {
+                        // NPE catches null objects
+                        Class<?> cInfo = Class.forName(cAdvertisingIdClientInfoName);
+                        Class<?> cClient = Class.forName(cAdvertisingIdClientName);
 
-                    Method mGetAdvertisingIdInfo = cClient.getMethod("getAdvertisingIdInfo", Context.class);
-                    Method mGetId = cInfo.getMethod("getId");
-                    Method mIsLimitAdTrackingEnabled = cInfo.getMethod("isLimitAdTrackingEnabled");
+                        Method mGetAdvertisingIdInfo = cClient.getMethod("getAdvertisingIdInfo", Context.class);
+                        Method mGetId = cInfo.getMethod("getId");
+                        Method mIsLimitAdTrackingEnabled = cInfo.getMethod("isLimitAdTrackingEnabled");
 
-                    Object adInfoObject = cInfo.cast(mGetAdvertisingIdInfo.invoke(null, context));
+                        Object adInfoObject = cInfo.cast(mGetAdvertisingIdInfo.invoke(null, callcontext));
 
-                    aaid = (String) mGetId.invoke(adInfoObject);
-                    limited = (Boolean) mIsLimitAdTrackingEnabled.invoke(adInfoObject);
+                        aaid = (String) mGetId.invoke(adInfoObject);
+                        limited = (Boolean) mIsLimitAdTrackingEnabled.invoke(adInfoObject);
+                    }
                 } catch (ClassNotFoundException ignored) {
                 } catch (InvocationTargetException ignored) {
                 } catch (NoSuchMethodException ignored) {
