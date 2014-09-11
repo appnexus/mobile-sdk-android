@@ -299,10 +299,9 @@ public abstract class AdView extends FrameLayout {
      * Not following this will cause a memory leak for using AdMob or DFP mediation.
      */
     public void destroy(){
-        Clog.d("SDKTestingFramework", "destroy adview");
+        Clog.d(Clog.baseLogTag, "called destroy() on AdView");
         if(this.lastDisplayable != null) {
             this.lastDisplayable.destroy();
-            Clog.d("SDKTestingFramework", "destroy lastdisplayble");
             this.lastDisplayable = null;
         }
     }
