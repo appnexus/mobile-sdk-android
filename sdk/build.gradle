@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         consumerProguardFiles 'proguard-project.txt'
-        minSdkVersion 8
+        minSdkVersion 9
     }
 
     sourceSets {
@@ -23,5 +23,5 @@ android {
 }
 
 dependencies {
-    compile 'com.google.android.gms:play-services:5.+'
+    compile 'com.google.android.gms:play-services:5.0.89'
 }
