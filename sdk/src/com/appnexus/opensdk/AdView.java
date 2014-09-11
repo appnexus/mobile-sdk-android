@@ -293,6 +293,11 @@ public abstract class AdView extends FrameLayout {
 			mAdFetcher.stop();
 	}
 
+    /**
+     * This must be called from the UI thread,
+     * when permanently remove the AdView from the view hierarchy.
+     * Not following this will cause a memory leak for using AdMob or DFP mediation.
+     */
     public void destroy(){
         if(this.lastDisplayable != null) {
             this.lastDisplayable.destroy();
