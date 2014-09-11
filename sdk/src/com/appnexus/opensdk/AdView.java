@@ -293,6 +293,13 @@ public abstract class AdView extends FrameLayout {
 			mAdFetcher.stop();
 	}
 
+    public void destroy(){
+        if(this.lastDisplayable != null) {
+            this.lastDisplayable.destroy();
+            this.lastDisplayable = null;
+        }
+    }
+
 	int getContainerWidth() {
 		return measuredWidth;
 	}
