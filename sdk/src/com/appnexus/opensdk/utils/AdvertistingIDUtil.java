@@ -20,6 +20,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Pair;
+
 import com.appnexus.opensdk.SDKSettings;
 
 import java.lang.ref.WeakReference;
@@ -75,32 +76,32 @@ public class AdvertistingIDUtil {
             Boolean limited = false;
 
             // attempt to retrieve AAID from GooglePlayServices via reflection
-            do {
-                try {
-                    Context callcontext = context.get();
-                    if (callcontext != null) {
-                        // NPE catches null objects
-                        Class<?> cInfo = Class.forName(cAdvertisingIdClientInfoName);
-                        Class<?> cClient = Class.forName(cAdvertisingIdClientName);
 
-                        Method mGetAdvertisingIdInfo = cClient.getMethod("getAdvertisingIdInfo", Context.class);
-                        Method mGetId = cInfo.getMethod("getId");
-                        Method mIsLimitAdTrackingEnabled = cInfo.getMethod("isLimitAdTrackingEnabled");
+            try {
+                Context callcontext = context.get();
+                if (callcontext != null) {
+                    // NPE catches null objects
+                    Class<?> cInfo = Class.forName(cAdvertisingIdClientInfoName);
+                    Class<?> cClient = Class.forName(cAdvertisingIdClientName);
 
-                        Object adInfoObject = cInfo.cast(mGetAdvertisingIdInfo.invoke(null, callcontext));
+                    Method mGetAdvertisingIdInfo = cClient.getMethod("getAdvertisingIdInfo", Context.class);
+                    Method mGetId = cInfo.getMethod("getId");
+                    Method mIsLimitAdTrackingEnabled = cInfo.getMethod("isLimitAdTrackingEnabled");
 
-                        aaid = (String) mGetId.invoke(adInfoObject);
-                        limited = (Boolean) mIsLimitAdTrackingEnabled.invoke(adInfoObject);
-                    }
-                } catch (ClassNotFoundException ignored) {
-                } catch (InvocationTargetException ignored) {
-                } catch (NoSuchMethodException ignored) {
-                } catch (IllegalAccessException ignored) {
-                } catch (ClassCastException ignored) {
-                } catch (NullPointerException ignored) {
+                    Object adInfoObject = cInfo.cast(mGetAdvertisingIdInfo.invoke(null, callcontext));
+
+                    aaid = (String) mGetId.invoke(adInfoObject);
+                    limited = (Boolean) mIsLimitAdTrackingEnabled.invoke(adInfoObject);
                 }
-
-            } while (false);
+            } catch (ClassNotFoundException ignored) {
+            } catch (InvocationTargetException ignored) {
+            } catch (NoSuchMethodException ignored) {
+            } catch (IllegalAccessException ignored) {
+            } catch (ClassCastException ignored) {
+            } catch (NullPointerException ignored) {
+            } catch (Exception ignored) {
+                // catches GooglePlayServicesRepairableException, GooglePlayServicesNotAvailableException
+            }
 
             // set or clear the AAID depending on success/failure
             return new Pair<String, Boolean>(aaid, limited);
