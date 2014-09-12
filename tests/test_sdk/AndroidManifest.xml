@@ -25,5 +25,5 @@
     -->
     <instrumentation android:name="android.test.InstrumentationTestRunner"
                      android:targetPackage="com.appnexus.opensdk"
-                     android:label="Tests for com.appnexus.opensdk"/>
+                     android:label="Tests for com.appnexus.opensdktest"/>
 </manifest>

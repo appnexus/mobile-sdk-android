@@ -28,7 +28,6 @@ import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Handler;
-import android.text.Layout;
 import android.util.DisplayMetrics;
 import android.util.Pair;
 import android.view.*;

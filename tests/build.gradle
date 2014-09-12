@@ -1,0 +1,33 @@
+/**
+ AppNexusSDKApp Android Build
+ **/
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.12.0'
+        classpath 'org.robolectric:robolectric-gradle-plugin:0.12.0'
+    }
+}
+def isReleaseBuild() {
+    return version.contains("SNAPSHOT") == false
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+
+    evaluationDependsOnChildren()
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.12'
+}

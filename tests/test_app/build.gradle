@@ -1,0 +1,27 @@
+apply plugin: 'android'
+
+android{
+    compileSdkVersion 19
+    buildToolsVersion "19.1.0"
+    enforceUniquePackageName false
+
+    defaultConfig{
+        minSdkVersion 9
+        targetSdkVersion 19
+    }
+
+    sourceSets {
+        main.manifest.srcFile 'AndroidManifest.xml'
+        main.java.srcDir 'src'
+        main.res.srcDir 'res'
+        main.resources.srcDir 'src'
+        main.assets.srcDir 'assets'
+    }
+
+    lintOptions{
+        abortOnError false
+    }
+}
+dependencies{
+    compile project(':test_sdk')
+}
