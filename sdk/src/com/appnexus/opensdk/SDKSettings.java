@@ -19,6 +19,10 @@ package com.appnexus.opensdk;
 import android.location.Location;
 import com.appnexus.opensdk.utils.Settings;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Set;
+
 /**
  * Global static functions that apply to all SDK views and calls.
  */
@@ -92,8 +96,20 @@ public class SDKSettings {
      * @param location The location value to use in the ad call (may be null)
      */
     public static void setLocation(Location location) {
-        Settings.getSettings().location =
-                getLocationEnabled() ? location : null;
+        if (getLocationEnabled()) {
+            if (getLocationDecimalDigits() != -1 && location != null) {
+                BigDecimal latBD = new BigDecimal(location.getLatitude());
+                latBD = latBD.setScale(SDKSettings.getLocationDecimalDigits(), RoundingMode.HALF_UP);
+                location.setLatitude(latBD.doubleValue());
+                BigDecimal lonBD = new BigDecimal(location.getLatitude());
+                lonBD = lonBD.setScale(SDKSettings.getLocationDecimalDigits(), RoundingMode.HALF_UP);
+                location.setLongitude(lonBD.doubleValue());
+            }
+            Settings.getSettings().location = location;
+        }
+        else {
+            Settings.getSettings().location = null;
+        }
     }
 
     /**
