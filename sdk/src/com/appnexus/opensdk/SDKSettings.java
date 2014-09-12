@@ -97,6 +97,27 @@ public class SDKSettings {
     }
 
     /**
+     * Sets the digits after the decimal of the latitude and longitude.
+     * It will only be applied if {@link #getLocationEnabled()}.
+     *
+     * @param digitsAfterDecimal The digits
+     */
+    public static void setLocationDecimalDigits(int digitsAfterDecimal) {
+        if (digitsAfterDecimal >= 0) {
+            Settings.getSettings().locationDecimalDigits = digitsAfterDecimal;
+        }
+    }
+
+    /**
+     * Returns the number of digits after decimal of latitude and longitude.
+     *
+     * @return The digits after decimal of latitude and longitude
+     */
+    public static int getLocationDecimalDigits(){
+        return Settings.getSettings().locationDecimalDigits;
+    }
+
+    /**
      * Register a mapping for an external mediation class.
      *
      * @param className the end class name.

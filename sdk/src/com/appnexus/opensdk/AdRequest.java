@@ -46,6 +46,8 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -192,8 +194,17 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         }
 
         if (lastLocation != null) {
-            lat = "" + lastLocation.getLatitude();
-            lon = "" + lastLocation.getLongitude();
+            if (SDKSettings.getLocationDecimalDigits() != -1) {
+                BigDecimal latBD = new BigDecimal(lastLocation.getLatitude());
+                latBD = latBD.setScale(SDKSettings.getLocationDecimalDigits(), RoundingMode.HALF_UP);
+                lat = "" + latBD.doubleValue();
+                BigDecimal lonBD = new BigDecimal(lastLocation.getLatitude());
+                lonBD = lonBD.setScale(SDKSettings.getLocationDecimalDigits(), RoundingMode.HALF_UP);
+                lon = "" + lonBD.doubleValue();
+            } else {
+                lat = "" + lastLocation.getLatitude();
+                lon = "" + lastLocation.getLongitude();
+            }
             locDataPrecision = "" + lastLocation.getAccuracy();
             locDataAge = "" + (System.currentTimeMillis() - lastLocation.getTime());
         } else {

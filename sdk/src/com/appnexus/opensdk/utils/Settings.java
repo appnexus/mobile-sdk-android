@@ -49,6 +49,7 @@ public class Settings {
 
     public boolean locationEnabled = true;
     public Location location = null;
+    public int locationDecimalDigits = -1;
 
     public HashMap<String, String> externalMediationClasses = new HashMap<String, String>();
     public HashSet<String> invalidNetworks = new HashSet<String>();
