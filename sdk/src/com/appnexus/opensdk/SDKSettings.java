@@ -106,7 +106,7 @@ public class SDKSettings {
     }
 
     /**
-     * Sets the digits after the decimal of the latitude and longitude.
+     * Sets the number of digits after the decimal of the latitude and longitude.
      * It will only be applied if {@link #getLocationEnabled()}.
      *
      * @param digitsAfterDecimal The digits
@@ -119,6 +119,7 @@ public class SDKSettings {
 
     /**
      * Returns the number of digits after decimal of latitude and longitude.
+     * If returns -1, it indicates that full resolution is used.
      *
      * @return The digits after decimal of latitude and longitude
      */
