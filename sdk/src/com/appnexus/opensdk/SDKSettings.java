@@ -19,10 +19,6 @@ package com.appnexus.opensdk;
 import android.location.Location;
 import com.appnexus.opensdk.utils.Settings;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Set;
-
 /**
  * Global static functions that apply to all SDK views and calls.
  */
