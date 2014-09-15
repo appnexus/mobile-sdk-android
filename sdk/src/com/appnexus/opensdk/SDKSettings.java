@@ -98,12 +98,9 @@ public class SDKSettings {
     public static void setLocation(Location location) {
         if (getLocationEnabled()) {
             if (getLocationDecimalDigits() != -1 && location != null) {
-                BigDecimal latBD = new BigDecimal(location.getLatitude());
-                latBD = latBD.setScale(SDKSettings.getLocationDecimalDigits(), RoundingMode.HALF_UP);
-                location.setLatitude(latBD.doubleValue());
-                BigDecimal lonBD = new BigDecimal(location.getLatitude());
-                lonBD = lonBD.setScale(SDKSettings.getLocationDecimalDigits(), RoundingMode.HALF_UP);
-                location.setLongitude(lonBD.doubleValue());
+                double power = Math.pow(10, getLocationDecimalDigits());
+                location.setLatitude(Math.round(location.getLatitude() * power) / power);
+                location.setLongitude(Math.round(location.getLongitude() * power) / power);
             }
             Settings.getSettings().location = location;
         }
