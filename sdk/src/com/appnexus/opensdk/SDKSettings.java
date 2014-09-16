@@ -108,12 +108,17 @@ public class SDKSettings {
     /**
      * Sets the number of digits after the decimal of the latitude and longitude.
      * It will only be applied if {@link #getLocationEnabled()}.
+     * Maximum of precision is 6, which means less than a foot.
      *
      * @param digitsAfterDecimal The digits
      */
     public static void setLocationDecimalDigits(int digitsAfterDecimal) {
-        if (digitsAfterDecimal >= 0) {
+        if (digitsAfterDecimal >= 0 && digitsAfterDecimal <= 6) {
             Settings.getSettings().locationDecimalDigits = digitsAfterDecimal;
+        } else if (digitsAfterDecimal > 6) {
+            Settings.getSettings().locationDecimalDigits = 6;
+        } else {
+            Settings.getSettings().locationDecimalDigits = -1;
         }
     }
 
