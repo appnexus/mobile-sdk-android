@@ -680,6 +680,12 @@ public class BannerAdView extends AdView {
         super.unhide();
     }
 
+
+    @Override
+    public void destroy() {
+        super.destroy();
+    }
+
     @Override
     boolean isBanner() {
         return true;
