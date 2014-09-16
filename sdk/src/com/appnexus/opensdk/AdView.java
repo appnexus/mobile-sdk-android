@@ -293,6 +293,18 @@ public abstract class AdView extends FrameLayout {
 			mAdFetcher.stop();
 	}
 
+    /**
+     * This must be called from the UI thread,
+     * when permanently remove the AdView from the view hierarchy.
+     */
+    public void destroy(){
+        Clog.d(Clog.baseLogTag, "called destroy() on AdView");
+        if(this.lastDisplayable != null) {
+            this.lastDisplayable.destroy();
+            this.lastDisplayable = null;
+        }
+    }
+
 	int getContainerWidth() {
 		return measuredWidth;
 	}

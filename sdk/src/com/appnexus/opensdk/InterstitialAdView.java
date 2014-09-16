@@ -383,7 +383,9 @@ public class InterstitialAdView extends AdView {
     /**
      * Destroy this InterstitialAdView object.
      */
+    @Override
     public void destroy() {
+        super.destroy();
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.destroy_int));
         if (this.mAdFetcher != null)
             mAdFetcher.stop();
