@@ -17,6 +17,8 @@
 package com.appnexus.opensdk;
 
 import android.location.Location;
+
+import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
 /**
@@ -113,12 +115,14 @@ public class SDKSettings {
      * @param digitsAfterDecimal The digits
      */
     public static void setLocationDecimalDigits(int digitsAfterDecimal) {
-        if (digitsAfterDecimal >= 0 && digitsAfterDecimal <= 6) {
-            Settings.getSettings().locationDecimalDigits = digitsAfterDecimal;
-        } else if (digitsAfterDecimal > 6) {
+        if (digitsAfterDecimal > 6) {
             Settings.getSettings().locationDecimalDigits = 6;
+            Clog.w(Clog.baseLogTag, "Out of range input " + digitsAfterDecimal + ", set location digits after decimal to maximum 6");
+        } else if (digitsAfterDecimal >= -1) {
+            Settings.getSettings().locationDecimalDigits = digitsAfterDecimal;
         } else {
             Settings.getSettings().locationDecimalDigits = -1;
+            Clog.w(Clog.baseLogTag, "Negative input " + digitsAfterDecimal + ", set location digits after decimal to default");
         }
     }
 
