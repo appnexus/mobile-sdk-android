@@ -1,33 +1,19 @@
-/**
- AppNexusSDKApp Android Build
- **/
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
     }
-
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.12.0'
-        classpath 'org.robolectric:robolectric-gradle-plugin:0.12.0'
+        classpath 'com.android.tools.build:gradle:0.12.2'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
     }
-}
-def isReleaseBuild() {
-    return version.contains("SNAPSHOT") == false
 }
 
 allprojects {
     repositories {
-        mavenCentral()
+        jcenter()
     }
-
-    tasks.withType(JavaCompile) {
-        options.encoding = "UTF-8"
-    }
-
-    evaluationDependsOnChildren()
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.12'
 }
