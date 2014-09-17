@@ -30,8 +30,10 @@ import android.os.Build;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.util.Pair;
+
 import com.appnexus.opensdk.InterstitialAdView.Size;
 import com.appnexus.opensdk.utils.*;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
@@ -91,8 +93,8 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     private String nonet;
     static HashSet<String> pNames = null;
 
-    private static HashSet<String> getParamNames(){
-        if(pNames == null){
+    private static HashSet<String> getParamNames() {
+        if (pNames == null) {
             pNames = new HashSet<String>();
             pNames.add("id");
             pNames.add("aaid");
@@ -126,12 +128,12 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             pNames.add("sdkver");
 
             return pNames;
-        }else{
+        } else {
             return pNames;
         }
     }
 
-    private static boolean stringNotInParamNames(String s){
+    private static boolean stringNotInParamNames(String s) {
         return !getParamNames().contains(s);
     }
 
@@ -156,8 +158,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             // First priority is the app supplied location
             if (appLocation != null) {
                 lastLocation = appLocation;
-            }
-            else if (context.checkCallingOrSelfPermission("android.permission.ACCESS_FINE_LOCATION") == PackageManager.PERMISSION_GRANTED
+            } else if (context.checkCallingOrSelfPermission("android.permission.ACCESS_FINE_LOCATION") == PackageManager.PERMISSION_GRANTED
                     || context.checkCallingOrSelfPermission("android.permission.ACCESS_COARSE_LOCATION") == PackageManager.PERMISSION_GRANTED) {
                 // Get lat, long from any GPS information that might be currently
                 // available
@@ -258,13 +259,13 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             this.overrideMaxSize = ((BannerAdView) owner).getOverrideMaxSize();
         }
 
-        if(this.overrideMaxSize){
+        if (this.overrideMaxSize) {
             maxHeight = ((BannerAdView) owner).getMaxHeight();
             maxWidth = ((BannerAdView) owner).getMaxWidth();
-            if(maxWidth <= 0 || maxHeight <= 0){
+            if (maxWidth <= 0 || maxHeight <= 0) {
                 Clog.w(Clog.httpReqLogTag, Clog.getString(R.string.max_size_not_set));
             }
-        }else {
+        } else {
             maxHeight = owner.getContainerHeight();
             maxWidth = owner.getContainerWidth();
         }
@@ -342,8 +343,8 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         }
         nonet = nonetSB.toString();
 
-        if((maxHeight <= 0 || maxWidth <= 0) &&
-               (width <= 0 || height <= 0)){
+        if ((maxHeight <= 0 || maxWidth <= 0) &&
+                (width <= 0 || height <= 0)) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.no_size_info));
             fail();
         }
@@ -403,9 +404,11 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (!StringUtil.isEmpty(mcc)) sb.append("&mcc=").append(Uri.encode(mcc));
         if (!StringUtil.isEmpty(mnc)) sb.append("&mnc=").append(Uri.encode(mnc));
         if (!StringUtil.isEmpty(language)) sb.append("&language=").append(Uri.encode(language));
-        if (!StringUtil.isEmpty(dev_timezone)) sb.append("&devtz=").append(Uri.encode(dev_timezone));
+        if (!StringUtil.isEmpty(dev_timezone))
+            sb.append("&devtz=").append(Uri.encode(dev_timezone));
         if (!StringUtil.isEmpty(dev_time)) sb.append("&devtime=").append(Uri.encode(dev_time));
-        if (!StringUtil.isEmpty(connection_type)) sb.append("&connection_type=").append(Uri.encode(connection_type));
+        if (!StringUtil.isEmpty(connection_type))
+            sb.append("&connection_type=").append(Uri.encode(connection_type));
         if (!StringUtil.isEmpty(nativeBrowser)) sb.append("&native_browser=").append(nativeBrowser);
         if (!StringUtil.isEmpty(psa)) sb.append("&psa=").append(psa);
         if (reserve > 0) sb.append("&reserve=").append(reserve);
@@ -420,12 +423,12 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (customKeywords != null) {
             for (Pair<String, String> pair : customKeywords) {
                 if (!StringUtil.isEmpty(pair.first) && (pair.second != null)) {
-                    if(AdRequest.stringNotInParamNames(pair.first)){
+                    if (AdRequest.stringNotInParamNames(pair.first)) {
                         sb.append("&")
                                 .append(pair.first)
                                 .append("=")
                                 .append(Uri.encode(pair.second));
-                    }else{
+                    } else {
                         Clog.w(Clog.httpReqLogTag, Clog.getString(R.string.request_parameter_override_attempt, pair.first));
                     }
                 }
@@ -484,7 +487,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         } catch (HttpHostConnectException he) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(
                     R.string.http_unreachable, he.getHost().getHostName(), he
-                    .getHost().getPort()));
+                            .getHost().getPort()));
             return null;
         } catch (IOException e) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_io));
