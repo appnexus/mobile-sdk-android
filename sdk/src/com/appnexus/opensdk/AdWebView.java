@@ -343,7 +343,7 @@ class AdWebView extends WebView implements Displayable {
         }
 
         try {
-            AdWebView.this.adView.getContext().startActivity(intent);
+            adView.getContext().startActivity(intent);
         } catch (ActivityNotFoundException e) {
             Clog.w(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing, activity_clz.getName()));
             AdWebView.BROWSER_QUEUE.remove();
@@ -352,7 +352,7 @@ class AdWebView extends WebView implements Displayable {
 
     // handles browser logic for shouldOverrideUrl
     void loadURLInCorrectBrowser(String url) {
-        if (!AdWebView.this.adView.getOpensNativeBrowser()
+        if (!adView.getOpensNativeBrowser()
                 && url.startsWith("http")) {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(R.string.opening_inapp));
@@ -376,7 +376,7 @@ class AdWebView extends WebView implements Displayable {
             }
 
             // Unless disabled by the user, handle redirects in background
-            if(AdWebView.this.adView.getLoadsInBackground()) {
+            if(adView.getLoadsInBackground()) {
                 // Otherwise, create an invisible 1x1 webview to load the landing
                 // page and detect if we're redirecting to a market url
                 WebView fwdWebView = new RedirectWebView(this.getContext());
@@ -385,7 +385,7 @@ class AdWebView extends WebView implements Displayable {
                 adView.addView(fwdWebView);
             }else{
                 // Stick the URL directly into the new activity.
-                WebView boringWebview = new WebView(AdWebView.this.getContext());
+                WebView boringWebview = new WebView(getContext());
                 WebviewUtil.setWebViewSettings(boringWebview);
                 boringWebview.loadUrl(url);
                 openInAppBrowser(boringWebview);
