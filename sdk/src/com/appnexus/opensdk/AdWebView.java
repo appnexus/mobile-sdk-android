@@ -28,7 +28,6 @@ import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Handler;
-import android.text.Layout;
 import android.util.DisplayMetrics;
 import android.util.Pair;
 import android.view.*;
@@ -377,7 +376,7 @@ class AdWebView extends WebView implements Displayable {
             }
 
             // Unless disabled by the user, handle redirects in background
-            if(AdWebView.this.adView.getDoesLoadingInBackground()) {
+            if(AdWebView.this.adView.getLoadsInBackground()) {
                 // Otherwise, create an invisible 1x1 webview to load the landing
                 // page and detect if we're redirecting to a market url
                 WebView fwdWebView = new RedirectWebView(this.getContext());

@@ -406,7 +406,7 @@ public class BannerAdView extends AdView {
                         Clog.getString(R.string.show_loading_indicator_xml));
                 setShowLoadingIndicator(a.getBoolean(attr, false));
             }else if (attr == R.styleable.BannerAdView_load_landing_page_in_background) {
-                setDoesLoadingInBackground(a.getBoolean(attr, true));
+                setLoadsInBackground(a.getBoolean(attr, true));
                 Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_load_landing_page_in_background, doesLoadingInBackground ));
             }
         }

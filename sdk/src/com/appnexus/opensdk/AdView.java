@@ -922,7 +922,7 @@ public abstract class AdView extends FrameLayout {
      *
      * @param doesLoadingInBackground
      */
-    public void setDoesLoadingInBackground(boolean doesLoadingInBackground){
+    public void setLoadsInBackground(boolean doesLoadingInBackground){
         this.doesLoadingInBackground = doesLoadingInBackground;
     }
 
@@ -933,7 +933,7 @@ public abstract class AdView extends FrameLayout {
      *
      * @return Whether or not redirects and landing pages are loaded/processed in the background before being displayed.
      */
-    public boolean getDoesLoadingInBackground(){
+    public boolean getLoadsInBackground(){
         return this.doesLoadingInBackground;
     }
 
