@@ -387,6 +387,7 @@ class AdWebView extends WebView implements Displayable {
             }else{
                 // Stick the URL directly into the new activity.
                 WebView boringWebview = new WebView(AdWebView.this.getContext());
+                WebviewUtil.setWebViewSettings(boringWebview);
                 boringWebview.loadUrl(url);
                 openInAppBrowser(boringWebview);
             }
