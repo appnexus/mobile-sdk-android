@@ -376,12 +376,20 @@ class AdWebView extends WebView implements Displayable {
                 }
             }
 
-            // Otherwise, create an invisible 1x1 webview to load the landing
-            // page and detect if we're redirecting to a market url
-            WebView fwdWebView = new RedirectWebView(this.getContext());
-            fwdWebView.loadUrl(url);
-            fwdWebView.setVisibility(View.GONE);
-            adView.addView(fwdWebView);
+            // Unless disabled by the user, handle redirects in background
+            if(AdWebView.this.adView.getDoesLoadingInBackground()) {
+                // Otherwise, create an invisible 1x1 webview to load the landing
+                // page and detect if we're redirecting to a market url
+                WebView fwdWebView = new RedirectWebView(this.getContext());
+                fwdWebView.loadUrl(url);
+                fwdWebView.setVisibility(View.GONE);
+                adView.addView(fwdWebView);
+            }else{
+                // Stick the URL directly into the new activity.
+                WebView boringWebview = new WebView(AdWebView.this.getContext());
+                boringWebview.loadUrl(url);
+                openInAppBrowser(boringWebview);
+            }
         } else {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(R.string.opening_native));
