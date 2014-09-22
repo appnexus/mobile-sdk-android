@@ -46,6 +46,7 @@ public class MoPubBannerAdView implements MediatedBannerAdView {
         adView = new MoPubView(activity);
         adView.setAdUnitId(uid);
         adView.setBannerAdListener(mpListener);
+        adView.setAutorefreshEnabled(false);
 
         if (targetingParameters != null) {
             if (targetingParameters.getLocation() != null) {
