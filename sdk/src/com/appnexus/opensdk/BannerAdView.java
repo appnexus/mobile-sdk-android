@@ -1,5 +1,5 @@
 /*
- *    Copyright 2013 APPNEXUS INC
+ *    Copyright 2013 - 2014 APPNEXUS INC
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -459,9 +459,8 @@ public class BannerAdView extends AdView {
             } else if (attr == R.styleable.BannerAdView_transition_type) {
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.transition_type));
-                int test = a.getInt(attr, 0);
-                setTransitionType(TransitionType.getTypeForInt(test));
-                Clog.d("testing", getTransitionType().toString());
+                int transitionTypeFromXML = a.getInt(attr, 0);
+                setTransitionType(TransitionType.getTypeForInt(transitionTypeFromXML));
             } else if (attr == R.styleable.BannerAdView_transition_direction) {
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.transition_direction));
