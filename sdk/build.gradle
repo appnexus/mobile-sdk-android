@@ -5,7 +5,8 @@ android {
     buildToolsVersion "19.1.0"
 
     defaultConfig {
-        minSdkVersion 8
+        consumerProguardFiles 'proguard-project.txt'
+        minSdkVersion 9
     }
 
     sourceSets {
@@ -19,4 +20,8 @@ android {
     lintOptions {
         abortOnError false
     }
+}
+
+dependencies {
+    compile 'com.google.android.gms:play-services:5.0.89'
 }

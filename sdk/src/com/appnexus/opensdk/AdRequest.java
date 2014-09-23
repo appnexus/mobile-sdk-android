@@ -30,8 +30,10 @@ import android.os.Build;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.util.Pair;
+
 import com.appnexus.opensdk.InterstitialAdView.Size;
 import com.appnexus.opensdk.utils.*;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
@@ -45,14 +47,15 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashSet;
 
 class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
-    private AdView owner;
-    private final AdRequester requester; // The instance of AdRequester which is filing this request.
-    private Context context;
+    private WeakReference<AdRequester> requester; // The instance of AdRequester which is filing this request.
+    private WeakReference<Context> owner_context;
+    private boolean is_owner_interstitial;
     private String hidmd5;
     private String hidsha1;
     private String aaid;
@@ -90,8 +93,8 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
     private String nonet;
     static HashSet<String> pNames = null;
 
-    private static HashSet<String> getParamNames(){
-        if(pNames == null){
+    private static HashSet<String> getParamNames() {
+        if (pNames == null) {
             pNames = new HashSet<String>();
             pNames.add("id");
             pNames.add("aaid");
@@ -125,12 +128,12 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             pNames.add("sdkver");
 
             return pNames;
-        }else{
+        } else {
             return pNames;
         }
     }
 
-    private static boolean stringNotInParamNames(String s){
+    private static boolean stringNotInParamNames(String s) {
         return !getParamNames().contains(s);
     }
 
@@ -138,13 +141,15 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             = new AdResponse(true);
 
     public AdRequest(AdRequester adRequester) {
-        owner = adRequester.getOwner();
-        this.requester = adRequester;
+        AdView owner = adRequester.getOwner();
+        this.requester = new WeakReference<AdRequester>(adRequester);
         this.placementId = owner.getPlacementID();
-        context = owner.getContext();
+        Context context = owner.getContext();
+        owner_context = new WeakReference<Context>(owner.getContext());
 
         AdvertistingIDUtil.retrieveAndSetAAID(context);
 
+        this.is_owner_interstitial = owner instanceof InterstitialAdView;
         Location lastLocation = null;
         Location appLocation = SDKSettings.getLocation();
         // Do we have access to location?
@@ -153,8 +158,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             // First priority is the app supplied location
             if (appLocation != null) {
                 lastLocation = appLocation;
-            }
-            else if (context.checkCallingOrSelfPermission("android.permission.ACCESS_FINE_LOCATION") == PackageManager.PERMISSION_GRANTED
+            } else if (context.checkCallingOrSelfPermission("android.permission.ACCESS_FINE_LOCATION") == PackageManager.PERMISSION_GRANTED
                     || context.checkCallingOrSelfPermission("android.permission.ACCESS_COARSE_LOCATION") == PackageManager.PERMISSION_GRANTED) {
                 // Get lat, long from any GPS information that might be currently
                 // available
@@ -255,13 +259,13 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             this.overrideMaxSize = ((BannerAdView) owner).getOverrideMaxSize();
         }
 
-        if(this.overrideMaxSize){
+        if (this.overrideMaxSize) {
             maxHeight = ((BannerAdView) owner).getMaxHeight();
             maxWidth = ((BannerAdView) owner).getMaxWidth();
-            if(maxWidth <= 0 || maxHeight <= 0){
+            if (maxWidth <= 0 || maxHeight <= 0) {
                 Clog.w(Clog.httpReqLogTag, Clog.getString(R.string.max_size_not_set));
             }
-        }else {
+        } else {
             maxHeight = owner.getContainerHeight();
             maxWidth = owner.getContainerWidth();
         }
@@ -339,16 +343,18 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         }
         nonet = nonetSB.toString();
 
-        if((maxHeight <= 0 || maxWidth <= 0) &&
-               (width <= 0 || height <= 0)){
+        if ((maxHeight <= 0 || maxWidth <= 0) &&
+                (width <= 0 || height <= 0)) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.no_size_info));
             fail();
         }
     }
 
     private void fail() {
-        if (requester != null)
+        AdRequester requester = this.requester.get();
+        if (requester != null) {
             requester.failed(this);
+        }
         Clog.clearLastResponse();
     }
 
@@ -386,23 +392,23 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (!StringUtil.isEmpty(orientation)) sb.append("&orientation=").append(orientation);
         if (width > 0 && height > 0) sb.append("&size=").append(width).append("x").append(height);
         // complicated, don't change
-        if (owner != null) {
-            if (maxHeight > 0 && maxWidth > 0) {
-                if ((!(owner instanceof InterstitialAdView)
-                        && (width < 0 || height < 0))) {
-                    sb.append("&max_size=").append(maxWidth).append("x").append(maxHeight);
-                } else if (owner instanceof InterstitialAdView) {
-                    sb.append("&size=").append(maxWidth).append("x").append(maxHeight);
-                }
+        if (maxHeight > 0 && maxWidth > 0) {
+            if (!is_owner_interstitial && (width < 0 || height < 0)) {
+                sb.append("&max_size=").append(maxWidth).append("x").append(maxHeight);
+            } else if (is_owner_interstitial) {
+                sb.append("&size=").append(maxWidth).append("x").append(maxHeight);
             }
         }
+
         if (!StringUtil.isEmpty(allowedSizes)) sb.append("&promo_sizes=").append(allowedSizes);
         if (!StringUtil.isEmpty(mcc)) sb.append("&mcc=").append(Uri.encode(mcc));
         if (!StringUtil.isEmpty(mnc)) sb.append("&mnc=").append(Uri.encode(mnc));
         if (!StringUtil.isEmpty(language)) sb.append("&language=").append(Uri.encode(language));
-        if (!StringUtil.isEmpty(dev_timezone)) sb.append("&devtz=").append(Uri.encode(dev_timezone));
+        if (!StringUtil.isEmpty(dev_timezone))
+            sb.append("&devtz=").append(Uri.encode(dev_timezone));
         if (!StringUtil.isEmpty(dev_time)) sb.append("&devtime=").append(Uri.encode(dev_time));
-        if (!StringUtil.isEmpty(connection_type)) sb.append("&connection_type=").append(Uri.encode(connection_type));
+        if (!StringUtil.isEmpty(connection_type))
+            sb.append("&connection_type=").append(Uri.encode(connection_type));
         if (!StringUtil.isEmpty(nativeBrowser)) sb.append("&native_browser=").append(nativeBrowser);
         if (!StringUtil.isEmpty(psa)) sb.append("&psa=").append(psa);
         if (reserve > 0) sb.append("&reserve=").append(reserve);
@@ -417,12 +423,12 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (customKeywords != null) {
             for (Pair<String, String> pair : customKeywords) {
                 if (!StringUtil.isEmpty(pair.first) && (pair.second != null)) {
-                    if(AdRequest.stringNotInParamNames(pair.first)){
+                    if (AdRequest.stringNotInParamNames(pair.first)) {
                         sb.append("&")
                                 .append(pair.first)
                                 .append("=")
                                 .append(Uri.encode(pair.second));
-                    }else{
+                    } else {
                         Clog.w(Clog.httpReqLogTag, Clog.getString(R.string.request_parameter_override_attempt, pair.first));
                     }
                 }
@@ -434,7 +440,8 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
     @Override
     protected AdResponse doInBackground(Void... params) {
-        if (!hasNetwork(context)) {
+
+        if (!hasNetwork()) {
             Clog.e(Clog.httpReqLogTag,
                     Clog.getString(R.string.no_connectivity));
             return null;
@@ -480,7 +487,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         } catch (HttpHostConnectException he) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(
                     R.string.http_unreachable, he.getHost().getHostName(), he
-                    .getHost().getPort()));
+                            .getHost().getPort()));
             return null;
         } catch (IOException e) {
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_io));
@@ -506,7 +513,8 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         return new AdResponse(out, r.getAllHeaders());
     }
 
-    private boolean hasNetwork(Context context) {
+    private boolean hasNetwork() {
+        Context context = owner_context.get();
         if (context != null) {
             NetworkInfo ninfo = ((ConnectivityManager) context
                     .getSystemService(Context.CONNECTIVITY_SERVICE))
@@ -551,8 +559,10 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         // add the orientation extra for interstitial ads
         result.addToExtras(AdResponse.EXTRAS_KEY_ORIENTATION, orientation);
 
-        if (requester != null)
+        AdRequester requester = this.requester.get();
+        if (requester != null) {
             requester.onReceiveResponse(result);
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)

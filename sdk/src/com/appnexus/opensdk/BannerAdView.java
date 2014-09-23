@@ -228,6 +228,7 @@ public class BannerAdView extends AdView {
                 }
             }
         };
+        // for non-sticky filters, registerReceiver always returns null.
         getContext().registerReceiver(receiver, filter);
     }
 
@@ -470,6 +471,9 @@ public class BannerAdView extends AdView {
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.transition_duration));
                 setTransitionDuration((long) a.getInt(attr, 1000));
+            }else if (attr == R.styleable.BannerAdView_load_landing_page_in_background) {
+                setLoadsInBackground(a.getBoolean(attr, true));
+                Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_load_landing_page_in_background, doesLoadingInBackground ));
             }
         }
 
@@ -733,13 +737,22 @@ public class BannerAdView extends AdView {
 
     private void dismantleBroadcast() {
         if (receiver == null) return;
-        getContext().unregisterReceiver(receiver);
+        // Catch exception to protect against receiver failing to be registered.
+        try {
+            getContext().unregisterReceiver(receiver);
+        } catch (IllegalArgumentException ignored) {}
         receiver = null;
     }
 
     @Override
     protected void unhide() {
         super.unhide();
+    }
+
+
+    @Override
+    public void destroy() {
+        super.destroy();
     }
 
     @Override

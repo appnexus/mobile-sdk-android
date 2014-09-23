@@ -20,8 +20,10 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Pair;
+
 import com.appnexus.opensdk.SDKSettings;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -62,10 +64,10 @@ public class AdvertistingIDUtil {
         private static final String cAdvertisingIdClientInfoName
                 = "com.google.android.gms.ads.identifier.AdvertisingIdClient$Info";
 
-        private final Context context;
+        private WeakReference<Context> context;
 
         private AAIDTask(Context context) {
-            this.context = context;
+            this.context = new WeakReference<Context>(context);
         }
 
         @Override
@@ -74,8 +76,10 @@ public class AdvertistingIDUtil {
             Boolean limited = false;
 
             // attempt to retrieve AAID from GooglePlayServices via reflection
-            do {
-                try {
+
+            try {
+                Context callcontext = context.get();
+                if (callcontext != null) {
                     // NPE catches null objects
                     Class<?> cInfo = Class.forName(cAdvertisingIdClientInfoName);
                     Class<?> cClient = Class.forName(cAdvertisingIdClientName);
@@ -84,19 +88,20 @@ public class AdvertistingIDUtil {
                     Method mGetId = cInfo.getMethod("getId");
                     Method mIsLimitAdTrackingEnabled = cInfo.getMethod("isLimitAdTrackingEnabled");
 
-                    Object adInfoObject = cInfo.cast(mGetAdvertisingIdInfo.invoke(null, context));
+                    Object adInfoObject = cInfo.cast(mGetAdvertisingIdInfo.invoke(null, callcontext));
 
                     aaid = (String) mGetId.invoke(adInfoObject);
                     limited = (Boolean) mIsLimitAdTrackingEnabled.invoke(adInfoObject);
-                } catch (ClassNotFoundException ignored) {
-                } catch (InvocationTargetException ignored) {
-                } catch (NoSuchMethodException ignored) {
-                } catch (IllegalAccessException ignored) {
-                } catch (ClassCastException ignored) {
-                } catch (NullPointerException ignored) {
                 }
-
-            } while (false);
+            } catch (ClassNotFoundException ignored) {
+            } catch (InvocationTargetException ignored) {
+            } catch (NoSuchMethodException ignored) {
+            } catch (IllegalAccessException ignored) {
+            } catch (ClassCastException ignored) {
+            } catch (NullPointerException ignored) {
+            } catch (Exception ignored) {
+                // catches GooglePlayServicesRepairableException, GooglePlayServicesNotAvailableException
+            }
 
             // set or clear the AAID depending on success/failure
             return new Pair<String, Boolean>(aaid, limited);

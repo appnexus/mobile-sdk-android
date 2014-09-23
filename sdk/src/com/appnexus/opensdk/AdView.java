@@ -75,6 +75,7 @@ public abstract class AdView extends FrameLayout {
 	private AdListenerDispatch dispatcher;
     boolean loadedOffscreen = false;
     boolean isMRAIDExpanded = false;
+    boolean doesLoadingInBackground = true;
 
     private boolean shouldResizeParent = false;
     private boolean showLoadingIndicator = false;
@@ -292,6 +293,18 @@ public abstract class AdView extends FrameLayout {
 		if (mAdFetcher != null)
 			mAdFetcher.stop();
 	}
+
+    /**
+     * This must be called from the UI thread,
+     * when permanently remove the AdView from the view hierarchy.
+     */
+    public void destroy(){
+        Clog.d(Clog.baseLogTag, "called destroy() on AdView");
+        if(this.lastDisplayable != null) {
+            this.lastDisplayable.destroy();
+            this.lastDisplayable = null;
+        }
+    }
 
 	int getContainerWidth() {
 		return measuredWidth;
@@ -900,6 +913,28 @@ public abstract class AdView extends FrameLayout {
 
     public int getCreativeHeight(){
         return creativeHeight;
+    }
+
+    /**
+     * Sets whether or not to load landing pages in the background before displaying them.
+     * This feature is on by default, but only works with the in-app browser (which is also enabled by default).
+     * Disabling this feature may cause redirects, such as to the app store, to first open a blank web page.
+     *
+     * @param doesLoadingInBackground
+     */
+    public void setLoadsInBackground(boolean doesLoadingInBackground){
+        this.doesLoadingInBackground = doesLoadingInBackground;
+    }
+
+    /**
+     * Gets whether or not this AdView will load landing pages in the background before displaying them.
+     * This feature is on by default, but only works with the in-app browser (which is also enabled by default).
+     * Disabling this feature may cause redirects, such as to the app store, to first open a blank web page.
+     *
+     * @return Whether or not redirects and landing pages are loaded/processed in the background before being displayed.
+     */
+    public boolean getLoadsInBackground(){
+        return this.doesLoadingInBackground;
     }
 
 	/**

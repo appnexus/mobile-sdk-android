@@ -167,6 +167,9 @@ public class InterstitialAdView extends AdView {
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.show_loading_indicator_xml));
                 setShowLoadingIndicator(a.getBoolean(attr, false));
+            }else if (attr == R.styleable.InterstitialAdView_load_landing_page_in_background) {
+                setLoadsInBackground(a.getBoolean(attr, true));
+                Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_load_landing_page_in_background, doesLoadingInBackground ));
             }
         }
         a.recycle();
@@ -383,7 +386,9 @@ public class InterstitialAdView extends AdView {
     /**
      * Destroy this InterstitialAdView object.
      */
+    @Override
     public void destroy() {
+        super.destroy();
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.destroy_int));
         if (this.mAdFetcher != null)
             mAdFetcher.stop();

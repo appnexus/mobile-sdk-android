@@ -17,6 +17,8 @@
 package com.appnexus.opensdk;
 
 import android.location.Location;
+
+import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
 /**
@@ -92,8 +94,46 @@ public class SDKSettings {
      * @param location The location value to use in the ad call (may be null)
      */
     public static void setLocation(Location location) {
-        Settings.getSettings().location =
-                getLocationEnabled() ? location : null;
+        if (getLocationEnabled()) {
+            if (getLocationDecimalDigits() != -1 && location != null) {
+                double power = Math.pow(10, getLocationDecimalDigits());
+                location.setLatitude(Math.round(location.getLatitude() * power) / power);
+                location.setLongitude(Math.round(location.getLongitude() * power) / power);
+            }
+            Settings.getSettings().location = location;
+        }
+        else {
+            Settings.getSettings().location = null;
+        }
+    }
+
+    /**
+     * Sets the number of digits after the decimal of the latitude and longitude.
+     * It will only be applied if {@link #getLocationEnabled()}.
+     * Maximum of precision is 6, which means less than a foot.
+     *
+     * @param digitsAfterDecimal The digits
+     */
+    public static void setLocationDecimalDigits(int digitsAfterDecimal) {
+        if (digitsAfterDecimal > 6) {
+            Settings.getSettings().locationDecimalDigits = 6;
+            Clog.w(Clog.baseLogTag, "Out of range input " + digitsAfterDecimal + ", set location digits after decimal to maximum 6");
+        } else if (digitsAfterDecimal >= -1) {
+            Settings.getSettings().locationDecimalDigits = digitsAfterDecimal;
+        } else {
+            Settings.getSettings().locationDecimalDigits = -1;
+            Clog.w(Clog.baseLogTag, "Negative input " + digitsAfterDecimal + ", set location digits after decimal to default");
+        }
+    }
+
+    /**
+     * Returns the number of digits after decimal of latitude and longitude.
+     * If returns -1, it indicates that full resolution is used.
+     *
+     * @return The digits after decimal of latitude and longitude
+     */
+    public static int getLocationDecimalDigits(){
+        return Settings.getSettings().locationDecimalDigits;
     }
 
     /**

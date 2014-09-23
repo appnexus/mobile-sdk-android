@@ -49,7 +49,7 @@ import java.util.HashMap;
 public abstract class MediatedAdViewController {
 
     protected MediatedAdView mAV;
-    private AdRequester requester;
+    private WeakReference<AdRequester> caller_requester;
     protected MediatedAd currentAd;
     private AdViewListener listener;
     protected MediatedDisplayable mediatedDisplayable = new MediatedDisplayable(this);
@@ -58,7 +58,7 @@ public abstract class MediatedAdViewController {
     boolean hasSucceeded = false;
 
     MediatedAdViewController(AdRequester requester, MediatedAd currentAd, AdViewListener listener) {
-        this.requester = requester;
+        this.caller_requester = new WeakReference<AdRequester>(requester);
         this.listener = listener;
         this.currentAd = currentAd;
 
@@ -176,7 +176,6 @@ public abstract class MediatedAdViewController {
             mAV.destroy();
         }
         mAV = null;
-        requester = null;
         currentAd = null;
         listener = null;
         Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediation_finish));
@@ -265,6 +264,7 @@ public abstract class MediatedAdViewController {
         if (hasFailed) return;
 
 
+        AdRequester requester = this.caller_requester.get();
         // if resultCB is empty don't fire resultCB, and just continue to next ad
         if ((currentAd == null) || StringUtil.isEmpty(currentAd.getResultCB())) {
             if(result == ResultCode.SUCCESS) return;
@@ -295,7 +295,7 @@ public abstract class MediatedAdViewController {
         ResultCBRequest cb = new ResultCBRequest(requester,
                 currentAd.getResultCB(), result,
                 currentAd.getExtras(), ignoreResult,
-                getLatencyParam(), getTotalLatencyParam());
+                getLatencyParam(), getTotalLatencyParam(requester));
 
         // Spawn GET call
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -313,7 +313,7 @@ public abstract class MediatedAdViewController {
     }
 
     private class ResultCBRequest extends HTTPGet<Void, Void, HTTPResponse> {
-        final AdRequester requester;
+        WeakReference<AdRequester> requester;
         private final String resultCB;
         final ResultCode result;
         private final HashMap<String, Object> extras;
@@ -324,7 +324,7 @@ public abstract class MediatedAdViewController {
         private ResultCBRequest(AdRequester requester, String resultCB, ResultCode result,
                                 HashMap<String, Object> extras, boolean ignoreResult,
                                 long latency, long totalLatency) {
-            this.requester = requester;
+            this.requester = new WeakReference<AdRequester>(requester);
             this.resultCB = resultCB;
             this.result = result;
             this.extras = extras;
@@ -339,8 +339,8 @@ public abstract class MediatedAdViewController {
                 Clog.i(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_ignored));
                 return;
             }
-
-            if (this.requester == null) {
+            AdRequester requester = this.requester.get();
+            if (requester == null) {
                 Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
                 return;
             }
@@ -356,7 +356,7 @@ public abstract class MediatedAdViewController {
                 Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_bad_response));
             }
 
-            this.requester.onReceiveResponse(response);
+            requester.onReceiveResponse(response);
         }
 
         @Override
@@ -455,7 +455,7 @@ public abstract class MediatedAdViewController {
      * The running total latency of the ad call.
      * @return the running total latency, -1 if `latencyStop` not set.
      */
-    private long getTotalLatencyParam() {
+    private long getTotalLatencyParam(AdRequester requester) {
         if ((requester != null) && (latencyStop > 0)) {
             return requester.getLatency(latencyStop);
         }
