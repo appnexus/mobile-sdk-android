@@ -1,5 +1,5 @@
 /*
- *    Copyright 2013 APPNEXUS INC
+ *    Copyright 2013 - 2014 APPNEXUS INC
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -27,10 +27,17 @@ import android.graphics.Point;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.*;
+import android.view.animation.Animation;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
+import android.widget.ViewAnimator;
+
+import com.appnexus.opensdk.transitionanimation.AnimationFactory;
+import com.appnexus.opensdk.transitionanimation.TransitionType;
+import com.appnexus.opensdk.transitionanimation.TransitionDirection;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
 
 /**
@@ -97,6 +104,9 @@ public class BannerAdView extends AdView {
     private int maximumHeight = -1;
     private boolean overrideMaxSize = false;
     private boolean measured = false;
+    private TransitionType transitionType = TransitionType.NONE;
+    private TransitionDirection direction = TransitionDirection.UP;
+    private long duration = 1000;
 
     private void setDefaultsBeforeXML() {
         loadAdHasBeenCalled = false;
@@ -170,6 +180,19 @@ public class BannerAdView extends AdView {
 
     @Override
     protected void setup(Context context, AttributeSet attrs) {
+        auto_refresh = true;
+        shouldResetContainer = false;
+        expandsToFitScreenWidth = false;
+        width = -1;
+        height = -1;
+        maximumWidth = -1;
+        maximumHeight = -1;
+        overrideMaxSize = false;
+        measured = false;
+        transitionType = TransitionType.NONE;
+        direction = TransitionDirection.UP;
+        duration = 1000;
+
         super.setup(context, attrs);
         onFirstLayout();
         mAdFetcher.setPeriod(period);
@@ -314,22 +337,50 @@ public class BannerAdView extends AdView {
             return;
         }
 
-        // call destroy on any old views
-        this.removeAllViews();
-        if (lastDisplayable != null) {
-            lastDisplayable.destroy();
+        if (transitionType == TransitionType.NONE)  {
+            // default to show ads without animation
+            // call destroy on any old views
+            this.removeAllViews();
+
+            if (lastDisplayable != null) {
+                lastDisplayable.destroy();
+            }
+            lastDisplayable = d;
+
+            View displayableView = d.getView();
+            this.addView(displayableView);
+
+            // center the displayable view in AdView
+            if ((displayableView.getLayoutParams()) != null) {
+                ((LayoutParams) displayableView.getLayoutParams()).gravity = Gravity.CENTER;
+            }
+
+            unhide();
+        } else {
+            ViewAnimator animator = new ViewAnimator(getContext());
+
+            if (lastDisplayable != null){
+                ViewUtil.removeChildFromParent(lastDisplayable.getView());
+                animator.addView(lastDisplayable.getView());
+            }
+            animator.addView(d.getView());
+
+            AnimationFactory.create(animator, transitionType, duration, direction);
+
+            this.removeAllViews();
+            this.addView(animator);
+
+            // center the ViewAnimator
+            if (animator.getLayoutParams() != null) {
+                ((LayoutParams) animator.getLayoutParams()).gravity = Gravity.CENTER;
+            }
+
+            // show animation
+            animator.showNext();
+
+            lastDisplayable = d;
+            unhide();
         }
-        lastDisplayable = d;
-
-        View displayableView = d.getView();
-        this.addView(displayableView);
-
-        // center the displayable view in AdView
-        if ((displayableView.getLayoutParams()) != null) {
-            ((LayoutParams) displayableView.getLayoutParams()).gravity = Gravity.CENTER;
-        }
-
-        unhide();
     }
 
     void start() {
@@ -405,6 +456,23 @@ public class BannerAdView extends AdView {
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.show_loading_indicator_xml));
                 setShowLoadingIndicator(a.getBoolean(attr, false));
+            } else if (attr == R.styleable.BannerAdView_transition_type) {
+                Clog.d(Clog.xmlLogTag,
+                        Clog.getString(R.string.transition_type));
+                int transitionTypeFromXML = a.getInt(attr, 0);
+                setTransitionType(TransitionType.getTypeForInt(transitionTypeFromXML));
+            } else if (attr == R.styleable.BannerAdView_transition_direction) {
+                Clog.d(Clog.xmlLogTag,
+                        Clog.getString(R.string.transition_direction));
+                setTransitionDirection(TransitionDirection.getDirectionForInt(a.getInt(attr, 0)));
+
+            } else if (attr == R.styleable.BannerAdView_transition_duration) {
+                Clog.d(Clog.xmlLogTag,
+                        Clog.getString(R.string.transition_duration));
+                setTransitionDuration((long) a.getInt(attr, 1000));
+            }else if (attr == R.styleable.BannerAdView_load_landing_page_in_background) {
+                setLoadsInBackground(a.getBoolean(attr, true));
+                Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_load_landing_page_in_background, doesLoadingInBackground ));
             }
         }
 
@@ -779,5 +847,62 @@ public class BannerAdView extends AdView {
         if(this.shouldResetContainer){
             resetContainer();
         }
+    }
+
+    /**
+     * Set the transition animation's type
+     *
+     * @param transitionType transition animation's type
+     */
+
+    public void setTransitionType(TransitionType transitionType){
+        this.transitionType = transitionType;
+    }
+
+    /**
+     * Get the type of the transition animation
+     *
+     * @return TransitionType
+     */
+
+    public TransitionType getTransitionType(){
+        return this.transitionType;
+    }
+
+    /**
+     * Set the transition animation's direction
+     *
+     * @param direction transition animation's direction
+     */
+    public void setTransitionDirection(TransitionDirection direction){
+        this.direction = direction;
+    }
+
+    /**
+     * Get the direction of the transition animation
+     *
+     * @return TransionDirection
+     */
+
+    public TransitionDirection getTransitionDirection(){
+        return this.direction;
+    }
+
+    /**
+     * Set the transition animation's duration
+     *
+     * @param duration in milliseconds
+     */
+    public void setTransitionDuration(long duration){
+        this.duration = duration;
+    }
+
+    /**
+     * Get the duration for the transition animation
+     *
+     * @return duration in milliseconds
+     */
+    public long getTransitionDuration(){
+        return this.duration;
     }
 }

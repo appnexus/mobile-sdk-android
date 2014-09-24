@@ -28,7 +28,6 @@ import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Handler;
-import android.text.Layout;
 import android.util.DisplayMetrics;
 import android.util.Pair;
 import android.view.*;
@@ -344,7 +343,7 @@ class AdWebView extends WebView implements Displayable {
         }
 
         try {
-            AdWebView.this.adView.getContext().startActivity(intent);
+            adView.getContext().startActivity(intent);
         } catch (ActivityNotFoundException e) {
             Clog.w(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing, activity_clz.getName()));
             AdWebView.BROWSER_QUEUE.remove();
@@ -353,7 +352,7 @@ class AdWebView extends WebView implements Displayable {
 
     // handles browser logic for shouldOverrideUrl
     void loadURLInCorrectBrowser(String url) {
-        if (!AdWebView.this.adView.getOpensNativeBrowser()
+        if (!adView.getOpensNativeBrowser()
                 && url.startsWith("http")) {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(R.string.opening_inapp));
@@ -376,12 +375,21 @@ class AdWebView extends WebView implements Displayable {
                 }
             }
 
-            // Otherwise, create an invisible 1x1 webview to load the landing
-            // page and detect if we're redirecting to a market url
-            WebView fwdWebView = new RedirectWebView(this.getContext());
-            fwdWebView.loadUrl(url);
-            fwdWebView.setVisibility(View.GONE);
-            adView.addView(fwdWebView);
+            // Unless disabled by the user, handle redirects in background
+            if(adView.getLoadsInBackground()) {
+                // Otherwise, create an invisible 1x1 webview to load the landing
+                // page and detect if we're redirecting to a market url
+                WebView fwdWebView = new RedirectWebView(this.getContext());
+                fwdWebView.loadUrl(url);
+                fwdWebView.setVisibility(View.GONE);
+                adView.addView(fwdWebView);
+            }else{
+                // Stick the URL directly into the new activity.
+                WebView boringWebview = new WebView(getContext());
+                WebviewUtil.setWebViewSettings(boringWebview);
+                boringWebview.loadUrl(url);
+                openInAppBrowser(boringWebview);
+            }
         } else {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(R.string.opening_native));
