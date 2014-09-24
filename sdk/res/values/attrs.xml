@@ -18,6 +18,7 @@
     <attr name="placement_id" format="string"/>
     <attr name="test" format="boolean"/>
     <attr name="show_loading_indicator" format="boolean"/>
+    <attr name="load_landing_page_in_background" format="boolean"/>
     <declare-styleable name="BannerAdView">
         <attr name="placement_id"/>
         <attr name="test"/>
@@ -29,6 +30,22 @@
         <attr name="opens_native_browser" format="boolean"/>
         <attr name="expands_to_fit_screen_width" format="boolean"/>
         <attr name="show_loading_indicator"/>
+        <attr name="transition_type" format="enum">
+            <enum name="none" value="0"/>
+            <enum name="random" value="1"/>
+            <enum name="fade" value="2"/>
+            <enum name="push" value="3"/>
+            <enum name="movein" value="4"/>
+            <enum name="reveal" value="5"/>
+        </attr>
+        <attr name="transition_direction" format="enum">
+            <enum name="up" value="0"/>
+            <enum name="down" value="1"/>
+            <enum name="right" value="2"/>
+            <enum name="left" value="3"/>
+        </attr>
+        <attr name="transition_duration" format="integer"/>
+        <attr name="load_landing_page_in_background"/>
     </declare-styleable>
 
     <declare-styleable name="InterstitialAdView">
@@ -37,6 +54,7 @@
         <attr name="color" format="integer"/>
         <attr name="opens_native_browser"/>
         <attr name="show_loading_indicator"/>
+        <attr name="load_landing_page_in_background"/>
     </declare-styleable>
 
 </resources>
