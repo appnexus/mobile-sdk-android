@@ -32,13 +32,15 @@ import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ViewAnimator;
 
-import com.appnexus.opensdk.transitionanimation.AnimationFactory;
+import com.appnexus.opensdk.transitionanimation.Animator;
 import com.appnexus.opensdk.transitionanimation.TransitionType;
 import com.appnexus.opensdk.transitionanimation.TransitionDirection;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
-import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
+
+import java.lang.ref.WeakReference;
+
 
 /**
  * This view is added to an existing layout in order to display banner
@@ -104,9 +106,7 @@ public class BannerAdView extends AdView {
     private int maximumHeight = -1;
     private boolean overrideMaxSize = false;
     private boolean measured = false;
-    private TransitionType transitionType = TransitionType.NONE;
-    private TransitionDirection direction = TransitionDirection.UP;
-    private long duration = 1000;
+    private Animator animator;
 
     private void setDefaultsBeforeXML() {
         loadAdHasBeenCalled = false;
@@ -189,9 +189,7 @@ public class BannerAdView extends AdView {
         maximumHeight = -1;
         overrideMaxSize = false;
         measured = false;
-        transitionType = TransitionType.NONE;
-        direction = TransitionDirection.UP;
-        duration = 1000;
+        animator = new Animator(getContext(), TransitionType.NONE, TransitionDirection.UP, 1000);
 
         super.setup(context, attrs);
         onFirstLayout();
@@ -337,7 +335,7 @@ public class BannerAdView extends AdView {
             return;
         }
 
-        if (transitionType == TransitionType.NONE)  {
+        if (getTransitionType() == TransitionType.NONE)  {
             // default to show ads without animation
             // call destroy on any old views
             this.removeAllViews();
@@ -345,42 +343,145 @@ public class BannerAdView extends AdView {
             if (lastDisplayable != null) {
                 lastDisplayable.destroy();
             }
-            lastDisplayable = d;
 
             View displayableView = d.getView();
             this.addView(displayableView);
 
-            // center the displayable view in AdView
+            // set the displayable view's gravity inside AdView
             if ((displayableView.getLayoutParams()) != null) {
-                ((LayoutParams) displayableView.getLayoutParams()).gravity = Gravity.CENTER;
+                ((LayoutParams) displayableView.getLayoutParams()).gravity = getAdAlignment().getGravity();
             }
 
-            unhide();
         } else {
-            ViewAnimator animator = new ViewAnimator(getContext());
-
-            if (lastDisplayable != null){
-                ViewUtil.removeChildFromParent(lastDisplayable.getView());
-                animator.addView(lastDisplayable.getView());
+            // first time showing animator
+            // which means there's no previous ad or previous ad does not show animation
+            if (this.getChildCount() == 0 || !(this.getChildAt(0) instanceof ViewAnimator)) {
+                this.removeAllViews();
+                this.addView(animator);
             }
+
+            // add the new ad to animator to be displayed with animation
             animator.addView(d.getView());
 
-            AnimationFactory.create(animator, transitionType, duration, direction);
-
-            this.removeAllViews();
-            this.addView(animator);
-
-            // center the ViewAnimator
-            if (animator.getLayoutParams() != null) {
-                ((LayoutParams) animator.getLayoutParams()).gravity = Gravity.CENTER;
+            if (d.getView().getLayoutParams() != null) {
+                ((LayoutParams) d.getView().getLayoutParams()).gravity = getAdAlignment().getGravity();
+                animator.setLayoutParams(d.getView().getLayoutParams());
             }
 
             // show animation
             animator.showNext();
 
-            lastDisplayable = d;
-            unhide();
+            final Displayable toBeDestroyed = lastDisplayable;
+
+            if (toBeDestroyed != null) {
+                if (toBeDestroyed.getView().getAnimation() != null) {
+                    toBeDestroyed.getView().getAnimation().setAnimationListener(
+                            new AnimatorListener(toBeDestroyed, animator)
+                    );
+                } else {
+                    toBeDestroyed.destroy();
+                }
+            }
+
         }
+        unhide();
+
+        lastDisplayable = d;
+
+    }
+
+    class AnimatorListener implements Animation.AnimationListener {
+        private final WeakReference<Displayable> oldView;
+        private final WeakReference<Animator> animator;
+
+        AnimatorListener(Displayable view, Animator animator) {
+            this.oldView = new WeakReference<Displayable>(view);
+            this.animator = new WeakReference<Animator>(animator);
+        }
+
+        @Override
+        public void onAnimationStart(Animation animation) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            animation.setAnimationListener(null);
+            Displayable oldView = this.oldView.get();
+            Animator animator = this.animator.get();
+            if (oldView != null && animator != null) {
+                animator.clearAnimation();
+                oldView.destroy();
+                animator.setAnimation();
+            }
+        }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {
+
+        }
+    }
+
+    private AdAlignment adAlignment;
+
+    public enum AdAlignment{
+        TOP_LEFT,
+        TOP_CENTER,
+        TOP_RIGHT,
+        CENTER_LEFT,
+        CENTER,
+        CENTER_RIGHT,
+        BOTTOM_LEFT,
+        BOTTOM_CENTER,
+        BOTTOM_RIGHT;
+
+        int getGravity() {
+            switch (this) {
+                case TOP_LEFT:
+                    return Gravity.TOP | Gravity.LEFT;
+                case TOP_CENTER:
+                    return Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+                case TOP_RIGHT:
+                    return Gravity.TOP | Gravity.RIGHT;
+                case CENTER_LEFT:
+                    return Gravity.LEFT | Gravity.CENTER_VERTICAL;
+                case CENTER:
+                    return Gravity.CENTER;
+                case CENTER_RIGHT:
+                    return Gravity.RIGHT | Gravity.CENTER_VERTICAL;
+                case BOTTOM_LEFT:
+                    return Gravity.BOTTOM | Gravity.LEFT;
+                case BOTTOM_CENTER:
+                    return Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                case BOTTOM_RIGHT:
+                    return Gravity.BOTTOM | Gravity.RIGHT;
+            }
+            return Gravity.CENTER;
+        }
+    }
+
+    /**
+     * Sets the alignment of ads inside the BannerAdView,
+     * which can be set to 9 different positions.
+     * It will be applied to next ad after setting the alignment.
+     *
+     * @param layout The alignment
+     */
+    public void setAdAlignment(AdAlignment layout) {
+        this.adAlignment = layout;
+    }
+
+    /**
+     * Returns the alignment of ads inside the BannerAdView.
+     * Default is center in the BannerAdView.
+     *
+     * @return The alignment
+     */
+    public AdAlignment getAdAlignment() {
+        if (this.adAlignment == null) {
+            this.adAlignment = adAlignment.CENTER;
+        }
+        return this.adAlignment;
     }
 
     void start() {
@@ -754,6 +855,7 @@ public class BannerAdView extends AdView {
         super.destroy();
     }
 
+
     @Override
     boolean isBanner() {
         return true;
@@ -856,7 +958,7 @@ public class BannerAdView extends AdView {
      */
 
     public void setTransitionType(TransitionType transitionType){
-        this.transitionType = transitionType;
+        animator.setTransitionType(transitionType);
     }
 
     /**
@@ -866,7 +968,7 @@ public class BannerAdView extends AdView {
      */
 
     public TransitionType getTransitionType(){
-        return this.transitionType;
+        return animator.getTransitionType();
     }
 
     /**
@@ -875,7 +977,7 @@ public class BannerAdView extends AdView {
      * @param direction transition animation's direction
      */
     public void setTransitionDirection(TransitionDirection direction){
-        this.direction = direction;
+        animator.setTransitionDirection(direction);
     }
 
     /**
@@ -885,7 +987,7 @@ public class BannerAdView extends AdView {
      */
 
     public TransitionDirection getTransitionDirection(){
-        return this.direction;
+        return animator.getTransitionDirection();
     }
 
     /**
@@ -894,7 +996,7 @@ public class BannerAdView extends AdView {
      * @param duration in milliseconds
      */
     public void setTransitionDuration(long duration){
-        this.duration = duration;
+        animator.setTransitionDuration(duration);
     }
 
     /**
@@ -903,6 +1005,6 @@ public class BannerAdView extends AdView {
      * @return duration in milliseconds
      */
     public long getTransitionDuration(){
-        return this.duration;
+        return animator.getTransitionDuration();
     }
 }

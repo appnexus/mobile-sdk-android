@@ -570,18 +570,9 @@ class AdWebView extends WebView implements Displayable {
     }
 
     void close() {
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
-                this.getLayoutParams());
-        lp.height = default_height;
-        lp.width = default_width;
-        lp.gravity = Gravity.CENTER;
-
         if (adView != null) {
             adView.close(default_width, default_height, implementation);
         }
-
-
-        this.setLayoutParams(lp);
     }
 
     private void checkPosition() {
