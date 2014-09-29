@@ -37,6 +37,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.WebView;
+import android.widget.FrameLayout;
+
 import com.appnexus.opensdk.utils.*;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -51,6 +53,7 @@ class MRAIDImplementation {
     boolean expanded = false;
     boolean resized = false;
     int default_width, default_height;
+    int default_gravity;
     private int screenWidth, screenHeight;
     boolean supportsPictureAPI = false;
     boolean supportsCalendar = false;
@@ -82,6 +85,9 @@ class MRAIDImplementation {
             // Store width and height for close()
             default_width = owner.getLayoutParams().width;
             default_height = owner.getLayoutParams().height;
+            if (owner.adView.isBanner()) {
+                default_gravity = ((FrameLayout.LayoutParams) owner.getLayoutParams()).gravity;
+            }
 
             readyFired = true;
             onViewableChange(owner.isViewable());
@@ -201,7 +207,11 @@ class MRAIDImplementation {
                     owner.getLayoutParams());
             lp.height = default_height;
             lp.width = default_width;
-            lp.gravity = Gravity.CENTER;
+            if (owner.adView.isBanner()) {
+                lp.gravity = default_gravity;
+            } else {
+                lp.gravity = Gravity.CENTER;
+            }
             owner.setLayoutParams(lp);
             owner.close();
             owner.loadUrl("javascript:window.mraid.util.stateChangeEvent('default');");

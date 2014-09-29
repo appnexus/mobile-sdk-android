@@ -18,6 +18,8 @@ package com.appnexus.opensdk;
 
 import android.view.View;
 
+import com.appnexus.opensdk.utils.ViewUtil;
+
 class MediatedDisplayable implements Displayable {
     private View view;
     private MediatedAdViewController mAVC;
@@ -39,6 +41,7 @@ class MediatedDisplayable implements Displayable {
     @Override
     public void destroy() {
         mAVC.finishController();
+        ViewUtil.removeChildFromParent(view);
     }
 
     @Override
