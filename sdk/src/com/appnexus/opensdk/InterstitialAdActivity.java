@@ -109,8 +109,11 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
             ((ViewGroup) adView.getParent()).removeAllViews();
         }
         Pair<Long, Displayable> p = adView.getAdQueue().poll();
+
+        // To be safe, ads from the future will be considered to have expired
+        // if now-p.first is less than 0, the ad will be considered to be from the future
         while (p != null && p.second != null
-                && now - p.first > InterstitialAdView.MAX_AGE) {
+                && (now - p.first > InterstitialAdView.MAX_AGE || now-p.first<0)) {
             Clog.w(Clog.baseLogTag, Clog.getString(R.string.too_old));
             p = adView.getAdQueue().poll();
         }

@@ -230,12 +230,13 @@ public class InterstitialAdView extends AdView {
     }
 
     // removes stale ads and returns whether or not a valid ad exists
+    // removes ads from the future
     private boolean removeStaleAds(long now) {
         boolean validAdExists = false;
         ArrayList<Pair<Long, Displayable>> staleAdsList = new ArrayList<Pair<Long, Displayable>>();
         for (Pair<Long, Displayable> p : adQueue) {
             if ((p == null) || (p.second == null)
-                    || ((now - p.first) > InterstitialAdView.MAX_AGE)) {
+                    || (((now - p.first) > InterstitialAdView.MAX_AGE) || now - p.first < 0)) {
                 staleAdsList.add(p);
             } else {
                 // We've reached a valid ad, so we can stop looking

@@ -196,7 +196,8 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             lat = "" + lastLocation.getLatitude();
             lon = "" + lastLocation.getLongitude();
             locDataPrecision = "" + lastLocation.getAccuracy();
-            locDataAge = "" + (System.currentTimeMillis() - lastLocation.getTime());
+            //Don't report location data from the future
+            locDataAge = "" + Math.max(0, (System.currentTimeMillis() - lastLocation.getTime()));
         } else {
             lat = "";
             lon = "";

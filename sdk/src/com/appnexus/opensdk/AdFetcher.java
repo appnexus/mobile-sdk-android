@@ -108,12 +108,15 @@ class AdFetcher implements AdRequester {
             // Start recurring ad requests
             long stall_temp;
             if (timePausedAt != -1 && lastFetchTime != -1) {
-                stall_temp = msPeriod - (timePausedAt - lastFetchTime);
+                //Clamp the stall between 0 and the period. Ads should never be requested on
+                //a delay longer than the period
+                stall_temp = Math.min(msPeriod, Math.max(0, msPeriod - (timePausedAt - lastFetchTime)));
             } else {
                 stall_temp = 0;
             }
 
-            final long stall = stall_temp;
+            //To be safe, only stall with positive time values
+            final long stall = Math.max(0, stall_temp);
             Clog.v(Clog.baseLogTag,
                     Clog.getString(R.string.request_delayed_by_x_ms, stall));
             tasker.schedule(new Runnable() {
@@ -176,11 +179,12 @@ class AdFetcher implements AdRequester {
             }
 
             // Update last fetch time once
+            // For sane logging, don't report negative times
             if (fetcher.lastFetchTime != -1) {
                 Clog.d(Clog.baseLogTag,
                         Clog.getString(
                                 R.string.new_ad_since,
-                                (int) (System.currentTimeMillis() - fetcher.lastFetchTime)));
+                                Math.max(0, (int) (System.currentTimeMillis() - fetcher.lastFetchTime))));
             }
             fetcher.lastFetchTime = System.currentTimeMillis();
 
