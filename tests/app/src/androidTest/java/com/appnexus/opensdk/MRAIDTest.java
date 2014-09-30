@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk;
 
+import android.view.View;
 import android.webkit.WebView;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
@@ -57,7 +58,9 @@ public class MRAIDTest extends BaseRoboTest {
         waitForTasks();
         Robolectric.runUiThreadTasks();
         // run AdRequest
-        Robolectric.getBackgroundScheduler().runOneTask();
+        while(Robolectric.getBackgroundScheduler().areAnyRunnable()){
+            Robolectric.getBackgroundScheduler().runOneTask();
+        }
         // runs all of the UI events until webview is loaded
         Robolectric.runUiThreadTasks();
 

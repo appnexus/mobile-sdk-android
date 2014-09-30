@@ -58,14 +58,18 @@ public class MediatedAdViewControllerTest extends BaseRoboTest {
     private  void executeMediationAdRequest() {
         adRequest.execute();
         // execute main ad request
-        Robolectric.getBackgroundScheduler().runOneTask();
+        while(Robolectric.getBackgroundScheduler().areAnyRunnable()){
+            Robolectric.getBackgroundScheduler().runOneTask();
+        }
         Robolectric.runUiThreadTasks();
     }
 
     private void executeResultCBRequest() {
         Robolectric.getUiThreadScheduler().advanceToLastPostedRunnable();
         // execute result cb request
-        Robolectric.getBackgroundScheduler().runOneTask();
+        while(Robolectric.getBackgroundScheduler().areAnyRunnable()){
+            Robolectric.getBackgroundScheduler().runOneTask();
+        }
         Robolectric.runUiThreadTasks();
     }
 
@@ -167,7 +171,7 @@ public class MediatedAdViewControllerTest extends BaseRoboTest {
         // load a standard ad
         adRequest.execute();
 
-        Robolectric.getBackgroundScheduler().runOneTask();
+        Robolectric.runBackgroundTasks();
         Robolectric.runUiThreadTasks();
 
         Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT);
@@ -182,11 +186,11 @@ public class MediatedAdViewControllerTest extends BaseRoboTest {
         adRequest = new AdRequest(bannerAdView.mAdFetcher);
         adRequest.execute();
 
-        Robolectric.getBackgroundScheduler().runOneTask();
+        Robolectric.runBackgroundTasks();
         Robolectric.runUiThreadTasks();
 
         Robolectric.getUiThreadScheduler().advanceToLastPostedRunnable();
-        Robolectric.getBackgroundScheduler().runOneTask();
+        Robolectric.runBackgroundTasks();
         Robolectric.runUiThreadTasks();
 
         Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT);

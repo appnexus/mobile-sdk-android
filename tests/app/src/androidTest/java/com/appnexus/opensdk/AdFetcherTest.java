@@ -50,7 +50,7 @@ public class AdFetcherTest extends BaseRoboTest {
         adFetcher = null;
     }
 
-/*    private void runStartTest(int expectedBgTaskCount) {
+    private void runStartTest(int expectedBgTaskCount) {
         // pause until a scheduler has a task in queue
         waitForTasks();
 
@@ -59,19 +59,19 @@ public class AdFetcherTest extends BaseRoboTest {
         // Check that the AdRequest was queued
         int bgTaskCount = Robolectric.getBackgroundScheduler().enqueuedTaskCount();
         assertEquals(expectedBgTaskCount, bgTaskCount);
-    }*/
+    }
 
-/*    @Test
+   @Test
     public void testStart() {
         adFetcher.start();
-        runStartTest(1);
+        runStartTest(2);
     }
 
     @Test
     public void testStartWithRefreshOn() {
         adFetcher.setAutoRefresh(true);
         adFetcher.start();
-        runStartTest(1);
+        runStartTest(2);
     }
 
     @Test
@@ -80,13 +80,13 @@ public class AdFetcherTest extends BaseRoboTest {
         adFetcher.setPeriod(1000);
         adFetcher.start();
 
-        runStartTest(1);
+        runStartTest(2);
 
         // reset for the refresh
         Robolectric.getBackgroundScheduler().reset();
         Robolectric.getBackgroundScheduler().pause();
 
-        runStartTest(1);
+        runStartTest(2);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class AdFetcherTest extends BaseRoboTest {
 
         // start an AdFetcher normally, until an AdRequest is queued
         adFetcher.start();
-        runStartTest(1);
+        runStartTest(2);
 
         adFetcher.stop();
 
@@ -119,13 +119,15 @@ public class AdFetcherTest extends BaseRoboTest {
         // Run the cancel command on AdRequest
         Robolectric.runUiThreadTasks();
         // Run the pending AdRequest from start() -- should have been canceled
-        Robolectric.getBackgroundScheduler().runOneTask();
+        while(Robolectric.getBackgroundScheduler().areAnyRunnable()) {
+            Robolectric.getBackgroundScheduler().runOneTask();
+        }
 
         // A normally executed AdRequest will queue onPostExecute call to the UI thread,
         // but it should be canceled, and queue nothing
         int uiTaskCount = Robolectric.getUiThreadScheduler().enqueuedTaskCount();
-        assertEquals(0, uiTaskCount);
-    }*/
+        assertEquals(1, uiTaskCount);
+    }
 
     @Test
     public void testPeriod() {

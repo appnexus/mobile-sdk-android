@@ -72,14 +72,18 @@ public class MediationCallbacksTest extends BaseRoboTest implements AdListener {
 
         adRequest.execute();
         // execute main ad request
-        Robolectric.getBackgroundScheduler().runOneTask();
+        while(Robolectric.getBackgroundScheduler().areAnyRunnable()) {
+            Robolectric.getBackgroundScheduler().runOneTask();
+        }
         Robolectric.runUiThreadTasks();
 
         // fast-forward any timers (for mediation network timeouts)
         Robolectric.getUiThreadScheduler().advanceToLastPostedRunnable();
 
         // execute resultCB
-        Robolectric.getBackgroundScheduler().runOneTask();
+        while(Robolectric.getBackgroundScheduler().areAnyRunnable()) {
+            Robolectric.getBackgroundScheduler().runOneTask();
+        }
         Robolectric.runUiThreadTasksIncludingDelayedTasks();
 
         Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT + 1000);
@@ -155,11 +159,15 @@ public class MediationCallbacksTest extends BaseRoboTest implements AdListener {
 
         // load first successful view, which calls extra callbacks after a delay
         adRequest.execute();
-        Robolectric.getBackgroundScheduler().runOneTask();
+        while(Robolectric.getBackgroundScheduler().areAnyRunnable()) {
+            Robolectric.getBackgroundScheduler().runOneTask();
+        }
         Robolectric.runUiThreadTasks();
 
         // resultCB for first view
-        Robolectric.getBackgroundScheduler().runOneTask();
+        while(Robolectric.getBackgroundScheduler().areAnyRunnable()) {
+            Robolectric.getBackgroundScheduler().runOneTask();
+        }
         Robolectric.runUiThreadTasks();
 
         assertCallbacks(true);
@@ -170,12 +178,16 @@ public class MediationCallbacksTest extends BaseRoboTest implements AdListener {
         // load second view to replace first view
         adRequest = new AdRequest(bannerAdView.mAdFetcher);
         adRequest.execute();
-        Robolectric.getBackgroundScheduler().runOneTask();
+        while(Robolectric.getBackgroundScheduler().areAnyRunnable()) {
+            Robolectric.getBackgroundScheduler().runOneTask();
+        }
         Robolectric.runUiThreadTasks();
 
         // run delayed runnables
         Robolectric.getUiThreadScheduler().advanceToLastPostedRunnable();
-        Robolectric.getBackgroundScheduler().runOneTask();
+        while(Robolectric.getBackgroundScheduler().areAnyRunnable()) {
+            Robolectric.getBackgroundScheduler().runOneTask();
+        }
         Robolectric.runUiThreadTasksIncludingDelayedTasks();
 
         Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT + 1000);

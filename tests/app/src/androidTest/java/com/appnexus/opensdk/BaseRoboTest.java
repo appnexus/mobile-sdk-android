@@ -54,6 +54,7 @@ public class BaseRoboTest implements AdListener {
         bannerAdView = new BannerAdView(activity);
         bannerAdView.setPlacementID("0");
         bannerAdView.setAdListener(this);
+        bannerAdView.setAdSize(320,50);
         bannerAdView.setAutoRefreshInterval(0);
 
         interstitialAdView = new InterstitialAdView(activity);
