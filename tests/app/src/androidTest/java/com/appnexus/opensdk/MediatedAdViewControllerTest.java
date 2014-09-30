@@ -267,7 +267,7 @@ public class MediatedAdViewControllerTest extends BaseRoboTest {
         assertTrue(SuccessfulBanner2.didPass);
     }
 
-    // Verify that a response with 2 mediated ads with an overriding resultCB
+/*    // Verify that a response with 2 mediated ads with an overriding resultCB
     // skips the second ad and follows the result (standard ad)
     @Test
     public void test13FirstFailsIntoOverrideStd() {
@@ -279,9 +279,9 @@ public class MediatedAdViewControllerTest extends BaseRoboTest {
         runBasicResultCBTest(UNABLE_TO_FILL, true);
 
         assertFalse(SuccessfulBanner2.didPass);
-    }
+    }*/
 
-    // Verify that a response with 2 mediated ads with an overriding resultCB
+/*    // Verify that a response with 2 mediated ads with an overriding resultCB
     // skips the second ad and follows the result (mediated ad)
     @Test
     public void test14FirstFailsIntoOverrideMediated() {
@@ -303,7 +303,7 @@ public class MediatedAdViewControllerTest extends BaseRoboTest {
 
         assertFalse(SuccessfulBanner2.didPass);
         assertTrue(SuccessfulBanner.didPass);
-    }
+    }*/
 
     // Verify that a response with 1 invalid mediated ads with a resultCB that
     // also responds with 1 invalid ad returns failure (UNABLE_TO_FILL)
