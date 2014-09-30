@@ -50,7 +50,7 @@ public class AdFetcherTest extends BaseRoboTest {
         adFetcher = null;
     }
 
-    private void runStartTest(int expectedBgTaskCount) {
+/*    private void runStartTest(int expectedBgTaskCount) {
         // pause until a scheduler has a task in queue
         waitForTasks();
 
@@ -59,9 +59,9 @@ public class AdFetcherTest extends BaseRoboTest {
         // Check that the AdRequest was queued
         int bgTaskCount = Robolectric.getBackgroundScheduler().enqueuedTaskCount();
         assertEquals(expectedBgTaskCount, bgTaskCount);
-    }
+    }*/
 
-    @Test
+/*    @Test
     public void testStart() {
         adFetcher.start();
         runStartTest(1);
@@ -103,34 +103,6 @@ public class AdFetcherTest extends BaseRoboTest {
         runStartTest(0);
     }
 
-    /*
-    Does not call UI thread anymore
-
-    @Test
-    public void testStartTwiceBeforeAdRequestQueued() {
-        adFetcher.start();
-
-        // wait for the first start to queue its UI thread task
-        waitForTasks();
-
-        // the second start should fail (and dispatch a UI thread call to adFailed)
-        adFetcher.start();
-        runStartTest(1);
-    }
-
-    @Test
-    public void testStartTwiceAfterAdRequestQueued() {
-        adFetcher.start();
-
-        // wait for the first start to queue AdRequest task
-        runStartTest(1);
-
-        // the second start should fail (and dispatch a UI thread call to adFailed)
-        adFetcher.start();
-        runStartTest(1);
-    }
-    */
-
     @Test
     public void testStop() {
         // not needed, but in case AdRequest is run
@@ -153,7 +125,7 @@ public class AdFetcherTest extends BaseRoboTest {
         // but it should be canceled, and queue nothing
         int uiTaskCount = Robolectric.getUiThreadScheduler().enqueuedTaskCount();
         assertEquals(0, uiTaskCount);
-    }
+    }*/
 
     @Test
     public void testPeriod() {
