@@ -1,0 +1,43 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion '19.1.0'
+    lintOptions {
+        abortOnError false
+    }
+    defaultConfig {
+        applicationId "com.example.simplebanner"
+        minSdkVersion 9
+        targetSdkVersion 19
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main.manifest.srcFile 'src/main/AndroidManifest.xml'
+        main.java.srcDir 'src/main/java'
+        main.res.srcDir 'src/main/res'
+        main.resources.srcDir 'src/main/java'
+    }
+    packagingOptions {
+        exclude 'AndroidManifest.xml'
+        exclude 'res/drawable/progress.xml'
+        exclude 'res/layout/activity_in_app_browser.xml'
+        exclude 'res/raw/anjam.js'
+        exclude 'res/raw/mraid.js'
+        exclude 'res/raw/sdkjs.js'
+    }
+    productFlavors {
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:19.+'
+    compile project(':sdk')
+}
