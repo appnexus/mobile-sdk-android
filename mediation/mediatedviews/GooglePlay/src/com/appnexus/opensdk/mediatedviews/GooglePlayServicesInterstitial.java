@@ -49,7 +49,12 @@ public class GooglePlayServicesInterstitial implements MediatedInterstitialAdVie
         interstitialAd.setAdUnitId(adUnitId);
         interstitialAd.setAdListener(adListener);
 
-        interstitialAd.loadAd(buildRequest(targetingParameters));
+        try {
+            interstitialAd.loadAd(buildRequest(targetingParameters));
+        } catch (NoClassDefFoundError e) {
+            // This can be thrown by Play Services on Honeycomb.
+            adListener.onAdFailedToLoad(AdRequest.ERROR_CODE_NO_FILL);
+        }
     }
 
     @Override
