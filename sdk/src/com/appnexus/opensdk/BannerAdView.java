@@ -26,15 +26,19 @@ import android.content.res.TypedArray;
 import android.graphics.Point;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.view.*;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ViewAnimator;
 
 import com.appnexus.opensdk.transitionanimation.Animator;
-import com.appnexus.opensdk.transitionanimation.TransitionType;
 import com.appnexus.opensdk.transitionanimation.TransitionDirection;
+import com.appnexus.opensdk.transitionanimation.TransitionType;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.WebviewUtil;
@@ -407,12 +411,18 @@ public class BannerAdView extends AdView {
         @Override
         public void onAnimationEnd(Animation animation) {
             animation.setAnimationListener(null);
-            Displayable oldView = this.oldView.get();
-            Animator animator = this.animator.get();
+            final Displayable oldView = this.oldView.get();
+            final Animator animator = this.animator.get();
+
             if (oldView != null && animator != null) {
-                animator.clearAnimation();
-                oldView.destroy();
-                animator.setAnimation();
+                // Make sure to post actions on UI thread
+                oldView.getView().getHandler().post(new Runnable() {
+                    public void run() {
+                        animator.clearAnimation();
+                        oldView.destroy();
+                        animator.setAnimation();
+                    }
+                });
             }
         }
 
