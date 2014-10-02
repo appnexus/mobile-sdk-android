@@ -70,7 +70,12 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
         adView.setAdSize(new AdSize(width, height));
         adView.setAdListener(adListener);
 
-        adView.loadAd(buildRequest(targetingParameters));
+        try {
+            adView.loadAd(buildRequest(targetingParameters));
+        } catch (NoClassDefFoundError e) {
+            // This can be thrown by Play Services on Honeycomb.
+            adListener.onAdFailedToLoad(AdRequest.ERROR_CODE_NO_FILL);
+        }
 
         adViewActivity = activity;
 
