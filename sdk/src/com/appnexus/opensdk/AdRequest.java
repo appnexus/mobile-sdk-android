@@ -243,9 +243,14 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         limitTrackingEnabled = settings.limitTrackingEnabled;
         // Get carrier
         if (settings.carrierName == null) {
-            settings.carrierName = ((TelephonyManager) context
-                    .getSystemService(Context.TELEPHONY_SERVICE))
-                    .getNetworkOperatorName();
+            TelephonyManager telephonyManager = (TelephonyManager) context
+                    .getSystemService(Context.TELEPHONY_SERVICE);
+            try {
+                settings.carrierName = telephonyManager.getNetworkOperatorName();
+            } catch (SecurityException ex) {
+                // Some phones require READ_PHONE_STATE permission just ignore name
+                settings.carrierName = "";
+            }
         }
         carrier = settings.carrierName;
         // Get firstlaunch and convert it to a string
@@ -277,6 +282,11 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             TelephonyManager tm = (TelephonyManager) context
                     .getSystemService(Context.TELEPHONY_SERVICE);
             String networkOperator = tm.getNetworkOperator();
+            // CDMA devices need special treatment
+            if (tm.getPhoneType() == TelephonyManager.PHONE_TYPE_CDMA &&
+                    tm.getSimState() == TelephonyManager.SIM_STATE_READY) {
+                networkOperator = tm.getSimOperator();
+            }
             if (networkOperator != null && networkOperator.length() >= 6) {
                 settings.mcc = networkOperator.substring(0, 3);
                 settings.mnc = networkOperator.substring(3);
