@@ -6,10 +6,10 @@ android {
 
     defaultConfig {
         minSdkVersion 9
-	targetSdkVersion 19
-	versionCode 1
-	versionName "3.0.0"
-	consumerProguardFiles 'proguard.txt'
+        targetSdkVersion 19
+        versionCode 1
+        versionName "3.0.0"
+        consumerProguardFiles 'proguard-project.txt'
     }
 
     sourceSets {

@@ -18,6 +18,8 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+#GMS
 -keep class * extends java.util.ListResourceBundle {
     protected Object[][] getContents();
 }

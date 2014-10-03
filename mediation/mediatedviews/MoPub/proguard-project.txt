@@ -14,3 +14,4 @@
 # Support for Android Advertiser ID.
 -keep class com.google.android.gms.common.GooglePlayServicesUtil {*;}
 -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {*;}
+-keep public class com.appnexus.opensdk.mediatedviews.**{ *; }
