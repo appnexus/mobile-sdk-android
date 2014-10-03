@@ -50,7 +50,6 @@ public class FacebookBanner implements MediatedBannerAdView {
             Clog.d(Clog.mediationLogTag, "Facebook - Attempted to instantiate with size other than the allowed size of 320x50. Instantiating with allowed size.");
         }
         adView.setAdListener(fbListener);
-        adView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER));
         adView.loadAd();
         return adView;
     }
