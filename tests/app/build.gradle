@@ -1,0 +1,116 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.12.+'
+        classpath 'org.robolectric:robolectric-gradle-plugin:0.11.+'
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'robolectric'
+
+android {
+    compileSdkVersion 18
+    buildToolsVersion "19.1.0"
+
+    enforceUniquePackageName = false
+
+    defaultConfig {
+        applicationId "com.appnexus.opensdk"
+        minSdkVersion 14
+        targetSdkVersion 18
+        versionCode 1
+        versionName "1.0.0-SNAPSHOT"
+        testInstrumentationRunner "com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
+    }
+    buildTypes {
+        release {
+            runProguard false
+        }
+    }
+
+    sourceSets {
+        main.manifest.srcFile 'src/main/AndroidManifest.xml'
+        main.res.srcDir 'src/main/res'
+        androidTest{
+            setRoot('src/androidTest')
+        }
+    }
+}
+
+robolectric {
+    include '**/*Test.class'
+    exclude '**/espresso/**/*.class'
+    exclude '**/BaseRoboTest.class'
+}
+
+dependencies {
+    repositories {
+        mavenCentral()
+    }
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':sdk')
+
+    androidTestCompile 'com.google.guava:guava:14.0.1'
+    androidTestCompile 'com.squareup.dagger:dagger:1.1.0'
+    androidTestCompile 'org.hamcrest:hamcrest-integration:1.1'
+    androidTestCompile 'org.hamcrest:hamcrest-core:1.1'
+    androidTestCompile 'org.hamcrest:hamcrest-library:1.1'
+
+    androidTestCompile('junit:junit:4.11') {
+        exclude module: 'hamcrest-core'
+    }
+    androidTestCompile('org.robolectric:robolectric:2.3') {
+        exclude module: 'classworlds'
+        exclude module: 'commons-logging'
+        exclude module: 'httpclient'
+        exclude module: 'maven-artifact'
+        exclude module: 'maven-artifact-manager'
+        exclude module: 'maven-error-diagnostics'
+        exclude module: 'maven-model'
+        exclude module: 'maven-project'
+        exclude module: 'maven-settings'
+        exclude module: 'plexus-container-default'
+        exclude module: 'plexus-interpolation'
+        exclude module: 'plexus-utils'
+        exclude module: 'wagon-file'
+        exclude module: 'wagon-http-lightweight'
+        exclude module: 'wagon-provider-api'
+    }
+    androidTestCompile('com.squareup:fest-android:1.0.+') {
+        exclude group: 'com.android.support'
+    }
+
+    compile 'com.android.support:support-v4:18.0.0'
+    compile('com.google.android.gms:play-services:4.+') {
+        exclude group: 'com.android.support'
+    }
+
+}
+
+apply plugin: 'idea'
+tasks.whenTaskAdded { theTask ->
+    def taskName = theTask.name.toString()
+    if ("testDebug".toString().equals(taskName)) {
+        /**
+         * Listen for when robolectric adds the 'testDebug' task and when it does, add the -noverify
+         * option to that task's jvmArgs.  This allows us to turn off byte code verification when
+         * running our unit tests.
+         */
+        theTask.jvmArgs('-noverify')
+    }
+}
+idea {
+    module {
+        testOutputDir = file('build/test-classes/debug')
+    }
+}
