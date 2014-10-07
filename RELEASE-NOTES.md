@@ -1,0 +1,77 @@
+## RC 1.21
+
+
+
+## RC 1.20
+
+
+
+### New public APIs: 
+
+
+
++ `AdView.setLoadsInBackground(boolean)`: Controls the SDK's behavior when an ad is clicked. The default behavior (`true`) is to load the landing page in the background until the initial payload finishes loading and present a fully rendered page to the user. Setting this to `false` will cause the in-app browser to immediately become visible to display the un-rendered landing page. Note that setting to `false` when an ad redirects to the app store may cause the in-app browser to briefly flash on the screen.
+
+
+
++ `AdView.destroy()`: Whenever a view's activity or fragment is destroyed the developer must call the `destroy()` method of the view. This must be done in the UI thread.
+
+
+
++ `Settings.setLocationDecimalDigits(int digitsAfterDecimal)`: This method will ensure that any location information is rounded to the specified number of digits after the decimal.  The nominal resolution of digits after the decimal to distance is 2 digits to ~1 km , 3 digits to ~100m , 4 digits to ~10m.
+
+
+
++ `BannerView.setAdAlignment(enum AdAlignment)`: Override the alignment of the ad within its container. The default alignment is `CENTER`. Use this method to align to top left, top center, top right, center left, center, center right, bottom left, bottom center, or bottom right.
+
+
+
++ `BannerView.transitionAnimation()`: Add an optional animation for banner transitions. By default, the animation feature is disabled. The developer may choose from 4 transitions with optional animation direction and transition time.
+
+
+
+### 3rd Party SDK updates:
+
+
+
++ Mopub 3.0.0
+
++ Amazon 5.3.22
+
++ Google Play 5.0.89
+
++ FB AudienceNetwork 3.18
+
+
+
+### Bug Fixes:
+
+
+
++ Added proguard settings for Google Play, MoPub, Facebook and Millennial. These rules should be in the main applications `proguard-rules.txt` file.
+
+
+
++ Minimum API level bumped to 9.
+
+
+
++ Stability fixes to catch infrequent exceptions.
+
+
+
++ Handle a backwards/forward time synchronization gracefully.
+
+
+
+### Notes:
+
+
+
+To enable Amazon monetization your app must call, somewhere in its initialization path:
+
+
+
+    import com.amazon.device.ads.AdRegistration;
+
+    AdRegistration.setAppKey("YOUR_APP_KEY");
