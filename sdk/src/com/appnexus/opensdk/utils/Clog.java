@@ -25,75 +25,129 @@ import java.util.ArrayList;
 import static com.appnexus.opensdk.utils.ClogListener.LOG_LEVEL;
 
 public class Clog {
+    /**
+     * @deprecated
+     * As of release 1.21, logging system properties are used instead.
+     * See Log.isLoggable() for more info.
+     */
+    @Deprecated
     public static boolean clogged = false;
 
+    private static void logIfLoggable(String LogTag, String message, int level, Throwable tr){
+        //Allow logging if baseLogTag would allow it, or if this log tag
+        //specifically allows it.
+        if(Log.isLoggable(LogTag, level) || Log.isLoggable(baseLogTag, level)) {
+            if (tr != null) {
+                switch (level) {
+                    case Log.VERBOSE:
+                        Log.v(LogTag, message, tr);
+                        break;
+                    case Log.DEBUG:
+                        Log.d(LogTag, message, tr);
+                        break;
+                    case Log.INFO:
+                        Log.i(LogTag, message, tr);
+                        break;
+                    case Log.WARN:
+                        Log.w(LogTag, message, tr);
+                        break;
+                    case Log.ERROR:
+                        Log.e(LogTag, message, tr);
+                        break;
+                    default:
+                        return;
+                }
+            } else {
+                switch (level) {
+                    case Log.VERBOSE:
+                        Log.v(LogTag, message);
+                        break;
+                    case Log.DEBUG:
+                        Log.d(LogTag, message);
+                        break;
+                    case Log.INFO:
+                        Log.i(LogTag, message);
+                        break;
+                    case Log.WARN:
+                        Log.w(LogTag, message);
+                        break;
+                    case Log.ERROR:
+                        Log.e(LogTag, message);
+                        break;
+                    default:
+                        return;
+                }
+            }
+        }
+    }
+
     public static void v(String LogTag, String message) {
-        if (!clogged && message != null) {
+        if (message != null) {
             notifyListener(LOG_LEVEL.V, LogTag, message);
-            Log.v(LogTag, message);
+            logIfLoggable(LogTag, message, Log.VERBOSE, null);
         }
     }
 
     public static void v(String LogTag, String message, Throwable tr) {
-        if (!clogged && message != null) {
+        if (message != null) {
             notifyListener(LOG_LEVEL.V, LogTag, message, tr);
-            Log.v(LogTag, message, tr);
+            logIfLoggable(LogTag, message, Log.VERBOSE, tr);
         }
     }
 
     public static void d(String LogTag, String message) {
-        if (!clogged && message != null) {
+        if (message != null) {
             notifyListener(LOG_LEVEL.D, LogTag, message);
-            Log.d(LogTag, message);
+            logIfLoggable(LogTag, message, Log.DEBUG, null);
         }
     }
 
     public static void d(String LogTag, String message, Throwable tr) {
-        if (!clogged && message != null) {
+        if (message != null) {
             notifyListener(LOG_LEVEL.D, LogTag, message, tr);
-            Log.d(LogTag, message, tr);
+            logIfLoggable(LogTag, message, Log.DEBUG, tr);
         }
     }
 
     public static void i(String LogTag, String message) {
-        if (!clogged && message != null) {
+        if (message != null) {
             notifyListener(LOG_LEVEL.I, LogTag, message);
-            Log.i(LogTag, message);
+            logIfLoggable(LogTag, message, Log.INFO, null);
         }
     }
 
     public static void i(String LogTag, String message, Throwable tr) {
-        if (!clogged && message != null) {
+        if (message != null) {
             notifyListener(LOG_LEVEL.I, LogTag, message, tr);
-            Log.i(LogTag, message, tr);
+            logIfLoggable(LogTag, message, Log.INFO, tr);
         }
     }
 
     public static void w(String LogTag, String message) {
-        if (!clogged && message != null) {
+        if (message != null) {
             notifyListener(LOG_LEVEL.W, LogTag, message);
-            Log.w(LogTag, message);
+            logIfLoggable(LogTag, message, Log.WARN, null);
         }
     }
 
     public static void w(String LogTag, String message, Throwable tr) {
-        if (!clogged && message != null) {
+        if (message != null) {
             notifyListener(LOG_LEVEL.W, LogTag, message, tr);
-            Log.w(LogTag, message, tr);
+            logIfLoggable(LogTag, message, Log.WARN, tr);
         }
     }
 
     public static void e(String LogTag, String message) {
-        if (!clogged && message != null) {
+        if (message != null) {
             notifyListener(LOG_LEVEL.E, LogTag, message);
-            Log.e(LogTag, message);
+            logIfLoggable(LogTag, message, Log.ERROR, null);
         }
     }
 
     public static void e(String LogTag, String message, Throwable tr) {
-        if (!clogged && message != null) {
+        if (message != null) {
             notifyListener(LOG_LEVEL.E, LogTag, message, tr);
-            Log.e(LogTag, message, tr);
+            logIfLoggable(LogTag, message, Log.ERROR, tr);
         }
     }
 
@@ -120,7 +174,7 @@ public class Clog {
     public static String getString(int id) {
         Context error_context = clog_context.get();
 
-        if (clogged || error_context == null)
+        if (error_context == null)
             return null;
         return error_context.getString(id);
     }
@@ -128,7 +182,7 @@ public class Clog {
     public static String getString(int id, long l) {
         Context error_context = clog_context.get();
 
-        if (clogged || error_context == null)
+        if (error_context == null)
             return null;
         return error_context.getString(id, l);
     }
@@ -136,7 +190,7 @@ public class Clog {
     public static String getString(int id, String s) {
         Context error_context = clog_context.get();
 
-        if (clogged || error_context == null)
+        if (error_context == null)
             return null;
         return error_context.getString(id, s);
     }
@@ -144,7 +198,7 @@ public class Clog {
     public static String getString(int id, String s, int i) {
         Context error_context = clog_context.get();
 
-        if (clogged || error_context == null)
+        if (error_context == null)
             return null;
         return error_context.getString(id, s, i);
     }
@@ -152,7 +206,7 @@ public class Clog {
     public static String getString(int id, int a, int b, int c, int d) {
         Context error_context = clog_context.get();
 
-        if (clogged || error_context == null)
+        if (error_context == null)
             return null;
         return error_context.getString(id, a, b, c, d);
     }
@@ -160,7 +214,7 @@ public class Clog {
     public static String getString(int id, boolean b) {
         Context error_context = clog_context.get();
 
-        if (clogged || error_context == null)
+        if (error_context == null)
             return null;
         return error_context.getString(id, b);
     }
@@ -168,7 +222,7 @@ public class Clog {
     public static String getString(int id, String s, String ss) {
         Context error_context = clog_context.get();
 
-        if (clogged || error_context == null)
+        if (error_context == null)
             return null;
         return error_context.getString(id, s, ss);
     }
@@ -176,7 +230,7 @@ public class Clog {
     public static String getString(int id, int i, String s, String ss) {
         Context error_context = clog_context.get();
 
-        if (clogged || error_context == null)
+        if (error_context == null)
             return null;
         return error_context.getString(id, i, s, ss);
     }
@@ -184,7 +238,7 @@ public class Clog {
     public static String getString(int id, String s, int i, String ss) {
         Context error_context = clog_context.get();
 
-        if (clogged || error_context == null)
+        if (error_context == null)
             return null;
         return error_context.getString(id, s, i, ss);
     }
@@ -192,7 +246,7 @@ public class Clog {
     public static String getString(int id, int i, String s) {
         Context error_context = clog_context.get();
 
-        if (clogged || error_context == null)
+        if (error_context == null)
             return null;
         return error_context.getString(id, i, s);
     }
@@ -200,7 +254,7 @@ public class Clog {
     public static String getString(int id, int w, int h, int offset_x, int offset_y, String custom_close_position, boolean allow_offscreen) {
         Context error_context = clog_context.get();
 
-        if (clogged || error_context == null)
+        if (error_context == null)
             return null;
         return error_context.getString(id, w, h, offset_x, offset_y, custom_close_position, allow_offscreen);
     }
@@ -208,7 +262,7 @@ public class Clog {
     public static String getString(int id, boolean b, int i) {
         Context error_context = clog_context.get();
 
-        if (clogged || error_context == null)
+        if (error_context == null)
             return null;
         return error_context.getString(id, b, i);
     }
@@ -216,7 +270,7 @@ public class Clog {
     public static String getString(int id, int i, int j) {
         Context error_context = clog_context.get();
 
-        if (clogged || error_context == null)
+        if (error_context == null)
             return null;
         return error_context.getString(id, i, j);
     }
