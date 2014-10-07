@@ -98,18 +98,18 @@ import java.lang.ref.WeakReference;
 public class BannerAdView extends AdView {
 
     private int period;
-    private boolean auto_refresh = true;
+    private boolean auto_refresh;
     private boolean loadAdHasBeenCalled;
     private boolean shouldReloadOnResume;
     private BroadcastReceiver receiver;
-    protected boolean shouldResetContainer = false;
-    private boolean expandsToFitScreenWidth = false;
-    private int width = -1;
-    private int height = -1;
-    private int maximumWidth = -1;
-    private int maximumHeight = -1;
-    private boolean overrideMaxSize = false;
-    private boolean measured = false;
+    protected boolean shouldResetContainer;
+    private boolean expandsToFitScreenWidth;
+    private int width;
+    private int height;
+    private int maximumWidth;
+    private int maximumHeight;
+    private boolean overrideMaxSize;
+    private boolean measured;
     private Animator animator;
 
     private void setDefaultsBeforeXML() {
