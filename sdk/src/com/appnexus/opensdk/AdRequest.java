@@ -382,7 +382,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (!StringUtil.isEmpty(hidsha1)) sb.append("&sha1udid=").append(Uri.encode(hidsha1));
         if (!StringUtil.isEmpty(aaid)) {
             sb.append("&aaid=").append(Uri.encode(aaid));
-            sb.append(limitTrackingEnabled ? "&dnt=1" : "&dnt=0");
+            sb.append(limitTrackingEnabled ? "&LimitAdTrackingEnabled=1" : "&LimitAdTrackingEnabled=0");
         }
         if (!StringUtil.isEmpty(devMake)) sb.append("&devmake=").append(Uri.encode(devMake));
         if (!StringUtil.isEmpty(devModel)) sb.append("&devmodel=").append(Uri.encode(devModel));
