@@ -40,28 +40,6 @@ public class ViewUtil {
         return close;
     }
 
-    public static ProgressBar createClickOverlay(Context context) {
-        return createClickOverlay(context, -1);
-    }
-
-    public static ProgressBar createClickOverlay(Context context, int maxHeight) { // Max height in pixels
-        ProgressBar bar = new ProgressBar(context, null, android.R.attr.progressBarStyleSmall);
-        bar.setBackgroundColor(0xCC4D4E53); // cool grey
-        bar.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
-        int[] padding = {20,15,20,15}; // In dp
-        convertFromDPToPixels((Activity)context, padding);
-
-        if (maxHeight != -1 && maxHeight < (padding[1] * 3)) { // Ad too small for regular overlay
-            for (int paddingIndex = 0; paddingIndex < padding.length; paddingIndex++) {
-                padding[paddingIndex] = (int)(padding[paddingIndex] / 4.0);
-            }
-        }
-
-        bar.setPadding(padding[0],padding[1],padding[2],padding[3]);
-
-        return bar;
-    }
-
     public static void removeChildFromParent(View view) {
         if ((view != null) && (view.getParent() != null)) {
             ((ViewGroup) view.getParent()).removeView(view);

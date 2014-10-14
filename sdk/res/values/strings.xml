@@ -30,5 +30,6 @@
     <string name="html5_geo_permission_prompt_title">%s would like to access your location</string>
     <string name="allow">Allow</string>
     <string name="deny">Deny</string>
+    <string name="loading">Loading</string>
 
 </resources>

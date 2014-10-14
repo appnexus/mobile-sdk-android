@@ -166,7 +166,7 @@ public class InterstitialAdView extends AdView {
             }else if (attr == R.styleable.InterstitialAdView_show_loading_indicator) {
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.show_loading_indicator_xml));
-                setShowLoadingIndicator(a.getBoolean(attr, false));
+                setShowLoadingIndicator(a.getBoolean(attr, true));
             }else if (attr == R.styleable.InterstitialAdView_load_landing_page_in_background) {
                 setLoadsInBackground(a.getBoolean(attr, true));
                 Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_load_landing_page_in_background, doesLoadingInBackground ));

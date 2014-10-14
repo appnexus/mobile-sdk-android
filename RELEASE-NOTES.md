@@ -1,5 +1,5 @@
 ## RC 1.21
-
++ MS-751 by default the android SDK now uses a modal dialog box loading animation during conversion loading. 
 
 
 ## RC 1.20

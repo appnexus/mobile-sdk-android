@@ -78,7 +78,7 @@ public abstract class AdView extends FrameLayout {
     boolean doesLoadingInBackground = true;
 
     private boolean shouldResizeParent = false;
-    private boolean showLoadingIndicator = false;
+    private boolean showLoadingIndicator = true;
 
     /**
      * Begin Construction

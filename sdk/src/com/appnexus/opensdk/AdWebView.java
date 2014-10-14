@@ -18,8 +18,10 @@ package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -35,7 +37,6 @@ import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.appnexus.opensdk.AdView.BrowserStyle;
 import com.appnexus.opensdk.utils.*;
@@ -64,7 +65,7 @@ class AdWebView extends WebView implements Displayable {
     private Handler handler = new Handler();
     private boolean viewableCheckPaused = false;
     private int orientation;
-    private ProgressBar clickOverlay;
+    private ProgressDialog progressDialog;
 
     public AdWebView(AdView adView) {
         super(adView.getContext());
@@ -361,35 +362,39 @@ class AdWebView extends WebView implements Displayable {
             if (checkStore(url)) {
                 return;
             }
-
-            if(this.adView.getShowLoadingIndicator()) {
-                if (adView instanceof InterstitialAdView) {
-                    if (this.getParent() instanceof ViewGroup) {
-                        ViewGroup parentView = (ViewGroup) this.getParent();
-                        clickOverlay = ViewUtil.createClickOverlay(parentView.getContext());
-                        parentView.addView(clickOverlay);
-                    }
-                } else if (adView instanceof BannerAdView) {
-                    clickOverlay = ViewUtil.createClickOverlay(this.adView.getContext(), adView.getHeight());
-                    this.adView.addView(clickOverlay);
-                }
-            }
-
+            final WebView out;
             // Unless disabled by the user, handle redirects in background
+
             if(adView.getLoadsInBackground()) {
                 // Otherwise, create an invisible 1x1 webview to load the landing
                 // page and detect if we're redirecting to a market url
-                WebView fwdWebView = new RedirectWebView(this.getContext());
-                fwdWebView.loadUrl(url);
-                fwdWebView.setVisibility(View.GONE);
-                adView.addView(fwdWebView);
+                out = new RedirectWebView(this.getContext());
+                out.loadUrl(url);
+                out.setVisibility(View.GONE);
+                adView.addView(out);
             }else{
                 // Stick the URL directly into the new activity.
-                WebView boringWebview = new WebView(getContext());
-                WebviewUtil.setWebViewSettings(boringWebview);
-                boringWebview.loadUrl(url);
-                openInAppBrowser(boringWebview);
+                out = new WebView(getContext());
+                WebviewUtil.setWebViewSettings(out);
+                out.loadUrl(url);
+                openInAppBrowser(out);
             }
+
+            if(this.adView.getShowLoadingIndicator()) {
+                //Show a dialog box
+                progressDialog = new ProgressDialog(((ViewGroup)this.getParent()).getContext());
+                progressDialog.setCancelable(true);
+                progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        out.stopLoading();
+                    }
+                });
+                progressDialog.setMessage(getContext().getResources().getString(R.string.loading));
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progressDialog.show();
+            }
+
         } else {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(R.string.opening_native));
@@ -680,9 +685,8 @@ class AdWebView extends WebView implements Displayable {
                     isOpeningAppStore = checkStore(url);
 
                     if (isOpeningAppStore) {
-                        if(clickOverlay != null) {
-                            ViewUtil.removeChildFromParent(clickOverlay);
-                            clickOverlay = null;
+                        if(progressDialog != null) {
+                            progressDialog.dismiss();
                         }
                     }
 
@@ -694,9 +698,8 @@ class AdWebView extends WebView implements Displayable {
                     Clog.v(Clog.browserLogTag, "Opening URL: " + url);
                     ViewUtil.removeChildFromParent(RedirectWebView.this);
 
-                    if(clickOverlay!=null) {
-                        ViewUtil.removeChildFromParent(clickOverlay);
-                        clickOverlay = null;
+                    if(progressDialog != null) {
+                        progressDialog.dismiss();
                     }
 
                     if (isOpeningAppStore) {

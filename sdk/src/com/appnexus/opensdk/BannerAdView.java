@@ -566,7 +566,7 @@ public class BannerAdView extends AdView {
             }else if (attr == R.styleable.BannerAdView_show_loading_indicator) {
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.show_loading_indicator_xml));
-                setShowLoadingIndicator(a.getBoolean(attr, false));
+                setShowLoadingIndicator(a.getBoolean(attr, true));
             } else if (attr == R.styleable.BannerAdView_transition_type) {
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.transition_type));
