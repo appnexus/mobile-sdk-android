@@ -27,10 +27,12 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
 public class ViewUtil {
-    public static ImageButton createCloseButton(Context context) {
+    public static ImageButton createCloseButton(Context context, boolean custom_close) {
         final ImageButton close = new ImageButton(context);
-        close.setImageDrawable(context.getResources().getDrawable(
-                android.R.drawable.ic_menu_close_clear_cancel));
+        if (!custom_close){
+            close.setImageDrawable(context.getResources().getDrawable(
+                    android.R.drawable.ic_menu_close_clear_cancel));
+        }
         FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.RIGHT

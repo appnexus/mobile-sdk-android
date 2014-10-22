@@ -378,27 +378,25 @@ public abstract class AdView extends FrameLayout {
                           AdWebView.MRAIDFullscreenListener listener) {
         MRAIDChangeSize(w, h);
 
-        if (!custom_close) {
-            // Add a stock close_button button to the top right corner
-            close_button = ViewUtil.createCloseButton(this.getContext());
-            FrameLayout.LayoutParams blp = (LayoutParams) close_button.getLayoutParams();
+        // Add a stock close_button button to the top right corner
+        close_button = ViewUtil.createCloseButton(this.getContext(), custom_close);
+        FrameLayout.LayoutParams blp = (LayoutParams) close_button.getLayoutParams();
 
-            // place the close button at the top right of the adview if it isn't fullscreen
-            if (!caller.owner.isFullScreen) {
-                if(getChildAt(0)!=null){
-                    blp.rightMargin = (this.getMeasuredWidth()
-                            - this.getChildAt(0).getMeasuredWidth()) / 2;
-                }
+        // place the close button at the top right of the adview if it isn't fullscreen
+        if (!caller.owner.isFullScreen) {
+            if(getChildAt(0)!=null){
+                blp.rightMargin = (this.getMeasuredWidth()
+                        - this.getChildAt(0).getMeasuredWidth()) / 2;
             }
-
-            close_button.setLayoutParams(blp);
-            close_button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    caller.close();
-                }
-            });
         }
+
+        close_button.setLayoutParams(blp);
+        close_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                caller.close();
+            }
+        });
 
         if (caller.owner.isFullScreen) {
             caller.setDefaultContainer((ViewGroup) caller.owner.getParent());

@@ -132,7 +132,7 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
     private void addCloseButton() {
         if ((layout == null) || (closeButton != null)) return;
 
-        closeButton = ViewUtil.createCloseButton(adActivity);
+        closeButton = ViewUtil.createCloseButton(adActivity, false);
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
