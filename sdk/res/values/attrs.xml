@@ -51,7 +51,6 @@
     <declare-styleable name="InterstitialAdView">
         <attr name="placement_id"/>
         <attr name="test"/>
-        <attr name="color" format="integer"/>
         <attr name="opens_native_browser"/>
         <attr name="show_loading_indicator"/>
         <attr name="load_landing_page_in_background"/>
