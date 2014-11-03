@@ -1,6 +1,6 @@
 ## RC 1.21
 + MS-751 by default the android SDK now uses a modal dialog box loading animation during conversion loading. 
-
++ MS-846 Removed color attribute from XML interstitial setup because of conflicts with google lollipop libs
 
 ## RC 1.20
 
