@@ -55,7 +55,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
     private WeakReference<AdRequester> requester; // The instance of AdRequester which is filing this request.
     private WeakReference<Context> owner_context;
-    private boolean is_owner_interstitial;
+    private MediaType media_type;
     private String hidmd5;
     private String hidsha1;
     private String aaid;
@@ -141,15 +141,15 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             = new AdResponse(true);
 
     public AdRequest(AdRequester adRequester) {
-        AdView owner = adRequester.getOwner();
         this.requester = new WeakReference<AdRequester>(adRequester);
-        this.placementId = owner.getPlacementID();
-        Context context = owner.getContext();
-        owner_context = new WeakReference<Context>(owner.getContext());
+        AdRequester requester = this.requester.get();
+        RequestParameters params = requester.getRequestParams();
+        this.placementId = params.getPlacementID();
+        Context context = params.getContext();
+        owner_context = new WeakReference<Context>(params.getContext());
 
         AdvertistingIDUtil.retrieveAndSetAAID(context);
 
-        this.is_owner_interstitial = owner instanceof InterstitialAdView;
         Location lastLocation = null;
         Location appLocation = SDKSettings.getLocation();
         // Do we have access to location?
@@ -259,21 +259,22 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         ua = settings.ua;
         // Get wxh
 
-        if (owner.isBanner()) {
-            this.width = ((BannerAdView) owner).getAdWidth();
-            this.height = ((BannerAdView) owner).getAdHeight();
-            this.overrideMaxSize = ((BannerAdView) owner).getOverrideMaxSize();
+        media_type = params.getMediaType();
+        if (media_type == MediaType.BANNER) {
+            this.width = params.getAdWidth();
+            this.height = params.getAdHeight();
+            this.overrideMaxSize = params.getOverrideMaxSize();
         }
 
         if (this.overrideMaxSize) {
-            maxHeight = ((BannerAdView) owner).getMaxHeight();
-            maxWidth = ((BannerAdView) owner).getMaxWidth();
+            maxHeight = params.getMaxHeight();
+            maxWidth = params.getMaxWidth();
             if (maxWidth <= 0 || maxHeight <= 0) {
                 Clog.w(Clog.httpReqLogTag, Clog.getString(R.string.max_size_not_set));
             }
         } else {
-            maxHeight = owner.getContainerHeight();
-            maxWidth = owner.getContainerWidth();
+            maxHeight = params.getContainerHeight();
+            maxWidth = params.getContainerWidth();
         }
 
 
@@ -305,10 +306,10 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         dev_time = "" + System.currentTimeMillis();
         dev_timezone = "" + Settings.getSettings().dev_timezone;
 
-        if (owner instanceof InterstitialAdView) {
+        if (media_type == MediaType.INTERSTITIAL) {
             // Make string for allowed_sizes
             allowedSizes = "";
-            ArrayList<Size> sizes = ((InterstitialAdView) owner).getAllowedSizes();
+            ArrayList<Size> sizes = params.getAllowedSizes();
             for (Size s : sizes) {
                 allowedSizes += "" + s.width() + "x" + s.height();
                 // If not last size, add a comma
@@ -317,27 +318,27 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             }
         }
 
-        nativeBrowser = owner.getOpensNativeBrowser() ? "1" : "0";
+        nativeBrowser = params.getOpensNativeBrowser() ? "1" : "0";
 
         //Reserve price
-        reserve = owner.getReserve();
+        reserve = params.getReserve();
         if (reserve <= 0) {
-            this.psa = owner.shouldServePSAs ? "1" : "0";
+            this.psa = params.getShouldServePSAs() ? "1" : "0";
         } else {
             this.psa = "0";
         }
 
-        age = owner.getAge();
-        if (owner.getGender() != null) {
-            if (owner.getGender() == AdView.GENDER.MALE) {
+        age = params.getAge();
+        if (params.getGender() != null) {
+            if (params.getGender() == AdView.GENDER.MALE) {
                 gender = "m";
-            } else if (owner.getGender() == AdView.GENDER.FEMALE) {
+            } else if (params.getGender() == AdView.GENDER.FEMALE) {
                 gender = "f";
             } else {
                 gender = null;
             }
         }
-        customKeywords = owner.getCustomKeywords();
+        customKeywords = params.getCustomKeywords();
 
         mcc = settings.mcc;
         mnc = settings.mnc;
@@ -404,9 +405,9 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (width > 0 && height > 0) sb.append("&size=").append(width).append("x").append(height);
         // complicated, don't change
         if (maxHeight > 0 && maxWidth > 0) {
-            if (!is_owner_interstitial && (width < 0 || height < 0)) {
+            if (!media_type.equals(MediaType.INTERSTITIAL) && (width < 0 || height < 0)) {
                 sb.append("&max_size=").append(maxWidth).append("x").append(maxHeight);
-            } else if (is_owner_interstitial) {
+            } else if (media_type.equals(MediaType.INTERSTITIAL)) {
                 sb.append("&size=").append(maxWidth).append("x").append(maxHeight);
             }
         }

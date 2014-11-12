@@ -16,6 +16,8 @@
 
 package com.appnexus.opensdk;
 
+import java.util.LinkedList;
+
 interface AdRequester {
     /**
      * Called when the request made by the requester fails.
@@ -32,11 +34,6 @@ interface AdRequester {
     public void onReceiveResponse(AdResponse response);
 
     /**
-     * Used to get the owner adview of the request
-     */
-    public AdView getOwner();
-
-    /**
      * Mark the beginning of an ad request for latency recording
      */
     public void markLatencyStart();
@@ -46,4 +43,9 @@ interface AdRequester {
      * @param now current time
      */
     public long getLatency(long now);
+
+    public LinkedList<MediatedAd> getMediatedAds();
+
+    public RequestParameters getRequestParams();
+
 }

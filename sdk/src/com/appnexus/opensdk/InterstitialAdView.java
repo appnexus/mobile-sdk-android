@@ -44,7 +44,6 @@ import java.util.Queue;
  */
 public class InterstitialAdView extends AdView {
     static final long MAX_AGE = 60000;
-    private ArrayList<Size> allowedSizes;
     private int backgroundColor = Color.BLACK;
     private int closeButtonDelay = Settings.DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
     static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
@@ -104,14 +103,14 @@ public class InterstitialAdView extends AdView {
     protected void setup(Context context, AttributeSet attrs) {
         super.setup(context, attrs);
         mAdFetcher.setAutoRefresh(false);
-
+        requestParameters.setMediaType(MediaType.INTERSTITIAL);
         // Get the screen size
         WindowManager manager = (WindowManager) context
                 .getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics dm = new DisplayMetrics();
         manager.getDefaultDisplay().getMetrics(dm);
-        measuredHeight = dm.heightPixels;
-        measuredWidth = dm.widthPixels;
+        int measuredHeight = dm.heightPixels;
+        int measuredWidth = dm.widthPixels;
         int h_adjust = 0;
 
         Activity a = (Activity) context;
@@ -127,7 +126,10 @@ public class InterstitialAdView extends AdView {
         measuredHeight = (int) (measuredHeight / scale + 0.5f);
         measuredWidth = (int) (measuredWidth / scale + 0.5f);
 
-        allowedSizes = new ArrayList<Size>();
+        requestParameters.setContainereWidth(measuredWidth);
+        requestParameters.setContainerHeight(measuredHeight);
+
+        ArrayList<Size> allowedSizes = new ArrayList<Size>();
 
 
         if (new Size(300, 250).fitsIn(measuredWidth, measuredHeight))
@@ -139,6 +141,7 @@ public class InterstitialAdView extends AdView {
         if (new Size(1024, 1024).fitsIn(measuredWidth, measuredHeight))
             allowedSizes.add(new Size(1024, 1024));
 
+        requestParameters.setAllowedSizes(allowedSizes);
     }
 
     @Override
@@ -346,7 +349,7 @@ public class InterstitialAdView extends AdView {
     public ArrayList<Size> getAllowedSizes() {
         Clog.d(Clog.publicFunctionsLogTag,
                 Clog.getString(R.string.get_allowed_sizes));
-        return allowedSizes;
+        return requestParameters.getAllowedSizes();
     }
 
     /**
@@ -361,7 +364,7 @@ public class InterstitialAdView extends AdView {
     public void setAllowedSizes(ArrayList<Size> allowed_sizes) {
         Clog.d(Clog.publicFunctionsLogTag,
                 Clog.getString(R.string.set_allowed_sizes));
-        allowedSizes = allowed_sizes;
+        requestParameters.setAllowedSizes(allowed_sizes);
     }
 
     /**

@@ -48,14 +48,6 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
 
         ResultCode errorCode = null;
 
-        TargetingParameters tp = null;
-        if ((requester != null) && (requester.getOwner() != null)) {
-            tp = requester.getOwner().getTargetingParameters();
-        }
-        if (tp == null) {
-            tp = new TargetingParameters();
-        }
-
         startTimeout();
         markLatencyStart();
 
@@ -65,7 +57,7 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
                         activity,
                         currentAd.getParam(),
                         currentAd.getId(),
-                        tp);
+                        getTargetingParameters());
             }else{
                 Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_null_activity));
                 errorCode = ResultCode.INTERNAL_ERROR;

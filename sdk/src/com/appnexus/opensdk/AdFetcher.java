@@ -27,6 +27,8 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +43,7 @@ class AdFetcher implements AdRequester {
     private long lastFetchTime = -1;
     private long timePausedAt = -1;
     private AdRequest adRequest;
+    private LinkedList<MediatedAd> mediatedAds;
 
     // Fires requests whenever it receives a message
     public AdFetcher(AdView owner) {
@@ -230,7 +233,7 @@ class AdFetcher implements AdRequester {
             @Override
             public void run() {
                 boolean responseHasAds = (response != null) && response.containsAds();
-                boolean ownerHasAds = (owner.getMediatedAds() != null) && !owner.getMediatedAds().isEmpty();
+                boolean ownerHasAds = (getMediatedAds() != null) && !getMediatedAds().isEmpty();
 
                 // no ads in the response and no old ads means no fill
                 if (!responseHasAds && !ownerHasAds) {
@@ -249,14 +252,14 @@ class AdFetcher implements AdRequester {
                 if (responseHasAds) {
                     // if non-mediated ad is overriding the list,
                     // this will be null and skip the loop for mediation
-                    owner.setMediatedAds(response.getMediatedAds());
+                    setMediatedAds(response.getMediatedAds());
                 }
 
                 // create output - either mediated or AdWebView
 
                 // check if most recent `mediatedAds` is non-empty
-                if ((owner.getMediatedAds() != null) && !owner.getMediatedAds().isEmpty()) {
-                    MediatedAd mediatedAd = owner.popMediatedAd();
+                if ((getMediatedAds() != null) && !getMediatedAds().isEmpty()) {
+                    MediatedAd mediatedAd = popMediatedAd();
                     if ((mediatedAd != null) && (response != null)) {
                         mediatedAd.setExtras(response.getExtras());
                     }
@@ -291,11 +294,6 @@ class AdFetcher implements AdRequester {
         });
     }
 
-    @Override
-    public AdView getOwner() {
-        return owner;
-    }
-
     /*
     Running Total Latency
      */
@@ -314,5 +312,45 @@ class AdFetcher implements AdRequester {
         }
         // return -1 if `totalLatencyStart` was not set.
         return -1;
+    }
+
+    /*
+     * Meditated Ads
+     */
+
+    // For logging mediated classes
+    private ArrayList<String> mediatedClasses = new ArrayList<String>();
+
+    void printMediatedClasses() {
+        if (mediatedClasses.isEmpty()) return;
+        StringBuilder sb = new StringBuilder("Mediated Classes: \n");
+        for (int i = mediatedClasses.size(); i > 0; i--) {
+            sb.append(String.format("%d: %s\n", i, mediatedClasses.get(i-1)));
+        }
+        Clog.i(Clog.mediationLogTag, sb.toString());
+        mediatedClasses.clear();
+    }
+
+    @Override
+    public LinkedList<MediatedAd> getMediatedAds() {
+        return mediatedAds;
+    }
+
+    @Override
+    public RequestParameters getRequestParams() {
+        return owner.requestParameters;
+    }
+
+    void setMediatedAds(LinkedList<MediatedAd> mediatedAds) {
+        this.mediatedAds = mediatedAds;
+    }
+
+    // returns the first mediated ad if available
+    MediatedAd popMediatedAd() {
+        if ((mediatedAds != null) && (mediatedAds.getFirst() != null)) {
+            mediatedClasses.add(mediatedAds.getFirst().getClassName());
+            return mediatedAds.removeFirst();
+        }
+        return null;
     }
 }

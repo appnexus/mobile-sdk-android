@@ -25,7 +25,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -41,7 +40,6 @@ import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.*;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 /**
  * The parent class of {@link InterstitialAdView} and {@link
@@ -53,23 +51,14 @@ import java.util.LinkedList;
 public abstract class AdView extends FrameLayout {
 
 	AdFetcher mAdFetcher;
-	String placementID;
 	boolean opensNativeBrowser = false;
-	int measuredWidth;
-	int measuredHeight;
-    boolean shouldServePSAs = false;
-	private float reserve = 0.00f;
-	String age;
-	GENDER gender = GENDER.UNKNOWN;
-	ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
-    private Location location = null;
 	boolean mraid_changing_size_or_visibility = false;
     int creativeWidth;
     int creativeHeight;
 	private AdListener adListener;
     private AppEventListener appEventListener;
 	private BrowserStyle browserStyle;
-	private LinkedList<MediatedAd> mediatedAds;
+
 	final Handler handler = new Handler(Looper.getMainLooper());
 	protected Displayable lastDisplayable;
 	private AdListenerDispatch dispatcher;
@@ -79,6 +68,8 @@ public abstract class AdView extends FrameLayout {
 
     private boolean shouldResizeParent = false;
     private boolean showLoadingIndicator = true;
+
+    RequestParameters requestParameters;
 
     /**
      * Begin Construction
@@ -98,6 +89,7 @@ public abstract class AdView extends FrameLayout {
 
     void setup(Context context, AttributeSet attrs) {
 		dispatcher = new AdView.AdListenerDispatch(handler);
+        requestParameters = new RequestParameters(context);
 
         AdvertistingIDUtil.retrieveAndSetAAID(context);
 
@@ -165,7 +157,7 @@ public abstract class AdView extends FrameLayout {
 			Clog.e(Clog.baseLogTag, Clog.getString(R.string.already_expanded));
 			return false;
 		}
-		if (StringUtil.isEmpty(placementID)) {
+		if (StringUtil.isEmpty(requestParameters.getPlacementID())) {
 			Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_placement_id));
 			return false;
 		}
@@ -213,7 +205,7 @@ public abstract class AdView extends FrameLayout {
 	 * @return true means the ad will begin loading; false otherwise.
 	 */
 	public boolean loadAd(String placementID) {
-		this.setPlacementID(placementID);
+		requestParameters.setPlacementID(placementID);
 		return loadAd();
 	}
 
@@ -264,8 +256,8 @@ public abstract class AdView extends FrameLayout {
 	 */
 	public String getPlacementID() {
 		Clog.d(Clog.publicFunctionsLogTag,
-				Clog.getString(R.string.get_placement_id, placementID));
-		return placementID;
+				Clog.getString(R.string.get_placement_id, requestParameters.getPlacementID()));
+		return requestParameters.getPlacementID();
 	}
 
 	/**
@@ -280,7 +272,7 @@ public abstract class AdView extends FrameLayout {
 	public void setPlacementID(String placementID) {
 		Clog.d(Clog.publicFunctionsLogTag,
 				Clog.getString(R.string.set_placement_id, placementID));
-		this.placementID = placementID;
+		requestParameters.setPlacementID(placementID);
 	}
 
 	@Override
@@ -307,11 +299,11 @@ public abstract class AdView extends FrameLayout {
     }
 
 	int getContainerWidth() {
-		return measuredWidth;
+		return requestParameters.getContainerWidth();
 	}
 
 	int getContainerHeight() {
-		return measuredHeight;
+		return requestParameters.getContainerHeight();
 	}
 
     protected void setShouldResizeParent(boolean shouldResizeParent) {
@@ -637,8 +629,8 @@ public abstract class AdView extends FrameLayout {
 	 */
 	public boolean getOpensNativeBrowser() {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
-				R.string.get_opens_native_browser, opensNativeBrowser));
-		return opensNativeBrowser;
+				R.string.get_opens_native_browser, requestParameters.getOpensNativeBrowser()));
+		return requestParameters.getOpensNativeBrowser();
 	}
 
 	/**
@@ -654,7 +646,7 @@ public abstract class AdView extends FrameLayout {
 	public void setOpensNativeBrowser(boolean opensNativeBrowser) {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
 				R.string.set_opens_native_browser, opensNativeBrowser));
-		this.opensNativeBrowser = opensNativeBrowser;
+		requestParameters.setOpensNativeBrowser(opensNativeBrowser);
 	}
 
 	BrowserStyle getBrowserStyle() {
@@ -675,7 +667,7 @@ public abstract class AdView extends FrameLayout {
 	 * @return Whether this placement accepts PSAs if no ad is served.
 	 */
 	public boolean getShouldServePSAs() {
-		return shouldServePSAs;
+		return requestParameters.getShouldServePSAs();
 	}
 
 	/**
@@ -688,7 +680,7 @@ public abstract class AdView extends FrameLayout {
 	 *            Whether this placement is willing to accept a PSA if no other ad is available.
 	 */
 	public void setShouldServePSAs(boolean shouldServePSAs) {
-		this.shouldServePSAs = shouldServePSAs;
+		requestParameters.setShouldServePSAs(shouldServePSAs);
 	}
 
 	/**
@@ -699,7 +691,7 @@ public abstract class AdView extends FrameLayout {
 	 * @return The reserve price.  A value of 0 indicates that no reserve is set.
 	 */
 	public float getReserve() {
-		return reserve;
+		return requestParameters.getReserve();
 	}
 
 	/**
@@ -713,7 +705,7 @@ public abstract class AdView extends FrameLayout {
 	 * @param reserve The reserve price expressed in CPM, e.g., 0.50f.
 	 */
 	public void setReserve(float reserve) {
-		this.reserve = reserve;
+		requestParameters.setReserve(reserve);
 	}
 
 	/**
@@ -724,7 +716,7 @@ public abstract class AdView extends FrameLayout {
 	 * @return The current user's age.
 	 */
 	public String getAge() {
-		return age;
+		return requestParameters.getAge();
 	}
 
 	/**
@@ -737,7 +729,7 @@ public abstract class AdView extends FrameLayout {
 	 *            "1974", or "25-35".
 	 */
 	public void setAge(String age) {
-		this.age = age;
+		requestParameters.setAge(age);
 	}
 
     /**
@@ -783,7 +775,7 @@ public abstract class AdView extends FrameLayout {
 	 * @return The user's gender.
 	 */
 	public GENDER getGender() {
-		return gender;
+		return requestParameters.getGender();
 	}
 
 	/**
@@ -796,7 +788,7 @@ public abstract class AdView extends FrameLayout {
 	 *            The user's gender.
 	 */
 	public void setGender(GENDER gender) {
-		this.gender = gender;
+		requestParameters.setGender(gender);
 	}
 
 	/**
@@ -812,10 +804,7 @@ public abstract class AdView extends FrameLayout {
 	 *            The value to add; this cannot be null or empty.
 	 */
 	public void addCustomKeywords(String key, String value) {
-		if (StringUtil.isEmpty(key) || (value == null)) {
-			return;
-		}
-		customKeywords.add(new Pair<String, String>(key, value));
+		requestParameters.addCustomKeywords(key, value);
 	}
 
 	/**
@@ -828,16 +817,7 @@ public abstract class AdView extends FrameLayout {
 	 *            The key to remove; this cannot be null or empty.
 	 */
 	public void removeCustomKeyword(String key) {
-		if (StringUtil.isEmpty(key))
-			return;
-
-		for (int i = 0; i < customKeywords.size(); i++) {
-			Pair<String, String> pair = customKeywords.get(i);
-			if (pair.first.equals(key)) {
-				customKeywords.remove(i);
-				break;
-			}
-		}
+		requestParameters.removeCustomKeyword(key);
 	}
 
     /**
@@ -845,7 +825,7 @@ public abstract class AdView extends FrameLayout {
      *
      */
     public void clearCustomKeywords(){
-        customKeywords.clear();
+        requestParameters.clearCustomKeywords();
     }
 
     /**
@@ -864,7 +844,7 @@ public abstract class AdView extends FrameLayout {
 	 * keywords.
 	 */
 	public ArrayList<Pair<String, String>> getCustomKeywords() {
-		return customKeywords;
+		return requestParameters.getCustomKeywords();
 	}
 
 	static class BrowserStyle {
@@ -956,7 +936,9 @@ public abstract class AdView extends FrameLayout {
                     setCreativeWidth(d.getCreativeWidth());
                     setCreativeHeight(d.getCreativeHeight());
 					display(d);
-                    printMediatedClasses();
+                    if (mAdFetcher != null) {
+                        mAdFetcher.printMediatedClasses();
+                    }
 					if (adListener != null)
 						adListener.onAdLoaded(AdView.this);
 				}
@@ -968,11 +950,13 @@ public abstract class AdView extends FrameLayout {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
-                    printMediatedClasses();
-					if (adListener != null)
-						adListener.onAdRequestFailed(AdView.this, errorCode);
-				}
-			});
+                    if (mAdFetcher != null) {
+                        mAdFetcher.printMediatedClasses();
+                    }
+                    if (adListener != null)
+                        adListener.onAdRequestFailed(AdView.this, errorCode);
+                }
+            });
 		}
 
 		@Override
@@ -1025,34 +1009,5 @@ public abstract class AdView extends FrameLayout {
 		return this.dispatcher;
 	}
 
-	LinkedList<MediatedAd> getMediatedAds() {
-		return mediatedAds;
-	}
 
-	void setMediatedAds(LinkedList<MediatedAd> mediatedAds) {
-		this.mediatedAds = mediatedAds;
-	}
-
-    // returns the first mediated ad if available
-    MediatedAd popMediatedAd() {
-        if ((mediatedAds != null) && (mediatedAds.getFirst() != null)) {
-            mediatedClasses.add(mediatedAds.getFirst().getClassName());
-            return mediatedAds.removeFirst();
-        }
-        return null;
-    }
-
-    // For logging mediated classes
-    private ArrayList<String> mediatedClasses = new ArrayList<String>();
-
-    private void printMediatedClasses() {
-        if (mediatedClasses.isEmpty()) return;
-
-        StringBuilder sb = new StringBuilder("Mediated Classes: \n");
-        for (int i = mediatedClasses.size(); i > 0; i--) {
-            sb.append(String.format("%d: %s\n", i, mediatedClasses.get(i-1)));
-        }
-        Clog.i(Clog.mediationLogTag, sb.toString());
-        mediatedClasses.clear();
-    }
 }

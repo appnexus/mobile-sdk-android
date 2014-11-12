@@ -106,6 +106,18 @@ public abstract class MediatedAdViewController {
         return true;
     }
 
+    protected TargetingParameters getTargetingParameters(){
+        AdRequester requester = this.caller_requester.get();
+        TargetingParameters tp = null;
+        if (requester != null && requester.getRequestParams() != null) {
+            tp = requester.getRequestParams().getTargetingParameters();
+        }
+        if (tp == null) {
+            tp = new TargetingParameters();
+        }
+        return tp;
+    }
+
     /**
      * Attempts to instantiate the currentAd.
      *
@@ -280,10 +292,10 @@ public abstract class MediatedAdViewController {
 
         boolean ignoreResult = false; // default is to not ignore
         if ((requester != null)
-                && (requester.getOwner() != null)
-                && (requester.getOwner().getMediatedAds() != null)) {
+//                && (requester.getOwner() != null)
+                && (requester.getMediatedAds() != null)) {
             // ignore resultCB except on the last mediated ad
-            ignoreResult = requester.getOwner().getMediatedAds().size() > 0;
+            ignoreResult = requester.getMediatedAds().size() > 0;
         }
 
         // ignore resultCB if succeeded already

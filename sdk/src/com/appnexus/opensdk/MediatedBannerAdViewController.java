@@ -49,14 +49,6 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
 
         ResultCode errorCode = null;
 
-        TargetingParameters tp = null;
-        if ((requester != null) && (requester.getOwner() != null)) {
-            tp = requester.getOwner().getTargetingParameters();
-        }
-        if (tp == null) {
-            tp = new TargetingParameters();
-        }
-
         startTimeout();
         markLatencyStart();
 
@@ -68,7 +60,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
                         currentAd.getId(),
                         currentAd.getWidth(),
                         currentAd.getHeight(),
-                        tp);
+                        getTargetingParameters());
                 mediatedDisplayable.setView(viewFromMediatedAdaptor);
             }else{
                 Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_null_activity));

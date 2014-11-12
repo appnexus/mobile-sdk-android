@@ -104,11 +104,6 @@ public class BannerAdView extends AdView {
     private BroadcastReceiver receiver;
     protected boolean shouldResetContainer;
     private boolean expandsToFitScreenWidth;
-    private int width;
-    private int height;
-    private int maximumWidth;
-    private int maximumHeight;
-    private boolean overrideMaxSize;
     private boolean measured;
     private Animator animator;
 
@@ -187,16 +182,12 @@ public class BannerAdView extends AdView {
         auto_refresh = true;
         shouldResetContainer = false;
         expandsToFitScreenWidth = false;
-        width = -1;
-        height = -1;
-        maximumWidth = -1;
-        maximumHeight = -1;
-        overrideMaxSize = false;
         measured = false;
         animator = new Animator(getContext(), TransitionType.NONE, TransitionDirection.UP, 1000);
 
         super.setup(context, attrs);
         onFirstLayout();
+        requestParameters.setMediaType(MediaType.BANNER);
         mAdFetcher.setPeriod(period);
         mAdFetcher.setAutoRefresh(auto_refresh);
     }
@@ -246,12 +237,12 @@ public class BannerAdView extends AdView {
         if (!measured || changed) {
             // Convert to dips
             float density = getContext().getResources().getDisplayMetrics().density;
-            measuredWidth = (int) ((right - left) / density + 0.5f);
-            measuredHeight = (int) ((bottom - top) / density + 0.5f);
-            if ((measuredHeight < height || measuredWidth < width)
+            int measuredWidth = (int) ((right - left) / density + 0.5f);
+            int measuredHeight = (int) ((bottom - top) / density + 0.5f);
+            if ((measuredHeight < requestParameters.getAdHeight() || measuredWidth < requestParameters.getAdHeight())
                     && measuredHeight > 0 && measuredWidth > 0) {
                 Clog.e(Clog.baseLogTag, Clog.getString(R.string.adsize_too_big,
-                        measuredWidth, measuredHeight, width, height));
+                        measuredWidth, measuredHeight, requestParameters.getAdHeight(), requestParameters.getAdHeight()));
                 // Hide the space, since no ad will be loaded due to error
                 hide();
                 // Stop any request in progress
@@ -261,7 +252,8 @@ public class BannerAdView extends AdView {
                 // next changes, and maybe the error will be amended.
                 return;
             }
-
+            requestParameters.setContainereWidth(measuredWidth);
+            requestParameters.setContainerHeight(measuredHeight);
             // Hide the adview
             if (!measured && !loadedOffscreen) {
                 hide();
@@ -616,7 +608,7 @@ public class BannerAdView extends AdView {
     @Deprecated
     public void setAdHeight(int h) {
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_height, h));
-        height = h;
+        requestParameters.setAdHeight(h);
     }
 
     /**
@@ -628,7 +620,7 @@ public class BannerAdView extends AdView {
     @Deprecated
     public void setAdWidth(int w) {
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_width, w));
-        width = w;
+        requestParameters.setAdWidth(w);
     }
 
     /**
@@ -639,8 +631,8 @@ public class BannerAdView extends AdView {
      */
     public void setAdSize(int w, int h){
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_size, w, h));
-        width=w;
-        height=h;
+        requestParameters.setAdWidth(w);
+        requestParameters.setAdHeight(h);
     }
 
     /**
@@ -652,8 +644,7 @@ public class BannerAdView extends AdView {
      */
     public void setMaxSize(int maxW, int maxH){
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_max_size, maxW, maxH));
-        maximumHeight=maxH;
-        maximumWidth=maxW;
+        requestParameters.setMaxSize(maxW, maxH);
     }
 
     /**
@@ -667,7 +658,7 @@ public class BannerAdView extends AdView {
      */
     public void setOverrideMaxSize(boolean shouldOverrideMaxSize){
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_override_max_size, shouldOverrideMaxSize));
-        this.overrideMaxSize = shouldOverrideMaxSize;
+        requestParameters.setOverrideMaxSize(shouldOverrideMaxSize);
     }
 
     /**
@@ -677,8 +668,8 @@ public class BannerAdView extends AdView {
      * @return The maximum height of the ad to be requested.
      */
     public int getMaxHeight(){
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_max_height, maximumHeight));
-        return maximumHeight;
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_max_height, requestParameters.getMaxHeight()));
+        return requestParameters.getMaxHeight();
     }
 
     /**
@@ -688,8 +679,8 @@ public class BannerAdView extends AdView {
      * @return The maximum width of the ad to be requested.
      */
     public int getMaxWidth(){
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_max_width, maximumWidth));
-        return maximumWidth;
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_max_width, requestParameters.getMaxWidth()));
+        return requestParameters.getMaxWidth();
     }
 
     /**
@@ -699,8 +690,8 @@ public class BannerAdView extends AdView {
      * @return If the maximum size will be passed instead of the ad size.
      */
     public boolean getOverrideMaxSize(){
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_override_max_size, overrideMaxSize));
-        return this.overrideMaxSize;
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_override_max_size, requestParameters.getOverrideMaxSize()));
+        return requestParameters.getOverrideMaxSize();
     }
 
     /**
@@ -709,8 +700,8 @@ public class BannerAdView extends AdView {
      * @return The height of the ad to request.
      */
     public int getAdHeight() {
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_height, height));
-        return height;
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_height, requestParameters.getAdHeight()));
+        return requestParameters.getAdHeight();
     }
 
     /**
@@ -719,8 +710,8 @@ public class BannerAdView extends AdView {
      * @return The width of the ad to request.
      */
     public int getAdWidth() {
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_width, width));
-        return width;
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_width, requestParameters.getAdWidth()));
+        return requestParameters.getAdWidth();
     }
 
     /**
