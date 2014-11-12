@@ -22,25 +22,32 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.util.LinkedList;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 @Config(emulateSdk=18)
 @RunWith(RobolectricTestRunner.class)
 public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdRequester {
-    boolean requesterFailed, requesterReceivedResponse, requesterReturnedOwner;
+    boolean requesterFailed, requesterReceivedResponse;
+    RequestParameters requestParameters;
 
     @Override
     public void setup() {
         super.setup();
         requesterFailed = false;
         requesterReceivedResponse = false;
-        requesterReturnedOwner = false;
+        requestParameters = new RequestParameters(activity);
+        requestParameters.setPlacementID("");
+        requestParameters.setAdWidth(320);
+        requestParameters.setAdHeight(50);
+        requestParameters.setMediaType(MediaType.BANNER);
     }
 
     @Override
     public void assertCallbacks(boolean success) {
-        assertTrue(requesterReturnedOwner);
+        assertTrue(requesterReceivedResponse || requesterFailed);
         assertEquals(success, requesterReceivedResponse);
         assertEquals(!success, requesterFailed);
     }
@@ -90,12 +97,6 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
         requesterReceivedResponse = true;
     }
 
-    @Override
-    public AdView getOwner() {
-        requesterReturnedOwner = true;
-        return bannerAdView;
-    }
-
     long time;
     @Override
     public void markLatencyStart() {
@@ -105,5 +106,15 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
     @Override
     public long getLatency(long now) {
         return System.currentTimeMillis()-time;
+    }
+
+    @Override
+    public LinkedList<MediatedAd> getMediatedAds() {
+        return null;
+    }
+
+    @Override
+    public RequestParameters getRequestParams() {
+        return requestParameters;
     }
 }
