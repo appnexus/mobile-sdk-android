@@ -58,7 +58,28 @@ public class FacebookBanner implements MediatedBannerAdView {
     public void destroy() {
         if (adView != null) {
             adView.destroy();
-            adView.setAdListener(null);
+            try {
+                adView.setAdListener(null);
+            }catch(NullPointerException npe){
+                //Facebook's rate limiting makes this hard to test
+                //catch npe to be safe
+            }
+            adView=null;
         }
+    }
+
+    @Override
+    public void onPause() {
+        //Facebook lacks a pause public api
+    }
+
+    @Override
+    public void onResume() {
+        //Facebook lacks a resume public api
+    }
+
+    @Override
+    public void onDestroy() {
+        destroy();
     }
 }

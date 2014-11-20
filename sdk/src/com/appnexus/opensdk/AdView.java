@@ -1009,5 +1009,22 @@ public abstract class AdView extends FrameLayout {
 		return this.dispatcher;
 	}
 
+    /**
+     * To be called by the developer when the fragment/activity's onDestroy() function is called.
+     *
+     */
+    abstract public void activityOnDestroy();
+
+    /**
+     * To be called by the developer when the fragment/activity's onPause() function is called.
+     *
+     */
+    abstract public void activityOnPause();
+
+    /**
+     * To be called by the developer when the fragment/activity's onResume() function is called.
+     *
+     */
+    abstract public void activityOnResume();
 
 }

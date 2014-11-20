@@ -42,7 +42,7 @@ import java.util.HashMap;
  *
  */
 public class MillennialMediaBanner implements MediatedBannerAdView {
-
+    MMAdView adView=null;
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
                           int width, int height, TargetingParameters targetingParameters) {
@@ -51,7 +51,7 @@ public class MillennialMediaBanner implements MediatedBannerAdView {
 
         MMSDK.initialize(activity);
 
-        MMAdView adView = new MMAdView(activity);
+        adView = new MMAdView(activity);
         adView.setApid(uid);
         adView.setWidth(width);
         adView.setHeight(height);
@@ -102,6 +102,30 @@ public class MillennialMediaBanner implements MediatedBannerAdView {
 
     @Override
     public void destroy() {
+        //No available API
+        if(adView!=null){
+            try {
+                adView.setListener(null);
+            }catch(NullPointerException npe){
+                //since the interstitials cause NPEs
+                //guard against banner as well to be safe
+            }
+            adView=null;
+        }
+    }
 
+    @Override
+    public void onPause() {
+        //No available API
+    }
+
+    @Override
+    public void onResume() {
+        //No available API
+    }
+
+    @Override
+    public void onDestroy() {
+        destroy(); //No available API
     }
 }

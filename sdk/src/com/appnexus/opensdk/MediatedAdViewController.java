@@ -474,4 +474,9 @@ public abstract class MediatedAdViewController {
         // return -1 if invalid.
         return -1;
     }
+
+    //Forwarded from the activity holding the AdView
+    abstract public void onDestroy();
+    abstract public void onPause();
+    abstract public void onResume();
 }

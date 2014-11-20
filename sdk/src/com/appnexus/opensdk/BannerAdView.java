@@ -321,6 +321,7 @@ public class BannerAdView extends AdView {
         return loadAd();
     }
 
+    private Displayable currentDisplayable;
     @Override
     protected void display(Displayable d) {
         // safety check: this should never evaluate to true
@@ -331,6 +332,7 @@ public class BannerAdView extends AdView {
             return;
         }
 
+        this.currentDisplayable=d;
         if (getTransitionType() == TransitionType.NONE)  {
             // default to show ads without animation
             // call destroy on any old views
@@ -341,6 +343,7 @@ public class BannerAdView extends AdView {
             }
 
             View displayableView = d.getView();
+
             this.addView(displayableView);
 
             // set the displayable view's gravity inside AdView
@@ -865,6 +868,28 @@ public class BannerAdView extends AdView {
     @Override
     boolean isInterstitial() {
         return false;
+    }
+
+    @Override
+    public void activityOnDestroy() {
+        if(this.currentDisplayable!=null){
+            this.currentDisplayable.onDestroy();
+            this.currentDisplayable=null;
+        }
+    }
+
+    @Override
+    public void activityOnPause() {
+        if(this.currentDisplayable!=null){
+            this.currentDisplayable.onPause();
+        }
+    }
+
+    @Override
+    public void activityOnResume() {
+        if(this.currentDisplayable!=null){
+            this.currentDisplayable.onResume();
+        }
     }
 
     /**

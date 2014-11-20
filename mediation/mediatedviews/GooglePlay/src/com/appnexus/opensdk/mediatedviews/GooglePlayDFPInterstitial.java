@@ -75,7 +75,6 @@ public class GooglePlayDFPInterstitial implements MediatedInterstitialAdView {
 
     private PublisherAdRequest buildRequest(TargetingParameters targetingParameters) {
         PublisherAdRequest.Builder builder = new PublisherAdRequest.Builder();
-
         switch (targetingParameters.getGender()) {
             case UNKNOWN:
                 builder.setGender(PublisherAdRequest.GENDER_UNKNOWN);
@@ -107,6 +106,25 @@ public class GooglePlayDFPInterstitial implements MediatedInterstitialAdView {
 
     @Override
     public void destroy() {
+        if(interstitialAd!=null) {
+            interstitialAd.setAdListener(null);
+            interstitialAd = null;
+            adListener=null;
+        }
+    }
 
+    @Override
+    public void onPause() {
+
+    }
+
+    @Override
+    public void onResume() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+        destroy();
     }
 }

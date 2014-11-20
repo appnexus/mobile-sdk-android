@@ -23,5 +23,7 @@ interface MediatedAdView {
      * be cleaned up.
      */
     public void destroy();
-
+    public void onPause();
+    public void onResume();
+    public void onDestroy();
 }

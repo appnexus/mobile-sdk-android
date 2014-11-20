@@ -111,6 +111,27 @@ public class MillennialMediaInterstitial implements MediatedInterstitialAdView {
 
     @Override
     public void destroy() {
+        iad=null;
+        try {
+            iad.setListener(null);
+        }catch (NullPointerException npe){
+            //Catch NPE until mmedia updates SDK to handle nullness
+        }
+        mmListener=null;
+    }
 
+    @Override
+    public void onPause() {
+        // No public API call available
+    }
+
+    @Override
+    public void onResume() {
+        // No public API call available
+    }
+
+    @Override
+    public void onDestroy() {
+        destroy();
     }
 }

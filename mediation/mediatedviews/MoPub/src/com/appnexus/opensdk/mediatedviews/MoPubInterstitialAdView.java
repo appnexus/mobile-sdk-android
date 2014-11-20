@@ -36,10 +36,11 @@ import com.mopub.mobileads.MoPubInterstitial;
 public class MoPubInterstitialAdView implements MediatedInterstitialAdView {
 
     private MoPubInterstitial interstitialAd;
+    private MoPubListener mpListener;
 
     @Override
     public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid, TargetingParameters targetingParameters) {
-        MoPubListener mpListener = new MoPubListener(mIC, this.getClass().getSimpleName());
+        mpListener = new MoPubListener(mIC, this.getClass().getSimpleName());
 
         interstitialAd = new MoPubInterstitial(activity, uid);
         interstitialAd.setInterstitialAdListener(mpListener);
@@ -81,7 +82,25 @@ public class MoPubInterstitialAdView implements MediatedInterstitialAdView {
     @Override
     public void destroy() {
         if (interstitialAd != null) {
+            interstitialAd.setInterstitialAdListener(null);
+            mpListener=null;
             interstitialAd.destroy();
+            interstitialAd=null;
         }
+    }
+
+    @Override
+    public void onPause() {
+        //Mopub lacks a pause public api
+    }
+
+    @Override
+    public void onResume() {
+        //Mopub lacks a resume public api
+    }
+
+    @Override
+    public void onDestroy() {
+        destroy();
     }
 }

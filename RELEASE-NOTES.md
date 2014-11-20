@@ -2,6 +2,9 @@
 + MS-751 by default the android SDK now uses a modal dialog box loading animation during conversion loading. 
 + MS-846 Removed color attribute from XML interstitial setup because of conflicts with google lollipop libs
 + MS-855 refactor of AdFethcer and AdView 
++ MS-876 Add onActivityResume/Pause/Destroy to AdView, to be called by dev
++ MS-876 Fix DFP memory leak
++ MS-880 update mediated SDKs, Mopub 3.0.0->3.2.0, Facebook 3.18->3.20, Amazon 5.4.78->5.4.192 
 
 ## RC 1.20
 

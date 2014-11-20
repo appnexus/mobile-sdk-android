@@ -70,7 +70,28 @@ public class FacebookInterstitial implements MediatedInterstitialAdView {
     public void destroy() {
         if (interstitialAd != null) {
             interstitialAd.destroy();
-            interstitialAd.setAdListener(null);
+            try {
+                interstitialAd.setAdListener(null);
+            }catch(NullPointerException npe){
+                //Facebook's rate limiting makes this hard to test
+                //catch npe to be safe
+            }
+            interstitialAd=null;
         }
+    }
+
+    @Override
+    public void onPause() {
+        //Facebook lacks a pause api
+    }
+
+    @Override
+    public void onResume() {
+        //Facebook lacks a resume api
+    }
+
+    @Override
+    public void onDestroy() {
+        destroy();
     }
 }

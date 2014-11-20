@@ -97,5 +97,27 @@ public class AmazonInterstitial implements MediatedInterstitialAdView {
 
     @Override
     public void destroy() {
+        try{
+            iad.setListener(null);
+        }catch(NullPointerException npe){
+            //Catch NPE until amazon updates SDK to handle nullness
+        }
+        iad=null;
+        amazonListener=null;
+    }
+
+    @Override
+    public void onPause() {
+        //No public api
+    }
+
+    @Override
+    public void onResume() {
+        //No public api
+    }
+
+    @Override
+    public void onDestroy() {
+        destroy();
     }
 }
