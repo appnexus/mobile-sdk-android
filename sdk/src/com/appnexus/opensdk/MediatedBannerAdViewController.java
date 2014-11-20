@@ -28,7 +28,7 @@ import com.appnexus.opensdk.utils.Clog;
  */
 
 public class MediatedBannerAdViewController extends MediatedAdViewController {
-
+    private MediatedBannerAdViewController out = null;
     static MediatedBannerAdViewController create(
             Activity activity, AdRequester requester,
             MediatedAd mediatedAd, AdViewListener listener) {
@@ -53,7 +53,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
         markLatencyStart();
 
         try {
-            if(activity!=null){
+            if(activity!=null && !destroyed){
                 View viewFromMediatedAdaptor = ((MediatedBannerAdView) mAV).requestAd(this,
                         activity,
                         currentAd.getParam(),
@@ -85,4 +85,26 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
         }
     }
 
+    boolean destroyed=false;
+    @Override
+    public void onDestroy() {
+        destroyed=true;
+        if(mAV!=null) {
+            mAV.onDestroy();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        if(mAV!=null) {
+            mAV.onPause();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        if(mAV!=null){
+            mAV.onResume();
+        }
+    }
 }

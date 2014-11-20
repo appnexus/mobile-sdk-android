@@ -86,17 +86,40 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
 
     @Override
     public void destroy() {
-        if (adView != null) adView.destroy();
+        if (adView != null){
+            adView.destroy();
+            adView.setAdListener(null);
+        }
         if ((adViewActivity != null) && (activityListener != null)) {
             if (Build.VERSION.SDK_INT > 13) {
                 adViewActivity.getApplication().unregisterActivityLifecycleCallbacks(activityListener);
             }
         }
+        adListener=null;
+        adView=null;
+    }
+
+    @Override
+    public void onPause() {
+        if(adView!=null){
+            adView.pause();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        if(adView!=null) {
+            adView.resume();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        destroy();
     }
 
     private PublisherAdRequest buildRequest(DFBBannerSSParameters ssparm, TargetingParameters targetingParameters) {
         PublisherAdRequest.Builder builder = new PublisherAdRequest.Builder();
-
         if ((ssparm.test_device != null) && (ssparm.test_device.length() > 0)) {
             adListener.printToClog("test device " + ssparm.test_device);
             builder.addTestDevice(ssparm.test_device);
@@ -177,6 +200,7 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
         public String test_device;
         public boolean isSmartBanner;
     }
+
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     private void registerActivityCallbacks() {

@@ -28,4 +28,10 @@ interface Displayable {
     public int getCreativeWidth();
 
     public int getCreativeHeight();
+
+    public void onPause();
+
+    public void onResume();
+
+    public void onDestroy();
 }

@@ -76,7 +76,7 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
     }
 
     void show() {
-        if (mAV != null) {
+        if (mAV != null && !destroyed) {
             ((MediatedInterstitialAdView) mAV).show();
         }
     }
@@ -85,4 +85,26 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
         return ((MediatedInterstitialAdView) mAV).isReady();
     }
 
+    boolean destroyed=false;
+    @Override
+    public void onDestroy() {
+        destroyed=true;
+        if(mAV!=null) {
+            mAV.onDestroy();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        if(mAV!=null) {
+            mAV.onPause();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        if(mAV!=null) {
+            mAV.onResume();
+        }
+    }
 }

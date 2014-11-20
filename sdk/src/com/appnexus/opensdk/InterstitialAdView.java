@@ -215,9 +215,15 @@ public class InterstitialAdView extends AdView {
         if (lastDisplayable != null) {
             lastDisplayable.destroy();
         }
-        lastDisplayable = d;
-
-        adQueue.add(new Pair<Long, Displayable>(System.currentTimeMillis(), d));
+        //Prevent responses from reaching this InterstitialAdView if it has been destroyed already
+        if(!destroyed && !paused) {
+            lastDisplayable = d;
+            adQueue.add(new Pair<Long, Displayable>(System.currentTimeMillis(), d));
+        }else{
+            if(d!=null){
+                d.destroy();
+            }
+        }
     }
 
     void interacted() {
@@ -316,8 +322,8 @@ public class InterstitialAdView extends AdView {
             }
         }
 
-        // otherwise, launch our adActivity
-        if (validAdExists) {
+        // otherwise, launch our adActivity, unless this view has already been destroyed
+        if (validAdExists && !destroyed) {
             Class<?> activity_clz = AdActivity.getActivityClass();
             Intent i = new Intent(getContext(), activity_clz);
             i.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE,
@@ -449,6 +455,29 @@ public class InterstitialAdView extends AdView {
     public int getCreativeHeight(){
         // override creative Height for interstitial ad
         return -1;
+    }
+
+    //Since interstitials launch activities, these functions
+    //don't need to pass activity events to child webviews.
+    //Instead, here, they serve as a way to prevent mediated
+    //views from being launched by an already-destroyed
+    //parent activity.
+    protected boolean destroyed=false;
+    protected boolean paused=false;
+    @Override
+    public void activityOnDestroy() {
+        destroyed=true;
+    }
+
+    @Override
+    public void activityOnPause() {
+        paused=true;
+
+    }
+
+    @Override
+    public void activityOnResume() {
+        paused=false;
     }
 
     Queue<Pair<Long, Displayable>> getAdQueue() {

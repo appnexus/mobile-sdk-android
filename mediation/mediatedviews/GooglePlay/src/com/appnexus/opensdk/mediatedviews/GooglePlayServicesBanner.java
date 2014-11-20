@@ -86,12 +86,36 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
 
     @Override
     public void destroy() {
-        if (adView != null) adView.destroy();
+        if (adView != null){
+            adView.destroy();
+            adView.setAdListener(null);
+        }
         if ((adViewActivity != null) && (activityListener != null)) {
             if (Build.VERSION.SDK_INT > 13) {
                 adViewActivity.getApplication().unregisterActivityLifecycleCallbacks(activityListener);
             }
         }
+        adListener=null;
+        adView=null;
+    }
+
+    @Override
+    public void onPause() {
+        if(adView!=null){
+            adView.pause();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        if(adView!=null){
+            adView.resume();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        destroy();
     }
 
     private AdRequest buildRequest(TargetingParameters targetingParameters) {

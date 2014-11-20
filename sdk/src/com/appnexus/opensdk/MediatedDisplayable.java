@@ -62,6 +62,22 @@ class MediatedDisplayable implements Displayable {
         return -1;
     }
 
+    @Override
+    public void onPause() {
+        mAVC.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        mAVC.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        mAVC.onDestroy();
+        this.destroy();
+    }
+
     void setView(View view) {
         this.view = view;
     }

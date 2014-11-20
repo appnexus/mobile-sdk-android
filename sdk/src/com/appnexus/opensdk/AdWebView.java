@@ -451,6 +451,11 @@ class AdWebView extends WebView implements Displayable {
         return this.creativeHeight;
     }
 
+    @Override
+    public void onDestroy() {
+        destroy();
+    }
+
     // MRAID code
 
     private void handleVisibilityChangedEvent(int windowVisibility, int visibility) {

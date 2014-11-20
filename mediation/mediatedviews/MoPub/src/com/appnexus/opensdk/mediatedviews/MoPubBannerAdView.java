@@ -38,11 +38,11 @@ import com.mopub.mobileads.MoPubView;
  */
 public class MoPubBannerAdView implements MediatedBannerAdView {
     private MoPubView adView;
-
+    private MoPubListener mpListener;
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
                           int width, int height, TargetingParameters targetingParameters) {
-        MoPubListener mpListener = new MoPubListener(mBC, this.getClass().getSimpleName());
+        mpListener = new MoPubListener(mBC, this.getClass().getSimpleName());
         adView = new MoPubView(activity);
         adView.setAdUnitId(uid);
         adView.setBannerAdListener(mpListener);
@@ -68,8 +68,26 @@ public class MoPubBannerAdView implements MediatedBannerAdView {
     @Override
     public void destroy() {
         if (adView != null) {
+            adView.setBannerAdListener(null);
+            mpListener=null;
             adView.destroy();
+            adView=null;
         }
+    }
+
+    @Override
+    public void onPause() {
+        //Mopub lacks a pause public api
+    }
+
+    @Override
+    public void onResume() {
+        //Mopub lacks a resume public api
+    }
+
+    @Override
+    public void onDestroy() {
+        destroy();
     }
 
 }

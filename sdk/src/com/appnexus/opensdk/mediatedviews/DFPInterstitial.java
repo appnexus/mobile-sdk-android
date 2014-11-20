@@ -59,6 +59,28 @@ public class DFPInterstitial implements MediatedInterstitialAdView {
     public void destroy() {
         if (adView != null) {
             adView.destroy();
+            adView=null;
+        }
+    }
+
+    @Override
+    public void onPause() {
+        if(adView!=null){
+            adView.onPause();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        if(adView!=null){
+            adView.onResume();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        if(adView!=null){
+            adView.onDestroy();
         }
     }
 }

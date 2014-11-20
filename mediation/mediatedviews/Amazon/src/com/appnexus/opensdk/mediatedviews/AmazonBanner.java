@@ -39,6 +39,7 @@ import com.appnexus.opensdk.TargetingParameters;
 public class AmazonBanner implements MediatedBannerAdView  {
     MediatedBannerAdViewController mediatedBannerAdViewController = null;
     AmazonListener amazonListener = null;
+    AdLayout adView=null;
     /**
      * Called by the AN SDK to request a Banner ad from the Amazon SDK. .
      *
@@ -52,7 +53,7 @@ public class AmazonBanner implements MediatedBannerAdView  {
      */
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
-        AdLayout adView = new AdLayout(activity, new AdSize(width, height));
+        adView = new AdLayout(activity, new AdSize(width, height));
 
         this.mediatedBannerAdViewController = mBC;
 
@@ -81,7 +82,32 @@ public class AmazonBanner implements MediatedBannerAdView  {
      */
     @Override
     public void destroy() {
+        if(adView!=null){
+            try {
+                adView.setListener(null);
+            }catch(NullPointerException npe){
+                //This only seems to happen in interstitials
+                //catch to be safe
+            }
+            adView.destroy();
+            amazonListener=null;
+            adView=null;
+        }
+    }
 
+    @Override
+    public void onPause() {
+        //Amazon has no onPause function!
+    }
+
+    @Override
+    public void onResume() {
+        //Amazon has no onResume function!
+    }
+
+    @Override
+    public void onDestroy() {
+        destroy();
     }
 
 }
