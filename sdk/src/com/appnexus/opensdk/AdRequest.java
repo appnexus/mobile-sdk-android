@@ -193,8 +193,13 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         }
 
         if (lastLocation != null) {
-            lat = "" + lastLocation.getLatitude();
-            lon = "" + lastLocation.getLongitude();
+            if (SDKSettings.getLocationDecimalDigits() == -1) {
+                lat = "" + lastLocation.getLatitude();
+                lon = "" + lastLocation.getLongitude();
+            } else {
+                lat = String.format("%." + SDKSettings.getLocationDecimalDigits() + "f", lastLocation.getLatitude());
+                lon = String.format("%." + SDKSettings.getLocationDecimalDigits() + "f", lastLocation.getLongitude());
+            }
             locDataPrecision = "" + lastLocation.getAccuracy();
             //Don't report location data from the future
             locDataAge = "" + Math.max(0, (System.currentTimeMillis() - lastLocation.getTime()));
