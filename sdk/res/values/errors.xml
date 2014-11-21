@@ -33,8 +33,8 @@
 	<string formatted="false" name="adsize_too_big">E103: You requested an Ad larger than the measured ad space. Ad space size: %dx%d, request size: %dx%d</string>
 	<string formatted="false" name="screen_off_stop">Stopped ad requests since screen is off</string>
 	<string formatted="false" name="screen_on_start">Starting ad requests since screen is on</string>
-	<string formatted="false" name="start">AdView.start()</string>
-	<string formatted="false" name="stop">AdView.stop()</string>
+	<string formatted="false" name="start">Start fetching an ad</string>
+	<string formatted="false" name="stop">Stop fetching ads</string>
 	<string formatted="false" name="found_n_in_xml">Found %d variables to read from xml</string>
 	<string formatted="false" name="placement_id">Placement id:%s</string>
 	<string formatted="false" name="xml_set_period">Auto refresh interval set to %dms in xml</string>

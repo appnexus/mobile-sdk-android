@@ -130,7 +130,7 @@ public abstract class AdView extends FrameLayout {
         // Some AdMob creatives won't load unless we set their parent's viewgroup's padding to 0-0-0-0
         setPadding(0,0,0,0);
 		// Make an AdFetcher - Continue the creation pass
-		mAdFetcher = new AdFetcher(this);
+		mAdFetcher = new ViewAdFetcher(this);
 		// Load user variables only if attrs isn't null
 		if (attrs != null)
 			loadVariablesFromXML(context, attrs);

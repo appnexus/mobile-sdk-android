@@ -33,25 +33,25 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-class AdFetcher implements AdRequester {
+abstract class AdFetcher implements AdRequester {
     private ScheduledExecutorService tasker;
-    private final AdView owner; // assume not null
     private int period = -1;
     private boolean autoRefresh;
     private final RequestHandler handler;
     private boolean shouldReset = false;
     private long lastFetchTime = -1;
     private long timePausedAt = -1;
+    private RequestParameters requestParameters;
     private AdRequest adRequest;
     private LinkedList<MediatedAd> mediatedAds;
 
     // Fires requests whenever it receives a message
-    public AdFetcher(AdView owner) {
-        this.owner = owner;
+    public AdFetcher(RequestParameters requestParams) {
+        this.requestParameters = requestParams;
         handler = new RequestHandler(this);
     }
 
-    void setPeriod(int period) {
+    protected void setPeriod(int period) {
         this.period = period;
         if (tasker != null)
             shouldReset = true;
@@ -61,7 +61,7 @@ class AdFetcher implements AdRequester {
         return period;
     }
 
-    void stop() {
+    protected void stop() {
         if (adRequest != null) {
             adRequest.cancel(true);
             adRequest = null;
@@ -82,7 +82,7 @@ class AdFetcher implements AdRequester {
 
     }
 
-    void start() {
+    protected void start() {
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.start));
         if (tasker != null) {
             // only print log, don't call onAdFailed callback
@@ -93,7 +93,7 @@ class AdFetcher implements AdRequester {
         makeTasker();
     }
 
-    private void makeTasker() {
+    protected void makeTasker() {
         // Start a Scheduler to execute recurring tasks
         tasker = Executors
                 .newScheduledThreadPool(Settings.FETCH_THREAD_COUNT);
@@ -134,13 +134,13 @@ class AdFetcher implements AdRequester {
         }
     }
 
-    void clearDurations() {
+    protected void clearDurations() {
         lastFetchTime = -1;
         timePausedAt = -1;
 
     }
 
-    private class MessageRunnable implements Runnable {
+    protected class MessageRunnable implements Runnable {
 
         @Override
         public void run() {
@@ -152,9 +152,11 @@ class AdFetcher implements AdRequester {
 
     }
 
+    protected abstract boolean isReadyToStart();
+
     // Create a handler which will receive the AsyncTasks and spawn them from
     // the main thread.
-    static class RequestHandler extends Handler {
+    protected static class RequestHandler extends Handler {
         private final WeakReference<AdFetcher> mFetcher;
 
         RequestHandler(AdFetcher f) {
@@ -170,7 +172,7 @@ class AdFetcher implements AdRequester {
             // this message
             AdFetcher fetcher = mFetcher.get();
             if (fetcher == null
-                    || !fetcher.owner.isReadyToStart())
+                    || !fetcher.isReadyToStart())
                 return;
 
             // If we need to reset, reset.
@@ -201,11 +203,11 @@ class AdFetcher implements AdRequester {
         }
     }
 
-    boolean getAutoRefresh() {
+    protected boolean getAutoRefresh() {
         return autoRefresh;
     }
 
-    void setAutoRefresh(boolean autoRefresh) {
+    protected void setAutoRefresh(boolean autoRefresh) {
         this.autoRefresh = autoRefresh;
         // Restart with new autorefresh setting, but only if auto-refresh was
         // set to true
@@ -222,77 +224,10 @@ class AdFetcher implements AdRequester {
     //
 
     @Override
-    public void failed(AdRequest request) {
-        // AdRequest failed
-        owner.fail(ResultCode.NETWORK_ERROR);
-    }
+    public abstract void failed(AdRequest request);
 
     @Override
-    public void onReceiveResponse(final AdResponse response) {
-        this.owner.handler.post(new Runnable() {
-            @Override
-            public void run() {
-                boolean responseHasAds = (response != null) && response.containsAds();
-                boolean ownerHasAds = (getMediatedAds() != null) && !getMediatedAds().isEmpty();
-
-                // no ads in the response and no old ads means no fill
-                if (!responseHasAds && !ownerHasAds) {
-                    Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
-                    owner.fail(ResultCode.UNABLE_TO_FILL);
-                    return;
-                }
-
-                // If we're about to dispatch a creative to a banner
-                // that has been resized by ad stretching, reset its size
-                if (owner.isBanner()) {
-                    BannerAdView bav = (BannerAdView) owner;
-                    bav.resetContainerIfNeeded();
-                }
-
-                if (responseHasAds) {
-                    // if non-mediated ad is overriding the list,
-                    // this will be null and skip the loop for mediation
-                    setMediatedAds(response.getMediatedAds());
-                }
-
-                // create output - either mediated or AdWebView
-
-                // check if most recent `mediatedAds` is non-empty
-                if ((getMediatedAds() != null) && !getMediatedAds().isEmpty()) {
-                    MediatedAd mediatedAd = popMediatedAd();
-                    if ((mediatedAd != null) && (response != null)) {
-                        mediatedAd.setExtras(response.getExtras());
-                    }
-                    // mediated
-                    if (owner.isBanner()) {
-                        MediatedBannerAdViewController.create(
-                                (Activity) owner.getContext(),
-                                owner.mAdFetcher,
-                                mediatedAd,
-                                owner.getAdDispatcher());
-                    } else if (owner.isInterstitial()) {
-                        MediatedInterstitialAdViewController.create(
-                                (Activity) owner.getContext(),
-                                owner.mAdFetcher,
-                                mediatedAd,
-                                owner.getAdDispatcher());
-                    }
-                } else if (response != null) { // null-check response in case
-                    // standard ads
-                    AdWebView output = new AdWebView(owner);
-                    output.loadAd(response);
-
-                    if (owner.isBanner()) {
-                        BannerAdView bav = (BannerAdView) owner;
-                        if (bav.getExpandsToFitScreenWidth()) {
-                            bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), output);
-                        }
-                    }
-                    owner.getAdDispatcher().onAdLoaded(output);
-                }
-            }
-        });
-    }
+    public abstract void onReceiveResponse(AdResponse response);
 
     /*
     Running Total Latency
@@ -338,8 +273,9 @@ class AdFetcher implements AdRequester {
 
     @Override
     public RequestParameters getRequestParams() {
-        return owner.requestParameters;
+        return requestParameters;
     }
+
 
     void setMediatedAds(LinkedList<MediatedAd> mediatedAds) {
         this.mediatedAds = mediatedAds;

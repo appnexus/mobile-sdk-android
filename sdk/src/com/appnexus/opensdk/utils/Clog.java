@@ -164,6 +164,7 @@ public class Clog {
     public static String jsLogTag = baseLogTag + "-JS";
     public static String mraidLogTag = baseLogTag + "-MRAID";
     public static String browserLogTag = baseLogTag + "-APPBROWSER";
+    public static String nativeLogTag = baseLogTag + "-NATIVE";
 
     public static void setErrorContext(Context c) {
         Clog.clog_context = new WeakReference<Context>(c);

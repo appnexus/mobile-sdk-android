@@ -1,0 +1,209 @@
+/*
+ *    Copyright 2014 APPNEXUS INC
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
+package com.appnexus.opensdk.mediatednativead;
+
+import android.graphics.Bitmap;
+import android.os.Looper;
+import android.os.Handler;
+import android.view.View;
+
+import com.appnexus.opensdk.NativeAdEventListener;
+import com.appnexus.opensdk.NativeAdResponse;
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Settings;
+import com.facebook.ads.NativeAd;
+
+import java.util.HashMap;
+import java.util.List;
+
+public class FBNativeAdResponse implements NativeAdResponse {
+    private String title;
+    private String description;
+    private String imageUrl;
+    private String iconUrl;
+    private String callToAction;
+    private Bitmap coverImage;
+    private Bitmap icon;
+    private NativeAd nativeAd;
+    private String socialContext;
+    private Rating rating;
+    private HashMap<String, String> nativeElements = new HashMap<String, String>();
+    private boolean expired = false;
+    private boolean registered = false;
+    private NativeAdEventListener listener;
+    private Runnable runnable;
+
+    public FBNativeAdResponse(NativeAd ad) {
+        this.nativeAd = ad;
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (coverImage != null) {
+                    coverImage.recycle();
+                    coverImage = null;
+                }
+                if (icon != null) {
+                    icon.recycle();
+                    icon = null;
+                }
+                listener = null;
+                expired = true;
+                if (nativeAd != null) {
+                    nativeAd.setAdListener(null);
+                    nativeAd.destroy();
+                    nativeAd = null;
+                }
+            }
+        };
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(runnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
+    }
+
+    @Override
+    public Network getNetworkIdentifier() {
+        return Network.FACEBOOK;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    @Override
+    public Bitmap getImage() {
+        return coverImage;
+    }
+
+    @Override
+    public void setImage(Bitmap bitmap) {
+        this.coverImage = bitmap;
+    }
+
+    @Override
+    public String getIconUrl() {
+        return iconUrl;
+    }
+
+    @Override
+    public Bitmap getIcon() {
+        return icon;
+    }
+
+    @Override
+    public void setIcon(Bitmap icon) {
+        this.icon = icon;
+    }
+
+    @Override
+    public String getCallToAction() {
+        return callToAction;
+    }
+
+    @Override
+    public HashMap<String, String> getNativeElements() {
+        return nativeElements;
+    }
+
+    @Override
+    public String getSocialContext() {
+        return null;
+    }
+
+    @Override
+    public Rating getAdStarRating() {
+        return null;
+    }
+
+    boolean setResources() {
+        if (nativeAd!= null && nativeAd.isAdLoaded()) {
+            title = nativeAd.getAdTitle();
+            description = nativeAd.getAdBody();
+            if (nativeAd.getAdIcon() != null) {
+                iconUrl = nativeAd.getAdIcon().getUrl();
+            }
+            if (nativeAd.getAdCoverImage() != null) {
+                imageUrl = nativeAd.getAdCoverImage().getUrl();
+            }
+            callToAction = nativeAd.getAdCallToAction();
+            socialContext = nativeAd.getAdSocialContext();
+            if (nativeAd.getAdStarRating() != null) {
+                rating = new Rating(nativeAd.getAdStarRating().getValue(),
+                        nativeAd.getAdStarRating().getScale());
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean hasExpired() {
+        return expired;
+    }
+
+    @Override
+    public boolean registerView(View view, NativeAdEventListener listener) {
+        if (nativeAd != null && !registered) {
+            nativeAd.registerViewForInteraction(view);
+            registered = true;
+        }
+        this.listener = listener;
+        return registered;
+    }
+
+    @Override
+    public boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
+        if (nativeAd != null && !registered) {
+            nativeAd.registerViewForInteraction(view, clickables);
+            registered = true;
+        }
+        this.listener = listener;
+        return registered;
+    }
+
+    NativeAdEventListener getListener() {
+        return listener;
+    }
+
+
+    @Override
+    public void unregisterViews() {
+        if (hasExpired()) {
+            Clog.d(Clog.mediationLogTag, "This NativeAdResponse has expired.");
+        }
+        if (nativeAd != null) {
+            nativeAd.unregisterView();
+        }
+        destroy();
+    }
+
+    @Override
+    public void destroy() {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.removeCallbacks(runnable);
+        handler.post(runnable);
+    }
+}

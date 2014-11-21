@@ -5,6 +5,7 @@
 + MS-876 Add onActivityResume/Pause/Destroy to AdView, to be called by dev
 + MS-876 Fix DFP memory leak
 + MS-880 update mediated SDKs, Mopub 3.0.0->3.2.0, Facebook 3.18->3.20, Amazon 5.4.78->5.4.192, GooglePlay->6.1.11 
++ MS-842 native api public interface
 
 ## RC 1.20
 

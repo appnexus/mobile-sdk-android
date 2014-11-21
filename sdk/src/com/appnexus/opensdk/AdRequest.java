@@ -355,10 +355,13 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         }
         nonet = nonetSB.toString();
 
-        if ((maxHeight <= 0 || maxWidth <= 0) &&
-                (width <= 0 || height <= 0)) {
-            Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.no_size_info));
-            fail();
+        if (!media_type.equals(MediaType.NATIVE)) {
+            if ((maxHeight <= 0 || maxWidth <= 0) &&
+                    (width <= 0 || height <= 0)) {
+                Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.no_size_info));
+                fail();
+                this.cancel(true);
+            }
         }
     }
 

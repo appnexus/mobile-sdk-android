@@ -31,5 +31,6 @@
     <string name="allow">Allow</string>
     <string name="deny">Deny</string>
     <string name="loading">Loading</string>
+    <string name="native_tag">View has been registered.</string>
 
 </resources>
