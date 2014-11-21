@@ -38,4 +38,19 @@ public class NoFillView implements MediatedBannerAdView {
     public void destroy() {
         didDestroy = true;
     }
+
+    @Override
+    public void onPause() {
+
+    }
+
+    @Override
+    public void onResume() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+
+    }
 }

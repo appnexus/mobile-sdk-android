@@ -1,0 +1,10 @@
+<!-- Place in ~/.m2/ -->
+<settings>
+	<servers>
+		<server>
+			<id>ossrh</id>
+			<username>your-jira-id</username>
+			<password>your-jira-pwd</password>
+		</server>
+	</servers>
+</settings>

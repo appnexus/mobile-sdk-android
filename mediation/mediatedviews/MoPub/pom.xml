@@ -1,0 +1,129 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<!-- SonaType Requirements -->
+	<name>AppNexus Android SDK: MoPub Mediation Adapter</name>
+	<description>AppNexus's Android Advertising Libraries: Mediation adapter for MoPub</description>
+	<url>https://wiki.appnexus.com/display/sdk/Mobile+SDKs?src=search#MobileSDKs-Android</url>
+	<scm>
+		<connection>scm:git:git@github.com:appnexus/mobile-sdk-android.git</connection>
+		<developerConnection>scm:git:git@github.com:appnexus/mobile-sdk-android.git</developerConnection>
+		<url>git@github.com:appnexus/mobile-sdk-android.git</url>
+	</scm>
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<name>AppNexus Mobile Team</name>
+			<email>sdk@appnexus.com</email>
+			<organization>AppNexus, Inc.</organization>
+			<organizationUrl>http://www.appnexus.com</organizationUrl>
+		</developer>
+	</developers>
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.appnexus.opensdk.mediatedviews</groupId>
+	<artifactId>appnexus-mopub-mediation</artifactId>
+	<version>2.0-3.2.0</version>
+	<packaging>aar</packaging>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+	<dependencies>
+		<!-- See https://github.com/mosabua/maven-android-sdk-deployer for information on how to get the android 5.0 sdk loaded -->
+		<dependency>
+			<groupId>android</groupId>
+			<artifactId>android</artifactId>
+			<version>5.0_r1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.mopub</groupId>
+			<artifactId>mobileads</artifactId>
+			<version>3.2.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/libs/mopub-sdk-3.2.0.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>com.appnexus.opensdk</groupId>
+			<artifactId>appnexus-sdk</artifactId>
+			<version>2.0</version>
+			<scope>compile</scope>
+			<type>aar</type>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>res</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
+				<artifactId>android-maven-plugin</artifactId>
+				<version>4.0.0-rc.2</version>
+				<configuration>
+					<sdk>
+						<path>${env.ANDROID_HOME}</path>
+						<platform>21</platform>
+					</sdk>
+					<release>true</release>
+					<sourceManifestFile>${project.basedir}/AndroidManifest.xml</sourceManifestFile>
+					<androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
+					<resourceDirectory>${project.basedir}/res/</resourceDirectory>
+					<nativeLibrariesDirectory>${project.basedir}/libs/</nativeLibrariesDirectory>
+				</configuration>
+				<extensions>true</extensions>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.5</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>false</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<properties>
+		<project.build.srouceEncoding>UTF-8</project.build.srouceEncoding>
+	</properties>
+
+</project>
