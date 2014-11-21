@@ -61,6 +61,9 @@ public class MediatedNativeAdController {
             this.adFetcher = new WeakReference<NativeAdFetcher>(adFetcher);
             this.listener = listener;
 
+            startTimeout();
+            markLatencyStart();
+
             try {
                 Class<?> c = Class.forName(currentAd.getClassName());
                 MediatedNativeAd ad = (MediatedNativeAd) c.newInstance();
@@ -163,8 +166,8 @@ public class MediatedNativeAdController {
         // don't call the listener here. the requester will call the listener
         // at the end of the waterfall
         fireResultCB(reason);
-        finishController();
         hasFailed = true;
+        finishController();
     }
 
 
@@ -319,7 +322,16 @@ public class MediatedNativeAdController {
 
             if (nac == null || nac.hasFailed) return;
             Clog.w(Clog.mediationLogTag, Clog.getString(R.string.mediation_timeout));
-            nac.onAdFailed(ResultCode.INTERNAL_ERROR);
+            try {
+                nac.onAdFailed(ResultCode.INTERNAL_ERROR);
+            } catch (IllegalArgumentException e) {
+                // catch exception for unregisterReceiver() of destroy() call
+            } finally {
+                nac.response = null;
+                nac.listener = null;
+                nac.currentAd = null;
+                nac.adFetcher.clear();
+            }
         }
     }
     // if the mediated network fails to call us within the timeout period, fail

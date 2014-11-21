@@ -232,8 +232,8 @@ public abstract class MediatedAdViewController {
         // don't call the listener here. the requester will call the listener
         // at the end of the waterfall
         fireResultCB(reason);
-        finishController();
         hasFailed = true;
+        finishController();
     }
 
     /**
@@ -421,7 +421,15 @@ public abstract class MediatedAdViewController {
             
             if (avc == null || avc.hasFailed) return;
             Clog.w(Clog.mediationLogTag, Clog.getString(R.string.mediation_timeout));
-            avc.onAdFailed(ResultCode.INTERNAL_ERROR);
+            try {
+                avc.onAdFailed(ResultCode.INTERNAL_ERROR);
+            } catch (IllegalArgumentException e) {
+                // catch exception for unregisterReceiver() when destroying views
+            } finally {
+                avc.listener = null;
+                avc.mAV = null;
+                avc.currentAd = null;
+            }
         }
     }
     // if the mediated network fails to call us within the timeout period, fail

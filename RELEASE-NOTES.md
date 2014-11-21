@@ -1,4 +1,5 @@
-## RC 1.21
+## RC 2.0
++ MS-885 Facebook adapter exception handling 
 + MS-751 by default the android SDK now uses a modal dialog box loading animation during conversion loading. 
 + MS-846 Removed color attribute from XML interstitial setup because of conflicts with google lollipop libs
 + MS-855 refactor of AdFethcer and AdView 
