@@ -37,7 +37,7 @@ public class AdFetcherTest extends BaseRoboTest {
     @Override
     public void setup() {
         super.setup();
-        adFetcher = new AdFetcher(bannerAdView);
+        adFetcher = new ViewAdFetcher(bannerAdView);
     }
 
     @Override
