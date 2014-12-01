@@ -1,3 +1,6 @@
+## RC 2.1
++ MS-657 Clean up many lint warnings
+
 ## RC 2.0
 + MS-885 Facebook adapter exception handling 
 + MS-751 by default the android SDK now uses a modal dialog box loading animation during conversion loading. 

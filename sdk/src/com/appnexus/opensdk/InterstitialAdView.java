@@ -113,13 +113,15 @@ public class InterstitialAdView extends AdView {
         int measuredWidth = dm.widthPixels;
         int h_adjust = 0;
 
-        Activity a = (Activity) context;
-        if (a != null) {
+        try{
+            Activity a = (Activity) context;
             Rect r = new Rect();
             a.getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
             h_adjust += a.getWindow().findViewById(Window.ID_ANDROID_CONTENT)
                     .getTop();
             measuredHeight -= h_adjust;
+        }catch(ClassCastException cce){
+
         }
 
         float scale = dm.density;

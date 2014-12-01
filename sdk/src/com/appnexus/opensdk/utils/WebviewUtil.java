@@ -52,7 +52,7 @@ public class WebviewUtil {
     /**
      * Call WebView onResume in API version safe manner
      * 
-     * @param wv
+     * @param wv The webview to invoke onResume on
      */
     public static void onResume(WebView wv) {
         if (wv == null) {
@@ -69,7 +69,7 @@ public class WebviewUtil {
     /**
      * Call WebView onPause in API version safe manner
      * 
-     * @param wv
+     * @param wv The webview to invoke onPause on
      */
     public static void onPause(WebView wv) {
         if (wv == null) {
@@ -86,7 +86,7 @@ public class WebviewUtil {
     /***
      * Synchronize the uuid2 cookie to the Webview Cookie Jar
      * This is only done if there is no present cookie.  
-     * @param cookies
+     * @param cookies Cookies to sync
      */
     public static void cookieSync(List<Cookie> cookies) {
         try {

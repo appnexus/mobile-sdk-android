@@ -24,7 +24,6 @@ import android.os.Build;
 import android.view.*;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 
 public class ViewUtil {
     public static ImageButton createCloseButton(Context context, boolean custom_close) {

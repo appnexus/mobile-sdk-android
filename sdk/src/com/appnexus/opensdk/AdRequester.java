@@ -22,14 +22,14 @@ interface AdRequester {
     /**
      * Called when the request made by the requester fails.
      *
-     * @param request
+     * @param request AdRequest which failed
      */
     public void failed(AdRequest request);
 
     /**
      * Called when a response is received
      *
-     * @param response
+     * @param response AdResponse which was received.
      */
     public void onReceiveResponse(AdResponse response);
 

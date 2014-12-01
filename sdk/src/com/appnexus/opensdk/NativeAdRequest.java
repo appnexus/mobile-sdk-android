@@ -45,7 +45,7 @@ public class NativeAdRequest {
     /**
      * Set the placement id for ad request.
      *
-     * @param placementID
+     * @param placementID Placement ID.
      */
     public void setPlacementID(String placementID) {
         requestParameters.setPlacementID(placementID);
@@ -54,7 +54,7 @@ public class NativeAdRequest {
     /**
      * Get the placement id for ad request
      *
-     * @return
+     * @return The Placement ID
      */
     public String getPlacementID() {
         return requestParameters.getPlacementID();
@@ -63,7 +63,7 @@ public class NativeAdRequest {
     /**
      * Set user's gender for targeting
      *
-     * @param gender
+     * @param gender User's gender
      */
     public void setGender(AdView.GENDER gender) {
         requestParameters.setGender(gender);
@@ -72,7 +72,7 @@ public class NativeAdRequest {
     /**
      * Get the user's gender
      *
-     * @return gender
+     * @return User's gender
      */
     public AdView.GENDER getGender() {
         return requestParameters.getGender();
@@ -81,7 +81,7 @@ public class NativeAdRequest {
     /**
      * Set the age or age range of the user
      *
-     * @param age
+     * @param age User's age or age range
      */
     public void setAge(String age) {
         requestParameters.setAge(age);
@@ -153,7 +153,7 @@ public class NativeAdRequest {
     /**
      * Register a listener for ad success/fail to load notification events
      *
-     * @param listener
+     * @param listener The RequestListener to register
      */
     public void setListener(NativeAdRequestListener listener) {
         this.listener = listener;
@@ -162,7 +162,7 @@ public class NativeAdRequest {
     /**
      * Set the listener that listens the state of the request
      *
-     * @return
+     * @return The registered request listener
      */
     public NativeAdRequestListener getListener() {
         return this.listener;

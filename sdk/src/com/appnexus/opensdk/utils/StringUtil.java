@@ -26,8 +26,8 @@ public class StringUtil {
 
 	/**
 	 * Implement an isEmpty for API < 9 
-	 * @param s
-	 * @return
+	 * @param s The string to validate
+	 * @return True if and only if the string isn't null and has a non-zero length
 	 */
 	public static boolean isEmpty(String s) {
 		return s == null || s.length() == 0;

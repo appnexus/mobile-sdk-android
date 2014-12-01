@@ -75,12 +75,7 @@ class RequestParameters {
     }
 
     boolean getOverrideMaxSize() {
-        if (mediaType == MediaType.BANNER) {
-            return this.overrideMaxSize;
-        } else {
-            return false;
-        }
-
+        return mediaType == MediaType.BANNER && this.overrideMaxSize;
     }
 
     void setMaxSize(int maxW, int maxH) {

@@ -16,8 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import android.os.Looper;
-import android.os.Handler;
 import android.view.View;
 
 import com.appnexus.opensdk.utils.Clog;
@@ -38,9 +36,9 @@ public class NativeAdSDK {
      * Register the developer view that will track impressions and respond to clicks
      * for the native ad.
      *
-     * @param response
+     * @param response A NativeAdResponse
      * @param view     can be a single view, or container, or a view group
-     * @param listener
+     * @param listener A NativeAdEventListener
      */
     public static void registerTracking(final NativeAdResponse response, final View view, final NativeAdEventListener listener) {
         if (isValid(response)) {

@@ -159,23 +159,26 @@ public class MoPubListener implements MoPubView.BannerAdListener, MoPubInterstit
 
         switch(targetingParameters.getGender()){
             case FEMALE:
-                keywords.append("m_gender:M");
-                keywords.append(",");
+                keywords.append("m_gender:F");
                 break;
             case MALE:
-                keywords.append("m_gender:F");
-                keywords.append(",");
+                keywords.append("m_gender:M");
                 break;
             default:
                 break;
         }
 
         if (!StringUtil.isEmpty(targetingParameters.getAge())) {
-            keywords.append("m_age:" + targetingParameters.getAge() + ",");
+            if(keywords.length()>0) keywords.append(",");
+            keywords.append("m_age:").append(targetingParameters.getAge());
         }
 
         for (Pair<String, String> p : targetingParameters.getCustomKeywords()) {
-            keywords.append(p.first + ":" + p.second + ",");
+            if(keywords.length()>0) keywords.append(",");
+            keywords.append(p.first).append(":").append(p.second);
+        }
+        if(keywords.lastIndexOf(",")==keywords.length()-1 && keywords.length()>0) {
+            keywords.deleteCharAt(keywords.lastIndexOf(","));
         }
 
         return keywords.toString();

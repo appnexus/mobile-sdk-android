@@ -75,7 +75,7 @@ public abstract class AdView extends FrameLayout {
      * Begin Construction
      */
     AdView(Context context) {
-        this(context, (AttributeSet) null);
+        this(context, null);
     }
 
     AdView(Context context, AttributeSet attrs) {
@@ -641,7 +641,8 @@ public abstract class AdView extends FrameLayout {
 	 * enable the in-app browser instead (a lightweight browser
 	 * that runs within your app).  The default value is false.
 	 *
-	 * @param opensNativeBrowser
+	 * @param opensNativeBrowser Whether or not the device's native browser should be used for
+     *                           landing pages.
 	 */
 	public void setOpensNativeBrowser(boolean opensNativeBrowser) {
 		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
@@ -898,7 +899,7 @@ public abstract class AdView extends FrameLayout {
      * This feature is on by default, but only works with the in-app browser (which is also enabled by default).
      * Disabling this feature may cause redirects, such as to the app store, to first open a blank web page.
      *
-     * @param doesLoadingInBackground
+     * @param doesLoadingInBackground Whether or not to load landing pages in background.
      */
     public void setLoadsInBackground(boolean doesLoadingInBackground){
         this.doesLoadingInBackground = doesLoadingInBackground;

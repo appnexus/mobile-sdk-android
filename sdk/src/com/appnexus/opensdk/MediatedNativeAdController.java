@@ -46,8 +46,7 @@ public class MediatedNativeAdController {
 
 
     public static MediatedNativeAdController create(MediatedAd currentAd, NativeAdFetcher adFetcher, NativeAdRequest.AdDispatcher listener){
-           MediatedNativeAdController c = new MediatedNativeAdController(currentAd, adFetcher, listener);
-           return c;
+           return new MediatedNativeAdController(currentAd, adFetcher, listener);
     }
 
     private MediatedNativeAdController(MediatedAd currentAd, NativeAdFetcher adFetcher, NativeAdRequest.AdDispatcher listener) {

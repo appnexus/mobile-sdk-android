@@ -484,7 +484,7 @@ public class BannerAdView extends AdView {
      */
     public AdAlignment getAdAlignment() {
         if (this.adAlignment == null) {
-            this.adAlignment = adAlignment.CENTER;
+            this.adAlignment = AdAlignment.CENTER;
         }
         return this.adAlignment;
     }
