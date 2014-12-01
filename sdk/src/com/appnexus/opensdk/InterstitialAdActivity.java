@@ -108,19 +108,19 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
         if (adView.getParent() != null) {
             ((ViewGroup) adView.getParent()).removeAllViews();
         }
-        Pair<Long, Displayable> p = adView.getAdQueue().poll();
+        InterstitialAdQueueEntry iAQE = adView.getAdQueue().poll();
 
         // To be safe, ads from the future will be considered to have expired
         // if now-p.first is less than 0, the ad will be considered to be from the future
-        while (p != null && p.second != null
-                && (now - p.first > InterstitialAdView.MAX_AGE || now-p.first<0)) {
+        while (iAQE != null
+                && (now - iAQE.getTime() > InterstitialAdView.MAX_AGE || now-iAQE.getTime()<0)) {
             Clog.w(Clog.baseLogTag, Clog.getString(R.string.too_old));
-            p = adView.getAdQueue().poll();
+            iAQE = adView.getAdQueue().poll();
         }
-        if ((p == null) || (p.second == null)
-                || !(p.second.getView() instanceof WebView))
+        if ((iAQE == null)
+                || !(iAQE.getView() instanceof AdWebView))
             return;
-        webView = (AdWebView) p.second.getView();
+        webView = (AdWebView) iAQE.getView();
 
         // lock orientation to ad request orientation
         AdActivity.lockToConfigOrientation(adActivity, webView.getOrientation());

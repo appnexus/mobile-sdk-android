@@ -103,7 +103,7 @@ class ViewAdFetcher extends AdFetcher {
                             bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), output);
                         }
                     }
-                    owner.getAdDispatcher().onAdLoaded(output);
+                    owner.getAdDispatcher().onAdLoaded(output, false);
                 }
             }
         }

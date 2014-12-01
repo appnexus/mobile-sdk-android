@@ -291,10 +291,7 @@ class AdWebView extends WebView implements Displayable {
     void fireAdClicked() {
         if (adView != null) {
             adView.getAdDispatcher().onAdClicked();
-        }
-
-        if (adView instanceof InterstitialAdView) {
-            ((InterstitialAdView) adView).interacted();
+            adView.interacted();
         }
     }
 
@@ -362,7 +359,9 @@ class AdWebView extends WebView implements Displayable {
             if (checkStore(url)) {
                 return;
             }
+
             final WebView out;
+
             // Unless disabled by the user, handle redirects in background
 
             if(adView.getLoadsInBackground()) {
@@ -549,10 +548,7 @@ class AdWebView extends WebView implements Displayable {
 
         if (adView != null) {
             adView.expand(w, h, cust_close, caller, mraidFullscreenListener);
-        }
-
-        if (adView instanceof InterstitialAdView) {
-            ((InterstitialAdView) adView).interacted();
+            adView.interacted();
         }
 
         this.setLayoutParams(lp);
@@ -638,8 +634,8 @@ class AdWebView extends WebView implements Displayable {
             adView.resize(w, h, offset_x, offset_y, custom_close_position, allow_offscrean, implementation);
         }
 
-        if (adView instanceof InterstitialAdView) {
-            ((InterstitialAdView) adView).interacted();
+        if (adView != null) {
+            adView.interacted();
         }
 
         this.setLayoutParams(lp);

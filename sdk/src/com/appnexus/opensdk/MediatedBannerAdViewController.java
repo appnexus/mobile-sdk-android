@@ -28,12 +28,22 @@ import com.appnexus.opensdk.utils.Clog;
  */
 
 public class MediatedBannerAdViewController extends MediatedAdViewController {
-    private MediatedBannerAdViewController out = null;
     static MediatedBannerAdViewController create(
             Activity activity, AdRequester requester,
             MediatedAd mediatedAd, AdViewListener listener) {
         MediatedBannerAdViewController out = new MediatedBannerAdViewController(activity, requester, mediatedAd, listener);
         return out.hasFailed ? null : out;
+    }
+
+    @Override
+    boolean isReady(){
+        return true;
+    }
+
+    //Required for interstitials only
+    @Override
+    void show() {
+        return;
     }
 
     private MediatedBannerAdViewController(

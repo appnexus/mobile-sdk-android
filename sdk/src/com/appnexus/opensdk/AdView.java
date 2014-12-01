@@ -218,17 +218,6 @@ public abstract class AdView extends FrameLayout {
         display(output);
     }
 
-	void loadHtml(String content, int width, int height) {
-		this.mAdFetcher.stop();
-
-		AdWebView awv = new AdWebView(this);
-		awv.loadData(content, "text/html", "UTF-8");
-		FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(width,
-				height);
-		awv.setLayoutParams(lp);
-		this.display(awv);
-	}
-
 	protected abstract void loadVariablesFromXML(Context context,
 			AttributeSet attrs);
 
@@ -237,6 +226,7 @@ public abstract class AdView extends FrameLayout {
 	 */
 
     protected abstract void display(Displayable d);
+    protected abstract void displayMediated(MediatedDisplayable d);
 
     void unhide() {
 		if (getVisibility() != VISIBLE) {
@@ -470,7 +460,7 @@ public abstract class AdView extends FrameLayout {
                 }
 
                 int adviewLoc[] = new int[2];
-                if(AdView.this instanceof InterstitialAdView){
+                if(isInterstitial()){
                     InterstitialAdView.INTERSTITIALADVIEW_TO_USE.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
                     InterstitialAdView.INTERSTITIALADVIEW_TO_USE.getLocationOnScreen(adviewLoc);
                     container_size = new Point(InterstitialAdView.INTERSTITIALADVIEW_TO_USE.getMeasuredWidth(),
@@ -930,13 +920,21 @@ public abstract class AdView extends FrameLayout {
 		}
 
 		@Override
-		public void onAdLoaded(final Displayable d) {
+		public void onAdLoaded(final Displayable d, final boolean isMediated) {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
                     setCreativeWidth(d.getCreativeWidth());
                     setCreativeHeight(d.getCreativeHeight());
-					display(d);
+                    if(isMediated){
+                        try {
+                            displayMediated((MediatedDisplayable) d);
+                        }catch(ClassCastException cce){
+                            Clog.e(Clog.baseLogTag, "The SDK shouldn't fail downcasts to MediatedDisplayable in AdView");
+                        }
+                    }else {
+                        display(d);
+                    }
                     if (mAdFetcher != null) {
                         mAdFetcher.printMediatedClasses();
                     }
@@ -1028,4 +1026,5 @@ public abstract class AdView extends FrameLayout {
      */
     abstract public void activityOnResume();
 
+    abstract void interacted();
 }

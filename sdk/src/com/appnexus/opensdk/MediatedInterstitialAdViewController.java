@@ -81,6 +81,7 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
         }
     }
 
+    @Override
     boolean isReady() {
         return ((MediatedInterstitialAdView) mAV).isReady();
     }

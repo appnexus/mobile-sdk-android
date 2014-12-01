@@ -142,8 +142,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
     public AdRequest(AdRequester adRequester) {
         this.requester = new WeakReference<AdRequester>(adRequester);
-        AdRequester requester = this.requester.get();
-        RequestParameters params = requester.getRequestParams();
+        RequestParameters params = adRequester.getRequestParams();
         this.placementId = params.getPlacementID();
         Context context = params.getContext();
         owner_context = new WeakReference<Context>(params.getContext());
@@ -193,7 +192,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         }
 
         if (lastLocation != null) {
-            if (SDKSettings.getLocationDecimalDigits() == -1) {
+            if (SDKSettings.getLocationDecimalDigits() <= -1) {
                 lat = "" + lastLocation.getLatitude();
                 lon = "" + lastLocation.getLongitude();
             } else {
@@ -360,7 +359,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         }
         nonet = nonetSB.toString();
 
-        if (!media_type.equals(MediaType.NATIVE)) {
+        if (media_type!=MediaType.NATIVE) {
             if ((maxHeight <= 0 || maxWidth <= 0) &&
                     (width <= 0 || height <= 0)) {
                 Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.no_size_info));
@@ -413,9 +412,9 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (width > 0 && height > 0) sb.append("&size=").append(width).append("x").append(height);
         // complicated, don't change
         if (maxHeight > 0 && maxWidth > 0) {
-            if (!media_type.equals(MediaType.INTERSTITIAL) && (width < 0 || height < 0)) {
+            if (media_type!=MediaType.INTERSTITIAL && (width < 0 || height < 0)) {
                 sb.append("&max_size=").append(maxWidth).append("x").append(maxHeight);
-            } else if (media_type.equals(MediaType.INTERSTITIAL)) {
+            } else if (media_type==MediaType.INTERSTITIAL) {
                 sb.append("&size=").append(maxWidth).append("x").append(maxHeight);
             }
         }

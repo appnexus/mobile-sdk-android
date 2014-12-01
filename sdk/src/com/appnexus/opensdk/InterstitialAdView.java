@@ -26,6 +26,7 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Pair;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -47,7 +48,7 @@ public class InterstitialAdView extends AdView {
     private int backgroundColor = Color.BLACK;
     private int closeButtonDelay = Settings.DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
     static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
-    private Queue<Pair<Long, Displayable>> adQueue = new LinkedList<Pair<Long, Displayable>>();
+    private Queue<InterstitialAdQueueEntry> adQueue = new LinkedList<InterstitialAdQueueEntry>();
 
     //Intent Keys
     static final String INTENT_KEY_TIME = "TIME";
@@ -207,20 +208,18 @@ public class InterstitialAdView extends AdView {
     @Override
     protected void display(Displayable d) {
         // safety check: this should never evaluate to true
-        if ((d == null) || d.failed()) {
-            // The displayable has failed to be parsed or turned into a View.
-            // We're already calling onAdLoaded, so don't call onAdFailed; just log
-            Clog.e(Clog.baseLogTag, "Loaded an ad with an invalid displayable");
+        if (!checkDisplayable(d)){
             return;
         }
 
         if (lastDisplayable != null) {
             lastDisplayable.destroy();
         }
+
         //Prevent responses from reaching this InterstitialAdView if it has been destroyed already
         if(!destroyed && !paused) {
             lastDisplayable = d;
-            adQueue.add(new Pair<Long, Displayable>(System.currentTimeMillis(), d));
+            adQueue.add(new DisplayableInterstitialAdQueueEntry(d, System.currentTimeMillis(), false, null));
         }else{
             if(d!=null){
                 d.destroy();
@@ -228,6 +227,40 @@ public class InterstitialAdView extends AdView {
         }
     }
 
+    @Override
+    protected void displayMediated(MediatedDisplayable d) {
+        // safety check: this should never evaluate to true
+        if (!checkDisplayable(d)){
+            return;
+        }
+
+        if (lastDisplayable != null) {
+            lastDisplayable.destroy();
+        }
+
+        //Prevent responses from reaching this InterstitialAdView if it has been destroyed already
+        if(!destroyed && !paused) {
+            lastDisplayable = d;
+            adQueue.add(new DisplayableInterstitialAdQueueEntry(d, System.currentTimeMillis(), true, d.getMAVC()));
+        }else{
+            if(d!=null){
+                d.destroy();
+            }
+        }
+    }
+
+    private boolean checkDisplayable(Displayable d){
+        // safety check: this should never evaluate to true
+        if ((d == null) || d.failed()) {
+            // The displayable has failed to be parsed or turned into a View.
+            // We're already calling onAdLoaded, so don't call onAdFailed; just log
+            Clog.e(Clog.baseLogTag, "Loaded an ad with an invalid displayable");
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     void interacted() {
         if (adImplementation != null) {
             adImplementation.interacted();
@@ -244,11 +277,11 @@ public class InterstitialAdView extends AdView {
     // removes ads from the future
     private boolean removeStaleAds(long now) {
         boolean validAdExists = false;
-        ArrayList<Pair<Long, Displayable>> staleAdsList = new ArrayList<Pair<Long, Displayable>>();
-        for (Pair<Long, Displayable> p : adQueue) {
-            if ((p == null) || (p.second == null)
-                    || (((now - p.first) > InterstitialAdView.MAX_AGE) || now - p.first < 0)) {
-                staleAdsList.add(p);
+        ArrayList<InterstitialAdQueueEntry> staleAdsList = new ArrayList<InterstitialAdQueueEntry>();
+        for (InterstitialAdQueueEntry iAQE : adQueue) {
+            if (iAQE == null
+                    || (((now - iAQE.getTime()) > InterstitialAdView.MAX_AGE) || now - iAQE.getTime() < 0)) {
+                staleAdsList.add(iAQE);
             } else {
                 // We've reached a valid ad, so we can stop looking
                 validAdExists = true;
@@ -256,8 +289,8 @@ public class InterstitialAdView extends AdView {
             }
         }
         // Clear the queue of invalid ads
-        for (Pair<Long, Displayable> p : staleAdsList) {
-            adQueue.remove(p);
+        for (InterstitialAdQueueEntry remove_ad : staleAdsList) {
+            adQueue.remove(remove_ad);
         }
         return validAdExists;
     }
@@ -282,12 +315,10 @@ public class InterstitialAdView extends AdView {
     public boolean isReady() {
         long now = System.currentTimeMillis();
         if (removeStaleAds(now)) {
-            Pair<Long, Displayable> top = adQueue.peek();
-            if (top != null && top.second instanceof MediatedDisplayable) {
-                MediatedDisplayable mediatedDisplayable = (MediatedDisplayable) top.second;
-                if (mediatedDisplayable.getMAVC() instanceof MediatedInterstitialAdViewController) {
-                    MediatedInterstitialAdViewController mAVC = (MediatedInterstitialAdViewController) mediatedDisplayable.getMAVC();
-                    return mAVC.isReady();
+            InterstitialAdQueueEntry top = adQueue.peek();
+            if (top != null && top.isMediated()) {
+                if (top.getMediatedAdViewController() != null) {
+                    return top.getMediatedAdViewController().isReady();
                 }
             }
             return true;
@@ -311,12 +342,10 @@ public class InterstitialAdView extends AdView {
         boolean validAdExists = removeStaleAds(now);
 
         //If the head of the queue is interstitial mediation, show that instead of our adactivity
-        Pair<Long, Displayable> top = adQueue.peek();
-        if (top != null && top.second instanceof MediatedDisplayable) {
-            MediatedDisplayable mediatedDisplayable = (MediatedDisplayable) top.second;
-            if (mediatedDisplayable.getMAVC() instanceof MediatedInterstitialAdViewController) {
-                MediatedInterstitialAdViewController mAVC = (MediatedInterstitialAdViewController) mediatedDisplayable.getMAVC();
-                mAVC.show();
+        InterstitialAdQueueEntry top = adQueue.peek();
+        if (top != null && top.isMediated()) {
+            if (top.getMediatedAdViewController() != null) {
+                top.getMediatedAdViewController().show();
 
                 //Pop the mediated view;
                 adQueue.poll();
@@ -459,6 +488,11 @@ public class InterstitialAdView extends AdView {
         return -1;
     }
 
+
+    Queue<InterstitialAdQueueEntry> getAdQueue() {
+        return adQueue;
+    }
+
     //Since interstitials launch activities, these functions
     //don't need to pass activity events to child webviews.
     //Instead, here, they serve as a way to prevent mediated
@@ -480,10 +514,6 @@ public class InterstitialAdView extends AdView {
     @Override
     public void activityOnResume() {
         paused=false;
-    }
-
-    Queue<Pair<Long, Displayable>> getAdQueue() {
-        return adQueue;
     }
 
     /**
@@ -526,5 +556,45 @@ public class InterstitialAdView extends AdView {
         public boolean fitsIn(int width, int height) {
             return h < height && w < width;
         }
+    }
+}
+
+interface InterstitialAdQueueEntry{
+    abstract long getTime();
+    abstract boolean isMediated();
+    abstract MediatedAdViewController getMediatedAdViewController();
+    abstract View getView();
+}
+
+class DisplayableInterstitialAdQueueEntry implements InterstitialAdQueueEntry{
+    private long time;
+    private Displayable d;
+    private boolean isMediated;
+    private MediatedAdViewController mAVC;
+
+    DisplayableInterstitialAdQueueEntry(Displayable d, Long t, boolean isMediated, MediatedAdViewController mAVC){
+        this.time=t;
+        this.d=d;
+        this.isMediated=isMediated;
+        this.mAVC=mAVC;
+    }
+
+    @Override
+    public long getTime() {
+        return time;
+    }
+
+    public boolean isMediated(){
+        return isMediated;
+    }
+
+    public MediatedAdViewController getMediatedAdViewController(){
+        return mAVC;
+    }
+
+    @Override
+    public View getView() {
+        if(d==null) return null;
+        return d.getView();
     }
 }

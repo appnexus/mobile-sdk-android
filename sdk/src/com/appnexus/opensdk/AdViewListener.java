@@ -28,7 +28,7 @@ package com.appnexus.opensdk;
      *
      * @param d the displayable view to show for banners
      */
-    public void onAdLoaded(Displayable d);
+    public void onAdLoaded(final Displayable d, final boolean isMediated);
 
     /**
      * Called when the mediation waterfall has ended in a failure

@@ -209,9 +209,13 @@ public abstract class MediatedAdViewController {
         hasSucceeded = true;
 
         if (listener != null)
-            listener.onAdLoaded(mediatedDisplayable);
+            listener.onAdLoaded(mediatedDisplayable, true);
         fireResultCB(ResultCode.SUCCESS);
     }
+
+    abstract boolean isReady();
+
+    abstract void show();
 
     /**
      * Call this method to inform the AppNexus SDK than an ad call

@@ -26,6 +26,7 @@ import android.content.res.TypedArray;
 import android.graphics.Point;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -44,6 +45,8 @@ import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.WebviewUtil;
 
 import java.lang.ref.WeakReference;
+import java.util.LinkedList;
+import java.util.Queue;
 
 
 /**
@@ -323,6 +326,11 @@ public class BannerAdView extends AdView {
 
     private Displayable currentDisplayable;
     @Override
+    void interacted(){
+        return;
+    }
+
+    @Override
     protected void display(Displayable d) {
         // safety check: this should never evaluate to true
         if ((d == null) || d.failed() || (d.getView() == null)) {
@@ -354,7 +362,7 @@ public class BannerAdView extends AdView {
         } else {
             // first time showing animator
             // which means there's no previous ad or previous ad does not show animation
-            if (this.getChildCount() == 0 || !(this.getChildAt(0) instanceof ViewAnimator)) {
+            if (this.getChildCount() == 0 || this.indexOfChild(animator) >-1) {
                 this.removeAllViews();
                 this.addView(animator);
             }
@@ -387,6 +395,12 @@ public class BannerAdView extends AdView {
 
         lastDisplayable = d;
 
+    }
+
+    //Mediated banners behave the same as non-mediated.
+    @Override
+    protected void displayMediated(MediatedDisplayable d) {
+        display(d);
     }
 
     class AnimatorListener implements Animation.AnimationListener {
