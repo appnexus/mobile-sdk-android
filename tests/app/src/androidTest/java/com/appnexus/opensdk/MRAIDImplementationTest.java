@@ -277,7 +277,7 @@ public class MRAIDImplementationTest extends BaseRoboTest {
         boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked;
 
         @Override
-        public void onAdLoaded(Displayable d) {
+        public void onAdLoaded(Displayable d, boolean b) {
             adLoaded = true;
         }
 
