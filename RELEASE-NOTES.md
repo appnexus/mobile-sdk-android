@@ -1,6 +1,7 @@
 ## RC 2.1
 + MS-657 Clean up many lint warnings
 + MS-808 Remove runtime instance checks, overhaul old interstitial ad queue with new class-based model
++ MS-859 Release SDK on Maven
 
 ## RC 2.0
 + MS-885 Facebook adapter exception handling 
