@@ -5,6 +5,7 @@
 + MS-782 closeButtonHandler made static to avoid potential memory leaks, cleaned up gradle lint
 + MS-763 Cleaner string building to minimize memory use
 + MS-826 If the impbus ever were to return malformed initcb/resultcb URLs, the SDK now fails gracefully on them
++ MS-790 Fix lint error in HTTPGet
 
 ## RC 2.0
 + MS-885 Facebook adapter exception handling 

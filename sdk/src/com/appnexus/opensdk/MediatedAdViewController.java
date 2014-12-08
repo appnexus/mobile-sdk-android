@@ -328,7 +328,7 @@ public abstract class MediatedAdViewController {
 
     }
 
-    private class ResultCBRequest extends HTTPGet<Void, Void, HTTPResponse> {
+    private class ResultCBRequest extends HTTPGet {
         WeakReference<AdRequester> requester;
         private final String resultCB;
         final ResultCode result;

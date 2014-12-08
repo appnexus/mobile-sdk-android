@@ -112,9 +112,8 @@ public class NativeAdSDK {
             @Override
             public void run() {
                 if (view.getTag(R.string.native_tag) != null) {
-                    WeakReference<NativeAdResponse> reference =
-                            (WeakReference<NativeAdResponse>) view.getTag(R.string.native_tag);
-                    NativeAdResponse response = reference.get();
+                    WeakReference reference = (WeakReference) view.getTag(R.string.native_tag);
+                    NativeAdResponse response = (NativeAdResponse)reference.get();
                     if (response != null) {
                         response.unregisterViews();
                     }

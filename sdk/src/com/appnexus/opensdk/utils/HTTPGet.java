@@ -31,14 +31,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 
-public abstract class HTTPGet<Params extends Void, Progress extends Void, Result extends HTTPResponse> extends AsyncTask<Params, Progress, Result> {
+public abstract class HTTPGet extends AsyncTask<Void, Void, HTTPResponse> {
 
 
     public HTTPGet() {
         super();
     }
 
-    @SuppressWarnings("unchecked")
 	@Override
     protected HTTPResponse doInBackground(Void... params) {
         HTTPResponse out = new HTTPResponse();
