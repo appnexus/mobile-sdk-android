@@ -17,10 +17,8 @@ package com.appnexus.opensdk.utils;
 
 import android.content.res.Resources;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.util.Scanner;
 
 public class StringUtil {
 
@@ -35,26 +33,15 @@ public class StringUtil {
 
     // returns true if success, false if exception
     public static boolean appendRes(StringBuilder sb, Resources res, int resId) {
-        Reader reader = null;
-        try {
-            InputStream inputStream = res.openRawResource(resId);
-            reader = new InputStreamReader(inputStream, "UTF-8");
-
-            char[] buffer = new char[inputStream.available()];
-            reader.read(buffer);
-
-            sb.append(buffer);
-        } catch (IOException e) {
+        InputStream inputStream = res.openRawResource(resId);
+        Scanner scanner = new Scanner(inputStream, "UTF-8").useDelimiter("\\A");
+        if(scanner.hasNext()){
+            sb.append(scanner.next());
+            scanner.close();
+            return true;
+        }else{
+            scanner.close();
             return false;
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                }
-            }
         }
-
-        return true;
     }
 }

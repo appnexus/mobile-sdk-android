@@ -46,6 +46,11 @@ public abstract class HTTPGet<Params extends Void, Progress extends Void, Result
         HttpClient httpc = new DefaultHttpClient();
         try {
             URI uri = new URI(getUrl());
+            if(uri.getHost()==null){
+                 Clog.w(Clog.httpReqLogTag, "An HTTP request with an invalid URL was attempted.", new IllegalStateException("An HTTP request with an invalid URL was attempted."));
+                out.setSucceeded(false);
+                return out;
+            }
             HttpGet request = new HttpGet();
             request.setHeader("User-Agent", Settings.getSettings().ua);
             request.setURI(uri);

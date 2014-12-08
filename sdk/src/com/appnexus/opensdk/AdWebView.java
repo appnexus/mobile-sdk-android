@@ -142,8 +142,8 @@ class AdWebView extends WebView implements Displayable {
     private String preLoadContent(String html) {
         // Check to ensure <html> tags are present
         if (!html.contains("<html>")) {
-            html = "<html><head></head><body style='padding:0;margin:0;'>"
-                    + html + "</body></html>";
+            StringBuilder bodyBuilder = new StringBuilder();
+            html = bodyBuilder.append("<html><head></head><body style='padding:0;margin:0;'>").append(html).append("</body></html>").toString();
         } else if (!html.contains("<head>")) {
             // The <html> tags are present, but there is no <head> section to
             // inject the mraid js

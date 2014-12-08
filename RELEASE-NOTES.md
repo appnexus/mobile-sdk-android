@@ -3,6 +3,8 @@
 + MS-808 Remove runtime instance checks, overhaul old interstitial ad queue with new class-based model
 + MS-859 Release SDK on Maven
 + MS-782 closeButtonHandler made static to avoid potential memory leaks, cleaned up gradle lint
++ MS-763 Cleaner string building to minimize memory use
++ MS-826 If the impbus ever were to return malformed initcb/resultcb URLs, the SDK now fails gracefully on them
 
 ## RC 2.0
 + MS-885 Facebook adapter exception handling 
