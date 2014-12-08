@@ -30,6 +30,8 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.ViewUtil;
 
+import java.lang.ref.WeakReference;
+
 class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
     private Activity adActivity;
     private AdWebView webView;
@@ -59,13 +61,7 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
                 InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY,
                 Settings.DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
 
-        Handler closeButtonHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                if (msg.what == CLOSE_BUTTON_MESSAGE_ID) addCloseButton();
-            }
-        };
-        closeButtonHandler.sendEmptyMessageDelayed(CLOSE_BUTTON_MESSAGE_ID, closeButtonDelay);
+        new CloseButtonHandler(this).sendEmptyMessageDelayed(CLOSE_BUTTON_MESSAGE_ID, closeButtonDelay);
     }
 
     @Override
@@ -141,5 +137,18 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
         });
 
         layout.addView(closeButton);
+    }
+
+    static class CloseButtonHandler extends Handler{
+        WeakReference<InterstitialAdActivity> weakReferenceIAA;
+        public CloseButtonHandler(InterstitialAdActivity a){
+            weakReferenceIAA=new WeakReference<InterstitialAdActivity>(a);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            InterstitialAdActivity iAA = weakReferenceIAA.get();
+            if (msg.what == CLOSE_BUTTON_MESSAGE_ID && iAA!=null) iAA.addCloseButton();
+        }
     }
 }
