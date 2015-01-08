@@ -78,6 +78,7 @@ class MRAIDImplementation {
             setScreenSize();
             setMaxSize();
             setDefaultPosition();
+            owner.checkPosition(); //set CURRENT position, in addition to default
 
             view.loadUrl("javascript:window.mraid.util.stateChangeEvent('default')");
             view.loadUrl("javascript:window.mraid.util.readyEvent();");
@@ -172,7 +173,8 @@ class MRAIDImplementation {
 
     // parameters are view properties in pixels
     void setCurrentPosition(int left, int top, int width, int height) {
-        if (!readyFired) return;
+        //Set current position whether or not ready has been fired in order
+        //to set the position prior to first ready fire
 
         if ((position[0] == left) && (position[1] == top)
                 && (position[2] == width) && (position[3] == height)) return;
@@ -194,11 +196,10 @@ class MRAIDImplementation {
         top = properties[1];
         width = properties[2];
         height = properties[3];
-
-        owner.loadUrl(String.format("javascript:window.mraid.util.sizeChangeEvent(%d, %d)",
-                width, height));
         owner.loadUrl(String.format("javascript:window.mraid.util.setCurrentPosition(%d, %d, %d, %d)",
                 left, top, width, height));
+        owner.loadUrl(String.format("javascript:window.mraid.util.sizeChangeEvent(%d, %d)",
+                width, height));
     }
 
     void close() {

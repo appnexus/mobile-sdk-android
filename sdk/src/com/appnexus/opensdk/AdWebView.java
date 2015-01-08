@@ -581,7 +581,7 @@ class AdWebView extends WebView implements Displayable {
         }
     }
 
-    private void checkPosition() {
+    protected void checkPosition() {
         if (!(this.getContext() instanceof Activity)) return;
 
         // check whether newly drawn view is onscreen or not,
