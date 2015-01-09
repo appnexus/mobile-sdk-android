@@ -27,6 +27,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -536,8 +537,19 @@ class MRAIDImplementation {
             if (allow_orientation_change) {
                 AdActivity.unlockOrientation(containerActivity);
             } else {
-                // forceOrientation only applies to pre-expansion, so don't use here
-                AdActivity.lockToCurrentOrientation(containerActivity);
+                int androidOrientation = Configuration.ORIENTATION_UNDEFINED;
+                switch(orientation){
+                    case landscape:
+                        androidOrientation=Configuration.ORIENTATION_LANDSCAPE;
+                        break;
+                    case portrait:
+                        androidOrientation=Configuration.ORIENTATION_PORTRAIT;
+                        break;
+                    case none:
+                    default:
+                        break;
+                }
+                AdActivity.lockToConfigOrientation(containerActivity, androidOrientation);
             }
         }
     }
