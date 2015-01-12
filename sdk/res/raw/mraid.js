@@ -167,7 +167,13 @@
                     mraid.util.errorEvent("mraid.expand() cannot be called for the placement_type " + placement_type, "mraid.expand()");
                     return;
                 }
-                mraid.util.nativeCall("mraid://expand/" + "?w=" + mraid.getExpandProperties().width + "&h=" + mraid.getExpandProperties().height + "&useCustomClose=" + mraid.getExpandProperties().useCustomClose + (url != null ? "&url=" + url : "") + "&allow_orientation_change=" + orientation_properties.allowOrientationChange + "&force_orientation=" + orientation_properties.forceOrientation);
+                mraid.util.nativeCall("mraid://expand/"
+                    + "?w=" + mraid.getExpandProperties().width
+                    + "&h=" + mraid.getExpandProperties().height
+                    + "&useCustomClose=" + mraid.getExpandProperties().useCustomClose
+                    + (url != null ? "&url=" + url : "")
+                    + "&allow_orientation_change=" + orientation_properties.allowOrientationChange
+                    + "&force_orientation=" + orientation_properties.forceOrientation);
                 break;
             case 'expanded':
                 mraid.util.errorEvent("mraid.expand() called while state is 'expanded'.", "mraid.expand()");
@@ -228,7 +234,13 @@
                     return;
                 }
                 if (resize_properties) {
-                    mraid.util.nativeCall("mraid://resize/?w=" + resize_properties.width + "&h=" + resize_properties.height + "&offset_x=" + resize_properties.offsetX + "&offset_y=" + resize_properties.offsetY + "&custom_close_position=" + resize_properties.customClosePosition + "&allow_offscreen=" + resize_properties.allowOffscreen);
+                    mraid.util.nativeCall("mraid://resize/?w="
+                        + resize_properties.width
+                        + "&h=" + resize_properties.height
+                        + "&offset_x=" + resize_properties.offsetX
+                        + "&offset_y=" + resize_properties.offsetY
+                        + "&custom_close_position=" + resize_properties.customClosePosition
+                        + "&allow_offscreen=" + resize_properties.allowOffscreen);
                 } else {
                     mraid.util.errorEvent("mraid.resize() called with no resize_properties set", "mraid.resize()");
                 }
