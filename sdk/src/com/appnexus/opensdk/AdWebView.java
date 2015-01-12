@@ -41,6 +41,8 @@ import android.widget.Toast;
 import com.appnexus.opensdk.AdView.BrowserStyle;
 import com.appnexus.opensdk.utils.*;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -106,6 +108,8 @@ class AdWebView extends WebView implements Displayable {
         setWebViewClient(new AdWebViewClient());
     }
 
+    private String originalMraidState=null;
+    private AdView.LayoutParams originalMraidLayoutParams=null;
     public void loadAd(AdResponse ad) {
         if(ad==null){
             return;
@@ -134,6 +138,12 @@ class AdWebView extends WebView implements Displayable {
         AdView.LayoutParams resize = new AdView.LayoutParams(rwidth, rheight,
                 Gravity.CENTER);
         this.setLayoutParams(resize);
+
+        if(isMRAIDEnabled){
+            //store the inital mraid state in case it's a two-part creative
+            originalMraidState=html;
+            originalMraidLayoutParams=resize;
+        }
 
         this.loadDataWithBaseURL(Settings.BASE_URL, html, "text/html", "UTF-8", null);
     }
@@ -187,6 +197,34 @@ class AdWebView extends WebView implements Displayable {
         }
     }
 
+    private boolean loadingNewMRAIDPage = false;
+    protected void loadUrlWithMRAID(final String url){
+        new HTTPGet() {
+            @Override
+            protected void onPostExecute(HTTPResponse response) {
+                if(response.getSucceeded()){
+                    String html = preLoadContent(response.getResponseBody());
+                    html = prependRawResources(html);
+                    loadingNewMRAIDPage=true;
+                    String baseString;
+                    try {
+                        baseString = new URL(url).getHost();
+                    } catch (MalformedURLException e) {
+                        baseString=null;
+                    }
+
+                    loadDataWithBaseURL(baseString, html, "text/html", "UTF-8", null);
+                }
+            }
+
+            @Override
+            protected String getUrl() {
+                return url;
+            }
+        }.execute();
+
+    }
+
     /**
      * AdWebViewClient for the webview
      */
@@ -205,7 +243,7 @@ class AdWebView extends WebView implements Displayable {
                 } else {
                     String host = Uri.parse(url).getHost();
                     if ((host != null) && host.equals("enable")) {
-                        fireMRAIDEnabled();
+                        fireMRAIDEnabled(loadingNewMRAIDPage);
                     }
                 }
                 return true;
@@ -226,13 +264,17 @@ class AdWebView extends WebView implements Displayable {
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            if (!firstPageFinished) {
+            if (!firstPageFinished || loadingNewMRAIDPage) {
+/*                if(loadingNewMRAIDPage){
+                    fireMRAIDEnabled(true);
+                }*/
                 view.loadUrl("javascript:window.mraid.util.pageFinished()");
                 if (isMRAIDEnabled) {
-                    implementation.webViewFinishedLoading(AdWebView.this);
+                    implementation.webViewFinishedLoading(AdWebView.this, loadingNewMRAIDPage ? MRAIDImplementation.STARTING_STATE_EXPANDED : MRAIDImplementation.STARTING_STATE_DEFAULT);
                     startCheckViewable();
                 }
                 firstPageFinished = true;
+                loadingNewMRAIDPage=false;
             }
         }
 
@@ -488,12 +530,14 @@ class AdWebView extends WebView implements Displayable {
         super.scrollTo(0, 0);
     }
 
-    public void fireMRAIDEnabled() {
-        if (isMRAIDEnabled) return;
+    //expanded tells us whether we're loading mraid for expand(url) page or
+    //for original creative
+    public void fireMRAIDEnabled(boolean expanded) {
+        if (isMRAIDEnabled && !expanded) return;
 
         isMRAIDEnabled = true;
         if (this.firstPageFinished) {
-            implementation.webViewFinishedLoading(this);
+            implementation.webViewFinishedLoading(this, expanded ? MRAIDImplementation.STARTING_STATE_EXPANDED : MRAIDImplementation.STARTING_STATE_DEFAULT);
             startCheckViewable();
         }
     }
@@ -575,9 +619,14 @@ class AdWebView extends WebView implements Displayable {
         }
     }
 
-    void close() {
+    void close(boolean closeFromMRAIDTwoPartExpansion) {
         if (adView != null) {
             adView.close(default_width, default_height, implementation);
+        }
+        if(closeFromMRAIDTwoPartExpansion) {
+            firstPageFinished=false; //pretend we haven't even loaded the creative yet
+            this.setLayoutParams(originalMraidLayoutParams);
+            this.loadDataWithBaseURL(Settings.BASE_URL, originalMraidState, "text/html", "UTF-8", null);
         }
     }
 

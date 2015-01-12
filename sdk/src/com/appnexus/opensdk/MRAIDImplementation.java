@@ -49,6 +49,8 @@ import java.util.ArrayList;
 
 @SuppressLint("InlinedApi")
 class MRAIDImplementation {
+    public final static String STARTING_STATE_DEFAULT = "default";
+    public final static String STARTING_STATE_EXPANDED = "expanded";
     protected final AdWebView owner;
     private boolean readyFired = false;
     boolean expanded = false;
@@ -63,25 +65,29 @@ class MRAIDImplementation {
     boolean isViewable;
     private int[] position = new int[4];
     private int lastRotation;
+    private boolean isMRAIDTwoPartExpanded = false;
 
     public MRAIDImplementation(AdWebView owner) {
         this.owner = owner;
     }
 
-    void webViewFinishedLoading(WebView view) {
+    void webViewFinishedLoading(WebView view, String startingState) {
         // Fire the ready event only once
         if (!readyFired) {
             String adType = owner.adView.isBanner() ? "inline" : "interstitial";
+            isMRAIDTwoPartExpanded=startingState.equals(STARTING_STATE_EXPANDED);
             view.loadUrl("javascript:window.mraid.util.setPlacementType('"
                     + adType + "')");
 
-            setSupportsValues(view);
-            setScreenSize();
-            setMaxSize();
-            setDefaultPosition();
-            owner.checkPosition(); //set CURRENT position, in addition to default
+            if(!isMRAIDTwoPartExpanded) {
+                setSupportsValues(view);
+                setScreenSize();
+                setMaxSize();
+                setDefaultPosition();
+            }
 
-            view.loadUrl("javascript:window.mraid.util.stateChangeEvent('default')");
+            owner.checkPosition(); //set CURRENT position, in addition to default
+            view.loadUrl("javascript:window.mraid.util.stateChangeEvent('"+startingState+"')");
             view.loadUrl("javascript:window.mraid.util.readyEvent();");
 
             // Store width and height for close()
@@ -215,7 +221,11 @@ class MRAIDImplementation {
                 lp.gravity = Gravity.CENTER;
             }
             owner.setLayoutParams(lp);
-            owner.close();
+            owner.close(isMRAIDTwoPartExpanded);
+            if(isMRAIDTwoPartExpanded) {
+                isMRAIDTwoPartExpanded = false;
+                readyFired = false;
+            }
             owner.loadUrl("javascript:window.mraid.util.stateChangeEvent('default');");
 
             if (!owner.adView.isInterstitial()) {
@@ -266,12 +276,17 @@ class MRAIDImplementation {
             }
         }
 
-        owner.expand(width, height, useCustomClose, this, allowOrientationChange, forceOrientation);
-
         // Fire the stateChange to MRAID
         if (!StringUtil.isEmpty(uri)) {
-            this.owner.loadUrl(uri);
+            readyFired = false; //reset mraid state
+            //Always expand twopart creatives to full screen
+            width=-1;
+            height=-1;
+            this.owner.loadUrlWithMRAID(uri);
         }
+
+        owner.expand(width, height, useCustomClose, this, allowOrientationChange, forceOrientation);
+
         this.owner.loadUrl("javascript:window.mraid.util.stateChangeEvent('expanded');");
         expanded = true;
 
