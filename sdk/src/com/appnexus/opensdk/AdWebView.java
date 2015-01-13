@@ -68,10 +68,13 @@ class AdWebView extends WebView implements Displayable {
     private boolean viewableCheckPaused = false;
     private int orientation;
     private ProgressDialog progressDialog;
+    protected String initialMraidStateString;
 
     public AdWebView(AdView adView) {
         super(adView.getContext());
         this.adView = adView;
+        this.initialMraidStateString = MRAIDImplementation.MRAID_INIT_STATE_STRINGS[
+                MRAIDImplementation.MRAID_INIT_STATE.STARTING_DEFAULT.ordinal()];
         setupSettings();
         setup();
     }
@@ -108,8 +111,6 @@ class AdWebView extends WebView implements Displayable {
         setWebViewClient(new AdWebViewClient());
     }
 
-    private String originalMraidState=null;
-    private AdView.LayoutParams originalMraidLayoutParams=null;
     public void loadAd(AdResponse ad) {
         if(ad==null){
             return;
@@ -138,12 +139,6 @@ class AdWebView extends WebView implements Displayable {
         AdView.LayoutParams resize = new AdView.LayoutParams(rwidth, rheight,
                 Gravity.CENTER);
         this.setLayoutParams(resize);
-
-        if(isMRAIDEnabled){
-            //store the inital mraid state in case it's a two-part creative
-            originalMraidState=html;
-            originalMraidLayoutParams=resize;
-        }
 
         this.loadDataWithBaseURL(Settings.BASE_URL, html, "text/html", "UTF-8", null);
     }
@@ -197,7 +192,6 @@ class AdWebView extends WebView implements Displayable {
         }
     }
 
-    private boolean loadingNewMRAIDPage = false;
     protected void loadUrlWithMRAID(final String url){
         new HTTPGet() {
             @Override
@@ -205,7 +199,6 @@ class AdWebView extends WebView implements Displayable {
                 if(response.getSucceeded()){
                     String html = preLoadContent(response.getResponseBody());
                     html = prependRawResources(html);
-                    loadingNewMRAIDPage=true;
                     String baseString;
                     try {
                         baseString = new URL(url).getHost();
@@ -214,6 +207,8 @@ class AdWebView extends WebView implements Displayable {
                     }
 
                     loadDataWithBaseURL(baseString, html, "text/html", "UTF-8", null);
+
+                    fireMRAIDEnabled();
                 }
             }
 
@@ -223,6 +218,10 @@ class AdWebView extends WebView implements Displayable {
             }
         }.execute();
 
+    }
+
+    protected MRAIDImplementation getMRAIDImplementation() {
+        return implementation;
     }
 
     /**
@@ -243,7 +242,7 @@ class AdWebView extends WebView implements Displayable {
                 } else {
                     String host = Uri.parse(url).getHost();
                     if ((host != null) && host.equals("enable")) {
-                        fireMRAIDEnabled(loadingNewMRAIDPage);
+                        fireMRAIDEnabled();
                     }
                 }
                 return true;
@@ -264,17 +263,13 @@ class AdWebView extends WebView implements Displayable {
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            if (!firstPageFinished || loadingNewMRAIDPage) {
-/*                if(loadingNewMRAIDPage){
-                    fireMRAIDEnabled(true);
-                }*/
+            if (!firstPageFinished) {
                 view.loadUrl("javascript:window.mraid.util.pageFinished()");
                 if (isMRAIDEnabled) {
-                    implementation.webViewFinishedLoading(AdWebView.this, loadingNewMRAIDPage ? MRAIDImplementation.STARTING_STATE_EXPANDED : MRAIDImplementation.STARTING_STATE_DEFAULT);
+                    implementation.webViewFinishedLoading(AdWebView.this, initialMraidStateString);
                     startCheckViewable();
                 }
                 firstPageFinished = true;
-                loadingNewMRAIDPage=false;
             }
         }
 
@@ -530,14 +525,12 @@ class AdWebView extends WebView implements Displayable {
         super.scrollTo(0, 0);
     }
 
-    //expanded tells us whether we're loading mraid for expand(url) page or
-    //for original creative
-    public void fireMRAIDEnabled(boolean expanded) {
-        if (isMRAIDEnabled && !expanded) return;
+    public void fireMRAIDEnabled() {
+        if (isMRAIDEnabled) return;
 
         isMRAIDEnabled = true;
         if (this.firstPageFinished) {
-            implementation.webViewFinishedLoading(this, expanded ? MRAIDImplementation.STARTING_STATE_EXPANDED : MRAIDImplementation.STARTING_STATE_DEFAULT);
+            implementation.webViewFinishedLoading(this, initialMraidStateString);
             startCheckViewable();
         }
     }
@@ -598,7 +591,7 @@ class AdWebView extends WebView implements Displayable {
         this.setLayoutParams(lp);
     }
 
-    private void lockOrientationFromExpand(Activity containerActivity,
+    protected void lockOrientationFromExpand(Activity containerActivity,
                                            boolean allowOrientationChange,
                                            AdActivity.OrientationEnum forceOrientation) {
         if (forceOrientation != AdActivity.OrientationEnum.none) {
@@ -619,14 +612,9 @@ class AdWebView extends WebView implements Displayable {
         }
     }
 
-    void close(boolean closeFromMRAIDTwoPartExpansion) {
+    void close() {
         if (adView != null) {
             adView.close(default_width, default_height, implementation);
-        }
-        if(closeFromMRAIDTwoPartExpansion) {
-            firstPageFinished=false; //pretend we haven't even loaded the creative yet
-            this.setLayoutParams(originalMraidLayoutParams);
-            this.loadDataWithBaseURL(Settings.BASE_URL, originalMraidState, "text/html", "UTF-8", null);
         }
     }
 
@@ -762,5 +750,22 @@ class AdWebView extends WebView implements Displayable {
                 }
             });
         }
+    }
+}
+
+class TwoPartWebView extends AdWebView{
+    MRAIDImplementation firstPartImplementation;
+
+    TwoPartWebView(AdView adView, MRAIDImplementation firstPartImplementation){
+        super(adView);
+        this.initialMraidStateString = MRAIDImplementation.MRAID_INIT_STATE_STRINGS[
+                MRAIDImplementation.MRAID_INIT_STATE.STARTING_EXPANDED.ordinal()];
+        this.firstPartImplementation=firstPartImplementation;
+    }
+
+    @Override
+    void close() {
+        super.close();
+        firstPartImplementation.close();
     }
 }

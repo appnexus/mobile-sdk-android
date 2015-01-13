@@ -355,6 +355,35 @@ public abstract class AdView extends FrameLayout {
         }
     }
 
+    protected void mraidFullscreenExpand(final MRAIDImplementation caller, boolean use_custom_close, AdWebView.MRAIDFullscreenListener listener){
+        caller.setDefaultContainer((ViewGroup) caller.owner.getParent());
+
+        //Make a new framelayout to contain webview and button
+        FrameLayout fslayout = new FrameLayout(this.getContext());
+
+        // remove the webview from its parent and add it to the fullscreen container
+        ViewUtil.removeChildFromParent(caller.owner);
+        fslayout.addView(caller.owner);
+        if (!use_custom_close) fslayout.addView(close_button);
+
+        mraidFullscreenContainer = fslayout;
+        mraidFullscreenImplementation = caller;
+        mraidFullscreenListener = listener;
+
+        Class<?> activity_clz = AdActivity.getActivityClass();
+        try {
+            Intent i = new Intent(getContext(), activity_clz);
+            i.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE,
+                    AdActivity.ACTIVITY_TYPE_MRAID);
+            getContext().startActivity(i);
+        } catch (ActivityNotFoundException e) {
+            Clog.e(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing, activity_clz.getName()));
+            mraidFullscreenContainer = null;
+            mraidFullscreenImplementation = null;
+            mraidFullscreenListener = null;
+        }
+    }
+
     void expand(int w, int h, boolean custom_close,
                           final MRAIDImplementation caller,
                           AdWebView.MRAIDFullscreenListener listener) {
@@ -381,32 +410,7 @@ public abstract class AdView extends FrameLayout {
         });
 
         if (caller.owner.isFullScreen) {
-            caller.setDefaultContainer((ViewGroup) caller.owner.getParent());
-
-            //Make a new framelayout to contain webview and button
-            FrameLayout fslayout = new FrameLayout(this.getContext());
-
-            // remove the webview from its parent and add it to the fullscreen container
-            ViewUtil.removeChildFromParent(caller.owner);
-            fslayout.addView(caller.owner);
-            if (!custom_close) fslayout.addView(close_button);
-
-            mraidFullscreenContainer = fslayout;
-            mraidFullscreenImplementation = caller;
-            mraidFullscreenListener = listener;
-
-            Class<?> activity_clz = AdActivity.getActivityClass();
-            try {
-                Intent i = new Intent(getContext(), activity_clz);
-                i.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE,
-                        AdActivity.ACTIVITY_TYPE_MRAID);
-                getContext().startActivity(i);
-            } catch (ActivityNotFoundException e) {
-                Clog.e(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing, activity_clz.getName()));
-                mraidFullscreenContainer = null;
-                mraidFullscreenImplementation = null;
-                mraidFullscreenListener = null;
-            }
+            mraidFullscreenExpand(caller, custom_close, listener);
         } else {
             // if not fullscreen, just add the close button
             if (!custom_close) this.addView(close_button);
