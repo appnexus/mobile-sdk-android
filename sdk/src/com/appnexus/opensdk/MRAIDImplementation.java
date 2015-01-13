@@ -242,6 +242,7 @@ class MRAIDImplementation {
                 a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             expanded = false;
             resized = false;
+            twoPartWebView = null;
         } else {
             // state must be default
             owner.hide();
