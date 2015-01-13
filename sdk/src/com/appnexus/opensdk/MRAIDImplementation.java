@@ -232,7 +232,8 @@ class MRAIDImplementation {
             owner.close();
             owner.loadUrl("javascript:window.mraid.util.stateChangeEvent('default');");
 
-            if (!owner.adView.isInterstitial()) {
+            //Avoid calling onAdCollapsed if this is the TwoPartView closing
+            if (!owner.adView.isInterstitial() && !isMRAIDTwoPartExpanded) {
                 owner.adView.getAdDispatcher().onAdCollapsed();
             }
 
