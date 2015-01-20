@@ -753,10 +753,13 @@ class AdWebView extends WebView implements Displayable {
     }
 }
 
-class TwoPartWebView extends AdWebView{
+class MRAIDTwoPartExpandWebView extends AdWebView{
     MRAIDImplementation firstPartImplementation;
 
-    TwoPartWebView(AdView adView, MRAIDImplementation firstPartImplementation){
+    //The mraidimplementation parameter is NOT here to be reused by this webview.
+    //this webview will make its own mraidimplementation
+    //and only access the first one when it closes, below
+    MRAIDTwoPartExpandWebView(AdView adView, MRAIDImplementation firstPartImplementation){
         super(adView);
         this.initialMraidStateString = MRAIDImplementation.MRAID_INIT_STATE_STRINGS[
                 MRAIDImplementation.MRAID_INIT_STATE.STARTING_EXPANDED.ordinal()];

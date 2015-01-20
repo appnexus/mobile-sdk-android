@@ -243,14 +243,14 @@ class MRAIDImplementation {
                 a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             expanded = false;
             resized = false;
-            twoPartWebView = null;
+            expandedWebView = null;
         } else {
             // state must be default
             owner.hide();
         }
     }
 
-    private TwoPartWebView twoPartWebView = null;
+    private MRAIDTwoPartExpandWebView expandedWebView = null;
     void expand(ArrayList<BasicNameValuePair> parameters) {
         // Default value is fullscreen.
         int width = -1;
@@ -285,18 +285,22 @@ class MRAIDImplementation {
 
         //A new webview is used for two-part creatives
         if (!StringUtil.isEmpty(uri)) {
-            twoPartWebView = new TwoPartWebView(this.owner.adView, this);
-            twoPartWebView.loadUrlWithMRAID(uri);
+            //We must pass a reference to the current MRAIDImplementation in order for the
+            //second webview to forward the close event back
+
+            //"This" mraid implementation is *not* reused by the second webview
+            expandedWebView = new MRAIDTwoPartExpandWebView(this.owner.adView, this);
+            expandedWebView.loadUrlWithMRAID(uri);
 
             final boolean allowOrientationChangeInner = allowOrientationChange;
             final AdActivity.OrientationEnum forceOrientationInner = forceOrientation;
-            this.owner.adView.mraidFullscreenExpand(twoPartWebView.getMRAIDImplementation(),
+            this.owner.adView.mraidFullscreenExpand(expandedWebView.getMRAIDImplementation(),
                     useCustomClose, new AdWebView.MRAIDFullscreenListener(){
                 @Override
                 public void onCreateCompleted() {
                     // lock orientation if necessary
                     if (getFullscreenActivity() != null) {
-                        twoPartWebView.lockOrientationFromExpand(getFullscreenActivity(),
+                        expandedWebView.lockOrientationFromExpand(getFullscreenActivity(),
                                 allowOrientationChangeInner, forceOrientationInner);
                         AdView.mraidFullscreenListener = null; // only listen once
                     }
