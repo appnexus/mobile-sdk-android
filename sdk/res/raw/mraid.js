@@ -168,8 +168,8 @@
                     return;
                 }
                 mraid.util.nativeCall("mraid://expand/"
-                    + "?w=" + mraid.getExpandProperties().width
-                    + "&h=" + mraid.getExpandProperties().height
+                    + "?w=-1"
+                    + "&h=-1"
                     + "&useCustomClose=" + mraid.getExpandProperties().useCustomClose
                     + (url != null ? "&url=" + url : "")
                     + "&allow_orientation_change=" + orientation_properties.allowOrientationChange
