@@ -80,10 +80,9 @@ public class MRAIDImplementationTest extends BaseRoboTest {
         String useCustomClose = "false";
         String allowOrientationChange = "true";
         String forceOrientation = "none";
-        String url = "http://www.appnexus.com";
 
-        String mraidCall = String.format("mraid://expand?w=%d&h=%d&useCustomClose=%s&url=%s&allow_orientation_change=%s&force_orientation=%s",
-                width, height, useCustomClose, url, allowOrientationChange, forceOrientation);
+        String mraidCall = String.format("mraid://expand?w=%d&h=%d&useCustomClose=%s&allow_orientation_change=%s&force_orientation=%s",
+                width, height, useCustomClose, allowOrientationChange, forceOrientation);
         implementation.dispatch_mraid_call(mraidCall);
 
         assertEquals(mockAdWebView.width, width);
@@ -91,7 +90,6 @@ public class MRAIDImplementationTest extends BaseRoboTest {
         assertEquals(mockAdWebView.customClose, false);
         assertEquals(mockAdWebView.allowOrientationChange, true);
         assertEquals(mockAdWebView.orientation, AdActivity.OrientationEnum.none);
-        assertEquals(mockAdWebView.testString, url);
 
         assertTrue(implementation.expanded);
 

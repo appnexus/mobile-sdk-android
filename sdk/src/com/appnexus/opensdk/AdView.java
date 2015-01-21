@@ -364,6 +364,8 @@ public abstract class AdView extends FrameLayout {
         // remove the webview from its parent and add it to the fullscreen container
         ViewUtil.removeChildFromParent(caller.owner);
         fslayout.addView(caller.owner);
+
+        if(close_button==null) close_button = ViewUtil.createCloseButton(this.getContext(), use_custom_close);
         if (!use_custom_close) fslayout.addView(close_button);
 
         mraidFullscreenContainer = fslayout;
