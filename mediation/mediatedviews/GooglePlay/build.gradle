@@ -27,7 +27,7 @@ android {
 }
 
 dependencies {
-    compile 'com.google.android.gms:play-services:6.1.11'
+    compile 'com.google.android.gms:play-services:6.5.87'
     compile project(':sdk')
 }
 

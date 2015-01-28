@@ -29,6 +29,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
     compile project(':sdk')
-    compile 'com.android.support:support-v4:19.1.+'
+    compile 'com.android.support:support-v4:21.0.2'
+    compile 'com.android.support:support-annotations:20.0.0'
 }
 
