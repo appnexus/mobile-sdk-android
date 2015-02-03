@@ -565,7 +565,7 @@ public class BannerAdView extends AdView {
                 setOpensNativeBrowser(a.getBoolean(attr, false));
                 Clog.d(Clog.xmlLogTag, Clog.getString(
                         R.string.xml_set_opens_native_browser,
-                        opensNativeBrowser));
+                        getOpensNativeBrowser()));
             }else if (attr == R.styleable.BannerAdView_expands_to_fit_screen_width){
                 setExpandsToFitScreenWidth(a.getBoolean(attr, false));
                 Clog.d(Clog.xmlLogTag, Clog.getString(

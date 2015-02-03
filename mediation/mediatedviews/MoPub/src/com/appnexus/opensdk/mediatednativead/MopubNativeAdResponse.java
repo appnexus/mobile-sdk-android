@@ -17,38 +17,41 @@
 package com.appnexus.opensdk.mediatednativead;
 
 import android.graphics.Bitmap;
-import android.os.Looper;
 import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.view.View;
 
 import com.appnexus.opensdk.NativeAdEventListener;
 import com.appnexus.opensdk.NativeAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
-import com.facebook.ads.NativeAd;
+import com.mopub.nativeads.NativeResponse;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class FBNativeAdResponse implements NativeAdResponse {
+public class MoPubNativeAdResponse implements NativeAdResponse{
     private String title;
     private String description;
     private String imageUrl;
     private String iconUrl;
     private String callToAction;
-    private Bitmap coverImage;
     private Bitmap icon;
-    private NativeAd nativeAd;
+    private Bitmap coverImage;
     private String socialContext;
     private Rating rating;
     private HashMap<String, String> nativeElements = new HashMap<String, String>();
     private boolean expired = false;
     private boolean registered = false;
+    private NativeResponse nativeResponse;
     private NativeAdEventListener listener;
     private Runnable runnable;
+    private View registeredView;
+    private List<View> registeredClickables;
 
-    public FBNativeAdResponse(NativeAd ad) {
-        this.nativeAd = ad;
+
+    public MoPubNativeAdResponse() {
         runnable = new Runnable() {
             @Override
             public void run() {
@@ -62,20 +65,38 @@ public class FBNativeAdResponse implements NativeAdResponse {
                 }
                 listener = null;
                 expired = true;
-                if (nativeAd != null) {
-                    nativeAd.setAdListener(null);
-                    nativeAd.destroy();
-                    nativeAd = null;
+                if (nativeResponse != null) {
+                    nativeResponse.destroy();
+                    nativeResponse = null;
                 }
+                registeredView = null;
+                registeredClickables = null;
             }
         };
         Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(runnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
     }
 
+    void setResources(@NonNull NativeResponse response) {
+        this.nativeResponse = response;
+        this.title = nativeResponse.getTitle();
+        this.description = nativeResponse.getText();
+        this.imageUrl = nativeResponse.getMainImageUrl();
+        this.iconUrl = nativeResponse.getIconImageUrl();
+        this.callToAction = nativeResponse.getCallToAction();
+        try {
+            this.rating = new Rating(nativeResponse.getStarRating(), 5.0);
+        } catch (NullPointerException e) {
+            this.rating = null;
+        }
+        if (nativeResponse.getExtras() != null && !nativeResponse.getExtras().isEmpty()) {
+            // put extras in native response
+        }
+    }
+
     @Override
     public Network getNetworkIdentifier() {
-        return Network.FACEBOOK;
+        return Network.MOPUB;
     }
 
     @Override
@@ -114,8 +135,8 @@ public class FBNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public void setIcon(Bitmap icon) {
-        this.icon = icon;
+    public void setIcon(Bitmap bitmap) {
+        this.icon = bitmap;
     }
 
     @Override
@@ -138,27 +159,6 @@ public class FBNativeAdResponse implements NativeAdResponse {
         return rating;
     }
 
-    boolean setResources() {
-        if (nativeAd!= null && nativeAd.isAdLoaded()) {
-            title = nativeAd.getAdTitle();
-            description = nativeAd.getAdBody();
-            if (nativeAd.getAdIcon() != null) {
-                iconUrl = nativeAd.getAdIcon().getUrl();
-            }
-            if (nativeAd.getAdCoverImage() != null) {
-                imageUrl = nativeAd.getAdCoverImage().getUrl();
-            }
-            callToAction = nativeAd.getAdCallToAction();
-            socialContext = nativeAd.getAdSocialContext();
-            if (nativeAd.getAdStarRating() != null) {
-                rating = new Rating(nativeAd.getAdStarRating().getValue(),
-                        nativeAd.getAdStarRating().getScale());
-            }
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public boolean hasExpired() {
         return expired;
@@ -166,39 +166,59 @@ public class FBNativeAdResponse implements NativeAdResponse {
 
     @Override
     public boolean registerView(View view, NativeAdEventListener listener) {
-        if (nativeAd != null && !registered) {
-            nativeAd.registerViewForInteraction(view);
+        if (nativeResponse != null && ! registered) {
+            nativeResponse.prepare(view);
+            registeredView = view;
             registered = true;
         }
         this.listener = listener;
         return registered;
     }
+
 
     @Override
     public boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
-        if (nativeAd != null && !registered) {
-            nativeAd.registerViewForInteraction(view, clickables);
-            registered = true;
+        if (nativeResponse != null && !registered) {
+            registeredClickables = clickables;
+            for (View clickable: clickables) {
+                nativeResponse.prepare(clickable);
+            }
         }
         this.listener = listener;
         return registered;
     }
-
-    NativeAdEventListener getListener() {
-        return listener;
-    }
-
 
     @Override
     public void unregisterViews() {
         if (hasExpired()) {
             Clog.d(Clog.mediationLogTag, "This NativeAdResponse has expired.");
         }
-        if (nativeAd != null) {
-            nativeAd.unregisterView();
+        if (nativeResponse != null) {
+            if (registeredView != null) {
+                nativeResponse.clear(registeredView);
+            }
+            if (registeredClickables != null && !registeredClickables.isEmpty()) {
+                for (View view : registeredClickables) {
+                    nativeResponse.clear(view);
+                }
+            }
         }
         destroy();
+
     }
+
+    void onAdClicked() {
+        if (listener != null) {
+            listener.onAdWasClicked();
+        }
+    }
+
+    void onAdWillLeaveApplication() {
+        if (listener != null) {
+            listener.onAdWillLeaveApplication();
+        }
+    }
+
 
     @Override
     public void destroy() {

@@ -20,10 +20,12 @@ import android.os.Build;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
+
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.DateUtils;
 
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
@@ -46,6 +48,14 @@ public class WebviewUtil {
         webView.getSettings().setDomStorageEnabled(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            CookieManager cm = CookieManager.getInstance();
+            if (cm != null) {
+                cm.setAcceptThirdPartyCookies(webView, true);
+            } else {
+                Clog.d(Clog.baseLogTag, "Failed to set Webview to accept 3rd party cookie");
+            }
         }
     }
 
@@ -83,7 +93,7 @@ public class WebviewUtil {
         }
     }
 
-    /***
+    /**
      * Synchronize the uuid2 cookie to the Webview Cookie Jar
      * This is only done if there is no present cookie.  
      * @param cookies Cookies to sync
@@ -100,12 +110,7 @@ public class WebviewUtil {
                 Clog.d(Clog.httpRespLogTag, "Webview already has our cookie");
                 return;
             }
-            CookieSyncManager csm = CookieSyncManager.getInstance();
-            if (csm == null) {
-                Clog.i(Clog.httpRespLogTag,
-                        "Unable to find a CookieSyncManager");
-                return;
-            }
+
             StringBuilder sb = new StringBuilder();
             for (Cookie c : cookies) {
                 if (!Settings.AN_UUID.equals(c.getName())) {
@@ -132,11 +137,33 @@ public class WebviewUtil {
                 }
                 Clog.d(Clog.httpRespLogTag, "set-cookie: " + sb.toString());
                 cm.setCookie(Settings.COOKIE_DOMAIN, sb.toString());
+
+            }
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                // CookieSyncManager is deprecated in API 21 Lollipop
+                CookieSyncManager csm = CookieSyncManager.getInstance();
+                if (csm == null) {
+                    Clog.i(Clog.httpRespLogTag,
+                            "Unable to find a CookieSyncManager");
+                    return;
+                }
                 csm.sync();
+            } else {
+                cm.flush();
             }
         } catch (IllegalStateException ise) {
         } catch (Exception e) {
         }
 
+    }
+
+    public static String getCookie() {
+        CookieManager cm = CookieManager.getInstance();
+        if (cm == null) {
+            Clog.i(Clog.httpRespLogTag, "Unable to find a CookieManager");
+            return null;
+        }
+        String wvcookie = cm.getCookie(Settings.BASE_URL);
+        return wvcookie;
     }
 }

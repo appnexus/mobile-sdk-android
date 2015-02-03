@@ -44,6 +44,8 @@
 	<string formatted="false" name="xml_set_opens_native_browser">OpensNativeBrowser is set to %b in xml</string>
 	<string formatted="false" name="xml_ad_width">Ad width set to %d in xml</string>
 	<string formatted="false" name="xml_ad_height">Ad height set to %d in xml</string>
+    <string formatted="false" name="set_gender">setGender() to: %s</string>
+    <string formatted="false" name="get_gender">getGender() to: %s</string>
 	<string formatted="false" name="get_period">getAutoRefreshInterval() returned %d</string>
 	<string formatted="false" name="set_period">setAutoRefreshInterval() to: %d</string>
 	<string formatted="false" name="get_auto_refresh">getAutoRefresh() returned %b</string>

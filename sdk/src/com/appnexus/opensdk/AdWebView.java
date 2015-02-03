@@ -44,11 +44,9 @@ import com.appnexus.opensdk.utils.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 @SuppressLint("ViewConstructor")
 class AdWebView extends WebView implements Displayable {
-    static LinkedList<WebView> BROWSER_QUEUE = new LinkedList<WebView>();
     private boolean failed = false;
     AdView adView;
 
@@ -368,7 +366,7 @@ class AdWebView extends WebView implements Displayable {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
 
-        AdWebView.BROWSER_QUEUE.add(fwdWebView);
+        BrowserAdActivity.BROWSER_QUEUE.add(fwdWebView);
         if (adView.getBrowserStyle() != null) {
             String i = "" + super.hashCode();
             intent.putExtra("bridgeid", i);
@@ -381,7 +379,7 @@ class AdWebView extends WebView implements Displayable {
             adView.getContext().startActivity(intent);
         } catch (ActivityNotFoundException e) {
             Clog.w(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing, activity_clz.getName()));
-            AdWebView.BROWSER_QUEUE.remove();
+            BrowserAdActivity.BROWSER_QUEUE.remove();
         }
     }
 

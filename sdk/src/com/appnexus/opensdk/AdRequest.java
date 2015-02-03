@@ -359,7 +359,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         }
         nonet = nonetSB.toString();
 
-        if (media_type!=MediaType.NATIVE) {
+        if (media_type != MediaType.NATIVE) {
             if ((maxHeight <= 0 || maxWidth <= 0) &&
                     (width <= 0 || height <= 0)) {
                 Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.no_size_info));
@@ -412,9 +412,9 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (width > 0 && height > 0) sb.append("&size=").append(width).append("x").append(height);
         // complicated, don't change
         if (maxHeight > 0 && maxWidth > 0) {
-            if (media_type!=MediaType.INTERSTITIAL && (width < 0 || height < 0)) {
+            if (media_type != MediaType.INTERSTITIAL && (width < 0 || height < 0)) {
                 sb.append("&max_size=").append(maxWidth).append("x").append(maxHeight);
-            } else if (media_type==MediaType.INTERSTITIAL) {
+            } else if (media_type == MediaType.INTERSTITIAL) {
                 sb.append("&size=").append(maxWidth).append("x").append(maxHeight);
             }
         }
@@ -529,7 +529,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
             // marked as UNABLE_TO_FILL
             Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
         }
-        return new AdResponse(out, r.getAllHeaders());
+        return new AdResponse(out, r.getAllHeaders(), media_type);
     }
 
     private boolean hasNetwork() {

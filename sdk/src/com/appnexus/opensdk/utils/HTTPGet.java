@@ -53,6 +53,7 @@ public abstract class HTTPGet extends AsyncTask<Void, Void, HTTPResponse> {
             HttpGet request = new HttpGet();
             request.setHeader("User-Agent", Settings.getSettings().ua);
             request.setURI(uri);
+            request.addHeader("Cookie", WebviewUtil.getCookie());
             HttpResponse r = httpc.execute(request);
 
             out.setHeaders(r.getAllHeaders());

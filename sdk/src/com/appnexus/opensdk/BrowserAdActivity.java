@@ -36,7 +36,10 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.ViewUtil;
 
+import java.util.LinkedList;
+
 class BrowserAdActivity implements AdActivity.AdActivityImplementation {
+    static LinkedList<WebView> BROWSER_QUEUE = new LinkedList<WebView>();
     private Activity adActivity;
     private WebView webView;
     private boolean shouldDestroyActivity = false;
@@ -52,7 +55,7 @@ class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     public void create() {
         adActivity.setContentView(R.layout.activity_in_app_browser);
 
-        webView = AdWebView.BROWSER_QUEUE.poll();
+        webView = BROWSER_QUEUE.poll();
         if ((webView == null) || (webView.getSettings() == null)) {
             finishAdActivity();
             return;
@@ -261,7 +264,7 @@ class BrowserAdActivity implements AdActivity.AdActivityImplementation {
             webView.destroy();
         } else {
             // activity is just rotating, push webView to recreate
-            AdWebView.BROWSER_QUEUE.addFirst(webView);
+            BROWSER_QUEUE.addFirst(webView);
         }
     }
 

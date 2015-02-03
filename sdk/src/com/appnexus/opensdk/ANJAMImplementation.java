@@ -148,7 +148,7 @@ class ANJAMImplementation {
 
         WebView browserWebView = new WebView(webView.getContext());
         WebviewUtil.setWebViewSettings(browserWebView);
-        AdWebView.BROWSER_QUEUE.add(browserWebView);
+        BrowserAdActivity.BROWSER_QUEUE.add(browserWebView);
         browserWebView.loadUrl(url);
 
         if (webView.adView.getBrowserStyle() != null) {
@@ -166,7 +166,7 @@ class ANJAMImplementation {
                     R.string.action_cant_be_completed,
                     Toast.LENGTH_SHORT).show();
             Clog.w(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing,activity_clz.getName()));
-            AdWebView.BROWSER_QUEUE.remove();
+            BrowserAdActivity.BROWSER_QUEUE.remove();
         }
     }
 

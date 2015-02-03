@@ -296,7 +296,6 @@ public abstract class MediatedAdViewController {
 
         boolean ignoreResult = false; // default is to not ignore
         if ((requester != null)
-//                && (requester.getOwner() != null)
                 && (requester.getMediatedAds() != null)) {
             // ignore resultCB except on the last mediated ad
             ignoreResult = requester.getMediatedAds().size() > 0;

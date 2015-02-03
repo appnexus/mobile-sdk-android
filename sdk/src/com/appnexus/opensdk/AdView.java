@@ -51,7 +51,6 @@ import java.util.ArrayList;
 public abstract class AdView extends FrameLayout {
 
 	AdFetcher mAdFetcher;
-	boolean opensNativeBrowser = false;
 	boolean mraid_changing_size_or_visibility = false;
     int creativeWidth;
     int creativeHeight;

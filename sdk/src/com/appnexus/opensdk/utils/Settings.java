@@ -67,6 +67,8 @@ public class Settings {
     public static final long MEDIATED_NETWORK_TIMEOUT = 15000;
 
     public static final long NATIVE_AD_RESPONSE_EXPIRATION_TIME = 3600000; // an hour
+    public static final int NATIVE_AD_VISIBILE_PERIOD_MILLIS = 1000;
+    public static final int MIN_PERCENTAGE_VIEWED = 50;
 
     public static String COOKIE_DOMAIN = "http://mediation.adnxs.com";
     public static final String AN_UUID = "uuid2";

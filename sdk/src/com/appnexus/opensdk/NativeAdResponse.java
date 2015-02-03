@@ -25,6 +25,7 @@ import java.util.List;
 public interface NativeAdResponse {
     public enum Network{
         FACEBOOK,
+        MOPUB,
         APPNEXUS
     }
     /**

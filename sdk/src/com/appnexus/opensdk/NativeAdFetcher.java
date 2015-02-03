@@ -65,10 +65,9 @@ class NativeAdFetcher extends AdFetcher {
             // mediated
             MediatedNativeAdController.create(mediatedAd, this, request.getDispatcher());
         } else {
-            // create AN Native ad
-            // call request.getDispatcher().onAdLoaded(ANNativeAdResponse);
-            // For current release
-            request.getDispatcher().onAdFailed(ResultCode.INTERNAL_ERROR);
+            ANNativeAdResponse nativeAdResponse = (ANNativeAdResponse) response.getNativeAdReponse();
+            nativeAdResponse.openNativeBrowser(request.getOpensNativeBrowser());
+            request.getDispatcher().onAdLoaded(response.getNativeAdReponse());
         }
     }
 

@@ -43,11 +43,42 @@ public class NativeAdRequest {
     }
 
     /**
+     * Retrieve the setting that determines whether or not the
+     * device's native browser is used instead of the in-app
+     * browser when the user clicks an ad.
+     *
+     * @return true if the device's native browser will be used; false otherwise.
+     */
+    public boolean getOpensNativeBrowser() {
+        Clog.d(Clog.nativeLogTag, Clog.getString(
+                R.string.get_opens_native_browser, requestParameters.getOpensNativeBrowser()));
+        return requestParameters.getOpensNativeBrowser();
+    }
+
+    /**
+     * Set this to true to disable the in-app browser.  This will
+     * cause URLs to open in a native browser such as Chrome so
+     * that when the user clicks on an ad, your app will be paused
+     * and the native browser will open.  Set this to false to
+     * enable the in-app browser instead (a lightweight browser
+     * that runs within your app).  The default value is false.
+     *
+     * @param opensNativeBrowser
+     */
+    public void setOpensNativeBrowser(boolean opensNativeBrowser) {
+        Clog.d(Clog.nativeLogTag, Clog.getString(
+                R.string.set_opens_native_browser, opensNativeBrowser));
+        requestParameters.setOpensNativeBrowser(opensNativeBrowser);
+    }
+
+    /**
      * Set the placement id for ad request.
      *
      * @param placementID Placement ID.
      */
     public void setPlacementID(String placementID) {
+        Clog.d(Clog.nativeLogTag, Clog.getString(
+                R.string.set_placement_id, placementID));
         requestParameters.setPlacementID(placementID);
     }
 
@@ -57,6 +88,8 @@ public class NativeAdRequest {
      * @return The Placement ID
      */
     public String getPlacementID() {
+        Clog.d(Clog.nativeLogTag, Clog.getString(
+                R.string.get_placement_id, requestParameters.getPlacementID()));
         return requestParameters.getPlacementID();
     }
 
@@ -66,6 +99,8 @@ public class NativeAdRequest {
      * @param gender User's gender
      */
     public void setGender(AdView.GENDER gender) {
+        Clog.d(Clog.nativeLogTag, Clog.getString(
+                R.string.set_gender, gender.toString()));
         requestParameters.setGender(gender);
     }
 
@@ -75,6 +110,8 @@ public class NativeAdRequest {
      * @return User's gender
      */
     public AdView.GENDER getGender() {
+        Clog.d(Clog.nativeLogTag, Clog.getString(
+                R.string.get_gender, requestParameters.getGender().toString()));
         return requestParameters.getGender();
     }
 

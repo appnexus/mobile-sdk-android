@@ -19,6 +19,7 @@ package com.appnexus.opensdk;
 import android.annotation.SuppressLint;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPResponse;
+import com.appnexus.opensdk.utils.JsonUtil;
 import com.appnexus.opensdk.utils.StringUtil;
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -35,6 +36,7 @@ class AdResponse {
     private int height;
     private int width;
     private String type;
+    private MediaType mediaType;
 
     private LinkedList<MediatedAd> mediatedAds;
 
@@ -58,6 +60,7 @@ class AdResponse {
     private static final String RESPONSE_KEY_ID = "id";
     private static final String RESPONSE_KEY_PARAM = "param";
     private static final String RESPONSE_KEY_RESULT_CB = "result_cb";
+    private static final String RESPONSE_KEY_NATIVE = "native";
 
     private static final String RESPONSE_VALUE_ERROR = "error";
     private static final String RESPONSE_VALUE_ANDROID = "android";
@@ -65,7 +68,7 @@ class AdResponse {
     static final String EXTRAS_KEY_MRAID = "MRAID";
     static final String EXTRAS_KEY_ORIENTATION = "ORIENTATION";
 
-    public AdResponse(String body, Header[] headers) {
+    public AdResponse(String body, Header[] headers, MediaType mediaType) {
         if (StringUtil.isEmpty(body)) {
             Clog.clearLastResponse();
             return;
@@ -76,6 +79,7 @@ class AdResponse {
         Clog.d(Clog.httpRespLogTag,
                 Clog.getString(R.string.response_body, body));
 
+        this.mediaType = mediaType;
         printHeaders(headers);
         parseResponse(body);
     }
@@ -124,18 +128,25 @@ class AdResponse {
 
         // stop parsing if status is not valid
         if (!checkStatusIsValid(response)) return;
-        // stop parsing if we get an ad from ads[]
-        if (handleStdAds(response)) return;
+        if (mediaType != MediaType.NATIVE) {
+            // stop parsing if we get an ad from ads[]
+            if (handleStdAds(response)) return;
+        } else {
+            // stop parsing if we get an ad from native[]
+            // the order needs to be handled
+            if (handleNativeAds(response)) return;
+        }
+
         // stop parsing if we get an ad from mediated[]
         if (handleMediatedAds(response)) return;
     }
 
     // returns true if no error in status. don't fail on null or missing status
     private boolean checkStatusIsValid(JSONObject response) {
-        String status = getJSONString(response, RESPONSE_KEY_STATUS);
+        String status = JsonUtil.getJSONString(response, RESPONSE_KEY_STATUS);
         if (status != null) {
             if (status.equals(RESPONSE_VALUE_ERROR)) {
-                String error = getJSONString(response, RESPONSE_KEY_ERROR_MESSAGE);
+                String error = JsonUtil.getJSONString(response, RESPONSE_KEY_ERROR_MESSAGE);
                 Clog.e(Clog.httpRespLogTag,
                         Clog.getString(R.string.response_error, error));
                 return false;
@@ -146,14 +157,14 @@ class AdResponse {
 
     // returns true if response contains an ad, false if not
     private boolean handleStdAds(JSONObject response) {
-        JSONArray ads = getJSONArray(response, RESPONSE_KEY_ADS);
+        JSONArray ads = JsonUtil.getJSONArray(response, RESPONSE_KEY_ADS);
         if (ads != null) {
             // take the first ad
-            JSONObject firstAd = getJSONObjectFromArray(ads, 0);
-            type = getJSONString(firstAd, RESPONSE_KEY_TYPE);
-            height = getJSONInt(firstAd, RESPONSE_KEY_HEIGHT);
-            width = getJSONInt(firstAd, RESPONSE_KEY_WIDTH);
-            content = getJSONString(firstAd, RESPONSE_KEY_CONTENT);
+            JSONObject firstAd = JsonUtil.getJSONObjectFromArray(ads, 0);
+            type = JsonUtil.getJSONString(firstAd, RESPONSE_KEY_TYPE);
+            height = JsonUtil.getJSONInt(firstAd, RESPONSE_KEY_HEIGHT);
+            width = JsonUtil.getJSONInt(firstAd, RESPONSE_KEY_WIDTH);
+            content = JsonUtil.getJSONString(firstAd, RESPONSE_KEY_CONTENT);
             if (StringUtil.isEmpty(content)) {
                 Clog.e(Clog.httpRespLogTag,
                         Clog.getString(R.string.blank_ad));
@@ -169,33 +180,51 @@ class AdResponse {
         return false;
     }
 
+    private ANNativeAdResponse anNativeAdResponse;
+
+    // returns true if response contains a native response, false if not
+    private boolean handleNativeAds(JSONObject response) {
+        JSONArray nativeAd = JsonUtil.getJSONArray(response, RESPONSE_KEY_NATIVE);
+        if (nativeAd != null) {
+            // take the first ad
+            JSONObject firstAd = JsonUtil.getJSONObjectFromArray(nativeAd, 0);
+            type = JsonUtil.getJSONString(firstAd, RESPONSE_KEY_TYPE);
+            anNativeAdResponse = ANNativeAdResponse.create(firstAd);
+            if (anNativeAdResponse != null){
+                containsAds = true;
+                return true;
+            }
+        }
+        return false;
+    }
+
     // returns true if response contains an ad, false if not
     private boolean handleMediatedAds(JSONObject response) {
-        JSONArray mediated = getJSONArray(response, RESPONSE_KEY_MEDIATED_ADS);
+        JSONArray mediated = JsonUtil.getJSONArray(response, RESPONSE_KEY_MEDIATED_ADS);
         if (mediated != null) {
             mediatedAds = new LinkedList<MediatedAd>();
             for (int i = 0; i < mediated.length(); i++) {
                 // parse through the elements of the mediated array for handlers
-                JSONObject mediatedElement = getJSONObjectFromArray(mediated, i);
+                JSONObject mediatedElement = JsonUtil.getJSONObjectFromArray(mediated, i);
                 if (mediatedElement != null) {
-                    JSONArray handler = getJSONArray(mediatedElement, RESPONSE_KEY_HANDLER);
+                    JSONArray handler = JsonUtil.getJSONArray(mediatedElement, RESPONSE_KEY_HANDLER);
                     if (handler != null) {
                         for (int j = 0; j < handler.length(); j++) {
                             // get mediatedAd fields from handlerElement if available
-                            JSONObject handlerElement = getJSONObjectFromArray(handler, j);
+                            JSONObject handlerElement = JsonUtil.getJSONObjectFromArray(handler, j);
                             if (handlerElement != null) {
                                 // we only care about handlers for android
-                                String type = getJSONString(handlerElement, RESPONSE_KEY_TYPE);
+                                String type = JsonUtil.getJSONString(handlerElement, RESPONSE_KEY_TYPE);
                                 if (type != null) {
                                     type = type.toLowerCase(Locale.US);
                                 }
                                 if ((type != null) && type.equals(RESPONSE_VALUE_ANDROID)) {
-                                    String className = getJSONString(handlerElement, RESPONSE_KEY_CLASS);
-                                    String param = getJSONString(handlerElement, RESPONSE_KEY_PARAM);
-                                    int height = getJSONInt(handlerElement, RESPONSE_KEY_HEIGHT);
-                                    int width = getJSONInt(handlerElement, RESPONSE_KEY_WIDTH);
-                                    String adId = getJSONString(handlerElement, RESPONSE_KEY_ID);
-                                    String resultCB = getJSONString(mediatedElement, RESPONSE_KEY_RESULT_CB);
+                                    String className = JsonUtil.getJSONString(handlerElement, RESPONSE_KEY_CLASS);
+                                    String param = JsonUtil.getJSONString(handlerElement, RESPONSE_KEY_PARAM);
+                                    int height = JsonUtil.getJSONInt(handlerElement, RESPONSE_KEY_HEIGHT);
+                                    int width = JsonUtil.getJSONInt(handlerElement, RESPONSE_KEY_WIDTH);
+                                    String adId = JsonUtil.getJSONString(handlerElement, RESPONSE_KEY_ID);
+                                    String resultCB = JsonUtil.getJSONString(mediatedElement, RESPONSE_KEY_RESULT_CB);
 
                                     if (!StringUtil.isEmpty(className)) {
                                         mediatedAds.add(new MediatedAd(className,
@@ -215,6 +244,14 @@ class AdResponse {
             }
         }
         return false;
+    }
+
+    public NativeAdResponse getNativeAdReponse() {
+        return anNativeAdResponse;
+    }
+
+    public MediaType getMediaType() {
+        return mediaType;
     }
 
     public String getContent() {
@@ -254,37 +291,4 @@ class AdResponse {
         extras.put(key, value);
     }
 
-    // also returns null if array is empty
-    private static JSONArray getJSONArray(JSONObject object, String key) {
-        if (object == null) return null;
-        try {
-            JSONArray array =  object.getJSONArray(key);
-            return array.length() > 0 ? array : null;
-        } catch (JSONException ignored) {}
-        return null;
-    }
-
-    private static JSONObject getJSONObjectFromArray(JSONArray array, int index) {
-        if (array == null) return null;
-        try {
-            return array.getJSONObject(index);
-        } catch (JSONException ignored) {}
-        return null;
-    }
-
-    private static String getJSONString(JSONObject object, String key) {
-        if (object == null) return null;
-        try {
-            return object.getString(key);
-        } catch (JSONException ignored) {}
-        return null;
-    }
-
-    private static int getJSONInt(JSONObject object, String key) {
-        if (object == null) return -1;
-        try {
-            return object.getInt(key);
-        } catch (JSONException ignored) {}
-        return -1;
-    }
 }

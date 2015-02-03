@@ -52,7 +52,7 @@ public class AdActivityTest extends BaseRoboTest {
     @Override
     public void tearDown() {
         super.tearDown();
-        AdWebView.BROWSER_QUEUE.clear();
+        BrowserAdActivity.BROWSER_QUEUE.clear();
         adActivity = null;
         activityController = null;
         implementation = null;
@@ -75,10 +75,10 @@ public class AdActivityTest extends BaseRoboTest {
         // creating AdActivity creates an implementation,
         // which consumes a webview
         WebView webView = new WebView(Robolectric.application);
-        AdWebView.BROWSER_QUEUE.add(webView);
+        BrowserAdActivity.BROWSER_QUEUE.add(webView);
         createActivity(AdActivity.ACTIVITY_TYPE_BROWSER);
 
-        assertEquals(0, AdWebView.BROWSER_QUEUE.size());
+        assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
     }
 
     private void createBrowserImplementation() {
@@ -87,14 +87,14 @@ public class AdActivityTest extends BaseRoboTest {
 
         // creating an implementation consumes a webview
         WebView webView = new WebView(Robolectric.application);
-        AdWebView.BROWSER_QUEUE.add(webView);
-        assertEquals(1, AdWebView.BROWSER_QUEUE.size());
+        BrowserAdActivity.BROWSER_QUEUE.add(webView);
+        assertEquals(1, BrowserAdActivity.BROWSER_QUEUE.size());
 
         implementation = new BrowserAdActivity(adActivity);
         implementation.create();
         assertNotNull(implementation.getWebView());
 
-        assertEquals(0, AdWebView.BROWSER_QUEUE.size());
+        assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
     }
 
     private void runActivityLifecycle() {
@@ -110,14 +110,14 @@ public class AdActivityTest extends BaseRoboTest {
     @Test
     public void testBrowserCreate() {
         createBrowserActivity();
-        assertEquals(0, AdWebView.BROWSER_QUEUE.size());
+        assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
     }
 
     @Test
     public void testBrowserDestroy() {
         testBrowserCreate();
         runActivityLifecycle();
-        assertEquals(1, AdWebView.BROWSER_QUEUE.size());
+        assertEquals(1, BrowserAdActivity.BROWSER_QUEUE.size());
     }
 
     @Test
@@ -125,7 +125,7 @@ public class AdActivityTest extends BaseRoboTest {
         testBrowserCreate();
         adActivity.onBackPressed();
         runActivityLifecycle();
-        assertEquals(0, AdWebView.BROWSER_QUEUE.size());
+        assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
     }
 
     @Test
@@ -133,11 +133,11 @@ public class AdActivityTest extends BaseRoboTest {
         testBrowserDestroy();
 
         createActivity(AdActivity.ACTIVITY_TYPE_BROWSER);
-        assertEquals(0, AdWebView.BROWSER_QUEUE.size());
+        assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
 
         adActivity.onBackPressed();
         runActivityLifecycle();
-        assertEquals(0, AdWebView.BROWSER_QUEUE.size());
+        assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
     }
 
     // BrowserAdActivity (implementation) tests
@@ -152,7 +152,7 @@ public class AdActivityTest extends BaseRoboTest {
         testBrowserImplementationCreate();
 
         implementation.destroy();
-        assertEquals(1, AdWebView.BROWSER_QUEUE.size());
+        assertEquals(1, BrowserAdActivity.BROWSER_QUEUE.size());
     }
 
     @Test
@@ -161,7 +161,7 @@ public class AdActivityTest extends BaseRoboTest {
 
         implementation.backPressed();
         implementation.destroy();
-        assertEquals(0, AdWebView.BROWSER_QUEUE.size());
+        assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
     }
 
     @Test
@@ -173,12 +173,12 @@ public class AdActivityTest extends BaseRoboTest {
         implementation = new BrowserAdActivity(adActivity);
         implementation.create();
         assertNotNull(implementation.getWebView());
-        assertEquals(0, AdWebView.BROWSER_QUEUE.size());
+        assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
 
         // actually destroy it this time
         implementation.backPressed();
         implementation.destroy();
-        assertEquals(0, AdWebView.BROWSER_QUEUE.size());
+        assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
     }
 
     @Test
@@ -188,7 +188,7 @@ public class AdActivityTest extends BaseRoboTest {
         implementation = new BrowserAdActivity(adActivity);
         implementation.create();
         assertNull(implementation.getWebView());
-        assertEquals(0, AdWebView.BROWSER_QUEUE.size());
+        assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
     }
 
 }
