@@ -16,6 +16,8 @@
 
 package com.appnexus.opensdk;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 
 import com.appnexus.opensdk.utils.Clog;
@@ -46,7 +48,10 @@ public class NativeAdSDK {
                 Clog.e(Clog.nativeLogTag, "View is not valid for registering");
                 return;
             }
-            view.post(new Runnable() {
+            // use a handler to always post register runnable to the main looper in the UI thread
+            // should not use View.post() because the method posts runnables to different queues based on the view's attachment status
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
                 @Override
                 public void run() {
                     if (view.getTag(R.string.native_tag) != null) {
@@ -79,7 +84,9 @@ public class NativeAdSDK {
                 Clog.e(Clog.nativeLogTag, "Views are not valid for registering");
                 return;
             }
-            container.post(new Runnable() {
+            // see comment above
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
                 @Override
                 public void run() {
                     if (container.getTag(R.string.native_tag) != null) {
@@ -108,7 +115,9 @@ public class NativeAdSDK {
         if (view == null) {
             return;
         }
-        view.post(new Runnable() {
+        // see comment above
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
             @Override
             public void run() {
                 if (view.getTag(R.string.native_tag) != null) {
