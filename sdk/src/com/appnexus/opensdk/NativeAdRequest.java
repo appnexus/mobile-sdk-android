@@ -19,6 +19,7 @@ package com.appnexus.opensdk;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import com.appnexus.opensdk.utils.AdvertistingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ImageService;
 
@@ -34,6 +35,7 @@ public class NativeAdRequest {
     private boolean loadIcon;
 
     public NativeAdRequest(Context context, String placementID) {
+        AdvertistingIDUtil.retrieveAndSetAAID(context);
         requestParameters = new RequestParameters(context);
         requestParameters.setPlacementID(placementID);
         requestParameters.setMediaType(MediaType.NATIVE);

@@ -16,6 +16,10 @@
 
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.util.TestUtil;
+
+import junit.framework.Test;
+
 import java.util.ArrayList;
 
 public class TestResponses {
@@ -25,7 +29,9 @@ public class TestResponses {
     // template strings
     private static final String CLASSNAME = "com.appnexus.opensdk.testviews.%s";
 
-    private static final String RESPONSE = "{\"status\":\"%s\",\"ads\": %s,\"mediated\": %s}";
+    // impbus response
+
+    private static final String RESPONSE = "{\"status\":\"%s\",\"ads\":%s,\"mediated\":%s,\"native\":%s,\"version\":%d}";
     private static final String ADS = "[{ \"type\": \"%s\", \"width\": %d, \"height\": %d, \"content\": \"%s\" }]";
     private static final String MEDIATED_AD = "{\"type\":\"%s\",\"class\":\"%s\",\"param\":\"%s\",\"width\":\"%d\",\"height\":\"%d\",\"id\":\"%s\"}";
     private static final String MEDIATED_ARRAY_SINGLE_AD = "[{ \"handler\": [{\"type\":\"%s\",\"class\":\"%s\",\"param\":\"%s\",\"width\":\"%d\",\"height\":\"%d\",\"id\":\"%s\"}],\"result_cb\":\"%s\"}]";
@@ -34,6 +40,13 @@ public class TestResponses {
     private static final String MEDIATED_ARRAY = "[%s]";
 
     private static final String MRAID_CONTENT = "<script type=\\\"text/javascript\\\" src=\\\"mraid.js\\\"></script><script type=\\\"text/javascript\\\">document.write('<div style=\\\"background-color:#EF8200;height:1000px;width:1000px;\\\"><p>%s</p></div>');</script>";
+
+    private static final String AN_NATIVE_RESPONSE = "[{\"type\":\"%s\",\"title\":\"%s\",\"description\":\"%s\",\"full_text\":\"%s\",\"context\":\"%s\",\"icon_img_url\":\"%s\",\"main_media\":%s,\"cta\":\"%s\",\"click_trackers\":[%s],\"impression_trackers\":[%s],\"rating\":%s,\"click_url\":\"%s\",\"click_fallback_url\":\"%s\",\"custom\":%s}]";
+    private static final String NATIVE_MAIN_MEDIA = "[{\"url\":\"%s\",\"width\":%d,\"height\":%d,\"label\":\"default\"},{\"url\":\"%s\",\"width\":%d,\"height\":%d},{\"url\":\"%s\",\"width\":%d,\"height\":%d}]";
+    private static final String NATIVE_RATING = "{\"value\":%.2f,\"scale\":%.2f}";
+    private static final String EMPTY_ARRAY = "[]";
+    private static final String STATUS_OK = "ok";
+    private static final String STATUS_NO_BID = "no_bid";
 
     public static String blank() {
         return "";
@@ -112,13 +125,13 @@ public class TestResponses {
 
     // templates
 
-    public static String templateResponse(String status, String ads, String mediated) {
-        return String.format(RESPONSE, status, ads, mediated);
+    public static String templateResponse(String status, String ads, String mediated, String nativeResponse, int version) {
+        return String.format(RESPONSE, status, ads, mediated, nativeResponse, version);
     }
 
     public static String templateAdsResponse(String type, int width, int height, String content) {
         String ads = String.format(ADS, type, width, height, content);
-        return templateResponse("ok", ads, null);
+        return templateResponse(STATUS_OK, ads, EMPTY_ARRAY, EMPTY_ARRAY, TestUtil.VERSION);
     }
 
     public static String templateSingleMediatedAdResponse(String className, String resultCB) {
@@ -127,7 +140,7 @@ public class TestResponses {
 
     public static String templateSingleMediatedAdResponse(String type, String className, String param, int width, int height, String id, String resultCB) {
         String mediatedAd = String.format(MEDIATED_ARRAY_SINGLE_AD, type, className, param, width, height, id, resultCB);
-        return templateResponse("ok", "[]", mediatedAd);
+        return templateResponse(STATUS_OK, EMPTY_ARRAY, mediatedAd, EMPTY_ARRAY, TestUtil.VERSION);
     }
 
     public static String templateMediatedAd(String className) {
@@ -155,6 +168,32 @@ public class TestResponses {
             sb.append(handler).append(",");
         }
         sb.deleteCharAt(sb.length() - 1);
-        return templateResponse("ok", "[]", String.format(MEDIATED_ARRAY, sb.toString()));
+        return templateResponse(STATUS_OK, EMPTY_ARRAY, String.format(MEDIATED_ARRAY, sb.toString()),null, TestUtil.VERSION);
     }
+
+    public static String templateNativeResponse(String type, String title, String description, String full_text, String context,
+                                                String icon, String main_media, String cta, String click_trackers,
+                                                String imp_trackers, String rating, String click_url,
+                                                String click_fallback_url, String custom){
+        return String.format(AN_NATIVE_RESPONSE, type, title, description, full_text, context, icon, main_media, cta, click_trackers, imp_trackers, rating, click_url, click_fallback_url, custom);
+
+
+    }
+
+    public static String templateNativeMainMedia(String url, int width, int height, String url2,int width2, int height2, String url3, int width3, int height3) {
+        return String.format(NATIVE_MAIN_MEDIA, url, width, height, url2, width2, height2, url3, width3, height3);
+    }
+
+    public static String templateNativeRating(float value, float scale) {
+        return String.format(NATIVE_RATING, value, scale);
+    }
+
+    public static String anNative() {
+        String nativeResponse = templateNativeResponse("native", "test title", "test description", "full text", "newsfeed",
+                "http://path_to_icon.com", templateNativeMainMedia("http://path_to_main.com", 300, 200, "http://path_to_main2.com", 50,50, "http://path_to_main3.com", 250,250),
+                "install", "\"http://ib.adnxs.com/click...\"", "\"http://ib.adnxs.com/it...\"", templateNativeRating(4f,5f), "http://www.appnexus.com", "http://www.google.com", "{\"key\":\"value\"}"
+                );
+        return templateResponse(STATUS_OK, EMPTY_ARRAY, EMPTY_ARRAY, nativeResponse, TestUtil.VERSION);
+    }
+
 }

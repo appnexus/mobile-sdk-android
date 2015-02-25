@@ -31,6 +31,8 @@ import static junit.framework.Assert.assertTrue;
 @RunWith(RobolectricTestRunner.class)
 public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdRequester {
     boolean requesterFailed, requesterReceivedResponse;
+    AdRequest adRequest;
+    AdResponse response;
     RequestParameters requestParameters;
 
     @Override
@@ -39,21 +41,31 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
         requesterFailed = false;
         requesterReceivedResponse = false;
         requestParameters = new RequestParameters(activity);
-        requestParameters.setPlacementID("");
-        requestParameters.setAdWidth(320);
-        requestParameters.setAdHeight(50);
-        requestParameters.setMediaType(MediaType.BANNER);
     }
 
-    @Override
     public void assertCallbacks(boolean success) {
         assertTrue(requesterReceivedResponse || requesterFailed);
         assertEquals(success, requesterReceivedResponse);
         assertEquals(!success, requesterFailed);
     }
 
+    public void setBannerRequestParams() {
+        requestParameters.setPlacementID("0");
+        requestParameters.setAdWidth(320);
+        requestParameters.setAdHeight(50);
+        requestParameters.setMediaType(MediaType.BANNER);
+    }
+
+    public void setNativeRequestParams() {
+        requestParameters.setPlacementID("0");
+        requestParameters.setAdWidth(1);
+        requestParameters.setAdHeight(1);
+        requestParameters.setMediaType(MediaType.NATIVE);
+    }
+
     @Test
-    public void testRequestSucceeded() {
+    public void testRequestBannerSucceeded() {
+        setBannerRequestParams();
         // adRequest initialization goes here because getOwner is called in the constructor
         adRequest = new AdRequest(this);
 
@@ -62,12 +74,14 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
         Robolectric.runBackgroundTasks();
         Robolectric.runUiThreadTasks();
         assertCallbacks(true);
+        assertEquals(MediaType.BANNER, response.getMediaType());
+
     }
 
     @Test
     public void testRequestBlank() {
+        setBannerRequestParams();
         adRequest = new AdRequest(this);
-
         // blanks are handled by requester
         Robolectric.addPendingHttpResponse(200, TestResponses.blank());
         adRequest.execute();
@@ -78,13 +92,26 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
 
     @Test
     public void testRequestStatusError() {
+        setBannerRequestParams();
         adRequest = new AdRequest(this);
-
         Robolectric.addPendingHttpResponse(404, TestResponses.banner());
         adRequest.execute();
         Robolectric.runBackgroundTasks();
         Robolectric.runUiThreadTasks();
         assertCallbacks(false);
+    }
+
+    @Test
+    public void testRequestNativeSucceeded() {
+        setNativeRequestParams();
+        adRequest = new AdRequest(this);
+
+        Robolectric.addPendingHttpResponse(200, TestResponses.anNative());
+        adRequest.execute();
+        Robolectric.runBackgroundTasks();
+        Robolectric.runUiThreadTasks();
+        assertCallbacks(true);
+        assertEquals(MediaType.NATIVE, response.getMediaType());
     }
 
     @Override
@@ -95,6 +122,7 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
     @Override
     public void onReceiveResponse(AdResponse response) {
         requesterReceivedResponse = true;
+        this.response = response;
     }
 
     long time;

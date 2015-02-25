@@ -29,7 +29,7 @@ import org.robolectric.annotation.Config;
         ShadowWebView.class, ShadowWebSettings.class},
         emulateSdk = 18)
 @RunWith(RobolectricTestRunner.class)
-public class AdListenerTest extends BaseRoboTest {
+public class AdListenerTest extends BaseViewAdTest{
 
     @Override
     public void setup() {

@@ -1,5 +1,5 @@
 /*
- *    Copyright 2013 APPNEXUS INC
+ *    Copyright 2015 APPNEXUS INC
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package com.appnexus.opensdk;
 
-import android.view.View;
-import android.webkit.WebView;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.shadows.ShadowWebView;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -33,44 +32,30 @@ import static junit.framework.Assert.assertTrue;
         ShadowWebView.class, ShadowWebSettings.class},
         emulateSdk = 18)
 @RunWith(RobolectricTestRunner.class)
-public class MRAIDTest extends BaseViewAdTest {
+public class NativeRequestTest extends BaseNativeTest{
 
-    WebView webView;
+    public void assertAdLoaded(Boolean loaded) {
+        assertTrue(adLoaded || adFailed);
+        assertTrue(loaded | !adFailed);
+        assertTrue(loaded | adLoaded);
+    }
 
-    @Override
-    public void setup() {
-        super.setup();
+    @Test
+    public void requestNative() {
+        adRequest.loadAd();
+        Robolectric.addPendingHttpResponse(200, TestResponses.anNative());
+        Robolectric.runUiThreadTasks();
+        waitForTasks();
+        Robolectric.runBackgroundTasks();
+        Robolectric.runUiThreadTasks();
+        assertAdLoaded(true);
     }
 
     @Override
     public void tearDown() {
         super.tearDown();
-        if (webView != null) webView.destroy();
-        webView = null;
-    }
-
-    private void loadMraidBanner(String testName) {
-        Robolectric.addPendingHttpResponse(200, TestResponses.mraidBanner(testName));
-        bannerAdView.setAdSize(320, 50);
-        bannerAdView.loadAdOffscreen();
-
-        // let AdFetcher queue AdRequest
-        waitForTasks();
-        Robolectric.runUiThreadTasks();
-        // run AdRequest
-        while(Robolectric.getBackgroundScheduler().areAnyRunnable()){
-            Robolectric.getBackgroundScheduler().runOneTask();
+        if (response != null) {
+            response.destroy();
         }
-        // runs all of the UI events until webview is loaded
-        Robolectric.runUiThreadTasks();
-
-        assertTrue(bannerAdView.getChildAt(0) instanceof WebView);
-        webView = (WebView) bannerAdView.getChildAt(0);
     }
-
-    @Test
-    public void testSuccessfulBannerLoaded() {
-        loadMraidBanner("testSuccessfulBannerLoaded");
-    }
-
 }

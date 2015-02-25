@@ -34,7 +34,7 @@ import static junit.framework.Assert.assertTrue;
         ShadowWebView.class, ShadowWebSettings.class},
         emulateSdk = 18)
 @RunWith(RobolectricTestRunner.class)
-public class MediationCallbacksTest extends BaseRoboTest implements AdListener {
+public class MediationCallbacksTest extends BaseViewAdTest implements AdListener {
 
     boolean adLoadedMultiple, adFailedMultiple;
 

@@ -19,6 +19,7 @@ package com.appnexus.opensdk;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.shadows.ShadowWebView;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -31,7 +32,7 @@ import static junit.framework.Assert.assertEquals;
         ShadowWebView.class, ShadowWebSettings.class},
         emulateSdk = 18)
 @RunWith(RobolectricTestRunner.class)
-public class AdFetcherTest extends BaseRoboTest {
+public class ViewAdFetcherTest extends BaseViewAdTest {
     private AdFetcher adFetcher;
 
     @Override
@@ -50,6 +51,16 @@ public class AdFetcherTest extends BaseRoboTest {
         adFetcher = null;
     }
 
+    /**
+     * When instantiating an AdView instance, AAID retrieval async tasks are scheduled
+     * This method clears all the background and UI thread tasks before running actual tests
+     */
+    private void clearAAIDAsyncTasks() {
+        Robolectric.runBackgroundTasks();
+        Robolectric.runUiThreadTasks();
+    }
+
+
     private void runStartTest(int expectedBgTaskCount) {
         // pause until a scheduler has a task in queue
         waitForTasks();
@@ -58,17 +69,20 @@ public class AdFetcherTest extends BaseRoboTest {
         Robolectric.runUiThreadTasks();
         // Check that the AdRequest was queued
         int bgTaskCount = Robolectric.getBackgroundScheduler().enqueuedTaskCount();
+
         assertEquals(expectedBgTaskCount, bgTaskCount);
     }
 
-   @Test
+    @Test
     public void testStart() {
+        clearAAIDAsyncTasks();
         adFetcher.start();
         runStartTest(2);
     }
 
     @Test
     public void testStartWithRefreshOn() {
+        clearAAIDAsyncTasks();
         adFetcher.setAutoRefresh(true);
         adFetcher.start();
         runStartTest(2);
@@ -76,6 +90,7 @@ public class AdFetcherTest extends BaseRoboTest {
 
     @Test
     public void testRefresh() {
+        clearAAIDAsyncTasks();
         adFetcher.setAutoRefresh(true);
         adFetcher.setPeriod(1000);
         adFetcher.start();
@@ -91,6 +106,7 @@ public class AdFetcherTest extends BaseRoboTest {
 
     @Test
     public void testStartWithBadPlacementId() {
+        clearAAIDAsyncTasks();
         bannerAdView.setPlacementID("");
         adFetcher.start();
         runStartTest(0);
@@ -98,6 +114,7 @@ public class AdFetcherTest extends BaseRoboTest {
 
     @Test
     public void testStartWithShouldResetTrue() {
+        clearAAIDAsyncTasks();
         adFetcher.start();
         adFetcher.setPeriod(0);
         runStartTest(0);
@@ -105,6 +122,11 @@ public class AdFetcherTest extends BaseRoboTest {
 
     @Test
     public void testStop() {
+        Robolectric.runBackgroundTasks();
+        Robolectric.runUiThreadTasksIncludingDelayedTasks();
+        int uitasks = Robolectric.getUiThreadScheduler().enqueuedTaskCount();
+        int bgTaskCount = Robolectric.getBackgroundScheduler().enqueuedTaskCount();
+
         // not needed, but in case AdRequest is run
         Robolectric.addPendingHttpResponse(200, TestResponses.blank());
 
@@ -119,7 +141,7 @@ public class AdFetcherTest extends BaseRoboTest {
         // Run the cancel command on AdRequest
         Robolectric.runUiThreadTasks();
         // Run the pending AdRequest from start() -- should have been canceled
-        while(Robolectric.getBackgroundScheduler().areAnyRunnable()) {
+        while (Robolectric.getBackgroundScheduler().areAnyRunnable()) {
             Robolectric.getBackgroundScheduler().runOneTask();
         }
 

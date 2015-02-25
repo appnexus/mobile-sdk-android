@@ -30,11 +30,11 @@ public interface NativeAdRequestListener {
      * returning null respectively.
      * @param response a NativeAdResponse
      */
-    void onAdLoaded(NativeAdResponse response);
+    public void onAdLoaded(NativeAdResponse response);
 
     /**
      * Called when a native ad call has failed
      * @param errorcode reason the call failed. Error codes TBD
      */
-    void onAdFailed(ResultCode errorcode);
+    public void onAdFailed(ResultCode errorcode);
 }

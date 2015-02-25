@@ -33,7 +33,7 @@ import static junit.framework.Assert.*;
         ShadowWebView.class, ShadowWebSettings.class},
         emulateSdk = 18)
 @RunWith(RobolectricTestRunner.class)
-public class MRAIDImplementationTest extends BaseRoboTest {
+public class MRAIDImplementationTest extends BaseViewAdTest {
     MRAIDImplementation implementation;
     MockAdWebView mockAdWebView;
 

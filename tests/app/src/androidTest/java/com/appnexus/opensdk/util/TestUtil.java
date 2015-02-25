@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 
 public class TestUtil {
     public static final String testLogTag = "OPENSDK-TEST";
+    public static final int VERSION = 1;
 
 
     public static void setWifi(boolean state, Context context) {

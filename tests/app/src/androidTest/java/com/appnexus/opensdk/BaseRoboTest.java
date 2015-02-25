@@ -26,20 +26,17 @@ import com.appnexus.opensdk.util.Lock;
 import org.junit.After;
 import org.junit.Before;
 import org.robolectric.Robolectric;
+import org.robolectric.util.ActivityController;
 import org.robolectric.util.Scheduler;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static junit.framework.Assert.assertEquals;
 
-public class BaseRoboTest implements AdListener {
+
+public class BaseRoboTest{
     Activity activity;
-    BannerAdView bannerAdView;
-    InterstitialAdView interstitialAdView;
-    AdRequest adRequest;
-    boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked;
-
     Scheduler uiScheduler, bgScheduler, looperScheduler;
 
     @Before
@@ -51,15 +48,7 @@ public class BaseRoboTest implements AdListener {
         Robolectric.shadowOf(activity).grantPermissions("android.permission.ACCESS_FINE_LOCATION");
         Robolectric.shadowOf(activity).grantPermissions("android.permission.INTERNET");
 
-        bannerAdView = new BannerAdView(activity);
-        bannerAdView.setPlacementID("0");
-        bannerAdView.setAdListener(this);
-        bannerAdView.setAdSize(320,50);
-        bannerAdView.setAutoRefreshInterval(0);
 
-        interstitialAdView = new InterstitialAdView(activity);
-        interstitialAdView.setPlacementID("0");
-        interstitialAdView.setAdListener(this);
 
         looperScheduler = Robolectric.shadowOf(Looper.getMainLooper()).getScheduler();
         bgScheduler = Robolectric.getBackgroundScheduler();
@@ -67,11 +56,7 @@ public class BaseRoboTest implements AdListener {
         bgScheduler.pause();
         uiScheduler.pause();
 
-        adLoaded = false;
-        adFailed = false;
-        adExpanded = false;
-        adCollapsed = false;
-        adClicked = false;
+
 
         SuccessfulBanner.didPass = false;
         SuccessfulBanner2.didPass = false;
@@ -94,10 +79,7 @@ public class BaseRoboTest implements AdListener {
         uiScheduler.pause();
     }
 
-    public void assertCallbacks(boolean success) {
-        assertEquals(success, adLoaded);
-        assertEquals(!success, adFailed);
-    }
+
 
     public void scheduleTimerToCheckForTasks() {
         Timer timer = new Timer();
@@ -119,28 +101,5 @@ public class BaseRoboTest implements AdListener {
         Lock.pause();
     }
 
-    @Override
-    public void onAdLoaded(AdView adView) {
-        adLoaded = true;
-    }
 
-    @Override
-    public void onAdRequestFailed(AdView adView, ResultCode resultCode) {
-        adFailed = true;
-    }
-
-    @Override
-    public void onAdExpanded(AdView adView) {
-        adExpanded = true;
-    }
-
-    @Override
-    public void onAdCollapsed(AdView adView) {
-        adCollapsed = true;
-    }
-
-    @Override
-    public void onAdClicked(AdView adView) {
-        adClicked = true;
-    }
 }

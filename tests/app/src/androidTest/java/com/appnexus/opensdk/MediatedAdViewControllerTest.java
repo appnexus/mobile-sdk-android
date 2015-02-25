@@ -37,7 +37,7 @@ import static junit.framework.Assert.*;
         ShadowWebView.class, ShadowWebSettings.class},
         emulateSdk = 18)
 @RunWith(RobolectricTestRunner.class)
-public class MediatedAdViewControllerTest extends BaseRoboTest {
+public class MediatedAdViewControllerTest extends BaseViewAdTest {
 
     @Override
     public void setup() {
