@@ -2,7 +2,7 @@
 + MS-857 MS-920 MS-866 AN native response, click handling, cookie management
 + MS-874 offline impression tracking
 + MS-914 MoPub native ad adapter
-+ MS-915 update mediated SDKs, MoPub 3.2.0->3.3.0, Facebook 3.20->2.22, Amazon 5.4.192->5.4.325, GooglePlay->6.5.876
++ MS-915 update mediated SDKs, MoPub 3.2.0->3.3.0, Facebook 3.20->3.22, Amazon 5.4.192->5.4.325, GooglePlay->6.5.876
 + MS-890 Bug fix for Facebook native adapter
 + MS-927 Mraid compliance creative and bug fixes
 + MS-657 Clean up many lint warnings
