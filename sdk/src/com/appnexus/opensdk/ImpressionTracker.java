@@ -81,7 +81,7 @@ class ImpressionTracker extends HTTPGet {
             } else {
                 elapsedTime = 0;
             }
-            if (elapsedTime >= Settings.NATIVE_AD_VISIBILE_PERIOD_MILLIS) {
+            if (elapsedTime >= Settings.NATIVE_AD_VISIBLE_PERIOD_MILLIS) {
                 ImpressionTracker.this.fire();
             }
         }

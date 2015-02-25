@@ -180,7 +180,7 @@ class ANJAMImplementation {
             return;
         }
 
-        // Create a invisibile webview to fire the url
+        // Create a invisible webview to fire the url
         WebView recordEventWebView = new WebView(webView.getContext());
         recordEventWebView.setWebViewClient(new WebViewClient() {
             @Override

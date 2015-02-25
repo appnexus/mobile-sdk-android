@@ -84,7 +84,8 @@ class AdResponse {
         parseResponse(body);
     }
 
-    public AdResponse(HTTPResponse httpResponse) {
+    public AdResponse(HTTPResponse httpResponse, MediaType mediaType) {
+        this.mediaType = mediaType;
         printHeaders(httpResponse.getHeaders());
         parseResponse(httpResponse.getResponseBody());
     }

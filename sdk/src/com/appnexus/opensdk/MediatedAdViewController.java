@@ -47,7 +47,7 @@ import java.util.HashMap;
  */
 
 public abstract class MediatedAdViewController {
-
+    protected MediaType mediaType;
     protected MediatedAdView mAV;
     private WeakReference<AdRequester> caller_requester;
     protected MediatedAd currentAd;
@@ -362,7 +362,7 @@ public abstract class MediatedAdViewController {
 
             AdResponse response = null;
             if ((httpResponse != null) && httpResponse.getSucceeded()) {
-                response = new AdResponse(httpResponse);
+                response = new AdResponse(httpResponse, mediaType);
                 if (extras.containsKey(AdResponse.EXTRAS_KEY_ORIENTATION)) {
                     response.addToExtras(AdResponse.EXTRAS_KEY_ORIENTATION,
                             extras.get(AdResponse.EXTRAS_KEY_ORIENTATION));

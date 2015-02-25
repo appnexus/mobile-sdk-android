@@ -19,16 +19,20 @@ package com.appnexus.opensdk.utils;
 import android.annotation.TargetApi;
 import android.os.AsyncTask;
 import android.os.Build;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.ConnectionPoolTimeoutException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 
 public abstract class HTTPGet extends AsyncTask<Void, Void, HTTPResponse> {
@@ -64,10 +68,19 @@ public abstract class HTTPGet extends AsyncTask<Void, Void, HTTPResponse> {
             out.setSucceeded(isStatusOK);
         } catch (URISyntaxException e) {
             out.setSucceeded(false);
+            out.setErrorCode(HttpErrorCode.URI_SYNTAX_ERROR);
         } catch (ClientProtocolException e) {
             out.setSucceeded(false);
+            out.setErrorCode(HttpErrorCode.HTTP_PROTOCOL_ERROR);
+        } catch (ConnectionPoolTimeoutException e) {
+            out.setSucceeded(false);
+            out.setErrorCode(HttpErrorCode.CONNECTION_FAILURE);
+        } catch (ConnectTimeoutException e) {
+            out.setSucceeded(false);
+            out.setErrorCode(HttpErrorCode.CONNECTION_FAILURE);
         } catch (IOException e) {
             out.setSucceeded(false);
+            out.setErrorCode(HttpErrorCode.TRANSPORT_ERROR);
         } finally {
             httpc.getConnectionManager().shutdown();
         }

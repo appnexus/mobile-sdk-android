@@ -19,7 +19,6 @@ package com.appnexus.opensdk;
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;

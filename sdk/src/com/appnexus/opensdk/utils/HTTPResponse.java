@@ -21,6 +21,7 @@ public class HTTPResponse {
     private boolean succeeded;
     private String responseBody;
     private Header[] headers;
+    private HttpErrorCode errorCode;
 
     public HTTPResponse() {
 
@@ -38,6 +39,14 @@ public class HTTPResponse {
 
     public void setSucceeded(boolean succeeded) {
         this.succeeded = succeeded;
+    }
+
+    public void setErrorCode(HttpErrorCode errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public HttpErrorCode getErrorCode() {
+        return errorCode;
     }
 
     public String getResponseBody() {

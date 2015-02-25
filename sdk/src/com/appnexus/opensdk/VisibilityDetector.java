@@ -66,12 +66,17 @@ class VisibilityDetector {
         this.visibilityCheck = new Runnable() {
             @Override
             public void run() {
+                // copy listeners to a new array to avoid concurrentmodificationexception
+                ArrayList<VisibilityListener> tempList = new ArrayList<VisibilityListener>();
+                for (VisibilityListener listener : listeners) {
+                    tempList.add(listener);
+                }
                 if (isVisible()) {
-                    for (VisibilityListener listener : listeners) {
+                    for (VisibilityListener listener : tempList) {
                         listener.onVisibilityChanged(true);
                     }
                 } else {
-                    for (VisibilityListener listener : listeners) {
+                    for (VisibilityListener listener : tempList) {
                         listener.onVisibilityChanged(false);
                     }
                 }

@@ -30,6 +30,7 @@ import com.mopub.nativeads.NativeResponse;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MoPubNativeAdResponse implements NativeAdResponse{
     private String title;
@@ -90,7 +91,14 @@ public class MoPubNativeAdResponse implements NativeAdResponse{
             this.rating = null;
         }
         if (nativeResponse.getExtras() != null && !nativeResponse.getExtras().isEmpty()) {
-            // put extras in native response
+            // put extras in native response, MoPub returns String as Object
+            for (Map.Entry<String, Object> entry : nativeResponse.getExtras().entrySet()) {
+                try {
+                    String value = (String) entry.getValue();
+                    nativeElements.put(entry.getKey(), value);
+                } catch (ClassCastException ignore) {
+                }
+            }
         }
     }
 

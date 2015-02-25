@@ -1,5 +1,5 @@
 /*
- *    Copyright 2014 APPNEXUS INC
+ *    Copyright 2015 APPNEXUS INC
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
     private Bitmap image;
     private Bitmap icon;
     private String clickUrl;
-    private String clickFallBakcUrl;
+    private String clickFallBackUrl;
     private String callToAction;
     private String socialContext;
     private Rating rating;
@@ -58,12 +58,15 @@ public class ANNativeAdResponse implements NativeAdResponse {
     private static final String KEY_TITLE = "title";
     private static final String KEY_DESCRIPTION = "description";
     private static final String KEY_CONTEXT = "context";
-    private static final String KEY_IMAGE = "main_img";
-    private static final String KEY_ICON = "icon_img";
+    private static final String KEY_MAIN_MEDIA = "main_media";
+    private static final String KEY_IMAGE_LABEL = "label";
+    private static final String VALUE_DEFAULT_IMAGE = "default";
+    private static final String KEY_IMAGE_URL = "url";
+    private static final String KEY_FULL_TEXT = "full_text";
+    private static final String KEY_ICON = "icon_img_url";
     private static final String KEY_CTA = "cta";
-    private static final String KEY_CLICK_TRACK = "click_track";
-    private static final String KEY_FALLBACK = "fallback"; // what is this？
-    private static final String KEY_IMP_TRACK = "imp_track";
+    private static final String KEY_CLICK_TRACK = "click_trackers";
+    private static final String KEY_IMP_TRACK = "impression_trackers";
     private static final String KEY_CLICK_URL = "click_url";
     private static final String KEY_CLICK_FALLBACK_URL = "click_fallback_url";
     private static final String KEY_RATING = "rating";
@@ -77,11 +80,20 @@ public class ANNativeAdResponse implements NativeAdResponse {
             expired = true;
             registeredView = null;
             clickables = null;
+            if (icon != null) {
+                icon.recycle();
+                icon = null;
+            }
+            if (image != null) {
+                image.recycle();
+                image = null;
+            }
             if (visibilityDetector != null) {
                 visibilityDetector.destroy();
                 visibilityDetector = null;
             }
             impressionTrackers = null;
+            listener = null;
         }
     };
 
@@ -111,12 +123,25 @@ public class ANNativeAdResponse implements NativeAdResponse {
         response.imp_trackers = imp_trackers;
         response.title = JsonUtil.getJSONString(metaData, KEY_TITLE);
         response.description = JsonUtil.getJSONString(metaData, KEY_DESCRIPTION);
-        response.imageUrl = JsonUtil.getJSONString(metaData, KEY_IMAGE);
+        JSONArray main_media = JsonUtil.getJSONArray(metaData, KEY_MAIN_MEDIA);
+        if (main_media != null) {
+            int l = main_media.length();
+            for (int i = 0; i < l; i++) {
+                JSONObject media = JsonUtil.getJSONObjectFromArray(main_media, i);
+                if (media != null) {
+                    String label = JsonUtil.getJSONString(media, KEY_IMAGE_LABEL);
+                    if (label != null && label.equals(VALUE_DEFAULT_IMAGE)) {
+                        response.imageUrl = JsonUtil.getJSONString(media, KEY_IMAGE_URL);
+                        break;
+                    }
+                }
+            }
+        };
         response.iconUrl = JsonUtil.getJSONString(metaData, KEY_ICON);
         response.socialContext = JsonUtil.getJSONString(metaData, KEY_CONTEXT);
         response.callToAction = JsonUtil.getJSONString(metaData, KEY_CTA);
         response.clickUrl = JsonUtil.getJSONString(metaData, KEY_CLICK_URL);
-        response.clickFallBakcUrl = JsonUtil.getJSONString(metaData, KEY_CLICK_FALLBACK_URL);
+        response.clickFallBackUrl = JsonUtil.getJSONString(metaData, KEY_CLICK_FALLBACK_URL);
         JSONObject rating = JsonUtil.getJSONObject(metaData, KEY_RATING);
         response.rating = new Rating(
                 JsonUtil.getJSONDouble(rating, KEY_RATING_VALUE),
@@ -268,14 +293,14 @@ public class ANNativeAdResponse implements NativeAdResponse {
                 // fire click tracker first
                 if (click_trackers != null) {
                     for (String url : click_trackers) {
-                        new ClickTracker(url, v.getContext()).fire();
+                        new ClickTracker(url).execute();
                     }
                 }
                 if (listener != null) {
                     listener.onAdWasClicked();
                 }
                 if (!handleClick(clickUrl, v.getContext())) {
-                    if (!handleClick(clickFallBakcUrl, v.getContext())) {
+                    if (!handleClick(clickFallBackUrl, v.getContext())) {
                         Clog.d(Clog.nativeLogTag, "Unable to handle click.");
                     }
                 }

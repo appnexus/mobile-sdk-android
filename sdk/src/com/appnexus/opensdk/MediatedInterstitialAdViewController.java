@@ -39,6 +39,7 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
             Activity activity, AdRequester requester, MediatedAd mediatedAd,
             AdViewListener listener) {
         super(requester, mediatedAd, listener);
+        mediaType = MediaType.INTERSTITIAL;
 
         if (!isValid(MediatedInterstitialAdView.class))
             return;

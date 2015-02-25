@@ -14,30 +14,12 @@
  *    limitations under the License.
  */
 
-package com.appnexus.opensdk;
+package com.appnexus.opensdk.utils;
 
-import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.HTTPGet;
-import com.appnexus.opensdk.utils.HTTPResponse;
-
-
-class ClickTracker extends HTTPGet{
-
-    private String url;
-
-    ClickTracker(String url) {
-        this.url = url;
-    }
-
-    @Override
-    protected void onPostExecute(HTTPResponse response) {
-        if (response != null && response.getSucceeded()) {
-            Clog.d(Clog.nativeLogTag, "Clicked tracked");
-        }
-    }
-
-    @Override
-    protected String getUrl() {
-        return url;
-    }
+public enum HttpErrorCode {
+    CONNECTION_FAILURE,
+    URI_SYNTAX_ERROR,
+    NO_HTTP_RESPONSE,
+    HTTP_PROTOCOL_ERROR,
+    TRANSPORT_ERROR
 }

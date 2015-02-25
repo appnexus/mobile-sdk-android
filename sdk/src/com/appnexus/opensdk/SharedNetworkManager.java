@@ -1,3 +1,19 @@
+/*
+ *    Copyright 2014 APPNEXUS INC
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package com.appnexus.opensdk;
 
 import android.content.Context;
@@ -7,6 +23,8 @@ import android.net.NetworkInfo;
 
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
+import com.appnexus.opensdk.utils.HttpErrorCode;
+
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -73,30 +91,31 @@ class SharedNetworkManager {
                             if (isConnected(context)) {
                                 final UrlObject urlObject = urls.remove(0);
                                 if (urlObject.retryTimes < TOTAL_RETRY_TIMES) {
-                                    new HTTPGet() {
-                                        @Override
-                                        protected void onPostExecute(HTTPResponse response) {}
+                                    {
 
-                                        @Override
-                                        protected String getUrl() {
-                                            return urlObject.url;
-                                        }
-                                    }.execute();
+                                        new HTTPGet() {
+                                            @Override
+                                            protected void onPostExecute(HTTPResponse response) {
+                                                if (response == null ||
+                                                        (!response.getSucceeded() && response.getErrorCode() == HttpErrorCode.CONNECTION_FAILURE)) {
+                                                    urlObject.retryTimes += 1;
+                                                    urls.add(urlObject);
+                                                }
+
+                                            }
+
+                                            @Override
+                                            protected String getUrl() {
+                                                return urlObject.url;
+                                            }
+                                        }.execute();
+                                    }
                                 }
                             } else {
                                 break;
                             }
                         }
-                        if (!urls.isEmpty()) {
-                            for (UrlObject urlObject : urls) {
-                                urlObject.retryTimes += 1;
-                                if (urlObject.retryTimes >= TOTAL_RETRY_TIMES) {
-                                    urls.remove(urlObject);
-                                }
-                            }
-                        } else {
-                            stopTimer();
-                        }
+                        if (urls.isEmpty()) stopTimer();
                     } else {
                         stopTimer();
                     }

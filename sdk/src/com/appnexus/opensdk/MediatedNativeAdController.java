@@ -59,6 +59,7 @@ public class MediatedNativeAdController {
 
             this.adFetcher = new WeakReference<NativeAdFetcher>(adFetcher);
             this.listener = listener;
+            this.currentAd = currentAd;
 
             startTimeout();
             markLatencyStart();
@@ -216,6 +217,7 @@ public class MediatedNativeAdController {
             cb.execute();
         }
 
+        // if currentAd failed and next ad is available, continue to next ad
         if (ignoreResult && result != ResultCode.SUCCESS) {
             if (requester != null) {
                 requester.onReceiveResponse(null);
@@ -259,7 +261,7 @@ public class MediatedNativeAdController {
 
             AdResponse response = null;
             if ((httpResponse != null) && httpResponse.getSucceeded()) {
-                response = new AdResponse(httpResponse);
+                response = new AdResponse(httpResponse, MediaType.NATIVE);
                 if (extras.containsKey(AdResponse.EXTRAS_KEY_ORIENTATION)) {
                     response.addToExtras(AdResponse.EXTRAS_KEY_ORIENTATION,
                             extras.get(AdResponse.EXTRAS_KEY_ORIENTATION));
