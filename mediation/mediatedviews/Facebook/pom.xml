@@ -27,7 +27,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.appnexus.opensdk.mediatedviews</groupId>
 	<artifactId>appnexus-facebook-mediation</artifactId>
-	<version>2.0.1-3.20</version>
+	<version>2.1.0-3.22</version>
 	<packaging>aar</packaging>
 
 	<distributionManagement>
@@ -45,19 +45,19 @@
 		<dependency>
 			<groupId>android</groupId>
 			<artifactId>android</artifactId>
-			<version>5.0_r1</version>
+			<version>5.0.1_r2</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.facebook</groupId>
 			<artifactId>ads</artifactId>
-			<version>3.20</version>
+			<version>3.22</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.appnexus.opensdk</groupId>
 			<artifactId>appnexus-sdk</artifactId>
-			<version>2.0</version>
+			<version>2.1</version>
 			<scope>compile</scope>
 			<type>aar</type>
 		</dependency>
