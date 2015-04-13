@@ -320,7 +320,7 @@ class MRAIDImplementation {
         }
     }
 
-    void dispatch_mraid_call(String url) {
+    void dispatch_mraid_call(String url, boolean userInteracted) {
         // Remove the fake protocol
         url = url.replaceFirst("mraid://", "");
 
@@ -347,21 +347,45 @@ class MRAIDImplementation {
         }
 
         if (func.equals("expand")) {
-            expand(parameters);
+            if (userInteracted) {
+                expand(parameters);
+            } else {
+                Clog.w(Clog.mraidLogTag, Clog.getString(R.string.no_user_interaction, url));
+            }
         } else if (func.equals("close")) {
             close();
         } else if (func.equals("resize")) {
-            resize(parameters);
+            if (userInteracted) {
+                resize(parameters);
+            } else {
+                Clog.w(Clog.mraidLogTag, Clog.getString(R.string.no_user_interaction, url));
+            }
         } else if (func.equals("setOrientationProperties")) {
             setOrientationProperties(parameters);
         } else if (supportsCalendar && func.equals("createCalendarEvent")) {
-            createCalendarEvent(parameters);
+            if (userInteracted) {
+                createCalendarEvent(parameters);
+            } else {
+                Clog.w(Clog.mraidLogTag, Clog.getString(R.string.no_user_interaction, url));
+            }
         } else if (func.equals("playVideo")) {
-            playVideo(parameters);
+            if (userInteracted) {
+                playVideo(parameters);
+            } else {
+                Clog.w(Clog.mraidLogTag, Clog.getString(R.string.no_user_interaction, url));
+            }
         } else if (supportsPictureAPI && func.equals("storePicture")) {
-            storePicture(parameters);
+            if (userInteracted) {
+                storePicture(parameters);
+            } else {
+                Clog.w(Clog.mraidLogTag, Clog.getString(R.string.no_user_interaction, url));
+            }
         } else if (func.equals("open")) {
-            open(parameters);
+            if (userInteracted) {
+                open(parameters);
+            } else {
+                Clog.w(Clog.mraidLogTag, Clog.getString(R.string.no_user_interaction, url));
+            }
         } else {
             if (func.equals("enable")) {
                 // suppress error for enable command

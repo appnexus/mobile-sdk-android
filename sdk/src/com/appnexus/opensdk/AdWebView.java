@@ -68,6 +68,9 @@ class AdWebView extends WebView implements Displayable {
     private ProgressDialog progressDialog;
     protected String initialMraidStateString;
 
+    // touch detection
+    private boolean userInteracted = false;
+
     public AdWebView(AdView adView) {
         super(adView.getContext());
         this.adView = adView;
@@ -222,6 +225,16 @@ class AdWebView extends WebView implements Displayable {
         return implementation;
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        userInteracted = true;
+        return super.onTouchEvent(event);
+    }
+
+    boolean getUserInteraction() {
+        return userInteracted;
+    }
+
     /**
      * AdWebViewClient for the webview
      */
@@ -236,7 +249,7 @@ class AdWebView extends WebView implements Displayable {
             if (url.startsWith("mraid://")) {
                 Clog.v(Clog.mraidLogTag, url);
                 if (isMRAIDEnabled) {
-                    implementation.dispatch_mraid_call(url);
+                    implementation.dispatch_mraid_call(url, userInteracted);
                 } else {
                     String host = Uri.parse(url).getHost();
                     if ((host != null) && host.equals("enable")) {

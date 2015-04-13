@@ -61,8 +61,9 @@ class PBImplementation {
         Uri uri = Uri.parse(url);
         String host = uri.getHost();
         if (HOST_WEB.equals(host)) {
-            launchApp(context);
-
+            if (adWebView.getUserInteraction()) {
+                launchApp(context);
+            }
         } else if (HOST_APP.equals(host)) {
             String auctionInfo = uri.getQueryParameter(KEY_AUCTIONINFO);
             saveAuctionInfo(auctionInfo);

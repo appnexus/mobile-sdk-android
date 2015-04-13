@@ -49,11 +49,23 @@ class ANJAMImplementation {
         if (CALL_MAYDEEPLINK.equals(call)) {
             callMayDeepLink(webView, uri);
         } else if (CALL_DEEPLINK.equals(call)) {
-            callDeepLink(webView, uri);
+            if (webView.getUserInteraction()) {
+                callDeepLink(webView, uri);
+            } else {
+                Clog.w(Clog.jsLogTag, Clog.getString(R.string.no_user_interaction, url));
+            }
         } else if (CALL_EXTERNALBROWSER.equals(call)) {
-            callExternalBrowser(webView, uri);
+            if (webView.getUserInteraction()) {
+                callExternalBrowser(webView, uri);
+            } else {
+                Clog.w(Clog.jsLogTag, Clog.getString(R.string.no_user_interaction, url));
+            }
         } else if (CALL_INTERNALBROWSER.equals(call)) {
-            callInternalBrowser(webView, uri);
+            if (webView.getUserInteraction()) {
+                callInternalBrowser(webView, uri);
+            } else {
+                Clog.w(Clog.jsLogTag, Clog.getString(R.string.no_user_interaction, url));
+            }
         } else if (CALL_RECORDEVENT.equals(call)) {
             callRecordEvent(webView, uri);
         } else if (CALL_DISPATCHAPPEVENT.equals(call)) {
