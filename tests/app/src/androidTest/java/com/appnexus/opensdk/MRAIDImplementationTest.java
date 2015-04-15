@@ -55,7 +55,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
     public void testMRAIDOpenSuccess() {
         String uri = "http://www.appnexus.com";
         String mraidCall = String.format("mraid://open?uri=%s", uri);
-        implementation.dispatch_mraid_call(mraidCall);
+        implementation.dispatch_mraid_call(mraidCall, true);
         assertEquals(mockAdWebView.testString, uri);
 
         MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
@@ -66,7 +66,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
     public void testMRAIDOpenFailure() {
         String uri = "";
         String mraidCall = String.format("mraid://open?uri=%s", uri);
-        implementation.dispatch_mraid_call(mraidCall);
+        implementation.dispatch_mraid_call(mraidCall, true);
         assertEquals(mockAdWebView.testString, "default");
 
         MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
@@ -83,7 +83,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
 
         String mraidCall = String.format("mraid://expand?w=%d&h=%d&useCustomClose=%s&allow_orientation_change=%s&force_orientation=%s",
                 width, height, useCustomClose, allowOrientationChange, forceOrientation);
-        implementation.dispatch_mraid_call(mraidCall);
+        implementation.dispatch_mraid_call(mraidCall, true);
 
         assertEquals(mockAdWebView.width, width);
         assertEquals(mockAdWebView.height, height);
@@ -110,7 +110,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
         String mraidCall = String.format("mraid://resize?w=%d&h=%d&offset_x=%d&offset_y=%d&custom_close_position=%s&allow_offscreen=%s",
                 width, height, offsetX, offsetY, customClosePosition, allowOffscreen);
 
-        implementation.dispatch_mraid_call(mraidCall);
+        implementation.dispatch_mraid_call(mraidCall, true);
 
         assertEquals(mockAdWebView.width, width);
         assertEquals(mockAdWebView.height, height);
@@ -129,7 +129,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
     @Test
     public void testMRAIDCloseToHidden() {
         String mraidCall = String.format("mraid://close");
-        implementation.dispatch_mraid_call(mraidCall);
+        implementation.dispatch_mraid_call(mraidCall, true);
 
         assertTrue(mockAdWebView.hidden);
     }
@@ -141,7 +141,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
         // Robolectric framework overrides intent errors for data type, so any uri will do
         String uri = "http://www.appnexus.com";
         String mraidCall = String.format("mraid://playVideo?uri=%s", uri);
-        implementation.dispatch_mraid_call(mraidCall);
+        implementation.dispatch_mraid_call(mraidCall, true);
 
         MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
         assertTrue(mockAdDispatcher.adClicked);
@@ -151,7 +151,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
     public void testMRAIDPlayVideoFail() {
         String uri = "";
         String mraidCall = String.format("mraid://playVideo?uri=%s", uri);
-        implementation.dispatch_mraid_call(mraidCall);
+        implementation.dispatch_mraid_call(mraidCall, true);
 
         MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
         assertFalse(mockAdDispatcher.adClicked);
@@ -161,7 +161,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
     public void testMRAIDCreateCalendarEventSuccess() {
         String event = "{\"id\":1}";
         String mraidCall = String.format("mraid://createCalendarEvent?p=%s", event);
-        implementation.dispatch_mraid_call(mraidCall);
+        implementation.dispatch_mraid_call(mraidCall, true);
 
         MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
         assertTrue(mockAdDispatcher.adClicked);
@@ -171,7 +171,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
     public void testMRAIDCreateCalendarEventFailure() {
         String event = "";
         String mraidCall = String.format("mraid://createCalendarEvent?p=%s", event);
-        implementation.dispatch_mraid_call(mraidCall);
+        implementation.dispatch_mraid_call(mraidCall, true);
 
         MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
         assertFalse(mockAdDispatcher.adClicked);
@@ -185,7 +185,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
                 allowOrientationChange, forceOrientation);
 
         implementation.expanded = true;
-        implementation.dispatch_mraid_call(mraidCall);
+        implementation.dispatch_mraid_call(mraidCall, true);
     }
 
     static class MockAdWebView extends AdWebView {

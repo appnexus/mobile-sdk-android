@@ -1,0 +1,13 @@
+# Vungle Proguard Config
+# NOTE: You should also include the Android Proguard config found with the build tools:
+# $ANDROID_HOME/tools/proguard/proguard-android.txt
+
+-keep class com.vungle.** { public *; }
+
+-keep class javax.inject.*
+
+-keepattributes *Annotation*
+
+-keepattributes Signature
+
+-keep class dagger.*

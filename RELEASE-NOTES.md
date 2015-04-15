@@ -1,6 +1,7 @@
 ## RC 2.2
 + MS-953 InMobi native, banner, interstitial mediation
 + MS-952 Detect user interaction on webview
++ MS-1075 Vungle interstitial video mediation
 
 ## RC 2.1
 + MS-857 MS-920 MS-866 AN native response, click handling, cookie management
