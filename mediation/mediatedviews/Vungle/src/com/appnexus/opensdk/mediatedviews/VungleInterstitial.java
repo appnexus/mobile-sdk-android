@@ -30,15 +30,15 @@ import java.lang.ref.WeakReference;
 
 /**
  * This class is the Vungle interstitial adapter - it provides the functionality needed to allow
- * an application using the AppNexus SDK to load a banner ad through the Vungle publisher SDK. The instantiation
- * of this class is done in response from the AppNexus server for an interstitial placement that is configured
- * to use Vungle to serve it. This class is never directly instantiated by the application.
- *
+ * an application using the AppNexus SDK to load an interstitial ad through the Vungle publisher SDK.
+ * The instantiation of this class is done in response from the AppNexus server for an interstitial
+ * placement that is configured to use Vungle to serve it. This class is never directly instantiated
+ * by the application.
+ * <p/>
  * This class also serves as an example of how to write a Mediation adaptor for the AppNexus
  * SDK.
- *
  */
-public class VungleInterstitial implements MediatedInterstitialAdView, EventListener{
+public class VungleInterstitial implements MediatedInterstitialAdView, EventListener {
     final VunglePub vunglePub = VunglePub.getInstance();
     WeakReference<Activity> weakActivity;
     String className = this.getClass().getSimpleName();

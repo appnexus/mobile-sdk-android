@@ -17,11 +17,11 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import android.content.Context;
+
 import com.vungle.publisher.VunglePub;
 
-
 /**
- * Convenience method to initilize Vungle SDk.
+ * Convenience method to initialize Vungle SDk.
  */
 public class VungleSettings {
     public static void initVungle(Context context, String appId) {
