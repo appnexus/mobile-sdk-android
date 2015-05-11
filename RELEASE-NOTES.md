@@ -1,4 +1,5 @@
 ## RC 2.2
++ MS-1110 Chartboost interstitial mediation
 + MS-953 InMobi native, banner, interstitial mediation
 + MS-952 Detect user interaction on webview
 + MS-1075 Vungle interstitial video mediation
