@@ -49,8 +49,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
     private MediatedBannerAdViewController(
             Activity activity, AdRequester requester, MediatedAd mediatedAd,
             AdViewListener listener) {
-        super(requester, mediatedAd, listener);
-        mediaType = MediaType.BANNER;
+        super(requester, mediatedAd, listener, MediaType.BANNER);
 
         if (!isValid(MediatedBannerAdView.class))
             return;

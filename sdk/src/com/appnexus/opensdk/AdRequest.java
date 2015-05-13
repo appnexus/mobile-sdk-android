@@ -350,7 +350,7 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
 
         StringBuilder nonetSB = new StringBuilder();
 
-        for (String invalidNetwork : settings.invalidNetworks) {
+        for (String invalidNetwork : settings.getInvalidNetwork(media_type)) {
             // only add commas when there are additional items
             if (nonetSB.length() > 0) {
                 nonetSB.append(",");

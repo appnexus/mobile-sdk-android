@@ -18,6 +18,8 @@ package com.appnexus.opensdk.utils;
 
 import android.location.Location;
 import android.os.Build;
+
+import com.appnexus.opensdk.MediaType;
 import com.appnexus.opensdk.R;
 
 import java.util.HashMap;
@@ -52,7 +54,9 @@ public class Settings {
     public int locationDecimalDigits = -1;
 
     public HashMap<String, String> externalMediationClasses = new HashMap<String, String>();
-    public HashSet<String> invalidNetworks = new HashSet<String>();
+    private HashSet<String> invalidBannerNetworks = new HashSet<String>();
+    private HashSet<String> invalidInterstitialNetworks = new HashSet<String>();
+    private HashSet<String> invalidNativeNetworks = new HashSet<String>();
 
     // STATICS
     public static final int HTTP_CONNECTION_TIMEOUT = 15000;
@@ -90,5 +94,33 @@ public class Settings {
 
     private Settings() {
 
+    }
+
+    public void addInvalidNetwork(MediaType type, String network) {
+        if (!StringUtil.isEmpty(network)) {
+            switch (type) {
+                case BANNER:
+                    invalidBannerNetworks.add(network);
+                    break;
+                case INTERSTITIAL:
+                    invalidInterstitialNetworks.add(network);
+                    break;
+                case NATIVE:
+                    invalidNativeNetworks.add(network);
+                    break;
+            }
+        }
+    }
+
+    public HashSet<String> getInvalidNetwork(MediaType type) {
+        switch (type) {
+            case BANNER:
+                return invalidBannerNetworks;
+            case INTERSTITIAL:
+                return invalidInterstitialNetworks;
+            case NATIVE:
+                return invalidNativeNetworks;
+        }
+        return null;
     }
 }

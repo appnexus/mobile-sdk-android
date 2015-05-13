@@ -57,10 +57,11 @@ public abstract class MediatedAdViewController {
     boolean hasFailed = false;
     boolean hasSucceeded = false;
 
-    MediatedAdViewController(AdRequester requester, MediatedAd currentAd, AdViewListener listener) {
+    MediatedAdViewController(AdRequester requester, MediatedAd currentAd, AdViewListener listener, MediaType type) {
         this.caller_requester = new WeakReference<AdRequester>(requester);
         this.listener = listener;
         this.currentAd = currentAd;
+        this.mediaType = type;
 
         ResultCode errorCode = null;
 
@@ -179,7 +180,7 @@ public abstract class MediatedAdViewController {
                         throwable.getClass().getSimpleName()));
         if (!StringUtil.isEmpty(className)) {
             Clog.w(Clog.mediationLogTag, String.format("Adding %s to invalid networks list", className));
-            Settings.getSettings().invalidNetworks.add(className);
+            Settings.getSettings().addInvalidNetwork(mediaType, className);
         }
     }
 

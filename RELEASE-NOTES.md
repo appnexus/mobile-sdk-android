@@ -1,10 +1,11 @@
 ## RC 2.2
++ MS-1145 Separate invalid networks based on media type
 + MS-1110 Chartboost interstitial mediation
 + MS-953 InMobi native, banner, interstitial mediation
 + MS-952 Detect user interaction on webview
 + MS-1075 Vungle interstitial video mediation
 + MS-1074 AdColony interstial mediation
-+ MS-1076,1080 Vdopia mediation, banner and interstitial
++ MS-1076 1080 Vdopia mediation, banner and interstitial
 
 ## RC 2.1
 + MS-857 MS-920 MS-866 AN native response, click handling, cookie management

@@ -104,7 +104,7 @@ public class MediatedNativeAdController {
                         throwable.getClass().getSimpleName()));
         if (!StringUtil.isEmpty(className)) {
             Clog.w(Clog.mediationLogTag, String.format("Adding %s to invalid networks list", className));
-            Settings.getSettings().invalidNetworks.add(className);
+            Settings.getSettings().addInvalidNetwork(MediaType.NATIVE, className);
         }
         errorCode = ResultCode.MEDIATED_SDK_UNAVAILABLE;
     }
