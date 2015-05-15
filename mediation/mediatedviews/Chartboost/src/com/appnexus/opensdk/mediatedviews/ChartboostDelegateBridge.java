@@ -22,7 +22,6 @@ import com.chartboost.sdk.Chartboost;
 import com.chartboost.sdk.ChartboostDelegate;
 import com.chartboost.sdk.Model.CBError;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**

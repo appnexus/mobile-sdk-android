@@ -42,7 +42,7 @@ public class Settings {
     public boolean test_mode = false;
     public String ua = null;
     public boolean first_launch;
-    public final String sdkVersion = "2.1";
+    public final String sdkVersion = "2.2";
 
     public String mcc;
     public String mnc;
