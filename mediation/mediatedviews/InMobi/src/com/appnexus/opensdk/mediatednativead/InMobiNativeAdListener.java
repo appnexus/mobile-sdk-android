@@ -16,8 +16,6 @@
 
 package com.appnexus.opensdk.mediatednativead;
 
-import android.support.annotation.NonNull;
-
 import com.appnexus.opensdk.MediatedNativeAdController;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.utils.Clog;
@@ -31,7 +29,7 @@ public class InMobiNativeAdListener implements IMNativeListener {
     private WeakReference<InMobiNativeAdResponse> response;
     private final MediatedNativeAdController controller;
 
-    public InMobiNativeAdListener(@NonNull InMobiNativeAdResponse response, MediatedNativeAdController controller) {
+    public InMobiNativeAdListener(InMobiNativeAdResponse response, MediatedNativeAdController controller) {
         this.response = new WeakReference<InMobiNativeAdResponse>(response);
         this.controller = controller;
     }

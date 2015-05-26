@@ -1,3 +1,6 @@
+## RC 2.3
++ MS-1225 Legacy AdMob/DFP adapter update
+
 ## RC 2.2
 + MS-1145 Separate invalid networks based on media type
 + MS-1110 Chartboost interstitial mediation

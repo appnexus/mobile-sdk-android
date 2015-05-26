@@ -16,7 +16,6 @@
 
 package com.appnexus.opensdk.mediatednativead;
 
-import android.support.annotation.NonNull;
 import android.view.View;
 
 import com.appnexus.opensdk.MediatedNativeAdController;
@@ -32,7 +31,7 @@ public class MoPubNativeAdListener implements MoPubNative.MoPubNativeNetworkList
     private WeakReference<MoPubNativeAdResponse> response;
     private final MediatedNativeAdController controller;
 
-    public MoPubNativeAdListener(@NonNull MoPubNativeAdResponse response, MediatedNativeAdController mBC) {
+    public MoPubNativeAdListener(MoPubNativeAdResponse response, MediatedNativeAdController mBC) {
         this.response = new WeakReference<MoPubNativeAdResponse>(response);
         this.controller = mBC;
     }

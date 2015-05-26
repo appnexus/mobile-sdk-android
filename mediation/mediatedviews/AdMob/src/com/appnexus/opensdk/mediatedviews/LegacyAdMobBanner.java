@@ -93,4 +93,19 @@ public class LegacyAdMobBanner implements MediatedBannerAdView {
             admobAV.destroy();
         }
     }
+
+    @Override
+    public void onPause() {
+
+    }
+
+    @Override
+    public void onResume() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+        destroy();
+    }
 }

@@ -21,7 +21,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -86,7 +85,7 @@ public class InMobiNativeAdResponse implements NativeAdResponse{
 
     }
 
-    boolean setResources(@NonNull final IMNative imNative) {
+    boolean setResources(final IMNative imNative) {
         this.imNative = imNative;
         if (imNative.getContent() == null || imNative.getContent().trim().isEmpty()) {
             return false;
@@ -197,7 +196,7 @@ public class InMobiNativeAdResponse implements NativeAdResponse{
     }
 
     @Override
-    public boolean registerView(@NonNull View view, NativeAdEventListener listener) {
+    public boolean registerView(View view, NativeAdEventListener listener) {
         if (imNative != null && !registered) {
             imNative.attachToView((ViewGroup) view);
             view.setOnClickListener(clickListener);
@@ -209,7 +208,7 @@ public class InMobiNativeAdResponse implements NativeAdResponse{
     }
 
     @Override
-    public boolean registerViewList(@NonNull View view, List<View> clickables, NativeAdEventListener listener) {
+    public boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
         if (imNative != null && !registered) {
             imNative.attachToView((ViewGroup) view);
             for (View clickable: clickables) {

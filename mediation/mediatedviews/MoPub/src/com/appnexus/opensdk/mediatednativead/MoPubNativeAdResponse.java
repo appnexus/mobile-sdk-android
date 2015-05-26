@@ -19,7 +19,6 @@ package com.appnexus.opensdk.mediatednativead;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.view.View;
 
 import com.appnexus.opensdk.NativeAdEventListener;
@@ -78,7 +77,7 @@ public class MoPubNativeAdResponse implements NativeAdResponse{
         handler.postDelayed(runnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
     }
 
-    void setResources(@NonNull NativeResponse response) {
+    void setResources(NativeResponse response) {
         this.nativeResponse = response;
         this.title = nativeResponse.getTitle();
         this.description = nativeResponse.getText();

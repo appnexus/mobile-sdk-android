@@ -101,4 +101,19 @@ public class LegacyAdMobInterstitial implements MediatedInterstitialAdView {
             iad.stopLoading();
         }
     }
+
+    @Override
+    public void onPause() {
+
+    }
+
+    @Override
+    public void onResume() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+        destroy();
+    }
 }

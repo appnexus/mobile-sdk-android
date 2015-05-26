@@ -109,6 +109,21 @@ public class LegacyDFPBanner implements MediatedBannerAdView {
         }
     }
 
+    @Override
+    public void onPause() {
+
+    }
+
+    @Override
+    public void onResume() {
+
+    }
+
+    @Override
+    public void onDestroy() {
+        destroy();
+    }
+
     /**
      * Class to extract optional server side parameters from passed in json string.
      * Supports
