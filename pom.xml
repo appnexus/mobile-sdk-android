@@ -48,20 +48,7 @@
 			<version>5.0.1_r2</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.android.support</groupId>
-			<artifactId>support-v4</artifactId>
-			<version>19.1.0</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>com.google.android.gms</groupId>
-			<artifactId>play-services</artifactId>
-			<version>6.5.87</version>
-			<type>aar</type>
-		</dependency>
 	</dependencies>
-
 	<build>
 		<sourceDirectory>sdk/src</sourceDirectory>
 		<resources>

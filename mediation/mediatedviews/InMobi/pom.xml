@@ -61,11 +61,6 @@
             <version>4.5.3</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>com.android.support</groupId>
-            <artifactId>support-annotations</artifactId>
-            <version>20.0.0</version>
-        </dependency>
 	</dependencies>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
