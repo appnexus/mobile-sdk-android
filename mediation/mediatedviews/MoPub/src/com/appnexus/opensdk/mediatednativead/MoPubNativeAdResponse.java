@@ -41,7 +41,7 @@ public class MoPubNativeAdResponse implements NativeAdResponse{
     private Bitmap coverImage;
     private String socialContext;
     private Rating rating;
-    private HashMap<String, String> nativeElements = new HashMap<String, String>();
+    private HashMap<String, Object> nativeElements = new HashMap<String, Object>();
     private boolean expired = false;
     private boolean registered = false;
     private NativeResponse nativeResponse;
@@ -84,19 +84,13 @@ public class MoPubNativeAdResponse implements NativeAdResponse{
         this.imageUrl = nativeResponse.getMainImageUrl();
         this.iconUrl = nativeResponse.getIconImageUrl();
         this.callToAction = nativeResponse.getCallToAction();
-        try {
+        if (nativeResponse.getStarRating() != null) {
             this.rating = new Rating(nativeResponse.getStarRating(), 5.0);
-        } catch (NullPointerException e) {
-            this.rating = null;
         }
-        if (nativeResponse.getExtras() != null && !nativeResponse.getExtras().isEmpty()) {
+        if (!nativeResponse.getExtras().isEmpty()) {
             // put extras in native response, MoPub returns String as Object
             for (Map.Entry<String, Object> entry : nativeResponse.getExtras().entrySet()) {
-                try {
-                    String value = (String) entry.getValue();
-                    nativeElements.put(entry.getKey(), value);
-                } catch (ClassCastException ignore) {
-                }
+                nativeElements.put(entry.getKey(), entry.getValue());
             }
         }
     }
@@ -152,7 +146,7 @@ public class MoPubNativeAdResponse implements NativeAdResponse{
     }
 
     @Override
-    public HashMap<String, String> getNativeElements() {
+    public HashMap<String, Object> getNativeElements() {
         return nativeElements;
     }
 

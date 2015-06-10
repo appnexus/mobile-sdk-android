@@ -26,11 +26,9 @@ import com.inmobi.monetization.IMNativeListener;
 import java.lang.ref.WeakReference;
 
 public class InMobiNativeAdListener implements IMNativeListener {
-    private WeakReference<InMobiNativeAdResponse> response;
     private final MediatedNativeAdController controller;
 
-    public InMobiNativeAdListener(InMobiNativeAdResponse response, MediatedNativeAdController controller) {
-        this.response = new WeakReference<InMobiNativeAdResponse>(response);
+    public InMobiNativeAdListener(MediatedNativeAdController controller) {
         this.controller = controller;
     }
 
@@ -67,10 +65,10 @@ public class InMobiNativeAdListener implements IMNativeListener {
 
     @Override
     public void onNativeRequestSucceeded(IMNative imNative) {
-        InMobiNativeAdResponse response = this.response.get();
-        if (response != null && imNative != null) {
+        if (imNative != null) {
+            InMobiNativeAdResponse response = new InMobiNativeAdResponse();
             if (response.setResources(imNative)) {
-                controller.onAdLoaded();
+                controller.onAdLoaded(response);
                 return;
             }
         }

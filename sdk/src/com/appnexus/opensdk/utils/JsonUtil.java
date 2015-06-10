@@ -35,11 +35,11 @@ public class JsonUtil {
         return null;
     }
 
-    public static HashMap<String, String> getStringHashMap(JSONObject object) {
+    public static HashMap<String, Object> getStringObjectHashMap(JSONObject object) {
         if (object == null) return null;
         try {
             Iterator<String> keys = object.keys();
-            HashMap<String, String> map = new HashMap<String, String>();
+            HashMap<String, Object> map = new HashMap<String, Object>();
             while (keys.hasNext()) {
                 String key = keys.next();
                 map.put(key, object.getString(key));

@@ -34,7 +34,6 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 public class MediatedNativeAdController {
-    NativeAdResponse response;
     WeakReference<NativeAdFetcher> adFetcher;
     NativeAdRequest.AdDispatcher listener;
     MediatedAd currentAd;
@@ -68,7 +67,7 @@ public class MediatedNativeAdController {
                 Class<?> c = Class.forName(currentAd.getClassName());
                 MediatedNativeAd ad = (MediatedNativeAd) c.newInstance();
                 if (adFetcher.getRequestParams() != null) {
-                    response = ad.requestNativeAd(
+                    ad.requestNativeAd(
                             adFetcher.getRequestParams().getContext(),
                             currentAd.getId(), this,
                             adFetcher.getRequestParams().getTargetingParameters());
@@ -110,10 +109,6 @@ public class MediatedNativeAdController {
     }
 
     protected void finishController() {
-        if (response != null) {
-            response.destroy();
-        }
-        response = null;
         listener = null;
         currentAd = null;
         adFetcher.clear();
@@ -128,7 +123,7 @@ public class MediatedNativeAdController {
      * in {@link MediatedNativeAd}.
      *
      */
-    public void onAdLoaded() {
+    public void onAdLoaded(NativeAdResponse response) {
         if (hasSucceeded || hasFailed) return;
         markLatencyStop();
         cancelTimeout();
@@ -141,7 +136,6 @@ public class MediatedNativeAdController {
             Log.wtf(Clog.baseLogTag, "Can't find the dispatcher of the NativeAdRequest.");
             response.destroy();
         }
-        response = null;
         listener = null;
         currentAd = null;
         adFetcher.clear();
@@ -328,7 +322,6 @@ public class MediatedNativeAdController {
             } catch (IllegalArgumentException e) {
                 // catch exception for unregisterReceiver() of destroy() call
             } finally {
-                nac.response = null;
                 nac.listener = null;
                 nac.currentAd = null;
                 nac.adFetcher.clear();

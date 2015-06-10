@@ -42,9 +42,9 @@ public class ChartboostInterstitial implements MediatedInterstitialAdView {
     ChartboostListener listener;
 
     /**
-     * Called by the AppNeuxs SDK to load an interstital ad from Chartboost
+     * Called by the AppNexus SDK to load an interstitial ad from Chartboost
      *
-     * @param mIC       A controller through which the adaptor must send events to the AppNexus SDK.
+     * @param mIC       A controller through which the adapter must send events to the AppNexus SDK.
      * @param activity  The activity that the app launch interstitial ad from.
      * @param parameter An optional opaque string passed from the Ad Network Manager, this can be used
      *                  to define SDK-specific parameters such as additional targeting information.
@@ -53,7 +53,7 @@ public class ChartboostInterstitial implements MediatedInterstitialAdView {
      * @param uid       The network ID for this ad call.  This ID is opaque to the AppNexus SDK; the
      *                  ID's contents and their encoding are up to the implementation of the
      * @param tp        Targeting parameters passed from AN SDK. Important: Please pass in the location
-     *                  by setting the customKeyords in the InterstitialAdView using key
+     *                  by setting the customKeywords in the InterstitialAdView using key
      *                  ChartboostSetting.KEY_CHARTBOOST_LOCATION.
      */
     @Override

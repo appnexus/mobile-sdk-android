@@ -23,6 +23,7 @@ import com.jirbo.adcolony.AdColonyAd;
 import com.jirbo.adcolony.AdColonyAdListener;
 
 public class AdColonyListener implements AdColonyAdListener {
+
     final MediatedAdViewController mAC;
     final String className;
 
@@ -41,34 +42,19 @@ public class AdColonyListener implements AdColonyAdListener {
 
     @Override
     public void onAdColonyAdStarted(AdColonyAd adColonyAd) {
-        Clog.d(Clog.mediationLogTag, className + "ad started");
+        Clog.d(Clog.mediationLogTag, className + " - ad started");
         if (mAC != null) {
             mAC.onAdExpanded();
         }
     }
 
     public void onZoneStatusNotActive(String zoneStatus, String zoneId) {
-        ResultCode code = ResultCode.INTERNAL_ERROR;
+        AdColonySettings.AdColonyStatus status = AdColonySettings.AdColonyStatus.getStatus(zoneStatus);
+        Clog.e(Clog.mediationLogTag, className + " - " + status.getErrorMessage() + " Zone id: " + zoneId);
+        ResultCode code = AdColonySettings.errorCodeForStatus(status);
 
-        if (zoneStatus.equals(AdColonySettings.INVALID)) {
-            code = ResultCode.INVALID_REQUEST;
-            printToClogError("Invalid zone id.");
-        } else if (zoneStatus.equals(AdColonySettings.UNKNOWN)) {
-            code = ResultCode.INVALID_REQUEST;
-            printToClogError("You haven't configured AdColony yet, call AdColonySetting.configure() in activity onCreate()");
-        } else if (zoneStatus.equals(AdColonySettings.LOADING)) {
-            code = ResultCode.UNABLE_TO_FILL;
-            printToClogError("No available ads yet.");
-        } else if (zoneStatus.equals(AdColonySettings.OFF)) {
-            code = ResultCode.INVALID_REQUEST;
-            printToClogError("Zone id " + zoneId + " is turned off.");
-        }
         if (mAC != null) {
             mAC.onAdFailed(code);
         }
-    }
-
-    void printToClogError(String s) {
-        Clog.e(Clog.mediationLogTag, className + "-" + s);
     }
 }

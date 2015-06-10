@@ -96,6 +96,7 @@ public class NativeAdSDK {
                     if (response.registerViewList(container, views, listener)) {
                         WeakReference<NativeAdResponse> reference = new WeakReference<NativeAdResponse>(response);
                         container.setTag(R.string.native_tag, reference);
+                        Clog.d(Clog.nativeLogTag, "View has been registered.");
                     } else {
                         Clog.e(Clog.nativeLogTag, "failed at registering the View");
                     }
@@ -124,6 +125,7 @@ public class NativeAdSDK {
                     WeakReference reference = (WeakReference) view.getTag(R.string.native_tag);
                     NativeAdResponse response = (NativeAdResponse)reference.get();
                     if (response != null) {
+                        Clog.d(Clog.nativeLogTag, "Unregister native ad response, assets will be destroyed.");
                         response.unregisterViews();
                     }
                     view.setTag(R.string.native_tag, null);

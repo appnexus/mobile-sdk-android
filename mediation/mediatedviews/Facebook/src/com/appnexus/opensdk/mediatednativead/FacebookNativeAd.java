@@ -42,11 +42,10 @@ public class FacebookNativeAd implements MediatedNativeAd {
      */
 
     @Override
-    public NativeAdResponse requestNativeAd(Context context, String uid, final MediatedNativeAdController mBC, TargetingParameters tp) {
+    public void requestNativeAd(Context context, String uid, final MediatedNativeAdController mBC, TargetingParameters tp) {
         NativeAd nativeAd = new NativeAd(context, uid);
         FBNativeAdResponse response = new FBNativeAdResponse(nativeAd);
         nativeAd.setAdListener(new FacebookNativeAdListener(mBC, response));
         nativeAd.loadAd();
-        return response;
     }
 }

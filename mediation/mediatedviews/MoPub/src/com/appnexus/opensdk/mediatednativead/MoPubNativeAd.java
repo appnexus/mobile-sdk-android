@@ -49,7 +49,7 @@ public class MoPubNativeAd implements MediatedNativeAd{
      * @return AppNexus NativeAdResponse that wraps a MoPub native ad.
      */
     @Override
-    public NativeAdResponse requestNativeAd(Context context, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
+    public void requestNativeAd(Context context, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
         RequestParameters requestParameters = null;
         if (tp != null) {
             final EnumSet<RequestParameters.NativeAdAsset> desired
@@ -60,12 +60,9 @@ public class MoPubNativeAd implements MediatedNativeAd{
                     .desiredAssets(desired)
                     .build();
         }
-        MoPubNativeAdResponse response = new MoPubNativeAdResponse();
-        MoPubNativeAdListener listener = new MoPubNativeAdListener(response, mBC);
+        MoPubNativeAdListener listener = new MoPubNativeAdListener(mBC);
         MoPubNative moPubNative = new MoPubNative(context, uid, listener);
         moPubNative.setNativeEventListener(listener);
         moPubNative.makeRequest(requestParameters);
-
-        return response;
     }
 }

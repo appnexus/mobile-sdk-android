@@ -49,7 +49,7 @@ public class InMobiNativeAdResponse implements NativeAdResponse{
     private String socialContext;
     private Rating rating;
     private String landingUrl;
-    private HashMap<String, String> nativeElements = new HashMap<String, String>();
+    private HashMap<String, Object> nativeElements = new HashMap<String, Object>();
     private boolean expired = false;
     private boolean registered = false;
     private NativeAdEventListener nativeAdEventlistener;
@@ -176,7 +176,7 @@ public class InMobiNativeAdResponse implements NativeAdResponse{
     }
 
     @Override
-    public HashMap<String, String> getNativeElements() {
+    public HashMap<String, Object> getNativeElements() {
         return nativeElements;
     }
 

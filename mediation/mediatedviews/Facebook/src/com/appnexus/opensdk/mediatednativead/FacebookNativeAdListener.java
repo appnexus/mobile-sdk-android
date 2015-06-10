@@ -61,11 +61,11 @@ public class FacebookNativeAdListener implements AdListener {
         FBNativeAdResponse response = this.response.get();
         if (response != null) {
             response.setResources();
+            controller.onAdLoaded(response);
         } else {
             controller.onAdFailed(ResultCode.UNABLE_TO_FILL);
-            return;
         }
-        controller.onAdLoaded();
+
     }
 
     @Override

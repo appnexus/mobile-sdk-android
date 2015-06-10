@@ -43,24 +43,22 @@ public class InMobiNativeAd implements MediatedNativeAd{
      * @return native ad response from InMobi
      */
     @Override
-    public NativeAdResponse requestNativeAd(Context context, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
+    public void requestNativeAd(Context context, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
         if (InMobiSettings.INMOBI_APP_ID == null || InMobiSettings.INMOBI_APP_ID.isEmpty()) {
             Clog.e(Clog.mediationLogTag, "InMobi mediation failed. Call InMobiSettings.setInMobiAppId(String key, Context context) to set the app id.");
             if (mBC != null) {
                 mBC.onAdFailed(ResultCode.MEDIATED_SDK_UNAVAILABLE);
             }
-            return null;
+            return;
         }
-        InMobiNativeAdResponse response = new InMobiNativeAdResponse();
         IMNative nativeAd;
         if (uid == null || uid.isEmpty()) {
-            nativeAd = new IMNative(InMobiSettings.INMOBI_APP_ID, new InMobiNativeAdListener(response, mBC));
+            nativeAd = new IMNative(InMobiSettings.INMOBI_APP_ID, new InMobiNativeAdListener(mBC));
         } else {
-            nativeAd = new IMNative(uid, new InMobiNativeAdListener(response, mBC));
+            nativeAd = new IMNative(uid, new InMobiNativeAdListener(mBC));
         }
         InMobiSettings.setTargetingParams(tp);
         nativeAd.loadAd();
-        return response;
     }
 
 }

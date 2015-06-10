@@ -70,7 +70,7 @@ public class Settings {
 
     public static final long MEDIATED_NETWORK_TIMEOUT = 15000;
 
-    public static final long NATIVE_AD_RESPONSE_EXPIRATION_TIME = 3600000; // an hour
+    public static final long NATIVE_AD_RESPONSE_EXPIRATION_TIME = 10000;//3600000; // an hour
 
     public static final int NATIVE_AD_VISIBLE_PERIOD_MILLIS = 1000;
 

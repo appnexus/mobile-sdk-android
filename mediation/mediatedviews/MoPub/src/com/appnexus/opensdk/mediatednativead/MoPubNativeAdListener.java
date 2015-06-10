@@ -27,26 +27,20 @@ import com.mopub.nativeads.NativeResponse;
 
 import java.lang.ref.WeakReference;
 
-public class MoPubNativeAdListener implements MoPubNative.MoPubNativeNetworkListener, MoPubNative.MoPubNativeEventListener{
+public class MoPubNativeAdListener implements MoPubNative.MoPubNativeNetworkListener, MoPubNative.MoPubNativeEventListener {
     private WeakReference<MoPubNativeAdResponse> response;
     private final MediatedNativeAdController controller;
 
-    public MoPubNativeAdListener(MoPubNativeAdResponse response, MediatedNativeAdController mBC) {
-        this.response = new WeakReference<MoPubNativeAdResponse>(response);
+    public MoPubNativeAdListener(MediatedNativeAdController mBC) {
         this.controller = mBC;
     }
 
     @Override
     public void onNativeLoad(NativeResponse nativeResponse) {
-        MoPubNativeAdResponse response = this.response.get();
-        if (response != null) {
-            response.setResources(nativeResponse);
-        } else {
-            controller.onAdFailed(ResultCode.UNABLE_TO_FILL);
-            return;
-        }
-        controller.onAdLoaded();
-
+        MoPubNativeAdResponse response = new MoPubNativeAdResponse();
+        response.setResources(nativeResponse);
+        this.response = new WeakReference<MoPubNativeAdResponse>(response);
+        controller.onAdLoaded(response);
     }
 
     @Override
@@ -104,9 +98,11 @@ public class MoPubNativeAdListener implements MoPubNative.MoPubNativeNetworkList
 
     @Override
     public void onNativeClick(View view) {
-        MoPubNativeAdResponse response = this.response.get();
-        if (response != null) {
-            response.onAdClicked();
+        if (this.response != null) {
+            MoPubNativeAdResponse response = this.response.get();
+            if (response != null) {
+                response.onAdClicked();
+            }
         }
     }
 }

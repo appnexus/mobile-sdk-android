@@ -27,7 +27,9 @@ public interface NativeAdResponse {
         FACEBOOK,
         MOPUB,
         APPNEXUS,
-        INMOBI
+        INMOBI,
+        ADCOLONY,
+        CUSTOM
     }
     /**
      *
@@ -105,7 +107,7 @@ public interface NativeAdResponse {
      *
      * @return A map of the native ad elements
      */
-    public HashMap<String, String> getNativeElements();
+    public HashMap<String, Object> getNativeElements();
 
     /**
      * Retrieve the social context of the native ad response.
@@ -153,6 +155,10 @@ public interface NativeAdResponse {
      * Destroy the response
      */
     public void destroy();
+
+    public class MainMedia {
+
+    }
 
     public class Rating{
         private final double value;

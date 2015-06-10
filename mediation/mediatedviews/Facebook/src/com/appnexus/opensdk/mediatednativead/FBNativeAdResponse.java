@@ -41,7 +41,7 @@ public class FBNativeAdResponse implements NativeAdResponse {
     private NativeAd nativeAd;
     private String socialContext;
     private Rating rating;
-    private HashMap<String, String> nativeElements = new HashMap<String, String>();
+    private HashMap<String, Object> nativeElements = new HashMap<String, Object>();
     private boolean expired = false;
     private boolean registered = false;
     private NativeAdEventListener listener;
@@ -52,21 +52,7 @@ public class FBNativeAdResponse implements NativeAdResponse {
         runnable = new Runnable() {
             @Override
             public void run() {
-                if (coverImage != null) {
-                    coverImage.recycle();
-                    coverImage = null;
-                }
-                if (icon != null) {
-                    icon.recycle();
-                    icon = null;
-                }
-                listener = null;
                 expired = true;
-                if (nativeAd != null) {
-                    nativeAd.setAdListener(null);
-                    nativeAd.destroy();
-                    nativeAd = null;
-                }
             }
         };
         Handler handler = new Handler(Looper.getMainLooper());
@@ -124,7 +110,7 @@ public class FBNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public HashMap<String, String> getNativeElements() {
+    public HashMap<String, Object> getNativeElements() {
         return nativeElements;
     }
 
@@ -139,7 +125,7 @@ public class FBNativeAdResponse implements NativeAdResponse {
     }
 
     boolean setResources() {
-        if (nativeAd!= null && nativeAd.isAdLoaded()) {
+        if (nativeAd != null && nativeAd.isAdLoaded()) {
             title = nativeAd.getAdTitle();
             description = nativeAd.getAdBody();
             if (nativeAd.getAdIcon() != null) {
@@ -191,9 +177,6 @@ public class FBNativeAdResponse implements NativeAdResponse {
 
     @Override
     public void unregisterViews() {
-        if (hasExpired()) {
-            Clog.d(Clog.mediationLogTag, "This NativeAdResponse has expired.");
-        }
         if (nativeAd != null) {
             nativeAd.unregisterView();
         }
@@ -204,6 +187,20 @@ public class FBNativeAdResponse implements NativeAdResponse {
     public void destroy() {
         Handler handler = new Handler(Looper.getMainLooper());
         handler.removeCallbacks(runnable);
-        handler.post(runnable);
+        if (coverImage != null) {
+            coverImage.recycle();
+            coverImage = null;
+        }
+        if (icon != null) {
+            icon.recycle();
+            icon = null;
+        }
+        listener = null;
+        expired = true;
+        if (nativeAd != null) {
+            nativeAd.setAdListener(null);
+            nativeAd.destroy();
+            nativeAd = null;
+        }
     }
 }

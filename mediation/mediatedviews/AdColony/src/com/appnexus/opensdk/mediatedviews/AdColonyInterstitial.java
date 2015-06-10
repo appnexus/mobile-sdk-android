@@ -28,13 +28,15 @@ import com.jirbo.adcolony.AdColonyVideoAd;
 import java.lang.ref.WeakReference;
 
 /**
- * This class is the AdColony interstitial adaptor it provides the functionality needed to allow
+ * This class is the AdColony interstitial adapter. It provides the functionality needed to allow
  * an application using the App Nexus SDK to load an interstitial ad through the AdColony SDK. The
  * instantiation of this class is done in response from the AppNexus server for an interstitial
  * placement that is configured to use AdConoly to serve it. This class is never directly instantiated
  * by the developer.
  */
+
 public class AdColonyInterstitial implements MediatedInterstitialAdView {
+
     String zoneId;
     WeakReference<Activity> weakActivity;
     AdColonyVideoAd ad;
@@ -45,13 +47,13 @@ public class AdColonyInterstitial implements MediatedInterstitialAdView {
         zoneId = uid;
         weakActivity = new WeakReference<Activity>(activity);
         listener = new AdColonyListener(mIC, this.getClass().getSimpleName());
-        if (isReady()) {
+        String zoneStatus = AdColony.statusForZone(zoneId);
+        if (AdColonySettings.isActive(zoneStatus)) {
             ad = new AdColonyVideoAd(zoneId).withListener(listener);
             if (mIC != null) {
                 mIC.onAdLoaded();
             }
         } else {
-            String zoneStatus = AdColony.statusForZone(zoneId);
             listener.onZoneStatusNotActive(zoneStatus, zoneId);
         }
 
@@ -72,7 +74,8 @@ public class AdColonyInterstitial implements MediatedInterstitialAdView {
 
     @Override
     public boolean isReady() {
-        return AdColony.statusForZone(zoneId).equals(AdColonySettings.ACTIVE);
+        String status = AdColony.statusForZone(zoneId);
+        return AdColonySettings.isActive(status);
     }
 
     @Override

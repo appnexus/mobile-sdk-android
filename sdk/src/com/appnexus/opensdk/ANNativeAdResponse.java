@@ -50,7 +50,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
     private String callToAction;
     private String socialContext;
     private Rating rating;
-    private HashMap<String, String> nativeElements;
+    private HashMap<String, Object> nativeElements;
     private boolean expired = false;
     private ArrayList<String> imp_trackers;
     private ArrayList<String> click_trackers;
@@ -74,20 +74,12 @@ public class ANNativeAdResponse implements NativeAdResponse {
     private static final String KEY_RATING_SCALE = "scale";
     private static final String KEY_CUSTOM = "custom";
 
-    private Runnable destroyRunnable = new Runnable() {
+    private Runnable expireRunnable = new Runnable() {
         @Override
         public void run() {
             expired = true;
             registeredView = null;
             clickables = null;
-            if (icon != null) {
-                icon.recycle();
-                icon = null;
-            }
-            if (image != null) {
-                image.recycle();
-                image = null;
-            }
             if (visibilityDetector != null) {
                 visibilityDetector.destroy();
                 visibilityDetector = null;
@@ -150,9 +142,9 @@ public class ANNativeAdResponse implements NativeAdResponse {
         JSONArray clickTrackerJson = JsonUtil.getJSONArray(metaData, KEY_CLICK_TRACK);
         response.click_trackers = JsonUtil.getStringArrayList(clickTrackerJson);
         JSONObject custom = JsonUtil.getJSONObject(metaData, KEY_CUSTOM);
-        response.nativeElements = JsonUtil.getStringHashMap(custom);
+        response.nativeElements = JsonUtil.getStringObjectHashMap(custom);
         Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(response.destroyRunnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
+        handler.postDelayed(response.expireRunnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
         return response;
     }
 
@@ -210,7 +202,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public HashMap<String, String> getNativeElements() {
+    public HashMap<String, Object> getNativeElements() {
         return nativeElements;
     }
 
@@ -276,8 +268,17 @@ public class ANNativeAdResponse implements NativeAdResponse {
     @Override
     public void destroy() {
         Handler handler = new Handler(Looper.getMainLooper());
-        handler.removeCallbacks(destroyRunnable);
-        handler.post(destroyRunnable);
+        handler.removeCallbacks(expireRunnable);
+        handler.post(expireRunnable);
+        // free assets in destroy
+        if (icon != null) {
+            icon.recycle();
+            icon = null;
+        }
+        if (image != null) {
+            image.recycle();
+            image = null;
+        }
     }
 
     private boolean openNativeBrowser = false;

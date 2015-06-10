@@ -824,14 +824,6 @@ public abstract class AdView extends FrameLayout {
         requestParameters.clearCustomKeywords();
     }
 
-    /**
-     * Pass the targeting parameters to the mediated networks.
-     * @return The parameters passed to the 3rd party network
-     */
-    protected TargetingParameters getTargetingParameters(){
-        return new TargetingParameters(getAge(), getGender(), getCustomKeywords(), SDKSettings.getLocation());
-    }
-
 	/**
 	 * Retrieve the array of custom keywords associated with the
 	 * current AdView.

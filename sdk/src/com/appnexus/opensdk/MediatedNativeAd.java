@@ -20,5 +20,5 @@ import android.content.Context;
 
 public interface MediatedNativeAd {
 
-    public NativeAdResponse requestNativeAd(Context context, String uid, MediatedNativeAdController mBC, TargetingParameters tp);
+    public void requestNativeAd(Context context, String uid, MediatedNativeAdController mBC, TargetingParameters tp);
 }
