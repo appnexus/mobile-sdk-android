@@ -5,8 +5,11 @@ android {
     buildToolsVersion "19.1.0"
 
     defaultConfig {
+        versionCode 25
+        versionName "2.3"
         consumerProguardFiles 'proguard-project.txt'
         minSdkVersion 9
+        targetSdkVersion 22
     }
 
     sourceSets {

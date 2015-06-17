@@ -11,4 +11,5 @@ bin/
 **/local.properties
 **/*.iml
 **/.DS_Store
-
+**/target/
+tests/gradle**

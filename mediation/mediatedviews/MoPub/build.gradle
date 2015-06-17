@@ -1,14 +1,14 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 19
+    compileSdkVersion 22
     buildToolsVersion "19.1.0"
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 19
+        targetSdkVersion 22
         versionCode 1
-        versionName "3.0.0"
+        versionName "3.8.0"
         consumerProguardFiles 'proguard-project.txt'
     }
 
@@ -29,7 +29,8 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
     compile project(':sdk')
-    compile 'com.android.support:support-v4:22.1.1'
-    compile 'com.android.support:support-annotations:20.0.0'
+    compile 'com.android.support:support-v4:22.2.0'
+    compile 'com.android.support:support-annotations:22.0.0'
+    compile 'com.mopub.volley:mopub-volley:1.1.0'
 }
 

@@ -6,9 +6,8 @@ android {
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 19
         versionCode 1
-        versionName "1.0"
+        versionName "7.5.0"
         consumerProguardFiles 'proguard-project.txt'
     }
 
@@ -27,7 +26,7 @@ android {
 }
 
 dependencies {
-    compile 'com.google.android.gms:play-services:7.3.0'
+    compile 'com.google.android.gms:play-services-ads:7.5.0'
     compile project(':sdk')
 }
 

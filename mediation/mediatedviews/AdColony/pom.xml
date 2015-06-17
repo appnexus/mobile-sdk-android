@@ -26,8 +26,8 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.appnexus.opensdk.mediatedviews</groupId>
-	<artifactId>appnexus-adconoly-mediation</artifactId>
-	<version>2.2.0-2.2.1</version>
+	<artifactId>appnexus-adcolony-mediation</artifactId>
+	<version>2.3.0-2.2.2</version>
 	<packaging>aar</packaging>
 
 	<distributionManagement>
@@ -45,19 +45,20 @@
 		<dependency>
 			<groupId>android</groupId>
 			<artifactId>android</artifactId>
-			<version>5.0.1_r2</version>
+			<!-- API 19-->
+			<version>4.4.2_r4</version>
 			<scope>provided</scope>
 		</dependency>
         <dependency>
             <groupId>com.jirbo.adcolony</groupId>
             <artifactId>adcolony</artifactId>
-            <version>2.2.1</version>
+            <version>2.2.2</version>
             <scope>compile</scope>
         </dependency>
 		<dependency>
 			<groupId>com.appnexus.opensdk</groupId>
 			<artifactId>appnexus-sdk</artifactId>
-			<version>2.2</version>
+			<version>2.3</version>
 			<scope>compile</scope>
 			<type>aar</type>
 		</dependency>
@@ -77,7 +78,7 @@
 				<configuration>
 					<sdk>
 						<path>${env.ANDROID_HOME}</path>
-						<platform>21</platform>
+						<platform>19</platform>
 					</sdk>
 					<release>true</release>
 					<sourceManifestFile>${project.basedir}/AndroidManifest.xml</sourceManifestFile>

@@ -1,6 +1,16 @@
 ## RC 2.3
 + MS-1225 Legacy AdMob/DFP adapter update
 + MS-1135 AdColony In-feed video phase 1
++ Removed SDK unnecessary dependency on google play services
++ Supported networks:
+	AdColony 2.2.2, interstitial, native
+	Amazon 5.6.20, banner, interstitial
+	Chartboost 5.4.1, interstitial
+	Facebook 4.2.0, banner, interstitial, native
+	Google Play services 7.5.0, only depend on the ads library now, DFP/AdMob banner, interstitial
+	InMobi 4.5.5, banner, interstitial, native
+	MM Media 5.4.0, banner, interstitial
+	MoPub 3.8.0, banner, interstitial, native
 
 ## RC 2.2
 + MS-1145 Separate invalid networks based on media type
