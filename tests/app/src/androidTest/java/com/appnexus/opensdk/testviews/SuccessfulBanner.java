@@ -28,11 +28,10 @@ public class SuccessfulBanner implements MediatedBannerAdView {
     public static boolean didPass;
 
     @Override
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
+    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
         didPass = true;
+        mBC.setView(DummyView.getDummyView(activity));
         mBC.onAdLoaded();
-
-        return DummyView.getDummyView(activity);
     }
 
     @Override

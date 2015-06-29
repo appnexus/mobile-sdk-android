@@ -16,7 +16,6 @@
 package com.appnexus.opensdk;
 
 import android.app.Activity;
-import android.view.View;
 
 /**
  * This is the interface a mediation adaptor must implement for
@@ -33,47 +32,41 @@ import android.view.View;
 
 public interface MediatedBannerAdView extends MediatedAdView {
 
-	/**
-	 * The AppNexus SDK will call this method to ask the
-	 * third-party SDK to request an ad from its network.  The
-	 * AppNexus SDK expects to be notified of events through the
-	 * {@link MediatedBannerAdViewController}.  Note that once a
-	 * requestAd call has been made, the AppNexus SDK expects
-	 * onAdLoaded or onAdFailed to be called through the {@link
-	 * MediatedBannerAdViewController} within 15 seconds or the
-	 * mediation call is considered to have failed.
-	 *
-	 * @param mBC The controller to notify on load, failure, etc.
-	 *
-	 * @param activity The activity from which this method was
-	 *                 called.
-	 *
-	 * @param parameter An optional opaque string passed from the
-	 *                  Ad Network Manager, this can be used to
-	 *                  defined SDK-specific parameters such as
-	 *                  additional targeting information.  The
-	 *                  encoding of the contents of this string
-	 *                  are entirely up to the implementation of
-	 *                  the third-party SDK adaptor.
-	 *
-	 * @param uid The network ID for this ad call.  This ID is
-	 *            opaque to the AppNexus SDK and its contents and
-	 *            their encoding are up to the implementation of
-	 *            the third-party SDK.
-	 *
-	 * @param width The width of the advertisement in pixels as
-	 *              defined in the {@link BannerAdView} object
-	 *              that initiated this call.
-	 *
-	 * @param height The height of the advertisement in pixels as
-	 *               defined in the {@link BannerAdView} object
-	 *               that initiated this call.
-	 *
-	 * @return A view that will be inserted into the {@link
-	 *         BannerAdView} that will hold the ad from the
-	 *         third-party SDK.
-	 */
+    /**
+     * The AppNexus SDK will call this method to ask the
+     * third-party SDK to request an ad from its network.  The
+     * AppNexus SDK expects to be notified of events through the
+     * {@link MediatedBannerAdViewController}.  Note that once a
+     * requestAd call has been made, the AppNexus SDK expects
+     * onAdLoaded or onAdFailed to be called through the {@link
+     * MediatedBannerAdViewController} within 15 seconds or the
+     * mediation call is considered to have failed.
+     *
+     * @param mBC       The controller to notify on load, failure, etc.
+     *                  Once the banner ad view is created successfully
+     *                  from the adapter, call mBC.setView(view) to pass
+     *                  the ad back to AppNexus SDK.
+     * @param activity  The activity from which this method was
+     *                  called.
+     * @param parameter An optional opaque string passed from the
+     *                  Ad Network Manager, this can be used to
+     *                  defined SDK-specific parameters such as
+     *                  additional targeting information.  The
+     *                  encoding of the contents of this string
+     *                  are entirely up to the implementation of
+     *                  the third-party SDK adaptor.
+     * @param uid       The network ID for this ad call.  This ID is
+     *                  opaque to the AppNexus SDK and its contents and
+     *                  their encoding are up to the implementation of
+     *                  the third-party SDK.
+     * @param width     The width of the advertisement in pixels as
+     *                  defined in the {@link BannerAdView} object
+     *                  that initiated this call.
+     * @param height    The height of the advertisement in pixels as
+     *                  defined in the {@link BannerAdView} object
+     *                  that initiated this call.
+     */
 
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp);
+    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp);
 
 }

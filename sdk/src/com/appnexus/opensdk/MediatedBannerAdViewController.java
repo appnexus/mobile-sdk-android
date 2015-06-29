@@ -64,14 +64,13 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
 
         try {
             if(activity!=null && !destroyed){
-                View viewFromMediatedAdaptor = ((MediatedBannerAdView) mAV).requestAd(this,
+                ((MediatedBannerAdView) mAV).requestAd(this,
                         activity,
                         currentAd.getParam(),
                         currentAd.getId(),
                         currentAd.getWidth(),
                         currentAd.getHeight(),
                         getTargetingParameters());
-                mediatedDisplayable.setView(viewFromMediatedAdaptor);
             }else{
                 Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_null_activity));
                 errorCode = ResultCode.INTERNAL_ERROR;
@@ -86,6 +85,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
         }
 
         if ((errorCode == null) && (mediatedDisplayable.getView() == null)) {
+            // To check that if by accident instantiated an interstitial ad
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_view_null));
             errorCode = ResultCode.INTERNAL_ERROR;
         }
@@ -93,6 +93,10 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
         if (errorCode != null) {
             onAdFailed(errorCode);
         }
+    }
+
+    public void setView(View view) {
+        mediatedDisplayable.setView(view);
     }
 
     boolean destroyed=false;

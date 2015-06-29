@@ -25,7 +25,7 @@ import com.appnexus.opensdk.TargetingParameters;
 
 public class OOMBannerView implements MediatedBannerAdView {
     @Override
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
+    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
         throw new OutOfMemoryError("Out of memory!");
     }
 

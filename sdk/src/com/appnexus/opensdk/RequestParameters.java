@@ -40,7 +40,7 @@ class RequestParameters {
     private int maximumWidth = -1;
     private int maximumHeight = -1;
     private boolean overrideMaxSize = false;
-    private ArrayList<InterstitialAdView.Size> allowedSizes;
+    private ArrayList<AdSize> allowedSizes;
 
     RequestParameters(Context context) {
         this.context = context;
@@ -131,11 +131,11 @@ class RequestParameters {
         return measuredHeight;
     }
 
-    void setAllowedSizes(ArrayList<InterstitialAdView.Size> allowed_sizes) {
+    void setAllowedSizes(ArrayList<AdSize> allowed_sizes) {
         this.allowedSizes = allowed_sizes;
     }
 
-    ArrayList<InterstitialAdView.Size> getAllowedSizes() {
+    ArrayList<AdSize> getAllowedSizes() {
         if (mediaType == MediaType.INTERSTITIAL) {
             return allowedSizes;
         } else {

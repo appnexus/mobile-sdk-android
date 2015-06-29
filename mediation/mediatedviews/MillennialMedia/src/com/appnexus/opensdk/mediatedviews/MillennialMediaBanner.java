@@ -22,6 +22,7 @@ import android.util.Pair;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
@@ -36,81 +37,83 @@ import java.util.HashMap;
  * an application using the AppNexus SDK to load a banner ad through the Millennial Media SDK. The instantiation
  * of this class is done in response from the AppNexus server for a banner placement that is configured
  * to use MM to serve it. This class is never directly instantiated by the application.
- *
+ * <p/>
  * This class also serves as an example of how to write a Mediation adaptor for the AppNexus
  * SDK.
- *
  */
 public class MillennialMediaBanner implements MediatedBannerAdView {
-    MMAdView adView=null;
+    MMAdView adView = null;
+
     @Override
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
+    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
                           int width, int height, TargetingParameters targetingParameters) {
-        MillennialMediaListener mmListener = new MillennialMediaListener(mBC, super.getClass().getSimpleName());
-        mmListener.printToClog(String.format("requesting an ad: [%s, %s, %dx%d]", parameter, uid, width, height));
+        if (mBC != null) {
 
-        MMSDK.initialize(activity);
+            MillennialMediaListener mmListener = new MillennialMediaListener(mBC, super.getClass().getSimpleName());
+            mmListener.printToClog(String.format("requesting an ad: [%s, %s, %dx%d]", parameter, uid, width, height));
 
-        adView = new MMAdView(activity);
-        adView.setApid(uid);
-        adView.setWidth(width);
-        adView.setHeight(height);
+            MMSDK.initialize(activity);
 
-        DisplayMetrics displayMetrics = activity.getResources().getDisplayMetrics();
-        int wpx = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, width, displayMetrics);
-        int hpx = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, height, displayMetrics);
+            adView = new MMAdView(activity);
+            adView.setApid(uid);
+            adView.setWidth(width);
+            adView.setHeight(height);
 
-        //Fix the AdView dimensions so we don't show any white padding to the left and right
-        ViewGroup.LayoutParams lps = new ViewGroup.LayoutParams(wpx, hpx);
+            DisplayMetrics displayMetrics = activity.getResources().getDisplayMetrics();
+            int wpx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, width, displayMetrics);
+            int hpx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, height, displayMetrics);
 
-        adView.setLayoutParams(lps);
+            //Fix the AdView dimensions so we don't show any white padding to the left and right
+            ViewGroup.LayoutParams lps = new ViewGroup.LayoutParams(wpx, hpx);
 
-        MMRequest mmRequest = new MMRequest();
+            adView.setLayoutParams(lps);
+
+            MMRequest mmRequest = new MMRequest();
 
 
-        switch(targetingParameters.getGender()){
-            case UNKNOWN:
-                mmRequest.setGender(MMRequest.GENDER_OTHER);
-                break;
-            case FEMALE:
-                mmRequest.setGender(MMRequest.GENDER_FEMALE);
-                break;
-            case MALE:
-                mmRequest.setGender(MMRequest.GENDER_MALE);
-                break;
+            switch (targetingParameters.getGender()) {
+                case UNKNOWN:
+                    mmRequest.setGender(MMRequest.GENDER_OTHER);
+                    break;
+                case FEMALE:
+                    mmRequest.setGender(MMRequest.GENDER_FEMALE);
+                    break;
+                case MALE:
+                    mmRequest.setGender(MMRequest.GENDER_MALE);
+                    break;
+            }
+
+            if (targetingParameters.getAge() != null) {
+                mmRequest.setAge(targetingParameters.getAge());
+            }
+
+            HashMap<String, String> mv = new HashMap<String, String>();
+            for (Pair<String, String> p : targetingParameters.getCustomKeywords()) {
+                mv.put(p.first, p.second);
+            }
+            if (targetingParameters.getLocation() != null) {
+                MMRequest.setUserLocation(targetingParameters.getLocation());
+            }
+            mmRequest.setMetaValues(mv);
+
+            adView.setMMRequest(mmRequest);
+            adView.setListener(mmListener);
+            mBC.setView(adView);
+            adView.getAd();
         }
-
-        if(targetingParameters.getAge()!=null){
-            mmRequest.setAge(targetingParameters.getAge());
-        }
-
-        HashMap<String, String> mv = new HashMap<String, String>();
-        for(Pair<String, String> p : targetingParameters.getCustomKeywords()){
-            mv.put(p.first, p.second);
-        }
-        if(targetingParameters.getLocation()!=null){
-            MMRequest.setUserLocation(targetingParameters.getLocation());
-        }
-        mmRequest.setMetaValues(mv);
-
-        adView.setMMRequest(mmRequest);
-        adView.setListener(mmListener);
-        adView.getAd();
-
-        return adView;
     }
 
     @Override
     public void destroy() {
         //No available API
-        if(adView!=null){
+        if (adView != null) {
             try {
                 adView.setListener(null);
-            }catch(NullPointerException npe){
+            } catch (NullPointerException npe) {
                 //since the interstitials cause NPEs
                 //guard against banner as well to be safe
             }
-            adView=null;
+            adView = null;
         }
     }
 

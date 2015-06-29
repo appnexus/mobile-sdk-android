@@ -22,15 +22,17 @@ import android.app.Application;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
-import android.view.View;
+
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.StringUtil;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
 import com.google.android.gms.ads.doubleclick.PublisherAdView;
 import com.google.android.gms.ads.mediation.admob.AdMobExtras;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -61,32 +63,60 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
      * @param targetingParameters targetingParameters
      */
     @Override
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String adUnitID,
+    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String adUnitID,
                           int width, int height, TargetingParameters targetingParameters) {
-        adListener = new GooglePlayAdListener(mBC, super.getClass().getSimpleName());
-        adListener.printToClog(String.format(" - requesting an ad: [%s, %s, %dx%d]",
-                parameter, adUnitID, width, height));
+        if (mBC != null) {
+            adListener = new GooglePlayAdListener(mBC, super.getClass().getSimpleName());
+            adListener.printToClog(String.format(" - requesting an ad: [%s, %s, %dx%d]",
+                    parameter, adUnitID, width, height));
 
-        DFBBannerSSParameters ssparm = new DFBBannerSSParameters(parameter);
-        AdSize adSize = ssparm.isSmartBanner ? AdSize.SMART_BANNER : new AdSize(width, height);
+            adViewActivity = activity;
+            registerActivityCallbacks();
 
-        adView = new PublisherAdView(activity);
-        adView.setAdUnitId(adUnitID);
-        adView.setAdSizes(adSize);
-        adView.setAdListener(adListener);
+            DFBBannerSSParameters ssparm = new DFBBannerSSParameters(parameter);
+            DFPCacheManager cacheManager = DFPCacheManager.getInstance(activity);
+            if (cacheManager.isCacheEnabled()) {
+                DFPCacheManager.ViewEntry cache = ssparm.isSmartBanner ?
+                        cacheManager.popSmartBanner(adUnitID) :
+                        cacheManager.popBannerForSize(adUnitID, width, height);
+                if (cache != null) {
+                    switch (cache.getState()) {
+                        case Loading:
+                            cache.addForwardingListener(adListener);
+                            adView = cache.getView();
+                            mBC.setView(adView);
+                            return;
+                        case Loaded:
+                            adView = cache.getView();
+                            adView.setAdListener(adListener);
+                            adView.recordManualImpression();
+                            mBC.setView(adView);
+                            mBC.onAdLoaded();
+                            return;
+                        case Failed:
+                            cache.destroy();
+                            break;
+                    }
 
-        adView.loadAd(buildRequest(ssparm, targetingParameters));
+                }
+            }
 
-        adViewActivity = activity;
 
-        registerActivityCallbacks();
+            AdSize adSize = ssparm.isSmartBanner ? AdSize.SMART_BANNER : new AdSize(width, height);
 
-        return adView;
+            adView = new PublisherAdView(activity);
+            adView.setAdUnitId(adUnitID);
+            adView.setAdSizes(adSize);
+            adView.setAdListener(adListener);
+            mBC.setView(adView);
+
+            adView.loadAd(buildRequest(ssparm, targetingParameters));
+        }
     }
 
     @Override
     public void destroy() {
-        if (adView != null){
+        if (adView != null) {
             adView.destroy();
             adView.setAdListener(null);
         }
@@ -95,20 +125,20 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
                 adViewActivity.getApplication().unregisterActivityLifecycleCallbacks(activityListener);
             }
         }
-        adListener=null;
-        adView=null;
+        adListener = null;
+        adView = null;
     }
 
     @Override
     public void onPause() {
-        if(adView!=null){
+        if (adView != null) {
             adView.pause();
         }
     }
 
     @Override
     public void onResume() {
-        if(adView!=null) {
+        if (adView != null) {
             adView.resume();
         }
     }
@@ -151,6 +181,9 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
 
         builder.addNetworkExtras(new AdMobExtras(bundle));
 
+        // hack
+        builder.setManualImpressionsEnabled(true);
+
         return builder.build();
     }
 
@@ -158,47 +191,54 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
      * Class to extract optional server side parameters from passed in json string.
      * Supports
      * {
+     * "swipeable" : false,
+     * "smartbanner" : true
+     * }
+     * Or
+     * {
      * "swipeable" : 1,
-     * "smartbanner" : 1
+     * "smartbanner" : 0
      * }
      */
     class DFBBannerSSParameters {
 
         public DFBBannerSSParameters(String parameter) {
-            final String SWIPEABLE = "swipeable";
-            final String SMARTBANNER = "smartbanner";
 
-            do {
-                JSONObject req = null;
-                if (parameter == null || parameter.length() == 0) {
-                    break;
-                }
+            if (!StringUtil.isEmpty(parameter)) {
+                final String SWIPEABLE = "swipeable";
+                final String SMARTBANNER = "smartbanner";
+
                 try {
-                    req = new JSONObject(parameter);
+                    JSONObject req = new JSONObject(parameter);
+                    isSmartBanner = getBoolean(req, SMARTBANNER);
+                    isSwipeable = getBoolean(req, SWIPEABLE);
                 } catch (JSONException e) {
-                    // This is optional
-                } finally {
-                    if (req == null) {
-                        break;
+                }
+            }
+        }
+
+        private boolean getBoolean(JSONObject object, String key) {
+            try {
+                return object.getBoolean(key);
+            } catch (JSONException e) {
+                try {
+                    int i = object.getInt(key);
+                    switch (i) {
+                        case 1:
+                            return true;
+                        case 0:
+                            return false;
                     }
+                } catch (JSONException e1) {
                 }
-
-                try {
-                    isSwipeable = req.getBoolean(SWIPEABLE);
-                } catch (JSONException e) {
-                }
-                try {
-                    isSmartBanner = req.getBoolean(SMARTBANNER);
-                } catch (JSONException e) {
-                }
-
-            } while (false);
+            }
+            return false;
         }
 
 
-        public boolean isSwipeable;
+        public boolean isSwipeable = false;
         public String test_device;
-        public boolean isSmartBanner;
+        public boolean isSmartBanner = false;
     }
 
 

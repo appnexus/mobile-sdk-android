@@ -40,15 +40,15 @@ public class FacebookBanner implements MediatedBannerAdView {
     private AdView adView;
 
     @Override
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
+    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
         FacebookListener fbListener = new FacebookListener(mBC, this.getClass().getSimpleName());
         adView = new AdView(activity, uid, AdSize.BANNER_320_50);
         if (width != AdSize.BANNER_320_50.getWidth() || height != AdSize.BANNER_320_50.getHeight()) {
             Clog.d(Clog.mediationLogTag, "Facebook - Attempted to instantiate with size other than the allowed size of 320x50. Instantiating with allowed size.");
         }
         adView.setAdListener(fbListener);
+        mBC.setView(adView);
         adView.loadAd();
-        return adView;
     }
 
     @Override

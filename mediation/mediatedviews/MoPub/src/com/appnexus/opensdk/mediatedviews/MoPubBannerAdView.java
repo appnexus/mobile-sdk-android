@@ -21,6 +21,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
@@ -31,16 +32,16 @@ import com.mopub.mobileads.MoPubView;
  * an application using the AppNexus SDK to load a banner ad through the MoPub SDK. The instantiation
  * of this class is done in response from the AppNexus server for a banner placement that is configured
  * to use MoPub to serve it. This class is never directly instantiated by the application.
- *
+ * <p/>
  * This class also serves as an example of how to write a Mediation adaptor for the AppNexus
  * SDK.
- *
  */
 public class MoPubBannerAdView implements MediatedBannerAdView {
     private MoPubView adView;
     private MoPubListener mpListener;
+
     @Override
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
+    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
                           int width, int height, TargetingParameters targetingParameters) {
         mpListener = new MoPubListener(mBC, this.getClass().getSimpleName());
         adView = new MoPubView(activity);
@@ -60,18 +61,18 @@ public class MoPubBannerAdView implements MediatedBannerAdView {
         adView.setMinimumWidth(width);
         adView.setMinimumHeight(height);
         adView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER));
-
+        mBC.setView(adView);
         adView.loadAd();
-        return adView;
+
     }
 
     @Override
     public void destroy() {
         if (adView != null) {
             adView.setBannerAdListener(null);
-            mpListener=null;
+            mpListener = null;
             adView.destroy();
-            adView=null;
+            adView = null;
         }
     }
 

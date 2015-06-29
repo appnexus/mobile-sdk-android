@@ -28,10 +28,9 @@ public class NoFillView implements MediatedBannerAdView {
     public static boolean didDestroy = false;
 
     @Override
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
+    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
         // ad request returned nothing!
         mBC.onAdFailed(ResultCode.UNABLE_TO_FILL);
-        return null;
     }
 
     @Override

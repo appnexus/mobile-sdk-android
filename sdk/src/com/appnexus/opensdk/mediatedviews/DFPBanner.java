@@ -17,7 +17,7 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
-import android.view.View;
+
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.ResultCode;
@@ -29,49 +29,50 @@ import com.appnexus.opensdk.TargetingParameters;
  * for DFP banners.
  */
 public class DFPBanner implements MediatedBannerAdView {
-    private MediatedBannerAdView adView;
+    private MediatedBannerAdView mediatedAdView;
 
     @Override
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity,
+    public void requestAd(MediatedBannerAdViewController mBC, Activity activity,
                           String parameter, String adUnitID, int width,
                           int height, TargetingParameters targetingParameters) {
-        adView = GoogleBridge.bannerForClassName(GoogleBridge.isGooglePlayServicesAvailable()
+        mediatedAdView = GoogleBridge.bannerForClassName(GoogleBridge.isGooglePlayServicesAvailable()
                 ? GoogleBridge.GooglePlayDFPBanner : GoogleBridge.DFPBanner);
-        if (adView == null) {
+        if (mediatedAdView == null) {
             if (mBC != null) {
                 mBC.onAdFailed(ResultCode.MEDIATED_SDK_UNAVAILABLE);
             }
-            return null;
+        } else {
+            mediatedAdView.requestAd(mBC, activity, parameter, adUnitID, width, height, targetingParameters);
         }
-        return adView.requestAd(mBC, activity, parameter, adUnitID, width, height, targetingParameters);
+
     }
 
     @Override
     public void destroy() {
-        if (adView != null) {
-            adView.destroy();
-            adView=null;
+        if (mediatedAdView != null) {
+            mediatedAdView.destroy();
+            mediatedAdView =null;
         }
     }
 
     @Override
     public void onPause() {
-        if(adView!=null){
-            adView.onPause();
+        if(mediatedAdView !=null){
+            mediatedAdView.onPause();
         }
     }
 
     @Override
     public void onResume() {
-        if (adView != null) {
-            adView.onResume();
+        if (mediatedAdView != null) {
+            mediatedAdView.onResume();
         }
     }
 
     @Override
     public void onDestroy() {
-        if(adView!=null){
-            adView.onDestroy();
+        if(mediatedAdView !=null){
+            mediatedAdView.onDestroy();
         }
     }
 }

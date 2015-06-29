@@ -23,6 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
+
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
@@ -59,7 +60,7 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
      * @param targetingParameters targetingParameters
      */
     @Override
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter,
+    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter,
                           String adUnitID, int width, int height, TargetingParameters targetingParameters) {
         adListener = new GooglePlayAdListener(mBC, super.getClass().getSimpleName());
         adListener.printToClog(String.format(" - requesting an ad: [%s, %s, %dx%d]",
@@ -69,6 +70,7 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
         adView.setAdUnitId(adUnitID);
         adView.setAdSize(new AdSize(width, height));
         adView.setAdListener(adListener);
+        mBC.setView(adView);
 
         try {
             adView.loadAd(buildRequest(targetingParameters));
@@ -81,12 +83,11 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
 
         registerActivityCallbacks();
 
-        return adView;
     }
 
     @Override
     public void destroy() {
-        if (adView != null){
+        if (adView != null) {
             adView.destroy();
             adView.setAdListener(null);
         }
@@ -95,20 +96,20 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
                 adViewActivity.getApplication().unregisterActivityLifecycleCallbacks(activityListener);
             }
         }
-        adListener=null;
-        adView=null;
+        adListener = null;
+        adView = null;
     }
 
     @Override
     public void onPause() {
-        if(adView!=null){
+        if (adView != null) {
             adView.pause();
         }
     }
 
     @Override
     public void onResume() {
-        if(adView!=null){
+        if (adView != null) {
             adView.resume();
         }
     }

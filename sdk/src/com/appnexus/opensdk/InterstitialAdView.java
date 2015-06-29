@@ -25,7 +25,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -132,17 +131,17 @@ public class InterstitialAdView extends AdView {
         requestParameters.setContainereWidth(measuredWidth);
         requestParameters.setContainerHeight(measuredHeight);
 
-        ArrayList<Size> allowedSizes = new ArrayList<Size>();
+        ArrayList<AdSize> allowedSizes = new ArrayList<AdSize>();
 
 
-        if (new Size(300, 250).fitsIn(measuredWidth, measuredHeight))
-            allowedSizes.add(new Size(300, 250));
-        if (new Size(320, 480).fitsIn(measuredWidth, measuredHeight))
-            allowedSizes.add(new Size(320, 480));
-        if (new Size(900, 500).fitsIn(measuredWidth, measuredHeight))
-            allowedSizes.add(new Size(900, 500));
-        if (new Size(1024, 1024).fitsIn(measuredWidth, measuredHeight))
-            allowedSizes.add(new Size(1024, 1024));
+        if (new AdSize(300, 250).fitsIn(measuredWidth, measuredHeight))
+            allowedSizes.add(new AdSize(300, 250));
+        if (new AdSize(320, 480).fitsIn(measuredWidth, measuredHeight))
+            allowedSizes.add(new AdSize(320, 480));
+        if (new AdSize(900, 500).fitsIn(measuredWidth, measuredHeight))
+            allowedSizes.add(new AdSize(900, 500));
+        if (new AdSize(1024, 1024).fitsIn(measuredWidth, measuredHeight))
+            allowedSizes.add(new AdSize(1024, 1024));
 
         requestParameters.setAllowedSizes(allowedSizes);
     }
@@ -377,28 +376,28 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * Get a list of ad {@link Size}s which are allowed to be
+     * Get a list of ad {@link AdSize}s which are allowed to be
      * displayed.
      *
-     * @return The {@link ArrayList} of {@link Size}s which are
+     * @return The {@link ArrayList} of {@link AdSize}s which are
      * allowed to be displayed.
      */
-    public ArrayList<Size> getAllowedSizes() {
+    public ArrayList<AdSize> getAllowedSizes() {
         Clog.d(Clog.publicFunctionsLogTag,
                 Clog.getString(R.string.get_allowed_sizes));
         return requestParameters.getAllowedSizes();
     }
 
     /**
-     * Set the ad {@link Size}s which are allowed to be displayed.
+     * Set the ad {@link AdSize}s which are allowed to be displayed.
      * This is a list of the platform ad sizes that may be inserted
      * into an interstitial ad view.  The default list is sufficient
      * for most implementations.  Custom sizes may also be added here.
      *
-     * @param allowed_sizes The {@link ArrayList} of {@link Size}s
+     * @param allowed_sizes The {@link ArrayList} of {@link AdSize}s
      *                      which are allowed to be displayed.
      */
-    public void setAllowedSizes(ArrayList<Size> allowed_sizes) {
+    public void setAllowedSizes(ArrayList<AdSize> allowed_sizes) {
         Clog.d(Clog.publicFunctionsLogTag,
                 Clog.getString(R.string.set_allowed_sizes));
         requestParameters.setAllowedSizes(allowed_sizes);
@@ -516,47 +515,6 @@ public class InterstitialAdView extends AdView {
         paused=false;
     }
 
-    /**
-     * A convenience class which holds a width and height in integers.
-     */
-    public static class Size {
-        private final int w;
-        private final int h;
-
-        public Size(int w, int h) {
-            this.w = w;
-            this.h = h;
-        }
-        
-        
-
-        /**
-         * @return The width, in pixels.
-         */
-        public int width() {
-            return w;
-        }
-
-        /**
-         * @return The height, in pixels.
-         */
-        public int height() {
-            return h;
-        }
-
-        /**
-         * Determines whether this size object fits inside a rectangle of the
-         * given width and height
-         *
-         * @param width  The width to check against.
-         * @param height The height to check against.
-         * @return True, if the size fits inside the described rectangle,
-         * otherwise, false.
-         */
-        public boolean fitsIn(int width, int height) {
-            return h < height && w < width;
-        }
-    }
 }
 
 interface InterstitialAdQueueEntry{

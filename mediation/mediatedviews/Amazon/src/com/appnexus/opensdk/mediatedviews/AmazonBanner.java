@@ -34,30 +34,27 @@ import com.appnexus.opensdk.TargetingParameters;
  * an application using the AppNexus SDK to load a banner ad through the Amazon API. The instantiation
  * of this class is done in response from the AppNexus server for a banner placement, that is configured
  * to use the Amazon Network to fill. This class is never instantiated by the developer.
- *
  */
-public class AmazonBanner implements MediatedBannerAdView  {
-    MediatedBannerAdViewController mediatedBannerAdViewController = null;
+public class AmazonBanner implements MediatedBannerAdView {
     AmazonListener amazonListener = null;
-    AdLayout adView=null;
+    AdLayout adView = null;
+
     /**
      * Called by the AN SDK to request a Banner ad from the Amazon SDK. .
      *
      * @param mBC       the object which will be called with events from the Amazon SDK
      * @param activity  the activity from which this is launched
      * @param parameter String parameter received from the server for instantiation of this object
-     *      optional server side parameters to control this call.
+     *                  optional server side parameters to control this call.
      * @param uid       The 3rd party placement , in adMob this is the adUnitID
      * @param width     Width of the ad
      * @param height    Height of the ad
      */
     @Override
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
+    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
         adView = new AdLayout(activity, new AdSize(width, height));
 
-        this.mediatedBannerAdViewController = mBC;
-
-        this.amazonListener = new AmazonListener(mBC,AmazonBanner.class.getSimpleName());
+        this.amazonListener = new AmazonListener(mBC, AmazonBanner.class.getSimpleName());
 
         adView.setListener(this.amazonListener);
 
@@ -66,15 +63,14 @@ public class AmazonBanner implements MediatedBannerAdView  {
         //Amazon won't load ads unless layout parameters are set
         adView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
 
-        if (!adView.loadAd(targetingOptions)) {
-            this.amazonListener.printToClogError("loadAd() call rejected");
-            if (mBC != null) {
+        if (mBC != null) {
+            mBC.setView(adView);
+            if (!adView.loadAd(targetingOptions)) {
+                this.amazonListener.printToClogError("loadAd() call rejected");
                 mBC.onAdFailed(ResultCode.UNABLE_TO_FILL);
+                adView = null;
             }
-            adView = null;
         }
-
-        return adView;
     }
 
     /**
@@ -82,16 +78,16 @@ public class AmazonBanner implements MediatedBannerAdView  {
      */
     @Override
     public void destroy() {
-        if(adView!=null){
+        if (adView != null) {
             try {
                 adView.setListener(null);
-            }catch(NullPointerException npe){
+            } catch (NullPointerException npe) {
                 //This only seems to happen in interstitials
                 //catch to be safe
             }
             adView.destroy();
-            amazonListener=null;
-            adView=null;
+            amazonListener = null;
+            adView = null;
         }
     }
 

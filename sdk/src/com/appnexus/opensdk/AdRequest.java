@@ -31,7 +31,6 @@ import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.util.Pair;
 
-import com.appnexus.opensdk.InterstitialAdView.Size;
 import com.appnexus.opensdk.utils.*;
 
 import org.apache.http.HttpResponse;
@@ -313,8 +312,8 @@ class AdRequest extends AsyncTask<Void, Integer, AdResponse> {
         if (media_type == MediaType.INTERSTITIAL) {
             // Make string for allowed_sizes
             allowedSizes = "";
-            ArrayList<Size> sizes = params.getAllowedSizes();
-            for (Size s : sizes) {
+            ArrayList<AdSize> sizes = params.getAllowedSizes();
+            for (AdSize s : sizes) {
                 allowedSizes += "" + s.width() + "x" + s.height();
                 // If not last size, add a comma
                 if (sizes.indexOf(s) != sizes.size() - 1)

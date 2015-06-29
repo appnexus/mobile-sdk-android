@@ -1,3 +1,6 @@
+## RC 2.4
++ MS-1246 Pre-cache DFP
+
 ## RC 2.3
 + MS-1225 Legacy AdMob/DFP adapter update
 + MS-1135 AdColony In-feed video phase 1
@@ -11,6 +14,8 @@
 	InMobi 4.5.5, banner, interstitial, native
 	MM Media 5.4.0, banner, interstitial
 	MoPub 3.8.0, banner, interstitial, native
+	Vdopia lw1.5, banner, interstitial
+	Vungle 3.3.0, interstitials
 
 ## RC 2.2
 + MS-1145 Separate invalid networks based on media type
