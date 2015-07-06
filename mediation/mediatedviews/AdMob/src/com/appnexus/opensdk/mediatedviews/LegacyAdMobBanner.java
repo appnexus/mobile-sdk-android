@@ -50,41 +50,44 @@ public class LegacyAdMobBanner implements MediatedBannerAdView {
      * @param height    Height of the ad
      */
     @Override
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String adUnitID,
+    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String adUnitID,
                           int width, int height, TargetingParameters targetingParameters) {
-        adListener = new AdMobAdListener(mBC, super.getClass().getSimpleName());
-        adListener.printToClog(String.format(" - requesting an ad: [%s, %s, %dx%d]",
-                parameter, adUnitID, width, height));
+        if (mBC != null) {
 
-        admobAV = new AdView(activity, new AdSize(width, height), adUnitID);
-        admobAV.setAdListener(adListener);
-        AdRequest ar = new AdRequest();
+            adListener = new AdMobAdListener(mBC, super.getClass().getSimpleName());
+            adListener.printToClog(String.format(" - requesting an ad: [%s, %s, %dx%d]",
+                    parameter, adUnitID, width, height));
 
-        switch (targetingParameters.getGender()) {
-            case UNKNOWN:
-                break;
-            case FEMALE:
-                ar.setGender(AdRequest.Gender.FEMALE);
-                break;
-            case MALE:
-                ar.setGender(AdRequest.Gender.MALE);
-                break;
-        }
-        AdMobAdapterExtras extras = new AdMobAdapterExtras();
-        if (targetingParameters.getAge() != null) {
-            extras.addExtra("Age", targetingParameters.getAge());
-        }
+            admobAV = new AdView(activity, new AdSize(width, height), adUnitID);
+            admobAV.setAdListener(adListener);
+            AdRequest ar = new AdRequest();
 
-        for (Pair<String, String> p : targetingParameters.getCustomKeywords()) {
-            extras.addExtra(p.first, p.second);
-        }
-        if (targetingParameters.getLocation() != null) {
-            ar.setLocation(targetingParameters.getLocation());
-        }
-        ar.setNetworkExtras(extras);
+            switch (targetingParameters.getGender()) {
+                case UNKNOWN:
+                    break;
+                case FEMALE:
+                    ar.setGender(AdRequest.Gender.FEMALE);
+                    break;
+                case MALE:
+                    ar.setGender(AdRequest.Gender.MALE);
+                    break;
+            }
+            AdMobAdapterExtras extras = new AdMobAdapterExtras();
+            if (targetingParameters.getAge() != null) {
+                extras.addExtra("Age", targetingParameters.getAge());
+            }
 
-        admobAV.loadAd(ar);
-        return admobAV;
+            for (Pair<String, String> p : targetingParameters.getCustomKeywords()) {
+                extras.addExtra(p.first, p.second);
+            }
+            if (targetingParameters.getLocation() != null) {
+                ar.setLocation(targetingParameters.getLocation());
+            }
+            ar.setNetworkExtras(extras);
+
+            mBC.setView(admobAV);
+            admobAV.loadAd(ar);
+        }
     }
 
     @Override
