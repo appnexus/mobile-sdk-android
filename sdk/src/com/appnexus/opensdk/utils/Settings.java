@@ -42,7 +42,7 @@ public class Settings {
     public boolean test_mode = false;
     public String ua = null;
     public boolean first_launch;
-    public final String sdkVersion = "2.3";
+    public final String sdkVersion = "2.3.1";
 
     public String mcc;
     public String mnc;
@@ -70,7 +70,7 @@ public class Settings {
 
     public static final long MEDIATED_NETWORK_TIMEOUT = 15000;
 
-    public static final long NATIVE_AD_RESPONSE_EXPIRATION_TIME = 10000;//3600000; // an hour
+    public static final long NATIVE_AD_RESPONSE_EXPIRATION_TIME = 3600000; // an hour
 
     public static final int NATIVE_AD_VISIBLE_PERIOD_MILLIS = 1000;
 

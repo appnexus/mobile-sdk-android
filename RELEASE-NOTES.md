@@ -1,6 +1,9 @@
 ## RC 2.4
 + MS-1246 Pre-cache DFP
 
+## RC 2.3.1
++ MS-1350 fix native ad response expiration time
+
 ## RC 2.3
 + MS-1225 Legacy AdMob/DFP adapter update
 + MS-1135 AdColony In-feed video phase 1
