@@ -101,7 +101,7 @@ class MRAIDImplementation {
             // Store width and height for close()
             default_width = owner.getLayoutParams().width;
             default_height = owner.getLayoutParams().height;
-            if (owner.adView.isBanner()) {
+            if (owner.adView.getMediaType().equals(MediaType.BANNER)) {
                 default_gravity = ((FrameLayout.LayoutParams) owner.getLayoutParams()).gravity;
             }
 
@@ -223,7 +223,7 @@ class MRAIDImplementation {
                     owner.getLayoutParams());
             lp.height = default_height;
             lp.width = default_width;
-            if (owner.adView.isBanner()) {
+            if (owner.adView.getMediaType().equals(MediaType.BANNER)) {
                 lp.gravity = default_gravity;
             } else {
                 lp.gravity = Gravity.CENTER;

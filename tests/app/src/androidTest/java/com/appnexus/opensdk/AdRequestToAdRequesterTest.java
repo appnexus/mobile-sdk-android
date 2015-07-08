@@ -22,6 +22,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import static junit.framework.Assert.assertEquals;
@@ -30,23 +31,30 @@ import static junit.framework.Assert.assertTrue;
 @Config(emulateSdk=18)
 @RunWith(RobolectricTestRunner.class)
 public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdRequester {
-    boolean requesterFailed, requesterReceivedResponse;
+    boolean requesterFailed, requesterReceivedServerResponse, requesterReceivedAd;
     AdRequest adRequest;
-    AdResponse response;
+    ServerResponse response;
     RequestParameters requestParameters;
 
     @Override
     public void setup() {
         super.setup();
         requesterFailed = false;
-        requesterReceivedResponse = false;
+        requesterReceivedServerResponse = false;
+        requesterReceivedAd = false;
         requestParameters = new RequestParameters(activity);
     }
 
-    public void assertCallbacks(boolean success) {
-        assertTrue(requesterReceivedResponse || requesterFailed);
-        assertEquals(success, requesterReceivedResponse);
+    public void assertReceiveServerResponseSuccessful(boolean success) {
+        assertTrue(requesterReceivedServerResponse || requesterFailed);
+        assertEquals(success, requesterReceivedServerResponse);
         assertEquals(!success, requesterFailed);
+    }
+
+    public void assertServerResponseHasAds(boolean hasAds) {
+        if (response != null) {
+            assertEquals(hasAds, response.containsAds());
+        }
     }
 
     public void setBannerRequestParams() {
@@ -54,6 +62,14 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
         requestParameters.setAdWidth(320);
         requestParameters.setAdHeight(50);
         requestParameters.setMediaType(MediaType.BANNER);
+    }
+
+    public void setInterstitialRequestParams() {
+        requestParameters.setPlacementID("0");
+        ArrayList<AdSize> allowedSizes = new ArrayList<AdSize>();
+        allowedSizes.add(new AdSize(300,250));
+        requestParameters.setAllowedSizes(allowedSizes);
+        requestParameters.setMediaType(MediaType.INTERSTITIAL);
     }
 
     public void setNativeRequestParams() {
@@ -73,9 +89,9 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
         adRequest.execute();
         Robolectric.runBackgroundTasks();
         Robolectric.runUiThreadTasks();
-        assertCallbacks(true);
+        assertReceiveServerResponseSuccessful(true);
+        assertServerResponseHasAds(true);
         assertEquals(MediaType.BANNER, response.getMediaType());
-
     }
 
     @Test
@@ -87,7 +103,8 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
         adRequest.execute();
         Robolectric.runBackgroundTasks();
         Robolectric.runUiThreadTasks();
-        assertCallbacks(true);
+        assertReceiveServerResponseSuccessful(true);
+        assertServerResponseHasAds(false);
     }
 
     @Test
@@ -98,7 +115,8 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
         adRequest.execute();
         Robolectric.runBackgroundTasks();
         Robolectric.runUiThreadTasks();
-        assertCallbacks(false);
+        assertReceiveServerResponseSuccessful(false);
+        assertServerResponseHasAds(false);
     }
 
     @Test
@@ -110,22 +128,45 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
         adRequest.execute();
         Robolectric.runBackgroundTasks();
         Robolectric.runUiThreadTasks();
-        assertCallbacks(true);
+        assertReceiveServerResponseSuccessful(true);
+        assertServerResponseHasAds(true);
         assertEquals(MediaType.NATIVE, response.getMediaType());
     }
 
+    @Test
+    public void testRequestInterstitialSucceeded() {
+        setInterstitialRequestParams();
+        // adRequest initialization goes here because getOwner is called in the constructor
+        adRequest = new AdRequest(this);
+
+        // Server response for banner and interstitial is the same
+        Robolectric.addPendingHttpResponse(200, TestResponses.banner());
+        adRequest.execute();
+        Robolectric.runBackgroundTasks();
+        Robolectric.runUiThreadTasks();
+        assertReceiveServerResponseSuccessful(true);
+        assertServerResponseHasAds(true);
+        assertEquals(MediaType.INTERSTITIAL, response.getMediaType());
+    }
+
+    long time;
+
     @Override
-    public void failed(AdRequest request) {
+    public void failed(ResultCode code) {
         requesterFailed = true;
     }
 
     @Override
-    public void onReceiveResponse(AdResponse response) {
-        requesterReceivedResponse = true;
+    public void onReceiveServerResponse(ServerResponse response) {
+        requesterReceivedServerResponse = true;
         this.response = response;
     }
 
-    long time;
+    @Override
+    public void onReceiveAd(AdResponse ad) {
+        requesterReceivedAd = true;
+    }
+
     @Override
     public void markLatencyStart() {
         time = System.currentTimeMillis();
@@ -134,6 +175,16 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
     @Override
     public long getLatency(long now) {
         return System.currentTimeMillis()-time;
+    }
+
+    @Override
+    public void cancel() {
+
+    }
+
+    @Override
+    public void execute() {
+
     }
 
     @Override

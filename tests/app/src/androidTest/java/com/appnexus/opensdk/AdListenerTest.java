@@ -42,8 +42,8 @@ public class AdListenerTest extends BaseViewAdTest{
     public void testBannerAdLoaded() {
         Robolectric.addPendingHttpResponse(200, TestResponses.banner());
 
-        adRequest = new AdRequest(bannerAdView.mAdFetcher);
-        adRequest.execute();
+        requestManager = new AdViewRequestManager(bannerAdView);
+        requestManager.execute();
         Robolectric.runBackgroundTasks();
 
         Robolectric.runUiThreadTasks();
@@ -54,8 +54,8 @@ public class AdListenerTest extends BaseViewAdTest{
     public void testBannerAdFailed() {
         Robolectric.addPendingHttpResponse(200, TestResponses.blank());
 
-        adRequest = new AdRequest(bannerAdView.mAdFetcher);
-        adRequest.execute();
+        requestManager = new AdViewRequestManager(bannerAdView);
+        requestManager.execute();
         Robolectric.runBackgroundTasks();
 
         Robolectric.runUiThreadTasks();
@@ -68,8 +68,8 @@ public class AdListenerTest extends BaseViewAdTest{
     public void testInterstitialAdLoaded() {
         Robolectric.addPendingHttpResponse(200, TestResponses.banner());
 
-        adRequest = new AdRequest(interstitialAdView.mAdFetcher);
-        adRequest.execute();
+        requestManager = new AdViewRequestManager(interstitialAdView);
+        requestManager.execute();
         Robolectric.runBackgroundTasks();
 
         Robolectric.runUiThreadTasks();
@@ -80,8 +80,8 @@ public class AdListenerTest extends BaseViewAdTest{
     public void testInterstitialAdFailed() {
         Robolectric.addPendingHttpResponse(200, TestResponses.blank());
 
-        adRequest = new AdRequest(interstitialAdView.mAdFetcher);
-        adRequest.execute();
+        requestManager = new AdViewRequestManager(interstitialAdView);
+        requestManager.execute();
         Robolectric.runBackgroundTasks();
 
         Robolectric.runUiThreadTasks();

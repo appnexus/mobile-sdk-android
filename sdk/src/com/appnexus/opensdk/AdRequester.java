@@ -22,17 +22,19 @@ interface AdRequester {
     /**
      * Called when the request made by the requester fails.
      *
-     * @param request AdRequest which failed
+     * @param code reason why the request fails.
      */
-    public void failed(AdRequest request);
+    public void failed(ResultCode code);
 
     /**
-     * Called when a response is received
+     * Called when a response from AppNexus server is received
      *
-     * @param response AdResponse which was received.
+     * @param response ServerResponse which was received.
      */
-    public void onReceiveResponse(AdResponse response);
+    public void onReceiveServerResponse(ServerResponse response);
 
+
+    public void onReceiveAd(AdResponse ad);
     /**
      * Mark the beginning of an ad request for latency recording
      */
@@ -43,6 +45,16 @@ interface AdRequester {
      * @param now current time
      */
     public long getLatency(long now);
+
+    /**
+     * Cancels the request, both to AppNexus server and to mediated networks
+     */
+    public void cancel();
+
+    /**
+     * Executes the request
+     */
+    public void execute();
 
     public LinkedList<MediatedAd> getMediatedAds();
 

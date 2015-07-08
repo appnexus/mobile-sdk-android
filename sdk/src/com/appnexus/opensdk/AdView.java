@@ -48,7 +48,7 @@ import java.util.ArrayList;
  *
  *
  */
-public abstract class AdView extends FrameLayout {
+public abstract class AdView extends FrameLayout implements Ad{
 
 	AdFetcher mAdFetcher;
 	boolean mraid_changing_size_or_visibility = false;
@@ -60,7 +60,7 @@ public abstract class AdView extends FrameLayout {
 
 	final Handler handler = new Handler(Looper.getMainLooper());
 	protected Displayable lastDisplayable;
-	private AdListenerDispatch dispatcher;
+	private AdViewDispatcher dispatcher;
     boolean loadedOffscreen = false;
     boolean isMRAIDExpanded = false;
     boolean doesLoadingInBackground = true;
@@ -87,7 +87,7 @@ public abstract class AdView extends FrameLayout {
     }
 
     void setup(Context context, AttributeSet attrs) {
-		dispatcher = new AdView.AdListenerDispatch(handler);
+		dispatcher = new AdViewDispatcher(handler);
         requestParameters = new RequestParameters(context);
 
         AdvertistingIDUtil.retrieveAndSetAAID(context);
@@ -129,7 +129,7 @@ public abstract class AdView extends FrameLayout {
         // Some AdMob creatives won't load unless we set their parent's viewgroup's padding to 0-0-0-0
         setPadding(0,0,0,0);
 		// Make an AdFetcher - Continue the creation pass
-		mAdFetcher = new ViewAdFetcher(this);
+		mAdFetcher = new AdFetcher(this);
 		// Load user variables only if attrs isn't null
 		if (attrs != null)
 			loadVariablesFromXML(context, attrs);
@@ -151,7 +151,8 @@ public abstract class AdView extends FrameLayout {
         return isMRAIDExpanded;
     }
 
-    boolean isReadyToStart() {
+    @Override
+    public boolean isReadyToStart() {
 		if (isMRAIDExpanded()) {
 			Clog.e(Clog.baseLogTag, Clog.getString(R.string.already_expanded));
 			return false;
@@ -170,7 +171,8 @@ public abstract class AdView extends FrameLayout {
 	 * @return true means the ad will begin loading; false otherwise.
 	 *
 	 */
-	protected boolean loadAd() {
+    @Override
+	public boolean loadAd() {
 		if (!isReadyToStart())
 			return false;
 		if (this.getWindowVisibility() == VISIBLE && mAdFetcher != null) {
@@ -212,7 +214,7 @@ public abstract class AdView extends FrameLayout {
         // load an ad directly from html
         loadedOffscreen = true;
         AdWebView output = new AdWebView(this);
-        AdResponse response = new AdResponse(html, width, height);
+        ServerResponse response = new ServerResponse(html, width, height);
         output.loadAd(response);
         display(output);
     }
@@ -465,7 +467,7 @@ public abstract class AdView extends FrameLayout {
                 }
 
                 int adviewLoc[] = new int[2];
-                if(isInterstitial()){
+                if(getMediaType().equals(MediaType.INTERSTITIAL)){
                     InterstitialAdView.INTERSTITIALADVIEW_TO_USE.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
                     InterstitialAdView.INTERSTITIALADVIEW_TO_USE.getLocationOnScreen(adviewLoc);
                     container_size = new Point(InterstitialAdView.INTERSTITIALADVIEW_TO_USE.getMeasuredWidth(),
@@ -556,17 +558,18 @@ public abstract class AdView extends FrameLayout {
             ((ViewGroup) caller.owner.getParent()).addView(close_button);
         }
     }
-	/**
-	 *
-	 * @return true if the AdView is a {@link BannerAdView}.
-	 */
-	abstract boolean isBanner();
 
-	/**
-	 *
-	 * @return true if the AdView is an {@link InterstitialAdView}.
-	 */
-	abstract boolean isInterstitial();
+    /**
+     *
+     * @return true if the AdView is a {@link BannerAdView}.
+     */
+    abstract boolean isBanner();
+
+    /**
+     *
+     * @return true if the AdView is an {@link InterstitialAdView}.
+     */
+    abstract boolean isInterstitial();
 
 	/**
 	 * Sets the currently installed listener that the SDK will send events to.
@@ -610,10 +613,6 @@ public abstract class AdView extends FrameLayout {
     public void setAppEventListener(AppEventListener appEventListener) {
         this.appEventListener = appEventListener;
     }
-
-    void fail(ResultCode errorCode) {
-        this.getAdDispatcher().onAdFailed(errorCode);
-	}
 
 	/**
 	 * Retrieve the setting that determines whether or not the
@@ -908,85 +907,85 @@ public abstract class AdView extends FrameLayout {
 	 * AdListener class.
 	 *
 	 */
-	private class AdListenerDispatch implements AdViewListener {
+	private class AdViewDispatcher implements AdDispatcher {
 
-		Handler handler;
+        Handler handler;
 
-		public AdListenerDispatch(Handler h) {
-			handler = h;
-		}
+        public AdViewDispatcher(Handler h) {
+            handler = h;
+        }
 
-		@Override
-		public void onAdLoaded(final Displayable d, final boolean isMediated) {
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-                    setCreativeWidth(d.getCreativeWidth());
-                    setCreativeHeight(d.getCreativeHeight());
-                    if(isMediated){
-                        try {
-                            displayMediated((MediatedDisplayable) d);
-                        }catch(ClassCastException cce){
-                            Clog.e(Clog.baseLogTag, "The SDK shouldn't fail downcasts to MediatedDisplayable in AdView");
+        @Override
+        public void onAdLoaded(final AdResponse ad) {
+            if (ad.getMediaType().equals(MediaType.BANNER) || ad.getMediaType().equals(MediaType.INTERSTITIAL)) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        setCreativeWidth(ad.getDisplayable().getCreativeWidth());
+                        setCreativeHeight(ad.getDisplayable().getCreativeHeight());
+                        if (ad.isMediated()) {
+                            try {
+                                displayMediated((MediatedDisplayable) ad.getDisplayable());
+                            } catch (ClassCastException cce) {
+                                Clog.e(Clog.baseLogTag, "The SDK shouldn't fail downcasts to MediatedDisplayable in AdView");
+                            }
+                        } else {
+                            display(ad.getDisplayable());
                         }
-                    }else {
-                        display(d);
+                        if (adListener != null)
+                            adListener.onAdLoaded(AdView.this);
                     }
-                    if (mAdFetcher != null) {
-                        mAdFetcher.printMediatedClasses();
-                    }
-					if (adListener != null)
-						adListener.onAdLoaded(AdView.this);
-				}
-			});
-		}
+                });
+            } else {
+                onAdFailed(ResultCode.INTERNAL_ERROR);
+            }
 
-		@Override
-		public void onAdFailed(final ResultCode errorCode) {
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-                    if (mAdFetcher != null) {
-                        mAdFetcher.printMediatedClasses();
-                    }
+        }
+
+        @Override
+        public void onAdFailed(final ResultCode code) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
                     if (adListener != null)
-                        adListener.onAdRequestFailed(AdView.this, errorCode);
+                        adListener.onAdRequestFailed(AdView.this, code);
                 }
             });
-		}
 
-		@Override
-		public void onAdExpanded() {
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					if (adListener != null)
-						adListener.onAdExpanded(AdView.this);
-				}
-			});
-		}
+        }
 
-		@Override
-		public void onAdCollapsed() {
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					if (adListener != null)
-						adListener.onAdCollapsed(AdView.this);
-				}
-			});
-		}
+        @Override
+        public void onAdExpanded() {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (adListener != null)
+                        adListener.onAdExpanded(AdView.this);
+                }
+            });
+        }
 
-		@Override
-		public void onAdClicked() {
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					if (adListener != null)
-						adListener.onAdClicked(AdView.this);
-				}
-			});
-		}
+        @Override
+        public void onAdCollapsed() {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (adListener != null)
+                        adListener.onAdCollapsed(AdView.this);
+                }
+            });
+        }
+
+        @Override
+        public void onAdClicked() {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (adListener != null)
+                        adListener.onAdClicked(AdView.this);
+                }
+            });
+        }
 
         @Override
         public void onAppEvent(final String name, final String data) {
@@ -1001,7 +1000,8 @@ public abstract class AdView extends FrameLayout {
         }
     }
 
-	AdViewListener getAdDispatcher() {
+    @Override
+	public AdDispatcher getAdDispatcher() {
 		return this.dispatcher;
 	}
 

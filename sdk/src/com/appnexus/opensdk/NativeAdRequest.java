@@ -26,11 +26,11 @@ import com.appnexus.opensdk.utils.ImageService;
 /**
  * Define the attributes used for requesting a native ad.
  */
-public class NativeAdRequest {
+public class NativeAdRequest implements Ad {
     private NativeAdRequestListener listener;
     private final RequestParameters requestParameters;
-    private final NativeAdFetcher mAdFetcher;
-    private final AdDispatcher dispatcher;
+    private final AdFetcher mAdFetcher;
+    private final NativeAdDispatcher dispatcher;
     private boolean loadImage;
     private boolean loadIcon;
 
@@ -39,9 +39,9 @@ public class NativeAdRequest {
         requestParameters = new RequestParameters(context);
         requestParameters.setPlacementID(placementID);
         requestParameters.setMediaType(MediaType.NATIVE);
-        mAdFetcher = new NativeAdFetcher(this);
-        mAdFetcher.setAutoRefresh(false);
-        dispatcher = new AdDispatcher();
+        mAdFetcher = new AdFetcher(this);
+        mAdFetcher.setPeriod(-1);
+        dispatcher = new NativeAdDispatcher();
     }
 
     /**
@@ -211,9 +211,20 @@ public class NativeAdRequest {
         return requestParameters;
     }
 
+    @Override
+    public MediaType getMediaType() {
+        return requestParameters.getMediaType();
+    }
+
+    @Override
+    public boolean isReadyToStart() {
+        return this.listener != null;
+    }
+
     /**
      * Call this to request a native ad for parameters described by this object.
      */
+    @Override
     public boolean loadAd() {
         if (listener == null) {
             // error message
@@ -237,7 +248,7 @@ public class NativeAdRequest {
     /**
      * Internal class to post process NativeAd image downloading
      */
-    class AdDispatcher implements ImageService.ImageServiceListener {
+    class NativeAdDispatcher implements ImageService.ImageServiceListener, AdDispatcher {
         ImageService imageService;
         NativeAdResponse response;
 
@@ -255,58 +266,90 @@ public class NativeAdRequest {
         }
 
         void onAdLoaded(final NativeAdResponse response) {
-            if (!loadImage && !loadIcon) {
-                if (listener != null) {
-                    listener.onAdLoaded(response);
-                } else {
-                    response.destroy();
-                }
-                isLoading = false;
-                return;
-            }
-            imageService = new ImageService();
-            this.response = response;
-            if (loadImage) {
-                ImageService.ImageReceiver imageReceiver = new ImageService.ImageReceiver() {
-                    @Override
-                    public void onReceiveImage(Bitmap image) {
-                        response.setImage(image);
-                    }
 
-                    @Override
-                    public void onFail() {
-                        Clog.e(Clog.httpRespLogTag, "Image downloading failed for url " + response.getImageUrl());
-                    }
-                };
-                imageService.registerImageReceiver(imageReceiver, response.getImageUrl());
-            }
-            if (loadIcon) {
-                ImageService.ImageReceiver iconReceiver = new ImageService.ImageReceiver() {
-                    @Override
-                    public void onReceiveImage(Bitmap image) {
-                        response.setIcon(image);
-                    }
-
-                    @Override
-                    public void onFail() {
-                        Clog.e(Clog.httpRespLogTag, "Image downloading failed for url " + response.getIconUrl());
-                    }
-                };
-                imageService.registerImageReceiver(iconReceiver, response.getIconUrl());
-            }
-            imageService.registerNotification(this);
-            imageService.execute();
         }
 
-        void onAdFailed(ResultCode resultCode) {
+        @Override
+        public void onAdLoaded(final AdResponse ad) {
+            if (!ad.getMediaType().equals(MediaType.NATIVE)) {
+                onAdFailed(ResultCode.INTERNAL_ERROR);
+            } else {
+                final NativeAdResponse response = ad.getNativeAdResponse();
+                if (!loadImage && !loadIcon) {
+                    if (listener != null) {
+                        listener.onAdLoaded(response);
+                    } else {
+                        response.destroy();
+                    }
+                    isLoading = false;
+                    return;
+                }
+                imageService = new ImageService();
+                this.response = response;
+                if (loadImage) {
+                    ImageService.ImageReceiver imageReceiver = new ImageService.ImageReceiver() {
+                        @Override
+                        public void onReceiveImage(Bitmap image) {
+                            response.setImage(image);
+                        }
+
+                        @Override
+                        public void onFail() {
+                            Clog.e(Clog.httpRespLogTag, "Image downloading failed for url " + response.getImageUrl());
+                        }
+                    };
+                    imageService.registerImageReceiver(imageReceiver, response.getImageUrl());
+                }
+                if (loadIcon) {
+                    ImageService.ImageReceiver iconReceiver = new ImageService.ImageReceiver() {
+                        @Override
+                        public void onReceiveImage(Bitmap image) {
+                            response.setIcon(image);
+                        }
+
+                        @Override
+                        public void onFail() {
+                            Clog.e(Clog.httpRespLogTag, "Image downloading failed for url " + response.getIconUrl());
+                        }
+                    };
+                    imageService.registerImageReceiver(iconReceiver, response.getIconUrl());
+                }
+                imageService.registerNotification(this);
+                imageService.execute();
+            }
+        }
+
+        @Override
+        public void onAdFailed(ResultCode resultCode) {
             if (listener != null) {
                 listener.onAdFailed(resultCode);
             }
             isLoading = false;
         }
+
+        @Override
+        public void onAdExpanded() {
+
+        }
+
+        @Override
+        public void onAdCollapsed() {
+
+        }
+
+        @Override
+        public void onAdClicked() {
+
+        }
+
+        @Override
+        public void onAppEvent(String name, String data) {
+
+        }
     }
 
-    AdDispatcher getDispatcher() {
+    @Override
+    public AdDispatcher getAdDispatcher() {
         return dispatcher;
     }
 }

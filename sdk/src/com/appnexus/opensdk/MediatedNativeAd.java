@@ -18,7 +18,39 @@ package com.appnexus.opensdk;
 
 import android.content.Context;
 
+/**
+ * This is the interface a mediation adaptor must implement for
+ * requesting native ads.  The mediation interface allows third-party
+ * SDKs to be called by the AppNexus SDK.  To integrate a third-party
+ * SDK, create a class that implements
+ * <code>MediatedNativeAd</code>.  Implement the required method
+ * and configure it within the AppNexus Ad Network Manager to be
+ * called whenever the targeting matches the conditions defined in the
+ * Ad Network Manager. (The Ad Network Manager is a web application
+ * that AppNexus platform members can use to work with ad networks
+ * that are not on the platform.)
+ */
 public interface MediatedNativeAd {
+
+    /**
+     * The AppNexus SDK will call this method to ask the
+     * third-party SDK to request an ad from its network.  The
+     * AppNexus SDK expects to be notified of events through the
+     * {@link MediatedNativeAdController}.  Note that once a
+     * requestAd call has been made, the AppNexus SDK expects
+     * onAdLoaded or onAdFailed to be called through the {@link
+     * MediatedNativeAdController} within 15 seconds or the
+     * mediation call is considered to have failed.
+     *
+     * @param mBC     The controller to notify on load, failure, etc.
+     * @param context The activity from which this method was
+     *                called.
+     * @param tp      Targeting parameters passed from SDK to adapter.wqw
+     * @param uid     The network ID for this ad call.  This ID is
+     *                opaque to the AppNexus SDK and its contents and
+     *                their encoding are up to the implementation of
+     *                the third-party SDK.
+     */
 
     public void requestNativeAd(Context context, String uid, MediatedNativeAdController mBC, TargetingParameters tp);
 }

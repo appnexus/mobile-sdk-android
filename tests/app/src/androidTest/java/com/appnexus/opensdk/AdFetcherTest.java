@@ -16,6 +16,8 @@
 
 package com.appnexus.opensdk;
 
+import android.content.Context;
+
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.shadows.ShadowWebView;
@@ -27,18 +29,25 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotSame;
 
 @Config(shadows = {ShadowAsyncTaskNoExecutor.class,
         ShadowWebView.class, ShadowWebSettings.class},
         emulateSdk = 18)
 @RunWith(RobolectricTestRunner.class)
-public class ViewAdFetcherTest extends BaseViewAdTest {
+public class AdFetcherTest extends BaseRoboTest {
     private AdFetcher adFetcher;
 
     @Override
     public void setup() {
         super.setup();
-        adFetcher = new ViewAdFetcher(bannerAdView);
+        // Since ad type is not a key factor that affects ad fetcher
+        // Using BannerAdView as the owner ad of AdFetcher here
+        MockAdOwner owner = new MockAdOwner(activity);
+        owner.setPlacementID("0");
+        owner.setAdSize(320, 50);
+        clearAAIDAsyncTasks();
+        adFetcher = new AdFetcher(owner);
     }
 
     @Override
@@ -61,12 +70,13 @@ public class ViewAdFetcherTest extends BaseViewAdTest {
     }
 
 
-    private void runStartTest(int expectedBgTaskCount) {
+    private void assertExpectedBGTasksAfterOneAdRequest(int expectedBgTaskCount) {
         // pause until a scheduler has a task in queue
         waitForTasks();
 
         // AdFetcher posts to a Handler which executes (queues) an AdRequest -- run the handler message
         Robolectric.runUiThreadTasks();
+
         // Check that the AdRequest was queued
         int bgTaskCount = Robolectric.getBackgroundScheduler().enqueuedTaskCount();
 
@@ -74,65 +84,49 @@ public class ViewAdFetcherTest extends BaseViewAdTest {
     }
 
     @Test
-    public void testStart() {
-        clearAAIDAsyncTasks();
+    public void testDefaultState() {
+        assertEquals(-1, adFetcher.getPeriod());
+        assertEquals(AdFetcher.STATE.STOPPED, adFetcher.getState());
+    }
+
+    @Test
+    public void testStartWithRefreshOff() {
+        // Default state is auto refresh off, just start the ad fetcher
         adFetcher.start();
-        runStartTest(2);
+        assertExpectedBGTasksAfterOneAdRequest(2);
+        assertEquals(AdFetcher.STATE.SINGLE_REQUEST, adFetcher.getState());
     }
 
     @Test
     public void testStartWithRefreshOn() {
-        clearAAIDAsyncTasks();
-        adFetcher.setAutoRefresh(true);
-        adFetcher.start();
-        runStartTest(2);
-    }
-
-    @Test
-    public void testRefresh() {
-        clearAAIDAsyncTasks();
-        adFetcher.setAutoRefresh(true);
-        adFetcher.setPeriod(1000);
+        // default state was stopped
+        // setting period to 10000 won't start the ad fetcher
+        adFetcher.setPeriod(10000);
         adFetcher.start();
 
-        runStartTest(2);
+        // assert 2 here because a AAID async task is executed for each AdRequest
+        assertExpectedBGTasksAfterOneAdRequest(2);
 
-        // reset for the refresh
+        assertEquals(AdFetcher.STATE.AUTO_REFRESH, adFetcher.getState());
+
+        // reset background scheduler, clear tasks for the refresh
         Robolectric.getBackgroundScheduler().reset();
         Robolectric.getBackgroundScheduler().pause();
 
-        runStartTest(2);
-    }
-
-    @Test
-    public void testStartWithBadPlacementId() {
-        clearAAIDAsyncTasks();
-        bannerAdView.setPlacementID("");
-        adFetcher.start();
-        runStartTest(0);
-    }
-
-    @Test
-    public void testStartWithShouldResetTrue() {
-        clearAAIDAsyncTasks();
-        adFetcher.start();
-        adFetcher.setPeriod(0);
-        runStartTest(0);
+        // in the following method, wait until next ad request is enqueued
+        assertExpectedBGTasksAfterOneAdRequest(2);
+        assertEquals(AdFetcher.STATE.AUTO_REFRESH, adFetcher.getState());
     }
 
     @Test
     public void testStop() {
-        Robolectric.runBackgroundTasks();
-        Robolectric.runUiThreadTasksIncludingDelayedTasks();
-        int uitasks = Robolectric.getUiThreadScheduler().enqueuedTaskCount();
-        int bgTaskCount = Robolectric.getBackgroundScheduler().enqueuedTaskCount();
-
         // not needed, but in case AdRequest is run
         Robolectric.addPendingHttpResponse(200, TestResponses.blank());
 
         // start an AdFetcher normally, until an AdRequest is queued
         adFetcher.start();
-        runStartTest(2);
+        assertExpectedBGTasksAfterOneAdRequest(2);
+        assertNotSame(AdFetcher.STATE.STOPPED, adFetcher.getState());
 
         adFetcher.stop();
 
@@ -149,12 +143,35 @@ public class ViewAdFetcherTest extends BaseViewAdTest {
         // but it should be canceled, and queue nothing
         int uiTaskCount = Robolectric.getUiThreadScheduler().enqueuedTaskCount();
         assertEquals(1, uiTaskCount);
+        assertEquals(AdFetcher.STATE.STOPPED, adFetcher.getState());
     }
 
     @Test
-    public void testPeriod() {
+    public void testSetPeriod() {
         int period = 30000;
         adFetcher.setPeriod(period);
         assertEquals(period, adFetcher.getPeriod());
+    }
+
+    @Test
+    public void testResetRefreshOff() {
+        adFetcher.setPeriod(10000);
+        adFetcher.start();
+        assertEquals(AdFetcher.STATE.AUTO_REFRESH, adFetcher.getState());
+        adFetcher.setPeriod(-1);
+        assertEquals(AdFetcher.STATE.SINGLE_REQUEST, adFetcher.getState());
+    }
+
+    class MockAdOwner extends BannerAdView {
+
+        public MockAdOwner(Context context) {
+            super(context);
+        }
+
+        @Override
+        public boolean isReadyToStart() {
+            return true;
+        }
+
     }
 }

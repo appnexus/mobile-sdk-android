@@ -1,5 +1,5 @@
 /*
- *    Copyright 2013 APPNEXUS INC
+ *    Copyright 2015 APPNEXUS INC
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,22 +16,18 @@
 
 package com.appnexus.opensdk;
 
-/**
- * Interface for receiving callbacks from a MediatedAdViewController
- */
-
-/** package **/ interface AdViewListener {
-
+interface AdDispatcher {
     /**
-     * Called when the third-party mediation network has alerted the
-     * SDK of a successful ad request
+     * Called when an ad is ready to be used, indicates a successful ad
+     * request
      *
-     * @param d the displayable view to show for banners
+     * @param ad the response from either AppNexus server or mediated networks
      */
-    public void onAdLoaded(final Displayable d, final boolean isMediated);
+    public void onAdLoaded(AdResponse ad);
 
     /**
      * Called when the mediation waterfall has ended in a failure
+     *
      * @param errorCode the error code describing the failure.
      */
     public void onAdFailed(ResultCode errorCode);

@@ -9,7 +9,7 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener{
 
     BannerAdView bannerAdView;
     InterstitialAdView interstitialAdView;
-    AdRequest adRequest;
+    RequestManager requestManager;
 
     boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked;
 
@@ -20,7 +20,7 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener{
         bannerAdView.setPlacementID("0");
         bannerAdView.setAdListener(this);
         bannerAdView.setAdSize(320,50);
-        bannerAdView.setAutoRefreshInterval(0);
+        bannerAdView.setAutoRefreshInterval(-1);
 
         interstitialAdView = new InterstitialAdView(activity);
         interstitialAdView.setPlacementID("0");

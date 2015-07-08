@@ -68,7 +68,6 @@ import java.util.Queue;
  *           android:layout_width="wrap_content"
  *           android:layout_height="wrap_content"
  *           android:placement_id="YOUR PLACEMENT ID"
- *           android:auto_refresh="true"
  *           android:auto_refresh_interval="30"
  *           android:opens_native_browser="true"
  *           android:adWidth="320"
@@ -101,7 +100,6 @@ import java.util.Queue;
 public class BannerAdView extends AdView {
 
     private int period;
-    private boolean auto_refresh;
     private boolean loadAdHasBeenCalled;
     private boolean shouldReloadOnResume;
     private BroadcastReceiver receiver;
@@ -109,11 +107,13 @@ public class BannerAdView extends AdView {
     private boolean expandsToFitScreenWidth;
     private boolean measured;
     private Animator animator;
+    private boolean autoRefreshOffInXML;
 
     private void setDefaultsBeforeXML() {
         loadAdHasBeenCalled = false;
-        auto_refresh = true;
+        period = Settings.DEFAULT_REFRESH;
         shouldReloadOnResume = false;
+        autoRefreshOffInXML = false;
     }
 
     /**
@@ -172,17 +172,12 @@ public class BannerAdView extends AdView {
      */
     public BannerAdView(Context context, int refresh_interval) {
         super(context);
-        if (refresh_interval == 0) {
-            this.setAutoRefresh(false);
-        } else {
-            this.setAutoRefresh(true);
-            this.setAutoRefreshInterval(refresh_interval);
-        }
+        this.setAutoRefreshInterval(refresh_interval);
     }
 
     @Override
     protected void setup(Context context, AttributeSet attrs) {
-        auto_refresh = true;
+        period = Settings.DEFAULT_REFRESH;
         shouldResetContainer = false;
         expandsToFitScreenWidth = false;
         measured = false;
@@ -192,7 +187,9 @@ public class BannerAdView extends AdView {
         onFirstLayout();
         requestParameters.setMediaType(MediaType.BANNER);
         mAdFetcher.setPeriod(period);
-        mAdFetcher.setAutoRefresh(auto_refresh);
+        if (autoRefreshOffInXML) {
+            mAdFetcher.start();
+        }
     }
 
     private void setupBroadcast() {
@@ -209,7 +206,7 @@ public class BannerAdView extends AdView {
                             Clog.getString(R.string.screen_off_stop));
                 } else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
                     boolean ad_started = false;
-                    if (auto_refresh) {
+                    if (period > 0) {
                         start();
                         ad_started = true;
                     } else if (shouldReloadOnResume) {
@@ -278,9 +275,14 @@ public class BannerAdView extends AdView {
 
     // Make sure receiver is registered.
     private void onFirstLayout() {
-        if (this.auto_refresh) {
+        if (period > 0) {
             setupBroadcast();
         }
+    }
+
+    @Override
+    public MediaType getMediaType() {
+        return MediaType.BANNER;
     }
 
     /**
@@ -535,7 +537,11 @@ public class BannerAdView extends AdView {
                 Clog.d(Clog.xmlLogTag, Clog.getString(R.string.placement_id,
                         a.getString(attr)));
             } else if (attr == R.styleable.BannerAdView_auto_refresh_interval) {
-                setAutoRefreshInterval(a.getInt(attr, Settings.DEFAULT_REFRESH));
+                int period = a.getInt(attr, Settings.DEFAULT_REFRESH);
+                setAutoRefreshInterval(period);
+                if (period <= 0) {
+                    autoRefreshOffInXML = true;
+                }
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.xml_set_period, period));
             } else if (attr == R.styleable.BannerAdView_test) {
@@ -543,10 +549,6 @@ public class BannerAdView extends AdView {
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.xml_set_test,
                                 Settings.getSettings().test_mode));
-            } else if (attr == R.styleable.BannerAdView_auto_refresh) {
-                setAutoRefresh(a.getBoolean(attr, false));
-                Clog.d(Clog.xmlLogTag, Clog.getString(
-                        R.string.xml_set_auto_refresh, auto_refresh));
             } else if (attr == R.styleable.BannerAdView_adWidth) {
                 width = a.getInt(attr, -1);
                 Clog.d(Clog.xmlLogTag,
@@ -592,7 +594,7 @@ public class BannerAdView extends AdView {
                 setTransitionDuration((long) a.getInt(attr, 1000));
             }else if (attr == R.styleable.BannerAdView_load_landing_page_in_background) {
                 setLoadsInBackground(a.getBoolean(attr, true));
-                Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_load_landing_page_in_background, doesLoadingInBackground ));
+                Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_load_landing_page_in_background, doesLoadingInBackground));
             }
         }
 
@@ -741,48 +743,16 @@ public class BannerAdView extends AdView {
      * @param period The auto-refresh interval, in milliseconds.
      */
     public void setAutoRefreshInterval(int period) {
-        this.period = Math.max(Settings.MIN_REFRESH_MILLISECONDS,
-                period);
         if (period > 0) {
-            Clog.d(Clog.publicFunctionsLogTag,
-                    Clog.getString(R.string.set_period, this.period));
-            setAutoRefresh(true);
+            this.period = Math.max(Settings.MIN_REFRESH_MILLISECONDS,
+                    period);
         } else {
-            setAutoRefresh(false);
+            this.period = period;
         }
+        Clog.d(Clog.publicFunctionsLogTag,
+                Clog.getString(R.string.set_period, this.period));
         if (mAdFetcher != null)
             mAdFetcher.setPeriod(this.period);
-    }
-
-    /**
-     * Check whether auto-refresh is currently enabled for this ad
-     * view.
-     *
-     * @return If true, this view will periodically request new ads.
-     */
-    private boolean getAutoRefresh() {
-        Clog.d(Clog.publicFunctionsLogTag,
-                Clog.getString(R.string.get_auto_refresh, auto_refresh));
-        return auto_refresh;
-    }
-
-    /**
-     * Turn the auto-refresh setting for this ad view on or off.
-     *
-     * @param auto_refresh If set to true, this view will periodically
-     *                     request new ads.
-     */
-    void setAutoRefresh(boolean auto_refresh) {
-        Clog.d(Clog.publicFunctionsLogTag,
-                Clog.getString(R.string.set_auto_refresh, auto_refresh));
-        this.auto_refresh = auto_refresh;
-        if (mAdFetcher != null) {
-            mAdFetcher.setAutoRefresh(auto_refresh);
-            mAdFetcher.clearDurations();
-        }
-        if (this.auto_refresh && !loadAdHasBeenCalled && mAdFetcher != null) {
-            start();
-        }
     }
 
     /**
@@ -823,7 +793,7 @@ public class BannerAdView extends AdView {
             //The only time we want to request on visibility changes is if an ad hasn't been loaded yet (loadAdHasBeenCalled)
             // shouldReloadOnResume is true
             // OR auto_refresh is enabled
-            if(loadAdHasBeenCalled || shouldReloadOnResume || auto_refresh){
+            if(loadAdHasBeenCalled || shouldReloadOnResume || (period > 0)){
 
                 //If we're MRAID mraid_is_closing or expanding, don't load.
                 if (!mraid_is_closing && !mraid_changing_size_or_visibility

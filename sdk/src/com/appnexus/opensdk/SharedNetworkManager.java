@@ -55,11 +55,7 @@ class SharedNetworkManager {
                 permission,
                 context.getPackageName()
         );
-        if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
-            permitted = true;
-        } else {
-            permitted = false;
-        }
+        permitted = (permissionStatus == PackageManager.PERMISSION_GRANTED);
     }
 
     boolean isConnected(Context context) {

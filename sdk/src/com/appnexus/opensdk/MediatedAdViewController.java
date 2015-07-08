@@ -51,16 +51,17 @@ public abstract class MediatedAdViewController {
     protected MediatedAdView mAV;
     private WeakReference<AdRequester> caller_requester;
     protected MediatedAd currentAd;
-    private AdViewListener listener;
+    protected AdDispatcher listener;
     protected MediatedDisplayable mediatedDisplayable = new MediatedDisplayable(this);
 
     boolean hasFailed = false;
     boolean hasSucceeded = false;
+    protected boolean destroyed=false;
 
-    MediatedAdViewController(AdRequester requester, MediatedAd currentAd, AdViewListener listener, MediaType type) {
+    MediatedAdViewController(AdRequester requester, MediatedAd currentAd, AdDispatcher listener, MediaType type) {
         this.caller_requester = new WeakReference<AdRequester>(requester);
-        this.listener = listener;
         this.currentAd = currentAd;
+        this.listener = listener;
         this.mediaType = type;
 
         ResultCode errorCode = null;
@@ -188,9 +189,9 @@ public abstract class MediatedAdViewController {
         if (mAV != null) {
             mAV.destroy();
         }
+        destroyed = true;
         mAV = null;
         currentAd = null;
-        listener = null;
         Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediation_finish));
     }
 
@@ -204,13 +205,42 @@ public abstract class MediatedAdViewController {
      *
      */
     public void onAdLoaded() {
-        if (hasSucceeded || hasFailed) return;
+        if (hasSucceeded || hasFailed || destroyed) return;
         markLatencyStop();
         cancelTimeout();
         hasSucceeded = true;
 
-        if (listener != null)
-            listener.onAdLoaded(mediatedDisplayable, true);
+        AdRequester requester = this.caller_requester.get();
+        if (requester != null) {
+            requester.onReceiveAd(new AdResponse() {
+                @Override
+                public MediaType getMediaType() {
+                    return mediaType;
+                }
+
+                @Override
+                public boolean isMediated() {
+                    return true;
+                }
+
+                @Override
+                public Displayable getDisplayable() {
+                    return mediatedDisplayable;
+                }
+
+                @Override
+                public NativeAdResponse getNativeAdResponse() {
+                    return null;
+                }
+
+                @Override
+                public void destroy() {
+                    mediatedDisplayable.destroy();
+                }
+            });
+        } else {
+            mediatedDisplayable.destroy();
+        }
         fireResultCB(ResultCode.SUCCESS);
     }
 
@@ -230,7 +260,7 @@ public abstract class MediatedAdViewController {
      * SDK failed.
      */
     public void onAdFailed(ResultCode reason) {
-        if (hasSucceeded || hasFailed) return;
+        if (hasSucceeded || hasFailed || destroyed) return;
         markLatencyStop();
         cancelTimeout();
 
@@ -248,7 +278,7 @@ public abstract class MediatedAdViewController {
      * <a href="http://www.iab.net/mraid">MRAID</a> ad.
      */
     public void onAdExpanded() {
-        if (hasFailed) return;
+        if (hasFailed || destroyed) return;
         if (listener != null)
             listener.onAdExpanded();
     }
@@ -258,7 +288,7 @@ public abstract class MediatedAdViewController {
      * expanded ad has now collapsed to its original size.
      */
     public void onAdCollapsed() {
-        if (hasFailed) return;
+        if (hasFailed || destroyed) return;
         if (listener != null)
             listener.onAdCollapsed();
     }
@@ -268,7 +298,7 @@ public abstract class MediatedAdViewController {
      * is interacting with the ad (i.e., has clicked on it).
      */
     public void onAdClicked() {
-        if (hasFailed) return;
+        if (hasFailed || destroyed) return;
         if (listener != null)
             listener.onAdClicked();
     }
@@ -291,7 +321,7 @@ public abstract class MediatedAdViewController {
                 Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
                 return;
             }
-            requester.onReceiveResponse(null);
+            requester.onReceiveServerResponse(null);
             return;
         }
 
@@ -322,7 +352,7 @@ public abstract class MediatedAdViewController {
 
         if (ignoreResult && result != ResultCode.SUCCESS) {
             if (requester != null) {
-                requester.onReceiveResponse(null);
+                requester.onReceiveServerResponse(null);
             }
         }
 
@@ -361,18 +391,18 @@ public abstract class MediatedAdViewController {
                 return;
             }
 
-            AdResponse response = null;
+            ServerResponse response = null;
             if ((httpResponse != null) && httpResponse.getSucceeded()) {
-                response = new AdResponse(httpResponse, mediaType);
-                if (extras.containsKey(AdResponse.EXTRAS_KEY_ORIENTATION)) {
-                    response.addToExtras(AdResponse.EXTRAS_KEY_ORIENTATION,
-                            extras.get(AdResponse.EXTRAS_KEY_ORIENTATION));
+                response = new ServerResponse(httpResponse, mediaType);
+                if (extras.containsKey(ServerResponse.EXTRAS_KEY_ORIENTATION)) {
+                    response.addToExtras(ServerResponse.EXTRAS_KEY_ORIENTATION,
+                            extras.get(ServerResponse.EXTRAS_KEY_ORIENTATION));
                 }
             } else {
                 Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_bad_response));
             }
 
-            requester.onReceiveResponse(response);
+            requester.onReceiveServerResponse(response);
         }
 
         @Override
@@ -491,4 +521,16 @@ public abstract class MediatedAdViewController {
     abstract public void onDestroy();
     abstract public void onPause();
     abstract public void onResume();
+
+    protected boolean hasCancelled = false;
+
+    /**
+     * Cancel mediated native ad request
+     */
+    protected void cancel(boolean hasCancelled) {
+        this.hasCancelled = hasCancelled;
+        if (hasCancelled) {
+            finishController();
+        }
+    }
 }

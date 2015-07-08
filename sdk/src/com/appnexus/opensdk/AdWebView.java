@@ -112,7 +112,7 @@ class AdWebView extends WebView implements Displayable {
         setWebViewClient(new AdWebViewClient());
     }
 
-    public void loadAd(AdResponse ad) {
+    public void loadAd(ServerResponse ad) {
         if(ad==null){
             return;
         }
@@ -181,12 +181,12 @@ class AdWebView extends WebView implements Displayable {
             return;
         }
 
-        if (extras.containsKey(AdResponse.EXTRAS_KEY_MRAID)) {
-            isMRAIDEnabled = (Boolean) extras.get(AdResponse.EXTRAS_KEY_MRAID);
+        if (extras.containsKey(ServerResponse.EXTRAS_KEY_MRAID)) {
+            isMRAIDEnabled = (Boolean) extras.get(ServerResponse.EXTRAS_KEY_MRAID);
         }
 
-        if (extras.containsKey(AdResponse.EXTRAS_KEY_ORIENTATION)
-                && extras.get(AdResponse.EXTRAS_KEY_ORIENTATION).equals("h")) {
+        if (extras.containsKey(ServerResponse.EXTRAS_KEY_ORIENTATION)
+                && extras.get(ServerResponse.EXTRAS_KEY_ORIENTATION).equals("h")) {
             this.orientation = Configuration.ORIENTATION_LANDSCAPE;
         } else {
             this.orientation = Configuration.ORIENTATION_PORTRAIT;

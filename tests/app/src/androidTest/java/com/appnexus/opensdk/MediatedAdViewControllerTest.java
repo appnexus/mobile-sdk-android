@@ -42,7 +42,7 @@ public class MediatedAdViewControllerTest extends BaseViewAdTest {
     @Override
     public void setup() {
         super.setup();
-        adRequest = new AdRequest(bannerAdView.mAdFetcher);
+        requestManager = new AdViewRequestManager(bannerAdView);
     }
 
     // checks that the resultCB appends the reason code correctly
@@ -56,7 +56,7 @@ public class MediatedAdViewControllerTest extends BaseViewAdTest {
     }
 
     private  void executeMediationAdRequest() {
-        adRequest.execute();
+        requestManager.execute();
         // execute main ad request
         while(Robolectric.getBackgroundScheduler().areAnyRunnable()){
             Robolectric.getBackgroundScheduler().runOneTask();
@@ -169,7 +169,7 @@ public class MediatedAdViewControllerTest extends BaseViewAdTest {
         Robolectric.addPendingHttpResponse(200, TestResponses.blank());
 
         // load a standard ad
-        adRequest.execute();
+        requestManager.execute();
 
         Robolectric.runBackgroundTasks();
         Robolectric.runUiThreadTasks();
@@ -183,8 +183,8 @@ public class MediatedAdViewControllerTest extends BaseViewAdTest {
         adLoaded = false;
 
         // load a mediated ad
-        adRequest = new AdRequest(bannerAdView.mAdFetcher);
-        adRequest.execute();
+        requestManager = new AdViewRequestManager(bannerAdView);
+        requestManager.execute();
 
         Robolectric.runBackgroundTasks();
         Robolectric.runUiThreadTasks();

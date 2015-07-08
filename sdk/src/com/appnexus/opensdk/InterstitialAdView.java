@@ -102,7 +102,7 @@ public class InterstitialAdView extends AdView {
     @Override
     protected void setup(Context context, AttributeSet attrs) {
         super.setup(context, attrs);
-        mAdFetcher.setAutoRefresh(false);
+        mAdFetcher.setPeriod(-1);
         requestParameters.setMediaType(MediaType.INTERSTITIAL);
         // Get the screen size
         WindowManager manager = (WindowManager) context
@@ -178,6 +178,11 @@ public class InterstitialAdView extends AdView {
             }
         }
         a.recycle();
+    }
+
+    @Override
+    public MediaType getMediaType() {
+        return MediaType.INTERSTITIAL;
     }
 
     /**

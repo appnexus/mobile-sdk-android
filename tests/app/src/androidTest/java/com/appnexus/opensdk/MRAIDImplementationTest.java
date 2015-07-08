@@ -266,16 +266,16 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
         }
 
         @Override
-        AdViewListener getAdDispatcher() {
+        public AdDispatcher getAdDispatcher() {
             return adDispatcher;
         }
     }
 
-    static class MockAdDispatcher implements AdViewListener {
+    static class MockAdDispatcher implements AdDispatcher {
         boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked;
 
         @Override
-        public void onAdLoaded(Displayable d, boolean b) {
+        public void onAdLoaded(AdResponse ad) {
             adLoaded = true;
         }
 

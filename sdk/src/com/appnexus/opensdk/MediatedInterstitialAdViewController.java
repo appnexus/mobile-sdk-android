@@ -30,14 +30,14 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
 
     static MediatedInterstitialAdViewController create(
             Activity activity, AdRequester requester,
-            MediatedAd mediatedAd, AdViewListener listener) {
+            MediatedAd mediatedAd, AdDispatcher listener) {
         MediatedInterstitialAdViewController out = new MediatedInterstitialAdViewController(activity, requester, mediatedAd, listener);
         return out.hasFailed ? null : out;
     }
 
     private MediatedInterstitialAdViewController(
             Activity activity, AdRequester requester, MediatedAd mediatedAd,
-            AdViewListener listener) {
+            AdDispatcher listener) {
         super(requester, mediatedAd, listener, MediaType.INTERSTITIAL);
 
         if (!isValid(MediatedInterstitialAdView.class))
@@ -86,7 +86,6 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
         return ((MediatedInterstitialAdView) mAV).isReady();
     }
 
-    boolean destroyed=false;
     @Override
     public void onDestroy() {
         destroyed=true;

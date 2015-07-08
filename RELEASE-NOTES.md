@@ -1,5 +1,6 @@
 ## RC 2.4
 + MS-1246 Pre-cache DFP
++ MS-1307 AdFetcher refactor
 
 ## RC 2.3.1
 + MS-1350 fix native ad response expiration time

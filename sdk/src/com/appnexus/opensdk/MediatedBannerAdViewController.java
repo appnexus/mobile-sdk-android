@@ -30,7 +30,7 @@ import com.appnexus.opensdk.utils.Clog;
 public class MediatedBannerAdViewController extends MediatedAdViewController {
     static MediatedBannerAdViewController create(
             Activity activity, AdRequester requester,
-            MediatedAd mediatedAd, AdViewListener listener) {
+            MediatedAd mediatedAd, AdDispatcher listener) {
         MediatedBannerAdViewController out = new MediatedBannerAdViewController(activity, requester, mediatedAd, listener);
         return out.hasFailed ? null : out;
     }
@@ -48,7 +48,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
 
     private MediatedBannerAdViewController(
             Activity activity, AdRequester requester, MediatedAd mediatedAd,
-            AdViewListener listener) {
+            AdDispatcher listener) {
         super(requester, mediatedAd, listener, MediaType.BANNER);
 
         if (!isValid(MediatedBannerAdView.class))
@@ -99,7 +99,6 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
         mediatedDisplayable.setView(view);
     }
 
-    boolean destroyed=false;
     @Override
     public void onDestroy() {
         destroyed=true;

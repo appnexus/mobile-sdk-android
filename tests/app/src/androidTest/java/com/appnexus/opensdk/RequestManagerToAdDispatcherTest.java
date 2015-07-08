@@ -16,49 +16,32 @@
 
 package com.appnexus.opensdk;
 
-import org.robolectric.Robolectric;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
-import java.lang.Override;
+import static junit.framework.Assert.assertTrue;
 
-public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListener {
-    NativeAdRequest adRequest;
-    NativeAdResponse response;
-
-    boolean adLoaded, adFailed;
-
+@Config(emulateSdk = 18)
+@RunWith(RobolectricTestRunner.class)
+public class RequestManagerToAdDispatcherTest extends BaseRoboTest {
+    private RequestParameters requestParameters;
 
     @Override
     public void setup() {
         super.setup();
-
-        adLoaded = false;
-        adFailed = false;
-
-        adRequest = new NativeAdRequest(activity, "0");
-        // clear AAID async task
-        Robolectric.runBackgroundTasks();
-        Robolectric.runUiThreadTasks();
-        adRequest.setListener(this);
+        requestParameters = new RequestParameters(activity);
     }
 
     @Override
     public void tearDown() {
         super.tearDown();
-        if (response != null) {
-            response.destroy();
-        }
-    }
-
-    @Override
-    public void onAdLoaded(NativeAdResponse response) {
-        adLoaded = true;
-        this.response = response;
-    }
-
-    @Override
-    public void onAdFailed(ResultCode errorcode) {
-        adFailed = true;
 
     }
 
+    @Test
+    public void testDummy() {
+        assertTrue(true);
+    }
 }

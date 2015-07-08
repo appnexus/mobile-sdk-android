@@ -22,7 +22,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
@@ -34,21 +33,21 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 public class MediatedNativeAdController {
-    WeakReference<NativeAdFetcher> adFetcher;
-    NativeAdRequest.AdDispatcher listener;
+    WeakReference<AdRequester> requester;
     MediatedAd currentAd;
 
     boolean hasSucceeded = false;
     boolean hasFailed = false;
+    private boolean hasCancelled = false;
 
     ResultCode errorCode;
 
 
-    public static MediatedNativeAdController create(MediatedAd currentAd, NativeAdFetcher adFetcher, NativeAdRequest.AdDispatcher listener){
-           return new MediatedNativeAdController(currentAd, adFetcher, listener);
+    public static MediatedNativeAdController create(MediatedAd currentAd, AdRequester requester){
+           return new MediatedNativeAdController(currentAd, requester);
     }
 
-    private MediatedNativeAdController(MediatedAd currentAd, NativeAdFetcher adFetcher, NativeAdRequest.AdDispatcher listener) {
+    private MediatedNativeAdController(MediatedAd currentAd, AdRequester requester) {
         if (currentAd == null) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_no_ads));
             errorCode = ResultCode.UNABLE_TO_FILL;
@@ -56,8 +55,7 @@ public class MediatedNativeAdController {
             Clog.d(Clog.mediationLogTag, Clog.getString(
                     R.string.instantiating_class, currentAd.getClassName()));
 
-            this.adFetcher = new WeakReference<NativeAdFetcher>(adFetcher);
-            this.listener = listener;
+            this.requester = new WeakReference<AdRequester>(requester);
             this.currentAd = currentAd;
 
             startTimeout();
@@ -66,11 +64,11 @@ public class MediatedNativeAdController {
             try {
                 Class<?> c = Class.forName(currentAd.getClassName());
                 MediatedNativeAd ad = (MediatedNativeAd) c.newInstance();
-                if (adFetcher.getRequestParams() != null) {
+                if (requester.getRequestParams() != null) {
                     ad.requestNativeAd(
-                            adFetcher.getRequestParams().getContext(),
+                            requester.getRequestParams().getContext(),
                             currentAd.getId(), this,
-                            adFetcher.getRequestParams().getTargetingParameters());
+                            requester.getRequestParams().getTargetingParameters());
                 } else {
                     errorCode = ResultCode.INVALID_REQUEST;
                 }
@@ -109,9 +107,7 @@ public class MediatedNativeAdController {
     }
 
     protected void finishController() {
-        listener = null;
         currentAd = null;
-        adFetcher.clear();
         Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediation_finish));
     }
 
@@ -123,22 +119,45 @@ public class MediatedNativeAdController {
      * in {@link MediatedNativeAd}.
      *
      */
-    public void onAdLoaded(NativeAdResponse response) {
+    public void onAdLoaded(final NativeAdResponse response) {
         if (hasSucceeded || hasFailed) return;
         markLatencyStop();
         cancelTimeout();
         hasSucceeded = true;
 
-        if (listener != null) {
-            listener.onAdLoaded(response);
+        AdRequester requester = this.requester.get();
+        if (requester != null) {
+            requester.onReceiveAd(new AdResponse() {
+                @Override
+                public MediaType getMediaType() {
+                    return MediaType.NATIVE;
+                }
+
+                @Override
+                public boolean isMediated() {
+                    return true;
+                }
+
+                @Override
+                public Displayable getDisplayable() {
+                    return null;
+                }
+
+                @Override
+                public NativeAdResponse getNativeAdResponse() {
+                    return response;
+                }
+
+                @Override
+                public void destroy() {
+                    response.destroy();
+                }
+            });
         } else {
-            // this should never happen, this listener is the dispatcher in NativeAdRequest object
-            Log.wtf(Clog.baseLogTag, "Can't find the dispatcher of the NativeAdRequest.");
+            Clog.d(Clog.mediationLogTag, "Request was cancelled, destroy mediated ad response");
             response.destroy();
         }
-        listener = null;
         currentAd = null;
-        adFetcher.clear();
         fireResultCB(ResultCode.SUCCESS);
     }
 
@@ -172,7 +191,7 @@ public class MediatedNativeAdController {
     private void fireResultCB(final ResultCode result) {
         if (hasFailed) return;
 
-        AdRequester requester = this.adFetcher.get();
+        AdRequester requester = this.requester.get();
         // if resultCB is empty don't fire resultCB, and just continue to next ad
         if ((currentAd == null) || StringUtil.isEmpty(currentAd.getResultCB())) {
             if(result == ResultCode.SUCCESS) return;
@@ -182,7 +201,7 @@ public class MediatedNativeAdController {
                 Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
                 return;
             }
-            requester.onReceiveResponse(null);
+            requester.onReceiveServerResponse(null);
             return;
         }
 
@@ -214,7 +233,7 @@ public class MediatedNativeAdController {
         // if currentAd failed and next ad is available, continue to next ad
         if (ignoreResult && result != ResultCode.SUCCESS) {
             if (requester != null) {
-                requester.onReceiveResponse(null);
+                requester.onReceiveServerResponse(null);
             }
         }
 
@@ -253,18 +272,18 @@ public class MediatedNativeAdController {
                 return;
             }
 
-            AdResponse response = null;
+            ServerResponse response = null;
             if ((httpResponse != null) && httpResponse.getSucceeded()) {
-                response = new AdResponse(httpResponse, MediaType.NATIVE);
-                if (extras.containsKey(AdResponse.EXTRAS_KEY_ORIENTATION)) {
-                    response.addToExtras(AdResponse.EXTRAS_KEY_ORIENTATION,
-                            extras.get(AdResponse.EXTRAS_KEY_ORIENTATION));
+                response = new ServerResponse(httpResponse, MediaType.NATIVE);
+                if (extras.containsKey(ServerResponse.EXTRAS_KEY_ORIENTATION)) {
+                    response.addToExtras(ServerResponse.EXTRAS_KEY_ORIENTATION,
+                            extras.get(ServerResponse.EXTRAS_KEY_ORIENTATION));
                 }
             } else {
                 Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_bad_response));
             }
 
-            requester.onReceiveResponse(response);
+            requester.onReceiveServerResponse(response);
         }
 
         @Override
@@ -322,9 +341,7 @@ public class MediatedNativeAdController {
             } catch (IllegalArgumentException e) {
                 // catch exception for unregisterReceiver() of destroy() call
             } finally {
-                nac.listener = null;
                 nac.currentAd = null;
-                nac.adFetcher.clear();
             }
         }
     }
@@ -377,6 +394,16 @@ public class MediatedNativeAdController {
         }
         // return -1 if invalid.
         return -1;
+    }
+
+    /**
+     * Cancel mediated native ad request
+     */
+    void cancel(boolean hasCancelled) {
+        this.hasCancelled = hasCancelled;
+        if (hasCancelled) {
+            finishController();
+        }
     }
 }
 

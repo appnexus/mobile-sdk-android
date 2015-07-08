@@ -19,17 +19,14 @@ package com.appnexus.opensdk;
 import android.app.Activity;
 import android.os.Looper;
 
-import com.appnexus.opensdk.OpenSDKUnitTestsActivity;
 import com.appnexus.opensdk.testviews.*;
 import com.appnexus.opensdk.util.Lock;
 
 import org.junit.After;
 import org.junit.Before;
 import org.robolectric.Robolectric;
-import org.robolectric.util.ActivityController;
 import org.robolectric.util.Scheduler;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Timer;
 import java.util.TimerTask;
 

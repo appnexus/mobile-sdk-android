@@ -16,33 +16,35 @@
 
 package com.appnexus.opensdk;
 
-interface AdResponse {
+/**
+ * Define the basics for an ad, package only
+ */
+interface Ad {
     /**
-     * @return MediaType of the ad respone
+     * Media type can be Banner, Interstitial or Native
+     *
+     * @return the media type of this ad
      */
     public MediaType getMediaType();
 
     /**
-     * @return true if the ad response comes a mediated network
-     */
-    public boolean isMediated();
-
-    /**
-     * For BannerAdView and InterstitialAdView to get displayable
+     * Checks whether an ad is ready to load a new one
      *
-     * @return null if media type is not banner or interstitial
+     * @return true if settings are ready to load a new ad
      */
-    public Displayable getDisplayable();
+    public boolean isReadyToStart();
 
     /**
-     * For NativeAdRequest to retrieve native ad response
+     * Call this to load a new ad
      *
-     * @return null if media type is not native
+     * @return true if ad request is scheduled successfully
      */
-    public NativeAdResponse getNativeAdResponse();
+    public boolean loadAd();
 
     /**
-     * Call this to destroy the ad response
+     * Provide the ad dispatcher of this ad
+     *
+     * @return ad dispatcher
      */
-    public void destroy();
+    public AdDispatcher getAdDispatcher();
 }

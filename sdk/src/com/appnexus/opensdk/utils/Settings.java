@@ -64,7 +64,7 @@ public class Settings {
 
     public static final int FETCH_THREAD_COUNT = 4;
 
-    public static final int DEFAULT_REFRESH = 0;
+    public static final int DEFAULT_REFRESH = 30000; // Default banner refresh interval is 30 seconds
     public static final int MIN_REFRESH_MILLISECONDS = 15000;
     public static final int DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY = 10000;
 

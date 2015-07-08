@@ -41,7 +41,7 @@ public class MediationCallbacksTest extends BaseViewAdTest implements AdListener
     @Override
     public void setup() {
         super.setup();
-        adRequest = new AdRequest(bannerAdView.mAdFetcher);
+        requestManager = new AdViewRequestManager(bannerAdView);
 
         adLoadedMultiple = false;
         adFailedMultiple = false;
@@ -70,7 +70,7 @@ public class MediationCallbacksTest extends BaseViewAdTest implements AdListener
         Robolectric.addPendingHttpResponse(200, TestResponses.callbacks(testNumber));
         Robolectric.addPendingHttpResponse(200, TestResponses.blank());
 
-        adRequest.execute();
+        requestManager.execute();
         // execute main ad request
         while(Robolectric.getBackgroundScheduler().areAnyRunnable()) {
             Robolectric.getBackgroundScheduler().runOneTask();
@@ -158,7 +158,7 @@ public class MediationCallbacksTest extends BaseViewAdTest implements AdListener
         Robolectric.addPendingHttpResponse(200, TestResponses.blank());
 
         // load first successful view, which calls extra callbacks after a delay
-        adRequest.execute();
+        requestManager.execute();
         while(Robolectric.getBackgroundScheduler().areAnyRunnable()) {
             Robolectric.getBackgroundScheduler().runOneTask();
         }
@@ -176,8 +176,8 @@ public class MediationCallbacksTest extends BaseViewAdTest implements AdListener
         adLoaded = false;
 
         // load second view to replace first view
-        adRequest = new AdRequest(bannerAdView.mAdFetcher);
-        adRequest.execute();
+        requestManager = new AdViewRequestManager(bannerAdView);
+        requestManager.execute();
         while(Robolectric.getBackgroundScheduler().areAnyRunnable()) {
             Robolectric.getBackgroundScheduler().runOneTask();
         }
