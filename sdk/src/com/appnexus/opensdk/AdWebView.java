@@ -523,11 +523,13 @@ class AdWebView extends WebView implements Displayable {
 
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
         handleVisibilityChangedEvent(visibility, getVisibility());
     }
 
     @Override
     public void onVisibilityChanged(View view, int visibility) {
+        super.onVisibilityChanged(view, visibility);
         handleVisibilityChangedEvent(getWindowVisibility(), visibility);
     }
 
