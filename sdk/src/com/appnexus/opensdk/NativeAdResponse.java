@@ -29,6 +29,7 @@ public interface NativeAdResponse {
         APPNEXUS,
         INMOBI,
         ADCOLONY,
+        YAHOO,
         CUSTOM
     }
     /**

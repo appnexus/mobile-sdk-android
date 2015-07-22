@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MoPubNativeAdResponse implements NativeAdResponse{
+public class MoPubNativeAdResponse implements NativeAdResponse {
     private String title;
     private String description;
     private String imageUrl;
@@ -167,9 +167,11 @@ public class MoPubNativeAdResponse implements NativeAdResponse{
 
     @Override
     public boolean registerView(View view, NativeAdEventListener listener) {
-        if (nativeResponse != null && ! registered) {
+        if (nativeResponse != null && !registered && !expired) {
             nativeResponse.prepare(view);
             registeredView = view;
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.removeCallbacks(runnable);
             registered = true;
         }
         this.listener = listener;
@@ -179,11 +181,14 @@ public class MoPubNativeAdResponse implements NativeAdResponse{
 
     @Override
     public boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
-        if (nativeResponse != null && !registered) {
+        if (nativeResponse != null && !registered && !expired) {
             registeredClickables = clickables;
-            for (View clickable: clickables) {
+            for (View clickable : clickables) {
                 nativeResponse.prepare(clickable);
             }
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.removeCallbacks(runnable);
+            registered = true;
         }
         this.listener = listener;
         return registered;

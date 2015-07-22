@@ -37,7 +37,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.List;
 
-public class InMobiNativeAdResponse implements NativeAdResponse{
+public class InMobiNativeAdResponse implements NativeAdResponse {
     private IMNative imNative;
     private String title;
     private String description;
@@ -63,7 +63,8 @@ public class InMobiNativeAdResponse implements NativeAdResponse{
             @Override
             public void run() {
                 if (coverImage != null) {
-                    coverImage.recycle();;
+                    coverImage.recycle();
+                    ;
                     coverImage = null;
                 }
                 if (icon != null) {
@@ -94,7 +95,7 @@ public class InMobiNativeAdResponse implements NativeAdResponse{
         try {
             // parse Json response and create an native response
             response = new JSONObject(imNative.getContent());
-        } catch (JSONException e){
+        } catch (JSONException e) {
             return false;
         }
         title = JsonUtil.getJSONString(response, InMobiSettings.KEY_TITLE);
@@ -197,11 +198,13 @@ public class InMobiNativeAdResponse implements NativeAdResponse{
 
     @Override
     public boolean registerView(View view, NativeAdEventListener listener) {
-        if (imNative != null && !registered) {
+        if (imNative != null && !registered && !expired) {
             imNative.attachToView((ViewGroup) view);
             view.setOnClickListener(clickListener);
             registeredView = view;
             registered = true;
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.removeCallbacks(runnable);
         }
         this.nativeAdEventlistener = listener;
         return registered;
@@ -209,14 +212,16 @@ public class InMobiNativeAdResponse implements NativeAdResponse{
 
     @Override
     public boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
-        if (imNative != null && !registered) {
+        if (imNative != null && !registered && !expired) {
             imNative.attachToView((ViewGroup) view);
-            for (View clickable: clickables) {
+            for (View clickable : clickables) {
                 clickable.setOnClickListener(clickListener);
             }
             registeredView = view;
             registeredClickables = clickables;
             registered = true;
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.removeCallbacks(runnable);
         }
         this.nativeAdEventlistener = listener;
         return registered;

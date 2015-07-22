@@ -63,7 +63,13 @@ public class AdColonyNativeAdResponse implements NativeAdResponse{
             @Override
             public void run() {
                 expired = true;
-
+                if (AdColonyNativeAdResponse.this.nativeAdView != null) {
+                    ViewUtil.removeChildFromParent(AdColonyNativeAdResponse.this.nativeAdView.getAdvertiserImage());
+                    ViewUtil.removeChildFromParent(AdColonyNativeAdResponse.this.nativeAdView);
+                    AdColonyNativeAdResponse.this.nativeAdView.withListener(null);
+                    AdColonyNativeAdResponse.this.nativeAdView.destroy();
+                    AdColonyNativeAdResponse.this.nativeAdView = null;
+                }
             }
         };
         Handler handler = new Handler(Looper.getMainLooper());
@@ -147,16 +153,19 @@ public class AdColonyNativeAdResponse implements NativeAdResponse{
 
     @Override
     public boolean registerView(View view, NativeAdEventListener listener) {
-        this.listener = listener;
-        // AdColony doesn't have a registration api, always return true
-        return true;
+        if (!expired) {
+            this.listener = listener;
+            // remove expiration runnable since assets are being used
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.removeCallbacks(expireRunnable);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
-        this.listener = listener;
-        // AdColony doesn't have a registration api, always return true
-        return true;
+        return registerView(view, listener);
     }
 
     @Override
@@ -168,14 +177,6 @@ public class AdColonyNativeAdResponse implements NativeAdResponse{
     public void destroy() {
         Handler handler = new Handler(Looper.getMainLooper());
         handler.removeCallbacks(expireRunnable);
-        expired = true;
-        if (nativeAdView != null) {
-            ViewUtil.removeChildFromParent(nativeAdView.getAdvertiserImage());
-            ViewUtil.removeChildFromParent(nativeAdView);
-            nativeAdView.withListener(null);
-            nativeAdView.destroy();
-            nativeAdView = null;
-        }
-
+        handler.post(expireRunnable);
     }
 }

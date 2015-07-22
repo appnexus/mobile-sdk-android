@@ -86,6 +86,15 @@ public class ANNativeAdResponse implements NativeAdResponse {
             }
             impressionTrackers = null;
             listener = null;
+            // free assets
+            if (icon != null) {
+                icon.recycle();
+                icon = null;
+            }
+            if (image != null) {
+                image.recycle();
+                image = null;
+            }
         }
     };
 
@@ -223,20 +232,25 @@ public class ANNativeAdResponse implements NativeAdResponse {
 
     @Override
     public boolean registerView(final View view, final NativeAdEventListener listener) {
-        this.listener = listener;
-        visibilityDetector = VisibilityDetector.create(view);
-        if (visibilityDetector == null) {
-            return false;
+        if (!expired && view != null) {
+            this.listener = listener;
+            visibilityDetector = VisibilityDetector.create(view);
+            if (visibilityDetector == null) {
+                return false;
+            }
+            impressionTrackers = new ArrayList<ImpressionTracker>(imp_trackers.size());
+            for (String url : imp_trackers) {
+                ImpressionTracker impressionTracker = ImpressionTracker.create(url, visibilityDetector, view.getContext());
+                impressionTrackers.add(impressionTracker);
+            }
+            this.registeredView = view;
+            setClickListener();
+            view.setOnClickListener(clickListener);
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.removeCallbacks(expireRunnable);
+            return true;
         }
-        impressionTrackers = new ArrayList<ImpressionTracker>(imp_trackers.size());
-        for (String url : imp_trackers) {
-            ImpressionTracker impressionTracker = ImpressionTracker.create(url, visibilityDetector, view.getContext());
-            impressionTrackers.add(impressionTracker);
-        }
-        this.registeredView = view;
-        setClickListener();
-        view.setOnClickListener(clickListener);
-        return true;
+        return false;
     }
 
     @Override
@@ -270,15 +284,6 @@ public class ANNativeAdResponse implements NativeAdResponse {
         Handler handler = new Handler(Looper.getMainLooper());
         handler.removeCallbacks(expireRunnable);
         handler.post(expireRunnable);
-        // free assets in destroy
-        if (icon != null) {
-            icon.recycle();
-            icon = null;
-        }
-        if (image != null) {
-            image.recycle();
-            image = null;
-        }
     }
 
     private boolean openNativeBrowser = false;

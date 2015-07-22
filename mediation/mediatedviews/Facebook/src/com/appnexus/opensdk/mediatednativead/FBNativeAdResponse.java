@@ -17,13 +17,12 @@
 package com.appnexus.opensdk.mediatednativead;
 
 import android.graphics.Bitmap;
-import android.os.Looper;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 
 import com.appnexus.opensdk.NativeAdEventListener;
 import com.appnexus.opensdk.NativeAdResponse;
-import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.facebook.ads.NativeAd;
 
@@ -52,7 +51,21 @@ public class FBNativeAdResponse implements NativeAdResponse {
         runnable = new Runnable() {
             @Override
             public void run() {
+                if (coverImage != null) {
+                    coverImage.recycle();
+                    coverImage = null;
+                }
+                if (icon != null) {
+                    icon.recycle();
+                    icon = null;
+                }
+                listener = null;
                 expired = true;
+                if (nativeAd != null) {
+                    nativeAd.setAdListener(null);
+                    nativeAd.destroy();
+                    nativeAd = null;
+                }
             }
         };
         Handler handler = new Handler(Looper.getMainLooper());
@@ -152,9 +165,11 @@ public class FBNativeAdResponse implements NativeAdResponse {
 
     @Override
     public boolean registerView(View view, NativeAdEventListener listener) {
-        if (nativeAd != null && !registered) {
+        if (nativeAd != null && !registered && !expired) {
             nativeAd.registerViewForInteraction(view);
             registered = true;
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.removeCallbacks(runnable);
         }
         this.listener = listener;
         return registered;
@@ -162,9 +177,11 @@ public class FBNativeAdResponse implements NativeAdResponse {
 
     @Override
     public boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
-        if (nativeAd != null && !registered) {
+        if (nativeAd != null && !registered && !expired) {
             nativeAd.registerViewForInteraction(view, clickables);
             registered = true;
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.removeCallbacks(runnable);
         }
         this.listener = listener;
         return registered;
@@ -187,20 +204,6 @@ public class FBNativeAdResponse implements NativeAdResponse {
     public void destroy() {
         Handler handler = new Handler(Looper.getMainLooper());
         handler.removeCallbacks(runnable);
-        if (coverImage != null) {
-            coverImage.recycle();
-            coverImage = null;
-        }
-        if (icon != null) {
-            icon.recycle();
-            icon = null;
-        }
-        listener = null;
-        expired = true;
-        if (nativeAd != null) {
-            nativeAd.setAdListener(null);
-            nativeAd.destroy();
-            nativeAd = null;
-        }
+        handler.post(runnable);
     }
 }
