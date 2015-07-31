@@ -16,6 +16,7 @@
 package com.appnexus.opensdk;
 
 import android.app.Activity;
+import android.view.View;
 
 /**
  * This is the interface a mediation adaptor must implement for
@@ -67,6 +68,6 @@ public interface MediatedBannerAdView extends MediatedAdView {
      *                  that initiated this call.
      */
 
-    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp);
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp);
 
 }

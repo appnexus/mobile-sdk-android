@@ -64,13 +64,14 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
 
         try {
             if(activity!=null && !destroyed){
-                ((MediatedBannerAdView) mAV).requestAd(this,
+                View viewFromMediatedAdaptor = ((MediatedBannerAdView) mAV).requestAd(this,
                         activity,
                         currentAd.getParam(),
                         currentAd.getId(),
                         currentAd.getWidth(),
                         currentAd.getHeight(),
                         getTargetingParameters());
+                mediatedDisplayable.setView(viewFromMediatedAdaptor);
             }else{
                 Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_null_activity));
                 errorCode = ResultCode.INTERNAL_ERROR;
@@ -93,10 +94,6 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
         if (errorCode != null) {
             onAdFailed(errorCode);
         }
-    }
-
-    public void setView(View view) {
-        mediatedDisplayable.setView(view);
     }
 
     @Override

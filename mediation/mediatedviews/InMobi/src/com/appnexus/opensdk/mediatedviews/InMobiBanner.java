@@ -53,42 +53,41 @@ public class InMobiBanner implements MediatedBannerAdView {
      * @return Banner View from InMobi to display
      */
     @Override
-    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter,
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter,
                           String uid, int width, int height, TargetingParameters tp) {
-        if (mBC != null) {
-
-            if (InMobiSettings.INMOBI_APP_ID == null || InMobiSettings.INMOBI_APP_ID.isEmpty()) {
-                Clog.e(Clog.mediationLogTag, "InMobi mediation failed. Call InMobiSettings.setInMobiAppId(String key, Context context) to set the app id.");
-
+        if (InMobiSettings.INMOBI_APP_ID == null || InMobiSettings.INMOBI_APP_ID.isEmpty()) {
+            Clog.e(Clog.mediationLogTag, "InMobi mediation failed. Call InMobiSettings.setInMobiAppId(String key, Context context) to set the app id.");
+            if (mBC != null) {
                 mBC.onAdFailed(ResultCode.MEDIATED_SDK_UNAVAILABLE);
-                return;
             }
-            IMBanner imBanner;
-            int adSize;
-            if (width == 300 && height == 250) {
-                adSize = IMBanner.INMOBI_AD_UNIT_300X250;
-            } else if (width == 120 && height == 600) {
-                adSize = IMBanner.INMOBI_AD_UNIT_120X600;
-            } else if (width == 468 && height == 60) {
-                adSize = IMBanner.INMOBI_AD_UNIT_468X60;
-            } else if (width == 728 && height == 90) {
-                adSize = IMBanner.INMOBI_AD_UNIT_728X90;
-            } else {
-                mBC.onAdFailed(ResultCode.INVALID_REQUEST);
-                return;
-            }
-            InMobiSettings.setTargetingParams(tp);
-            if (uid != null && !uid.isEmpty()) {
-                imBanner = new IMBanner(activity, uid, adSize);
-            } else {
-                imBanner = new IMBanner(activity, InMobiSettings.INMOBI_APP_ID, adSize);
-            }
-            imBanner.setRefreshInterval(IMBanner.REFRESH_INTERVAL_OFF);
-            imBanner.setIMBannerListener(new InMobiListener(mBC, this.getClass().getSimpleName()));
-            mBC.setView(imBanner);
-            imBanner.loadBanner();
-
+            return null;
         }
+        IMBanner imBanner;
+        int adSize;
+        if (width == 300 && height == 250) {
+            adSize = IMBanner.INMOBI_AD_UNIT_300X250;
+        } else if (width == 120 && height == 600) {
+            adSize = IMBanner.INMOBI_AD_UNIT_120X600;
+        } else if (width == 468 && height == 60) {
+            adSize = IMBanner.INMOBI_AD_UNIT_468X60;
+        } else if (width == 728 && height == 90) {
+            adSize = IMBanner.INMOBI_AD_UNIT_728X90;
+        } else {
+            if (mBC != null) {
+                mBC.onAdFailed(ResultCode.INVALID_REQUEST);
+            }
+            return null;
+        }
+        InMobiSettings.setTargetingParams(tp);
+        if (uid != null && !uid.isEmpty()) {
+            imBanner = new IMBanner(activity, uid, adSize);
+        } else {
+            imBanner = new IMBanner(activity, InMobiSettings.INMOBI_APP_ID, adSize);
+        }
+        imBanner.setRefreshInterval(IMBanner.REFRESH_INTERVAL_OFF);
+        imBanner.setIMBannerListener(new InMobiListener(mBC, this.getClass().getSimpleName()));
+        imBanner.loadBanner();
+        return imBanner;
     }
 
     @Override

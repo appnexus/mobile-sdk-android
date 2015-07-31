@@ -65,25 +65,26 @@ public class VdopiaBanner implements MediatedBannerAdView {
      * @return View from the ad network
      */
     @Override
-    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter,
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter,
                           String uid, int width, int height, TargetingParameters tp) {
-        if (mBC != null) {
-            if (width == 300 && height == 250) {
-                adView = new LVDOAdView(activity, LVDOAdSize.IAB_MRECT, uid);
-            } else if (width == 728 && height == 90) {
-                adView = new LVDOAdView(activity, LVDOAdSize.IAB_LEADERBOARD, uid);
-            } else if (width == 320 && height == 50) {
-                adView = new LVDOAdView(activity, LVDOAdSize.BANNER, uid);
-            } else {
+        if (width == 300 && height == 250) {
+            adView = new LVDOAdView(activity, LVDOAdSize.IAB_MRECT, uid);
+        } else if (width == 728 && height == 90) {
+            adView = new LVDOAdView(activity, LVDOAdSize.IAB_LEADERBOARD, uid);
+        } else if (width == 320 && height == 50) {
+            adView = new LVDOAdView(activity, LVDOAdSize.BANNER, uid);
+        } else {
+            if (mBC != null) {
                 mBC.onAdFailed(ResultCode.INVALID_REQUEST);
-                return;
             }
-
-            VdopiaListener listener = new VdopiaListener(mBC, this.getClass().getSimpleName());
-            adView.setAdListener(listener);
-            mBC.setView(adView);
-            adView.loadAd(VdopiaSettings.buildRequest(tp));
+            return null;
         }
+
+        VdopiaListener listener = new VdopiaListener(mBC, this.getClass().getSimpleName());
+        adView.setAdListener(listener);
+        adView.loadAd(VdopiaSettings.buildRequest(tp));
+
+        return adView;
     }
 
     @Override

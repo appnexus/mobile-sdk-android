@@ -45,62 +45,60 @@ public class MillennialMediaBanner implements MediatedBannerAdView {
     MMAdView adView = null;
 
     @Override
-    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
                           int width, int height, TargetingParameters targetingParameters) {
-        if (mBC != null) {
+        MillennialMediaListener mmListener = new MillennialMediaListener(mBC, super.getClass().getSimpleName());
+        mmListener.printToClog(String.format("requesting an ad: [%s, %s, %dx%d]", parameter, uid, width, height));
 
-            MillennialMediaListener mmListener = new MillennialMediaListener(mBC, super.getClass().getSimpleName());
-            mmListener.printToClog(String.format("requesting an ad: [%s, %s, %dx%d]", parameter, uid, width, height));
+        MMSDK.initialize(activity);
 
-            MMSDK.initialize(activity);
+        adView = new MMAdView(activity);
+        adView.setApid(uid);
+        adView.setWidth(width);
+        adView.setHeight(height);
 
-            adView = new MMAdView(activity);
-            adView.setApid(uid);
-            adView.setWidth(width);
-            adView.setHeight(height);
+        DisplayMetrics displayMetrics = activity.getResources().getDisplayMetrics();
+        int wpx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, width, displayMetrics);
+        int hpx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, height, displayMetrics);
 
-            DisplayMetrics displayMetrics = activity.getResources().getDisplayMetrics();
-            int wpx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, width, displayMetrics);
-            int hpx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, height, displayMetrics);
+        //Fix the AdView dimensions so we don't show any white padding to the left and right
+        ViewGroup.LayoutParams lps = new ViewGroup.LayoutParams(wpx, hpx);
 
-            //Fix the AdView dimensions so we don't show any white padding to the left and right
-            ViewGroup.LayoutParams lps = new ViewGroup.LayoutParams(wpx, hpx);
+        adView.setLayoutParams(lps);
 
-            adView.setLayoutParams(lps);
-
-            MMRequest mmRequest = new MMRequest();
+        MMRequest mmRequest = new MMRequest();
 
 
-            switch (targetingParameters.getGender()) {
-                case UNKNOWN:
-                    mmRequest.setGender(MMRequest.GENDER_OTHER);
-                    break;
-                case FEMALE:
-                    mmRequest.setGender(MMRequest.GENDER_FEMALE);
-                    break;
-                case MALE:
-                    mmRequest.setGender(MMRequest.GENDER_MALE);
-                    break;
-            }
-
-            if (targetingParameters.getAge() != null) {
-                mmRequest.setAge(targetingParameters.getAge());
-            }
-
-            HashMap<String, String> mv = new HashMap<String, String>();
-            for (Pair<String, String> p : targetingParameters.getCustomKeywords()) {
-                mv.put(p.first, p.second);
-            }
-            if (targetingParameters.getLocation() != null) {
-                MMRequest.setUserLocation(targetingParameters.getLocation());
-            }
-            mmRequest.setMetaValues(mv);
-
-            adView.setMMRequest(mmRequest);
-            adView.setListener(mmListener);
-            mBC.setView(adView);
-            adView.getAd();
+        switch (targetingParameters.getGender()) {
+            case UNKNOWN:
+                mmRequest.setGender(MMRequest.GENDER_OTHER);
+                break;
+            case FEMALE:
+                mmRequest.setGender(MMRequest.GENDER_FEMALE);
+                break;
+            case MALE:
+                mmRequest.setGender(MMRequest.GENDER_MALE);
+                break;
         }
+
+        if (targetingParameters.getAge() != null) {
+            mmRequest.setAge(targetingParameters.getAge());
+        }
+
+        HashMap<String, String> mv = new HashMap<String, String>();
+        for (Pair<String, String> p : targetingParameters.getCustomKeywords()) {
+            mv.put(p.first, p.second);
+        }
+        if (targetingParameters.getLocation() != null) {
+            MMRequest.setUserLocation(targetingParameters.getLocation());
+        }
+        mmRequest.setMetaValues(mv);
+
+        adView.setMMRequest(mmRequest);
+        adView.setListener(mmListener);
+        adView.getAd();
+
+        return adView;
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.appnexus.opensdk.mediatedviews;
 import android.app.Activity;
 import android.os.Build;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
@@ -15,7 +16,6 @@ import com.flurry.android.FlurryAgent;
 import com.flurry.android.ads.FlurryAdBanner;
 import com.flurry.android.ads.FlurryAdBannerListener;
 import com.flurry.android.ads.FlurryAdErrorType;
-import com.flurry.android.ads.FlurryAdTargeting;
 
 import java.lang.ref.WeakReference;
 
@@ -26,7 +26,7 @@ public class YahooFlurryBanner implements MediatedBannerAdView, FlurryAdBannerLi
     private FlurryAdBanner flurryAd;
 
     @Override
-    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
         if (mBC != null) {
             if (activity != null) {
                 this.controller = new WeakReference<MediatedBannerAdViewController>(mBC);
@@ -35,16 +35,16 @@ public class YahooFlurryBanner implements MediatedBannerAdView, FlurryAdBannerLi
                 DisplayMetrics dp = activity.getResources().getDisplayMetrics();
                 float density = dp.density;
                 mBanner.setLayoutParams(new ViewGroup.LayoutParams((int) (width * density), (int) (height * density)));
-                mBC.setView(mBanner);
                 flurryAd = new FlurryAdBanner(activity, mBanner, uid);
                 flurryAd.setTargeting(YahooFlurrySettings.getFlurryAdTargeting(tp));
                 flurryAd.setListener(this);
                 flurryAd.fetchAd();
+                return mBanner;
             } else {
                 mBC.onAdFailed(ResultCode.INTERNAL_ERROR);
             }
-
         }
+        return null;
     }
 
     @Override

@@ -22,6 +22,7 @@ import android.app.Application;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
+import android.view.View;
 
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
@@ -63,55 +64,27 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
      * @param targetingParameters targetingParameters
      */
     @Override
-    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String adUnitID,
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String adUnitID,
                           int width, int height, TargetingParameters targetingParameters) {
-        if (mBC != null) {
-            adListener = new GooglePlayAdListener(mBC, super.getClass().getSimpleName());
-            adListener.printToClog(String.format(" - requesting an ad: [%s, %s, %dx%d]",
-                    parameter, adUnitID, width, height));
+        adListener = new GooglePlayAdListener(mBC, super.getClass().getSimpleName());
+        adListener.printToClog(String.format(" - requesting an ad: [%s, %s, %dx%d]",
+                parameter, adUnitID, width, height));
 
-            adViewActivity = activity;
-            registerActivityCallbacks();
+        DFBBannerSSParameters ssparm = new DFBBannerSSParameters(parameter);
+        AdSize adSize = ssparm.isSmartBanner ? AdSize.SMART_BANNER : new AdSize(width, height);
 
-            DFBBannerSSParameters ssparm = new DFBBannerSSParameters(parameter);
-            DFPCacheManager cacheManager = DFPCacheManager.getInstance(activity);
-            if (cacheManager.isCacheEnabled()) {
-                DFPCacheManager.ViewEntry cache = ssparm.isSmartBanner ?
-                        cacheManager.popSmartBanner(adUnitID) :
-                        cacheManager.popBannerForSize(adUnitID, width, height);
-                if (cache != null) {
-                    switch (cache.getState()) {
-                        case Loading:
-                            cache.addForwardingListener(adListener);
-                            adView = cache.getView();
-                            mBC.setView(adView);
-                            return;
-                        case Loaded:
-                            adView = cache.getView();
-                            adView.setAdListener(adListener);
-                            adView.recordManualImpression();
-                            mBC.setView(adView);
-                            mBC.onAdLoaded();
-                            return;
-                        case Failed:
-                            cache.destroy();
-                            break;
-                    }
+        adView = new PublisherAdView(activity);
+        adView.setAdUnitId(adUnitID);
+        adView.setAdSizes(adSize);
+        adView.setAdListener(adListener);
 
-                }
-            }
+        adView.loadAd(buildRequest(ssparm, targetingParameters));
 
+        adViewActivity = activity;
 
-            AdSize adSize = ssparm.isSmartBanner ? AdSize.SMART_BANNER : new AdSize(width, height);
+        registerActivityCallbacks();
 
-            adView = new PublisherAdView(activity);
-            adView.setAdUnitId(adUnitID);
-            adView.setAdSizes(adSize);
-            adView.setAdListener(adListener);
-            mBC.setView(adView);
-
-            adView.loadAd(buildRequest(ssparm, targetingParameters));
-        }
+        return adView;
     }
 
     @Override

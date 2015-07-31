@@ -41,7 +41,7 @@ public class MoPubBannerAdView implements MediatedBannerAdView {
     private MoPubListener mpListener;
 
     @Override
-    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
                           int width, int height, TargetingParameters targetingParameters) {
         mpListener = new MoPubListener(mBC, this.getClass().getSimpleName());
         adView = new MoPubView(activity);
@@ -61,9 +61,9 @@ public class MoPubBannerAdView implements MediatedBannerAdView {
         adView.setMinimumWidth(width);
         adView.setMinimumHeight(height);
         adView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER));
-        mBC.setView(adView);
-        adView.loadAd();
 
+        adView.loadAd();
+        return adView;
     }
 
     @Override

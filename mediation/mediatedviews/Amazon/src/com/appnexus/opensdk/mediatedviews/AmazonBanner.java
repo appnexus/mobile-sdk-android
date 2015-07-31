@@ -51,7 +51,7 @@ public class AmazonBanner implements MediatedBannerAdView {
      * @param height    Height of the ad
      */
     @Override
-    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
         adView = new AdLayout(activity, new AdSize(width, height));
 
         this.amazonListener = new AmazonListener(mBC, AmazonBanner.class.getSimpleName());
@@ -63,14 +63,15 @@ public class AmazonBanner implements MediatedBannerAdView {
         //Amazon won't load ads unless layout parameters are set
         adView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
 
-        if (mBC != null) {
-            mBC.setView(adView);
-            if (!adView.loadAd(targetingOptions)) {
-                this.amazonListener.printToClogError("loadAd() call rejected");
+        if (!adView.loadAd(targetingOptions)) {
+            this.amazonListener.printToClogError("loadAd() call rejected");
+            if (mBC != null) {
                 mBC.onAdFailed(ResultCode.UNABLE_TO_FILL);
-                adView = null;
             }
+            adView = null;
         }
+
+        return adView;
     }
 
     /**

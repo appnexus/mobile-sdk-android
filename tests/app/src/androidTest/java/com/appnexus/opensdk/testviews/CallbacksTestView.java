@@ -18,6 +18,7 @@ package com.appnexus.opensdk.testviews;
 
 import android.app.Activity;
 import android.os.Handler;
+import android.view.View;
 
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
@@ -32,11 +33,10 @@ public class CallbacksTestView implements MediatedBannerAdView {
     MediatedBannerAdViewController controller;
 
     @Override
-    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
         int testNumber = Integer.parseInt(uid);
         long defaultWaitTime = 1000;
         controller = mBC;
-        controller.setView(DummyView.getDummyView(activity));
 
         // For delayed Runnables
         Handler handler = new Handler();
@@ -108,6 +108,7 @@ public class CallbacksTestView implements MediatedBannerAdView {
             default:
                 break;
         }
+        return DummyView.getDummyView(activity);
     }
 
     @Override

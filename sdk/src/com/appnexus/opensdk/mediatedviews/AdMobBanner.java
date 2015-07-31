@@ -17,6 +17,7 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
+import android.view.View;
 
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
@@ -32,7 +33,7 @@ public class AdMobBanner implements MediatedBannerAdView {
     private MediatedBannerAdView mediatedAdView;
 
     @Override
-    public void requestAd(MediatedBannerAdViewController mBC, Activity activity,
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity,
                           String parameter, String adUnitID, int width,
                           int height, TargetingParameters targetingParameters) {
         mediatedAdView = GoogleBridge.bannerForClassName(GoogleBridge.isGooglePlayServicesAvailable()
@@ -41,29 +42,29 @@ public class AdMobBanner implements MediatedBannerAdView {
             if (mBC != null) {
                 mBC.onAdFailed(ResultCode.MEDIATED_SDK_UNAVAILABLE);
             }
-        } else {
-            mediatedAdView.requestAd(mBC, activity, parameter, adUnitID, width, height, targetingParameters);
+            return null;
         }
+        return mediatedAdView.requestAd(mBC, activity, parameter, adUnitID, width, height, targetingParameters);
     }
 
     @Override
     public void destroy() {
         if (mediatedAdView != null) {
             mediatedAdView.destroy();
-            mediatedAdView =null;
+            mediatedAdView = null;
         }
     }
 
     @Override
     public void onPause() {
-        if(mediatedAdView !=null) {
+        if (mediatedAdView != null) {
             mediatedAdView.onPause();
         }
     }
 
     @Override
     public void onResume() {
-        if(mediatedAdView !=null) {
+        if (mediatedAdView != null) {
             mediatedAdView.onResume();
         }
     }

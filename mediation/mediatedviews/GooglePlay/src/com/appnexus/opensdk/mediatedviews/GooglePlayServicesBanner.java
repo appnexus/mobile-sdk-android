@@ -60,7 +60,7 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
      * @param targetingParameters targetingParameters
      */
     @Override
-    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter,
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter,
                           String adUnitID, int width, int height, TargetingParameters targetingParameters) {
         adListener = new GooglePlayAdListener(mBC, super.getClass().getSimpleName());
         adListener.printToClog(String.format(" - requesting an ad: [%s, %s, %dx%d]",
@@ -70,7 +70,6 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
         adView.setAdUnitId(adUnitID);
         adView.setAdSize(new AdSize(width, height));
         adView.setAdListener(adListener);
-        mBC.setView(adView);
 
         try {
             adView.loadAd(buildRequest(targetingParameters));
@@ -82,6 +81,8 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
         adViewActivity = activity;
 
         registerActivityCallbacks();
+
+        return adView;
 
     }
 
