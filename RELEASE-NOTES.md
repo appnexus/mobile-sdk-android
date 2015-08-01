@@ -1,5 +1,5 @@
 ## RC 2.4
-+ MS-1246 Pre-cache DFP
++ MS-1370 AdColony totation fix
 + MS-1307 AdFetcher refactor
 + MS-1326 AdWebView bug fix to support Android lollipop webview
 + MS-1320 Yahoo Flurry mediation, banner, interstitial, native, version 5.5.0

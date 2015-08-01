@@ -31,7 +31,7 @@ import java.lang.ref.WeakReference;
  * This class is the AdColony interstitial adapter. It provides the functionality needed to allow
  * an application using the App Nexus SDK to load an interstitial ad through the AdColony SDK. The
  * instantiation of this class is done in response from the AppNexus server for an interstitial
- * placement that is configured to use AdConoly to serve it. This class is never directly instantiated
+ * placement that is configured to use AdColony to serve it. This class is never directly instantiated
  * by the developer.
  */
 
@@ -56,18 +56,11 @@ public class AdColonyInterstitial implements MediatedInterstitialAdView {
         } else {
             listener.onZoneStatusNotActive(zoneStatus, zoneId);
         }
-
     }
 
     @Override
     public void show() {
-        if (isReady()) {
-            Activity activity = weakActivity.get();
-            if (activity != null) {
-                // AdColony may rotate the screen
-                // this line guarantees that after ad collapsed, activity restores to sensor detected rotation
-                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-            }
+        if (isReady() && ad != null) {
             ad.show();
         }
     }
