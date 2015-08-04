@@ -2,7 +2,19 @@
 + MS-1370 AdColony totation fix
 + MS-1307 AdFetcher refactor
 + MS-1326 AdWebView bug fix to support Android lollipop webview
-+ MS-1320 Yahoo Flurry mediation, banner, interstitial, native, version 5.5.0
++ MS-1320 Yahoo Flurry mediation, banner, interstitial, native, version 5.6.0
++ Supported networks:
+        AdColony 2.2.2, interstitial, native
+        Amazon 5.6.20, banner, interstitial
+        Chartboost 5.3.0, interstitial
+        Facebook 4.4.1, banner, interstitial, native
+        Google Play services 7.5.0, only depend on the ads library now, DFP/AdMob banner, interstitial
+        InMobi 4.5.5, banner, interstitial, native
+        MM Media 5.4.0, banner, interstitial
+        MoPub 3.9.0, banner, interstitial, native
+        Vdopia lw1.5, banner, interstitial
+        Vungle 3.3.1, interstitials
+	Yahoo Flurry 5.6.0 banner, interstitial, native
 
 ## RC 2.3.1
 + MS-1350 fix native ad response expiration time
