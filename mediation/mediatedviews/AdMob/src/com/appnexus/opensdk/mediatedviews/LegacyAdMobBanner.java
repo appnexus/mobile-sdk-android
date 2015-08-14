@@ -18,6 +18,7 @@ package com.appnexus.opensdk.mediatedviews;
 import android.app.Activity;
 import android.util.Pair;
 import android.view.View;
+
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
@@ -50,44 +51,41 @@ public class LegacyAdMobBanner implements MediatedBannerAdView {
      * @param height    Height of the ad
      */
     @Override
-    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String adUnitID,
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String adUnitID,
                           int width, int height, TargetingParameters targetingParameters) {
-        if (mBC != null) {
+        adListener = new AdMobAdListener(mBC, super.getClass().getSimpleName());
+        adListener.printToClog(String.format(" - requesting an ad: [%s, %s, %dx%d]",
+                parameter, adUnitID, width, height));
 
-            adListener = new AdMobAdListener(mBC, super.getClass().getSimpleName());
-            adListener.printToClog(String.format(" - requesting an ad: [%s, %s, %dx%d]",
-                    parameter, adUnitID, width, height));
+        admobAV = new AdView(activity, new AdSize(width, height), adUnitID);
+        admobAV.setAdListener(adListener);
+        AdRequest ar = new AdRequest();
 
-            admobAV = new AdView(activity, new AdSize(width, height), adUnitID);
-            admobAV.setAdListener(adListener);
-            AdRequest ar = new AdRequest();
-
-            switch (targetingParameters.getGender()) {
-                case UNKNOWN:
-                    break;
-                case FEMALE:
-                    ar.setGender(AdRequest.Gender.FEMALE);
-                    break;
-                case MALE:
-                    ar.setGender(AdRequest.Gender.MALE);
-                    break;
-            }
-            AdMobAdapterExtras extras = new AdMobAdapterExtras();
-            if (targetingParameters.getAge() != null) {
-                extras.addExtra("Age", targetingParameters.getAge());
-            }
-
-            for (Pair<String, String> p : targetingParameters.getCustomKeywords()) {
-                extras.addExtra(p.first, p.second);
-            }
-            if (targetingParameters.getLocation() != null) {
-                ar.setLocation(targetingParameters.getLocation());
-            }
-            ar.setNetworkExtras(extras);
-
-            mBC.setView(admobAV);
-            admobAV.loadAd(ar);
+        switch (targetingParameters.getGender()) {
+            case UNKNOWN:
+                break;
+            case FEMALE:
+                ar.setGender(AdRequest.Gender.FEMALE);
+                break;
+            case MALE:
+                ar.setGender(AdRequest.Gender.MALE);
+                break;
         }
+        AdMobAdapterExtras extras = new AdMobAdapterExtras();
+        if (targetingParameters.getAge() != null) {
+            extras.addExtra("Age", targetingParameters.getAge());
+        }
+
+        for (Pair<String, String> p : targetingParameters.getCustomKeywords()) {
+            extras.addExtra(p.first, p.second);
+        }
+        if (targetingParameters.getLocation() != null) {
+            ar.setLocation(targetingParameters.getLocation());
+        }
+        ar.setNetworkExtras(extras);
+
+        admobAV.loadAd(ar);
+        return admobAV;
     }
 
     @Override

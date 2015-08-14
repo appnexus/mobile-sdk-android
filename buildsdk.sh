@@ -11,16 +11,19 @@ COMBINE=$TMPOUTDIR/combine
 # Adapters to include in AAR
 # space after each item required
 LIBS=""
+LIBS+="mediation/mediatedviews/AdColony "
 LIBS+="mediation/mediatedviews/AdMob "
 LIBS+="mediation/mediatedviews/Amazon "
+LIBS+="mediation/mediatedviews/Chartboost "
 LIBS+="mediation/mediatedviews/Facebook "
 LIBS+="mediation/mediatedviews/GooglePlay "
+LIBS+="mediation/mediatedviews/InMobi "
 LIBS+="mediation/mediatedviews/MillennialMedia "
 LIBS+="mediation/mediatedviews/MoPub "
 LIBS+="mediation/mediatedviews/InMobi "
-LIBS+="mediation/mediatedviews/Vungle "
 LIBS+="mediation/mediatedviews/Vdopia "
-LIBS+="mediation/mediatedviews/Chartboost "
+LIBS+="mediation/mediatedviews/Vungle "
+LIBS+="mediation/mediatedviews/Yahoo "
 
 LIBS+="mediation/mediating/Google "
 LIBS+="mediation/mediating/MoPub "
@@ -56,17 +59,17 @@ rm -rf $TMPOUTDIR
 #####
 echoX "Building AN SDK"
 # build AN SDK
-gradle clean build
+gradle clean assembleRelease
 
 echoX "Building AN Mediation Adapters"
 # build Mediation adapters
 cd $MEDDIR
-gradle clean build
+gradle clean assembleRelease
 
 echoX "Building Mediation Adapters for AN"
 # build Mediated adapters
 cd $MEDFORDIR
-gradle clean build
+gradle clean assembleRelease
 
 #####
 # Copy AARs
@@ -97,7 +100,7 @@ STAGE=$OUTDIR/ANSDK
 mkdir -p $SDKAAR
 mkdir -p $STAGE
 
-unzip $SDKDIR/$AARPATH/sdk.aar -d $SDKAAR
+unzip $SDKDIR/$AARPATH/sdk-release.aar -d $SDKAAR
 cp -f $TMPOUTDIR/classes.jar $SDKAAR/classes.jar
 mkdir -p $SDKAAR/libs
 cp $MEDDIR/MillennialMedia/libs/*.jar $SDKAAR/libs

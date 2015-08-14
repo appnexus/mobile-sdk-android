@@ -53,54 +53,53 @@ public class LegacyDFPBanner implements MediatedBannerAdView {
      * @param height    Height of the ad
      */
     @Override
-    public void requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String adUnitID,
+    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String adUnitID,
                           int width, int height, TargetingParameters targetingParameters) {
-        if (mBC != null) {
-            adListener = new AdMobAdListener(mBC, super.getClass().getSimpleName());
-            adListener.printToClog(String.format("requesting an ad: [%s, %s, %dx%d]", parameter, adUnitID, width, height));
+        adListener = new AdMobAdListener(mBC, super.getClass().getSimpleName());
+        adListener.printToClog(String.format("requesting an ad: [%s, %s, %dx%d]", parameter, adUnitID, width, height));
 
-            DFBBannerSSParameters ssparm = new DFBBannerSSParameters(parameter);
-            AdSize adSize = ssparm.isSmartBanner ? AdSize.SMART_BANNER : new AdSize(width, height);
+        DFBBannerSSParameters ssparm = new DFBBannerSSParameters(parameter);
+        AdSize adSize = ssparm.isSmartBanner ? AdSize.SMART_BANNER : new AdSize(width, height);
 
-            if (ssparm.isSwipeable) {
-                dfpView = new SwipeableDfpAdView(activity, adSize, adUnitID);
-            } else {
-                dfpView = new DfpAdView(activity, adSize, adUnitID);
-            }
-
-            dfpView.setAdListener(adListener);
-            AdRequest ar = new AdRequest();
-
-            if (ssparm.test_device != null && ssparm.test_device.length() > 0) {
-                adListener.printToClog("requestAd called with test device " + ssparm.test_device);
-                ar.addTestDevice(ssparm.test_device);
-            }
-
-            switch (targetingParameters.getGender()) {
-                case UNKNOWN:
-                    break;
-                case FEMALE:
-                    ar.setGender(AdRequest.Gender.FEMALE);
-                    break;
-                case MALE:
-                    ar.setGender(AdRequest.Gender.MALE);
-                    break;
-            }
-            DfpExtras extras = new DfpExtras();
-            if (targetingParameters.getAge() != null) {
-                extras.addExtra("Age", targetingParameters.getAge());
-            }
-            if (targetingParameters.getLocation() != null) {
-                ar.setLocation(targetingParameters.getLocation());
-            }
-            for (Pair<String, String> p : targetingParameters.getCustomKeywords()) {
-                extras.addExtra(p.first, p.second);
-            }
-            ar.setNetworkExtras(extras);
-
-            mBC.setView(dfpView);
-            dfpView.loadAd(ar);
+        if (ssparm.isSwipeable) {
+            dfpView = new SwipeableDfpAdView(activity, adSize, adUnitID);
+        } else {
+            dfpView = new DfpAdView(activity, adSize, adUnitID);
         }
+
+        dfpView.setAdListener(adListener);
+        AdRequest ar = new AdRequest();
+
+        if (ssparm.test_device != null && ssparm.test_device.length() > 0) {
+            adListener.printToClog("requestAd called with test device " + ssparm.test_device);
+            ar.addTestDevice(ssparm.test_device);
+        }
+
+        switch (targetingParameters.getGender()) {
+            case UNKNOWN:
+                break;
+            case FEMALE:
+                ar.setGender(AdRequest.Gender.FEMALE);
+                break;
+            case MALE:
+                ar.setGender(AdRequest.Gender.MALE);
+                break;
+        }
+        DfpExtras extras = new DfpExtras();
+        if (targetingParameters.getAge() != null) {
+            extras.addExtra("Age", targetingParameters.getAge());
+        }
+        if (targetingParameters.getLocation() != null) {
+            ar.setLocation(targetingParameters.getLocation());
+        }
+        for (Pair<String, String> p : targetingParameters.getCustomKeywords()) {
+            extras.addExtra(p.first, p.second);
+        }
+        ar.setNetworkExtras(extras);
+
+        dfpView.loadAd(ar);
+
+        return dfpView;
     }
 
     @Override

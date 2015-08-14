@@ -1,3 +1,6 @@
+## RC2.5
++ MS-1391 fix gradle build issue
+
 ## RC 2.4
 + MS-1370 AdColony totation fix
 + MS-1307 AdFetcher refactor

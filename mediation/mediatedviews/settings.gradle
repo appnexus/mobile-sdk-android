@@ -1,10 +1,15 @@
 include ':sdk'
 project(':sdk').projectDir = new File(settingsDir, '../../sdk')
 
+include ':AdColony'
 include ':AdMob'
 include ':Amazon'
+include ':Chartboost'
 include ':Facebook'
 include ':GooglePlay'
+include ':InMobi'
 include ':MillennialMedia'
 include ':MoPub'
-include ':InMobi'
+include ':Vdopia'
+include ':Vungle'
+include ':Yahoo'
