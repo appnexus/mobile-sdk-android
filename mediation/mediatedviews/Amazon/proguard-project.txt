@@ -18,4 +18,5 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
--dontshrink
+
+-keep public class com.amazon.device.ads.** { public *;}

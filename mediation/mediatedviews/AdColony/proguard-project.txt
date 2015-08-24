@@ -19,6 +19,8 @@
 #   public *;
 #}
 
+-keep public class com.jirbo.adcolony.** {public *;}
+
 # uncomment for api 18+
 #-dontwarn android.webkit.**
 

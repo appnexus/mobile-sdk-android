@@ -17,7 +17,6 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
-import android.content.pm.ActivityInfo;
 
 import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;

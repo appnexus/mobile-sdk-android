@@ -20,7 +20,6 @@ import android.content.Context;
 
 import com.appnexus.opensdk.MediatedNativeAd;
 import com.appnexus.opensdk.MediatedNativeAdController;
-import com.appnexus.opensdk.NativeAdResponse;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.utils.Clog;
@@ -31,15 +30,15 @@ import com.inmobi.monetization.IMNative;
  * to request a native ad from the InMobi Android SDK. A developer needs to set up an account in the
  * AppNexus console in order to serve ads from InMobi. This class is never instantiated by the application.
  */
-public class InMobiNativeAd implements MediatedNativeAd{
+public class InMobiNativeAd implements MediatedNativeAd {
 
     /**
      * Called by the AN SDK to request a native ad
      *
      * @param context the context from which this class is launched
-     * @param uid property id from InMobi
-     * @param mBC the controller that AN uses to manage callbacks
-     * @param tp targeting parameters that developer passes in
+     * @param uid     property id from InMobi
+     * @param mBC     the controller that AN uses to manage callbacks
+     * @param tp      targeting parameters that developer passes in
      * @return native ad response from InMobi
      */
     @Override

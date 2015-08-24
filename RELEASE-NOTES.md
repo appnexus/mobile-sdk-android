@@ -1,4 +1,5 @@
 ## RC2.5
++ MS-1383/1494 Pro-guard settings fix
 + MS-1391 fix gradle build issue
 
 ## RC 2.4

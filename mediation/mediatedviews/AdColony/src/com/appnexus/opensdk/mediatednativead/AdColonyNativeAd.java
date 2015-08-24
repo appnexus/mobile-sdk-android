@@ -30,7 +30,6 @@ import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.mediatedviews.AdColonySettings;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.jirbo.adcolony.AdColony;
-import com.jirbo.adcolony.AdColonyNativeAdListener;
 import com.jirbo.adcolony.AdColonyNativeAdView;
 
 /**
