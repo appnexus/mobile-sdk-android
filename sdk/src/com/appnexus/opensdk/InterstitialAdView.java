@@ -43,7 +43,7 @@ import java.util.Queue;
  * to show the ad.
  */
 public class InterstitialAdView extends AdView {
-    static final long MAX_AGE = 60000;
+    static final long MAX_AGE = 270000; // 4.5 minutes
     private int backgroundColor = Color.BLACK;
     private int closeButtonDelay = Settings.DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
     static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
