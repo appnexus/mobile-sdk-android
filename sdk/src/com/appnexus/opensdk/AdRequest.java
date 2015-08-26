@@ -81,16 +81,14 @@ class AdRequest extends AsyncTask<Void, Integer, ServerResponse> {
         if (requester != null) {
             RequestParameters parameters = requester.getRequestParams();
             if (parameters != null) {
-                String query_string = parameters.getRequestUrl();
-
-                Clog.setLastRequest(query_string);
-
-                Clog.d(Clog.httpReqLogTag,
-                        Clog.getString(R.string.fetch_url, query_string));
-
-                HttpResponse r = null;
-                String out = null;
                 try {
+                    String query_string = parameters.getRequestUrl();
+
+                    Clog.setLastRequest(query_string);
+
+                    Clog.d(Clog.httpReqLogTag,
+                            Clog.getString(R.string.fetch_url, query_string));
+
                     HttpParams p = new BasicHttpParams();
                     HttpConnectionParams.setConnectionTimeout(p,
                             Settings.HTTP_CONNECTION_TIMEOUT);
@@ -101,49 +99,40 @@ class AdRequest extends AsyncTask<Void, Integer, ServerResponse> {
 
                     HttpGet req = new HttpGet(query_string);
                     req.setHeader("User-Agent", Settings.getSettings().ua);
-                    r = h.execute(req);
+                    HttpResponse r = h.execute(req);
                     if (!httpShouldContinue(r.getStatusLine())) {
                         return AdRequest.HTTP_ERROR;
                     }
-                    out = EntityUtils.toString(r.getEntity());
+                    String out = EntityUtils.toString(r.getEntity());
                     WebviewUtil.cookieSync(h.getCookieStore().getCookies());
+                    if (out.equals("")) {
+                        // just log and return a valid AdResponse object so that it is
+                        // marked as UNABLE_TO_FILL
+                        Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
+                    }
+                    return new ServerResponse(out, r.getAllHeaders(), parameters.getMediaType());
                 } catch (ClientProtocolException e) {
                     Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unknown));
-                    return null;
                 } catch (ConnectTimeoutException e) {
                     Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_timeout));
-                    return null;
                 } catch (HttpHostConnectException he) {
                     Clog.e(Clog.httpReqLogTag, Clog.getString(
                             R.string.http_unreachable, he.getHost().getHostName(), he
                                     .getHost().getPort()));
-                    return null;
                 } catch (IOException e) {
                     Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_io));
-                    return null;
                 } catch (SecurityException se) {
                     Clog.e(Clog.httpReqLogTag,
                             Clog.getString(R.string.permissions_internet));
-                    return null;
                 } catch (IllegalArgumentException ie) {
                     Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unknown));
-                    return null;
                 } catch (Exception e) {
                     e.printStackTrace();
                     Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.unknown_exception));
-                    return null;
                 }
-
-                if (out.equals("")) {
-                    // just log and return a valid AdResponse object so that it is
-                    // marked as UNABLE_TO_FILL
-                    Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
-                }
-                return new ServerResponse(out, r.getAllHeaders(), requester.getRequestParams().getMediaType());
             }
         }
         return null;
-
     }
 
     private boolean httpShouldContinue(StatusLine statusLine) {
