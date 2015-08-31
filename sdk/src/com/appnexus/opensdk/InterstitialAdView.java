@@ -44,6 +44,9 @@ import java.util.Queue;
  */
 public class InterstitialAdView extends AdView {
     static final long MAX_AGE = 270000; // 4.5 minutes
+ 	private VastVideoConfiguration videoConfiguration = new VastVideoConfiguration();
+
+    private VideoAdEventsListener videoAdEventsListener;
     private int backgroundColor = Color.BLACK;
     private int closeButtonDelay = Settings.DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
     static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
@@ -309,6 +312,14 @@ public class InterstitialAdView extends AdView {
         return true;
     }
 
+    @Override
+    public void setOpensNativeBrowser(boolean opensNativeBrowser) {
+        super.setOpensNativeBrowser(opensNativeBrowser);
+        if(videoConfiguration != null){
+            videoConfiguration.setOpenInExternalBrowser(opensNativeBrowser);
+        }
+    }
+
     /**
      * Checks the queue to see if there is a valid (i.e., fresher than
      * 60 seconds) interstitial ad available.
@@ -357,12 +368,16 @@ public class InterstitialAdView extends AdView {
             }
         }
 
+        String activityType = AdActivity.ACTIVITY_TYPE_INTERSTITIAL;
+        if (top.getView() instanceof VastVideoView){
+            activityType = AdActivity.ACTIVITY_TYPE_VIDEO_INTERSTITIAL;
+        }
+
         // otherwise, launch our adActivity, unless this view has already been destroyed
         if (validAdExists && !destroyed) {
             Class<?> activity_clz = AdActivity.getActivityClass();
             Intent i = new Intent(getContext(), activity_clz);
-            i.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE,
-                    AdActivity.ACTIVITY_TYPE_INTERSTITIAL);
+            i.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, activityType);
             i.putExtra(InterstitialAdView.INTENT_KEY_TIME, now);
             i.putExtra(InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY, closeButtonDelay);
 
@@ -427,6 +442,61 @@ public class InterstitialAdView extends AdView {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.get_bg));
         return backgroundColor;
     }
+
+    /**
+     * Returns the skip countdown position
+     * @return
+     */
+    public VastVideoConfiguration.LABEL_POSITION getCountdownLabelPosition() {
+        return videoConfiguration.getCountdownLabelPosition();
+    }
+
+    /**
+     * Sets the countdown timer label position
+     * @param countdownLabelPosition
+     */
+    public void setCountdownLabelPosition(VastVideoConfiguration.LABEL_POSITION countdownLabelPosition) {
+        videoConfiguration.setCountdownLabelPosition(countdownLabelPosition);
+    }
+
+    /**
+     * Returns the skip countdown position
+     * @return
+     */
+    public int getSkipOffset() {
+        return videoConfiguration.getSkipOffset();
+    }
+
+    /**
+     * Sets the countdown timer label position
+     * @param skipOffset
+     * @param skipOffsetType
+     */
+    public void setSkipOffset(int skipOffset, VastVideoConfiguration.SKIP_OFFSET_TYPE skipOffsetType) {
+        videoConfiguration.setSkipOffset(skipOffset, skipOffsetType);
+    }
+
+
+    protected VastVideoConfiguration getVideoConfiguration() {
+        return videoConfiguration;
+    }
+
+    /**
+     * Returns the videoAdEventsListener object
+     * @return
+     */
+    public VideoAdEventsListener getVideoAdEventsListener() {
+        return videoAdEventsListener;
+    }
+
+    /**
+     * Sets the listener to listen all the video ad events
+     * @param videoAdEventsListener
+     */
+    public void setVideoAdEventsListener(VideoAdEventsListener videoAdEventsListener) {
+        this.videoAdEventsListener = videoAdEventsListener;
+    }
+
 
     /**
      * Destroy this InterstitialAdView object.

@@ -1,5 +1,5 @@
 /*
- *    Copyright 2014 APPNEXUS INC
+ *    Copyright 2013 APPNEXUS INC
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -13,12 +13,10 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
 package com.appnexus.opensdk;
 
-public enum MediaType {
-    BANNER,
-    INTERSTITIAL,
-    NATIVE,
-    VAST
+public interface IUpdateCountdownTimerListener {
+    public void onUpdateCountdownTimer(String skipOffset);
+
+    public void onDisplayCloseButton();
 }

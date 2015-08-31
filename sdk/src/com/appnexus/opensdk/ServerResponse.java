@@ -17,10 +17,15 @@
 package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
+
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.JsonUtil;
 import com.appnexus.opensdk.utils.StringUtil;
+import com.appnexus.opensdk.utils.VastVideoUtil;
+import com.appnexus.opensdk.vastdata.AdModel;
+
 import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,6 +37,8 @@ import java.util.Locale;
 
 @SuppressLint("NewApi")
 class ServerResponse {
+
+    private AdModel vastAdResponse;
     private String content;
     private int height;
     private int width;
@@ -129,9 +136,22 @@ class ServerResponse {
 
         // stop parsing if status is not valid
         if (!checkStatusIsValid(response)) return;
-        if (mediaType != MediaType.NATIVE) {
+        if (mediaType == MediaType.BANNER || mediaType == MediaType.INTERSTITIAL ) {
             // stop parsing if we get an ad from ads[]
-            if (handleStdAds(response)) return;
+            /**
+             * TODO: Commented the below code just for testing. Uncomment to show standard ads
+             */
+//            if (handleStdAds(response)) return;
+
+            /**
+             * TODO: Remove below line to show standard ads
+             */
+            if (handleVastAds(response)) return;
+
+        } else if (mediaType == MediaType.VAST) {
+            // handle vast parsing if mediaType of ads is vast.
+            if (handleVastAds(response)) return;
+
         } else {
             // stop parsing if we get an ad from native[]
             // the order needs to be handled
@@ -199,6 +219,21 @@ class ServerResponse {
         return false;
     }
 
+    private boolean handleVastAds(JSONObject response) {
+        mediaType = MediaType.VAST;
+        VastResponseParser vastResponseParser = new VastResponseParser();
+        try {
+            this.vastAdResponse = vastResponseParser.readVAST(VastVideoUtil.getVastResponse());
+            containsAds = true;
+        } catch (Exception e) {
+            Clog.e(Clog.httpReqLogTag,"Error parsing the vast response: "+e.getMessage());
+            return false;
+        }
+
+        Log.i("", "vast ad parsed");
+        return true;
+    }
+
     // returns true if response contains an ad, false if not
     private boolean handleMediatedAds(JSONObject response) {
         JSONArray mediated = JsonUtil.getJSONArray(response, RESPONSE_KEY_MEDIATED_ADS);
@@ -254,6 +289,8 @@ class ServerResponse {
     MediaType getMediaType() {
         return mediaType;
     }
+
+    AdModel getVastAdResponse() { return vastAdResponse; }
 
     String getContent() {
         return content != null ? content : "";

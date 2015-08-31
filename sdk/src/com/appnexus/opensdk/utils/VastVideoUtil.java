@@ -622,7 +622,7 @@ public class VastVideoUtil {
     }
 
 
-    public static InputStream readVastFile() {
+    public static InputStream getVastResponse() {
 
 		try {
             //http://www.lotusfest.org/wp-content/uploads/2015/03/2014-Lotus-Festival-Video-Sample-One.mp4

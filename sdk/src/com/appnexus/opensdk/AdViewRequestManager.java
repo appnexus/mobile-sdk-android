@@ -120,48 +120,90 @@ class AdViewRequestManager extends RequestManager {
                                     Clog.e(Clog.baseLogTag, "Request type can not be identified.");
                                     owner.getAdDispatcher().onAdFailed(ResultCode.INVALID_REQUEST);
                                 }
-                            } else if (response != null) { // null-check response in case
-                                // standard ads
-                                final AdWebView output = new AdWebView(owner);
-                                output.loadAd(response);
+                            } else if (response != null) { // null-check response
 
-                                if (owner.getMediaType().equals(MediaType.BANNER)) {
-                                    BannerAdView bav = (BannerAdView) owner;
-                                    if (bav.getExpandsToFitScreenWidth()) {
-                                        bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), output);
-                                    }
+                                if (response.getMediaType() == MediaType.VAST) {
+                                    // Vast ads
+                                    initiateVastAdView(owner, response);
+                                }else{
+                                    // Standard ads
+                                    initiateWebview(owner, response);
                                 }
-                                onReceiveAd(new AdResponse() {
-                                    @Override
-                                    public MediaType getMediaType() {
-                                        return owner.getMediaType();
-                                    }
-
-                                    @Override
-                                    public boolean isMediated() {
-                                        return false;
-                                    }
-
-                                    @Override
-                                    public Displayable getDisplayable() {
-                                        return output;
-                                    }
-
-                                    @Override
-                                    public NativeAdResponse getNativeAdResponse() {
-                                        return null;
-                                    }
-
-                                    @Override
-                                    public void destroy() {
-                                        output.destroy();
-                                    }
-                                });
                             }
                         }
                     }
             );
         }
+    }
+
+    private void initiateWebview(final AdView owner, ServerResponse response) {
+        final AdWebView output = new AdWebView(owner);
+        output.loadAd(response);
+
+        if (owner.getMediaType().equals(MediaType.BANNER)) {
+            BannerAdView bav = (BannerAdView) owner;
+            if (bav.getExpandsToFitScreenWidth()) {
+                bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), output);
+            }
+        }
+
+        onReceiveAd(new AdResponse() {
+            @Override
+            public MediaType getMediaType() {
+                return owner.getMediaType();
+            }
+
+            @Override
+            public boolean isMediated() {
+                return false;
+            }
+
+            @Override
+            public Displayable getDisplayable() {
+                return output;
+            }
+
+            @Override
+            public NativeAdResponse getNativeAdResponse() {
+                return null;
+            }
+
+            @Override
+            public void destroy() {
+                output.destroy();
+            }
+        });
+    }
+
+    private void initiateVastAdView(final AdView owner, ServerResponse response) {
+        final VastVideoView adVideoView = new VastVideoView(owner.getContext(), response.getVastAdResponse());
+
+        onReceiveAd(new AdResponse() {
+            @Override
+            public MediaType getMediaType() {
+                return owner.getMediaType();
+            }
+
+            @Override
+            public boolean isMediated() {
+                return false;
+            }
+
+            @Override
+            public Displayable getDisplayable() {
+                return adVideoView;
+            }
+
+            @Override
+            public NativeAdResponse getNativeAdResponse() {
+                return null;
+            }
+
+            @Override
+            public void destroy() {
+                adVideoView.destroy();
+            }
+        });
     }
 
     @Override

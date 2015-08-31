@@ -61,6 +61,7 @@ public class AdActivity extends Activity {
     //Intent Keys
     static final String INTENT_KEY_ACTIVITY_TYPE = "ACTIVITY_TYPE";
     static final String ACTIVITY_TYPE_INTERSTITIAL = "INTERSTITIAL";
+    static final String ACTIVITY_TYPE_VIDEO_INTERSTITIAL = "VIDEO_INTERSTITIAL";
     static final String ACTIVITY_TYPE_BROWSER = "BROWSER";
     static final String ACTIVITY_TYPE_MRAID = "MRAID";
 
@@ -87,6 +88,9 @@ public class AdActivity extends Activity {
             implementation.create();
         } else if (ACTIVITY_TYPE_MRAID.equals(activityType)) {
             implementation = new MRAIDAdActivity(this);
+            implementation.create();
+        } else if (ACTIVITY_TYPE_VIDEO_INTERSTITIAL.equals(activityType)) {
+            implementation = new InterstitialVideoAdActivity(this);
             implementation.create();
         }
 
