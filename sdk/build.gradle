@@ -5,8 +5,8 @@ android {
     buildToolsVersion "22.0.1"
 
     defaultConfig {
-        versionCode 27
-        versionName "2.4"
+        versionCode 28
+        versionName "2.5"
         consumerProguardFiles 'proguard-project.txt'
         minSdkVersion 9
         targetSdkVersion 22

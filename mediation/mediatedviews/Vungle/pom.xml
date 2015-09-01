@@ -27,7 +27,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.appnexus.opensdk.mediatedviews</groupId>
 	<artifactId>appnexus-vungle-mediation</artifactId>
-	<version>2.4-3.3.1</version>
+	<version>2.5-3.3.1</version>
 	<packaging>aar</packaging>
 
 	<distributionManagement>
@@ -51,7 +51,7 @@
 		<dependency>
 			<groupId>com.appnexus.opensdk</groupId>
 			<artifactId>appnexus-sdk</artifactId>
-			<version>2.4</version>
+			<version>2.5</version>
 			<scope>compile</scope>
 			<type>aar</type>
 		</dependency>

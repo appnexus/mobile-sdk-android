@@ -19,6 +19,6 @@
 #   public *;
 #}
 
--keep public class com.millennialmedia.android.* {public *;}
--keep public class com.google.ads.mediation.millennial.* {public *;}
+-keep class com.millennialmedia.android.** { public *;}
+-keep class com.google.ads.mediation.millennial.** {public *;}
 -dontwarn com.millennialmedia.android.NVASpeechKit*

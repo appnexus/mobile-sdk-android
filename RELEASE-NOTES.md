@@ -3,6 +3,18 @@
 + MS-1426 Change interstitial timeout from 60 seconds to 4.5 minutes
 + MS-1383/1494 Pro-guard settings fix
 + MS-1391 fix gradle build issue
++ Supported networks:
+        AdColony 2.2.2, interstitial, native
+        Amazon 5.6.20, banner, interstitial
+        Chartboost 5.5.3, interstitial
+        Facebook 4.5.1, banner, interstitial, native
+        Google Play services 7.8.0, only depend on the ads library now, DFP/AdMob banner, interstitial
+        InMobi 4.5.5, banner, interstitial, native
+        MM Media 5.4.0, banner, interstitial
+        MoPub 3.11.0, banner, interstitial, native
+        Vdopia lw1.5, banner, interstitial
+        Vungle 3.3.1, interstitials
+        Yahoo Flurry 6.0.0 banner, interstitial, native
 
 ## RC 2.4
 + MS-1370 AdColony totation fix
