@@ -1,7 +1,7 @@
 package com.appnexus.opensdk;
 
 public class VastVideoConfiguration {
-    private boolean openInExternalBrowser=false;
+    private boolean openInNativeBrowser =false;
 
     public enum LABEL_POSITION{
     	TOP_RIGHT, TOP_LEFT, TOP_CENTER, BOTTOM_RIGHT, BOTTOM_LEFT, BOTTOM_CENTER
@@ -14,21 +14,20 @@ public class VastVideoConfiguration {
     private int skipOffset = 0;
     private SKIP_OFFSET_TYPE skipOffsetType = SKIP_OFFSET_TYPE.ABSOLUTE;
     private LABEL_POSITION countdownLabelPosition = LABEL_POSITION.TOP_RIGHT;
-    private boolean dismissVideoAdOnClick;
-  
+
 
     /**
-     * @return the openInExternalBrowser
+     * @return the openInNativeBrowser
      */
-    public boolean isOpenInExternalBrowser() {
-        return openInExternalBrowser;
+    public boolean openInNativeBrowser() {
+        return openInNativeBrowser;
     }
 
     /**
-     * @param openInBrowser the openInExternalBrowser to set
+     * @param openInBrowser the openInNativeBrowser to set
      */
-    public void setOpenInExternalBrowser(boolean openInBrowser) {
-        this.openInExternalBrowser = openInBrowser;
+    public void setOpenInNativeBrowser(boolean openInBrowser) {
+        this.openInNativeBrowser = openInBrowser;
     }
 
 	/**
@@ -47,19 +46,6 @@ public class VastVideoConfiguration {
 		this.countdownLabelPosition = countdownLabelPosition;
 	}
 
-	
-	public boolean shouldDismissVideoAdOnClick() {
-		return dismissVideoAdOnClick;
-	}
-
-	/**
-	 * Sets whether to dismiss or pause the pre-roll ad on click through. 
-	 * As a default behavior SDK would pause the ad whenever the browser is opened.
-	 * @param dismissVideoAdOnClick
-	 */
-	public void setDismissVideoAdOnClick(boolean dismissVideoAdOnClick) {
-		this.dismissVideoAdOnClick = dismissVideoAdOnClick;
-	}
 
 	/**
 	 * @return the skipOffset

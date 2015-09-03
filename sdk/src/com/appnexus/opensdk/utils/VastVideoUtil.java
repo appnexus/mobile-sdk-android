@@ -624,7 +624,7 @@ public class VastVideoUtil {
 
     public static InputStream getVastResponse() {
 
-		try {
+        try {
             //http://www.lotusfest.org/wp-content/uploads/2015/03/2014-Lotus-Festival-Video-Sample-One.mp4
 
             String vastResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
@@ -660,12 +660,68 @@ public class VastVideoUtil {
             InputStream stream = new ByteArrayInputStream(vastResponse.getBytes(StandardCharsets.UTF_8));
 
 
-			return stream;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+            return stream;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-		return null;
-	}
+        return null;
+    }
+
+
+    public static String getSkipOffsetFromConfiguration(VastVideoConfiguration adSlotConfiguration, double videoLength) {
+        int videoLengthInSecs = (int) Math.round((videoLength / 1000));
+
+        if (adSlotConfiguration.getSkipOffset() < 0 && adSlotConfiguration.getSkipOffset() != VastVideoUtil.DEFAULT_SKIP_OFFSET) {
+            Clog.i(TAG, "Skip Offset is less than 0. Setting the default value as 0 seconds");
+            adSlotConfiguration.setSkipOffset(0, adSlotConfiguration.getSkipOffsetType());
+        }
+
+        if ((adSlotConfiguration.getSkipOffsetType() == VastVideoConfiguration.SKIP_OFFSET_TYPE.RELATIVE && adSlotConfiguration.getSkipOffset() > 100)
+                || (adSlotConfiguration.getSkipOffsetType() == VastVideoConfiguration.SKIP_OFFSET_TYPE.ABSOLUTE && adSlotConfiguration.getSkipOffset() > videoLengthInSecs)) {
+            Clog.i(TAG, "Skip Offset is greater than video length. Setting the total video length as skip offset");
+            return null;
+        }
+
+        if (adSlotConfiguration.getSkipOffset() >= 0) {
+            String skipOffset = String.valueOf(adSlotConfiguration.getSkipOffset());
+            if (adSlotConfiguration.getSkipOffsetType() == VastVideoConfiguration.SKIP_OFFSET_TYPE.RELATIVE) {
+                skipOffset = skipOffset+"%";
+            }
+            return skipOffset;
+        }
+        return null;
+    }
+
+
+    public static int calculateSkipOffset(String parsedSkipOffset, VastVideoConfiguration videoConfiguration, double videoLength) {
+
+        Clog.d(TAG, "Parsed Skip Offset: " + parsedSkipOffset);
+        float SKIP_OFFSET = 1.1f;
+        int skipOffsetValue;
+        if (parsedSkipOffset == null) {
+            parsedSkipOffset = getSkipOffsetFromConfiguration(videoConfiguration, videoLength);
+            Clog.d(TAG, "Skip Offset from configuration: " + parsedSkipOffset);
+        }
+
+        if (!VastVideoUtil.isNullOrEmpty(parsedSkipOffset)) {
+            if (parsedSkipOffset.contains("%")) {
+                SKIP_OFFSET = (Float.valueOf(parsedSkipOffset.substring(0,
+                        parsedSkipOffset.length() - 1)) / 100);
+                skipOffsetValue = (int) (SKIP_OFFSET * Math.round((videoLength / 1000)));
+                Clog.d(TAG, "Relative skipOffsetValue: " + skipOffsetValue);
+            } else {
+                double skipOffset = Double.parseDouble(parsedSkipOffset);
+                skipOffsetValue = (int) skipOffset;
+                Clog.d(TAG, "Absolute skipOffsetValue: " + skipOffsetValue);
+            }
+
+        } else {
+            skipOffsetValue = (int) Math.round((videoLength / 1000));
+            Clog.d(TAG, "skipOffset default value for this video: " + skipOffsetValue);
+        }
+
+        return skipOffsetValue;
+    }
 
 }

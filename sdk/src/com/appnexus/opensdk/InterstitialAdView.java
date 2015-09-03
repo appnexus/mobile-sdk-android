@@ -316,7 +316,7 @@ public class InterstitialAdView extends AdView {
     public void setOpensNativeBrowser(boolean opensNativeBrowser) {
         super.setOpensNativeBrowser(opensNativeBrowser);
         if(videoConfiguration != null){
-            videoConfiguration.setOpenInExternalBrowser(opensNativeBrowser);
+            videoConfiguration.setOpenInNativeBrowser(opensNativeBrowser);
         }
     }
 
@@ -369,7 +369,7 @@ public class InterstitialAdView extends AdView {
         }
 
         String activityType = AdActivity.ACTIVITY_TYPE_INTERSTITIAL;
-        if (top.getView() instanceof VastVideoView){
+        if (top !=null && top.getView() instanceof VastVideoView){
             activityType = AdActivity.ACTIVITY_TYPE_VIDEO_INTERSTITIAL;
         }
 
@@ -460,11 +460,19 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * Returns the skip countdown position
+     * Returns the skip countdown value
      * @return
      */
     public int getSkipOffset() {
         return videoConfiguration.getSkipOffset();
+    }
+
+    /**
+     * Returns the skip countdown value
+     * @return
+     */
+    public VastVideoConfiguration.SKIP_OFFSET_TYPE getSkipOffsetType() {
+        return videoConfiguration.getSkipOffsetType();
     }
 
     /**

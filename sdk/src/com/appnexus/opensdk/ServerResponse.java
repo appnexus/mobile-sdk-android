@@ -17,7 +17,6 @@
 package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPResponse;
@@ -225,13 +224,14 @@ class ServerResponse {
         try {
             this.vastAdResponse = vastResponseParser.readVAST(VastVideoUtil.getVastResponse());
             containsAds = true;
+            Clog.i(Clog.httpReqLogTag, "Vast response parsed");
+            return true;
         } catch (Exception e) {
             Clog.e(Clog.httpReqLogTag,"Error parsing the vast response: "+e.getMessage());
             return false;
         }
 
-        Log.i("", "vast ad parsed");
-        return true;
+
     }
 
     // returns true if response contains an ad, false if not

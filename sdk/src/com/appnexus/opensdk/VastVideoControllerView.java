@@ -439,9 +439,9 @@ public class VastVideoControllerView extends RelativeLayout {
 			return;
 		}
 		if (mediaPlayerControl.isPlaying()) {
-			pause.setImageDrawable(context.getDrawable(android.R.drawable.ic_media_pause));
+			pause.setImageDrawable(context.getResources().getDrawable(android.R.drawable.ic_media_pause));
 		} else {
-			pause.setImageDrawable(context.getDrawable(android.R.drawable.ic_media_play));
+			pause.setImageDrawable(context.getResources().getDrawable(android.R.drawable.ic_media_play));
 		}
 	}
 
@@ -853,13 +853,9 @@ public class VastVideoControllerView extends RelativeLayout {
         fullscreen.setBackgroundColor(Color.TRANSPARENT);
 		fullscreen.setContentDescription(VastVideoUtil.STRING_MEDIA_CONTROLS);
 		fullscreen.setPadding(0, VastVideoUtil.getSizeInDP(context, 4),
-				VastVideoUtil.getSizeInDP(context, 10),
-				VastVideoUtil.getSizeInDP(context, 4));
-		if (vastVideoPlayer.isVastInterstitial) {
-			fullscreen.setVisibility(GONE);
-		} else {
-			fullscreen.setVisibility(VISIBLE);
-		}
+                VastVideoUtil.getSizeInDP(context, 10),
+                VastVideoUtil.getSizeInDP(context, 4));
+        fullscreen.setVisibility(GONE);
 
 		LayoutParams layoutParamsfullscreen = new LayoutParams(
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);

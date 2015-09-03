@@ -157,7 +157,7 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
         videoPlayer.setVideoAdListener(new VideoAdEventsListener() {
             @Override
             public void onVideoPlay() {
-                if (adView.getVideoAdEventsListener() != null) {
+                if (adView !=null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onVideoPlay();
                 }
 
@@ -165,81 +165,81 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
 
             @Override
             public void onVideoPause(long currentPosition) {
-                if (adView.getVideoAdEventsListener() != null) {
+                if (adView !=null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onVideoPause(currentPosition);
                 }
             }
 
             @Override
             public void onVideoResume(long currentPosition) {
-                if (adView.getVideoAdEventsListener() != null) {
+                if (adView !=null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onVideoResume(currentPosition);
                 }
             }
 
             @Override
             public void onVideoSkip(long currentPosition) {
-                if (adView.getVideoAdEventsListener() != null) {
+                if (adView !=null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onVideoSkip(currentPosition);
                 }
             }
 
             @Override
             public void onMuteVideo() {
-                if (adView.getVideoAdEventsListener() != null) {
+                if (adView !=null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onMuteVideo();
                 }
             }
 
             @Override
             public void onUnMuteVideo() {
-                if (adView.getVideoAdEventsListener() != null) {
+                if (adView !=null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onUnMuteVideo();
                 }
             }
 
             @Override
             public void onQuartileFinish(int videoQuartile) {
-                if (adView.getVideoAdEventsListener() != null) {
+                if (adView !=null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onQuartileFinish(videoQuartile);
                 }
             }
 
             @Override
             public void onVideoPlayerEnterFullScreenMode() {
-                if (adView.getVideoAdEventsListener() != null) {
+                if (adView !=null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onVideoPlayerEnterFullScreenMode();
                 }
             }
 
             @Override
             public void onVideoPlayerExitFullScreenMode() {
-                if (adView.getVideoAdEventsListener() != null) {
+                if (adView !=null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onVideoPlayerExitFullScreenMode();
                 }
             }
 
             @Override
             public void onVideoPlayerRewind(long fromPosition, long toPosition) {
-                if (adView.getVideoAdEventsListener() != null) {
+                if (adView !=null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onVideoPlayerRewind(fromPosition, toPosition);
                 }
             }
 
             @Override
             public void onVideoClick(MotionEvent event) {
-                if (adView.getVideoAdEventsListener() != null) {
+                if (adView !=null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onVideoClick(event);
                 }
             }
 
             @Override
             public void onVideoAdFinish() {
+                if (adView !=null && adView.getVideoAdEventsListener() != null) {
+                    adView.getVideoAdEventsListener().onVideoAdFinish();
+                }
                 if (adActivity != null) {
                     adActivity.finish();
-                }
-                if (adView.getVideoAdEventsListener() != null) {
-                    adView.getVideoAdEventsListener().onVideoAdFinish();
                 }
             }
         });
@@ -267,7 +267,5 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
 
         layout.addView(closeButton);
     }
-
-
 
 }

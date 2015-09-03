@@ -21,6 +21,7 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.HttpErrorCode;
@@ -88,14 +89,16 @@ class SharedNetworkManager {
                                 final UrlObject urlObject = urls.remove(0);
                                 if (urlObject.retryTimes < TOTAL_RETRY_TIMES) {
                                     {
-
                                         new HTTPGet() {
                                             @Override
                                             protected void onPostExecute(HTTPResponse response) {
+
                                                 if (response == null ||
                                                         (!response.getSucceeded() && response.getErrorCode() == HttpErrorCode.CONNECTION_FAILURE)) {
                                                     urlObject.retryTimes += 1;
                                                     urls.add(urlObject);
+                                                }else{
+                                                    Clog.i(Clog.baseLogTag, "isSuccess? "+response.getSucceeded());
                                                 }
 
                                             }
@@ -116,7 +119,7 @@ class SharedNetworkManager {
                         stopTimer();
                     }
                 }
-            }, TOTAL_RETRY_WAIT_INTERVAL_MILLES, TOTAL_RETRY_WAIT_INTERVAL_MILLES);
+            }, 0, TOTAL_RETRY_WAIT_INTERVAL_MILLES);
 
         }
     }

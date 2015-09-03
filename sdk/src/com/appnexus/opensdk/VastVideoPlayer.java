@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaPlayer;
@@ -15,7 +14,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.support.v4.view.GestureDetectorCompat;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -26,7 +24,6 @@ import android.webkit.WebView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
-import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.appnexus.opensdk.utils.Clog;
@@ -52,12 +49,11 @@ public class VastVideoPlayer implements OnCompletionListener,
     private static final float MID_POINT_MARKER = 0.50f;
     private static final float THIRD_QUARTER_MARKER = 0.75f;
     private static final long VIDEO_PROGRESS_TIMER_CHECKER_DELAY = 50;
-    private static float SKIP_OFFSET = 1.1f;
     private Context context;
-    private VideoView videoView;
+    protected VideoView videoView;
 	private Handler handler;
-	private RelativeLayout relativeLayout;
-	private VastVideoControllerView videoControllerView;
+    protected RelativeLayout relativeLayout;
+    protected VastVideoControllerView videoControllerView;
 	private LinearAdModel linearAdModel;
 	private Runnable videoProgressCheckerRunnable;
 	private boolean isVideoProgressShouldBeChecked;
@@ -66,14 +62,11 @@ public class VastVideoPlayer implements OnCompletionListener,
 	private boolean isThirdMarkHit;
 	private boolean isMuted;
 	private boolean isPaused;
-    protected boolean isVastInterstitial;
-	private TextView countdownTimerTextView;
-	private TextView skipButton;
 	private double videoLength;
 	private MediaPlayer mediaPlayer;
     private VideoAdEventsListener videoAdListener;
 	private boolean isFullscreen;
-	private VastVideoConfiguration videoConfiguration;
+    protected VastVideoConfiguration videoConfiguration;
 	private BroadcastReceiver mReceiver;
 	private Timer videoDismissTimer;
 	private TimerTask videoDismissTask;
@@ -85,8 +78,7 @@ public class VastVideoPlayer implements OnCompletionListener,
 	private boolean isFromBrowser;
 	private int updateCounter;
 	private GestureDetectorCompat mDetector;
-	private LayoutParams originalLayoutParams;
-	private int originalVideoId;
+    protected int originalVideoId;
     private AdModel vastAd;
     private ProgressBar progressBar;
 
@@ -121,7 +113,6 @@ public class VastVideoPlayer implements OnCompletionListener,
             this.vastAd = videoView.getVastAd();
             this.relativeLayout = relativeLayout;
             this.videoConfiguration = videoConfiguration;
-            isVastInterstitial = true;
             isFromBrowser = false;
 
             showLoader();
@@ -168,9 +159,6 @@ public class VastVideoPlayer implements OnCompletionListener,
             Clog.d(TAG, "SurfaceDestroyed ");
             resumeMusicFromOtherApps();
             unregisterReceiver();
-            if (getAdSlotConfiguration().shouldDismissVideoAdOnClick()) {
-                clearVastData();
-            }
         }
 
         @Override
@@ -179,25 +167,9 @@ public class VastVideoPlayer implements OnCompletionListener,
             Clog.i(TAG, "Has returned from browser? " + isFromBrowser);
 
             try {
-                registerForBroadCast();
-                if (isFromBrowser) {
-                    // Returned from browser
-                    if (getAdSlotConfiguration().shouldDismissVideoAdOnClick()) {
-                        isFromBrowser = false;
-                        if (videoAdListener != null) {
-                            videoAdListener.onVideoAdFinish();
-                            Clog.d(TAG, "onVideoAdFinish");
-                        }
-
-                        if (VastVideoPlayer.this.videoView != null) {
-                            VastVideoPlayer.this.videoView.setOnPreparedListener(null);
-                            VastVideoPlayer.this.videoView.getHolder().removeCallback(this);
-                        }
-                    } else {
-                        resumeVideoAd();
-                    }
-                } else {
-                    // returned from background
+                registerForBroadcast();
+                if (isFromBrowser || videoPausePosition > 0) {
+                    // Returned from background
                     resumeVideoAd();
                 }
             }catch (Exception e){
@@ -207,13 +179,12 @@ public class VastVideoPlayer implements OnCompletionListener,
         @Override
         public void surfaceChanged(SurfaceHolder holder, int format,
         int width, int height) {
-
         }
 
     };
 	
 	
-	private void registerForBroadCast() {
+	private void registerForBroadcast() {
 		try {
 			IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
 			filter.addAction(Intent.ACTION_SCREEN_OFF);
@@ -365,14 +336,12 @@ public class VastVideoPlayer implements OnCompletionListener,
             if ((Build.VERSION.SDK_INT >= 11) && ((AudioManager) context.getSystemService(Context.AUDIO_SERVICE)).isMusicActive()) {
                 ((AudioManager) context.getSystemService(Context.AUDIO_SERVICE))
                         .abandonAudioFocus(audioFocusListener);
-
             }
         }catch (Exception e){
             Clog.e(TAG, "Exception occurred while resuming the music from other apps");
         }
 
 	}
-
 
 	@Override
 	public void pause() {
@@ -439,13 +408,7 @@ public class VastVideoPlayer implements OnCompletionListener,
 	}
 
 	@Override
-	public void toggleFullScreen() {
-		if (isFullscreen) {
-			collapseVideoView();
-		} else {
-			expandVideoToFullScreen();
-		}
-	}
+	public void toggleFullScreen() {}
 
 
 	@Override
@@ -454,9 +417,7 @@ public class VastVideoPlayer implements OnCompletionListener,
 			Clog.d(TAG, "Muting video");
 			isMuted = true;
 			mediaPlayer.setVolume(0, 0);
-            trackRequestInBackground(VastVideoUtil.getVastEventURLList(
-                    vastAd,
-                    VastVideoUtil.EVENT_MUTE));
+            trackRequestInBackground(VastVideoUtil.getVastEventURLList(vastAd, VastVideoUtil.EVENT_MUTE));
 
 			if (this.videoAdListener != null) {
 				this.videoAdListener.onMuteVideo();
@@ -526,14 +487,8 @@ public class VastVideoPlayer implements OnCompletionListener,
 			public void run() {
 				if (videoLength > 0) {
 					int currentPosition = (int) (getCurrentPosition() / 1000);
-
 					if (currentPosition > updateCounter) {
-
-						if (isVastInterstitial) {
-							updateVastInterstitialCountdownTimer();
-						} else {
-							updatePrerollCountdownTimer();
-						}
+						updateVastInterstitialCountdownTimer();
 					}
 					trackQuartileEvents(currentPosition);
 				}
@@ -597,7 +552,9 @@ public class VastVideoPlayer implements OnCompletionListener,
         videoControllerView.bringToFront();
         videoLength = videoView.getDuration();
 
-        calculateSkipOffset();
+        Clog.d(TAG, "videoLength: " + videoLength);
+        parsedSkipOffset = linearAdModel.getSkipOffset();
+        skipOffsetValue = VastVideoUtil.calculateSkipOffset(parsedSkipOffset, videoConfiguration, videoLength);
 
         videoControllerView.pause.setImageDrawable(context.getResources().getDrawable(android.R.drawable.ic_media_pause));
         videoControllerView.requestLayout();
@@ -612,69 +569,6 @@ public class VastVideoPlayer implements OnCompletionListener,
             ViewUtil.removeChildFromParent(progressBar);
         }
     }
-
-    private String getSkipOffsetFromConfiguration() {
-		int videoLengthInSecs = (int) Math.round((videoLength / 1000));
-		
-		if (getAdSlotConfiguration().getSkipOffset() < 0 && getAdSlotConfiguration().getSkipOffset() != VastVideoUtil.DEFAULT_SKIP_OFFSET) {
-            Clog.i(TAG, "Skip Offset is less than 0. Setting the default value as 0 seconds");
-			getAdSlotConfiguration().setSkipOffset(0, getAdSlotConfiguration().getSkipOffsetType());
-		}
-		
-		if ((getAdSlotConfiguration().getSkipOffsetType() == VastVideoConfiguration.SKIP_OFFSET_TYPE.RELATIVE && getAdSlotConfiguration().getSkipOffset() > 100)
-				|| (getAdSlotConfiguration().getSkipOffsetType() == VastVideoConfiguration.SKIP_OFFSET_TYPE.ABSOLUTE && getAdSlotConfiguration().getSkipOffset() > videoLengthInSecs)) {
-            Clog.i(TAG, "Skip Offset is greater than video length. Setting the total video length as skip offset");
-			return null;
-		}
-		
-		if (getAdSlotConfiguration().getSkipOffset() >= 0) {
-			String skipOffset = String.valueOf(getAdSlotConfiguration().getSkipOffset());
-			if (getAdSlotConfiguration().getSkipOffsetType() == VastVideoConfiguration.SKIP_OFFSET_TYPE.RELATIVE) {
-				skipOffset = skipOffset+"%";
-			}
-			return skipOffset;
-		}
-		return null;
-	}
-
-
-	private void calculateSkipOffset() {
-        Clog.d(TAG, "videoLength: " + videoLength);
-		parsedSkipOffset = linearAdModel.getSkipOffset();
-        Clog.d(TAG, "Parsed Skip Offset: " + parsedSkipOffset);
-		
-		if (parsedSkipOffset == null) {
-			parsedSkipOffset = getSkipOffsetFromConfiguration();
-            Clog.d(TAG, "Skip Offset from configuration: " + parsedSkipOffset);
-		}
-		
-		if (!VastVideoUtil.isNullOrEmpty(parsedSkipOffset)) {
-			if (parsedSkipOffset.contains("%")) {
-				SKIP_OFFSET = (Float.valueOf(parsedSkipOffset.substring(0,
-						parsedSkipOffset.length() - 1)) / 100);
-				skipOffsetValue = (int) (SKIP_OFFSET * Math.round((videoLength / 1000)));
-                Clog.d(TAG, "Relative skipOffsetValue: " + skipOffsetValue);
-			} else {
-				double skipOffset = Double.parseDouble(parsedSkipOffset);
-				skipOffsetValue = (int) skipOffset;
-				setSkipOffset(skipOffset * 1000, videoLength);
-                Clog.d(TAG, "Absolute skipOffsetValue: " + skipOffsetValue);
-			}
-
-		} else {
-			SKIP_OFFSET = 1.1f;
-			skipOffsetValue = (int) Math.round((videoLength / 1000));
-            Clog.d(TAG, "skipOffset default value for this video: " + skipOffsetValue);
-		}
-		
-	}
-	
-
-	private void setSkipOffset(double skipDuration, double videoLength) {
-		if (skipDuration < videoLength) {
-			SKIP_OFFSET = (float) (skipDuration / videoLength);
-		}
-	}
 
 	private void trackImpressionURL() {
 			trackRequestInBackground(
@@ -734,24 +628,30 @@ public class VastVideoPlayer implements OnCompletionListener,
     }
 
 
-	private void openInExternalBrowser(String url, MotionEvent event) {
+	private boolean openNativeBrowser(Context context, String url) {
+        /**
+         * TODO: Need to move the method to a utility class
+         */
 		if (!StringUtil.isEmpty(url) && context != null) {
-			Intent inAppBrowserIntent = new Intent(Intent.ACTION_VIEW);
-			inAppBrowserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			inAppBrowserIntent.setData(Uri.parse(url));
-			context.startActivity(inAppBrowserIntent);
-			isFromBrowser = true;
-			if (getAdSlotConfiguration().shouldDismissVideoAdOnClick()) {
-                clearVideoSurface();
-			}
-            if(videoAdListener != null){
-                videoAdListener.onVideoClick(event);
+            try {
+                Intent inAppBrowserIntent = new Intent(Intent.ACTION_VIEW);
+                inAppBrowserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                inAppBrowserIntent.setData(Uri.parse(url));
+                context.startActivity(inAppBrowserIntent);
+                return true;
+            }catch (ActivityNotFoundException e){
+                Clog.w(TAG, "Native browser not found.");
             }
+
 		}
+        return false;
 	}
 
 
-    private void openInAppBrowser(String clickThroughURL, MotionEvent event) {
+    private boolean openInAppBrowser(Context context, String clickThroughURL) {
+        /**
+         * TODO: Need to handle AdActivity dependency and move the method to a utility class
+         */
         if (!StringUtil.isEmpty(clickThroughURL) && context != null) {
             WebView fwdWebView = new WebView(context);
             WebviewUtil.setWebViewSettings(fwdWebView);
@@ -767,19 +667,13 @@ public class VastVideoPlayer implements OnCompletionListener,
 
             try {
                 context.startActivity(intent);
-                isFromBrowser = true;
-
-                if (getAdSlotConfiguration().shouldDismissVideoAdOnClick()) {
-                    clearVideoSurface();
-                }
-                if(videoAdListener != null){
-                    videoAdListener.onVideoClick(event);
-                }
+                return true;
             } catch (ActivityNotFoundException e) {
                 Clog.w(TAG, Clog.getString(R.string.adactivity_missing, activity_clz.getName()));
                 BrowserAdActivity.BROWSER_QUEUE.remove();
             }
         }
+        return false;
     }
 
 	@Override
@@ -814,13 +708,12 @@ public class VastVideoPlayer implements OnCompletionListener,
 			videoDismissTimer.cancel();
 			videoDismissTimer = null;
 		}
-
 	}
 
 	@Override
 	public void onScreenDisplayOff() {
 		isScreenDisplayOff = true;
-        Clog.i("", "onScreenDisplayOff");
+        Clog.i(TAG, "onScreenDisplayOff");
 		if (videoView != null && videoControllerView != null) {
 			pause();
 		}
@@ -909,7 +802,6 @@ public class VastVideoPlayer implements OnCompletionListener,
 			if (this.videoAdListener != null) {
 				this.videoAdListener.onVideoClick(e);
 			}
-			
 			Clog.i(TAG, "on Single Tap Confirmed");
 			trackRequestInBackground(VastVideoUtil.getVastClickURLList(vastAd));
 			
@@ -923,11 +815,12 @@ public class VastVideoPlayer implements OnCompletionListener,
 						videoView.pause();
 					}
 					videoPausePosition = getCurrentPosition();
-					if (videoConfiguration.isOpenInExternalBrowser()) {
-						openInExternalBrowser(clickUrl, e);
+					if (videoConfiguration.openInNativeBrowser()) {
+						openNativeBrowser(context, clickUrl);
 					} else {
-						openInAppBrowser(clickUrl, e);
+						openInAppBrowser(context, clickUrl);
 					}
+                    isFromBrowser = true;
 				}
 			} catch (Exception exp) {
 				Clog.e(TAG, "Exception occurred while clicking the video - " + exp.getMessage());
@@ -946,9 +839,10 @@ public class VastVideoPlayer implements OnCompletionListener,
         }
         for (final String url : urls) {
             if (url != null && url.trim().length()>0) {
-                Log.v(TAG, "Tracking URL: " + url);
-                new VastVideoTracker(url).execute();
+                Clog.i(TAG, "Tracking URL: " + url);
+                SharedNetworkManager.getInstance(context).addURL(url, context);
             }
+
         }
     }
 
@@ -1006,198 +900,4 @@ public class VastVideoPlayer implements OnCompletionListener,
 			Clog.e(TAG, "Exception occurred while tracking quartile events: " + e.getMessage());
 		}
 	}
-
-
-    /**
-     *  TODO: PRE-ROLL video related methods
-     *
-     */
-    private void expandVideoToFullScreen() {
-        try {
-            originalLayoutParams = (LayoutParams) videoView.getLayoutParams();
-            LayoutParams params = new LayoutParams(
-                    LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-            params.addRule(RelativeLayout.CENTER_IN_PARENT);
-            videoView.setLayoutParams(params);
-
-            refreshVideoViewLayout();
-
-            adjustMediaContollerLayout();
-
-            isFullscreen = true;
-            trackRequestInBackground(
-                    VastVideoUtil.getVastEventURLList(
-                            vastAd,
-                            VastVideoUtil.EVENT_FULLSCREEN));
-        } catch (Exception e) {
-            Clog.e(TAG, "Exception occurred while expanding videoview: " + e.getMessage());
-        }
-
-
-        if (this.videoAdListener != null) {
-            this.videoAdListener.onVideoPlayerEnterFullScreenMode();
-        }
-    }
-
-    private void refreshVideoViewLayout() {
-        if (videoView == null) return;
-
-        videoView.requestLayout();
-        videoView.forceLayout();
-        videoView.postInvalidate();
-        videoView.refreshDrawableState();
-        videoView.requestFocus();
-        videoView.invalidate();
-    }
-
-    private void adjustMediaContollerLayout() {
-        if (relativeLayout == null || videoControllerView == null) return;
-
-        relativeLayout.removeView(videoControllerView);
-        LayoutParams param = new LayoutParams(
-                LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT);
-        if (Configuration.ORIENTATION_LANDSCAPE == context.getResources()
-                .getConfiguration().orientation) {
-            param.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        } else {
-            param.addRule(RelativeLayout.BELOW, videoView.getId());
-        }
-        videoControllerView.setLayoutParams(param);
-        relativeLayout.addView(videoControllerView);
-        videoControllerView.setVisibility(View.VISIBLE);
-        if (countdownTimerTextView.getVisibility() == View.VISIBLE) {
-            videoControllerView.show();
-        }
-
-    }
-
-    private void collapseVideoView() {
-
-        try {
-            Clog.d(TAG, "Collapsing video");
-
-            videoView.setLayoutParams(originalLayoutParams);
-            refreshVideoViewLayout();
-            adjustMediaContollerLayout();
-            isFullscreen = false;
-
-            trackRequestInBackground(VastVideoUtil.getVastEventURLList(vastAd,
-                    VastVideoUtil.EVENT_EXIT_FULLSCREEN));
-            Clog.d(TAG, "Video Collapsed");
-        } catch (Exception e) {
-            Clog.e(TAG, "Exception occurred while collapsing videoview: " + e.getMessage());
-        }
-
-        if (this.videoAdListener != null) {
-            this.videoAdListener.onVideoPlayerExitFullScreenMode();
-        }
-
-    }
-
-    private void handlePrerollFinish() {
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                trackCompleteAdEvent();
-                resetVideoView();
-                resetVideoLayoutParams();
-                Clog.d("onCompletion", "onCompletion Pre-roll ad view is released ");
-            }
-        }, 100);
-    }
-
-
-    protected void resetVideoLayoutParams() {
-        try {
-            Clog.d(TAG, "Resetting layout parameters of videoview :" + originalLayoutParams.width);
-            if (originalLayoutParams != null) {
-                videoView.setLayoutParams(originalLayoutParams);
-            }
-
-            refreshVideoViewLayout();
-        } catch (Exception e) {
-            Clog.e(TAG, "Exception occurred while restoring the original layout parameters of videoView: " + e.getMessage());
-        }
-
-    }
-
-    private void updatePrerollCountdownTimer() {
-        videoPausePosition = videoView.getCurrentPosition();
-        videoControllerView.progressBar.setEnabled(false);
-        countdownTimerTextView.setLayoutParams(getTimerPosition(videoConfiguration));
-        countdownTimerTextView.bringToFront();
-        countdownTimerTextView.setVisibility(View.VISIBLE);
-        skipButton.setVisibility(View.INVISIBLE);
-        countdownTimerTextView.setText(VastVideoUtil.convertIntToHHSS(skipOffsetValue - 1)+ "  ");
-        skipOffsetValue = skipOffsetValue - 1;
-        if (skipOffsetValue <= 0) {
-            countdownTimerTextView.setText("");
-            if (!VastVideoUtil.isNullOrEmpty(parsedSkipOffset)) {
-                skipButton.setVisibility(View.VISIBLE);
-                skipButton.bringToFront();
-                videoControllerView.progressBar.setEnabled(true);
-            }
-        }
-    }
-
-    private LayoutParams getTimerPosition(VastVideoConfiguration adSlotConfig) {
-        LayoutParams params = new LayoutParams(
-                LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT);
-        if (adSlotConfig.getCountdownLabelPosition() == null) {
-            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            params.addRule(RelativeLayout.ALIGN_TOP, videoView.getId());
-            return params;
-        }
-        try {
-            switch (adSlotConfig.getCountdownLabelPosition()) {
-                case TOP_RIGHT:
-                    //Top-right
-                    params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                    params.addRule(RelativeLayout.ALIGN_TOP, videoView.getId());
-                    break;
-
-                case TOP_LEFT:
-                    //Top-Left
-                    params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                    params.addRule(RelativeLayout.ALIGN_TOP, videoView.getId());
-                    break;
-
-                case TOP_CENTER:
-                    //Top-center
-                    params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                    params.addRule(RelativeLayout.ALIGN_TOP, videoView.getId());
-                    break;
-
-                case BOTTOM_RIGHT:
-                    //Bottom-right
-                    params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                    params.addRule(RelativeLayout.ABOVE, videoControllerView.getId());
-                    break;
-
-                case BOTTOM_LEFT:
-                    //Bottom-Left
-                    params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                    params.addRule(RelativeLayout.ABOVE, videoControllerView.getId());
-                    break;
-
-                case BOTTOM_CENTER:
-                    //Bottom-center
-                    params.addRule(RelativeLayout.ABOVE, videoControllerView.getId());
-                    params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                    break;
-
-                default:
-                    //Top-right
-                    params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                    params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                    break;
-            }
-        } catch (Exception e) {
-            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-        }
-
-        return params;
-    }
 }
