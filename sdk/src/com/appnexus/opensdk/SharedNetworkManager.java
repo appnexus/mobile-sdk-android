@@ -21,11 +21,9 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.HttpErrorCode;
-
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -97,8 +95,6 @@ class SharedNetworkManager {
                                                         (!response.getSucceeded() && response.getErrorCode() == HttpErrorCode.CONNECTION_FAILURE)) {
                                                     urlObject.retryTimes += 1;
                                                     urls.add(urlObject);
-                                                }else{
-                                                    Clog.i(Clog.baseLogTag, "isSuccess? "+response.getSucceeded());
                                                 }
 
                                             }
