@@ -65,7 +65,6 @@ public class VastVideoPlayer implements OnCompletionListener,
 	private double videoLength;
 	private MediaPlayer mediaPlayer;
     private VideoAdEventsListener videoAdListener;
-	private boolean isFullscreen;
     protected VastVideoConfiguration videoConfiguration;
 	private BroadcastReceiver mReceiver;
 	private Timer videoDismissTimer;
@@ -404,7 +403,7 @@ public class VastVideoPlayer implements OnCompletionListener,
 
 	@Override
 	public boolean isFullScreen() {
-		return isFullscreen;
+		return false;
 	}
 
 	@Override
