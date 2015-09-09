@@ -27,7 +27,7 @@ import java.lang.ref.WeakReference;
 import java.util.Formatter;
 import java.util.Locale;
 
-public class VastVideoControllerView extends RelativeLayout {
+public class VideoControllerBarView extends RelativeLayout {
     public static final int CONTROLLER_DISPLAY_TIMEOUT = 3600000;
     private IMediaPlayerControl mediaPlayerControl;
 	private Context context;
@@ -58,8 +58,8 @@ public class VastVideoControllerView extends RelativeLayout {
 	private int videoViewId;
 	private RelativeLayout relativeLayout;
 
-	public VastVideoControllerView(Context context, int i,
-                                   RelativeLayout relativeLayout) {
+	public VideoControllerBarView(Context context, int i,
+                                  RelativeLayout relativeLayout) {
 		super(context);
 		rootView = null;
 		this.context = context;
@@ -75,14 +75,14 @@ public class VastVideoControllerView extends RelativeLayout {
 		super.onConfigurationChanged(newConfig);
 	}
 
-	public VastVideoControllerView(Context context, boolean isUseFastForward) {
+	public VideoControllerBarView(Context context, boolean isUseFastForward) {
 		super(context);
 		setLayoutParams(new LayoutParams(360, 100));
 		this.context = context;
 		this.isUseFastForward = isUseFastForward;
 	}
 
-	public VastVideoControllerView(Context context) {
+	public VideoControllerBarView(Context context) {
 		this(context, true);
 
 	}
@@ -694,15 +694,15 @@ public class VastVideoControllerView extends RelativeLayout {
 	}
 
 	private static class MessageHandler extends Handler {
-		private final WeakReference<VastVideoControllerView> mView;
+		private final WeakReference<VideoControllerBarView> mView;
 
-		MessageHandler(VastVideoControllerView view) {
-			mView = new WeakReference<VastVideoControllerView>(view);
+		MessageHandler(VideoControllerBarView view) {
+			mView = new WeakReference<VideoControllerBarView>(view);
 		}
 
 		@Override
 		public void handleMessage(Message msg) {
-			VastVideoControllerView view = mView.get();
+			VideoControllerBarView view = mView.get();
 			if (view == null || view.mediaPlayerControl == null) {
 				return;
 			}

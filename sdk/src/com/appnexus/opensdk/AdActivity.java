@@ -59,6 +59,7 @@ public class AdActivity extends Activity {
     private AdActivityImplementation implementation;
 
     //Intent Keys
+    static final String CLICK_URL="CLICK_URL";
     static final String INTENT_KEY_ACTIVITY_TYPE = "ACTIVITY_TYPE";
     static final String ACTIVITY_TYPE_INTERSTITIAL = "INTERSTITIAL";
     static final String ACTIVITY_TYPE_VIDEO_INTERSTITIAL = "VIDEO_INTERSTITIAL";
@@ -77,6 +78,9 @@ public class AdActivity extends Activity {
 
         String activityType = getIntent().
                 getStringExtra(INTENT_KEY_ACTIVITY_TYPE);
+
+        String clickUrl = getIntent().getStringExtra(CLICK_URL);
+
         if (StringUtil.isEmpty(activityType)) {
             Clog.e(Clog.baseLogTag, Clog.getString(R.string.adactivity_no_type));
             finish();
@@ -84,7 +88,7 @@ public class AdActivity extends Activity {
             implementation = new InterstitialAdActivity(this);
             implementation.create();
         } else if (ACTIVITY_TYPE_BROWSER.equals(activityType)) {
-            implementation = new BrowserAdActivity(this);
+            implementation = new BrowserAdActivity(this, clickUrl);
             implementation.create();
         } else if (ACTIVITY_TYPE_MRAID.equals(activityType)) {
             implementation = new MRAIDAdActivity(this);

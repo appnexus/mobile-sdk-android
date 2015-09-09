@@ -184,7 +184,7 @@ public class CompanionAdModel {
 		return companionClickThroughURL;
 	}
 	/**
-	 * @param campanionClickThroughURL the campanionClickThroughURL to set
+	 * @param companionClickThroughURL the campanionClickThroughURL to set
 	 */
 	public void setCampanionClickThroughURL(String companionClickThroughURL) {
 		this.companionClickThroughURL = companionClickThroughURL;

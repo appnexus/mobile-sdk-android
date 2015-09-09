@@ -1,6 +1,5 @@
 package com.appnexus.opensdk;
 
-import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,17 +19,14 @@ import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.webkit.WebView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.VideoView;
 
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.VastVideoUtil;
 import com.appnexus.opensdk.utils.ViewUtil;
-import com.appnexus.opensdk.utils.WebviewUtil;
 import com.appnexus.opensdk.vastdata.AdModel;
 import com.appnexus.opensdk.vastdata.LinearAdModel;
 
@@ -39,7 +35,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class VastVideoPlayer implements OnCompletionListener,
-		VastVideoControllerView.IMediaPlayerControl,
+		VideoControllerBarView.IMediaPlayerControl,
 		OnPreparedListener, OnClickListener, OnTouchListener,
 		HibernationListener, GestureDetector.OnGestureListener,
 		GestureDetector.OnDoubleTapListener {
@@ -53,7 +49,7 @@ public class VastVideoPlayer implements OnCompletionListener,
     protected VideoView videoView;
 	private Handler handler;
     protected RelativeLayout relativeLayout;
-    protected VastVideoControllerView videoControllerView;
+    protected VideoControllerBarView videoControllerView;
 	private LinearAdModel linearAdModel;
 	private Runnable videoProgressCheckerRunnable;
 	private boolean isVideoProgressShouldBeChecked;
@@ -104,7 +100,6 @@ public class VastVideoPlayer implements OnCompletionListener,
 	 * @param videoConfiguration
 	 */
 	protected void initiateVASTVideoPlayer(Context context, VastVideoView videoView, RelativeLayout relativeLayout, VastVideoConfiguration videoConfiguration) {
-
         try {
             originalVideoId = videoView.getId();
             this.context = context;
@@ -256,20 +251,14 @@ public class VastVideoPlayer implements OnCompletionListener,
 		Clog.d("onCompletion", "onCompletion VAST Interstitial released");
 		handler.post(new Runnable() {
             public void run() {
-                trackCompleteAdEvent();
+                isMuted = false;
+                trackRequestInBackground(VastVideoUtil.getVastEventURLList(vastAd, VastVideoUtil.EVENT_COMPLETE));
+                stopProgressChecker();
                 if (videoAdListener != null) {
                     videoAdListener.onVideoAdFinish();
                 }
             }
         });
-	}
-
-	private void trackCompleteAdEvent() {
-		isMuted = false;
-        trackRequestInBackground(VastVideoUtil.getVastEventURLList(
-                vastAd,
-                VastVideoUtil.EVENT_COMPLETE));
-		stopProgressChecker();
 	}
 
 	private void stopProgressChecker() {
@@ -470,7 +459,7 @@ public class VastVideoPlayer implements OnCompletionListener,
 			isMuted = false;
 			isVideoProgressShouldBeChecked = true;
 
-			videoControllerView = new VastVideoControllerView(context, videoView.getId(), relativeLayout);
+			videoControllerView = new VideoControllerBarView(context, videoView.getId(), relativeLayout);
             int videoControllerId = VastVideoUtil.VIDEO_CONTROLLER;
             videoControllerView.setId(videoControllerId);
 
@@ -557,7 +546,7 @@ public class VastVideoPlayer implements OnCompletionListener,
 
         videoControllerView.pause.setImageDrawable(context.getResources().getDrawable(android.R.drawable.ic_media_pause));
         videoControllerView.requestLayout();
-        trackImpressionURL();
+        trackRequestInBackground(vastAd.getImpressionArrayList());
 
         Clog.d(TAG, "onPrepared skipOffsetValue " + skipOffsetValue);
     }
@@ -569,16 +558,10 @@ public class VastVideoPlayer implements OnCompletionListener,
         }
     }
 
-	private void trackImpressionURL() {
-			trackRequestInBackground(
-                    vastAd.getImpressionArrayList()
-            );
-	}
 
 	@Override
 	public void onClick(View v) {
 		int id = v.getId();
-        Clog.i("onClick", "onClick id " + id);
 		if (id == VastVideoUtil.VIDEO_SKIP) {
             skipVideo();
 		}
@@ -626,54 +609,6 @@ public class VastVideoPlayer implements OnCompletionListener,
         }
     }
 
-
-	private boolean openNativeBrowser(Context context, String url) {
-        /**
-         * TODO: Need to move the method to a utility class
-         */
-		if (!StringUtil.isEmpty(url) && context != null) {
-            try {
-                Intent inAppBrowserIntent = new Intent(Intent.ACTION_VIEW);
-                inAppBrowserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                inAppBrowserIntent.setData(Uri.parse(url));
-                context.startActivity(inAppBrowserIntent);
-                return true;
-            }catch (ActivityNotFoundException e){
-                Clog.w(TAG, "Native browser not found.");
-            }
-
-		}
-        return false;
-	}
-
-
-    private boolean openInAppBrowser(Context context, String clickThroughURL) {
-        /**
-         * TODO: Need to handle AdActivity dependency and move the method to a utility class
-         */
-        if (!StringUtil.isEmpty(clickThroughURL) && context != null) {
-            WebView fwdWebView = new WebView(context);
-            WebviewUtil.setWebViewSettings(fwdWebView);
-            fwdWebView.loadUrl(clickThroughURL);
-
-            Class<?> activity_clz = AdActivity.getActivityClass();
-
-            Intent intent = new Intent(context, activity_clz);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
-
-            BrowserAdActivity.BROWSER_QUEUE.add(fwdWebView);
-
-            try {
-                context.startActivity(intent);
-                return true;
-            } catch (ActivityNotFoundException e) {
-                Clog.w(TAG, Clog.getString(R.string.adactivity_missing, activity_clz.getName()));
-                BrowserAdActivity.BROWSER_QUEUE.remove();
-            }
-        }
-        return false;
-    }
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
@@ -746,7 +681,6 @@ public class VastVideoPlayer implements OnCompletionListener,
 
 	private void unregisterReceiver() {
 		try {
-
 			if (mReceiver != null && context != null) {
                 Clog.i(TAG, "Unregistering the receiver ");
 				context.unregisterReceiver(mReceiver);
@@ -755,7 +689,6 @@ public class VastVideoPlayer implements OnCompletionListener,
 		} catch (Exception e) {
 			Clog.e(TAG, "Exception occurred while unregistering the receiver: " + e.getMessage());
 		}
-		
 	}
 
 	@Override
@@ -765,18 +698,14 @@ public class VastVideoPlayer implements OnCompletionListener,
 
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-			float velocityY) {
-		return false;
-	}
+			float velocityY) {return false;}
 
 	@Override
 	public void onLongPress(MotionEvent e) {}
 
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
-			float distanceY) {
-		return false;
-	}
+			float distanceY) {return false;}
 
 	@Override
 	public void onShowPress(MotionEvent e) {}
@@ -814,12 +743,10 @@ public class VastVideoPlayer implements OnCompletionListener,
 						videoView.pause();
 					}
 					videoPausePosition = getCurrentPosition();
-					if (videoConfiguration.openInNativeBrowser()) {
-						openNativeBrowser(context, clickUrl);
-					} else {
-						openInAppBrowser(context, clickUrl);
-					}
-                    isFromBrowser = true;
+
+                    if (AdUtil.openBrowser(context, clickUrl, videoConfiguration.openInNativeBrowser())) {
+                        isFromBrowser = true;
+                    }
 				}
 			} catch (Exception exp) {
 				Clog.e(TAG, "Exception occurred while clicking the video - " + exp.getMessage());

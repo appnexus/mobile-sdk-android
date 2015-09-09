@@ -127,6 +127,4 @@ public void setIconViewTracking(String iconViewTracking) {
 	this.iconViewTracking = iconViewTracking;
 }
 
-
-
 }
