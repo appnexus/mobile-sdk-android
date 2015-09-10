@@ -35,13 +35,12 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
     public static final int TEXT_SIZE = 17;
     private Activity adActivity;
     private TextView countdownTimerText;
-
     private RelativeLayout layout;
     private long now;
     private InterstitialAdView adView;
     private ImageButton closeButton;
     private VastVideoView videoView;
-    private VastVideoPlayer videoPlayer;
+    private InterstitialVideoPlayer videoPlayer;
     private VastVideoConfiguration videoConfig;
 
     public InterstitialVideoAdActivity(Activity adActivity) {
@@ -136,7 +135,8 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
 
         layout.addView(videoView);
 
-        videoPlayer = new VastVideoPlayer();
+        videoPlayer = new InterstitialVideoPlayer();
+//        videoPlayer = new VastVideoPlayer();
         videoPlayer.setUpdateCountdownTimerListener(new IUpdateCountdownTimerListener() {
             @Override
             public void onUpdateCountdownTimer(String skipOffset) {
@@ -156,9 +156,9 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
 
         videoPlayer.setVideoAdListener(new VideoAdEventsListener() {
             @Override
-            public void onVideoPlay() {
+            public void onVideoStart() {
                 if (adView !=null && adView.getVideoAdEventsListener() != null) {
-                    adView.getVideoAdEventsListener().onVideoPlay();
+                    adView.getVideoAdEventsListener().onVideoStart();
                 }
 
             }
@@ -216,13 +216,6 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
             public void onVideoPlayerExitFullScreenMode() {
                 if (adView !=null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onVideoPlayerExitFullScreenMode();
-                }
-            }
-
-            @Override
-            public void onVideoPlayerRewind(long fromPosition, long toPosition) {
-                if (adView !=null && adView.getVideoAdEventsListener() != null) {
-                    adView.getVideoAdEventsListener().onVideoPlayerRewind(fromPosition, toPosition);
                 }
             }
 
