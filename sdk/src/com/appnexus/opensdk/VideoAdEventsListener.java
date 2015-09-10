@@ -12,7 +12,7 @@ public interface VideoAdEventsListener {
 	/**
 	 * Gets called when video starts playing
 	 */
-	public void onVideoPlay();
+	public void onVideoStart();
 
 	/**
 	 * Gets called when video is paused
@@ -63,13 +63,6 @@ public interface VideoAdEventsListener {
 	 * Gets called when the video exits full screen mode
 	 */
 	public void onVideoPlayerExitFullScreenMode();
-
-	/**
-	 * Gets called when the video ad is rewinded
-	 * @param fromPosition the duration from video is rewinded
-	 * @param toPosition the duration to video is rewinded
-	 */
-	public void onVideoPlayerRewind(long fromPosition, long toPosition);
 
 	/**
 	 * Gets called when the video ad is clicked

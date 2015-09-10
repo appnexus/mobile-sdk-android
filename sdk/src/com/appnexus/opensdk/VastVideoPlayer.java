@@ -31,25 +31,22 @@ import com.appnexus.opensdk.vastdata.AdModel;
 import com.appnexus.opensdk.vastdata.LinearAdModel;
 
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
-public class VastVideoPlayer implements OnCompletionListener,
+abstract public class VastVideoPlayer implements OnCompletionListener,
 		VideoControllerBarView.IMediaPlayerControl,
 		OnPreparedListener, OnClickListener, OnTouchListener,
 		HibernationListener, GestureDetector.OnGestureListener,
 		GestureDetector.OnDoubleTapListener {
     private String TAG = getClass().getSimpleName();
-    public static final int INTERSTITIAL_EXPIRY_TIME = 30000;
     private static final float FIRST_QUARTER_MARKER = 0.25f;
     private static final float MID_POINT_MARKER = 0.50f;
     private static final float THIRD_QUARTER_MARKER = 0.75f;
     private static final long VIDEO_PROGRESS_TIMER_CHECKER_DELAY = 50;
-    private Context context;
+    protected Context context;
     protected VideoView videoView;
-	private Handler handler;
+	protected Handler handler;
     protected RelativeLayout relativeLayout;
-    protected VideoControllerBarView videoControllerView;
+    protected VideoControllerBarView videoControllerBar;
 	private LinearAdModel linearAdModel;
 	private Runnable videoProgressCheckerRunnable;
 	private boolean isVideoProgressShouldBeChecked;
@@ -63,20 +60,15 @@ public class VastVideoPlayer implements OnCompletionListener,
     private VideoAdEventsListener videoAdListener;
     protected VastVideoConfiguration videoConfiguration;
 	private BroadcastReceiver mReceiver;
-	private Timer videoDismissTimer;
-	private TimerTask videoDismissTask;
-	protected boolean isScreenDisplayOff;
-	private int videoPausePosition;
+    private int videoPausePosition;
 	private int skipOffsetValue;
 	private String parsedSkipOffset;
-	private IUpdateCountdownTimerListener updateCountdownTimerListener;
 	private boolean isFromBrowser;
 	private int updateCounter;
 	private GestureDetectorCompat mDetector;
     protected int originalVideoId;
     private AdModel vastAd;
     private ProgressBar progressBar;
-
 
 	public VastVideoPlayer() {
 		handler = new Handler();
@@ -86,19 +78,11 @@ public class VastVideoPlayer implements OnCompletionListener,
         this.videoAdListener = videoAdListener;
     }
 
-
     private void clearVastData() {
         vastAd = null;
         linearAdModel = null;
     }
 
-    /**
-	 * Method to show interstitial video view.
-	 * 
-	 * @param context
-	 * @param relativeLayout
-	 * @param videoConfiguration
-	 */
 	protected void initiateVASTVideoPlayer(Context context, VastVideoView videoView, RelativeLayout relativeLayout, VastVideoConfiguration videoConfiguration) {
         try {
             originalVideoId = videoView.getId();
@@ -145,7 +129,6 @@ public class VastVideoPlayer implements OnCompletionListener,
         }
     };
 
-
     SurfaceHolder.Callback surfaceHolderCB = new SurfaceHolder.Callback() {
 
         @Override
@@ -167,6 +150,7 @@ public class VastVideoPlayer implements OnCompletionListener,
                     resumeVideoAd();
                 }
             }catch (Exception e){
+                Clog.e(TAG, "Exception occurred while creating video surface: "+e.getMessage());
             }
         }
 
@@ -174,10 +158,12 @@ public class VastVideoPlayer implements OnCompletionListener,
         public void surfaceChanged(SurfaceHolder holder, int format,
         int width, int height) {
         }
-
     };
-	
-	
+
+    protected void setVideoPausePosition(int videoPausePosition) {
+        this.videoPausePosition = videoPausePosition;
+    }
+
 	private void registerForBroadcast() {
 		try {
 			IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
@@ -190,30 +176,12 @@ public class VastVideoPlayer implements OnCompletionListener,
 		}
 	}
 
-	public void setUpdateCountdownTimerListener(
-			IUpdateCountdownTimerListener updateCountdownTimerListener) {
-		this.updateCountdownTimerListener = updateCountdownTimerListener;
-	}
-
-	/**
-	 * 
-	 * @return videoConfiguration
-	 */
-	public VastVideoConfiguration getAdSlotConfiguration() {
-		return videoConfiguration;
-	}
-
-	/**
-	 * method to play vast video ad.
-	 */
 	private void playVastVideoAd() throws Exception{
 		Clog.i(TAG, "Attempting to play VAST video ad");
 		int videoViewWidth = videoView.getWidth();
-
 		if (videoViewWidth == 0) {
 			videoViewWidth = VastVideoUtil.getScreenWidth(context);
 		}
-
 		Uri uri = Uri.parse(VastVideoUtil.getVASTVideoURL(
                 linearAdModel.getMediaFilesArrayList(),
                 VastVideoUtil.getPixelSize(context, videoViewWidth)));
@@ -232,9 +200,6 @@ public class VastVideoPlayer implements OnCompletionListener,
         relativeLayout.addView(progressBar);
     }
 
-    /**
-	 * Get call on complete media player.
-	 */
 	@Override
 	public void onCompletion(final MediaPlayer mp) {
 		handleAdFinishScenario();
@@ -243,20 +208,20 @@ public class VastVideoPlayer implements OnCompletionListener,
 	private void handleAdFinishScenario() {
         hideLoader();
 		resumeMusicFromOtherApps();
-        handleInterstitialFinish();
+        finishRenderingVideoAd();
         unregisterReceiver();
 	}
 
-	private void handleInterstitialFinish() {
+	private void finishRenderingVideoAd() {
 		Clog.d("onCompletion", "onCompletion VAST Interstitial released");
 		handler.post(new Runnable() {
             public void run() {
-                isMuted = false;
-                trackRequestInBackground(VastVideoUtil.getVastEventURLList(vastAd, VastVideoUtil.EVENT_COMPLETE));
-                stopProgressChecker();
-                if (videoAdListener != null) {
-                    videoAdListener.onVideoAdFinish();
-                }
+            isMuted = false;
+            trackRequestInBackground(VastVideoUtil.getVastEventURLList(vastAd, VastVideoUtil.EVENT_COMPLETE));
+            stopProgressChecker();
+            if (videoAdListener != null) {
+                videoAdListener.onVideoAdFinish();
+            }
             }
         });
 	}
@@ -290,7 +255,7 @@ public class VastVideoPlayer implements OnCompletionListener,
                 // Play video from beginning
                 trackRequestInBackground(VastVideoUtil.getVastEventURLList(vastAd, VastVideoUtil.EVENT_START));
                 if (this.videoAdListener != null) {
-                    this.videoAdListener.onVideoPlay();
+                    this.videoAdListener.onVideoStart();
                 }
             }
             isPaused = false;
@@ -316,7 +281,6 @@ public class VastVideoPlayer implements OnCompletionListener,
         }catch (Exception e){
             Clog.e(TAG, "Exception occurred while pausing the music from other apps");
         }
-
 	}
 
 	private void resumeMusicFromOtherApps() {
@@ -338,7 +302,6 @@ public class VastVideoPlayer implements OnCompletionListener,
             resumeMusicFromOtherApps();
             isPaused = true;
             trackRequestInBackground(VastVideoUtil.getVastEventURLList(vastAd, VastVideoUtil.EVENT_PAUSE));
-
             if (this.videoAdListener != null) {
                 this.videoAdListener.onVideoPause(getCurrentPosition());
             }
@@ -371,84 +334,34 @@ public class VastVideoPlayer implements OnCompletionListener,
 	}
 
 	@Override
-	public int getBufferPercentage() {
-		return 0;
-	}
+	public int getBufferPercentage() {return 0;}
 
 	@Override
-	public boolean canPause() {
-		return true;
-	}
+	public boolean canPause() {return true;}
 
 	@Override
-	public boolean canSeekBackward() {
-		return true;
-	}
-
-	@Override
-	public boolean canSeekForward() {
-		return true;
-	}
-
-	@Override
-	public boolean isFullScreen() {
-		return false;
-	}
+	public boolean isFullScreen() {return false;}
 
 	@Override
 	public void toggleFullScreen() {}
 
-
 	@Override
 	public void mute() {
-		if (mediaPlayer != null) {
-			Clog.d(TAG, "Muting video");
-			isMuted = true;
-			mediaPlayer.setVolume(0, 0);
-            trackRequestInBackground(VastVideoUtil.getVastEventURLList(vastAd, VastVideoUtil.EVENT_MUTE));
+        muteVideo();
+    }
 
-			if (this.videoAdListener != null) {
-				this.videoAdListener.onMuteVideo();
-			}
-			Clog.d(TAG, "Video Muted");
-		}
-	}
-
-	@Override
+    @Override
 	public boolean isMute() {
 		return isMuted;
 	}
 
 	@Override
 	public void unMute() {
+        unmuteVideo();
+    }
 
-		if (mediaPlayer != null) {
-            Clog.d(TAG, "Unmuting video");
-			isMuted = false;
-			mediaPlayer.setVolume(1, 1);
-            trackRequestInBackground(VastVideoUtil.getVastEventURLList(vastAd,
-                    VastVideoUtil.EVENT_UNMUTE));
-			if (this.videoAdListener != null) {
-				this.videoAdListener.onUnMuteVideo();
-			}
-            Clog.d(TAG, "Video Unmuted");
-		}
-	}
-
-	@Override
+    @Override
 	public void rewind() {
-		if (videoView != null && videoView.isPlaying()) {
-            trackRequestInBackground(
-                    VastVideoUtil.getVastEventURLList(
-                            vastAd,
-                            VastVideoUtil.EVENT_REWIND));
-
-			if (this.videoAdListener != null) {
-				this.videoAdListener.onVideoPlayerRewind(getCurrentPosition(),
-						getCurrentPosition());
-			}
-
-		}
 	}
 
 	protected void initializeVideoPlayer() {
@@ -459,9 +372,9 @@ public class VastVideoPlayer implements OnCompletionListener,
 			isMuted = false;
 			isVideoProgressShouldBeChecked = true;
 
-			videoControllerView = new VideoControllerBarView(context, videoView.getId(), relativeLayout);
+			videoControllerBar = new VideoControllerBarView(context);
             int videoControllerId = VastVideoUtil.VIDEO_CONTROLLER;
-            videoControllerView.setId(videoControllerId);
+            videoControllerBar.setId(videoControllerId);
 
 		} catch (Exception e) {
 			String errorMessage = "Exception occurred while initializing video player - "+e.getMessage();
@@ -474,29 +387,70 @@ public class VastVideoPlayer implements OnCompletionListener,
 			@Override
 			public void run() {
 				if (videoLength > 0) {
-					int currentPosition = (int) (getCurrentPosition() / 1000);
-					if (currentPosition > updateCounter) {
-						updateVastInterstitialCountdownTimer();
-					}
+                    int currentPosition = (int) (getCurrentPosition() / 1000);
+                    handleVideoProgress(currentPosition);
 					trackQuartileEvents(currentPosition);
 				}
-
 				if (isVideoProgressShouldBeChecked) {
 					handler.postDelayed(videoProgressCheckerRunnable,
 							VIDEO_PROGRESS_TIMER_CHECKER_DELAY);
 				}
-
 			}
 		};
         handler.post(videoProgressCheckerRunnable);
 
 	}
 
-	@Override
+    private void handleVideoProgress(int currentPosition) {
+        if (currentPosition > updateCounter) {
+            if(videoView != null) {
+                setVideoPausePosition(videoView.getCurrentPosition());
+            }
+            updateCountdownTimer(skipOffsetValue);
+            skipOffsetValue = skipOffsetValue - 1;
+            if (skipOffsetValue < 0) {
+                videoControllerBar.progressBar.setEnabled(true);
+                displayCloseButton();
+            }
+        }
+    }
+
+    abstract protected void updateCountdownTimer(int skipOffsetValue);
+
+    abstract protected void displayCloseButton();
+
+    private void muteVideo() {
+        if (mediaPlayer != null) {
+            Clog.d(TAG, "Muting video");
+            isMuted = true;
+            mediaPlayer.setVolume(0, 0);
+            trackRequestInBackground(VastVideoUtil.getVastEventURLList(vastAd, VastVideoUtil.EVENT_MUTE));
+
+            if (this.videoAdListener != null) {
+                this.videoAdListener.onMuteVideo();
+            }
+            Clog.d(TAG, "Video Muted");
+        }
+    }
+
+    private void unmuteVideo() {
+        if (mediaPlayer != null) {
+            Clog.d(TAG, "Unmuting video");
+            isMuted = false;
+            mediaPlayer.setVolume(1, 1);
+            trackRequestInBackground(VastVideoUtil.getVastEventURLList(vastAd, VastVideoUtil.EVENT_UNMUTE));
+            if (this.videoAdListener != null) {
+                this.videoAdListener.onUnMuteVideo();
+            }
+            Clog.d(TAG, "Video Unmuted");
+        }
+    }
+
+    @Override
 	public void onPrepared(MediaPlayer mp) {
 		try {
 			this.mediaPlayer = mp;
-			if (videoControllerView != null) {
+			if (videoControllerBar != null) {
 				if (isFromBrowser || videoPausePosition > 0) {
                     handleVideoResume();
 				}else{
@@ -509,7 +463,6 @@ public class VastVideoPlayer implements OnCompletionListener,
 			Clog.e(TAG, errorMessage);
 			resetVideoView();
 		}
-
 	}
 
     private void handleVideoResume() throws Exception{
@@ -518,34 +471,34 @@ public class VastVideoPlayer implements OnCompletionListener,
             mediaPlayer.setVolume(0, 0);
         }
         skipOffsetValue = skipOffsetValue + 1;
-        videoControllerView.setMediaPlayer(this);
-        videoControllerView.show();
-        if (videoControllerView.pause != null) {
-            videoControllerView.pause.setImageDrawable(context.getResources().getDrawable(android.R.drawable.ic_media_pause));
-            videoControllerView.requestLayout();
+        videoControllerBar.setMediaPlayer(this);
+        videoControllerBar.show();
+        if (videoControllerBar.pause != null) {
+            videoControllerBar.pause.setImageDrawable(context.getResources().getDrawable(android.R.drawable.ic_media_pause));
+            videoControllerBar.requestLayout();
         }
     }
 
     private void handleVideoStart() throws Exception{
         Clog.i(TAG, "About to display first frame of video");
-        videoControllerView.setMediaPlayer(this);
-        videoControllerView.setAnchorView(relativeLayout, this);
+        videoControllerBar.setMediaPlayer(this);
+        videoControllerBar.setAnchorView(relativeLayout, this);
 
         videoView.setOnTouchListener(VastVideoPlayer.this);
         mDetector = new GestureDetectorCompat(context, this);
         mDetector.setOnDoubleTapListener(this);
 
-        videoControllerView.show();
+        videoControllerBar.show();
         videoView.bringToFront();
-        videoControllerView.bringToFront();
+        videoControllerBar.bringToFront();
         videoLength = videoView.getDuration();
 
         Clog.d(TAG, "videoLength: " + videoLength);
         parsedSkipOffset = linearAdModel.getSkipOffset();
         skipOffsetValue = VastVideoUtil.calculateSkipOffset(parsedSkipOffset, videoConfiguration, videoLength);
 
-        videoControllerView.pause.setImageDrawable(context.getResources().getDrawable(android.R.drawable.ic_media_pause));
-        videoControllerView.requestLayout();
+        videoControllerBar.pause.setImageDrawable(context.getResources().getDrawable(android.R.drawable.ic_media_pause));
+        videoControllerBar.requestLayout();
         trackRequestInBackground(vastAd.getImpressionArrayList());
 
         Clog.d(TAG, "onPrepared skipOffsetValue " + skipOffsetValue);
@@ -557,7 +510,6 @@ public class VastVideoPlayer implements OnCompletionListener,
             ViewUtil.removeChildFromParent(progressBar);
         }
     }
-
 
 	@Override
 	public void onClick(View v) {
@@ -575,14 +527,13 @@ public class VastVideoPlayer implements OnCompletionListener,
         resetVideoView();
     }
 
-
-    private void resetVideoView() {
+    protected void resetVideoView() {
         try {
             unregisterReceiver();
             clearVideoSurface();
 			resumeMusicFromOtherApps();
 			if (this.videoAdListener != null) {
-				this.videoAdListener.onVideoAdFinish();
+                this.videoAdListener.onVideoAdFinish();
 			}
             hideLoader();
 			clearVastData();
@@ -596,19 +547,18 @@ public class VastVideoPlayer implements OnCompletionListener,
         try {
             videoView.stopPlayback();
             isVideoProgressShouldBeChecked = false;
-            if (videoControllerView != null) {
-                videoControllerView.hide();
+            if (videoControllerBar != null) {
+                videoControllerBar.hide();
             }
             videoView.setOnCompletionListener(null);
             videoView.setOnPreparedListener(null);
             videoView.setOnTouchListener(null);
 
-            videoControllerView = null;
+            videoControllerBar = null;
         }catch (Exception e){
             Clog.e(TAG, "Exception occurred while releasing video surface");
         }
     }
-
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
@@ -619,65 +569,23 @@ public class VastVideoPlayer implements OnCompletionListener,
 	@Override
 	public void onScreenDisplayOn() {
         try {
-            Clog.i(TAG, "onScreenDisplayOn");
-            if (videoView != null && videoControllerView != null && context != null) {
-                videoControllerView.pause.setImageDrawable(context.getResources().getDrawable(android.R.drawable.ic_media_play));
+
+            if (videoView != null && videoControllerBar != null && context != null) {
+                videoControllerBar.pause.setImageDrawable(context.getResources().getDrawable(android.R.drawable.ic_media_play));
             }
-            isScreenDisplayOff = false;
-            cancelVideoDismissTask();
         }catch (Exception e){
             Clog.e(TAG,"Exception occurred while displaying the screen.");
         }
-	}
 
-	private void cancelVideoDismissTask() {
-		if (videoDismissTask != null) {
-			Clog.d(TAG, "cancelVideoDismissTask () : " + "Video Dismiss task cancelled");
-			videoDismissTask.cancel();
-			videoDismissTask = null;
-		}
-		
-		if (videoDismissTimer != null) {
-			videoDismissTimer.purge();
-			videoDismissTimer.cancel();
-			videoDismissTimer = null;
-		}
-	}
+    }
 
 	@Override
 	public void onScreenDisplayOff() {
-		isScreenDisplayOff = true;
-        Clog.i(TAG, "onScreenDisplayOff");
-		if (videoView != null && videoControllerView != null) {
-			pause();
-		}
-		scheduleVideoDismissTask();
-	}
+        if (videoView != null && videoControllerBar != null) {
+            pause();
+        }
+    }
 
-	private void scheduleVideoDismissTask() {
-
-		try {
-			cancelVideoDismissTask();
-			if (videoDismissTimer == null) {
-				videoDismissTimer = new Timer();
-			}
-			TimerTask newMemoryCheckTask = new TimerTask() {
-				@Override
-				public void run() {
-					handler.post(new Runnable() {
-						public void run() {
-							resetVideoView();
-						}
-					});
-				}
-			};
-			videoDismissTimer.schedule(newMemoryCheckTask, INTERSTITIAL_EXPIRY_TIME);
-			videoDismissTask = newMemoryCheckTask;
-
-		} catch (Exception e) {
-			Clog.e(TAG, "Exception scheduling video dismiss timer : " + e.getMessage());
-		}
-	}
 
 	private void unregisterReceiver() {
 		try {
@@ -692,9 +600,7 @@ public class VastVideoPlayer implements OnCompletionListener,
 	}
 
 	@Override
-	public boolean onDown(MotionEvent e) {
-		return false;
-	}
+	public boolean onDown(MotionEvent e) {return false;}
 
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
@@ -711,9 +617,7 @@ public class VastVideoPlayer implements OnCompletionListener,
 	public void onShowPress(MotionEvent e) {}
 
 	@Override
-	public boolean onSingleTapUp(MotionEvent e) {
-		return false;
-	}
+	public boolean onSingleTapUp(MotionEvent e) {return false;}
 
 	@Override
 	public boolean onDoubleTap(MotionEvent e) {
@@ -727,38 +631,30 @@ public class VastVideoPlayer implements OnCompletionListener,
 
 	@Override
 	public boolean onSingleTapConfirmed(MotionEvent e) {
-			if (this.videoAdListener != null) {
-				this.videoAdListener.onVideoClick(e);
-			}
-			Clog.i(TAG, "on Single Tap Confirmed");
-			trackRequestInBackground(VastVideoUtil.getVastClickURLList(vastAd));
-			
-			try {
-				if (linearAdModel.getVideoClicksArrayList() != null
-						&& linearAdModel.getVideoClicksArrayList().size() > 0) {
-                    String clickUrl = linearAdModel
-                            .getVideoClicksArrayList().get(0)
-                            .getClickThroughURL();
-					if (videoView.isPlaying()) {
-						videoView.pause();
-					}
-					videoPausePosition = getCurrentPosition();
+        if (this.videoAdListener != null) {
+            this.videoAdListener.onVideoClick(e);
+        }
+        Clog.i(TAG, "on Single Tap Confirmed");
+        trackRequestInBackground(VastVideoUtil.getVastClickURLList(vastAd));
 
-                    if (AdUtil.openBrowser(context, clickUrl, videoConfiguration.openInNativeBrowser())) {
-                        isFromBrowser = true;
-                    }
-				}
-			} catch (Exception exp) {
-				Clog.e(TAG, "Exception occurred while clicking the video - " + exp.getMessage());
-			}
+        try {
+            if (linearAdModel.getVideoClicksArrayList() != null && linearAdModel.getVideoClicksArrayList().size() > 0) {
+                String clickUrl = linearAdModel.getVideoClicksArrayList().get(0).getClickThroughURL();
+                if (videoView.isPlaying()) {
+                    videoView.pause();
+                }
+                setVideoPausePosition(getCurrentPosition());
 
+                if (AdUtil.openBrowser(context, clickUrl, videoConfiguration.openInNativeBrowser())) {
+                    isFromBrowser = true;
+                }
+            }
+        } catch (Exception exp) {
+            Clog.e(TAG, "Exception occurred while clicking the video - " + exp.getMessage());
+        }
 		return false;
 	}
 
-    /**
-     * Sends tracking requests in the background thread.
-     * @param urls
-     */
     public void trackRequestInBackground(final List<String> urls) {
         if (urls == null || urls.size() == 0) {
             return;
@@ -768,31 +664,12 @@ public class VastVideoPlayer implements OnCompletionListener,
                 Clog.i(TAG, "Tracking URL: " + url);
                 SharedNetworkManager.getInstance(context).addURL(url, context);
             }
-
         }
     }
-
-	private void updateVastInterstitialCountdownTimer() {
-        if(videoView != null) {
-            videoPausePosition = videoView.getCurrentPosition();
-        }
-		if (updateCountdownTimerListener != null) {
-			videoControllerView.progressBar.setEnabled(false);
-			updateCountdownTimerListener.onUpdateCountdownTimer(VastVideoUtil.convertIntToHHSS(skipOffsetValue));
-		}
-		skipOffsetValue = skipOffsetValue - 1;
-		if (skipOffsetValue < 0) {
-			videoControllerView.progressBar.setEnabled(true);
-			if (updateCountdownTimerListener != null) {
-				updateCountdownTimerListener.onDisplayCloseButton();
-			}
-		}
-	}
 
 	private void trackQuartileEvents(int currentPosition) {
 		try {
 			updateCounter = currentPosition;
-
 			double progressPercentage = (double) getCurrentPosition() / videoLength;
 
 			if (progressPercentage > FIRST_QUARTER_MARKER && !isFirstMarkHit) {

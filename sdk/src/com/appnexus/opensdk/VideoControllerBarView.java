@@ -40,35 +40,14 @@ public class VideoControllerBarView extends RelativeLayout {
 	private static final int DEFAULT_TIMEOUT = 0;
 	private static final int FADE_OUT = 1;
 	private static final int SHOW_PROGRESS = 2;
-	private boolean isUseFastForward;
-	private boolean isFromXml;
-	private boolean isListenersSet;
-	private OnClickListener nextListener, prevListener;
 	private StringBuilder formatBuilder;
 	private Formatter formatter;
 	public ImageView pause;
-	private ImageButton forward;
-	private ImageButton rewind;
-	private ImageButton mNextButton;
-	private ImageButton previous;
 	private ImageView fullscreen;
 	private ImageView mute;
 	private Handler mHandler = new MessageHandler(this);
 	public static boolean isrewind;
-	private int videoViewId;
-	private RelativeLayout relativeLayout;
 
-	public VideoControllerBarView(Context context, int i,
-                                  RelativeLayout relativeLayout) {
-		super(context);
-		rootView = null;
-		this.context = context;
-		isUseFastForward = true;
-		isFromXml = true;
-		this.videoViewId = i;
-		this.relativeLayout = relativeLayout;
-
-	}
 
 	@Override
 	protected void onConfigurationChanged(Configuration newConfig) {
@@ -79,7 +58,7 @@ public class VideoControllerBarView extends RelativeLayout {
 		super(context);
 		setLayoutParams(new LayoutParams(360, 100));
 		this.context = context;
-		this.isUseFastForward = isUseFastForward;
+        rootView = null;
 	}
 
 	public VideoControllerBarView(Context context) {
@@ -163,34 +142,6 @@ public class VideoControllerBarView extends RelativeLayout {
 			fullscreen.setOnClickListener(mFullscreenListener);
 		}
 
-        int videoFfwdId = VastVideoUtil.VIDEO_FFWD;
-        forward = (ImageButton) v.findViewById(videoFfwdId);
-		if (forward != null) {
-			forward.setOnClickListener(mFfwdListener);
-			if (!isFromXml) {
-				forward.setVisibility(isUseFastForward ? View.GONE : View.GONE);
-			}
-		}
-        int videoRewId = VastVideoUtil.VIDEO_REW;
-        rewind = (ImageButton) v.findViewById(videoRewId);
-		if (rewind != null) {
-			rewind.setOnClickListener(mRewListener);
-			if (!isFromXml) {
-				rewind.setVisibility(isUseFastForward ? View.GONE : View.GONE);
-			}
-		}
-        int videoNextId = VastVideoUtil.VIDEO_NEXT;
-        mNextButton = (ImageButton) v.findViewById(videoNextId);
-		if (mNextButton != null && !isFromXml && !isListenersSet) {
-			mNextButton.setVisibility(View.GONE);
-			mNextButton.setOnClickListener(nextListener);
-
-		}
-        int videoPrevId = VastVideoUtil.VIDEO_PREV;
-        previous = (ImageButton) v.findViewById(videoPrevId);
-		if (previous != null && !isFromXml && !isListenersSet) {
-			previous.setVisibility(View.GONE);
-		}
         int videoMediacontrollerProgressId = VastVideoUtil.VIDEO_MEDIACONTROLLER_PROGRESS;
         progressBar = (ProgressBar) v
 				.findViewById(videoMediacontrollerProgressId);
@@ -207,7 +158,6 @@ public class VideoControllerBarView extends RelativeLayout {
         currentTime = (TextView) v.findViewById(videoTimeCurrentId);
 		formatBuilder = new StringBuilder();
 		formatter = new Formatter(formatBuilder, Locale.getDefault());
-		installPrevNextListeners();
 	}
 
 	/**
@@ -231,12 +181,7 @@ public class VideoControllerBarView extends RelativeLayout {
 			if (pause != null && !mediaPlayerControl.canPause()) {
 				pause.setEnabled(false);
 			}
-			if (rewind != null && !mediaPlayerControl.canSeekBackward()) {
-				rewind.setEnabled(false);
-			}
-			if (forward != null && !mediaPlayerControl.canSeekForward()) {
-				forward.setEnabled(false);
-			}
+
 			if (progressBar != null ) {
 				progressBar.setEnabled(false);
 			}
@@ -363,9 +308,6 @@ public class VideoControllerBarView extends RelativeLayout {
 		return false;
 	}
 
-	/**
-	 *
-	 */
 	@Override
 	public boolean dispatchKeyEvent(KeyEvent event) {
 		if (mediaPlayerControl == null) {
@@ -574,18 +516,7 @@ public class VideoControllerBarView extends RelativeLayout {
 		if (pause != null) {
 			pause.setEnabled(enabled);
 		}
-		if (forward != null) {
-			forward.setEnabled(enabled);
-		}
-		if (rewind != null) {
-			rewind.setEnabled(enabled);
-		}
-		if (mNextButton != null) {
-			mNextButton.setEnabled(enabled && nextListener != null);
-		}
-		if (previous != null) {
-			previous.setEnabled(enabled && prevListener != null);
-		}
+
 		if (progressBar != null) {
 			progressBar.setEnabled(enabled);
 		}
@@ -628,33 +559,6 @@ public class VideoControllerBarView extends RelativeLayout {
 		}
 	};
 
-	private void installPrevNextListeners() {
-		if (mNextButton != null) {
-			mNextButton.setOnClickListener(nextListener);
-			mNextButton.setEnabled(nextListener != null);
-		}
-		if (previous != null) {
-			previous.setOnClickListener(prevListener);
-			previous.setEnabled(prevListener != null);
-		}
-	}
-
-	public void setPrevNextListeners(OnClickListener next,
-			OnClickListener prev) {
-		nextListener = next;
-		prevListener = prev;
-		isListenersSet = true;
-		if (rootView != null) {
-			installPrevNextListeners();
-
-			if (mNextButton != null && !isFromXml) {
-				mNextButton.setVisibility(View.VISIBLE);
-			}
-			if (previous != null && !isFromXml) {
-				previous.setVisibility(View.VISIBLE);
-			}
-		}
-	}
 
 	public interface IMediaPlayerControl {
 		void start();
@@ -674,10 +578,6 @@ public class VideoControllerBarView extends RelativeLayout {
 		int getBufferPercentage();
 
 		boolean canPause();
-
-		boolean canSeekBackward();
-
-		boolean canSeekForward();
 
 		boolean isFullScreen();
 
@@ -748,49 +648,16 @@ public class VideoControllerBarView extends RelativeLayout {
 				LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		linearLayoutForButton.setLayoutParams(layoutparamsForButton);
 
-		ImageButton prev = new ImageButton(context);
-		prev.setId(VastVideoUtil.VIDEO_PREV);
-		prev.setContentDescription(VastVideoUtil.STRING_MEDIA_CONTROLS);
-		prev.setVisibility(GONE);
-		LayoutParams layoutparamsprev = new LayoutParams(
-				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		prev.setLayoutParams(layoutparamsprev);
-		linearLayoutForButton.addView(prev);
-
-		ImageButton rew = new ImageButton(context);
-		rew.setId(VastVideoUtil.VIDEO_REW);
-		rew.setContentDescription(VastVideoUtil.STRING_MEDIA_CONTROLS);
-		rew.setVisibility(GONE);
-		LayoutParams layoutparamrew = new LayoutParams(
-				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		rew.setLayoutParams(layoutparamrew);
-		linearLayoutForButton.addView(rew);
 
 		ImageView pause = new ImageView(context);
-		pause.setId(VastVideoUtil.VIDEO_PAUSE);
+        int videoPauseId = VastVideoUtil.VIDEO_PAUSE;
+        pause.setId(videoPauseId);
 		pause.setContentDescription(VastVideoUtil.STRING_MEDIA_CONTROLS);
 		LayoutParams layoutparampause = new LayoutParams(
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		pause.setLayoutParams(layoutparampause);
 		linearLayoutForButton.addView(pause);
 
-		ImageButton ffwd = new ImageButton(context);
-		ffwd.setId(VastVideoUtil.VIDEO_FFWD);
-		ffwd.setContentDescription(VastVideoUtil.STRING_MEDIA_CONTROLS);
-		ffwd.setVisibility(GONE);
-		LayoutParams layoutparamffwd = new LayoutParams(
-				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		ffwd.setLayoutParams(layoutparamffwd);
-		linearLayoutForButton.addView(ffwd);
-
-		ImageButton next = new ImageButton(context);
-		next.setId(VastVideoUtil.VIDEO_NEXT);
-		next.setContentDescription(VastVideoUtil.STRING_MEDIA_CONTROLS);
-		next.setVisibility(GONE);
-		LayoutParams layoutparamnext = new LayoutParams(
-				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-		next.setLayoutParams(layoutparamnext);
-		linearLayoutForButton.addView(next);
 		mainLinearLayout.addView(linearLayoutForButton);
 
 		RelativeLayout relativeLayoutText = new RelativeLayout(context);
