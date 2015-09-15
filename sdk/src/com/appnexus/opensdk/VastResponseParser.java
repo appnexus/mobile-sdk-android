@@ -3,7 +3,6 @@ package com.appnexus.opensdk;
 import android.util.Xml;
 
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.VastVideoUtil;
 import com.appnexus.opensdk.vastdata.AdModel;
 import com.appnexus.opensdk.vastdata.ClickTrackingModel;
 import com.appnexus.opensdk.vastdata.CompanionAdModel;
@@ -1019,5 +1018,4 @@ public class VastResponseParser {
 		}
 		return result.trim();
 	}
-
 }

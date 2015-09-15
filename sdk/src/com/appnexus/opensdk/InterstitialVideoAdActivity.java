@@ -28,7 +28,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.VastVideoUtil;
 import com.appnexus.opensdk.utils.ViewUtil;
 
 class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation {
@@ -136,7 +135,6 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
         layout.addView(videoView);
 
         videoPlayer = new InterstitialVideoPlayer();
-//        videoPlayer = new VastVideoPlayer();
         videoPlayer.setUpdateCountdownTimerListener(new IUpdateCountdownTimerListener() {
             @Override
             public void onUpdateCountdownTimer(String skipOffset) {
@@ -237,8 +235,8 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
             }
         });
 
-
         videoPlayer.initiateVASTVideoPlayer(adActivity, videoView, layout, videoConfig);
+
     }
 
     // add the close button if it hasn't been added already

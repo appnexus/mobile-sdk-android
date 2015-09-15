@@ -19,30 +19,30 @@ public class VastVideoConfiguration {
     /**
      * @return the openInNativeBrowser
      */
-    public boolean openInNativeBrowser() {
+    protected boolean openInNativeBrowser() {
         return openInNativeBrowser;
     }
 
     /**
      * @param openInBrowser the openInNativeBrowser to set
      */
-    public void setOpenInNativeBrowser(boolean openInBrowser) {
+    protected void setOpenInNativeBrowser(boolean openInBrowser) {
         this.openInNativeBrowser = openInBrowser;
     }
 
 	/**
 	 * Returns the skip countdown position 
-	 * @return
+	 * @return countdownLabelPosition
 	 */
-	public LABEL_POSITION getCountdownLabelPosition() {
+    protected LABEL_POSITION getCountdownLabelPosition() {
 		return countdownLabelPosition;
 	}
 
 	/**
 	 * Sets the countdown timer label position
-	 * @param countdownLabelPosition
+	 * @param countdownLabelPosition - position of countdown timer label
 	 */
-	public void setCountdownLabelPosition(LABEL_POSITION countdownLabelPosition) {
+    protected void setCountdownLabelPosition(LABEL_POSITION countdownLabelPosition) {
 		this.countdownLabelPosition = countdownLabelPosition;
 	}
 
@@ -50,7 +50,7 @@ public class VastVideoConfiguration {
 	/**
 	 * @return the skipOffset
 	 */
-	public int getSkipOffset() {
+    protected int getSkipOffset() {
 		return skipOffset;
 	}
 
@@ -61,7 +61,7 @@ public class VastVideoConfiguration {
 	 * @param skipOffset - in seconds or in percentage of ad's total duration
 	 * @param skipOffsetType - absolute or relative
 	 */
-	public void setSkipOffset(int skipOffset, SKIP_OFFSET_TYPE skipOffsetType) {
+    protected void setSkipOffset(int skipOffset, SKIP_OFFSET_TYPE skipOffsetType) {
 		this.skipOffset = skipOffset;
 		this.skipOffsetType = skipOffsetType;
 	}
@@ -69,7 +69,7 @@ public class VastVideoConfiguration {
 	/**
 	 * @return the skipOffsetType
 	 */
-	public SKIP_OFFSET_TYPE getSkipOffsetType() {
+    protected SKIP_OFFSET_TYPE getSkipOffsetType() {
 		return skipOffsetType;
 	}
 	

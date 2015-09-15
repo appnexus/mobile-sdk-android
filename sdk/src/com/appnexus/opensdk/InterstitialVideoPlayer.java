@@ -1,7 +1,6 @@
 package com.appnexus.opensdk;
 
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.VastVideoUtil;
 
 import java.util.Timer;
 import java.util.TimerTask;

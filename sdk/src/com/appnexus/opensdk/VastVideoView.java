@@ -10,7 +10,6 @@ import android.widget.RelativeLayout;
 import android.widget.VideoView;
 
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.VastVideoUtil;
 import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.vastdata.AdModel;
 

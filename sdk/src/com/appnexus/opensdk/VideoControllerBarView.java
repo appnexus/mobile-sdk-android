@@ -21,7 +21,6 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import com.appnexus.opensdk.utils.Drawables;
-import com.appnexus.opensdk.utils.VastVideoUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.Formatter;
@@ -46,7 +45,7 @@ public class VideoControllerBarView extends RelativeLayout {
 	private ImageView fullscreen;
 	private ImageView mute;
 	private Handler mHandler = new MessageHandler(this);
-	public static boolean isrewind;
+//	public static boolean isrewind;
 
 
 	@Override
@@ -438,22 +437,6 @@ public class VideoControllerBarView extends RelativeLayout {
 		updateMuteUnMute();
 	}
 
-	private void dorewind() {
-		if (mediaPlayerControl == null) {
-			return;
-		}
-		if (mediaPlayerControl.isPlaying()) {
-			mediaPlayerControl.rewind();
-		}
-		updaterewind();
-	}
-
-	private void updaterewind() {
-		if (rootView == null || mute == null || mediaPlayerControl == null) {
-			return;
-		}
-	}
-
 	private void doToggleFullscreen() {
 		if (mediaPlayerControl == null) {
 			return;
@@ -461,8 +444,6 @@ public class VideoControllerBarView extends RelativeLayout {
 		mediaPlayerControl.toggleFullScreen();
 		updateFullScreen();
 	}
-
-
 
 	private OnSeekBarChangeListener mSeekListener = new OnSeekBarChangeListener() {
 		public void onStartTrackingTouch(SeekBar bar) {
@@ -485,12 +466,11 @@ public class VideoControllerBarView extends RelativeLayout {
 
 			long newposition = (duration * progress) / 1000L;
 
-			if (currentduration - newposition > 0) {
-				if (mediaPlayerControl.isPlaying()) {
-					isrewind = true;
-				}
-				updaterewind();
-			}
+//			if (currentduration - newposition > 0) {
+//				if (mediaPlayerControl.isPlaying()) {
+//					isrewind = true;
+//				}
+//			}
 			mediaPlayerControl.seekTo((int) newposition);
 			if (currentTime != null)
 				currentTime.setText(stringForTime((int) newposition));
@@ -499,10 +479,10 @@ public class VideoControllerBarView extends RelativeLayout {
 
 		public void onStopTrackingTouch(SeekBar bar) {
 			isDragging = false;
-			if (isrewind && mediaPlayerControl.isPlaying()) {
-				mediaPlayerControl.rewind();
-				isrewind = false;
-			}
+//			if (isrewind && mediaPlayerControl.isPlaying()) {
+//				mediaPlayerControl.rewind();
+//				isrewind = false;
+//			}
 			setProgress();
 			updatePausePlay();
 			show(DEFAULT_TIMEOUT);
@@ -523,41 +503,6 @@ public class VideoControllerBarView extends RelativeLayout {
 		disableUnsupportedButtons();
 		super.setEnabled(enabled);
 	}
-
-	private OnClickListener mRewListener = new OnClickListener() {
-		public void onClick(View v) {
-			if (mediaPlayerControl == null) {
-				return;
-			}
-
-			int pos = mediaPlayerControl.getCurrentPosition();
-			int duration = mediaPlayerControl.getDuration();
-			int factor = duration / 12;
-			// pos -= 50; // milliseconds
-			pos -= factor;
-			mediaPlayerControl.seekTo(pos);
-			setProgress();
-			dorewind();
-			show(DEFAULT_TIMEOUT);
-		}
-	};
-
-	private OnClickListener mFfwdListener = new OnClickListener() {
-		public void onClick(View v) {
-			if (mediaPlayerControl == null) {
-				return;
-			}
-			int pos = mediaPlayerControl.getCurrentPosition();
-			int duration = mediaPlayerControl.getDuration();
-			int factor = duration / 8;
-			// pos += 50; // milliseconds
-			pos += factor;
-			mediaPlayerControl.seekTo(pos);
-			setProgress();
-
-			show(DEFAULT_TIMEOUT);
-		}
-	};
 
 
 	public interface IMediaPlayerControl {
@@ -589,7 +534,7 @@ public class VideoControllerBarView extends RelativeLayout {
 
 		void unMute();
 
-		void rewind();
+//		void rewind();
 
 	}
 

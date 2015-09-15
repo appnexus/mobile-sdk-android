@@ -1,4 +1,4 @@
-package com.appnexus.opensdk.utils;
+package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -13,7 +13,7 @@ import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
-import com.appnexus.opensdk.VastVideoConfiguration;
+import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.vastdata.AdModel;
 import com.appnexus.opensdk.vastdata.ClickTrackingModel;
 import com.appnexus.opensdk.vastdata.CreativeModel;

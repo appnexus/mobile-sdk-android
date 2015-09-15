@@ -22,7 +22,6 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.JsonUtil;
 import com.appnexus.opensdk.utils.StringUtil;
-import com.appnexus.opensdk.utils.VastVideoUtil;
 import com.appnexus.opensdk.vastdata.AdModel;
 
 import org.apache.http.Header;

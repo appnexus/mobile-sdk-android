@@ -1,8 +1,10 @@
 package com.appnexus.opensdk;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+
+import com.appnexus.opensdk.utils.Clog;
 
 public class HibernationBroadcast extends BroadcastReceiver {
 	 public HibernationListener hibernationListener;
@@ -19,17 +21,17 @@ public class HibernationBroadcast extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
-			Log.d("HibernationBroadcast", "HibernationBroadcast ACTION_SCREEN_OFF");
+			Clog.d("HibernationBroadcast", "HibernationBroadcast ACTION_SCREEN_OFF");
             if (hibernationListener != null) {
 				hibernationListener.onScreenDisplayOff();
 			}
         } else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
-            Log.d("HibernationBroadcast", "HibernationBroadcast ACTION_SCREEN_ON");
+            Clog.d("HibernationBroadcast", "HibernationBroadcast ACTION_SCREEN_ON");
             if (hibernationListener != null) {
 				hibernationListener.onScreenDisplayOn();
 			}
         }else if (intent.getAction().equals(Intent.ACTION_MAIN)) {
-            Log.d("HibernationBroadcast", "HibernationBroadcast ACTION_MAIN");
+            Clog.d("HibernationBroadcast", "HibernationBroadcast ACTION_MAIN");
         }
 	}
 
