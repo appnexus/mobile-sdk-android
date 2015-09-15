@@ -13,7 +13,7 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.vastdata.AdModel;
 
-public class VastVideoView extends VideoView implements OnErrorListener, Displayable {
+class VastVideoView extends VideoView implements OnErrorListener, Displayable {
 	private String TAG = getClass().getSimpleName();
     private AdModel vastAd;
 

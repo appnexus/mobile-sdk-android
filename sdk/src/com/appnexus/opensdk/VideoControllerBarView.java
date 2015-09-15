@@ -26,7 +26,7 @@ import java.lang.ref.WeakReference;
 import java.util.Formatter;
 import java.util.Locale;
 
-public class VideoControllerBarView extends RelativeLayout {
+class VideoControllerBarView extends RelativeLayout {
     public static final int CONTROLLER_DISPLAY_TIMEOUT = 3600000;
     private IMediaPlayerControl mediaPlayerControl;
 	private Context context;
@@ -45,7 +45,6 @@ public class VideoControllerBarView extends RelativeLayout {
 	private ImageView fullscreen;
 	private ImageView mute;
 	private Handler mHandler = new MessageHandler(this);
-//	public static boolean isrewind;
 
 
 	@Override
