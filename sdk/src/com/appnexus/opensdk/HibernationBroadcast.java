@@ -6,7 +6,7 @@ import android.content.Intent;
 
 import com.appnexus.opensdk.utils.Clog;
 
-public class HibernationBroadcast extends BroadcastReceiver {
+class HibernationBroadcast extends BroadcastReceiver {
 	 public HibernationListener hibernationListener;
 	 
 	 /**

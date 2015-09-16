@@ -23,6 +23,7 @@ import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.JsonUtil;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.vastdata.AdModel;
+import com.appnexus.opensdk.vastdata.VastResponseParser;
 
 import org.apache.http.Header;
 import org.json.JSONArray;

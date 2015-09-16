@@ -109,16 +109,6 @@ public class VastVideoUtil {
     public static final String VAST_READNONLINEAR_APIFRAMEWORK_ATTR =  "apiFramework";
     public static final String VAST_READNONLINEAR_MINSUGGESTIONDURATION_ATTR =  "minSuggestedDuration";
 
-    // VAST JSON response String
-    public static final String VAST_JSON_AD = "Ad";
-    public static final String VAST_JSON_FILEURL = "FileUrl";
-    public static final String VAST_JSON_POSITION = "Pos";
-    public static final String VAST_JSON_IMPRESSIONURL = "ImpUrl";
-    public static final String VAST_JSON_CLICKURL = "ClkUrl";
-    public static final String VAST_JSON_H = "H";
-    public static final String VAST_JSON_W = "W";
-    public static final String VAST_JSON_ADTYPE = "AdType";
-    public static final String VAST_JSON_TEXT = "Text";
 
     public static final String EVENT_FIRST_QUARTILE = "firstQuartile";
     public static final String EVENT_MIDPOINT = "midpoint";

@@ -1,6 +1,6 @@
 package com.appnexus.opensdk;
 
-public interface HibernationListener {
+interface HibernationListener {
 	/**
 	 * Gets called when screen comes back from hibernation mode.
 	 */

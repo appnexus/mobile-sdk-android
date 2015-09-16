@@ -1,20 +1,10 @@
-package com.appnexus.opensdk;
+package com.appnexus.opensdk.vastdata;
 
 import android.util.Xml;
 
+import com.appnexus.opensdk.ANSSLSocketFactory;
+import com.appnexus.opensdk.VastVideoUtil;
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.vastdata.AdModel;
-import com.appnexus.opensdk.vastdata.ClickTrackingModel;
-import com.appnexus.opensdk.vastdata.CompanionAdModel;
-import com.appnexus.opensdk.vastdata.CompanionClickTrackingModel;
-import com.appnexus.opensdk.vastdata.CreativeModel;
-import com.appnexus.opensdk.vastdata.LinearAdModel;
-import com.appnexus.opensdk.vastdata.MediaFileModel;
-import com.appnexus.opensdk.vastdata.NonLinearAdModel;
-import com.appnexus.opensdk.vastdata.NonLinearClickTrackingModel;
-import com.appnexus.opensdk.vastdata.ResourceModel;
-import com.appnexus.opensdk.vastdata.TrackingModel;
-import com.appnexus.opensdk.vastdata.VideoClickModel;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -43,8 +33,6 @@ import java.util.ArrayList;
 
 public class VastResponseParser {
 
-	private String TAG = getClass().getSimpleName();
-
 	private int skipOffset;
 
 	private String impressionTrackerUrl;
@@ -56,7 +44,7 @@ public class VastResponseParser {
 
     /**
      * Method to read VAST InputStream
-     * @param data response inputstream
+     * @param data response input stream
      * @throws XmlPullParserException
      * @throws IOException
      * @throws Exception
@@ -64,9 +52,9 @@ public class VastResponseParser {
 	public AdModel readVAST(InputStream data) throws XmlPullParserException,
 			IOException, Exception {
 
-        Clog.i(TAG, "--- Parsing starts ---");
+        Clog.i(Clog.vastLogTag, "--- Parsing starts ---");
 
-		Clog.d(TAG, "Start reading VAST xml tag");
+		Clog.d(Clog.vastLogTag, "Start reading VAST xml tag");
 		XmlPullParser parser = Xml.newPullParser();
 		parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
 		parser.setInput(data, "UTF-8");
@@ -100,12 +88,12 @@ public class VastResponseParser {
 			}
 			String name = p.getName();
 			if (name.equals(VastVideoUtil.VAST_INLINE_TAG)) {
-				Clog.i(TAG,
+				Clog.i(Clog.vastLogTag,
                         "VAST file contains inline ad information.");
 				readInLine(p);
 			}
 			if (name.equals(VastVideoUtil.VAST_WRAPPER_TAG)) {
-				Clog.i(TAG,
+				Clog.i(Clog.vastLogTag,
                         "VAST file contains wrapped ad information.");
 				readWrapper(p);
 			}
@@ -175,7 +163,7 @@ public class VastResponseParser {
 				mediaFileList.add(mediaFileModel);
 				p.require(XmlPullParser.END_TAG, null,
 						VastVideoUtil.VAST_MEDIAFILE_TAG);
-				Clog.i(TAG, "Mediafile url: " + mediaFileModel.getUrl());
+				Clog.i(Clog.vastLogTag, "Mediafile url: " + mediaFileModel.getUrl());
 			} else {
 				skip(p);
 			}
@@ -209,7 +197,7 @@ public class VastResponseParser {
 				trackingModel.setEvent(ev);
 				trackingModel.setURL(readText(p));
 				trackingList.add(trackingModel);
-				Clog.d(TAG, "Added VAST tracking \"" + ev + "\"");
+				Clog.d(Clog.vastLogTag, "Added VAST tracking \"" + ev + "\"");
 				p.require(XmlPullParser.END_TAG, null,
 						VastVideoUtil.VAST_TRACKING_TAG);
 			} else {
@@ -249,7 +237,7 @@ public class VastResponseParser {
 				String id = p.getAttributeValue(null, "id");
 				clickTrackingModel.setId(id);
 				clickTrackingModel.setURL(readText(p));
-				Clog.d(TAG, "Companion click tracking url: "
+				Clog.d(Clog.vastLogTag, "Companion click tracking url: "
                         + clickTrackingModel.getURL() + "  ---- "
                         + clickTrackingModel.getId());
 				p.require(XmlPullParser.END_TAG, null,
@@ -261,7 +249,7 @@ public class VastResponseParser {
 			}
 		}
 
-		Clog.d(TAG,
+		Clog.d(Clog.vastLogTag,
                 "clickTrackingList: " + clickTrackingList.size());
 		return clickTrackingList;
 	}
@@ -305,7 +293,7 @@ public class VastResponseParser {
 			}
 		}
 
-		Clog.d(TAG,
+		Clog.d(Clog.vastLogTag,
                 "clickTrackingList: " + clickTrackingList.size());
 		return clickTrackingList;
 	}
@@ -336,7 +324,7 @@ public class VastResponseParser {
 						VastVideoUtil.VAST_CLICKTHROUGH_TAG);
 				/* this.clickThroughUrl = readText(p); */
 				videoClickModel.setClickThroughURL(readText(p));
-				Clog.d(TAG, "Parsed video clickthrough url: "
+				Clog.d(Clog.vastLogTag, "Parsed video clickthrough url: "
                         + videoClickModel.getClickThroughURL());
 				p.require(XmlPullParser.END_TAG, null,
 						VastVideoUtil.VAST_CLICKTHROUGH_TAG);
@@ -352,7 +340,7 @@ public class VastResponseParser {
 				/* this.clickTrackingUrl = readText(p); */
 				clickTrackingModel.setId(id);
 				clickTrackingModel.setURL(readText(p));
-				Clog.d(TAG, "Parsed video clicktracking url: "
+				Clog.d(Clog.vastLogTag, "Parsed video clicktracking url: "
                         + clickTrackingModel.getURL() + "  - "
                         + clickTrackingModel.getId());
 				p.require(XmlPullParser.END_TAG, null,
@@ -366,10 +354,7 @@ public class VastResponseParser {
 			}
 		}
 
-		Clog.d(
-                TAG,
-                "clickTrackingList: "
-                        + videoClickModel.getClickTrackingArrayList());
+		Clog.d(Clog.vastLogTag, "clickTrackingList: "+ videoClickModel.getClickTrackingArrayList());
 		return videoClickModel;
 	}
 
@@ -389,7 +374,7 @@ public class VastResponseParser {
 
 		String skipoffsetStr = p.getAttributeValue(null, "skipOffset");
 		if (skipoffsetStr != null && skipoffsetStr.indexOf(":") < 0) {
-			Clog.d(TAG,
+			Clog.d(Clog.vastLogTag,
                     "Relative skip offset present. Ad would be skippable after x amount of time");
 			linearAdModel.setSkipOffset(skipoffsetStr);
 		} else if (skipoffsetStr != null && skipoffsetStr.indexOf(":") >= 0) {
@@ -397,9 +382,9 @@ public class VastResponseParser {
 			// skipOffset = -1;
 			linearAdModel.setSkipOffset(String.valueOf(skipOffset));
 
-			Clog.d(TAG, "Absolute skipOffset present.");
+			Clog.d(Clog.vastLogTag, "Absolute skipOffset present.");
 		} else {
-			Clog.d(TAG, "No skip offset present. Ad would not be skippable");
+			Clog.d(Clog.vastLogTag, "No skip offset present. Ad would not be skippable");
 		}
 		
 		while (p.next() != XmlPullParser.END_TAG) {
@@ -415,7 +400,7 @@ public class VastResponseParser {
 				p.require(XmlPullParser.END_TAG, null,
 						VastVideoUtil.VAST_DURATION_TAG);
 
-				Clog.d(TAG, "Video duration:- " + this.duration);
+				Clog.d(Clog.vastLogTag, "Video duration:- " + this.duration);
 				linearAdModel.setDuration(this.duration);
 
 			} else if (name != null
@@ -439,18 +424,18 @@ public class VastResponseParser {
 			if (name != null && name.equals(VastVideoUtil.VAST_LINEAR_TAG)) {
 
 				if (linearAdModel.getTrackingEventArrayList() != null) {
-					Clog.d(TAG, "getTrackingEventArrayList "
+					Clog.d(Clog.vastLogTag, "getTrackingEventArrayList "
                             + linearAdModel.getTrackingEventArrayList().size());
 				} else {
-					Clog.d(TAG, "<TrackingEvents> tag is not present.");
+					Clog.d(Clog.vastLogTag, "<TrackingEvents> tag is not present.");
 					linearAdModel
 							.setTrackingEventArrayList(new ArrayList<TrackingModel>());
 				}
 
 				if (linearAdModel.getMediaFilesArrayList() != null) {
-					Clog.d(TAG, "getMediaFilesArrayList : " + linearAdModel.getMediaFilesArrayList().size());
+					Clog.d(Clog.vastLogTag, "getMediaFilesArrayList : " + linearAdModel.getMediaFilesArrayList().size());
 				} else {
-					Clog.d(TAG, "<MediaFiles> tag is not present.");
+					Clog.d(Clog.vastLogTag, "<MediaFiles> tag is not present.");
 					linearAdModel.setMediaFilesArrayList(new ArrayList<MediaFileModel>());
 				}
 
@@ -672,7 +657,7 @@ public class VastResponseParser {
 			companionAdList.add(companionAdModel);
 		}
 
-		Clog.w(TAG, "Companion Ad List " + companionAdList.size());
+		Clog.w(Clog.vastLogTag, "Companion Ad List " + companionAdList.size());
 	}
 
 	/**
@@ -704,7 +689,7 @@ public class VastResponseParser {
 			nonLinearAdList.add(nonLinearAdModel);
 		}
 
-		Clog.w(TAG, "companionAdList........ " + nonLinearAdList.size());
+		Clog.w(Clog.vastLogTag, "companionAdList........ " + nonLinearAdList.size());
 	}
 
 	/**
@@ -757,15 +742,15 @@ public class VastResponseParser {
 				if (skipoffsetStr != null && skipoffsetStr.contains(":")) {
 
 					skipOffset = Integer.parseInt(skipoffsetStr.substring(0, skipoffsetStr.length() - 1));
-					Clog.d(TAG, "Linear skipoffset is " + skipOffset + " [%]");
+					Clog.d(Clog.vastLogTag, "Linear skipoffset is " + skipOffset + " [%]");
 
 				} else if (skipoffsetStr != null && skipoffsetStr.contains(":")) {
 
 					int skipoffsetInSeconds = VastVideoUtil.convertStringtoSeconds(skipoffsetStr);
-					Clog.d(TAG, "Skip offset (in seconds) - " + skipoffsetInSeconds);
+					Clog.d(Clog.vastLogTag, "Skip offset (in seconds) - " + skipoffsetInSeconds);
 					// skipOffset = -1;
 					skipOffset = skipoffsetInSeconds;
-					Clog.w(TAG, "Absolute time value ignored for skipOffset in VAST xml. Only percentage values will pe parsed.");
+					Clog.w(Clog.vastLogTag, "Absolute time value ignored for skipOffset in VAST xml. Only percentage values will pe parsed.");
 				}
 				readCompanionAds(p);
 			} else {
@@ -779,7 +764,7 @@ public class VastResponseParser {
 			if (name != null && name.equals(VastVideoUtil.VAST_CREATIVE_TAG)) {
 
 				creativesArrayList.add(creativeModel);
-				Clog.d(TAG, "CREATIVE TAG ENDED creative list size - " + creativesArrayList.size());
+				Clog.d(Clog.vastLogTag, "CREATIVE TAG ENDED creative list size - " + creativesArrayList.size());
 			}
 
 		}
@@ -795,7 +780,7 @@ public class VastResponseParser {
 	private void readCreatives(XmlPullParser p) throws IOException,
 			XmlPullParserException {
 
-		Clog.d(TAG, "Read Creative tag ");
+		Clog.d(Clog.vastLogTag, "Read Creative tag ");
 
 		p.require(XmlPullParser.START_TAG, null, VastVideoUtil.VAST_CREATIVES_TAG);
 		ArrayList<CreativeModel> creativesArrayList = new ArrayList<CreativeModel>();
@@ -857,19 +842,19 @@ public class VastResponseParser {
 
 		} catch (MalformedURLException mue) {
 			isError = true;
-			Clog.e(TAG, "Error fetching wrapped vast tag - Malformed URL exception :\n" + mue.getMessage());
+			Clog.e(Clog.vastLogTag, "Error fetching wrapped vast tag - Malformed URL exception :\n" + mue.getMessage());
 		} catch (ClientProtocolException e) {
 			isError = true;
-			Clog.e(TAG, "Error fetching wrapped vast tag - Client protocol exception :\n" + e.getMessage());
+			Clog.e(Clog.vastLogTag, "Error fetching wrapped vast tag - Client protocol exception :\n" + e.getMessage());
 		} catch (IllegalStateException e) {
 			isError = true;
-			Clog.e(TAG, "Error fetching wrapped vast tag - IllegalStateException :\n" + e.getMessage());
+			Clog.e(Clog.vastLogTag, "Error fetching wrapped vast tag - IllegalStateException :\n" + e.getMessage());
 		} catch (IOException e) {
 			isError = true;
-			Clog.e(TAG, "Error fetching wrapped vast tag - IO-Exception :\n" + e.getMessage());
+			Clog.e(Clog.vastLogTag, "Error fetching wrapped vast tag - IO-Exception :\n" + e.getMessage());
 		} catch (Exception e) {
 			isError = true;
-			Clog.e(TAG, "Error fetching wrapped vast tag - Exception :\n" + e.getMessage());
+			Clog.e(Clog.vastLogTag, "Error fetching wrapped vast tag - Exception :\n" + e.getMessage());
 		} 
 		if (isError) {
 			throw new Exception("Error fetching wrapped VAST ad response");
@@ -924,7 +909,7 @@ public class VastResponseParser {
 				p.require(XmlPullParser.END_TAG, null,
 						VastVideoUtil.VAST_IMPRESSION_TAG);
 
-				Clog.d(TAG, "Wrapper Impression tracker url: "
+				Clog.d(Clog.vastLogTag, "Wrapper Impression tracker url: "
                         + this.impressionTrackerUrl);
 
                 vastAd.getImpressionArrayList().add(impressionTrackerUrl);
@@ -962,7 +947,7 @@ public class VastResponseParser {
 				p.require(XmlPullParser.END_TAG, null,
 						VastVideoUtil.VAST_IMPRESSION_TAG);
                 vastAd.getImpressionArrayList().add(impressionTrackerUrl);
-				Clog.d(TAG, "Impression tracker url: "
+				Clog.d(Clog.vastLogTag, "Impression tracker url: "
                         + this.impressionTrackerUrl);
 			} else if (name != null
 					&& name.equals(VastVideoUtil.VAST_CREATIVES_TAG)) {
@@ -984,7 +969,7 @@ public class VastResponseParser {
 			} else {
 				skip(p);
 			}
-			Clog.d(TAG, "Impression tracker url ArrayList: " + vastAd.getImpressionArrayList().size());
+			Clog.d(Clog.vastLogTag, "Impression tracker url ArrayList: " + vastAd.getImpressionArrayList().size());
 
 		}
 	}
@@ -1014,7 +999,7 @@ public class VastResponseParser {
 			result = parser.getText();
 			parser.nextTag();
 		} else {
-			Clog.w(TAG, "No text: " + parser.getName());
+			Clog.w(Clog.vastLogTag, "No text: " + parser.getName());
 		}
 		return result.trim();
 	}

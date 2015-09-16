@@ -158,7 +158,6 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
                 if (adView !=null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onVideoStart();
                 }
-
             }
 
             @Override
