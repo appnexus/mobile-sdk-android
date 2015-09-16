@@ -108,7 +108,7 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
         // To be safe, ads from the future will be considered to have expired
         // if now-p.first is less than 0, the ad will be considered to be from the future
         while (iAQE != null
-                && (now - iAQE.getTime() > InterstitialAdView.MAX_AGE || now-iAQE.getTime()<0)) {
+                && (now - iAQE.getTime() > InterstitialAdView.MAX_AGE || now - iAQE.getTime() < 0)) {
             Clog.w(Clog.baseLogTag, Clog.getString(R.string.too_old));
             iAQE = adView.getAdQueue().poll();
         }
@@ -131,23 +131,29 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (adActivity != null) adActivity.finish();
+                if (adActivity != null) {
+                    if (adView != null && adView.getAdDispatcher() != null) {
+                        adView.getAdDispatcher().onAdCollapsed();
+                    }
+                    adActivity.finish();
+                }
             }
         });
 
         layout.addView(closeButton);
     }
 
-    static class CloseButtonHandler extends Handler{
+    static class CloseButtonHandler extends Handler {
         WeakReference<InterstitialAdActivity> weakReferenceIAA;
-        public CloseButtonHandler(InterstitialAdActivity a){
-            weakReferenceIAA=new WeakReference<InterstitialAdActivity>(a);
+
+        public CloseButtonHandler(InterstitialAdActivity a) {
+            weakReferenceIAA = new WeakReference<InterstitialAdActivity>(a);
         }
 
         @Override
         public void handleMessage(Message msg) {
             InterstitialAdActivity iAA = weakReferenceIAA.get();
-            if (msg.what == CLOSE_BUTTON_MESSAGE_ID && iAA!=null) iAA.addCloseButton();
+            if (msg.what == CLOSE_BUTTON_MESSAGE_ID && iAA != null) iAA.addCloseButton();
         }
     }
 }

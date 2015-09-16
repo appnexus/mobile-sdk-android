@@ -1,3 +1,6 @@
+## RC2.6
++ MS-1592 Bug fix for InterstitialAdView not passing back onAdCollapsed
+
 ## RC2.5
 + MS-1512 NPE fix in AdRequest
 + MS-1426 Change interstitial timeout from 60 seconds to 4.5 minutes
