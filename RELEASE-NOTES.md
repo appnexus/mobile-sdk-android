@@ -1,4 +1,5 @@
 ## RC2.6
++ MS-1619 Bug fix for DFP banner impression logging
 + MS-1592 Bug fix for InterstitialAdView not passing back onAdCollapsed
 
 ## RC2.5

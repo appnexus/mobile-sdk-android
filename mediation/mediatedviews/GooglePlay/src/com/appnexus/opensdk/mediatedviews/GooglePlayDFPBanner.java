@@ -154,9 +154,6 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
 
         builder.addNetworkExtras(new AdMobExtras(bundle));
 
-        // hack
-        builder.setManualImpressionsEnabled(true);
-
         return builder.build();
     }
 
