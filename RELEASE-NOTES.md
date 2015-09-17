@@ -1,3 +1,6 @@
+## RC2.5.1
++ MS-1619 Bug fix for DFP banner impression logging
+
 ## RC2.5
 + MS-1512 NPE fix in AdRequest
 + MS-1426 Change interstitial timeout from 60 seconds to 4.5 minutes
