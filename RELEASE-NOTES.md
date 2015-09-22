@@ -1,4 +1,5 @@
 ## RC2.6
++ MS-1629 Bug fix for using comma as decimal points when user sets certain languages
 + MS-1619 Bug fix for DFP banner impression logging
 + MS-1592 Bug fix for InterstitialAdView not passing back onAdCollapsed
 

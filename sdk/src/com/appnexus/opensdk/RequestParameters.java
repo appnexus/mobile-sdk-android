@@ -33,6 +33,7 @@ import com.appnexus.opensdk.utils.StringUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Locale;
 
 class RequestParameters {
     private MediaType mediaType;
@@ -369,8 +370,8 @@ class RequestParameters {
                 lat = "" + lastLocation.getLatitude();
                 lon = "" + lastLocation.getLongitude();
             } else {
-                lat = String.format("%." + SDKSettings.getLocationDecimalDigits() + "f", lastLocation.getLatitude());
-                lon = String.format("%." + SDKSettings.getLocationDecimalDigits() + "f", lastLocation.getLongitude());
+                lat = String.format(Locale.ENGLISH, "%." + SDKSettings.getLocationDecimalDigits() + "f", lastLocation.getLatitude());
+                lon = String.format(Locale.ENGLISH, "%." + SDKSettings.getLocationDecimalDigits() + "f", lastLocation.getLongitude());
             }
             locDataPrecision = "" + lastLocation.getAccuracy();
             //Don't report location data from the future
