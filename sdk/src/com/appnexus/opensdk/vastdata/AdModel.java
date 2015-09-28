@@ -148,6 +148,14 @@ public class AdModel {
 		this.impressionArrayList = impressionArrayList;
 	}
 	
-	
+	public boolean containsLinearAd(){
+        if (this.getCreativesArrayList() != null
+                && this.getCreativesArrayList().size() > 0
+                && this.getCreativesArrayList().get(0) != null
+                && this.getCreativesArrayList().get(0).getLinearAdModel() != null) {
+            return true;
+        }
+        return false;
+    }
 
 }

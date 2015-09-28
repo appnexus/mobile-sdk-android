@@ -41,6 +41,7 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
     private static final int CLOSE_BUTTON_MESSAGE_ID = 8000;
     private ImageButton closeButton;
 
+
     public InterstitialAdActivity(Activity adActivity) {
         this.adActivity = adActivity;
     }

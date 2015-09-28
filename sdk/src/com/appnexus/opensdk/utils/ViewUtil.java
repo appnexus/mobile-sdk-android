@@ -21,10 +21,18 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
-import android.view.*;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+
+import com.appnexus.opensdk.R;
+import com.appnexus.opensdk.VastVideoUtil;
 
 public class ViewUtil {
     public static ImageButton createCloseButton(Context context, boolean custom_close) {
@@ -42,19 +50,20 @@ public class ViewUtil {
         return close;
     }
 
-    public static ImageButton createCloseButtonInRelativeLayout(Context context, boolean custom_close) {
-        final ImageButton close = new ImageButton(context);
-        if (!custom_close){
-            close.setImageDrawable(context.getResources().getDrawable(
-                    android.R.drawable.ic_menu_close_clear_cancel));
-        }
+    public static ImageView createMuteButtonInRelativeLayout(Context context) {
+        final ImageView muteButton = new ImageButton(context);
+
+        muteButton.setImageResource(R.drawable.unmute);
+        muteButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
         RelativeLayout.LayoutParams blp = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT);
+                VastVideoUtil.getSizeInDP(context, 60),
+                VastVideoUtil.getSizeInDP(context, 60));
         blp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        close.setLayoutParams(blp);
-        close.setBackgroundColor(Color.TRANSPARENT);
-        return close;
+        blp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        muteButton.setLayoutParams(blp);
+        muteButton.setBackgroundColor(Color.TRANSPARENT);
+
+        return muteButton;
     }
 
 

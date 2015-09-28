@@ -1,5 +1,8 @@
 package com.appnexus.opensdk;
 
+import android.content.Context;
+import android.widget.RelativeLayout;
+
 import com.appnexus.opensdk.utils.Clog;
 
 import java.util.Timer;
@@ -14,15 +17,22 @@ public class InterstitialVideoPlayer extends VastVideoPlayer {
     protected Timer videoDismissTimer;
     protected TimerTask videoDismissTask;
 
+    public InterstitialVideoPlayer(Context context, VastVideoView videoView, RelativeLayout relativeLayout, VastVideoConfiguration videoConfiguration) {
+        super(context, videoView, relativeLayout, videoConfiguration);
+    }
+
+
+    @Override
+    protected void startCountdownTimer(int skipOffsetValue) {
+        if (updateCountdownTimerListener != null) {
+            updateCountdownTimerListener.onStartCountdownTimer(skipOffsetValue+"");
+        }
+    }
+
     @Override
     protected void updateCountdownTimer(int skipOffsetValue) {
-
-        String skipOffsetInHHSS = VastVideoUtil.convertIntToHHSS(skipOffsetValue);
-        if(videoControllerBar != null){
-            videoControllerBar.progressBar.setEnabled(false);
-        }
         if (updateCountdownTimerListener != null) {
-            updateCountdownTimerListener.onUpdateCountdownTimer(skipOffsetInHHSS);
+            updateCountdownTimerListener.onUpdateCountdownTimer(skipOffsetValue+"");
         }
     }
 

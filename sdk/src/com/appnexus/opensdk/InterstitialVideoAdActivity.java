@@ -17,30 +17,27 @@
 package com.appnexus.opensdk;
 
 import android.app.Activity;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ViewUtil;
 
 class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation {
-    public static final int TEXT_SIZE = 17;
+    public static final int MARGIN = 10;
+    public static final int CCD_DIMENSIONS = 30;
     private Activity adActivity;
-    private TextView countdownTimerText;
     private RelativeLayout layout;
     private long now;
     private InterstitialAdView adView;
-    private ImageButton closeButton;
     private VastVideoView videoView;
     private InterstitialVideoPlayer videoPlayer;
     private VastVideoConfiguration videoConfig;
+
+    private CircularCountdown countdownWidget;
 
     public InterstitialVideoAdActivity(Activity adActivity) {
         this.adActivity = adActivity;
@@ -58,19 +55,21 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
                 System.currentTimeMillis());
         setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
 
-        addCountdownTimerTextView();
+        addCountdownWidget();
 
-        addCloseButton();
     }
 
-    private void addCountdownTimerTextView() {
-        countdownTimerText = new TextView(adActivity);
-        countdownTimerText.setTextSize(TEXT_SIZE);
-        countdownTimerText.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        countdownTimerText.setTextColor(Color.WHITE);
-        countdownTimerText.setLayoutParams(VastVideoUtil.getTimerPosition(videoConfig));
-        countdownTimerText.setVisibility(View.GONE);
-        layout.addView(countdownTimerText);
+    private void addCountdownWidget() {
+        countdownWidget = (CircularCountdown)adActivity.getLayoutInflater().inflate(R.layout.countdown_widget, null);
+        int size = VastVideoUtil.getSizeInDP(adActivity, CCD_DIMENSIONS);
+        int margin = VastVideoUtil.getSizeInDP(adActivity, MARGIN);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(size,size);
+        params.setMargins(0, margin, margin, 0);
+        countdownWidget.setVisibility(View.GONE);
+        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        countdownWidget.setLayoutParams(params);
+        layout.addView(countdownWidget);
     }
 
     @Override
@@ -89,6 +88,9 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
         if (adView != null) {
             adView.setAdImplementation(null);
         }
+
+        ViewUtil.removeChildFromParent(countdownWidget);
+        countdownWidget = null;
     }
 
     @Override
@@ -134,21 +136,32 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
 
         layout.addView(videoView);
 
-        videoPlayer = new InterstitialVideoPlayer();
+        videoPlayer = new InterstitialVideoPlayer(adActivity, videoView, layout, videoConfig);
         videoPlayer.setUpdateCountdownTimerListener(new IUpdateCountdownTimerListener() {
+
+            @Override
+            public void onStartCountdownTimer(String skipOffset) {
+                countdownWidget.setVisibility(View.VISIBLE);
+                countdownWidget.bringToFront();
+                countdownWidget.setMax(Integer.parseInt(skipOffset));
+                countdownWidget.setProgress(Integer.parseInt(skipOffset));
+                int seconds = (int) (Integer.parseInt(skipOffset) / 1000) + 1;
+                countdownWidget.setTitle(seconds+"");
+                countdownWidget.setOnClickListener(null);
+
+            }
+
             @Override
             public void onUpdateCountdownTimer(String skipOffset) {
-                countdownTimerText.setVisibility(View.VISIBLE);
-                countdownTimerText.setText(skipOffset + "  ");
-                countdownTimerText.bringToFront();
+                int seconds = (int) (Integer.parseInt(skipOffset) / 1000) + 1;
+                countdownWidget.setProgress(Integer.parseInt(skipOffset));
+                countdownWidget.setTitle(seconds+"");
             }
 
             @Override
             public void onDisplayCloseButton() {
-                countdownTimerText.setText("");
-                countdownTimerText.setVisibility(View.GONE);
-                closeButton.setVisibility(View.VISIBLE);
-                closeButton.bringToFront();
+                countdownWidget.setTitle("X");
+                countdownWidget.setOnClickListener(clickListener);
             }
         });
 
@@ -234,28 +247,20 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
             }
         });
 
-        videoPlayer.initiateVASTVideoPlayer(adActivity, videoView, layout, videoConfig);
+        videoPlayer.initiateVASTVideoPlayer();
 
     }
 
-    // add the close button if it hasn't been added already
-    private void addCloseButton() {
-        if ((layout == null) || (closeButton != null)) return;
 
-        closeButton = ViewUtil.createCloseButtonInRelativeLayout(adActivity, false);
-        closeButton.setVisibility(View.GONE);
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (videoPlayer != null) {
-                    videoPlayer.skipVideo();
-                } else if (adActivity != null) {
-                    adActivity.finish();
-                }
+    View.OnClickListener clickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (videoPlayer != null) {
+                videoPlayer.skipVideo();
+            } else if (adActivity != null) {
+                adActivity.finish();
             }
-        });
-
-        layout.addView(closeButton);
-    }
+        }
+    };
 
 }

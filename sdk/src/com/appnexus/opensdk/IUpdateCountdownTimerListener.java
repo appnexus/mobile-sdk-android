@@ -16,6 +16,9 @@
 package com.appnexus.opensdk;
 
 public interface IUpdateCountdownTimerListener {
+
+    public void onStartCountdownTimer(String skipOffset);
+
     public void onUpdateCountdownTimer(String skipOffset);
 
     public void onDisplayCloseButton();

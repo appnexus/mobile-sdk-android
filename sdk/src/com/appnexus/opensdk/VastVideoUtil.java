@@ -626,7 +626,7 @@ public class VastVideoUtil {
                     "      <Impression><![CDATA[http://oasc-training7.247realmedia.com/sdk/sdktest/@Bottomss]]></Impression>\n" +
                     "      <Creatives>\n" +
                     "        <Creative>\n" +
-                    "          <Linear skipOffset=\"00:00:05\">\n" +
+                    "          <Linear skipOffset=\"00:00:10\">\n" +
                     "\t\t  <Icons></Icons>\n" +
                     "            <Duration>00:00:30</Duration>\n" +
                     "            <TrackingEvents>\n" +
@@ -684,7 +684,7 @@ public class VastVideoUtil {
     }
 
 
-    public static int calculateSkipOffset(String parsedSkipOffset, VastVideoConfiguration videoConfiguration, double videoLength) {
+    public static long calculateSkipOffset(String parsedSkipOffset, VastVideoConfiguration videoConfiguration, double videoLength) {
 
         Clog.d(TAG, "Parsed Skip Offset: " + parsedSkipOffset);
         float SKIP_OFFSET = 1.1f;
@@ -711,7 +711,7 @@ public class VastVideoUtil {
             Clog.d(TAG, "skipOffset default value for this video: " + skipOffsetValue);
         }
 
-        return skipOffsetValue;
+        return skipOffsetValue * 1000;
     }
 
 }

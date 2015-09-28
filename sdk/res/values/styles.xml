@@ -17,4 +17,13 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
+    <style name="CircularCountdown">
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="ccd_progressColor">@color/circular_progress_gray</item>
+        <item name="ccd_backgroundColor">@color/circular_progress_white</item>
+        <item name="ccd_strokeWidth">7</item>
+        <item name="ccd_titleColor">#ffffff</item>
+    </style>
+
 </resources>
