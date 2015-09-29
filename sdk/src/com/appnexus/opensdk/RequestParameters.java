@@ -499,15 +499,17 @@ class RequestParameters {
 
         // add custom parameters if there are any
         if (customKeywords != null) {
-            for (Pair<String, String> pair : customKeywords) {
-                if (!StringUtil.isEmpty(pair.first) && (pair.second != null)) {
-                    if (stringNotInParamNames(pair.first)) {
-                        sb.append("&")
-                                .append(pair.first)
-                                .append("=")
-                                .append(Uri.encode(pair.second));
-                    } else {
-                        Clog.w(Clog.httpReqLogTag, Clog.getString(R.string.request_parameter_override_attempt, pair.first));
+            synchronized (customKeywords) {
+                for (Pair<String, String> pair : customKeywords) {
+                    if (!StringUtil.isEmpty(pair.first) && (pair.second != null)) {
+                        if (stringNotInParamNames(pair.first)) {
+                            sb.append("&")
+                                    .append(pair.first)
+                                    .append("=")
+                                    .append(Uri.encode(pair.second));
+                        } else {
+                            Clog.w(Clog.httpReqLogTag, Clog.getString(R.string.request_parameter_override_attempt, pair.first));
+                        }
                     }
                 }
             }
