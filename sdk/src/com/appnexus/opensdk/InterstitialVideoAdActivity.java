@@ -143,9 +143,10 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
             public void onStartCountdownTimer(String skipOffset) {
                 countdownWidget.setVisibility(View.VISIBLE);
                 countdownWidget.bringToFront();
-                countdownWidget.setMax(Integer.parseInt(skipOffset));
-                countdownWidget.setProgress(Integer.parseInt(skipOffset));
-                int seconds = (int) (Integer.parseInt(skipOffset) / 1000) + 1;
+                int skipOffsetInt = getSkipOffsetIntValue(skipOffset);
+                countdownWidget.setMax(skipOffsetInt);
+                countdownWidget.setProgress(skipOffsetInt);
+                int seconds = (int) (skipOffsetInt / 1000) + 1;
                 countdownWidget.setTitle(seconds+"");
                 countdownWidget.setOnClickListener(null);
 
@@ -153,8 +154,9 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
 
             @Override
             public void onUpdateCountdownTimer(String skipOffset) {
-                int seconds = (int) (Integer.parseInt(skipOffset) / 1000) + 1;
-                countdownWidget.setProgress(Integer.parseInt(skipOffset));
+                int skipOffsetInt = getSkipOffsetIntValue(skipOffset);
+                int seconds = (int) (skipOffsetInt / 1000) + 1;
+                countdownWidget.setProgress(skipOffsetInt);
                 countdownWidget.setTitle(seconds+"");
             }
 
@@ -249,6 +251,15 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
 
         videoPlayer.initiateVASTVideoPlayer();
 
+    }
+
+    private int getSkipOffsetIntValue(String skipOffset) {
+        try {
+            int skipOffsetInt = Integer.parseInt(skipOffset);
+            return skipOffsetInt;
+        }catch (NumberFormatException ex){
+            return 0;
+        }
     }
 
 
