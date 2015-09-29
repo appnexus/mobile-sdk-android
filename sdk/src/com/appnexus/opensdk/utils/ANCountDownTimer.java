@@ -24,10 +24,10 @@ public abstract class ANCountDownTimer {
     private CountDownTimer countDownTimer;
 
     public ANCountDownTimer(long millisInFuture, long countDownInterval) {
-        initiateCountDownTimer(millisInFuture, countDownInterval);
+        initiateCountdownTimer(millisInFuture, countDownInterval);
     }
 
-    private void initiateCountDownTimer(final long millisInFuture, final long countDownInterval) {
+    private void initiateCountdownTimer(final long millisInFuture, final long countDownInterval) {
         ANCountDownTimer.this.countDownInterval = countDownInterval;
         ANCountDownTimer.this.countDownTimer = new CountDownTimer(millisInFuture, countDownInterval) {
             @Override
@@ -66,7 +66,7 @@ public abstract class ANCountDownTimer {
     }
 
     public void resumeTimer(){
-        initiateCountDownTimer(pauseTimeMillis, countDownInterval);
+        initiateCountdownTimer(pauseTimeMillis, countDownInterval);
         startTimer();
     }
 
