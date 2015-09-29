@@ -40,7 +40,7 @@ import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.VideoView;
 
-import com.appnexus.opensdk.utils.ANCountDownTimer;
+import com.appnexus.opensdk.utils.ANCountdownTimer;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.vastdata.AdModel;
@@ -73,7 +73,7 @@ abstract public class VastVideoPlayer implements OnCompletionListener,
     private AdModel vastAd;
     private ProgressBar progressBar;
     private VideoEventHandler videoEventHandler;
-    private ANCountDownTimer countDownTimer;
+    private ANCountdownTimer countDownTimer;
     private ImageView muteButton;
 
     public VastVideoPlayer(Context context, VastVideoView videoView, RelativeLayout relativeLayout, VastVideoConfiguration videoConfiguration) {
@@ -325,7 +325,7 @@ abstract public class VastVideoPlayer implements OnCompletionListener,
     private void startVideoCountDown() {
 
         startCountdownTimer((int)skipOffsetMillis);
-        countDownTimer = new ANCountDownTimer((long)videoLength, COUNTDOWN_INTERVAL) {
+        countDownTimer = new ANCountdownTimer((long)videoLength, COUNTDOWN_INTERVAL) {
 
             @Override
             public void onTick(long leftTimeInMilliseconds) {
