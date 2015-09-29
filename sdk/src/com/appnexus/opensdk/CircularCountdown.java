@@ -146,6 +146,4 @@ public class CircularCountdown extends ProgressBar{
 		return title;
 	}
 
-
-
 }
