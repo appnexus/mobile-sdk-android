@@ -22,6 +22,7 @@ public class CircularProgressBar extends ProgressBar{
     public static final int TITLE_FONT_SIZE = 32;
     public static final String MONACO = "Monaco";
     public static final String CLOSE_X = "&#xd7;";
+    public static final int CROSS_X_FONT_SIZE = 48;
 
     private String title = "";
 
@@ -132,7 +133,7 @@ public class CircularProgressBar extends ProgressBar{
 	public synchronized void setTitle(String title){
         if(title.equalsIgnoreCase("X")){
             this.title = Html.fromHtml(CLOSE_X).toString();
-            titlePaint.setTextSize(48);
+            titlePaint.setTextSize(CROSS_X_FONT_SIZE);
         }else{
             this.title = title;
             titlePaint.setTextSize(TITLE_FONT_SIZE);

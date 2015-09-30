@@ -134,14 +134,14 @@ class ServerResponse {
             }
         } catch (JSONException e) {
             Clog.e(Clog.httpRespLogTag,
-                Clog.getString(R.string.response_json_error, body));
+                    Clog.getString(R.string.response_json_error, body));
             return;
         }
         // response will never be null at this point
 
         // stop parsing if status is not valid
         if (!checkStatusIsValid(response)) return;
-        if (mediaType == MediaType.BANNER || mediaType == MediaType.INTERSTITIAL ) {
+        if (mediaType == MediaType.BANNER || mediaType == MediaType.INTERSTITIAL) {
             // stop parsing if we get an ad from ads[]
             /**
              * TODO: Commented the below code just for testing. Uncomment to show standard ads
@@ -194,8 +194,7 @@ class ServerResponse {
             if (StringUtil.isEmpty(content)) {
                 Clog.e(Clog.httpRespLogTag,
                         Clog.getString(R.string.blank_ad));
-            }
-            else {
+            } else {
                 if (content.contains(MRAID_JS_FILENAME)) {
                     addToExtras(EXTRAS_KEY_MRAID, true);
                 }
@@ -216,7 +215,7 @@ class ServerResponse {
             JSONObject firstAd = JsonUtil.getJSONObjectFromArray(nativeAd, 0);
             type = JsonUtil.getJSONString(firstAd, RESPONSE_KEY_TYPE);
             anNativeAdResponse = ANNativeAdResponse.create(firstAd);
-            if (anNativeAdResponse != null){
+            if (anNativeAdResponse != null) {
                 containsAds = true;
                 return true;
             }
@@ -233,7 +232,7 @@ class ServerResponse {
             Clog.i(Clog.httpReqLogTag, "Vast response parsed");
             return true;
         } catch (Exception e) {
-            Clog.e(Clog.httpReqLogTag,"Error parsing the vast response: "+e.getMessage());
+            Clog.e(Clog.httpReqLogTag, "Error parsing the vast response: " + e.getMessage());
             return false;
         }
 
@@ -296,7 +295,9 @@ class ServerResponse {
         return mediaType;
     }
 
-    AdModel getVastAdResponse() { return vastAdResponse; }
+    AdModel getVastAdResponse() {
+        return vastAdResponse;
+    }
 
     String getContent() {
         return content != null ? content : "";
