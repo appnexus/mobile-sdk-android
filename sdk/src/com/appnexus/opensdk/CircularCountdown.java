@@ -10,6 +10,7 @@ import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -18,7 +19,9 @@ import android.widget.ProgressBar;
 public class CircularCountdown extends ProgressBar{
 
     private static final int DEFAULT_STROKE_WIDTH = 5;
-    public static final int TITLE_FONT_SIZE = 28;
+    public static final int TITLE_FONT_SIZE = 32;
+    public static final String MONACO = "Monaco";
+    public static final String CLOSE_X = "&#xd7;";
 
     private String title = "";
 
@@ -91,7 +94,7 @@ public class CircularCountdown extends ProgressBar{
 		titlePaint.setTextSize(TITLE_FONT_SIZE);
 		titlePaint.setStyle(Style.FILL);
 		titlePaint.setAntiAlias(true);
-		titlePaint.setTypeface(Typeface.create("Monaco", Typeface.BOLD));
+		titlePaint.setTypeface(Typeface.create(MONACO, Typeface.BOLD));
 	}
 
 	@Override
@@ -128,9 +131,16 @@ public class CircularCountdown extends ProgressBar{
 	}
 
 	public synchronized void setTitle(String title){
-		this.title = title;
+        if(title.equalsIgnoreCase("X")){
+            this.title = Html.fromHtml(CLOSE_X).toString();
+            titlePaint.setTextSize(48);
+        }else{
+            this.title = title;
+            titlePaint.setTextSize(TITLE_FONT_SIZE);
+        }
 		invalidate();
 	}
+
 
 	public String getTitle(){
 		return title;

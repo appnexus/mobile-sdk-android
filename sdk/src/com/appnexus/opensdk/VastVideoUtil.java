@@ -1,3 +1,19 @@
+/*
+ *    Copyright 2015 APPNEXUS INC
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
@@ -10,8 +26,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.vastdata.AdModel;
@@ -365,63 +379,6 @@ public class VastVideoUtil {
 	}*/
 
 
-    /**
-     *
-     * @param adSlotConfig
-     * @return
-     */
-    public static LayoutParams getTimerPosition(VastVideoConfiguration adSlotConfig) {
-        LayoutParams params = new LayoutParams(
-                LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT);
-
-        switch (adSlotConfig.getCountdownLabelPosition()) {
-            case TOP_RIGHT:
-                //Top-right
-                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                break;
-
-            case TOP_LEFT:
-                //Top-Left
-                params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                break;
-
-            case TOP_CENTER:
-                //Top-center
-                params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                break;
-
-            case BOTTOM_RIGHT:
-                //Bottom-right
-                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                break;
-
-            case BOTTOM_LEFT:
-                //Bottom-Left
-                params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                break;
-
-            case BOTTOM_CENTER:
-                //Bottom-center
-                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                break;
-
-            default:
-                //Top-right
-                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                break;
-        }
-
-        return params;
-    }
-
 
     /**
      * Converts the time duration in MM:SS format
@@ -626,7 +583,7 @@ public class VastVideoUtil {
                     "      <Impression><![CDATA[http://oasc-training7.247realmedia.com/sdk/sdktest/@Bottomss]]></Impression>\n" +
                     "      <Creatives>\n" +
                     "        <Creative>\n" +
-                    "          <Linear skipOffset=\"00:00:10\">\n" +
+                    "          <Linear skipOffset=\"00:00:07\">\n" +
                     "\t\t  <Icons></Icons>\n" +
                     "            <Duration>00:00:30</Duration>\n" +
                     "            <TrackingEvents>\n" +
@@ -664,7 +621,7 @@ public class VastVideoUtil {
 
         if (adSlotConfiguration.getSkipOffset() < 0 && adSlotConfiguration.getSkipOffset() != VastVideoUtil.DEFAULT_SKIP_OFFSET) {
             Clog.i(TAG, "Skip Offset is less than 0. Setting the default value as 0 seconds");
-            adSlotConfiguration.setSkipOffset(0, adSlotConfiguration.getSkipOffsetType());
+            adSlotConfiguration.setSkipOffset(0, adSlotConfiguration.getSkipOffsetType() == VastVideoConfiguration.SKIP_OFFSET_TYPE.RELATIVE);
         }
 
         if ((adSlotConfiguration.getSkipOffsetType() == VastVideoConfiguration.SKIP_OFFSET_TYPE.RELATIVE && adSlotConfiguration.getSkipOffset() > 100)
@@ -694,7 +651,7 @@ public class VastVideoUtil {
             Clog.d(TAG, "Skip Offset from configuration: " + parsedSkipOffset);
         }
 
-        if (!VastVideoUtil.isNullOrEmpty(parsedSkipOffset)) {
+        if (!isNullOrEmpty(parsedSkipOffset)) {
             if (parsedSkipOffset.contains("%")) {
                 SKIP_OFFSET = (Float.valueOf(parsedSkipOffset.substring(0,
                         parsedSkipOffset.length() - 1)) / 100);

@@ -1,5 +1,5 @@
 /*
- *    Copyright 2013 APPNEXUS INC
+ *    Copyright 2015 APPNEXUS INC
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -143,18 +143,20 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
             public void onStartCountdownTimer(String skipOffset) {
                 countdownWidget.setVisibility(View.VISIBLE);
                 countdownWidget.bringToFront();
-                countdownWidget.setMax(Integer.parseInt(skipOffset));
-                countdownWidget.setProgress(Integer.parseInt(skipOffset));
-                int seconds = (int) (Integer.parseInt(skipOffset) / 1000) + 1;
-                countdownWidget.setTitle(seconds + "");
+               int skipOffsetInt = getSkipOffsetIntValue(skipOffset);
+                countdownWidget.setMax(skipOffsetInt);
+                countdownWidget.setProgress(skipOffsetInt);
+                int seconds = (int) (skipOffsetInt / 1000) + 1;
+                countdownWidget.setTitle(seconds+"");
                 countdownWidget.setOnClickListener(null);
             }
 
             @Override
             public void onUpdateCountdownTimer(String skipOffset) {
-                int seconds = (int) (Integer.parseInt(skipOffset) / 1000) + 1;
-                countdownWidget.setProgress(Integer.parseInt(skipOffset));
-                countdownWidget.setTitle(seconds + "");
+               int skipOffsetInt = getSkipOffsetIntValue(skipOffset);
+                int seconds = (int) (skipOffsetInt / 1000) + 1;
+                countdownWidget.setProgress(skipOffsetInt);
+                countdownWidget.setTitle(seconds+"");
             }
 
             @Override
@@ -248,6 +250,15 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
 
         videoPlayer.initiateVASTVideoPlayer();
 
+    }
+
+    private int getSkipOffsetIntValue(String skipOffset) {
+        try {
+            int skipOffsetInt = Integer.parseInt(skipOffset);
+            return skipOffsetInt;
+        }catch (NumberFormatException ex){
+            return 0;
+        }
     }
 
 

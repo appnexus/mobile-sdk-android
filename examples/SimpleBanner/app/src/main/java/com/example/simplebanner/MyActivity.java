@@ -40,7 +40,6 @@ public class MyActivity extends Activity {
         InterstitialAdView iav = new InterstitialAdView(this);
         iav.setPlacementID("1281482");
         iav.setShouldServePSAs(false);
-        iav.setCountdownLabelPosition(VastVideoConfiguration.LABEL_POSITION.TOP_CENTER);
         iav.setOpensNativeBrowser(false);
         iav.setAdListener(new AdListener() {
             @Override

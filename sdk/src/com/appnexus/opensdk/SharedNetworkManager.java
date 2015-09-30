@@ -115,7 +115,7 @@ class SharedNetworkManager {
                         stopTimer();
                     }
                 }
-            }, 0, TOTAL_RETRY_WAIT_INTERVAL_MILLES);
+            }, TOTAL_RETRY_WAIT_INTERVAL_MILLES, TOTAL_RETRY_WAIT_INTERVAL_MILLES);
 
         }
     }

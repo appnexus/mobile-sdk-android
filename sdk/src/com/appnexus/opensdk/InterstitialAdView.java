@@ -445,25 +445,7 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
-     * Returns the skip countdown position
-     *
-     * @return
-     */
-    public VastVideoConfiguration.LABEL_POSITION getCountdownLabelPosition() {
-        return videoConfiguration.getCountdownLabelPosition();
-    }
-
-    /**
-     * Sets the countdown timer label position
-     *
-     * @param countdownLabelPosition
-     */
-    public void setCountdownLabelPosition(VastVideoConfiguration.LABEL_POSITION countdownLabelPosition) {
-        videoConfiguration.setCountdownLabelPosition(countdownLabelPosition);
-    }
-
-    /**
-     * Returns the skip countdown value
+    * Returns the skip countdown value
      *
      * @return
      */
@@ -482,12 +464,11 @@ public class InterstitialAdView extends AdView {
 
     /**
      * Sets the countdown timer label position
-     *
-     * @param skipOffset
-     * @param skipOffsetType
+    * @param skipOffset - Value of skip offset
+     * @param isRelative - Relative or Absolute skip offset type
      */
-    public void setSkipOffset(int skipOffset, VastVideoConfiguration.SKIP_OFFSET_TYPE skipOffsetType) {
-        videoConfiguration.setSkipOffset(skipOffset, skipOffsetType);
+    public void setSkipOffset(int skipOffset, boolean isRelative) {
+        videoConfiguration.setSkipOffset(skipOffset, isRelative);
     }
 
 
