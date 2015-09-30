@@ -90,7 +90,6 @@ public class CircularCountdown extends ProgressBar{
 		backgroundColorPaint.setStyle(Style.STROKE);
 		backgroundColorPaint.setStrokeWidth(strokeWidth);
 
-
 		titlePaint.setTextSize(TITLE_FONT_SIZE);
 		titlePaint.setStyle(Style.FILL);
 		titlePaint.setAntiAlias(true);

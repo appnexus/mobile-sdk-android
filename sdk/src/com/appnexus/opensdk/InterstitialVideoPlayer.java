@@ -36,7 +36,6 @@ public class InterstitialVideoPlayer extends VastVideoPlayer {
         super(context, videoView, relativeLayout, videoConfiguration);
     }
 
-
     @Override
     protected void startCountdownTimer(int skipOffsetValue) {
         if (updateCountdownTimerListener != null) {

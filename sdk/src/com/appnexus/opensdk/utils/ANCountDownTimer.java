@@ -27,9 +27,9 @@ public abstract class ANCountdownTimer {
         initiateCountdownTimer(millisInFuture, countdowninterval);
     }
 
-    private void initiateCountdownTimer(final long millisInFuture, final long countDownInterval) {
-        ANCountdownTimer.this.countdownInterval = countDownInterval;
-        ANCountdownTimer.this.countdownTimer = new CountDownTimer(millisInFuture, countDownInterval) {
+    private void initiateCountdownTimer(final long millisInFuture, final long countdowninterval) {
+        ANCountdownTimer.this.countdownInterval = countdowninterval;
+        ANCountdownTimer.this.countdownTimer = new CountDownTimer(millisInFuture, countdowninterval) {
             @Override
             public void onTick(long millisUntilFinished) {
                 pauseTimeMillis = millisUntilFinished;

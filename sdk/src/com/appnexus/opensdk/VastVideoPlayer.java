@@ -66,6 +66,7 @@ abstract class VastVideoPlayer implements OnCompletionListener,
     private BroadcastReceiver mReceiver;
     private int videoPausePosition;
     private long skipOffsetMillis;
+    private boolean isSkipCountdownFinished;
     private long remainingMillis;
     private boolean isFromBrowser;
     private GestureDetectorCompat mDetector;
@@ -325,7 +326,7 @@ abstract class VastVideoPlayer implements OnCompletionListener,
     private void startVideoCountDown() {
 
         startCountdownTimer((int) skipOffsetMillis);
-        countDownTimer = new ANCountDownTimer((long) videoLength, COUNTDOWN_INTERVAL) {
+        countDownTimer = new ANCountdownTimer((long) videoLength, COUNTDOWN_INTERVAL) {
             @Override
             public void onTick(long leftTimeInMilliseconds) {
                 handleVideoProgress(leftTimeInMilliseconds);
@@ -342,18 +343,21 @@ abstract class VastVideoPlayer implements OnCompletionListener,
         countDownTimer.startTimer();
     }
 
-    private void handleVideoProgress(long leftTimeInMilliseconds) {
+    private void handleVideoProgress( long leftTimeInMilliseconds) {
         if (videoView != null) {
             setVideoPausePosition(videoView.getCurrentPosition());
         }
         skipOffsetMillis = (long) (leftTimeInMilliseconds - remainingMillis);
-        if (skipOffsetMillis < 0) {
-            displayCloseButton();
-            countDownTimer.cancelTimer();
-        } else {
-            updateCountdownTimer((int) skipOffsetMillis);
+        if (!isSkipCountdownFinished) {
+            if (skipOffsetMillis < 0) {
+                isSkipCountdownFinished = true;
+                displayCloseButton();
+            } else {
+                updateCountdownTimer((int) skipOffsetMillis);
+            }
         }
     }
+
 
     abstract protected void startCountdownTimer(int skipOffsetValue);
 
