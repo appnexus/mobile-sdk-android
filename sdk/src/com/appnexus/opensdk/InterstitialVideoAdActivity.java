@@ -37,7 +37,7 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
     private InterstitialVideoPlayer videoPlayer;
     private VastVideoConfiguration videoConfig;
 
-    private CircularCountdown countdownWidget;
+    private CircularProgressBar countdownWidget;
 
     public InterstitialVideoAdActivity(Activity adActivity) {
         this.adActivity = adActivity;
@@ -60,7 +60,7 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
     }
 
     private void addCountdownWidget() {
-        countdownWidget = (CircularCountdown) adActivity.getLayoutInflater().inflate(R.layout.countdown_widget, null);
+        countdownWidget = (CircularProgressBar) adActivity.getLayoutInflater().inflate(R.layout.countdown_widget, null);
         int size = VastVideoUtil.getSizeInDP(adActivity, CCD_DIMENSIONS);
         int margin = VastVideoUtil.getSizeInDP(adActivity, MARGIN);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(size, size);

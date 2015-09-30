@@ -55,7 +55,7 @@
         <attr name="load_landing_page_in_background"/>
     </declare-styleable>
 
-    <declare-styleable name="CircularCountdown">
+    <declare-styleable name="CircularProgressBar">
         <attr name="ccd_progressColor" format="string"/>
         <attr name="ccd_backgroundColor" format="string"/>
         <attr name="ccd_title" format="string"/>
