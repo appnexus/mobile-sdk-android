@@ -16,7 +16,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ProgressBar;
 
-public class CircularCountdown extends ProgressBar{
+public class CircularProgressBar extends ProgressBar{
 
     private static final int DEFAULT_STROKE_WIDTH = 5;
     public static final int TITLE_FONT_SIZE = 32;
@@ -32,17 +32,17 @@ public class CircularCountdown extends ProgressBar{
 	private final Paint backgroundColorPaint = new Paint();
 	private final Paint titlePaint = new Paint();
 
-	public CircularCountdown(Context context) {
+	public CircularProgressBar(Context context) {
 		super(context);
 		initializeCountdownView(null, 0);
 	}
 
-	public CircularCountdown(Context context, AttributeSet attrs) {
+	public CircularProgressBar(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		initializeCountdownView(attrs, 0);
 	}
 
-	public CircularCountdown(Context context, AttributeSet attrs, int defStyle) {
+	public CircularProgressBar(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		initializeCountdownView(attrs, defStyle);
 	}
@@ -52,33 +52,33 @@ public class CircularCountdown extends ProgressBar{
             setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
 
-        TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.CircularCountdown, style, 0);
+        TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.CircularProgressBar, style, 0);
 
 		String color;
 		Resources res = getResources();
 
-		color = a.getString(R.styleable.CircularCountdown_ccd_progressColor);
+		color = a.getString(R.styleable.CircularProgressBar_ccd_progressColor);
 		if(color==null) {
             progressColorPaint.setColor(res.getColor(R.color.circular_progress_gray));
         } else {
             progressColorPaint.setColor(Color.parseColor(color));
         }
 
-		color = a.getString(R.styleable.CircularCountdown_ccd_backgroundColor);
+		color = a.getString(R.styleable.CircularProgressBar_ccd_backgroundColor);
 		if(color==null) {
             backgroundColorPaint.setColor(res.getColor(R.color.circular_progress_white));
         } else {
             backgroundColorPaint.setColor(Color.parseColor(color));
         }
 
-		color = a.getString(R.styleable.CircularCountdown_ccd_titleColor);
+		color = a.getString(R.styleable.CircularProgressBar_ccd_titleColor);
 		if(color==null) {
             titlePaint.setColor(res.getColor(R.color.circular_progress_white));
         } else {
             titlePaint.setColor(Color.parseColor(color));
         }
 
-		strokeWidth = a.getInt(R.styleable.CircularCountdown_ccd_strokeWidth, DEFAULT_STROKE_WIDTH);
+		strokeWidth = a.getInt(R.styleable.CircularProgressBar_ccd_strokeWidth, DEFAULT_STROKE_WIDTH);
 
 		a.recycle();
 
