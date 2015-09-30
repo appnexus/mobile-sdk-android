@@ -12,7 +12,7 @@ import java.util.TimerTask;
 public class InterstitialVideoPlayer extends VastVideoPlayer {
 
     private static final int INTERSTITIAL_EXPIRY_TIME = 30000;
-    private IUpdateCountdownTimerListener updateCountdownTimerListener;
+    private UpdateCountdownTimerListener updateCountdownTimerListener;
     private String TAG = getClass().getSimpleName();
     protected Timer videoDismissTimer;
     protected TimerTask videoDismissTask;
@@ -44,7 +44,7 @@ public class InterstitialVideoPlayer extends VastVideoPlayer {
     }
 
     public void setUpdateCountdownTimerListener(
-            IUpdateCountdownTimerListener updateCountdownTimerListener) {
+            UpdateCountdownTimerListener updateCountdownTimerListener) {
         this.updateCountdownTimerListener = updateCountdownTimerListener;
     }
 

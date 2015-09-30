@@ -15,7 +15,10 @@
  */
 package com.appnexus.opensdk;
 
-public interface IUpdateCountdownTimerListener {
+/**
+ * Package only class that listens to video countdown timer
+ */
+interface UpdateCountdownTimerListener {
 
     public void onStartCountdownTimer(String skipOffset);
 

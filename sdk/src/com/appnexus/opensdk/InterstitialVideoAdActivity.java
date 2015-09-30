@@ -60,10 +60,10 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
     }
 
     private void addCountdownWidget() {
-        countdownWidget = (CircularCountdown)adActivity.getLayoutInflater().inflate(R.layout.countdown_widget, null);
+        countdownWidget = (CircularCountdown) adActivity.getLayoutInflater().inflate(R.layout.countdown_widget, null);
         int size = VastVideoUtil.getSizeInDP(adActivity, CCD_DIMENSIONS);
         int margin = VastVideoUtil.getSizeInDP(adActivity, MARGIN);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(size,size);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(size, size);
         params.setMargins(0, margin, margin, 0);
         countdownWidget.setVisibility(View.GONE);
         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
@@ -81,7 +81,7 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
     public void destroy() {
         // clean up video view
         if (videoView != null) {
-           videoView.destroy();
+            videoView.destroy();
         }
 
         // cleanup adView
@@ -119,7 +119,7 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
         // To be safe, ads from the future will be considered to have expired
         // if now-p.first is less than 0, the ad will be considered to be from the future
         while (iAQE != null
-                && (now - iAQE.getTime() > InterstitialAdView.MAX_AGE || now-iAQE.getTime()<0)) {
+                && (now - iAQE.getTime() > InterstitialAdView.MAX_AGE || now - iAQE.getTime() < 0)) {
             Clog.w(Clog.baseLogTag, Clog.getString(R.string.too_old));
             iAQE = adView.getAdQueue().poll();
         }
@@ -137,7 +137,7 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
         layout.addView(videoView);
 
         videoPlayer = new InterstitialVideoPlayer(adActivity, videoView, layout, videoConfig);
-        videoPlayer.setUpdateCountdownTimerListener(new IUpdateCountdownTimerListener() {
+        videoPlayer.setUpdateCountdownTimerListener(new UpdateCountdownTimerListener() {
 
             @Override
             public void onStartCountdownTimer(String skipOffset) {
@@ -146,16 +146,15 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
                 countdownWidget.setMax(Integer.parseInt(skipOffset));
                 countdownWidget.setProgress(Integer.parseInt(skipOffset));
                 int seconds = (int) (Integer.parseInt(skipOffset) / 1000) + 1;
-                countdownWidget.setTitle(seconds+"");
+                countdownWidget.setTitle(seconds + "");
                 countdownWidget.setOnClickListener(null);
-
             }
 
             @Override
             public void onUpdateCountdownTimer(String skipOffset) {
                 int seconds = (int) (Integer.parseInt(skipOffset) / 1000) + 1;
                 countdownWidget.setProgress(Integer.parseInt(skipOffset));
-                countdownWidget.setTitle(seconds+"");
+                countdownWidget.setTitle(seconds + "");
             }
 
             @Override
@@ -168,77 +167,77 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
         videoPlayer.setVideoAdListener(new VideoAdEventsListener() {
             @Override
             public void onVideoStart() {
-                if (adView !=null && adView.getVideoAdEventsListener() != null) {
+                if (adView != null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onVideoStart();
                 }
             }
 
             @Override
             public void onVideoPause(long currentPosition) {
-                if (adView !=null && adView.getVideoAdEventsListener() != null) {
+                if (adView != null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onVideoPause(currentPosition);
                 }
             }
 
             @Override
             public void onVideoResume(long currentPosition) {
-                if (adView !=null && adView.getVideoAdEventsListener() != null) {
+                if (adView != null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onVideoResume(currentPosition);
                 }
             }
 
             @Override
             public void onVideoSkip(long currentPosition) {
-                if (adView !=null && adView.getVideoAdEventsListener() != null) {
+                if (adView != null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onVideoSkip(currentPosition);
                 }
             }
 
             @Override
             public void onMuteVideo() {
-                if (adView !=null && adView.getVideoAdEventsListener() != null) {
+                if (adView != null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onMuteVideo();
                 }
             }
 
             @Override
             public void onUnMuteVideo() {
-                if (adView !=null && adView.getVideoAdEventsListener() != null) {
+                if (adView != null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onUnMuteVideo();
                 }
             }
 
             @Override
             public void onQuartileFinish(int videoQuartile) {
-                if (adView !=null && adView.getVideoAdEventsListener() != null) {
+                if (adView != null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onQuartileFinish(videoQuartile);
                 }
             }
 
             @Override
             public void onVideoPlayerEnterFullScreenMode() {
-                if (adView !=null && adView.getVideoAdEventsListener() != null) {
+                if (adView != null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onVideoPlayerEnterFullScreenMode();
                 }
             }
 
             @Override
             public void onVideoPlayerExitFullScreenMode() {
-                if (adView !=null && adView.getVideoAdEventsListener() != null) {
+                if (adView != null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onVideoPlayerExitFullScreenMode();
                 }
             }
 
             @Override
             public void onVideoClick(MotionEvent event) {
-                if (adView !=null && adView.getVideoAdEventsListener() != null) {
+                if (adView != null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onVideoClick(event);
                 }
             }
 
             @Override
             public void onVideoAdFinish() {
-                if (adView !=null && adView.getVideoAdEventsListener() != null) {
+                if (adView != null && adView.getVideoAdEventsListener() != null) {
                     adView.getVideoAdEventsListener().onVideoAdFinish();
                 }
                 if (adActivity != null) {

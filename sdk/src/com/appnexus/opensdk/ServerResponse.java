@@ -36,6 +36,12 @@ import java.util.Locale;
 
 @SuppressLint("NewApi")
 class ServerResponse {
+    // TODO add this to track the response content type
+    enum ContentType {
+        NATIVE_ASSETS,
+        HTML,
+        VAST
+    }
 
     private AdModel vastAdResponse;
     private String content;
