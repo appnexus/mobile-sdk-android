@@ -20,6 +20,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.media.CamcorderProfile;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -28,6 +29,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Connectivity;
 import com.appnexus.opensdk.vastdata.AdModel;
 import com.appnexus.opensdk.vastdata.ClickTrackingModel;
 import com.appnexus.opensdk.vastdata.CreativeModel;
@@ -47,6 +49,7 @@ import java.util.List;
 public class VastVideoUtil {
 
 
+    public static final int MAX_VIDEO_HEIGHT = 720;
     private static String TAG = "VastVideoUtil";
     public final static String VAST_ADTAGURI_TAG = "VASTAdTagURI";
     public final static String VAST_START_TAG = "VAST";
@@ -94,7 +97,7 @@ public class VastVideoUtil {
     public static final String VAST_READMEDIAFILES_MINBITRATE_ATTR = "minBitrate";
     public static final String VAST_READMEDIAFILES_MAXBITRATE_ATTR =  "maxBitrate";
     public static final String VAST_READMEDIAFILES_WIDTH_ATTR =  "width";
-    public static final String VAST_READMEDIAFILES_HIGHT_ATTR = "height";
+    public static final String VAST_READMEDIAFILES_HEIGHT_ATTR = "height";
     public static final String VAST_READMEDIAFILES_SCALABLE_ATTR =  "scalable";
     public static final String VAST_READMEDIAFILES_MAINTAINASPECTRATIO_ATTR = "maintainAspectRatio";
     public static final String VAST_READMEDIAFILES_CODEC_ATTR =  "codec";
@@ -133,39 +136,14 @@ public class VastVideoUtil {
     public static final String EVENT_UNMUTE = "unmute";
     public static final String EVENT_PAUSE = "pause";
     public static final String EVENT_RESUME= "resume";
-    public static final String EVENT_FULLSCREEN = "fullscreen";
-    public static final String EVENT_EXIT_FULLSCREEN = "exitFullscreen";
-    public static final String EVENT_REWIND = "rewind";
     public static final String EVENT_START = "start";
-    public static final String EVENT_CLICK_TRACKING = "ClickTracking";
-    public static final String EVENT_CLICK_THROUGH ="ClickThrough";
-    public static final String EVENT_CLOSE ="closeLinear";
     public static final String EVENT_SKIP ="skip";
-    public static final String EVENT_IMPRESSION ="impression";
 
-
-    //R constants for Video
-    public static final int VIDEO_PAUSE =10001;
-    public static final int VIDEO_MUTE=10002;
-    public static final int VIDEO_FULLSCREEN=10003;
-    public static final int VIDEO_FFWD=10004;
-    public static final int VIDEO_REW=10005;
-    public static final int VIDEO_NEXT=10006;
-    public static final int VIDEO_PREV=10007;
-    public static final int VIDEO_MEDIACONTROLLER_PROGRESS=10008;
-    public static final int VIDEO_TIME_CURRENT=10009;
-    public static final int VIDEO_TIME=10010;
     public static final int VIDEO_SKIP=10011;
     public static final int VIDEO_VIEW=10012;
-    public static final int VIDEO_COUNTDOWN_TIMER=10013;
-    public static final int VIDEO_CONTROLLER=10014;
 
     public static final int DEFAULT_SKIP_OFFSET = -9999;
 
-    public static final String STRING_BANNER_IMAGE_NULL = "Banner image is null";
-    public static final String STRING_DOMAIN_NOT_SET = "Domain name is not set.";
-    public static final String STRING_URL_NOT_SET = "URL is null or blank.";
-    public static final String STRING_MEDIA_CONTROLS ="Media Controls";
 
     /**
      * Converts string to seconds
@@ -205,10 +183,95 @@ public class VastVideoUtil {
      * Returns VAST Video url according to frame width to support video renditions.
      *
      * @param arrayList
+     * @param context
+     * @return
+     */
+    public static String getVASTVideoURL(ArrayList<MediaFileModel> arrayList, Context context) {
+
+        int frameWidth = getBestSupportedFrameWidth(context);
+        String mediaUrl = "";
+
+        int count = arrayList.size();
+        ArrayList<MediaFileModel> supportedVideoFormats = new ArrayList<MediaFileModel>();
+
+        for (int i = 0; i < count; i++) {
+            mediaUrl = arrayList.get(i).getUrl();
+            String extension = VastVideoUtil.getExtensionFromUrl(mediaUrl);
+            if (isFormatSupported(extension)) {
+                supportedVideoFormats.add(arrayList.get(i));
+            }
+        }
+
+        count = supportedVideoFormats.size();
+        if (count == 0) {
+            return mediaUrl;
+        } else if (count == 1) {
+            mediaUrl = supportedVideoFormats.get(0).getUrl();
+            return mediaUrl;
+        }
+
+        try {
+            int selectedIndex = 0;
+            Collections.sort(supportedVideoFormats, new MediaFileComparator());
+            for (int index = 0; index < count; index++) {
+                int currentObjWidth = Integer.parseInt(supportedVideoFormats.get(index).getWidth());
+                if (frameWidth <= currentObjWidth) {
+                    break;
+                }
+                selectedIndex = index;
+                Log.i(TAG, "Rendition currentObjWidth:" + currentObjWidth + " Index: "+index);
+            }
+
+            mediaUrl = supportedVideoFormats.get(selectedIndex).getUrl();
+            Log.i(TAG, "Rendition Selected - using player width:" + frameWidth + ", selected width:" +  supportedVideoFormats.get(selectedIndex).getWidth() + " selectedIndex: "+selectedIndex);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return mediaUrl;
+        }
+
+        return mediaUrl;
+    }
+
+    private static int getBestSupportedFrameWidth(Context context) {
+        CamcorderProfile profile = getCamcorderProfile(context);
+
+        Log.d(TAG, "Rendition Max Width: " + profile.videoFrameWidth);
+        Log.d(TAG, "Rendition Max Height: " + profile.videoFrameHeight);
+
+        return profile.videoFrameWidth;
+    }
+
+    private static CamcorderProfile getCamcorderProfile(Context context) {
+        if(Connectivity.isConnectionFast(context)) {
+            CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
+                // Set a max limit to 720
+                if(profile.videoFrameHeight > MAX_VIDEO_HEIGHT) {
+                    profile = CamcorderProfile.get(CamcorderProfile.QUALITY_720P);
+                }
+            }
+            return profile;
+        }else{
+            return CamcorderProfile.get(CamcorderProfile.QUALITY_LOW);
+        }
+
+    }
+
+    private static boolean isFormatSupported(String extension) {
+        return extension.startsWith("mp4") || extension.startsWith("MP4") || extension.startsWith("3gp")
+                || extension.startsWith("3GP") || extension.startsWith("mkv") || extension.startsWith("MKV");
+    }
+
+
+    /**
+     * Returns VAST Video url according to frame width to support video renditions.
+     *
+     * @param arrayList
      * @param frameWidth
      * @return
      */
-    public static String getVASTVideoURL(ArrayList<MediaFileModel> arrayList, int frameWidth) {
+    public static String getVASTVideoURLOriginal(ArrayList<MediaFileModel> arrayList, int frameWidth) {
+
         String mediaUrl = "";
 
         int count = arrayList.size();
@@ -217,9 +280,8 @@ public class VastVideoUtil {
         for (int i = 0; i < count; i++) {
             mediaUrl = arrayList.get(i).getUrl();
             String extension = VastVideoUtil.getExtensionFromUrl(mediaUrl);
-            if (extension.startsWith("mp4") || extension.startsWith("MP4")) {
+            if (isFormatSupported(extension)) {
                 mp4Videos.add(arrayList.get(i));
-                // return mediaUrl;
             }
         }
 
@@ -232,28 +294,29 @@ public class VastVideoUtil {
         }
 
         try {
-            int lastObjwidth = 0;
+            int lastObjWidth = 0;
             int currentObjWidth = 0;
             int index;
 
             Collections.sort(mp4Videos, new MediaFileComparator());
             for (index = 0; index < count; index++) {
                 currentObjWidth = Integer.parseInt(mp4Videos.get(index).getWidth());
-                if (currentObjWidth > frameWidth) {
+                if (frameWidth < currentObjWidth) {
                     break;
                 }
-                lastObjwidth = currentObjWidth;
+                lastObjWidth = currentObjWidth;
             }
 
             if (count == index) {
                 index -= 1;
                 mediaUrl = mp4Videos.get(index).getUrl();
-            } else if (lastObjwidth != 0 && frameWidth == lastObjwidth) {
+            } else if (lastObjWidth != 0 && frameWidth == lastObjWidth) {
                 mediaUrl = mp4Videos.get(index - 1).getUrl();
-                currentObjWidth = lastObjwidth;
+                currentObjWidth = lastObjWidth;
             } else {
                 mediaUrl = mp4Videos.get(index).getUrl();
             }
+
             Log.d(TAG, "Rendition Selected- using player width:" + frameWidth + ", selected rendition width:" + currentObjWidth + ", URL:" + mediaUrl);
         } catch (Exception e) {
             return mediaUrl;
@@ -403,8 +466,12 @@ public class VastVideoUtil {
 
         @Override
         public int compare(MediaFileModel lhs, MediaFileModel rhs) {
-            return Integer.parseInt(lhs.getWidth())
+            int widthDifference = Integer.parseInt(lhs.getWidth())
                     - Integer.parseInt(rhs.getWidth());
+            if(widthDifference == 0){
+                return Integer.parseInt(lhs.getBitrate()) -Integer.parseInt(rhs.getBitrate());
+            }
+            return widthDifference;
         }
 
     }
@@ -417,8 +484,10 @@ public class VastVideoUtil {
      * @return
      */
     public static int getPixelSize(Context context, int sizeInDP) {
+        Clog.i(Clog.vastLogTag, "sizeInDP: "+sizeInDP);
         float scale = getDensity(context);
         int pixelSize = (int) (sizeInDP / scale);
+        Clog.i(Clog.vastLogTag, "pixelSize: "+pixelSize);
         return pixelSize;
     }
 
@@ -593,7 +662,22 @@ public class VastVideoUtil {
                     "              <ClickThrough><![CDATA[http://www.appnexus.com]]></ClickThrough>\n" +
                     "            </VideoClicks>\n" +
                     "            <MediaFiles>\t\t\t  \n" +
-                    "\t\t\t  <MediaFile delivery=\"progressive\" bitrate=\"500\" width=\"720\" height=\"480\" type=\"video/mp4\" scalable=\"true\" maintainAspectRatio=\"true\">\n" +
+                    "\t\t\t  <MediaFile delivery=\"progressive\" bitrate=\"500\" width=\"1024\" height=\"720\" type=\"video/mp4\" scalable=\"true\" maintainAspectRatio=\"true\">\n" +
+                    "\t\t\t\thttp://imageceu1.247realmedia.com/0/EU_Client/Eurosport_vast_campaign/keywest_tourism_boating.mp4\n" +
+                    "              </MediaFile>\n" +
+                    "\t\t\t  <MediaFile delivery=\"progressive\" bitrate=\"500\" width=\"640\" height=\"360\" type=\"video/mp4\" scalable=\"true\" maintainAspectRatio=\"true\">\n" +
+                    "\t\t\t\thttp://imageceu1.247realmedia.com/0/EU_Client/Eurosport_vast_campaign/keywest_tourism_boating.mp4\n" +
+                    "              </MediaFile>\n" +
+                    "\t\t\t  <MediaFile delivery=\"progressive\" bitrate=\"512\" width=\"720\" height=\"480\" type=\"video/mp4\" scalable=\"true\" maintainAspectRatio=\"true\">\n" +
+                    "\t\t\t\thttp://imageceu1.247realmedia.com/0/EU_Client/Eurosport_vast_campaign/keywest_tourism_boating.mp4\n" +
+                    "              </MediaFile>\n" +
+                    "\t\t\t  <MediaFile delivery=\"progressive\" bitrate=\"256\" width=\"1920\" height=\"1080\" type=\"video/mp4\" scalable=\"true\" maintainAspectRatio=\"true\">\n" +
+                    "\t\t\t\thttp://imageceu1.247realmedia.com/0/EU_Client/Eurosport_vast_campaign/keywest_tourism_boating.mp4\n" +
+                    "              </MediaFile>\n" +
+                    "\t\t\t  <MediaFile delivery=\"progressive\" bitrate=\"128\" width=\"320\" height=\"240\" type=\"video/mp4\" scalable=\"true\" maintainAspectRatio=\"true\">\n" +
+                    "\t\t\t\thttp://www.sample-videos.com/video/3gp/240/big_buck_bunny_240p_1mb.3gp\n" +
+                    "              </MediaFile>\n" +
+                    "\t\t\t  <MediaFile delivery=\"progressive\" bitrate=\"128\" width=\"1920\" height=\"1080\" type=\"video/mp4\" scalable=\"true\" maintainAspectRatio=\"true\">\n" +
                     "\t\t\t\thttp://imageceu1.247realmedia.com/0/EU_Client/Eurosport_vast_campaign/keywest_tourism_boating.mp4\n" +
                     "              </MediaFile>\n" +
                     "            </MediaFiles>\n" +

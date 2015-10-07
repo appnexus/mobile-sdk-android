@@ -136,7 +136,7 @@ public class VastResponseParser {
 				String width = p.getAttributeValue(null,
 						VastVideoUtil.VAST_READMEDIAFILES_WIDTH_ATTR);
 				String height = p.getAttributeValue(null,
-						VastVideoUtil.VAST_READMEDIAFILES_HIGHT_ATTR);
+						VastVideoUtil.VAST_READMEDIAFILES_HEIGHT_ATTR);
 				String scalable = p.getAttributeValue(null,
 						VastVideoUtil.VAST_READMEDIAFILES_SCALABLE_ATTR);
 				String maintainAspectRatio = p.getAttributeValue(null,

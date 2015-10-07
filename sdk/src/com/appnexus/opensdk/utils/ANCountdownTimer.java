@@ -23,13 +23,13 @@ public abstract class ANCountdownTimer {
     private long countdownInterval = 0;
     private CountDownTimer countdownTimer;
 
-    public ANCountdownTimer(long millisInFuture, long countdowninterval) {
-        initiateCountdownTimer(millisInFuture, countdowninterval);
+    public ANCountdownTimer(long millisInFuture, long countdownInterval) {
+        initiateCountdownTimer(millisInFuture, countdownInterval);
     }
 
-    private void initiateCountdownTimer(final long millisInFuture, final long countdowninterval) {
-        ANCountdownTimer.this.countdownInterval = countdowninterval;
-        ANCountdownTimer.this.countdownTimer = new CountDownTimer(millisInFuture, countdowninterval) {
+    private void initiateCountdownTimer(final long millisInFuture, final long countdownInterval) {
+        ANCountdownTimer.this.countdownInterval = countdownInterval;
+        ANCountdownTimer.this.countdownTimer = new CountDownTimer(millisInFuture, countdownInterval) {
             @Override
             public void onTick(long millisUntilFinished) {
                 pauseTimeMillis = millisUntilFinished;
