@@ -185,9 +185,7 @@ abstract class VastVideoPlayer implements OnCompletionListener,
         if (videoViewWidth == 0) {
             videoViewWidth = VastVideoUtil.getScreenWidth(context);
         }
-        Uri uri = Uri.parse(VastVideoUtil.getVASTVideoURL(
-                linearAdModel.getMediaFilesArrayList(),
-                VastVideoUtil.getPixelSize(context, videoViewWidth)));
+        Uri uri = Uri.parse(VastVideoUtil.getVASTVideoURL(linearAdModel.getMediaFilesArrayList(), context));
 
         videoView.setVideoURI(uri);
         videoView.requestFocus();
@@ -326,7 +324,7 @@ abstract class VastVideoPlayer implements OnCompletionListener,
     private void startVideoCountDown() {
 
         startCountdownTimer((int) skipOffsetMillis);
-        countDownTimer = new ANCountdownTimer((long) videoLength, COUNTDOWN_INTERVAL) {
+        countDownTimer = new ANCountdownTimer((long) videoLength + 1000, COUNTDOWN_INTERVAL) {
             @Override
             public void onTick(long leftTimeInMilliseconds) {
                 handleVideoProgress(leftTimeInMilliseconds);
