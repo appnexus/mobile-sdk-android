@@ -3,6 +3,18 @@
 + MS-1629 Bug fix for using comma as decimal points when user sets certain languages
 + MS-1619 Bug fix for DFP banner impression logging
 + MS-1592 Bug fix for InterstitialAdView not passing back onAdCollapsed
++ Supported networks:
+	AdColony 2.3.0, interstitial, native
+	Amazon 5.6.20, banner, interstitial
+        Chartboost 5.5.3, interstitial
+	Facebook 4.7.0, banner, interstitial, native
+	Google Play services 7.8.0, only depend on the ads library now, DFP/AdMob banner, interstitial
+	InMobi 4.5.5, banner, interstitial, native
+	MM Media 5.4.0, banner, interstitial
+        MoPub 3.11.0, banner, interstitial, native
+	Vdopia lw1.5, banner, interstitial
+	Vungle 3.3.2, interstitials	
+	Yahoo Flurry 6.1.0 banner, interstitial, native
 
 ## RC2.5
 + MS-1512 NPE fix in AdRequest
