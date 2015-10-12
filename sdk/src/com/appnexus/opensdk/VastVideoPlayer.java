@@ -42,6 +42,7 @@ import android.widget.VideoView;
 
 import com.appnexus.opensdk.utils.ANCountdownTimer;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.vastdata.AdModel;
 import com.appnexus.opensdk.vastdata.LinearAdModel;
@@ -181,11 +182,13 @@ abstract class VastVideoPlayer implements OnCompletionListener,
 
     private void playVastVideoAd() throws Exception {
         Clog.i(Clog.vastLogTag, "Attempting to play VAST video ad");
-        int videoViewWidth = videoView.getWidth();
-        if (videoViewWidth == 0) {
-            videoViewWidth = VastVideoUtil.getScreenWidth(context);
+
+        String url = VastVideoUtil.getVASTVideoURL(linearAdModel.getMediaFilesArrayList(), context);
+        if(StringUtil.isEmpty(url)){
+            throw new RuntimeException("No compatible media urls found");
         }
-        Uri uri = Uri.parse(VastVideoUtil.getVASTVideoURL(linearAdModel.getMediaFilesArrayList(), context));
+
+        Uri uri = Uri.parse(url);
 
         videoView.setVideoURI(uri);
         videoView.requestFocus();

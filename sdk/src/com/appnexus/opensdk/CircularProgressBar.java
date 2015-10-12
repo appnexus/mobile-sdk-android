@@ -18,11 +18,11 @@ import android.widget.ProgressBar;
 
 public class CircularProgressBar extends ProgressBar{
 
-    private static final int DEFAULT_STROKE_WIDTH = 5;
-    public static final int TITLE_FONT_SIZE = 32;
+    private static final int DEFAULT_STROKE_WIDTH = 3;
+    public static final int TITLE_FONT_SIZE = 16;
     public static final String MONACO = "Monaco";
     public static final String CLOSE_X = "&#xd7;";
-    public static final int CROSS_X_FONT_SIZE = 48;
+    public static final int CROSS_X_FONT_SIZE = 24;
 
     private String title = "";
 
@@ -53,6 +53,7 @@ public class CircularProgressBar extends ProgressBar{
             setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
 
+        strokeWidth = VastVideoUtil.getSizeInDP(this.getContext(), DEFAULT_STROKE_WIDTH) + 1;
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.CircularProgressBar, style, 0);
 
 		String color;
@@ -78,8 +79,6 @@ public class CircularProgressBar extends ProgressBar{
         } else {
             titlePaint.setColor(Color.parseColor(color));
         }
-
-		strokeWidth = a.getInt(R.styleable.CircularProgressBar_ccd_strokeWidth, DEFAULT_STROKE_WIDTH);
 
 		a.recycle();
 
@@ -133,10 +132,10 @@ public class CircularProgressBar extends ProgressBar{
 	public synchronized void setTitle(String title){
         if(title.equalsIgnoreCase("X")){
             this.title = Html.fromHtml(CLOSE_X).toString();
-            titlePaint.setTextSize(CROSS_X_FONT_SIZE);
+            titlePaint.setTextSize(VastVideoUtil.getSizeInDP(this.getContext(), CROSS_X_FONT_SIZE));
         }else{
             this.title = title;
-            titlePaint.setTextSize(TITLE_FONT_SIZE);
+            titlePaint.setTextSize(VastVideoUtil.getSizeInDP(this.getContext(), TITLE_FONT_SIZE));
         }
 		invalidate();
 	}

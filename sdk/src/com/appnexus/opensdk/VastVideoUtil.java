@@ -225,7 +225,6 @@ public class VastVideoUtil {
             mediaUrl = supportedVideoFormats.get(selectedIndex).getUrl();
             Log.i(TAG, "Rendition Selected - using player width:" + frameWidth + ", selected width:" +  supportedVideoFormats.get(selectedIndex).getWidth() + " selectedIndex: "+selectedIndex);
         } catch (Exception e) {
-            e.printStackTrace();
             return mediaUrl;
         }
 
