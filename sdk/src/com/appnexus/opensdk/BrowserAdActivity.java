@@ -258,8 +258,9 @@ class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     }
 
     @Override
-    public void backPressed() {
+    public boolean shouldHandleBackPress() {
         shouldDestroyActivity = true;
+        return !shouldDestroyActivity;
     }
 
     @Override

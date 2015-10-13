@@ -36,6 +36,7 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
     private VastVideoView videoView;
     private InterstitialVideoPlayer videoPlayer;
     private VastVideoConfiguration videoConfig;
+    private boolean preventExitOnBackPress;
 
     private CircularProgressBar countdownWidget;
 
@@ -73,9 +74,10 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
     }
 
     @Override
-    public void backPressed() {
-        // do nothing
+    public boolean shouldHandleBackPress() {
+        return preventExitOnBackPress;
     }
+
 
     @Override
     public void destroy() {
@@ -143,6 +145,7 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
             public void onStartCountdownTimer(String skipOffset) {
                 countdownWidget.setVisibility(View.VISIBLE);
                 countdownWidget.bringToFront();
+                preventExitOnBackPress = true;
                int skipOffsetInt = getSkipOffsetIntValue(skipOffset);
                 countdownWidget.setMax(skipOffsetInt);
                 countdownWidget.setProgress(skipOffsetInt);
@@ -163,6 +166,7 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
             public void onDisplayCloseButton() {
                 countdownWidget.setTitle("X");
                 countdownWidget.setOnClickListener(clickListener);
+                preventExitOnBackPress = false;
             }
         });
 

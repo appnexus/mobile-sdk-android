@@ -50,7 +50,7 @@ public class AdActivity extends Activity {
 
     interface AdActivityImplementation {
         void create();
-        void backPressed();
+        boolean shouldHandleBackPress();
         void destroy();
         void interacted();
         WebView getWebView();
@@ -134,9 +134,10 @@ public class AdActivity extends Activity {
     @Override
     public void onBackPressed() {
         if (implementation != null) {
-            implementation.backPressed();
+            if(!implementation.shouldHandleBackPress()){
+                super.onBackPressed();
+            }
         }
-        super.onBackPressed();
     }
 
     @Override
