@@ -373,18 +373,21 @@ public class VastResponseParser {
 		ArrayList<VideoClickModel> videoClicks = new ArrayList<VideoClickModel>();
 
 		String skipoffsetStr = p.getAttributeValue(null, "skipOffset");
-		if (skipoffsetStr != null && skipoffsetStr.indexOf(":") < 0) {
-			Clog.d(Clog.vastLogTag,
-                    "Relative skip offset present. Ad would be skippable after x amount of time");
-			linearAdModel.setSkipOffset(skipoffsetStr);
-		} else if (skipoffsetStr != null && skipoffsetStr.indexOf(":") >= 0) {
-			skipOffset = VastVideoUtil.convertStringtoSeconds(skipoffsetStr);
-			// skipOffset = -1;
-			linearAdModel.setSkipOffset(String.valueOf(skipOffset));
 
-			Clog.d(Clog.vastLogTag, "Absolute skipOffset present.");
+		if (skipoffsetStr != null && !skipoffsetStr.contains(":")) {
+
+			Clog.i(Clog.vastLogTag, "Relative skip offset present. Ad would be skippable after x amount of time");
+			linearAdModel.setSkipOffset(skipoffsetStr);
+
+		} else if (skipoffsetStr != null && skipoffsetStr.contains(":")) {
+
+			skipOffset = VastVideoUtil.convertStringtoSeconds(skipoffsetStr);
+			linearAdModel.setSkipOffset(String.valueOf(skipOffset));
+			Clog.i(Clog.vastLogTag, "Absolute skipOffset present.");
+
 		} else {
-			Clog.d(Clog.vastLogTag, "No skip offset present. Ad would not be skippable");
+			Clog.i(Clog.vastLogTag, "No skip offset present. Ad would not be skippable");
+            linearAdModel.setSkipOffset(null);
 		}
 		
 		while (p.next() != XmlPullParser.END_TAG) {

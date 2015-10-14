@@ -22,7 +22,7 @@ public class VastVideoConfiguration {
     	ABSOLUTE, RELATIVE
     }
     
-    private int skipOffset = 0;
+    private int skipOffset = VastVideoUtil.DEFAULT_SKIP_OFFSET;
     private SKIP_OFFSET_TYPE skipOffsetType = SKIP_OFFSET_TYPE.ABSOLUTE;
 
 

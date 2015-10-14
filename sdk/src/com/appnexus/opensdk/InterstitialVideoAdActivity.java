@@ -146,7 +146,7 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
                 countdownWidget.setVisibility(View.VISIBLE);
                 countdownWidget.bringToFront();
                 preventExitOnBackPress = true;
-               int skipOffsetInt = getSkipOffsetIntValue(skipOffset);
+                int skipOffsetInt = getSkipOffsetIntValue(skipOffset);
                 countdownWidget.setMax(skipOffsetInt);
                 countdownWidget.setProgress(skipOffsetInt);
                 int seconds = (int) (skipOffsetInt / 1000) + 1;
@@ -156,7 +156,7 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
 
             @Override
             public void onUpdateCountdownTimer(String skipOffset) {
-               int skipOffsetInt = getSkipOffsetIntValue(skipOffset);
+                int skipOffsetInt = getSkipOffsetIntValue(skipOffset);
                 int seconds = (int) (skipOffsetInt / 1000) + 1;
                 countdownWidget.setProgress(skipOffsetInt);
                 countdownWidget.setTitle(seconds+"");

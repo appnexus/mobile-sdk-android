@@ -30,6 +30,7 @@ import android.view.WindowManager;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Connectivity;
+import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.vastdata.AdModel;
 import com.appnexus.opensdk.vastdata.ClickTrackingModel;
 import com.appnexus.opensdk.vastdata.CreativeModel;
@@ -642,6 +643,8 @@ public class VastVideoUtil {
         try {
             //http://www.lotusfest.org/wp-content/uploads/2015/03/2014-Lotus-Festival-Video-Sample-One.mp4
 
+            String a = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><VAST version=\"2.0\"><Ad id=\"34\"><Wrapper><AdSystem version=\"2.0\">adnxs</AdSystem><VASTAdTagURI><![CDATA[http://YsyDuPEpA8.com]]></VASTAdTagURI><Creatives><Creative id=\"24\"><Linear></Linear></Creative></Creatives></Wrapper></Ad></VAST>";
+
             String vastResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
                     "<VAST xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"vast2.xsd\" version=\"3.0\">\n" +
                     "  <Ad id=\"VAST Ad - Linear Video\">\n" +
@@ -651,7 +654,7 @@ public class VastVideoUtil {
                     "      <Impression><![CDATA[http://oasc-training7.247realmedia.com/sdk/sdktest/@Bottomss]]></Impression>\n" +
                     "      <Creatives>\n" +
                     "        <Creative>\n" +
-                    "          <Linear skipOffset=\"00:00:07\">\n" +
+                    "          <Linear>\n" +
                     "\t\t  <Icons></Icons>\n" +
                     "            <Duration>00:00:30</Duration>\n" +
                     "            <TrackingEvents>\n" +
@@ -726,31 +729,29 @@ public class VastVideoUtil {
 
     public static long calculateSkipOffset(String parsedSkipOffset, VastVideoConfiguration videoConfiguration, double videoLength) {
 
-        Clog.d(TAG, "Parsed Skip Offset: " + parsedSkipOffset);
-        float SKIP_OFFSET = 1.1f;
+        Clog.i(TAG, "Parsed Skip Offset: " + parsedSkipOffset);
         int skipOffsetValue;
         if (parsedSkipOffset == null) {
             parsedSkipOffset = getSkipOffsetFromConfiguration(videoConfiguration, videoLength);
-            Clog.d(TAG, "Skip Offset from configuration: " + parsedSkipOffset);
+            Clog.i(TAG, "Skip Offset from configuration: " + parsedSkipOffset);
         }
 
-        if (!isNullOrEmpty(parsedSkipOffset)) {
+        if (!StringUtil.isEmpty(parsedSkipOffset)) {
             if (parsedSkipOffset.contains("%")) {
-                SKIP_OFFSET = (Float.valueOf(parsedSkipOffset.substring(0,
+                float skipPercentage = (Float.valueOf(parsedSkipOffset.substring(0,
                         parsedSkipOffset.length() - 1)) / 100);
-                skipOffsetValue = (int) (SKIP_OFFSET * Math.round((videoLength / 1000)));
+                skipOffsetValue = (int) (skipPercentage * Math.round((videoLength / 1000)));
                 Clog.d(TAG, "Relative skipOffsetValue: " + skipOffsetValue);
             } else {
                 double skipOffset = Double.parseDouble(parsedSkipOffset);
                 skipOffsetValue = (int) skipOffset;
-                Clog.d(TAG, "Absolute skipOffsetValue: " + skipOffsetValue);
+                Clog.i(TAG, "Absolute skipOffsetValue: " + skipOffsetValue);
             }
 
         } else {
-            skipOffsetValue = (int) Math.round((videoLength / 1000));
-            Clog.d(TAG, "skipOffset default value for this video: " + skipOffsetValue);
+            Clog.i(TAG, "skipOffset default value for this video: " + videoLength);
+            return (long)videoLength;
         }
-
         return skipOffsetValue * 1000;
     }
 
