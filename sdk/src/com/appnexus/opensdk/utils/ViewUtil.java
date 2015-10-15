@@ -32,7 +32,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.appnexus.opensdk.R;
-import com.appnexus.opensdk.VastVideoUtil;
 
 public class ViewUtil {
     public static ImageButton createCloseButton(Context context, boolean custom_close) {
@@ -56,8 +55,7 @@ public class ViewUtil {
         muteButton.setImageResource(R.drawable.unmute);
         muteButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
         RelativeLayout.LayoutParams blp = new RelativeLayout.LayoutParams(
-                VastVideoUtil.getSizeInDP(context, 60),
-                VastVideoUtil.getSizeInDP(context, 60));
+                getSizeInDP(context, 60),getSizeInDP(context, 60));
         blp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         blp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         muteButton.setLayoutParams(blp);
@@ -131,5 +129,18 @@ public class ViewUtil {
         for (int i = 0; i < pixels.length; i++) {
             pixels[i] = (int) ((pixels[i] * scale) + 0.5f);
         }
+    }
+
+    /**
+     * Returns the value according to device's density pixels.
+     *
+     * @param context
+     * @param pixelSize
+     * @return
+     */
+    public static int getSizeInDP(Context context, int pixelSize) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        int sizeInDP = (int) (pixelSize * scale);
+        return sizeInDP;
     }
 }

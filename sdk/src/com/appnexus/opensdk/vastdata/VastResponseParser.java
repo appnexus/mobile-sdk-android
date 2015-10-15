@@ -74,7 +74,7 @@ public class VastResponseParser {
 
 	/**
 	 * Method to read ad to identify Inline and wrapper.
-	 * 
+	 *
 	 * @param p parser object
 	 * @throws IOException
 	 * @throws XmlPullParserException
@@ -102,7 +102,7 @@ public class VastResponseParser {
 
 	/**
 	 * Method to read and parse Media files.
-	 * 
+	 *
 	 * @param p parser object
 	 * @return ArrayList
 	 * @throws IOException
@@ -173,7 +173,7 @@ public class VastResponseParser {
 
 	/**
 	 * Method to read and parse tracking events.
-	 * 
+	 *
 	 * @param p parser object
 	 * @return ArrayList
 	 * @throws IOException
@@ -209,7 +209,7 @@ public class VastResponseParser {
 
 	/**
 	 * Method to read and parse companion click data.
-	 * 
+	 *
 	 * @param p parser object
 	 * @return
 	 * @throws IOException
@@ -256,7 +256,7 @@ public class VastResponseParser {
 
 	/**
 	 * Method to read and parse nonLinearAdClick data.
-	 * 
+	 *
 	 * @param p parser object
 	 * @return ArrayList
 	 * @throws IOException
@@ -300,7 +300,7 @@ public class VastResponseParser {
 
 	/**
 	 * method to read and parse Video click data.
-	 * 
+	 *
 	 * @param p parser object
 	 * @return VideoClickModel
 	 * @throws IOException
@@ -360,7 +360,7 @@ public class VastResponseParser {
 
 	/**
 	 * Method to read and parse LinearAd data.
-	 * 
+	 *
 	 * @param p parser object
 	 * @param creativeModel creative ad object
 	 * @throws IOException
@@ -389,7 +389,7 @@ public class VastResponseParser {
 			Clog.i(Clog.vastLogTag, "No skip offset present. Ad would not be skippable");
             linearAdModel.setSkipOffset(null);
 		}
-		
+
 		while (p.next() != XmlPullParser.END_TAG) {
 			String name = p.getName();
 			if (p.getEventType() != XmlPullParser.START_TAG) {
@@ -453,7 +453,7 @@ public class VastResponseParser {
 
 	/**
 	 * Method to read and parse companion ad data.
-	 * 
+	 *
 	 * @param p parser object
 	 * @return CompanionAdModel
 	 * @throws IOException
@@ -543,7 +543,7 @@ public class VastResponseParser {
 
 	/**
 	 * Method to read and parse NonLinearAd data.
-	 * 
+	 *
 	 * @param p parser object
 	 * @return NonLinearAdModel
 	 * @throws IOException
@@ -635,7 +635,7 @@ public class VastResponseParser {
 
 	/**
 	 * Method to read CompanionAds.
-	 * 
+	 *
 	 * @param p parser object
 	 * @throws IOException
 	 * @throws XmlPullParserException
@@ -665,7 +665,7 @@ public class VastResponseParser {
 
 	/**
 	 * method to read and parse nonLinearAds data.
-	 * 
+	 *
 	 * @param p parser object
 	 * @throws IOException
 	 * @throws XmlPullParserException
@@ -697,7 +697,7 @@ public class VastResponseParser {
 
 	/**
 	 * Method to create and set resource model.
-	 * 
+	 *
 	 * @param companionAdModel
 	 */
 	private void createResourceModel(CompanionAdModel companionAdModel) {
@@ -709,7 +709,7 @@ public class VastResponseParser {
 
 	/**
 	 * Method to create and set nonlinear resource model.
-	 * 
+	 *
 	 * @param nonLinearAd
 	 */
 	private void createNonLinearResourceModel(NonLinearAdModel nonLinearAd) {
@@ -721,7 +721,7 @@ public class VastResponseParser {
 
 	/**
 	 * Method to read and parse Creative data.
-	 * 
+	 *
 	 * @param p parser object
 	 * @param creativesArrayList
 	 * @throws IOException
@@ -775,7 +775,7 @@ public class VastResponseParser {
 
 	/**
 	 * Method to read and parse Creatives data.
-	 * 
+	 *
 	 * @param p parser object
 	 * @throws IOException
 	 * @throws XmlPullParserException
@@ -804,7 +804,7 @@ public class VastResponseParser {
 
 	/**
 	 * Method to get wrapped VAST after validating the valid listener.
-	 * 
+	 *
 	 * @param p parser object
 	 * @throws IOException
 	 * @throws XmlPullParserException
@@ -829,10 +829,10 @@ public class VastResponseParser {
 			HttpGet httpget = new HttpGet(url);
 
 			HttpResponse response = httpclient.execute(httpget);
-			
+
 			Clog.d("", "Fetching Wrapped Vast XML...");
 			HttpEntity entity = response.getEntity();
-			
+
 			if (entity != null) {
 				InputStream instream = entity.getContent();
                 Clog.i("", "Fetched Wrapped Vast XML successfully!");
@@ -858,13 +858,13 @@ public class VastResponseParser {
 		} catch (Exception e) {
 			isError = true;
 			Clog.e(Clog.vastLogTag, "Error fetching wrapped vast tag - Exception :\n" + e.getMessage());
-		} 
+		}
 		if (isError) {
 			throw new Exception("Error fetching wrapped VAST ad response");
 		}
 	}
-	
-	
+
+
 	@SuppressWarnings("deprecation")
 	private DefaultHttpClient getNewHttpClient() {
 	     try {
@@ -892,7 +892,7 @@ public class VastResponseParser {
 
 	/**
 	 * Method to read and parse wrapper data.
-	 * 
+	 *
 	 * @param p
 	 * @throws IOException
 	 * @throws XmlPullParserException
@@ -929,7 +929,7 @@ public class VastResponseParser {
 
 	/**
 	 * Method to read and parse Inline data.
-	 * 
+	 *
 	 * @param p
 	 * @throws IOException
 	 * @throws XmlPullParserException

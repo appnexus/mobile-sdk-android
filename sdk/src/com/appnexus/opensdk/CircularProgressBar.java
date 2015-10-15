@@ -16,6 +16,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.appnexus.opensdk.utils.ViewUtil;
+
 public class CircularProgressBar extends ProgressBar{
 
     private static final int DEFAULT_STROKE_WIDTH = 3;
@@ -53,7 +55,7 @@ public class CircularProgressBar extends ProgressBar{
             setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
 
-        strokeWidth = VastVideoUtil.getSizeInDP(this.getContext(), DEFAULT_STROKE_WIDTH) + 1;
+        strokeWidth = ViewUtil.getSizeInDP(this.getContext(), DEFAULT_STROKE_WIDTH) + 1;
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.CircularProgressBar, style, 0);
 
 		String color;
@@ -132,10 +134,10 @@ public class CircularProgressBar extends ProgressBar{
 	public synchronized void setTitle(String title){
         if(title.equalsIgnoreCase("X")){
             this.title = Html.fromHtml(CLOSE_X).toString();
-            titlePaint.setTextSize(VastVideoUtil.getSizeInDP(this.getContext(), CROSS_X_FONT_SIZE));
+            titlePaint.setTextSize(ViewUtil.getSizeInDP(this.getContext(), CROSS_X_FONT_SIZE));
         }else{
             this.title = title;
-            titlePaint.setTextSize(VastVideoUtil.getSizeInDP(this.getContext(), TITLE_FONT_SIZE));
+            titlePaint.setTextSize(ViewUtil.getSizeInDP(this.getContext(), TITLE_FONT_SIZE));
         }
 		invalidate();
 	}

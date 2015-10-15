@@ -16,13 +16,19 @@
 
 package com.example.simplebanner;
 
-import android.os.Bundle;
 import android.app.Activity;
-import android.widget.FrameLayout;
-import android.location.LocationManager;
 import android.location.Location;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.os.Handler;
-import com.appnexus.opensdk.*;
+import android.widget.FrameLayout;
+
+import com.appnexus.opensdk.AdListener;
+import com.appnexus.opensdk.AdView;
+import com.appnexus.opensdk.BannerAdView;
+import com.appnexus.opensdk.InterstitialAdView;
+import com.appnexus.opensdk.ResultCode;
+import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.utils.Clog;
 
 public class MyActivity extends Activity {
@@ -41,6 +47,7 @@ public class MyActivity extends Activity {
         iav.setPlacementID("1281482");
         iav.setShouldServePSAs(false);
         iav.setOpensNativeBrowser(false);
+
         iav.setAdListener(new AdListener() {
             @Override
             public void onAdLoaded(AdView av) {
