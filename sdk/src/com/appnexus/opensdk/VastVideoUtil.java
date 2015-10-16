@@ -338,8 +338,6 @@ public class VastVideoUtil {
         try {
             //http://www.lotusfest.org/wp-content/uploads/2015/03/2014-Lotus-Festival-Video-Sample-One.mp4
 
-            String a = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><VAST version=\"2.0\"><Ad id=\"34\"><Wrapper><AdSystem version=\"2.0\">adnxs</AdSystem><VASTAdTagURI><![CDATA[http://YsyDuPEpA8.com]]></VASTAdTagURI><Creatives><Creative id=\"24\"><Linear></Linear></Creative></Creatives></Wrapper></Ad></VAST>";
-
             String vastResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
                     "<VAST xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"vast2.xsd\" version=\"3.0\">\n" +
                     "  <Ad id=\"VAST Ad - Linear Video\">\n" +
