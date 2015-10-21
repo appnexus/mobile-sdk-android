@@ -76,14 +76,11 @@ public class Settings {
 
     public static final int MIN_PERCENTAGE_VIEWED = 50;
 
-    public static String COOKIE_DOMAIN = "http://ib.adnxs.com/ut/v1";
-//    public static String COOKIE_DOMAIN = "http://mediation.adnxs.com";
+    public static String COOKIE_DOMAIN = "http://mediation.adnxs.com";
     public static final String AN_UUID = "uuid2";
-//    public static String BASE_URL = "http://mediation.adnxs.com/";
-    public static final String BASE_URL = "http://ib.adnxs.com/ut/v1";
-    public static String REQUEST_BASE_URL = BASE_URL + "?";
-    //    public static String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
-    //    public static String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
+    public static String BASE_URL = "http://mediation.adnxs.com/";
+    public static String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
+    public static String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
 
     private static Settings settings_instance = null;
 
