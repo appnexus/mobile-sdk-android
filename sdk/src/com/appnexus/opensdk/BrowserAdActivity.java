@@ -20,6 +20,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -35,6 +36,7 @@ import android.widget.*;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.ViewUtil;
+import com.appnexus.opensdk.utils.WebviewUtil;
 
 import java.util.LinkedList;
 
@@ -44,8 +46,12 @@ class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     private WebView webView;
     private boolean shouldDestroyActivity = false;
 
-    public BrowserAdActivity(Activity adActivity) {
+
+    private String clickUrl;
+
+    public BrowserAdActivity(Activity adActivity, String clickUrl) {
         this.adActivity = adActivity;
+        this.clickUrl = clickUrl;
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -54,12 +60,15 @@ class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     @Override
     public void create() {
         adActivity.setContentView(R.layout.activity_in_app_browser);
+        initiateBrowserView(adActivity);
 
         webView = BROWSER_QUEUE.poll();
         if ((webView == null) || (webView.getSettings() == null)) {
             finishAdActivity();
             return;
         }
+
+
         WebView webViewSpace = (WebView) adActivity.findViewById(R.id.web_view);
         ViewGroup.LayoutParams spaceParams = webViewSpace.getLayoutParams();
         ViewGroup webViewSpaceParent = ((ViewGroup) webViewSpace.getParent());
@@ -249,8 +258,9 @@ class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     }
 
     @Override
-    public void backPressed() {
+    public boolean shouldHandleBackPress() {
         shouldDestroyActivity = true;
+        return false;
     }
 
     @Override
@@ -281,5 +291,15 @@ class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     private void finishAdActivity() {
         shouldDestroyActivity = true;
         adActivity.finish();
+    }
+
+    private void initiateBrowserView(Context context) {
+
+        if (!StringUtil.isEmpty(clickUrl) && context != null) {
+            WebView fwdWebView = new WebView(context);
+            WebviewUtil.setWebViewSettings(fwdWebView);
+            fwdWebView.loadUrl(clickUrl);
+            BrowserAdActivity.BROWSER_QUEUE.add(fwdWebView);
+        }
     }
 }

@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
@@ -23,4 +22,8 @@ android {
     lintOptions {
         abortOnError false
     }
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:22.2.0'
 }

@@ -41,6 +41,7 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
     private static final int CLOSE_BUTTON_MESSAGE_ID = 8000;
     private ImageButton closeButton;
 
+
     public InterstitialAdActivity(Activity adActivity) {
         this.adActivity = adActivity;
     }
@@ -64,8 +65,9 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
     }
 
     @Override
-    public void backPressed() {
+    public boolean shouldHandleBackPress() {
         // do nothing
+        return false;
     }
 
     @Override

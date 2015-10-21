@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
@@ -44,6 +45,9 @@ import java.util.Queue;
  */
 public class InterstitialAdView extends AdView {
     static final long MAX_AGE = 270000; // 4.5 minutes
+    private VastVideoConfiguration videoConfiguration = new VastVideoConfiguration();
+
+    private VideoAdEventsListener videoAdEventsListener;
     private int backgroundColor = Color.BLACK;
     private int closeButtonDelay = Settings.DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
     static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
@@ -113,14 +117,14 @@ public class InterstitialAdView extends AdView {
         int measuredWidth = dm.widthPixels;
         int h_adjust = 0;
 
-        try{
+        try {
             Activity a = (Activity) context;
             Rect r = new Rect();
             a.getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
             h_adjust += a.getWindow().findViewById(Window.ID_ANDROID_CONTENT)
                     .getTop();
             measuredHeight -= h_adjust;
-        }catch(ClassCastException cce){
+        } catch (ClassCastException cce) {
 
         }
 
@@ -168,13 +172,13 @@ public class InterstitialAdView extends AdView {
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.xml_set_opens_native_browser));
                 this.setOpensNativeBrowser(a.getBoolean(attr, false));
-            }else if (attr == R.styleable.InterstitialAdView_show_loading_indicator) {
+            } else if (attr == R.styleable.InterstitialAdView_show_loading_indicator) {
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.show_loading_indicator_xml));
                 setShowLoadingIndicator(a.getBoolean(attr, true));
-            }else if (attr == R.styleable.InterstitialAdView_load_landing_page_in_background) {
+            } else if (attr == R.styleable.InterstitialAdView_load_landing_page_in_background) {
                 setLoadsInBackground(a.getBoolean(attr, true));
-                Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_load_landing_page_in_background, doesLoadingInBackground ));
+                Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_load_landing_page_in_background, doesLoadingInBackground));
             }
         }
         a.recycle();
@@ -212,7 +216,7 @@ public class InterstitialAdView extends AdView {
     @Override
     protected void display(Displayable d) {
         // safety check: this should never evaluate to true
-        if (!checkDisplayable(d)){
+        if (!checkDisplayable(d)) {
             return;
         }
 
@@ -221,11 +225,11 @@ public class InterstitialAdView extends AdView {
         }
 
         //Prevent responses from reaching this InterstitialAdView if it has been destroyed already
-        if(!destroyed && !paused) {
+        if (!destroyed && !paused) {
             lastDisplayable = d;
             adQueue.add(new DisplayableInterstitialAdQueueEntry(d, System.currentTimeMillis(), false, null));
-        }else{
-            if(d!=null){
+        } else {
+            if (d != null) {
                 d.destroy();
             }
         }
@@ -234,7 +238,7 @@ public class InterstitialAdView extends AdView {
     @Override
     protected void displayMediated(MediatedDisplayable d) {
         // safety check: this should never evaluate to true
-        if (!checkDisplayable(d)){
+        if (!checkDisplayable(d)) {
             return;
         }
 
@@ -243,17 +247,17 @@ public class InterstitialAdView extends AdView {
         }
 
         //Prevent responses from reaching this InterstitialAdView if it has been destroyed already
-        if(!destroyed && !paused) {
+        if (!destroyed && !paused) {
             lastDisplayable = d;
             adQueue.add(new DisplayableInterstitialAdQueueEntry(d, System.currentTimeMillis(), true, d.getMAVC()));
-        }else{
-            if(d!=null){
+        } else {
+            if (d != null) {
                 d.destroy();
             }
         }
     }
 
-    private boolean checkDisplayable(Displayable d){
+    private boolean checkDisplayable(Displayable d) {
         // safety check: this should never evaluate to true
         if ((d == null) || d.failed()) {
             // The displayable has failed to be parsed or turned into a View.
@@ -309,6 +313,14 @@ public class InterstitialAdView extends AdView {
         return true;
     }
 
+    @Override
+    public void setOpensNativeBrowser(boolean opensNativeBrowser) {
+        super.setOpensNativeBrowser(opensNativeBrowser);
+        if (videoConfiguration != null) {
+            videoConfiguration.setOpenInNativeBrowser(opensNativeBrowser);
+        }
+    }
+
     /**
      * Checks the queue to see if there is a valid (i.e., fresher than
      * 60 seconds) interstitial ad available.
@@ -357,12 +369,16 @@ public class InterstitialAdView extends AdView {
             }
         }
 
+        String activityType = AdActivity.ACTIVITY_TYPE_INTERSTITIAL;
+        if (top != null && top.getView() instanceof VastVideoView) {
+            activityType = AdActivity.ACTIVITY_TYPE_VIDEO_INTERSTITIAL;
+        }
+
         // otherwise, launch our adActivity, unless this view has already been destroyed
         if (validAdExists && !destroyed) {
             Class<?> activity_clz = AdActivity.getActivityClass();
             Intent i = new Intent(getContext(), activity_clz);
-            i.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE,
-                    AdActivity.ACTIVITY_TYPE_INTERSTITIAL);
+            i.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, activityType);
             i.putExtra(InterstitialAdView.INTENT_KEY_TIME, now);
             i.putExtra(InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY, closeButtonDelay);
 
@@ -371,7 +387,7 @@ public class InterstitialAdView extends AdView {
                 getContext().startActivity(i);
             } catch (ActivityNotFoundException e) {
                 INTERSTITIALADVIEW_TO_USE = null;
-                Clog.e(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing,activity_clz.getName()));
+                Clog.e(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing, activity_clz.getName()));
             }
 
             return adQueue.size() - 1; // Return the number of ads remaining, less the one we're about to show
@@ -429,6 +445,57 @@ public class InterstitialAdView extends AdView {
     }
 
     /**
+    * Returns the skip countdown value
+     *
+     * @return
+     */
+    public int getSkipOffset() {
+        return videoConfiguration.getSkipOffset();
+    }
+
+    /**
+     * Returns the skip countdown value
+     *
+     * @return
+     */
+    public VastVideoConfiguration.SKIP_OFFSET_TYPE getSkipOffsetType() {
+        return videoConfiguration.getSkipOffsetType();
+    }
+
+    /**
+     * Sets the countdown timer label position
+    * @param skipOffset - Value of skip offset
+     * @param isRelative - Relative or Absolute skip offset type
+     */
+    public void setSkipOffset(int skipOffset, boolean isRelative) {
+        videoConfiguration.setSkipOffset(skipOffset, isRelative);
+    }
+
+
+    protected VastVideoConfiguration getVideoConfiguration() {
+        return videoConfiguration;
+    }
+
+    /**
+     * Returns the videoAdEventsListener object
+     *
+     * @return
+     */
+    public VideoAdEventsListener getVideoAdEventsListener() {
+        return videoAdEventsListener;
+    }
+
+    /**
+     * Sets the listener to listen all the video ad events
+     *
+     * @param videoAdEventsListener
+     */
+    public void setVideoAdEventsListener(VideoAdEventsListener videoAdEventsListener) {
+        this.videoAdEventsListener = videoAdEventsListener;
+    }
+
+
+    /**
      * Destroy this InterstitialAdView object.
      */
     @Override
@@ -476,7 +543,7 @@ public class InterstitialAdView extends AdView {
      * @return -1
      */
     @Override
-    public int getCreativeWidth(){
+    public int getCreativeWidth() {
         return -1;
     }
 
@@ -487,7 +554,7 @@ public class InterstitialAdView extends AdView {
      */
 
     @Override
-    public int getCreativeHeight(){
+    public int getCreativeHeight() {
         // override creative Height for interstitial ad
         return -1;
     }
@@ -502,44 +569,48 @@ public class InterstitialAdView extends AdView {
     //Instead, here, they serve as a way to prevent mediated
     //views from being launched by an already-destroyed
     //parent activity.
-    protected boolean destroyed=false;
-    protected boolean paused=false;
+    protected boolean destroyed = false;
+    protected boolean paused = false;
+
     @Override
     public void activityOnDestroy() {
-        destroyed=true;
+        destroyed = true;
     }
 
     @Override
     public void activityOnPause() {
-        paused=true;
+        paused = true;
 
     }
 
     @Override
     public void activityOnResume() {
-        paused=false;
+        paused = false;
     }
 
 }
 
-interface InterstitialAdQueueEntry{
+interface InterstitialAdQueueEntry {
     abstract long getTime();
+
     abstract boolean isMediated();
+
     abstract MediatedAdViewController getMediatedAdViewController();
+
     abstract View getView();
 }
 
-class DisplayableInterstitialAdQueueEntry implements InterstitialAdQueueEntry{
+class DisplayableInterstitialAdQueueEntry implements InterstitialAdQueueEntry {
     private long time;
     private Displayable d;
     private boolean isMediated;
     private MediatedAdViewController mAVC;
 
-    DisplayableInterstitialAdQueueEntry(Displayable d, Long t, boolean isMediated, MediatedAdViewController mAVC){
-        this.time=t;
-        this.d=d;
-        this.isMediated=isMediated;
-        this.mAVC=mAVC;
+    DisplayableInterstitialAdQueueEntry(Displayable d, Long t, boolean isMediated, MediatedAdViewController mAVC) {
+        this.time = t;
+        this.d = d;
+        this.isMediated = isMediated;
+        this.mAVC = mAVC;
     }
 
     @Override
@@ -547,17 +618,17 @@ class DisplayableInterstitialAdQueueEntry implements InterstitialAdQueueEntry{
         return time;
     }
 
-    public boolean isMediated(){
+    public boolean isMediated() {
         return isMediated;
     }
 
-    public MediatedAdViewController getMediatedAdViewController(){
+    public MediatedAdViewController getMediatedAdViewController() {
         return mAVC;
     }
 
     @Override
     public View getView() {
-        if(d==null) return null;
+        if (d == null) return null;
         return d.getView();
     }
 }

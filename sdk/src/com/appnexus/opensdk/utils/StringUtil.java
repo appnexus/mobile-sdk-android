@@ -28,7 +28,7 @@ public class StringUtil {
 	 * @return True if and only if the string isn't null and has a non-zero length
 	 */
 	public static boolean isEmpty(String s) {
-		return s == null || s.length() == 0;
+		return s == null || s.trim().length() == 0;
 	}
 
     // returns true if success, false if exception

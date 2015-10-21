@@ -55,12 +55,13 @@ class MRAIDAdActivity implements AdActivity.AdActivityImplementation {
     }
 
     @Override
-    public void backPressed() {
+    public boolean shouldHandleBackPress() {
         if (mraidFullscreenImplementation != null) {
             mraidFullscreenImplementation.setFullscreenActivity(null);
             mraidFullscreenImplementation.close();
         }
         mraidFullscreenImplementation = null;
+        return false;
     }
 
 

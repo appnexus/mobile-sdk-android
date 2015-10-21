@@ -35,14 +35,15 @@
       android:theme="@style/AppTheme" >
     <activity
         android:name=".MyActivity"
-        android:label="@string/app_name" >
+        android:label="@string/app_name"
+        android:configChanges="orientation|screenLayout|screenSize|keyboardHidden">>
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
 
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
-    <activity android:name="com.appnexus.opensdk.AdActivity" />
-    <activity android:name="com.appnexus.opensdk.BrowserActivity" />
+    <activity android:name="com.appnexus.opensdk.AdActivity"
+              android:configChanges="orientation|screenLayout|screenSize|keyboardHidden"/>
   </application>
 </manifest>
