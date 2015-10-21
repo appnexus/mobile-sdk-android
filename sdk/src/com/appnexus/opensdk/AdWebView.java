@@ -147,6 +147,12 @@ class AdWebView extends WebView implements Displayable {
     // The webview about to load the ad, and the html ad content
     private String preLoadContent(String html) {
         // Check to ensure <html> tags are present
+        /**
+         * TODO: Added a null check. Needs to be reviewed
+         */
+        if(StringUtil.isEmpty(html)){
+            return null;
+        }
         if (!html.contains("<html>")) {
             StringBuilder bodyBuilder = new StringBuilder();
             html = bodyBuilder.append("<html><head></head><body style='padding:0;margin:0;'>").append(html).append("</body></html>").toString();
@@ -159,6 +165,9 @@ class AdWebView extends WebView implements Displayable {
     }
 
     private String prependRawResources(String html) {
+        if(StringUtil.isEmpty(html)){
+            return null;
+        }
         Resources res = getResources();
         StringBuilder htmlSB = new StringBuilder("<head><script>");
 
@@ -197,7 +206,10 @@ class AdWebView extends WebView implements Displayable {
         new HTTPGet() {
             @Override
             protected void onPostExecute(HTTPResponse response) {
-                if(response.getSucceeded()){
+                /**
+                 * TODO: add null check for HTML
+                 */
+                if(response.getSucceeded() && response.getResponseBody() != null){
                     String html = preLoadContent(response.getResponseBody());
                     html = prependRawResources(html);
                     String baseString;

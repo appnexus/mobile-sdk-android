@@ -65,6 +65,81 @@ class AdViewRequestManager extends RequestManager {
     }
 
     @Override
+    public void onReceiveNewServerResponse(final NewAdResponse response) {
+        final AdView owner = this.owner.get();
+        if (owner != null) {
+            owner.handler.post(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            boolean responseHasAds = (response != null) && response.containsAds();
+                            boolean ownerHasAds = (getMediatedAds() != null) && !getMediatedAds().isEmpty();
+
+                            // no ads in the response and no old ads means no fill
+                            if (!responseHasAds && !ownerHasAds) {
+                                Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
+                                owner.getAdDispatcher().onAdFailed(ResultCode.UNABLE_TO_FILL);
+                                return;
+                            }
+
+                            // If we're about to dispatch a creative to a banner
+                            // that has been resized by ad stretching, reset its size
+                            if (owner.getMediaType().equals(MediaType.BANNER)) {
+                                BannerAdView bav = (BannerAdView) owner;
+                                bav.resetContainerIfNeeded();
+                            }
+
+                            if (responseHasAds) {
+                                // if non-mediated ad is overriding the list,
+                                // this will be null and skip the loop for mediation
+                                setMediatedAds(response.getMediatedAds());
+                            }
+
+                            // create output - either mediated or AdWebView
+
+                            // check if most recent `mediatedAds` is non-empty
+                            if ((getMediatedAds() != null) && !getMediatedAds().isEmpty()) {
+                                MediatedAd mediatedAd = popMediatedAd();
+                                if ((mediatedAd != null) && (response != null)) {
+                                    mediatedAd.setExtras(response.getExtras());
+                                }
+                                // mediated
+                                if (owner.getMediaType().equals(MediaType.BANNER)) {
+                                    controller = MediatedBannerAdViewController.create(
+                                            (Activity) owner.getContext(),
+                                            AdViewRequestManager.this,
+                                            mediatedAd,
+                                            owner.getAdDispatcher());
+                                } else if (owner.getMediaType().equals(MediaType.INTERSTITIAL)) {
+                                    controller = MediatedInterstitialAdViewController.create(
+                                            (Activity) owner.getContext(),
+                                            AdViewRequestManager.this,
+                                            mediatedAd,
+                                            owner.getAdDispatcher());
+                                } else {
+                                    Clog.e(Clog.baseLogTag, "Request type can not be identified.");
+                                    owner.getAdDispatcher().onAdFailed(ResultCode.INVALID_REQUEST);
+                                }
+                            } else if (response != null) { // null-check response
+
+                                if (response.getMediaType() == MediaType.VAST) {
+                                    // Vast ads
+                                    initiateVastAdView(owner, response);
+                                } else {
+                                    // Standard ads
+                                    /**
+                                     * TODO: Temporary
+                                     */
+//                                    initiateWebview(owner, response);
+                                }
+                            }
+                        }
+                    }
+            );
+        }
+    }
+
+    @Override
     public void onReceiveServerResponse(final ServerResponse response) {
         final AdView owner = this.owner.get();
         if (owner != null) {
@@ -175,7 +250,40 @@ class AdViewRequestManager extends RequestManager {
         });
     }
 
+
+
     private void initiateVastAdView(final AdView owner, ServerResponse response) {
+        final VastVideoView adVideoView = new VastVideoView(owner.getContext(), response.getVastAdResponse());
+
+        onReceiveAd(new AdResponse() {
+            @Override
+            public MediaType getMediaType() {
+                return owner.getMediaType();
+            }
+
+            @Override
+            public boolean isMediated() {
+                return false;
+            }
+
+            @Override
+            public Displayable getDisplayable() {
+                return adVideoView;
+            }
+
+            @Override
+            public NativeAdResponse getNativeAdResponse() {
+                return null;
+            }
+
+            @Override
+            public void destroy() {
+                adVideoView.destroy();
+            }
+        });
+    }
+
+    private void initiateVastAdView(final AdView owner, NewAdResponse response) {
         final VastVideoView adVideoView = new VastVideoView(owner.getContext(), response.getVastAdResponse());
 
         onReceiveAd(new AdResponse() {

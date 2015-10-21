@@ -63,6 +63,11 @@ class NativeAdRequestManager extends RequestManager {
     }
 
     @Override
+    public void onReceiveNewServerResponse(NewAdResponse response) {
+
+    }
+
+    @Override
     public void onReceiveServerResponse(ServerResponse response) {
         final NativeAdRequest owner = this.owner.get();
         if (owner != null) {

@@ -32,7 +32,7 @@ import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.utils.Clog;
 
 public class MyActivity extends Activity {
-
+    InterstitialAdView iav;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,10 +43,12 @@ public class MyActivity extends Activity {
     }
 
     private void showInterstitialAd(){
-        InterstitialAdView iav = new InterstitialAdView(this);
-        iav.setPlacementID("1281482");
+        iav = new InterstitialAdView(this);
+//        iav.setPlacementID("5706860");
+        iav.setPlacementID("5706860");
         iav.setShouldServePSAs(false);
         iav.setOpensNativeBrowser(false);
+        iav.setSkipOffset(1, false);
 
         iav.setAdListener(new AdListener() {
             @Override

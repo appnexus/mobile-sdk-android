@@ -201,11 +201,12 @@ public class InterstitialAdView extends AdView {
      */
     @Override
     public boolean loadAd() {
-        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.load_ad_int));
+        Clog.i(Clog.publicFunctionsLogTag, Clog.getString(R.string.load_ad_int));
         if (!isReadyToStart())
             return false;
         if (mAdFetcher != null) {
             // Load an interstitial ad
+            Clog.i("test", "InterstitialAdView: Stop");
             mAdFetcher.stop();
             mAdFetcher.start();
             return true;
@@ -501,7 +502,7 @@ public class InterstitialAdView extends AdView {
     @Override
     public void destroy() {
         super.destroy();
-        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.destroy_int));
+        Clog.i("test", Clog.getString(R.string.destroy_int));
         if (this.mAdFetcher != null)
             mAdFetcher.stop();
         adQueue.clear();

@@ -44,4 +44,14 @@ public class StringUtil {
             return false;
         }
     }
+
+    public static int getIntegerValue(String s){
+        int value = 0;
+        try {
+            value = Integer.parseInt(s);
+        }catch (NumberFormatException e){
+            return 0;
+        }
+        return value;
+    }
 }

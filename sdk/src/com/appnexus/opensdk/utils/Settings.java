@@ -59,7 +59,7 @@ public class Settings {
     private HashSet<String> invalidNativeNetworks = new HashSet<String>();
 
     // STATICS
-    public static final int HTTP_CONNECTION_TIMEOUT = 15000;
+    public static final int HTTP_CONNECTION_TIMEOUT = 35000;
     public static final int HTTP_SOCKET_TIMEOUT = 20000;
 
     public static final int FETCH_THREAD_COUNT = 4;
@@ -76,11 +76,14 @@ public class Settings {
 
     public static final int MIN_PERCENTAGE_VIEWED = 50;
 
-    public static String COOKIE_DOMAIN = "http://mediation.adnxs.com";
+    public static String COOKIE_DOMAIN = "http://ib.adnxs.com/ut/v1";
+//    public static String COOKIE_DOMAIN = "http://mediation.adnxs.com";
     public static final String AN_UUID = "uuid2";
-    public static String BASE_URL = "http://mediation.adnxs.com/";
-    public static String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
-    public static String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
+//    public static String BASE_URL = "http://mediation.adnxs.com/";
+    public static final String BASE_URL = "http://ib.adnxs.com/ut/v1";
+    public static String REQUEST_BASE_URL = BASE_URL + "?";
+    //    public static String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
+    //    public static String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
 
     private static Settings settings_instance = null;
 

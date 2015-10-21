@@ -58,14 +58,16 @@ class AdFetcher {
         this.period = period;
         if ((periodChanged) && !state.equals(STATE.STOPPED)) {
             // We should reset.
-            Clog.d(Clog.baseLogTag, "AdFetcher refresh period changed to " + this.period);
-            Clog.d(Clog.baseLogTag, "Resetting AdFetcher");
+            Clog.i("test", "AdFetcher refresh period changed to " + this.period);
+            Clog.i("test", "Resetting AdFetcher");
+
             stop();
             start();
         }
     }
 
     void stop() {
+        Clog.e(Clog.httpReqLogTag, "AdFetcher: Stop");
         if (requestManager != null) {
             requestManager.cancel();
             requestManager = null;

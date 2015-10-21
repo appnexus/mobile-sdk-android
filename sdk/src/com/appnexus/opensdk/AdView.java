@@ -177,6 +177,7 @@ public abstract class AdView extends FrameLayout implements Ad{
 			return false;
 		if (this.getWindowVisibility() == VISIBLE && mAdFetcher != null) {
 			// Reload Ad Fetcher to get new ad at user's request
+            Clog.i("test", "AdView Stop");
 			mAdFetcher.stop();
 			mAdFetcher.clearDurations();
 			mAdFetcher.start();
@@ -273,6 +274,7 @@ public abstract class AdView extends FrameLayout implements Ad{
 		} catch (Throwable e) {
 		}
 		// Just in case, kill the adfetcher's service
+        Clog.e("test","AdView: finalize(): stop");
 		if (mAdFetcher != null)
 			mAdFetcher.stop();
 	}

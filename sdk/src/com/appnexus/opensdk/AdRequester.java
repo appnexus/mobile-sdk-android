@@ -33,6 +33,13 @@ interface AdRequester {
      */
     public void onReceiveServerResponse(ServerResponse response);
 
+    /**
+     * Called when a new protocol response from AppNexus server is received
+     *
+     * @param response ServerResponse which was received.
+     */
+    public void onReceiveNewServerResponse(NewAdResponse response);
+
 
     public void onReceiveAd(AdResponse ad);
     /**

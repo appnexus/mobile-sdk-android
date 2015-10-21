@@ -26,7 +26,8 @@ import java.util.LinkedList;
 
 abstract class RequestManager implements AdRequester{
     private LinkedList<MediatedAd> mediatedAds;
-    protected AdRequest adRequest;
+//    protected AdRequest adRequest;
+    protected NewAdRequest adRequest;
     private long totalLatencyStart = -1;
 
     @Override
@@ -34,7 +35,8 @@ abstract class RequestManager implements AdRequester{
 
     @Override
     public void execute() {
-        adRequest = new AdRequest(this);
+        adRequest = new NewAdRequest(this);
+//        adRequest = new AdRequest(this);
         markLatencyStart();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             adRequest.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -51,6 +53,9 @@ abstract class RequestManager implements AdRequester{
 
     @Override
     public abstract void onReceiveServerResponse(ServerResponse response);
+
+    @Override
+    public abstract void onReceiveNewServerResponse(NewAdResponse response);
 
     @Override
     public abstract void onReceiveAd(AdResponse ad);

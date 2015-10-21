@@ -24,8 +24,8 @@
 
 
   <uses-sdk
-      android:minSdkVersion="8"
-      android:targetSdkVersion="17"
+      android:minSdkVersion="9"
+      android:targetSdkVersion="22"
       />
 
   <application
@@ -39,10 +39,10 @@
         android:configChanges="orientation|screenLayout|screenSize|keyboardHidden">>
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
-
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
+
     <activity android:name="com.appnexus.opensdk.AdActivity"
               android:configChanges="orientation|screenLayout|screenSize|keyboardHidden"/>
   </application>
