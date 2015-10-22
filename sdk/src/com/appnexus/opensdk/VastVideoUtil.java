@@ -32,9 +32,6 @@ import com.appnexus.opensdk.vastdata.MediaFileModel;
 import com.appnexus.opensdk.vastdata.TrackingModel;
 import com.appnexus.opensdk.vastdata.VideoClickModel;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -329,69 +326,6 @@ public class VastVideoUtil {
             return widthDifference;
         }
 
-    }
-
-
-
-    public static InputStream getVastResponse() {
-
-        try {
-            //http://www.lotusfest.org/wp-content/uploads/2015/03/2014-Lotus-Festival-Video-Sample-One.mp4
-
-            String vastResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
-                    "<VAST xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"vast2.xsd\" version=\"3.0\">\n" +
-                    "  <Ad id=\"VAST Ad - Linear Video\">\n" +
-                    "    <InLine>\n" +
-                    "      <AdSystem><![CDATA[OAS]]></AdSystem>\n" +
-                    "      <AdTitle><![CDATA[vast3_ManuallRenditions_vast]]></AdTitle>\n" +
-                    "      <Impression><![CDATA[http://oasc-training7.247realmedia.com/sdk/sdktest/@Bottomss]]></Impression>\n" +
-                    "      <Creatives>\n" +
-                    "        <Creative>\n" +
-                    "          <Linear>\n" +
-                    "\t\t  <Icons></Icons>\n" +
-                    "            <Duration>00:00:30</Duration>\n" +
-                    "            <TrackingEvents>\n" +
-                    "            </TrackingEvents>\n" +
-                    "            <VideoClicks>\n" +
-                    "              <ClickTracking><![CDATA[http://oasc-training7.247realmedia.com/sdk/sdktest/@Bottomss]]></ClickTracking>\n" +
-                    "              <ClickThrough><![CDATA[http://www.appnexus.com]]></ClickThrough>\n" +
-                    "            </VideoClicks>\n" +
-                    "            <MediaFiles>\t\t\t  \n" +
-                    "\t\t\t  <MediaFile delivery=\"progressive\" bitrate=\"500\" width=\"1024\" height=\"720\" type=\"video/mp4\" scalable=\"true\" maintainAspectRatio=\"true\">\n" +
-                    "\t\t\t\thttp://imageceu1.247realmedia.com/0/EU_Client/Eurosport_vast_campaign/keywest_tourism_boating.mp4\n" +
-                    "              </MediaFile>\n" +
-                    "\t\t\t  <MediaFile delivery=\"progressive\" bitrate=\"500\" width=\"640\" height=\"360\" type=\"video/mp4\" scalable=\"true\" maintainAspectRatio=\"true\">\n" +
-                    "\t\t\t\thttp://imageceu1.247realmedia.com/0/EU_Client/Eurosport_vast_campaign/keywest_tourism_boating.mp4\n" +
-                    "              </MediaFile>\n" +
-                    "\t\t\t  <MediaFile delivery=\"progressive\" bitrate=\"512\" width=\"720\" height=\"480\" type=\"video/mp4\" scalable=\"true\" maintainAspectRatio=\"true\">\n" +
-                    "\t\t\t\thttp://imageceu1.247realmedia.com/0/EU_Client/Eurosport_vast_campaign/keywest_tourism_boating.mp4\n" +
-                    "              </MediaFile>\n" +
-                    "\t\t\t  <MediaFile delivery=\"progressive\" bitrate=\"256\" width=\"1920\" height=\"1080\" type=\"video/mp4\" scalable=\"true\" maintainAspectRatio=\"true\">\n" +
-                    "\t\t\t\thttp://imageceu1.247realmedia.com/0/EU_Client/Eurosport_vast_campaign/keywest_tourism_boating.mp4\n" +
-                    "              </MediaFile>\n" +
-                    "\t\t\t  <MediaFile delivery=\"progressive\" bitrate=\"128\" width=\"320\" height=\"240\" type=\"video/mp4\" scalable=\"true\" maintainAspectRatio=\"true\">\n" +
-                    "\t\t\t\thttp://www.sample-videos.com/video/3gp/240/big_buck_bunny_240p_1mb.3gp\n" +
-                    "              </MediaFile>\n" +
-                    "\t\t\t  <MediaFile delivery=\"progressive\" bitrate=\"128\" width=\"1920\" height=\"1080\" type=\"video/mp4\" scalable=\"true\" maintainAspectRatio=\"true\">\n" +
-                    "\t\t\t\thttp://imageceu1.247realmedia.com/0/EU_Client/Eurosport_vast_campaign/keywest_tourism_boating.mp4\n" +
-                    "              </MediaFile>\n" +
-                    "            </MediaFiles>\n" +
-                    "          </Linear>\n" +
-                    "        </Creative>\n" +
-                    "      </Creatives>\n" +
-                    "    </InLine>\n" +
-                    "  </Ad>\n" +
-                    "</VAST>";
-
-            InputStream stream = new ByteArrayInputStream(vastResponse.getBytes(StandardCharsets.UTF_8));
-
-
-            return stream;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
     }
 
 
