@@ -36,12 +36,12 @@ class AdViewRequestManager extends RequestManager {
     @Override
     public void execute() {
         if(owner.get() instanceof InterstitialAdView){
-            newAdRequest = new NewAdRequest(this);
+            utAdRequest = new UTAdRequest(this);
             markLatencyStart();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                newAdRequest.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                utAdRequest.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
-                newAdRequest.execute();
+                utAdRequest.execute();
             }
         }else {
             super.execute();
@@ -82,7 +82,7 @@ class AdViewRequestManager extends RequestManager {
     }
 
     @Override
-    public void onReceiveNewServerResponse(final NewAdResponse response) {
+    public void onReceiveUTResponse(final UTAdResponse response) {
         final AdView owner = this.owner.get();
         if (owner != null) {
             owner.handler.post(
@@ -106,38 +106,7 @@ class AdViewRequestManager extends RequestManager {
                                 bav.resetContainerIfNeeded();
                             }
 
-                            if (responseHasAds) {
-                                // if non-mediated ad is overriding the list,
-                                // this will be null and skip the loop for mediation
-                                setMediatedAds(response.getMediatedAds());
-                            }
-
-                            // create output - either mediated or AdWebView
-
-                            // check if most recent `mediatedAds` is non-empty
-                            if ((getMediatedAds() != null) && !getMediatedAds().isEmpty()) {
-                                MediatedAd mediatedAd = popMediatedAd();
-                                if ((mediatedAd != null) && (response != null)) {
-                                    mediatedAd.setExtras(response.getExtras());
-                                }
-                                // mediated
-                                if (owner.getMediaType().equals(MediaType.BANNER)) {
-                                    controller = MediatedBannerAdViewController.create(
-                                            (Activity) owner.getContext(),
-                                            AdViewRequestManager.this,
-                                            mediatedAd,
-                                            owner.getAdDispatcher());
-                                } else if (owner.getMediaType().equals(MediaType.INTERSTITIAL)) {
-                                    controller = MediatedInterstitialAdViewController.create(
-                                            (Activity) owner.getContext(),
-                                            AdViewRequestManager.this,
-                                            mediatedAd,
-                                            owner.getAdDispatcher());
-                                } else {
-                                    Clog.e(Clog.baseLogTag, "Request type can not be identified.");
-                                    owner.getAdDispatcher().onAdFailed(ResultCode.INVALID_REQUEST);
-                                }
-                            } else if (response != null) { // null-check response
+                            if (response != null) { // null-check response
 
                                 /**
                                  * TODO: Need to revisit this condition
@@ -224,7 +193,7 @@ class AdViewRequestManager extends RequestManager {
         }
     }
 
-    private void initiateWebview(final AdView owner, NewAdResponse response) {
+    private void initiateWebview(final AdView owner, UTAdResponse response) {
         final AdWebView output = new AdWebView(owner);
         output.loadAd(response);
 
@@ -305,7 +274,7 @@ class AdViewRequestManager extends RequestManager {
 
 
 
-    private void initiateVastAdView(final AdView owner, NewAdResponse response) {
+    private void initiateVastAdView(final AdView owner, UTAdResponse response) {
         final VastVideoView adVideoView = new VastVideoView(owner.getContext(), response.getVastAdResponse());
 
         onReceiveAd(new AdResponse() {

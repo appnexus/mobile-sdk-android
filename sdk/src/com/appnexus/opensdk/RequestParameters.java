@@ -300,6 +300,7 @@ class RequestParameters {
             sb.append("&devmake=").append(Uri.encode(settings.deviceMake));
         if (!StringUtil.isEmpty(settings.deviceModel))
             sb.append("&devmodel=").append(Uri.encode(settings.deviceModel));
+
         // Get carrier
         if (settings.carrierName == null) {
             TelephonyManager telephonyManager = (TelephonyManager) context

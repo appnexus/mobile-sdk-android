@@ -88,8 +88,7 @@ class AdRequest extends AsyncTask<Void, Integer, ServerResponse> {
 
                     Clog.setLastRequest(query_string);
 
-                    Clog.d(Clog.httpReqLogTag,
-                            Clog.getString(R.string.fetch_url, query_string));
+                    Clog.d(Clog.httpReqLogTag, Clog.getString(R.string.fetch_url, query_string));
 
                     HttpParams p = new BasicHttpParams();
                     HttpConnectionParams.setConnectionTimeout(p,

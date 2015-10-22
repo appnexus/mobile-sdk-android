@@ -63,7 +63,7 @@ class NativeAdRequestManager extends RequestManager {
     }
 
     @Override
-    public void onReceiveNewServerResponse(NewAdResponse response) {
+    public void onReceiveUTResponse(UTAdResponse response) {
 
     }
 

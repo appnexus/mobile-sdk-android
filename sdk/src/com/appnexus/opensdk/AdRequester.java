@@ -34,14 +34,14 @@ interface AdRequester {
     public void onReceiveServerResponse(ServerResponse response);
 
     /**
-     * Called when a new protocol response from AppNexus server is received
+     * Called when a Universal Tag response from AppNexus server is received
      *
-     * @param response ServerResponse which was received.
+     * @param response UTAdResponse which was received.
      */
-    public void onReceiveNewServerResponse(NewAdResponse response);
-
+    public void onReceiveUTResponse(UTAdResponse response);
 
     public void onReceiveAd(AdResponse ad);
+
     /**
      * Mark the beginning of an ad request for latency recording
      */

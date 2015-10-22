@@ -112,7 +112,7 @@ class AdWebView extends WebView implements Displayable {
         setWebViewClient(new AdWebViewClient());
     }
 
-    public void loadAd(NewAdResponse ad) {
+    public void loadAd(UTAdResponse ad) {
         if(ad==null){
             fail();
             return;
@@ -240,9 +240,7 @@ class AdWebView extends WebView implements Displayable {
         new HTTPGet() {
             @Override
             protected void onPostExecute(HTTPResponse response) {
-                /**
-                 * TODO: add null check for HTML
-                 */
+
                 if(response.getSucceeded() && response.getResponseBody() != null){
                     String html = preLoadContent(response.getResponseBody());
                     html = prependRawResources(html);

@@ -30,7 +30,6 @@ import android.util.Pair;
 
 import com.appnexus.opensdk.utils.AdvertistingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.NewSettings;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
@@ -54,15 +53,60 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Locale;
 
-class NewAdRequest extends AsyncTask<Void, Integer, NewAdResponse> {
+class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
+
+    public static final String SIZE_WIDTH = "width";
+    public static final String SIZE_HEIGHT = "height";
+    public static final String TAGS = "tags";
+    public static final String TAG_ID = "id";
+    public static final String TAG_SIZES = "sizes";
+    public static final String TAG_ALLOW_SMALLER_SIZES = "allow_smaller_sizes";
+    public static final String TAG_ALLOWED_MEDIA_AD_TYPES = "ad_types";
+    public static final String TAG_DISABLE_PSA = "disable_psa";
+    public static final String TAG_PREBID = "prebid";
+    public static final String USER = "user";
+    public static final String USER_AGE = "age";
+    public static final String USER_GENDER = "gender";
+    public static final String USER_LANGUAGE = "language";
+    public static final String DEVICE = "device";
+    public static final String DEVICE_USERAGENT = "useragent";
+    public static final String DEVICE_GEO = "geo";
+    public static final String GEO_LAT = "lat";
+    public static final String GEO_LON = "lng";
+    public static final String GEO_AGE = "loc_age";
+    public static final String GEO_PREC = "loc_precision";
+    public static final String DEVICE_MAKE = "make";
+    public static final String DEVICE_MODEL = "model";
+    public static final String DEVICE_OS = "os";
+    public static final String DEVICE_CARRIER = "carrier";
+    public static final String DEVICE_CONNECTIONTYPE = "connectiontype";
+    public static final String DEVICE_MCC = "mcc";
+    public static final String DEVICE_MNC = "mnc";
+    public static final String DEVICE_LMT = "limit_ad_tracking";
+    public static final String DEVICE_DEVICE_ID = "device_id";
+    public static final String DEVICE_DEVTIME = "devtime";
+    public static final String DEVICE_ID_AAID = "aaid";
+    public static final String APP = "app";
+    public static final String APP_ID = "appid";
+    public static final String KEYWORDS = "keywords";
+    public static final String KEYVAL_KEY = "key";
+    public static final String KEYVAL_VALUE = "value";
+
+    /**
+     * Constants for universal tag response parsing
+     */
+    public static final String BANNER = "banner";
+    public static final String VAST = "video";
+
 
     private static ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
     private WeakReference<AdRequester> requester; // The instance of AdRequester which is filing this request.
     private RequestParameters params;
 
-    private static final NewAdResponse HTTP_ERROR = new NewAdResponse(true);
+    private static final UTAdResponse HTTP_ERROR = new UTAdResponse(true);
+    public static final String os = "android";
 
-    public NewAdRequest(AdRequester adRequester) {
+    public UTAdRequest(AdRequester adRequester) {
         this.requester = new WeakReference<AdRequester>(adRequester);
          params = adRequester.getRequestParams();
         if (params != null) {
@@ -92,14 +136,14 @@ class NewAdRequest extends AsyncTask<Void, Integer, NewAdResponse> {
 
 
     @Override
-    protected NewAdResponse doInBackground(Void... params) {
+    protected UTAdResponse doInBackground(Void... params) {
 
         AdRequester requester = this.requester.get();
         if (requester != null) {
             RequestParameters parameters = requester.getRequestParams();
                 try {
 
-                    URL url = new URL(NewSettings.BASEURL);
+                    URL url = new URL(Settings.BASE_URL_UT);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setDoOutput(true);
                     conn.setDoInput(true);
@@ -143,7 +187,7 @@ class NewAdRequest extends AsyncTask<Void, Integer, NewAdResponse> {
                         // marked as UNABLE_TO_FILL
                         Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
                     }
-                    return new NewAdResponse(result, parameters.getMediaType());
+                    return new UTAdResponse(result, parameters.getMediaType());
                 }  catch (SocketTimeoutException e) {
                     Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_timeout));
                 } catch (IOException e) {
@@ -177,7 +221,7 @@ class NewAdRequest extends AsyncTask<Void, Integer, NewAdResponse> {
     }
 
     @Override
-    protected void onPostExecute(NewAdResponse result) {
+    protected void onPostExecute(UTAdResponse result) {
         // check for invalid responses
         if (result == null) {
             Clog.i(Clog.httpRespLogTag, Clog.getString(R.string.no_response));
@@ -195,21 +239,20 @@ class NewAdRequest extends AsyncTask<Void, Integer, NewAdResponse> {
             if (requester.getRequestParams() != null) {
                 result.addToExtras(ServerResponse.EXTRAS_KEY_ORIENTATION, requester.getRequestParams().getOrientation());
             }
-            requester.onReceiveNewServerResponse(result);
+            requester.onReceiveUTResponse(result);
         }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
-    protected void onCancelled(NewAdResponse serverResponse) {
+    protected void onCancelled(UTAdResponse serverResponse) {
         super.onCancelled(serverResponse);
         Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.cancel_request));
     }
 
-
     // Package only for testing purpose
     String getPostData() {
-        Context context = NewSettings.getContext();
+        Context context = params.getContext();
         if (context != null) {
             // Try to retrieve aaid and limitedAdTracking if they were not set
             AdvertistingIDUtil.retrieveAndSetAAID(context);
@@ -219,27 +262,27 @@ class NewAdRequest extends AsyncTask<Void, Integer, NewAdResponse> {
             // add tags
             JSONArray tags = getTagsObject();
             if (tags != null && tags.length() > 0) {
-                postData.put(NewSettings.TAGS, tags);
+                postData.put(TAGS, tags);
             }
             // add user
             JSONObject user = getUserObject();
             if (user != null && user.length() > 0) {
-                postData.put(NewSettings.USER, user);
+                postData.put(USER, user);
             }
             // add device
             JSONObject device = getDeviceObject();
             if (device != null && device.length() > 0) {
-                postData.put(NewSettings.DEVICE, device);
+                postData.put(DEVICE, device);
             }
             // add app
             JSONObject app = getAppObject();
             if (device != null && device.length() > 0) {
-                postData.put(NewSettings.APP, app);
+                postData.put(APP, app);
             }
             // add custom keywords
             JSONArray keywordsArray = getCustomKeywordsArray();
             if (keywordsArray != null && keywordsArray.length() > 0) {
-                postData.put(NewSettings.KEYWORDS, keywordsArray);
+                postData.put(KEYWORDS, keywordsArray);
             }
         } catch (JSONException e) {
             Clog.e(Clog.httpRespLogTag, "JSONException: "+e.getMessage());
@@ -252,26 +295,23 @@ class NewAdRequest extends AsyncTask<Void, Integer, NewAdResponse> {
         JSONArray tags = new JSONArray();
         JSONObject tag = new JSONObject();
         try {
-            /**
-             * TODO: Add integer parse validation
-             */
-            tag.put(NewSettings.TAG_ID, Integer.parseInt(params.getPlacementID()));
+            tag.put(TAG_ID, StringUtil.getIntegerValue(params.getPlacementID()));
 
 //            if (params.getAdWidth() > 0 && params.getAdHeight() > 0) {
                 JSONObject size = new JSONObject();
-                size.put(NewSettings.SIZE_WIDTH, params.getMaxWidth());
-                size.put(NewSettings.SIZE_HEIGHT, params.getMaxHeight());
+                size.put(SIZE_WIDTH, params.getMaxWidth());
+                size.put(SIZE_HEIGHT, params.getMaxHeight());
                 JSONArray sizes = new JSONArray();
                 sizes.put(size);
-                tag.put(NewSettings.TAG_SIZES, sizes);
-                tag.put(NewSettings.TAG_ALLOW_SMALLER_SIZES, true);
+                tag.put(TAG_SIZES, sizes);
+                tag.put(TAG_ALLOW_SMALLER_SIZES, true);
 //            }
             JSONArray allowedAdTypes = new JSONArray();
-            allowedAdTypes.put(NewSettings.BANNER);
-            allowedAdTypes.put(NewSettings.VAST);
-            tag.put(NewSettings.TAG_ALLOWED_MEDIA_AD_TYPES, allowedAdTypes);
-            tag.put(NewSettings.TAG_PREBID, false);
-            tag.put(NewSettings.TAG_DISABLE_PSA, true);
+            allowedAdTypes.put(BANNER);
+            allowedAdTypes.put(VAST);
+            tag.put(TAG_ALLOWED_MEDIA_AD_TYPES, allowedAdTypes);
+            tag.put(TAG_PREBID, false);
+            tag.put(TAG_DISABLE_PSA, true);
         } catch (JSONException e) {
         }
         if (tag.length() > 0) {
@@ -284,9 +324,8 @@ class NewAdRequest extends AsyncTask<Void, Integer, NewAdResponse> {
         JSONObject user = new JSONObject();
         try {
             if (StringUtil.getIntegerValue(params.getAge()) > 0) {
-                user.put(NewSettings.USER_AGE, StringUtil.getIntegerValue(params.getAge()));
+                user.put(USER_AGE, StringUtil.getIntegerValue(params.getAge()));
             }
-
 
             AdView.GENDER gender = params.getGender();
             int g = 0;
@@ -301,9 +340,9 @@ class NewAdRequest extends AsyncTask<Void, Integer, NewAdResponse> {
                     g = 0;
                     break;
             }
-            user.put(NewSettings.USER_GENDER, g);
-            if (!StringUtil.isEmpty(NewSettings.language)) {
-                user.put(NewSettings.USER_LANGUAGE, NewSettings.language);
+            user.put(USER_GENDER, g);
+            if (!StringUtil.isEmpty(Settings.getSettings().language)) {
+                user.put(USER_LANGUAGE, Settings.getSettings().language);
             }
         } catch (JSONException e) {
         }
@@ -314,51 +353,52 @@ class NewAdRequest extends AsyncTask<Void, Integer, NewAdResponse> {
         JSONObject device = new JSONObject();
         try {
             // Device make
-            if (!StringUtil.isEmpty(NewSettings.deviceMake))
-                device.put(NewSettings.DEVICE_MAKE, NewSettings.deviceMake);
+            if (!StringUtil.isEmpty(Settings.getSettings().deviceMake))
+                device.put(DEVICE_MAKE, Settings.getSettings().deviceMake);
             // Device model
-            if (!StringUtil.isEmpty(NewSettings.deviceModel))
-                device.put(NewSettings.DEVICE_MODEL, NewSettings.deviceModel);
+            if (!StringUtil.isEmpty(Settings.getSettings().deviceModel))
+                device.put(DEVICE_MODEL, Settings.getSettings().deviceModel);
             // POST data that requires context
-            Context context = NewSettings.getContext();
+            Context context = params.getContext();
             if (context != null) {
                 // Default User Agent
-                if (!StringUtil.isEmpty(NewSettings.getUseragent())) {
-                    device.put(NewSettings.DEVICE_USERAGENT, NewSettings.getUseragent());
+                if (!StringUtil.isEmpty(Settings.getSettings().ua)) {
+                    device.put(DEVICE_USERAGENT, Settings.getSettings().ua);
                 }
 
                 TelephonyManager telephonyManager = (TelephonyManager) context
                         .getSystemService(Context.TELEPHONY_SERVICE);
                 // Get mobile country codes
-                if (NewSettings.getMCC() < 0 || NewSettings.getMNC() < 0) {
+
+                if (Settings.getSettings().mcc == null || Settings.getSettings().mnc == null) {
                     String networkOperator = telephonyManager.getNetworkOperator();
                     if (!StringUtil.isEmpty(networkOperator)) {
                         try {
-                            NewSettings.setMCC(Integer.parseInt(networkOperator.substring(0, 3)));
-                            NewSettings.setMNC(Integer.parseInt(networkOperator.substring(3)));
+                            Settings.getSettings().mcc = networkOperator.substring(0, 3);
+                            Settings.getSettings().mnc = networkOperator.substring(3);
                         } catch (Exception e) {
-                            // Catches NumberFormatException and StringIndexOutOfBoundsException
-                            NewSettings.setMCC(-1);
-                            NewSettings.setMNC(-1);
+                            // Catches IndexOutOfBoundsException
+                            Settings.getSettings().mcc = null;
+                            Settings.getSettings().mnc = null;
                         }
                     }
                 }
-                if (NewSettings.getMCC() > 0 && NewSettings.getMNC() > 0) {
-                    device.put(NewSettings.DEVICE_MNC, NewSettings.getMNC());
-                    device.put(NewSettings.DEVICE_MCC, NewSettings.getMCC());
+                if (Settings.getSettings().mcc != null && Settings.getSettings().mnc != null) {
+                    device.put(DEVICE_MNC, StringUtil.getIntegerValue(Settings.getSettings().mnc));
+                    device.put(DEVICE_MCC, StringUtil.getIntegerValue(Settings.getSettings().mcc));
                 }
 
                 // Get carrier
-                if (NewSettings.getCarrierName() == null) {
+                if (Settings.getSettings().carrierName == null) {
                     try {
-                        NewSettings.setCarrierName(telephonyManager.getNetworkOperatorName());
+                        Settings.getSettings().carrierName = telephonyManager.getNetworkOperatorName();
                     } catch (SecurityException ex) {
                         // Some phones require READ_PHONE_STATE permission just ignore name
-                        NewSettings.setCarrierName("");
+                        Settings.getSettings().carrierName = "";
                     }
                 }
-                if (!StringUtil.isEmpty(NewSettings.getCarrierName()))
-                    device.put(NewSettings.DEVICE_CARRIER, NewSettings.getCarrierName());
+                if (!StringUtil.isEmpty(Settings.getSettings().carrierName))
+                    device.put(DEVICE_CARRIER, Settings.getSettings().carrierName);
 
                 // check connection type
                 int connection_type = 0;
@@ -371,9 +411,9 @@ class NewAdRequest extends AsyncTask<Void, Integer, NewAdResponse> {
                         connection_type = wifi.isConnected() ? 1 : 2;
                     }
                 }
-                device.put(NewSettings.DEVICE_CONNECTIONTYPE, connection_type);
+                device.put(DEVICE_CONNECTIONTYPE, connection_type);
             }
-            // Location NewSettings
+
             Double lat, lon;
             Integer locDataAge, locDataPrecision;
             Location lastLocation = null;
@@ -413,8 +453,6 @@ class NewAdRequest extends AsyncTask<Void, Integer, NewAdResponse> {
                 }
             }
 
-
-
             // Set the location info back to the application
             if (appLocation != lastLocation) {
                 SDKSettings.setLocation(lastLocation);
@@ -439,30 +477,30 @@ class NewAdRequest extends AsyncTask<Void, Integer, NewAdResponse> {
             }
             JSONObject geo = new JSONObject();
             if (lat != null && lon != null) {
-                geo.put(NewSettings.GEO_LAT, lat);
-                geo.put(NewSettings.GEO_LON, lon);
-                if (locDataAge != null) geo.put(NewSettings.GEO_AGE, locDataAge);
-                if (locDataPrecision != null) geo.put(NewSettings.GEO_PREC, locDataPrecision);
+                geo.put(GEO_LAT, lat);
+                geo.put(GEO_LON, lon);
+                if (locDataAge != null) geo.put(GEO_AGE, locDataAge);
+                if (locDataPrecision != null) geo.put(GEO_PREC, locDataPrecision);
             }
             if (geo.length() > 0) {
-                device.put(NewSettings.DEVICE_GEO, geo);
+                device.put(DEVICE_GEO, geo);
             }
 
             // devtime
             long dev_time = System.currentTimeMillis();
-            device.put(NewSettings.DEVICE_DEVTIME, dev_time);
+            device.put(DEVICE_DEVTIME, dev_time);
 
             // limited ad tracking
-            device.put(NewSettings.DEVICE_LMT, NewSettings.isLimitAdTracking());
-            if (!NewSettings.isLimitAdTracking() && !StringUtil.isEmpty(NewSettings.getAAID())) {
+            device.put(DEVICE_LMT, Settings.getSettings().limitTrackingEnabled);
+            if (!Settings.getSettings().limitTrackingEnabled && !StringUtil.isEmpty(Settings.getSettings().aaid)) {
                 // device id
                 JSONObject device_id = new JSONObject();
-                device_id.put(NewSettings.DEVICE_ID_AAID, NewSettings.getAAID());
-                device.put(NewSettings.DEVICE_DEVICE_ID, device_id);
+                device_id.put(DEVICE_ID_AAID, Settings.getSettings().aaid);
+                device.put(DEVICE_DEVICE_ID, device_id);
             }
 
             // os
-            device.put(NewSettings.DEVICE_OS, NewSettings.os);
+            device.put(DEVICE_OS, os);
         } catch (JSONException e) {
         }
 
@@ -470,17 +508,16 @@ class NewAdRequest extends AsyncTask<Void, Integer, NewAdResponse> {
     }
 
     private JSONObject getAppObject() {
-        if (StringUtil.isEmpty(NewSettings.getAppID())) {
-            Context context = NewSettings.getContext();
+        if (StringUtil.isEmpty(Settings.getSettings().app_id)) {
+            Context context = params.getContext();
             if (context != null) {
-                NewSettings.setAppID(context.getApplicationContext()
-                        .getPackageName());
+                Settings.getSettings().app_id = context.getApplicationContext().getPackageName();
             }
         }
         JSONObject app = new JSONObject();
         try {
-            if (!StringUtil.isEmpty(NewSettings.getAppID())) {
-                app.put(NewSettings.APP_ID, NewSettings.getAppID());
+            if (!StringUtil.isEmpty(Settings.getSettings().app_id)) {
+                app.put(APP_ID, Settings.getSettings().app_id);
             }
         } catch (JSONException e) {
         }
@@ -500,8 +537,8 @@ class NewAdRequest extends AsyncTask<Void, Integer, NewAdResponse> {
                 for (Pair<String, String> pair : customKeywords) {
                     if (!StringUtil.isEmpty(pair.first) && !StringUtil.isEmpty(pair.second)) {
                         JSONObject key_val = new JSONObject();
-                        key_val.put(NewSettings.KEYVAL_KEY, pair.first);
-                        key_val.put(NewSettings.KEYVAL_VALUE, pair.second);
+                        key_val.put(KEYVAL_KEY, pair.first);
+                        key_val.put(KEYVAL_VALUE, pair.second);
                         keywords.put(key_val);
                     }
                 }

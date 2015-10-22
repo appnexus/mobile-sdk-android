@@ -49,8 +49,9 @@ public class StringUtil {
         int value = 0;
         try {
             value = Integer.parseInt(s);
-        }catch (NumberFormatException e){
-            return 0;
+        }catch (Exception e){
+            // Catch NullPointerException and NumberFormatException
+            Clog.e(Clog.baseLogTag, "Exception while parsing integer value from string: "+s + " - "+e.getMessage());
         }
         return value;
     }

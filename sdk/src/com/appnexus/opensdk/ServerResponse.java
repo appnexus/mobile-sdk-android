@@ -57,24 +57,24 @@ class ServerResponse {
 
     private boolean isHttpError = false;
 
-    private static final String MRAID_JS_FILENAME = "mraid.js";
-    private static final String RESPONSE_KEY_STATUS = "status";
-    private static final String RESPONSE_KEY_ERROR_MESSAGE = "errorMessage";
-    private static final String RESPONSE_KEY_ADS = "ads";
-    private static final String RESPONSE_KEY_TYPE = "type";
-    private static final String RESPONSE_KEY_WIDTH = "width";
-    private static final String RESPONSE_KEY_HEIGHT = "height";
-    private static final String RESPONSE_KEY_CONTENT = "content";
-    private static final String RESPONSE_KEY_MEDIATED_ADS = "mediated";
-    private static final String RESPONSE_KEY_HANDLER = "handler";
-    private static final String RESPONSE_KEY_CLASS = "class";
-    private static final String RESPONSE_KEY_ID = "id";
-    private static final String RESPONSE_KEY_PARAM = "param";
-    private static final String RESPONSE_KEY_RESULT_CB = "result_cb";
-    private static final String RESPONSE_KEY_NATIVE = "native";
+    static final String MRAID_JS_FILENAME = "mraid.js";
+    static final String RESPONSE_KEY_STATUS = "status";
+    static final String RESPONSE_KEY_ERROR_MESSAGE = "errorMessage";
+    static final String RESPONSE_KEY_ADS = "ads";
+    static final String RESPONSE_KEY_TYPE = "type";
+    static final String RESPONSE_KEY_WIDTH = "width";
+    static final String RESPONSE_KEY_HEIGHT = "height";
+    static final String RESPONSE_KEY_CONTENT = "content";
+    static final String RESPONSE_KEY_MEDIATED_ADS = "mediated";
+    static final String RESPONSE_KEY_HANDLER = "handler";
+    static final String RESPONSE_KEY_CLASS = "class";
+    static final String RESPONSE_KEY_ID = "id";
+    static final String RESPONSE_KEY_PARAM = "param";
+    static final String RESPONSE_KEY_RESULT_CB = "result_cb";
+    static final String RESPONSE_KEY_NATIVE = "native";
 
-    private static final String RESPONSE_VALUE_ERROR = "error";
-    private static final String RESPONSE_VALUE_ANDROID = "android";
+    static final String RESPONSE_VALUE_ERROR = "error";
+    static final String RESPONSE_VALUE_ANDROID = "android";
 
     static final String EXTRAS_KEY_MRAID = "MRAID";
     static final String EXTRAS_KEY_ORIENTATION = "ORIENTATION";
