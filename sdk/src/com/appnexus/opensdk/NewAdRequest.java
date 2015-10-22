@@ -33,6 +33,7 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.NewSettings;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
+import com.appnexus.opensdk.utils.WebviewUtil;
 
 import org.apache.http.StatusLine;
 import org.json.JSONArray;
@@ -45,6 +46,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.ref.WeakReference;
+import java.net.CookieHandler;
+import java.net.CookieManager;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -129,10 +132,12 @@ class NewAdRequest extends AsyncTask<Void, Integer, NewAdResponse> {
                     String result = builder.toString();
 
                     Clog.e(Clog.vastLogTag, "RESPONSE -- "+result);
+                    CookieManager cookieManager = new CookieManager();
+                    CookieHandler.setDefault(cookieManager);
                     /**
-                     * TODO: Cookie sync needs to be implemented
+                     * TODO: Cookie sync needs to be re-visited
                      */
-//                    WebviewUtil.cookieSync(h.getCookieStore().getCookies());
+                    WebviewUtil.httpCookieSync(cookieManager.getCookieStore().getCookies());
                     if (result.equals("")) {
                         // just log and return a valid AdResponse object so that it is
                         // marked as UNABLE_TO_FILL
@@ -254,12 +259,12 @@ class NewAdRequest extends AsyncTask<Void, Integer, NewAdResponse> {
 
 //            if (params.getAdWidth() > 0 && params.getAdHeight() > 0) {
                 JSONObject size = new JSONObject();
-                size.put(NewSettings.SIZE_WIDTH, params.getAdWidth());
-                size.put(NewSettings.SIZE_HEIGHT, params.getAdHeight());
+                size.put(NewSettings.SIZE_WIDTH, params.getMaxWidth());
+                size.put(NewSettings.SIZE_HEIGHT, params.getMaxHeight());
                 JSONArray sizes = new JSONArray();
                 sizes.put(size);
                 tag.put(NewSettings.TAG_SIZES, sizes);
-                tag.put(NewSettings.TAG_ALLOW_SMALLER_SIZES, false);
+                tag.put(NewSettings.TAG_ALLOW_SMALLER_SIZES, true);
 //            }
             JSONArray allowedAdTypes = new JSONArray();
             allowedAdTypes.put(NewSettings.BANNER);

@@ -25,7 +25,7 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.DateUtils;
 
 import java.lang.reflect.Method;
-import java.net.URL;
+import java.net.HttpCookie;
 import java.util.Date;
 import java.util.List;
 
@@ -93,9 +93,10 @@ public class WebviewUtil {
         }
     }
 
+
     /**
      * Synchronize the uuid2 cookie to the Webview Cookie Jar
-     * This is only done if there is no present cookie.  
+     * This is only done if there is no present cookie.
      * @param cookies Cookies to sync
      */
     public static void cookieSync(List<Cookie> cookies) {
@@ -125,7 +126,7 @@ public class WebviewUtil {
                 sb.append(c.getName()).append('=').append(c.getValue())
                         .append("; ");
 
-                Date d = c.getExpiryDate();
+                Date d =  c.getExpiryDate();
                 if (d != null && d.getTime() > 0) {
                     sb.append("expires=").append(DateUtils.formatDate(d))
                             .append("; ");
@@ -135,7 +136,72 @@ public class WebviewUtil {
                 } else {
                     sb.append("HttpOnly");
                 }
-                Clog.d(Clog.httpRespLogTag, "set-cookie: " + sb.toString());
+                Clog.i(Clog.httpRespLogTag, "set-cookie: " + sb.toString());
+                cm.setCookie(Settings.COOKIE_DOMAIN, sb.toString());
+
+            }
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                // CookieSyncManager is deprecated in API 21 Lollipop
+                CookieSyncManager csm = CookieSyncManager.getInstance();
+                if (csm == null) {
+                    Clog.i(Clog.httpRespLogTag,
+                            "Unable to find a CookieSyncManager");
+                    return;
+                }
+                csm.sync();
+            } else {
+                cm.flush();
+            }
+        } catch (IllegalStateException ise) {
+        } catch (Exception e) {
+        }
+
+    }
+
+    /**
+     * Synchronize the uuid2 cookie to the Webview Cookie Jar
+     * This is only done if there is no present cookie.  
+     * @param cookies Cookies to sync
+     */
+    public static void httpCookieSync(List<HttpCookie> cookies) {
+        try {
+            CookieManager cm = CookieManager.getInstance();
+            if (cm == null) {
+                Clog.i(Clog.httpRespLogTag, "Unable to find a CookieManager");
+                return;
+            }
+            String wvcookie = cm.getCookie(Settings.BASE_URL);
+            if (!StringUtil.isEmpty(wvcookie)) {
+                Clog.d(Clog.httpRespLogTag, "Webview already has our cookie");
+                return;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            for (HttpCookie c : cookies) {
+                if (!Settings.AN_UUID.equals(c.getName())) {
+                    continue;
+                }
+                if (!StringUtil.isEmpty(c.getDomain())) {
+                    sb.append("domain=").append(c.getDomain()).append("; ");
+                }
+                if (!StringUtil.isEmpty(c.getPath())) {
+                    sb.append("path=").append(c.getPath()).append("; ");
+                }
+                sb.append(c.getName()).append('=').append(c.getValue())
+                        .append("; ");
+
+
+                Date d =  new Date((c.getMaxAge()*1000));
+                if (d != null && d.getTime() > 0) {
+                    sb.append("expires=").append(DateUtils.formatDate(d))
+                            .append("; ");
+                }
+                if (c.getSecure()) {
+                    sb.append("secure");
+                } else {
+                    sb.append("HttpOnly");
+                }
+                Clog.i(Clog.httpRespLogTag, "set-cookie: " + sb.toString());
                 cm.setCookie(Settings.COOKIE_DOMAIN, sb.toString());
 
             }

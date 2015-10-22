@@ -43,6 +43,7 @@ class NewAdResponse {
     public static final String NEW_RESPONSE_TAGS = "tags";
     public static final String NEW_RESPONSE_AD = "ad";
     public static final String NEW_RESPONSE_VIDEO = "video";
+    public static final String NEW_RESPONSE_BANNER = "banner";
     public static final String NEW_RESPONSE_CONTENT = "content";
 
     // TODO add this to track the response content type
@@ -97,16 +98,15 @@ class NewAdResponse {
 
         Clog.setLastResponse(body);
 
-        Clog.d(Clog.httpRespLogTag, Clog.getString(R.string.response_body, body));
+        Clog.i(Clog.httpRespLogTag, Clog.getString(R.string.response_body, body));
+        Clog.i(Clog.httpRespLogTag, "Media type: "+mediaType);
 
         this.mediaType = mediaType;
-//        printHeaders(headers);
         parseResponse(body);
     }
 
     public NewAdResponse(HTTPResponse httpResponse, MediaType mediaType) {
         this.mediaType = mediaType;
-//        printHeaders(httpResponse.getHeaders());
         parseResponse(httpResponse.getResponseBody());
     }
 
@@ -139,7 +139,6 @@ class NewAdResponse {
 
             if (!StringUtil.isEmpty(body)) {
                 response = new JSONObject(body);
-                Clog.i("NewAdResponse","Response VAST: "+((JSONObject)response.getJSONArray("tags").get(0)).getJSONObject("ad").getJSONObject("video").getString("content"));
             } else {
                 return;
             }
@@ -153,20 +152,7 @@ class NewAdResponse {
         if (!checkStatusIsValid(response)) return;
         if (mediaType == MediaType.BANNER || mediaType == MediaType.INTERSTITIAL) {
             // stop parsing if we get an ad from ads[]
-            /**
-             * TODO: Commented the below code just for testing. Uncomment to show standard ads
-             */
-//            if (handleStdAds(response)) return;
-
-            /**
-             * TODO: Remove below line to show standard ads
-             */
-            if (handleVastAds(response)) return;
-
-        } else if (mediaType == MediaType.VAST) {
-            // handle vast parsing if mediaType of ads is vast.
-            if (handleVastAds(response)) return;
-
+            if (handleStdAds(response)) return;
         } else {
             // stop parsing if we get an ad from native[]
             // the order needs to be handled
@@ -194,14 +180,37 @@ class NewAdResponse {
 
     // returns true if response contains an ad, false if not
     private boolean handleStdAds(JSONObject response) {
-        JSONArray ads = JsonUtil.getJSONArray(response, RESPONSE_KEY_ADS);
-        if (ads != null) {
-            // take the first ad
-            JSONObject firstAd = JsonUtil.getJSONObjectFromArray(ads, 0);
-            type = JsonUtil.getJSONString(firstAd, RESPONSE_KEY_TYPE);
-            height = JsonUtil.getJSONInt(firstAd, RESPONSE_KEY_HEIGHT);
-            width = JsonUtil.getJSONInt(firstAd, RESPONSE_KEY_WIDTH);
-            content = JsonUtil.getJSONString(firstAd, RESPONSE_KEY_CONTENT);
+
+//        mediaType = MediaType.INTERSTITIAL;
+        try {
+            JSONArray tagsArray = JsonUtil.getJSONArray(response, NEW_RESPONSE_TAGS);
+            if(tagsArray != null) {
+                JSONObject tagObject = (JSONObject) tagsArray.get(0);
+                JSONObject adObject = JsonUtil.getJSONObject(tagObject, NEW_RESPONSE_AD);
+                if (adObject != null) {
+                    if(adObject.has(NEW_RESPONSE_BANNER)) {
+                        Clog.i(Clog.httpReqLogTag, "it's an HTML Ad");
+                        return handleHtmlAds(adObject);
+                    }else{
+                        Clog.i(Clog.httpReqLogTag, "it's a Video Ad");
+                        return handleVideoAds(adObject);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Clog.e(Clog.httpReqLogTag, "Error parsing the ad response: " + e.getMessage());
+            containsAds = false;
+        }
+        return false;
+
+    }
+
+    private boolean handleHtmlAds(JSONObject adObject) {
+        JSONObject bannerObject = JsonUtil.getJSONObject(adObject, NEW_RESPONSE_BANNER);
+        if(bannerObject != null) {
+            height = JsonUtil.getJSONInt(bannerObject, RESPONSE_KEY_HEIGHT);
+            width = JsonUtil.getJSONInt(bannerObject, RESPONSE_KEY_WIDTH);
+            content = JsonUtil.getJSONString(bannerObject, NEW_RESPONSE_CONTENT);
             if (StringUtil.isEmpty(content)) {
                 Clog.e(Clog.httpRespLogTag,
                         Clog.getString(R.string.blank_ad));
@@ -209,6 +218,7 @@ class NewAdResponse {
                 if (content.contains(MRAID_JS_FILENAME)) {
                     addToExtras(EXTRAS_KEY_MRAID, true);
                 }
+                Clog.i(Clog.httpReqLogTag, "handleHtmlAds: true");
                 containsAds = true;
                 return true;
             }
@@ -234,33 +244,19 @@ class NewAdResponse {
         return false;
     }
 
-    private boolean handleVastAds(JSONObject response) {
-        mediaType = MediaType.VAST;
+    private boolean handleVideoAds(JSONObject adObject) throws Exception {
         VastResponseParser vastResponseParser = new VastResponseParser();
-        try {
-            JSONArray tagsArray = JsonUtil.getJSONArray(response, NEW_RESPONSE_TAGS);
-            if(tagsArray != null) {
-                JSONObject tagObject = (JSONObject) tagsArray.get(0);
-                JSONObject adObject = JsonUtil.getJSONObject(tagObject, NEW_RESPONSE_AD);
-                if (adObject != null) {
-                    JSONObject videoObject = JsonUtil.getJSONObject(adObject, NEW_RESPONSE_VIDEO);
-                    if(videoObject != null) {
-                        String vastResponse = JsonUtil.getJSONString(videoObject, NEW_RESPONSE_CONTENT);
-                        if(!StringUtil.isEmpty(vastResponse)) {
-                            InputStream stream = new ByteArrayInputStream(vastResponse.getBytes(StandardCharsets.UTF_8));
-                            this.vastAdResponse = vastResponseParser.readVAST(stream);
-                            containsAds = true;
-                            Clog.i(Clog.httpReqLogTag, "Vast response parsed");
-                            return true;
-                        }
-                    }
-                }
+        JSONObject videoObject = JsonUtil.getJSONObject(adObject, NEW_RESPONSE_VIDEO);
+        if(videoObject != null) {
+            String vastResponse = JsonUtil.getJSONString(videoObject, NEW_RESPONSE_CONTENT);
+            if(!StringUtil.isEmpty(vastResponse)) {
+                InputStream stream = new ByteArrayInputStream(vastResponse.getBytes(StandardCharsets.UTF_8));
+                this.vastAdResponse = vastResponseParser.readVAST(stream);
+                containsAds = true;
+                Clog.i(Clog.httpReqLogTag, "Vast response parsed");
+                return true;
             }
-        } catch (Exception e) {
-            Clog.e(Clog.httpReqLogTag, "Error parsing the vast response: " + e.getMessage());
-            containsAds = false;
         }
-
         return false;
     }
 

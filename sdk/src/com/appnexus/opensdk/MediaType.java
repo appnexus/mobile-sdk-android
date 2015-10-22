@@ -19,7 +19,5 @@ package com.appnexus.opensdk;
 public enum MediaType {
     BANNER,
     INTERSTITIAL,
-    NATIVE,
-    // TODO remove VAST as a media type
-    VAST
+    NATIVE
 }

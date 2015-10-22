@@ -44,7 +44,8 @@ public class MyActivity extends Activity {
 
     private void showInterstitialAd(){
         iav = new InterstitialAdView(this);
-//        iav.setPlacementID("5706860");
+        //5658526
+//        iav.setPlacementID("1281482");
         iav.setPlacementID("5706860");
         iav.setShouldServePSAs(false);
         iav.setOpensNativeBrowser(false);

@@ -23,7 +23,6 @@ import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.JsonUtil;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.vastdata.AdModel;
-import com.appnexus.opensdk.vastdata.VastResponseParser;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -144,19 +143,7 @@ class ServerResponse {
         if (!checkStatusIsValid(response)) return;
         if (mediaType == MediaType.BANNER || mediaType == MediaType.INTERSTITIAL) {
             // stop parsing if we get an ad from ads[]
-            /**
-             * TODO: Commented the below code just for testing. Uncomment to show standard ads
-             */
-//            if (handleStdAds(response)) return;
-
-            /**
-             * TODO: Remove below line to show standard ads
-             */
-            if (handleVastAds(response)) return;
-
-        } else if (mediaType == MediaType.VAST) {
-            // handle vast parsing if mediaType of ads is vast.
-            if (handleVastAds(response)) return;
+            if (handleStdAds(response)) return;
 
         } else {
             // stop parsing if we get an ad from native[]
@@ -224,21 +211,7 @@ class ServerResponse {
         return false;
     }
 
-    private boolean handleVastAds(JSONObject response) {
-        mediaType = MediaType.VAST;
-        VastResponseParser vastResponseParser = new VastResponseParser();
-        try {
-            this.vastAdResponse = vastResponseParser.readVAST(VastVideoUtil.getVastResponse());
-            containsAds = true;
-            Clog.i(Clog.httpReqLogTag, "Vast response parsed");
-            return true;
-        } catch (Exception e) {
-            Clog.e(Clog.httpReqLogTag, "Error parsing the vast response: " + e.getMessage());
-            return false;
-        }
 
-
-    }
 
     // returns true if response contains an ad, false if not
     private boolean handleMediatedAds(JSONObject response) {

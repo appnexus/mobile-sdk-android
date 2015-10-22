@@ -112,6 +112,39 @@ class AdWebView extends WebView implements Displayable {
         setWebViewClient(new AdWebViewClient());
     }
 
+    public void loadAd(NewAdResponse ad) {
+        if(ad==null){
+            fail();
+            return;
+        }
+        String html = ad.getContent();
+        // set creative size
+        setCreativeHeight(ad.getHeight());
+        setCreativeWidth(ad.getWidth());
+        // Safety Check: content is verified in AdResponse, so this should never be empty
+        if (StringUtil.isEmpty(html)) {
+            fail();
+            return;
+        }
+
+        Clog.i(Clog.baseLogTag, Clog.getString(R.string.webview_loading, html));
+
+        parseAdResponseExtras(ad.getExtras());
+
+        html = preLoadContent(html);
+        html = prependRawResources(html);
+
+        final float scale = adView.getContext().getResources()
+                .getDisplayMetrics().density;
+        int rheight = (int) (ad.getHeight() * scale + 0.5f);
+        int rwidth = (int) (ad.getWidth() * scale + 0.5f);
+        AdView.LayoutParams resize = new AdView.LayoutParams(rwidth, rheight,
+                Gravity.CENTER);
+        this.setLayoutParams(resize);
+
+        this.loadDataWithBaseURL(Settings.BASE_URL, html, "text/html", "UTF-8", null);
+    }
+
     public void loadAd(ServerResponse ad) {
         if(ad==null){
             return;
@@ -195,6 +228,7 @@ class AdWebView extends WebView implements Displayable {
         }
 
         if (extras.containsKey(ServerResponse.EXTRAS_KEY_ORIENTATION)
+                && extras.get(ServerResponse.EXTRAS_KEY_ORIENTATION) != null
                 && extras.get(ServerResponse.EXTRAS_KEY_ORIENTATION).equals("h")) {
             this.orientation = Configuration.ORIENTATION_LANDSCAPE;
         } else {
