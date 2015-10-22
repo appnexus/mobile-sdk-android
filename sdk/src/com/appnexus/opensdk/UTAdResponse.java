@@ -1,7 +1,7 @@
 package com.appnexus.opensdk;
 
 /*
- *    Copyright 2013 APPNEXUS INC
+ *    Copyright 2015 APPNEXUS INC
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -35,11 +35,11 @@ import java.util.HashMap;
 
 class UTAdResponse {
 
-    public static final String NEW_RESPONSE_TAGS = "tags";
-    public static final String NEW_RESPONSE_AD = "ad";
-    public static final String NEW_RESPONSE_VIDEO = "video";
-    public static final String NEW_RESPONSE_BANNER = "banner";
-    public static final String NEW_RESPONSE_CONTENT = "content";
+    public static final String UT_TAGS = "tags";
+    public static final String UT_AD = "ad";
+    public static final String UT_VIDEO = "video";
+    public static final String UT_BANNER = "banner";
+    public static final String UT_CONTENT = "content";
     public static final String UTF_8 = "UTF-8";
     private AdModel vastAdResponse;
     private String content;
@@ -135,12 +135,12 @@ class UTAdResponse {
     // returns true if response contains an ad, false if not
     private boolean handleAdResponse(JSONObject response) {
         try {
-            JSONArray tagsArray = JsonUtil.getJSONArray(response, NEW_RESPONSE_TAGS);
+            JSONArray tagsArray = JsonUtil.getJSONArray(response, UT_TAGS);
             if(tagsArray != null) {
                 JSONObject tagObject = (JSONObject) tagsArray.get(0);
-                JSONObject adObject = JsonUtil.getJSONObject(tagObject, NEW_RESPONSE_AD);
+                JSONObject adObject = JsonUtil.getJSONObject(tagObject, UT_AD);
                 if (adObject != null) {
-                    if(adObject.has(NEW_RESPONSE_BANNER)) {
+                    if(adObject.has(UT_BANNER)) {
                         Clog.i(Clog.httpReqLogTag, "it's an HTML Ad");
                         return parseHTMLAd(adObject);
                     }else{
@@ -163,11 +163,11 @@ class UTAdResponse {
      * @return
      */
     private boolean parseHTMLAd(JSONObject adObject) {
-        JSONObject bannerObject = JsonUtil.getJSONObject(adObject, NEW_RESPONSE_BANNER);
+        JSONObject bannerObject = JsonUtil.getJSONObject(adObject, UT_BANNER);
         if(bannerObject != null) {
             height = JsonUtil.getJSONInt(bannerObject, ServerResponse.RESPONSE_KEY_HEIGHT);
             width = JsonUtil.getJSONInt(bannerObject, ServerResponse.RESPONSE_KEY_WIDTH);
-            content = JsonUtil.getJSONString(bannerObject, NEW_RESPONSE_CONTENT);
+            content = JsonUtil.getJSONString(bannerObject, UT_CONTENT);
             if (StringUtil.isEmpty(content)) {
                 Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.blank_ad));
             } else {
@@ -184,15 +184,17 @@ class UTAdResponse {
 
     private boolean parseVastVideoAd(JSONObject adObject) throws Exception {
         VastResponseParser vastResponseParser = new VastResponseParser();
-        JSONObject videoObject = JsonUtil.getJSONObject(adObject, NEW_RESPONSE_VIDEO);
+        JSONObject videoObject = JsonUtil.getJSONObject(adObject, UT_VIDEO);
         if(videoObject != null) {
-            String vastResponse = JsonUtil.getJSONString(videoObject, NEW_RESPONSE_CONTENT);
+            String vastResponse = JsonUtil.getJSONString(videoObject, UT_CONTENT);
             if(!StringUtil.isEmpty(vastResponse)) {
                 InputStream stream = new ByteArrayInputStream(vastResponse.getBytes(Charset.forName(UTF_8)));
                 this.vastAdResponse = vastResponseParser.readVAST(stream);
-                containsAds = true;
-                Clog.i(Clog.httpReqLogTag, "Vast response parsed");
-                return true;
+                if(this.vastAdResponse != null && this.vastAdResponse.containsLinearAd()) {
+                    containsAds = true;
+                    Clog.i(Clog.httpReqLogTag, "Vast response parsed");
+                    return true;
+                }
             }
         }
         return false;

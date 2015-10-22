@@ -67,7 +67,6 @@ class AdFetcher {
     }
 
     void stop() {
-        Clog.e(Clog.httpReqLogTag, "AdFetcher: Stop");
         if (requestManager != null) {
             requestManager.cancel();
             requestManager = null;

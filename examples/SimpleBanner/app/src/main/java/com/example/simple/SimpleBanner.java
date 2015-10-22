@@ -90,6 +90,7 @@ public class SimpleBanner extends Activity {
             };
 
         bav.setAdListener(adListener);
+        bav.setAutoRefreshInterval(0);
 
         // Get the device's location and send it on the ad call so the
         // impression is more attractive to advertisers.
@@ -118,6 +119,6 @@ public class SimpleBanner extends Activity {
             public void run() {
                 bav.loadAd();
             }
-            }, 0);
+        }, 0);
     }
 }

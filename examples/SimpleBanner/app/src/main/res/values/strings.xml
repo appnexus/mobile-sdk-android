@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Simple Interstitial</string>
+    <string name="app_name">AppNexus Demo</string>
     <string name="hello_world">Hello from AppNexus!</string>
     <string name="action_settings">Settings</string>
     <string name="interstitial_button">Show Interstitial</string>

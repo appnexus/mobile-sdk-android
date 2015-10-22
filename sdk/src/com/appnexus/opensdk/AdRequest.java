@@ -84,7 +84,7 @@ class AdRequest extends AsyncTask<Void, Integer, ServerResponse> {
                 try {
                     String query_string = parameters.getRequestUrl();
 
-                    Clog.e(Clog.vastLogTag, "URL -- "+query_string);
+                    Clog.i(Clog.vastLogTag, "AdRequest - URL : "+query_string);
 
                     Clog.setLastRequest(query_string);
 
@@ -106,8 +106,7 @@ class AdRequest extends AsyncTask<Void, Integer, ServerResponse> {
                     }
                     String out = EntityUtils.toString(r.getEntity());
 
-
-                    Clog.e(Clog.vastLogTag, "RESPONSE -- "+out);
+                    Clog.i(Clog.httpRespLogTag, "AdRequest RESPONSE -- "+out);
                     WebviewUtil.cookieSync(h.getCookieStore().getCookies());
                     if (out.equals("")) {
                         // just log and return a valid AdResponse object so that it is

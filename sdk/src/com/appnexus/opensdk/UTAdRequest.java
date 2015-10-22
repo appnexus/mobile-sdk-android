@@ -1,5 +1,5 @@
 /*
- *    Copyright 2013 APPNEXUS INC
+ *    Copyright 2015 APPNEXUS INC
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -175,7 +175,7 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
                     }
                     String result = builder.toString();
 
-                    Clog.e(Clog.vastLogTag, "RESPONSE -- "+result);
+                    Clog.i(Clog.httpRespLogTag, "RESPONSE - "+result);
                     CookieManager cookieManager = new CookieManager();
                     CookieHandler.setDefault(cookieManager);
                     /**
