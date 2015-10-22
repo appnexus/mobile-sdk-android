@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package com.example.simplebanner;
+package com.example.simple;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
