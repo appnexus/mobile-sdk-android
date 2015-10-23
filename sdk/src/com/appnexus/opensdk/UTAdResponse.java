@@ -17,13 +17,11 @@ package com.appnexus.opensdk;
  */
 
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.JsonUtil;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.vastdata.AdModel;
 import com.appnexus.opensdk.vastdata.VastResponseParser;
 
-import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,19 +32,19 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 
 class UTAdResponse {
+    
+    private static final String UTF_8 = "UTF-8";
 
-    public static final String UT_TAGS = "tags";
-    public static final String UT_AD = "ad";
-    public static final String UT_VIDEO = "video";
-    public static final String UT_BANNER = "banner";
-    public static final String UT_CONTENT = "content";
-    public static final String UTF_8 = "UTF-8";
-
-    static final String RESPONSE_KEY_STATUS = "status";
-    static final String RESPONSE_KEY_ERROR_MESSAGE = "errorMessage";
-    static final String RESPONSE_KEY_WIDTH = "width";
-    static final String RESPONSE_KEY_HEIGHT = "height";
-    static final String RESPONSE_VALUE_ERROR = "error";
+    private static final String RESPONSE_KEY_TAGS = "tags";
+    private static final String RESPONSE_KEY_AD = "ad";
+    private static final String RESPONSE_KEY_VIDEO = "video";
+    private static final String RESPONSE_KEY_BANNER = "banner";
+    private static final String RESPONSE_KEY_CONTENT = "content";
+    private static final String RESPONSE_KEY_STATUS = "status";
+    private static final String RESPONSE_KEY_ERROR_MESSAGE = "errorMessage";
+    private static final String RESPONSE_KEY_WIDTH = "width";
+    private static final String RESPONSE_KEY_HEIGHT = "height";
+    private static final String RESPONSE_VALUE_ERROR = "error";
 
     private AdModel vastAdResponse;
     private String content;
@@ -76,31 +74,11 @@ class UTAdResponse {
         parseResponse(body);
     }
 
-    public UTAdResponse(HTTPResponse httpResponse, MediaType mediaType) {
-        this.mediaType = mediaType;
-        parseResponse(httpResponse.getResponseBody());
-    }
 
     public UTAdResponse(boolean isHttpError) {
         this.isHttpError = isHttpError;
     }
 
-    // minimal constructor for protected loadAdFromHtml function
-    protected UTAdResponse(String content, int width, int height) {
-        this.content = content;
-        this.width = width;
-        this.height = height;
-    }
-
-    private void printHeaders(Header[] headers) {
-        if (headers != null) {
-            for (Header h : headers) {
-                Clog.v(Clog.httpRespLogTag,
-                        Clog.getString(R.string.response_header, h.getName(),
-                                h.getValue()));
-            }
-        }
-    }
 
     private void parseResponse(String body) {
         JSONObject response;
@@ -142,12 +120,12 @@ class UTAdResponse {
     // returns true if response contains an ad, false if not
     private boolean handleAdResponse(JSONObject response) {
         try {
-            JSONArray tagsArray = JsonUtil.getJSONArray(response, UT_TAGS);
+            JSONArray tagsArray = JsonUtil.getJSONArray(response, RESPONSE_KEY_TAGS);
             if(tagsArray != null) {
                 JSONObject tagObject = (JSONObject) tagsArray.get(0);
-                JSONObject adObject = JsonUtil.getJSONObject(tagObject, UT_AD);
+                JSONObject adObject = JsonUtil.getJSONObject(tagObject, RESPONSE_KEY_AD);
                 if (adObject != null) {
-                    if(adObject.has(UT_BANNER)) {
+                    if(adObject.has(RESPONSE_KEY_BANNER)) {
                         Clog.i(Clog.httpReqLogTag, "it's an HTML Ad");
                         return parseHTMLAd(adObject);
                     }else{
@@ -170,11 +148,11 @@ class UTAdResponse {
      * @return
      */
     private boolean parseHTMLAd(JSONObject adObject) {
-        JSONObject bannerObject = JsonUtil.getJSONObject(adObject, UT_BANNER);
+        JSONObject bannerObject = JsonUtil.getJSONObject(adObject, RESPONSE_KEY_BANNER);
         if(bannerObject != null) {
             height = JsonUtil.getJSONInt(bannerObject, RESPONSE_KEY_HEIGHT);
             width = JsonUtil.getJSONInt(bannerObject, RESPONSE_KEY_WIDTH);
-            content = JsonUtil.getJSONString(bannerObject, UT_CONTENT);
+            content = JsonUtil.getJSONString(bannerObject, RESPONSE_KEY_CONTENT);
             if (StringUtil.isEmpty(content)) {
                 Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.blank_ad));
             } else {
@@ -191,9 +169,9 @@ class UTAdResponse {
 
     private boolean parseVastVideoAd(JSONObject adObject) throws Exception {
         VastResponseParser vastResponseParser = new VastResponseParser();
-        JSONObject videoObject = JsonUtil.getJSONObject(adObject, UT_VIDEO);
+        JSONObject videoObject = JsonUtil.getJSONObject(adObject, RESPONSE_KEY_VIDEO);
         if(videoObject != null) {
-            String vastResponse = JsonUtil.getJSONString(videoObject, UT_CONTENT);
+            String vastResponse = JsonUtil.getJSONString(videoObject, RESPONSE_KEY_CONTENT);
             if(!StringUtil.isEmpty(vastResponse)) {
                 InputStream stream = new ByteArrayInputStream(vastResponse.getBytes(Charset.forName(UTF_8)));
                 this.vastAdResponse = vastResponseParser.readVAST(stream);
