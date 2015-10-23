@@ -91,12 +91,8 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
     public static final String KEYWORDS = "keywords";
     public static final String KEYVAL_KEY = "key";
     public static final String KEYVAL_VALUE = "value";
-
-    /**
-     * Constants for universal tag response parsing
-     */
-    public static final String BANNER = "banner";
-    public static final String VAST = "video";
+    public static final String ALLOWED_TYPE_BANNER = "banner";
+    public static final String ALLOWED_TYPE_VIDEO = "video";
 
 
     private static ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
@@ -172,15 +168,15 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
                         }
                         reader.close();
                         is.close();
+                    }else{
+                        return UTAdRequest.HTTP_ERROR;
                     }
                     String result = builder.toString();
 
                     Clog.i(Clog.httpRespLogTag, "RESPONSE - "+result);
                     CookieManager cookieManager = new CookieManager();
                     CookieHandler.setDefault(cookieManager);
-                    /**
-                     * TODO: Cookie sync needs to be re-visited
-                     */
+
                     WebviewUtil.httpCookieSync(cookieManager.getCookieStore().getCookies());
                     if (result.equals("")) {
                         // just log and return a valid AdResponse object so that it is
@@ -297,21 +293,24 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
         try {
             tag.put(TAG_ID, StringUtil.getIntegerValue(params.getPlacementID()));
 
-//            if (params.getAdWidth() > 0 && params.getAdHeight() > 0) {
-                JSONObject size = new JSONObject();
-                size.put(SIZE_WIDTH, params.getMaxWidth());
-                size.put(SIZE_HEIGHT, params.getMaxHeight());
-                JSONArray sizes = new JSONArray();
-                sizes.put(size);
-                tag.put(TAG_SIZES, sizes);
-                tag.put(TAG_ALLOW_SMALLER_SIZES, true);
-//            }
+            JSONObject size = new JSONObject();
+            ArrayList<AdSize> allowedSizes = params.getAllowedSizes();
+            for (AdSize s : allowedSizes) {
+                size.put(SIZE_WIDTH, s.width());
+                size.put(SIZE_HEIGHT, s.height());
+            }
+            JSONArray sizes = new JSONArray();
+            sizes.put(size);
+            tag.put(TAG_SIZES, sizes);
+            tag.put(TAG_ALLOW_SMALLER_SIZES, true);
+
             JSONArray allowedAdTypes = new JSONArray();
-            allowedAdTypes.put(BANNER);
-            allowedAdTypes.put(VAST);
+            allowedAdTypes.put(ALLOWED_TYPE_BANNER);
+            allowedAdTypes.put(ALLOWED_TYPE_VIDEO);
+
             tag.put(TAG_ALLOWED_MEDIA_AD_TYPES, allowedAdTypes);
             tag.put(TAG_PREBID, false);
-            tag.put(TAG_DISABLE_PSA, true);
+            tag.put(TAG_DISABLE_PSA, !params.getShouldServePSAs());
         } catch (JSONException e) {
         }
         if (tag.length() > 0) {
@@ -492,7 +491,8 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
 
             // limited ad tracking
             device.put(DEVICE_LMT, Settings.getSettings().limitTrackingEnabled);
-            if (!Settings.getSettings().limitTrackingEnabled && !StringUtil.isEmpty(Settings.getSettings().aaid)) {
+
+            if (!StringUtil.isEmpty(Settings.getSettings().aaid)) {
                 // device id
                 JSONObject device_id = new JSONObject();
                 device_id.put(DEVICE_ID_AAID, Settings.getSettings().aaid);
@@ -524,15 +524,11 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
         return app;
     }
 
-    void clearCustomKeywords() {
-        customKeywords.clear();
-    }
-
     private JSONArray getCustomKeywordsArray() {
         JSONArray keywords = new JSONArray();
         try {
             // add custom parameters if there are any
-            ArrayList<Pair<String, String>> customKeywords = getCustomKeywords();
+            ArrayList<Pair<String, String>> customKeywords = params.getCustomKeywords();
             if (customKeywords != null) {
                 for (Pair<String, String> pair : customKeywords) {
                     if (!StringUtil.isEmpty(pair.first) && !StringUtil.isEmpty(pair.second)) {
@@ -548,43 +544,4 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
         return keywords;
     }
 
-
-    /**
-     * Retrieve the array of custom keywords associated with the DFPCacheManager.
-     *
-     * @return The current list of key-value pairs of custom keywords.
-     */
-    public static ArrayList<Pair<String, String>> getCustomKeywords() {
-        return customKeywords;
-    }
-
-    /**
-     * Remove a custom keyword from the DFPCacheManager. Use this to remove a keyword
-     * previously set using addCustomKeywords.
-     *
-     * @param key The key to remove; this should not be null or empty.
-     */
-    public static void removeCustomKeyword(String key) {
-        if (StringUtil.isEmpty(key))
-            return;
-        for (int i = 0; i < customKeywords.size(); i++) {
-            Pair<String, String> pair = customKeywords.get(i);
-            if (pair.first.equals(key)) {
-                customKeywords.remove(i);
-                break;
-            }
-        }
-    }
-
-    /**
-     * Add a custom keyword for customized targeting.
-     *
-     * @param key   The key to add; this cannot be null or empty.
-     * @param value The value to add; this cannot be null or empty.
-     */
-    public static void addCustomKeyword(String key, String value) {
-        if (StringUtil.isEmpty(key) || value == null)
-            return;
-        customKeywords.add(new Pair<String, String>(key, value));
-    }
 }

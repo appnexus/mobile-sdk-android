@@ -32,7 +32,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 
 class UTAdResponse {
-    
+
     private static final String UTF_8 = "UTF-8";
 
     private static final String RESPONSE_KEY_TAGS = "tags";
@@ -40,11 +40,9 @@ class UTAdResponse {
     private static final String RESPONSE_KEY_VIDEO = "video";
     private static final String RESPONSE_KEY_BANNER = "banner";
     private static final String RESPONSE_KEY_CONTENT = "content";
-    private static final String RESPONSE_KEY_STATUS = "status";
-    private static final String RESPONSE_KEY_ERROR_MESSAGE = "errorMessage";
     private static final String RESPONSE_KEY_WIDTH = "width";
     private static final String RESPONSE_KEY_HEIGHT = "height";
-    private static final String RESPONSE_VALUE_ERROR = "error";
+    public static final String RESPONSE_KEY_NO_BID = "nobid";
 
     private AdModel vastAdResponse;
     private String content;
@@ -94,43 +92,25 @@ class UTAdResponse {
             return;
         }
 
-        // stop parsing if status is not valid
-        if (!checkStatusIsValid(response)) return;
-        if (mediaType == MediaType.INTERSTITIAL) {
-            // stop parsing if we get an ad from ads[]
-            if (handleAdResponse(response)) return;
-        }
-    }
-
-
-    // returns true if no error in status. don't fail on null or missing status
-    private boolean checkStatusIsValid(JSONObject response) {
-        String status = JsonUtil.getJSONString(response, RESPONSE_KEY_STATUS);
-        if (status != null) {
-            if (status.equals(RESPONSE_VALUE_ERROR)) {
-                String error = JsonUtil.getJSONString(response, RESPONSE_KEY_ERROR_MESSAGE);
-                Clog.e(Clog.httpRespLogTag,
-                        Clog.getString(R.string.response_error, error));
-                return false;
-            }
-        }
-        return true;
-    }
-
-    // returns true if response contains an ad, false if not
-    private boolean handleAdResponse(JSONObject response) {
         try {
             JSONArray tagsArray = JsonUtil.getJSONArray(response, RESPONSE_KEY_TAGS);
             if(tagsArray != null) {
-                JSONObject tagObject = (JSONObject) tagsArray.get(0);
+
+                JSONObject tagObject = JsonUtil.getJSONObjectFromArray(tagsArray, 0);
+
+                // If it contains nobid response, don't parse further.
+                if (JsonUtil.getJSONBoolean(tagObject, RESPONSE_KEY_NO_BID)){
+                    return;
+                }
+
                 JSONObject adObject = JsonUtil.getJSONObject(tagObject, RESPONSE_KEY_AD);
                 if (adObject != null) {
                     if(adObject.has(RESPONSE_KEY_BANNER)) {
                         Clog.i(Clog.httpReqLogTag, "it's an HTML Ad");
-                        return parseHTMLAd(adObject);
+                        parseHTMLAd(adObject);
                     }else{
                         Clog.i(Clog.httpReqLogTag, "it's a Video Ad");
-                        return parseVastVideoAd(adObject);
+                        parseVastVideoAd(adObject);
                     }
                 }
             }
@@ -138,9 +118,8 @@ class UTAdResponse {
             Clog.e(Clog.httpReqLogTag, "Error parsing the ad response: " + e.getMessage());
             containsAds = false;
         }
-        return false;
-
     }
+
 
     /**
      *
