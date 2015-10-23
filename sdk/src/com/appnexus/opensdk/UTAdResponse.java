@@ -115,18 +115,18 @@ class UTAdResponse {
                 }
             }
         } catch (Exception e) {
+            // Catches XMLPullParserException, JSONException, NullPointerException and IOException
             Clog.e(Clog.httpReqLogTag, "Error parsing the ad response: " + e.getMessage());
             containsAds = false;
         }
     }
 
-
     /**
-     *
+     * Parses HTML ad response
      * @param adObject
-     * @return
+     * @throws Exception
      */
-    private boolean parseHTMLAd(JSONObject adObject) {
+    private void parseHTMLAd(JSONObject adObject) throws Exception{
         JSONObject bannerObject = JsonUtil.getJSONObject(adObject, RESPONSE_KEY_BANNER);
         if(bannerObject != null) {
             height = JsonUtil.getJSONInt(bannerObject, RESPONSE_KEY_HEIGHT);
@@ -140,13 +140,16 @@ class UTAdResponse {
                 }
                 Clog.i(Clog.httpReqLogTag, "parseHTMLAd: true");
                 containsAds = true;
-                return true;
             }
         }
-        return false;
     }
 
-    private boolean parseVastVideoAd(JSONObject adObject) throws Exception {
+    /**
+     * Parses VAST ad response
+     * @param adObject
+     * @throws Exception
+     */
+    private void parseVastVideoAd(JSONObject adObject) throws Exception {
         VastResponseParser vastResponseParser = new VastResponseParser();
         JSONObject videoObject = JsonUtil.getJSONObject(adObject, RESPONSE_KEY_VIDEO);
         if(videoObject != null) {
@@ -157,11 +160,9 @@ class UTAdResponse {
                 if(this.vastAdResponse != null && this.vastAdResponse.containsLinearAd()) {
                     containsAds = true;
                     Clog.i(Clog.httpReqLogTag, "Vast response parsed");
-                    return true;
                 }
             }
         }
-        return false;
     }
 
 
