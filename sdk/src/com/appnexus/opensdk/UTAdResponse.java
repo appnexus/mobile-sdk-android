@@ -41,6 +41,13 @@ class UTAdResponse {
     public static final String UT_BANNER = "banner";
     public static final String UT_CONTENT = "content";
     public static final String UTF_8 = "UTF-8";
+
+    static final String RESPONSE_KEY_STATUS = "status";
+    static final String RESPONSE_KEY_ERROR_MESSAGE = "errorMessage";
+    static final String RESPONSE_KEY_WIDTH = "width";
+    static final String RESPONSE_KEY_HEIGHT = "height";
+    static final String RESPONSE_VALUE_ERROR = "error";
+
     private AdModel vastAdResponse;
     private String content;
     private int height;
@@ -120,10 +127,10 @@ class UTAdResponse {
 
     // returns true if no error in status. don't fail on null or missing status
     private boolean checkStatusIsValid(JSONObject response) {
-        String status = JsonUtil.getJSONString(response, ServerResponse.RESPONSE_KEY_STATUS);
+        String status = JsonUtil.getJSONString(response, RESPONSE_KEY_STATUS);
         if (status != null) {
-            if (status.equals(ServerResponse.RESPONSE_VALUE_ERROR)) {
-                String error = JsonUtil.getJSONString(response, ServerResponse.RESPONSE_KEY_ERROR_MESSAGE);
+            if (status.equals(RESPONSE_VALUE_ERROR)) {
+                String error = JsonUtil.getJSONString(response, RESPONSE_KEY_ERROR_MESSAGE);
                 Clog.e(Clog.httpRespLogTag,
                         Clog.getString(R.string.response_error, error));
                 return false;
@@ -165,8 +172,8 @@ class UTAdResponse {
     private boolean parseHTMLAd(JSONObject adObject) {
         JSONObject bannerObject = JsonUtil.getJSONObject(adObject, UT_BANNER);
         if(bannerObject != null) {
-            height = JsonUtil.getJSONInt(bannerObject, ServerResponse.RESPONSE_KEY_HEIGHT);
-            width = JsonUtil.getJSONInt(bannerObject, ServerResponse.RESPONSE_KEY_WIDTH);
+            height = JsonUtil.getJSONInt(bannerObject, RESPONSE_KEY_HEIGHT);
+            width = JsonUtil.getJSONInt(bannerObject, RESPONSE_KEY_WIDTH);
             content = JsonUtil.getJSONString(bannerObject, UT_CONTENT);
             if (StringUtil.isEmpty(content)) {
                 Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.blank_ad));
