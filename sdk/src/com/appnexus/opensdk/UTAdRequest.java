@@ -34,7 +34,6 @@ import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
 
-import org.apache.http.StatusLine;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -169,6 +168,7 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
                         reader.close();
                         is.close();
                     }else{
+                        Clog.d(Clog.httpRespLogTag, Clog.getString(R.string.http_bad_status, httpResult));
                         return UTAdRequest.HTTP_ERROR;
                     }
                     String result = builder.toString();
@@ -200,21 +200,6 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
         return null;
     }
 
-    private boolean httpShouldContinue(StatusLine statusLine) {
-        if (statusLine == null)
-            return false;
-
-        int http_error_code = statusLine.getStatusCode();
-        switch (http_error_code) {
-            default:
-                Clog.d(Clog.httpRespLogTag,
-                        Clog.getString(R.string.http_bad_status, http_error_code));
-                return false;
-            case 200:
-                return true;
-        }
-
-    }
 
     @Override
     protected void onPostExecute(UTAdResponse result) {
@@ -283,7 +268,7 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
         } catch (JSONException e) {
             Clog.e(Clog.httpRespLogTag, "JSONException: "+e.getMessage());
         }
-        Clog.e(Clog.httpRespLogTag, "POST data: " + postData.toString());
+        Clog.i(Clog.httpRespLogTag, "POST data: " + postData.toString());
         return postData.toString();
     }
 
