@@ -144,7 +144,9 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
                     conn.setDoInput(true);
                     conn.setRequestProperty("Content-Type", "application/json");
                     conn.setRequestProperty("Accept", "application/json");
+                    conn.setRequestProperty("User-Agent", Settings.getSettings().ua);
                     conn.setRequestMethod("POST");
+
                     conn.setConnectTimeout(Settings.HTTP_CONNECTION_TIMEOUT);
                     // Make post request
                     String postData = getPostData();
@@ -287,7 +289,7 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
             JSONArray sizes = new JSONArray();
             sizes.put(size);
             tag.put(TAG_SIZES, sizes);
-            tag.put(TAG_ALLOW_SMALLER_SIZES, true);
+            tag.put(TAG_ALLOW_SMALLER_SIZES, false);
 
             JSONArray allowedAdTypes = new JSONArray();
             allowedAdTypes.put(ALLOWED_TYPE_BANNER);
