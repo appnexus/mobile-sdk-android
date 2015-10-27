@@ -27,6 +27,7 @@ import java.util.LinkedList;
 abstract class RequestManager implements AdRequester{
     private LinkedList<MediatedAd> mediatedAds;
     protected AdRequest adRequest;
+    protected UTAdRequest utAdRequest;
     private long totalLatencyStart = -1;
 
     @Override
@@ -51,6 +52,9 @@ abstract class RequestManager implements AdRequester{
 
     @Override
     public abstract void onReceiveServerResponse(ServerResponse response);
+
+    @Override
+    public abstract void onReceiveUTResponse(UTAdResponse response);
 
     @Override
     public abstract void onReceiveAd(AdResponse ad);

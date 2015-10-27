@@ -32,7 +32,6 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 
 
 public abstract class HTTPGet extends AsyncTask<Void, Void, HTTPResponse> {
@@ -61,7 +60,9 @@ public abstract class HTTPGet extends AsyncTask<Void, Void, HTTPResponse> {
             HttpResponse r = httpc.execute(request);
 
             out.setHeaders(r.getAllHeaders());
-            out.setResponseBody(EntityUtils.toString(r.getEntity()));
+            if (r.getEntity() != null) {
+                out.setResponseBody(EntityUtils.toString(r.getEntity()));
+            }
             boolean isStatusOK = (r.getStatusLine() != null)
                     && (r.getStatusLine().getStatusCode()
                     == 200);

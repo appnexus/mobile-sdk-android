@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package com.example.simplebanner;
+package com.example.simple;
 
 import android.app.Activity;
 import android.location.Location;
@@ -31,53 +31,16 @@ import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.utils.Clog;
 
-public class MyActivity extends Activity {
-
+public class SimpleBanner extends Activity {
+    InterstitialAdView iav;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my);
+        setContentView(R.layout.activity_ad);
 
-        showInterstitialAd();
-//        showBannerAd();
+        showBannerAd();
     }
 
-    private void showInterstitialAd(){
-        InterstitialAdView iav = new InterstitialAdView(this);
-        iav.setPlacementID("1281482");
-        iav.setShouldServePSAs(false);
-        iav.setOpensNativeBrowser(false);
-
-        iav.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded(AdView av) {
-                InterstitialAdView iav = (InterstitialAdView) av;
-                iav.show();
-            }
-
-            @Override
-            public void onAdRequestFailed(AdView adView, ResultCode errorCode) {
-
-            }
-
-            @Override
-            public void onAdExpanded(AdView adView) {
-
-            }
-
-            @Override
-            public void onAdCollapsed(AdView adView) {
-
-            }
-
-            @Override
-            public void onAdClicked(AdView adView) {
-
-            }
-        });
-
-        iav.loadAd();
-    }
 
     private void showBannerAd() {
         final BannerAdView bav = new BannerAdView(this);
@@ -127,6 +90,7 @@ public class MyActivity extends Activity {
             };
 
         bav.setAdListener(adListener);
+        bav.setAutoRefreshInterval(0);
 
         // Get the device's location and send it on the ad call so the
         // impression is more attractive to advertisers.
@@ -155,6 +119,6 @@ public class MyActivity extends Activity {
             public void run() {
                 bav.loadAd();
             }
-            }, 0);
+        }, 0);
     }
 }

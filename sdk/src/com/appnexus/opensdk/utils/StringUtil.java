@@ -44,4 +44,16 @@ public class StringUtil {
             return false;
         }
     }
+
+    public static int getIntegerValue(String s){
+        if(s == null) return 0;
+
+        int value = 0;
+        try {
+            value = Integer.parseInt(s);
+        }catch (NumberFormatException e){
+            Clog.e(Clog.baseLogTag, "Exception while parsing integer value from string: "+s + " - "+e.getMessage());
+        }
+        return value;
+    }
 }
