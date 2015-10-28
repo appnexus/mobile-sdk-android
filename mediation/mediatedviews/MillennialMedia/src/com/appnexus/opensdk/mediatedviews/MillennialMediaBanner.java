@@ -17,20 +17,18 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
-import android.util.DisplayMetrics;
-import android.util.Pair;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
+import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
-import com.millennialmedia.android.MMAdView;
-import com.millennialmedia.android.MMRequest;
-import com.millennialmedia.android.MMSDK;
-
-import java.util.HashMap;
+import com.millennialmedia.InlineAd;
+import com.millennialmedia.MMException;
+import com.millennialmedia.MMSDK;
+import com.millennialmedia.UserData;
 
 /**
  * This class is the Millennial Media banner adaptor it provides the functionality needed to allow
@@ -42,76 +40,56 @@ import java.util.HashMap;
  * SDK.
  */
 public class MillennialMediaBanner implements MediatedBannerAdView {
-    MMAdView adView = null;
+    InlineAd inlineAd;
 
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
                           int width, int height, TargetingParameters targetingParameters) {
-        MillennialMediaListener mmListener = new MillennialMediaListener(mBC, super.getClass().getSimpleName());
-        mmListener.printToClog(String.format("requesting an ad: [%s, %s, %dx%d]", parameter, uid, width, height));
+        if (activity != null) {
+            try {
+                MillennialMediaListener mmListener = new MillennialMediaListener(mBC, super.getClass().getSimpleName());
+                mmListener.printToClog(String.format("requesting an ad: [%s, %s, %dx%d]", parameter, uid, width, height));
 
-        MMSDK.initialize(activity);
+                MMSDK.initialize(activity);
+                // SDK must be initialized first before creating userdata instance
+                UserData userData = Settings.getUserData(targetingParameters, activity);
+                FrameLayout adContainer = new FrameLayout(activity);
+                adContainer.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                inlineAd = InlineAd.createInstance(uid, adContainer);
+                inlineAd.setListener(mmListener);
+                InlineAd.AdSize size;
+                if (width == 320 && height == 50) {
+                    size = InlineAd.AdSize.BANNER;
+                } else if (width == 468 && height == 60) {
+                    size = InlineAd.AdSize.FULL_BANNER;
+                } else if (width == 320 && height == 100) {
+                    size = InlineAd.AdSize.LARGE_BANNER;
+                } else if (width == 728 && height == 90) {
+                    size = InlineAd.AdSize.LEADERBOARD;
+                } else if (width == 300 && height == 250) {
+                    size = InlineAd.AdSize.MEDIUM_RECTANGLE;
+                } else {
+                    size = new InlineAd.AdSize(width, height);
+                }
+                final InlineAd.InlineAdMetadata inlineAdMetadata = new InlineAd.InlineAdMetadata().setAdSize(size);
+                MMSDK.setUserData(userData);
+                inlineAd.request(inlineAdMetadata);
+                return adContainer;
+            } catch (MMException e) {
+                if (mBC != null) {
+                    mBC.onAdFailed(ResultCode.INTERNAL_ERROR);
+                }
+            }
 
-        adView = new MMAdView(activity);
-        adView.setApid(uid);
-        adView.setWidth(width);
-        adView.setHeight(height);
-
-        DisplayMetrics displayMetrics = activity.getResources().getDisplayMetrics();
-        int wpx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, width, displayMetrics);
-        int hpx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, height, displayMetrics);
-
-        //Fix the AdView dimensions so we don't show any white padding to the left and right
-        ViewGroup.LayoutParams lps = new ViewGroup.LayoutParams(wpx, hpx);
-
-        adView.setLayoutParams(lps);
-
-        MMRequest mmRequest = new MMRequest();
-
-
-        switch (targetingParameters.getGender()) {
-            case UNKNOWN:
-                mmRequest.setGender(MMRequest.GENDER_OTHER);
-                break;
-            case FEMALE:
-                mmRequest.setGender(MMRequest.GENDER_FEMALE);
-                break;
-            case MALE:
-                mmRequest.setGender(MMRequest.GENDER_MALE);
-                break;
         }
-
-        if (targetingParameters.getAge() != null) {
-            mmRequest.setAge(targetingParameters.getAge());
-        }
-
-        HashMap<String, String> mv = new HashMap<String, String>();
-        for (Pair<String, String> p : targetingParameters.getCustomKeywords()) {
-            mv.put(p.first, p.second);
-        }
-        if (targetingParameters.getLocation() != null) {
-            MMRequest.setUserLocation(targetingParameters.getLocation());
-        }
-        mmRequest.setMetaValues(mv);
-
-        adView.setMMRequest(mmRequest);
-        adView.setListener(mmListener);
-        adView.getAd();
-
-        return adView;
+        return null;
     }
 
     @Override
     public void destroy() {
         //No available API
-        if (adView != null) {
-            try {
-                adView.setListener(null);
-            } catch (NullPointerException npe) {
-                //since the interstitials cause NPEs
-                //guard against banner as well to be safe
-            }
-            adView = null;
+        if (inlineAd != null) {
+            inlineAd = null;
         }
     }
 

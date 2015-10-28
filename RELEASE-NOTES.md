@@ -1,7 +1,7 @@
 ## RC2.7
 + MS-1688 InMobi Adapter update
 + MS-1669 MoPub update to 3.11.0 
-
++ MS-1424 Millennial Media update
 
 ## RC2.6
 + MS-1627 Bug fix for conccurency modification in RequestParams

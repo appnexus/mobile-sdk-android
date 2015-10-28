@@ -17,107 +17,93 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
-import android.util.Pair;
+
 import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
+import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
-import com.millennialmedia.android.MMInterstitial;
-import com.millennialmedia.android.MMRequest;
-import com.millennialmedia.android.MMSDK;
+import com.millennialmedia.InterstitialAd;
+import com.millennialmedia.MMException;
+import com.millennialmedia.MMSDK;
+import com.millennialmedia.UserData;
 
-import java.util.HashMap;
+import java.lang.ref.WeakReference;
 
 /**
  * This class is the Millennial Media interstitial adaptor it provides the functionality needed to allow
  * an application using the App Nexus SDK to load an interstitial ad through the Millennial Media SDK. The instantiation
  * of this class is done in response from the AppNexus server for a banner placement that is configured
  * to use MM  to serve it. This class is never instantiated by the developer.
- *
+ * <p/>
  * This class also serves as an example of how to write a Mediation adaptor for the AppNexus
  * SDK.
- *
  */
 public class MillennialMediaInterstitial implements MediatedInterstitialAdView {
-    private MMInterstitial iad;
+    private InterstitialAd interstitialAd;
     private MillennialMediaListener mmListener;
+    private WeakReference<Activity> weakActivity;
 
     @Override
     public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid, TargetingParameters targetingParameters) {
-        mmListener = new MillennialMediaListener(mIC, super.getClass().getSimpleName());
-        mmListener.printToClog(String.format("requesting an interstitial ad: [%s, %s]", parameter, uid));
+        if (activity != null) {
+            weakActivity = new WeakReference<Activity>(activity);
+            mmListener = new MillennialMediaListener(mIC, super.getClass().getSimpleName());
+            mmListener.printToClog(String.format("requesting an interstitial ad: [%s, %s]", parameter, uid));
 
-        MMSDK.initialize(activity);
+            MMSDK.initialize(activity);
+            // SDK must be initialized first before creating userdata instance
+            UserData userData = Settings.getUserData(targetingParameters, activity);
+            try {
+                interstitialAd = InterstitialAd.createInstance(uid);
+                interstitialAd.setListener(mmListener);
+                MMSDK.setUserData(userData);
+                interstitialAd.load(activity, new InterstitialAd.InterstitialAdMetadata());
+            } catch (MMException e) {
+                if (mIC != null) {
+                    mIC.onAdFailed(ResultCode.INTERNAL_ERROR);
+                }
+            }
 
-        iad = new MMInterstitial(activity);
-        iad.setApid(uid);
-        iad.setListener(new MillennialMediaListener(mIC, super.getClass().getSimpleName()));
-
-        MMRequest mmRequest = new MMRequest();
-
-        switch(targetingParameters.getGender()){
-            case UNKNOWN:
-                mmRequest.setGender(MMRequest.GENDER_OTHER);
-                break;
-            case FEMALE:
-                mmRequest.setGender(MMRequest.GENDER_FEMALE);
-                break;
-            case MALE:
-                mmRequest.setGender(MMRequest.GENDER_MALE);
-                break;
-        }
-
-        if(targetingParameters.getAge()!=null){
-            mmRequest.setAge(targetingParameters.getAge());
-        }
-
-        HashMap<String, String> mv = new HashMap<String, String>();
-        for(Pair<String, String> p : targetingParameters.getCustomKeywords()){
-            mv.put(p.first, p.second);
-        }
-        mmRequest.setMetaValues(mv);
-        if(targetingParameters.getLocation()!=null){
-            MMRequest.setUserLocation(targetingParameters.getLocation());
-        }
-        if (!iad.isAdAvailable()) {
-            iad.fetch(mmRequest);
-        } else {
-            mmListener.printToClogWarn("ad was available from cache. show it instead of fetching");
-            mIC.onAdLoaded();
         }
     }
 
     @Override
     public void show() {
         mmListener.printToClog("show called");
-        if (iad == null) {
+        if (interstitialAd == null) {
             mmListener.printToClogError("show called while interstitial ad view was null");
             return;
         }
-        if (!iad.isAdAvailable()) {
+        if (!interstitialAd.isReady()) {
             mmListener.printToClogError("show called while interstitial ad view was unavailable");
             return;
         }
-
-        if (iad.display(false))
-            mmListener.printToClog("display called successfully");
-        else
-            mmListener.printToClogError("display call failed");
+        Activity activity = weakActivity.get();
+        if (activity != null) {
+            try {
+                interstitialAd.show(activity);
+                return;
+            } catch (MMException e) {
+            }
+        }
+        mmListener.printToClogError("display call failed");
     }
 
     @Override
     public boolean isReady() {
-        return (iad != null) && (iad.isAdAvailable());
+        if (interstitialAd != null) {
+            return interstitialAd.isReady();
+        }
+        return false;
     }
 
     @Override
     public void destroy() {
-        try {
-            iad.setListener(null);
-        }catch (NullPointerException npe){
-            //Catch NPE until mmedia updates SDK to handle nullness
+        if (interstitialAd != null) {
+            interstitialAd.setListener(null);
+            interstitialAd = null;
+            mmListener = null;
         }
-        iad=null;
-        mmListener=null;
     }
 
     @Override
