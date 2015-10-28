@@ -24,7 +24,8 @@ import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.mediatednativead.InMobiSettings;
 import com.appnexus.opensdk.utils.Clog;
-import com.inmobi.monetization.IMInterstitial;
+import com.appnexus.opensdk.utils.StringUtil;
+
 
 /**
  * This class is InMobi interstitial adapter - it provides the functionality needed to allow an application
@@ -33,7 +34,7 @@ import com.inmobi.monetization.IMInterstitial;
  */
 public class InMobiInterstitial implements MediatedInterstitialAdView {
 
-    IMInterstitial iad;
+    com.inmobi.ads.InMobiInterstitial iad;
 
     /**
      * Called by the AppNexus SDK to request an Interstitial ad
@@ -51,21 +52,22 @@ public class InMobiInterstitial implements MediatedInterstitialAdView {
     @Override
     public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity,
                           String parameter, String uid, TargetingParameters tp) {
-        if (InMobiSettings.INMOBI_APP_ID == null || InMobiSettings.INMOBI_APP_ID.isEmpty()) {
-            Clog.e(Clog.mediationLogTag, "InMobi mediation failed. Call InMobiSettings.setInMobiAppId(String key, Context context) to set the app id.");
-            if (mIC != null) {
+        if (mIC != null) {
+            if (StringUtil.isEmpty(InMobiSettings.INMOBI_APP_ID)) {
+                Clog.e(Clog.mediationLogTag, "InMobi mediation failed. Call InMobiSettings.setInMobiAppId(String key, Context context) to set the app id.");
                 mIC.onAdFailed(ResultCode.MEDIATED_SDK_UNAVAILABLE);
+                return;
             }
-            return;
+            try {
+                long placementID = Long.parseLong(uid);
+                InMobiListener listener = new InMobiListener(mIC, this.getClass().getSimpleName());
+                iad = new com.inmobi.ads.InMobiInterstitial(activity, placementID, listener);
+                InMobiSettings.setTargetingParams(tp);
+                iad.load();
+            } catch (NumberFormatException e) {
+                mIC.onAdFailed(ResultCode.INVALID_REQUEST);
+            }
         }
-        if (uid != null && !uid.isEmpty()) {
-            iad = new IMInterstitial(activity, uid);
-        } else {
-            iad = new IMInterstitial(activity, InMobiSettings.INMOBI_APP_ID);
-        }
-        iad.setIMInterstitialListener(new InMobiListener(mIC, this.getClass().getSimpleName()));
-        InMobiSettings.setTargetingParams(tp);
-        iad.loadInterstitial();
     }
 
     @Override
@@ -80,14 +82,12 @@ public class InMobiInterstitial implements MediatedInterstitialAdView {
 
     @Override
     public boolean isReady() {
-        return (iad != null) && (iad.getState() == IMInterstitial.State.READY);
+        return (iad != null) && (iad.isReady());
     }
 
     @Override
     public void destroy() {
         if (iad != null) {
-            iad.stopLoading();
-            iad.setIMInterstitialListener(null);
             iad = null;
         }
     }

@@ -17,136 +17,86 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import com.appnexus.opensdk.MediatedAdViewController;
-import com.appnexus.opensdk.ResultCode;
-import com.appnexus.opensdk.utils.Clog;
-import com.inmobi.monetization.IMBanner;
-import com.inmobi.monetization.IMBannerListener;
-import com.inmobi.monetization.IMErrorCode;
-import com.inmobi.monetization.IMInterstitial;
-import com.inmobi.monetization.IMInterstitialListener;
+import com.appnexus.opensdk.mediatednativead.InMobiSettings;
+import com.inmobi.ads.InMobiAdRequestStatus;
+import com.inmobi.ads.InMobiBanner;
+import com.inmobi.ads.InMobiInterstitial;
 
 import java.util.Map;
 
-public class InMobiListener implements IMBannerListener, IMInterstitialListener {
+public class InMobiListener implements InMobiBanner.BannerAdListener, InMobiInterstitial.InterstitialAdListener {
 
     private final MediatedAdViewController mediatedAdViewController;
     private final String className;
-    private boolean listenerWasCalled = false;
 
     public InMobiListener(MediatedAdViewController mediatedAdViewController, String className) {
         this.mediatedAdViewController = mediatedAdViewController;
         this.className = className;
     }
 
-    private ResultCode errorCodeMapping(IMErrorCode imErrorCode) {
-        ResultCode code = ResultCode.INTERNAL_ERROR;
-
-        switch (imErrorCode) {
-
-            case INVALID_REQUEST:
-                code = ResultCode.INVALID_REQUEST;
-                break;
-            case INTERNAL_ERROR:
-                break;
-            case NO_FILL:
-                code = ResultCode.UNABLE_TO_FILL;
-                break;
-            case DO_MONETIZE:
-                break;
-            case DO_NOTHING:
-                break;
-            case NETWORK_ERROR:
-                code = ResultCode.NETWORK_ERROR;
-                break;
-        }
-
-        return  code;
-    }
+    // Banner Listener implementation
 
     @Override
-    public void onBannerRequestFailed(IMBanner imBanner, IMErrorCode imErrorCode) {
-        if (!listenerWasCalled) {
-            Clog.d(Clog.mediationLogTag,
-                    className + " | InMobi - onBannerRequestFailed called with error message: " + imErrorCode.toString());
-
-            if (mediatedAdViewController != null) {
-                mediatedAdViewController.onAdFailed(errorCodeMapping(imErrorCode));
-            }
-            listenerWasCalled = true;
-        } else {
-            Clog.d(Clog.mediationLogTag, "InMobi listener getting called multiple times");
-        }
-
-
-    }
-
-    @Override
-    public void onBannerRequestSucceeded(IMBanner imBanner) {
-        if (!listenerWasCalled) {
-            if (mediatedAdViewController != null) {
-                mediatedAdViewController.onAdLoaded();
-            }
-            listenerWasCalled = true;
-        } else {
-            Clog.d(Clog.mediationLogTag, "InMobi listener getting called multiple times");
-        }
-
-    }
-
-    @Override
-    public void onBannerInteraction(IMBanner imBanner, Map<String, String> stringStringMap) {
-        if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdClicked();
-        }
-    }
-
-    @Override
-    public void onShowBannerScreen(IMBanner imBanner) {
-        if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdExpanded();
-        }
-    }
-
-    @Override
-    public void onDismissBannerScreen(IMBanner imBanner) {
-        if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdCollapsed();
-        }
-    }
-
-    @Override
-    public void onLeaveApplication(IMBanner imBanner) {
-        if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdExpanded();
-        }
-    }
-
-    @Override
-    public void onInterstitialFailed(IMInterstitial imInterstitial, IMErrorCode imErrorCode) {
-        Clog.d(Clog.mediationLogTag, className + " | InMobi - failed to load interstitial because: " + imErrorCode.toString());
-
-        if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdFailed(errorCodeMapping(imErrorCode));
-        }
-    }
-
-    @Override
-    public void onInterstitialLoaded(IMInterstitial imInterstitial) {
+    public void onAdLoadSucceeded(InMobiBanner inMobiBanner) {
         if (mediatedAdViewController != null) {
             mediatedAdViewController.onAdLoaded();
         }
     }
 
     @Override
-    public void onShowInterstitialScreen(IMInterstitial imInterstitial) {
+    public void onAdLoadFailed(InMobiBanner inMobiBanner, InMobiAdRequestStatus inMobiAdRequestStatus) {
+        if (mediatedAdViewController != null) {
+            mediatedAdViewController.onAdFailed(InMobiSettings.getResultCode(inMobiAdRequestStatus));
+        }
+    }
+
+    @Override
+    public void onAdDisplayed(InMobiBanner inMobiBanner) {
         if (mediatedAdViewController != null) {
             mediatedAdViewController.onAdExpanded();
         }
+    }
+
+    @Override
+    public void onAdDismissed(InMobiBanner inMobiBanner) {
+        if (mediatedAdViewController != null) {
+            mediatedAdViewController.onAdCollapsed();
+        }
+    }
+
+    @Override
+    public void onAdInteraction(InMobiBanner inMobiBanner, Map<Object, Object> map) {
+        if (mediatedAdViewController != null) {
+            mediatedAdViewController.onAdClicked();
+        }
+    }
+
+    @Override
+    public void onUserLeftApplication(InMobiBanner inMobiBanner) {
 
     }
 
     @Override
-    public void onDismissInterstitialScreen(IMInterstitial imInterstitial) {
+    public void onAdRewardActionCompleted(InMobiBanner inMobiBanner, Map<Object, Object> map) {
+
+    }
+
+    // Interstitial listener implementation
+
+    @Override
+    public void onAdRewardActionCompleted(InMobiInterstitial inMobiInterstitial, Map<Object, Object> map) {
+
+    }
+
+    @Override
+    public void onAdDisplayed(InMobiInterstitial inMobiInterstitial) {
+        if (mediatedAdViewController != null) {
+            mediatedAdViewController.onAdExpanded();
+        }
+    }
+
+    @Override
+    public void onAdDismissed(InMobiInterstitial inMobiInterstitial) {
         if (mediatedAdViewController != null) {
             mediatedAdViewController.onAdCollapsed();
         }
@@ -154,16 +104,29 @@ public class InMobiListener implements IMBannerListener, IMInterstitialListener 
     }
 
     @Override
-    public void onInterstitialInteraction(IMInterstitial imInterstitial, Map<String, String> stringStringMap) {
+    public void onAdInteraction(InMobiInterstitial inMobiInterstitial, Map<Object, Object> map) {
         if (mediatedAdViewController != null) {
             mediatedAdViewController.onAdClicked();
+        }
+
+    }
+
+    @Override
+    public void onAdLoadSucceeded(InMobiInterstitial inMobiInterstitial) {
+        if (mediatedAdViewController != null) {
+            mediatedAdViewController.onAdLoaded();
         }
     }
 
     @Override
-    public void onLeaveApplication(IMInterstitial imInterstitial) {
+    public void onAdLoadFailed(InMobiInterstitial inMobiInterstitial, InMobiAdRequestStatus inMobiAdRequestStatus) {
         if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdExpanded();
+            mediatedAdViewController.onAdFailed(InMobiSettings.getResultCode(inMobiAdRequestStatus));
         }
+    }
+
+    @Override
+    public void onUserLeftApplication(InMobiInterstitial inMobiInterstitial) {
+
     }
 }

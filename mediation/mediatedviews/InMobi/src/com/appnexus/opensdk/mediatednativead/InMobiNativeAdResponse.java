@@ -22,23 +22,21 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.appnexus.opensdk.NativeAdEventListener;
 import com.appnexus.opensdk.NativeAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.JsonUtil;
 import com.appnexus.opensdk.utils.Settings;
-import com.inmobi.monetization.IMNative;
+import com.inmobi.ads.InMobiNative;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
 
 public class InMobiNativeAdResponse implements NativeAdResponse {
-    private IMNative imNative;
+    private InMobiNative imNative;
     private String title;
     private String description;
     private String imageUrl;
@@ -74,7 +72,7 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
                 nativeAdEventlistener = null;
                 expired = true;
                 if (imNative != null) {
-                    imNative.detachFromView();
+                    InMobiNative.unbind(registeredView);
                     imNative = null;
                 }
                 registeredView = null;
@@ -86,44 +84,42 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
 
     }
 
-    boolean setResources(final IMNative imNative) {
+    boolean setResources(final InMobiNative imNative) {
         this.imNative = imNative;
-        if (imNative.getContent() == null || imNative.getContent().trim().isEmpty()) {
-            return false;
-        }
-        JSONObject response;
         try {
-            // parse Json response and create an native response
-            response = new JSONObject(imNative.getContent());
-        } catch (JSONException e) {
-            return false;
-        }
-        title = JsonUtil.getJSONString(response, InMobiSettings.KEY_TITLE);
-        callToAction = JsonUtil.getJSONString(response, InMobiSettings.KEY_CALL_TO_ACTION);
-        description = JsonUtil.getJSONString(response, InMobiSettings.KEY_DESCRIPTION);
-        JSONObject iconObject = JsonUtil.getJSONObject(response, InMobiSettings.KEY_ICON);
-        iconUrl = JsonUtil.getJSONString(iconObject, InMobiSettings.KEY_URL);
-        JSONObject imageObject = JsonUtil.getJSONObject(response, InMobiSettings.KEY_IMAGE);
-        imageUrl = JsonUtil.getJSONString(imageObject, InMobiSettings.KEY_URL);
-        if (JsonUtil.getJSONDouble(response, InMobiSettings.KEY_RATING) >= 0) {
-            rating = new Rating(JsonUtil.getJSONDouble(response, InMobiSettings.KEY_RATING), 5);
-        }
-        landingUrl = JsonUtil.getJSONString(response, InMobiSettings.KEY_LANDING_URL);
-        clickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                imNative.handleClick(null); // no additional params passed in for click tracking
-                onAdClicked();
-                if (v != null && landingUrl != null && !landingUrl.isEmpty()) {
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(landingUrl));
-                    browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    onAdWillLeaveApplication();
-                    v.getContext().startActivity(browserIntent);
-                }
+            JSONObject response = new JSONObject((String) imNative.getAdContent());
+            title = JsonUtil.getJSONString(response, InMobiSettings.KEY_TITLE);
+            callToAction = JsonUtil.getJSONString(response, InMobiSettings.KEY_CALL_TO_ACTION);
+            description = JsonUtil.getJSONString(response, InMobiSettings.KEY_DESCRIPTION);
+            JSONObject iconObject = JsonUtil.getJSONObject(response, InMobiSettings.KEY_ICON);
+            iconUrl = JsonUtil.getJSONString(iconObject, InMobiSettings.KEY_URL);
+            JSONObject imageObject = JsonUtil.getJSONObject(response, InMobiSettings.KEY_IMAGE);
+            imageUrl = JsonUtil.getJSONString(imageObject, InMobiSettings.KEY_URL);
+            if (JsonUtil.getJSONDouble(response, InMobiSettings.KEY_RATING) >= 0) {
+                rating = new Rating(JsonUtil.getJSONDouble(response, InMobiSettings.KEY_RATING), 5);
             }
-        };
-        return true;
+            landingUrl = JsonUtil.getJSONString(response, InMobiSettings.KEY_LANDING_URL);
+            clickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    imNative.reportAdClick(null); // no additional params passed in for click tracking
+                    onAdClicked();
+                    if (v != null && landingUrl != null && !landingUrl.isEmpty()) {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+                                Uri.parse(landingUrl));
+                        browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        onAdWillLeaveApplication();
+                        v.getContext().startActivity(browserIntent);
+                    }
+                }
+            };
+            return true;
+        } catch (Exception e) {
+            // Catches JSONException for parsing,
+            // ClassCastException for String casting,
+            // NPE for null imNative
+        }
+        return false;
     }
 
     @Override
@@ -199,7 +195,7 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
     @Override
     public boolean registerView(View view, NativeAdEventListener listener) {
         if (imNative != null && !registered && !expired) {
-            imNative.attachToView((ViewGroup) view);
+            InMobiNative.bind(view, imNative);
             view.setOnClickListener(clickListener);
             registeredView = view;
             registered = true;
@@ -213,7 +209,7 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
     @Override
     public boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
         if (imNative != null && !registered && !expired) {
-            imNative.attachToView((ViewGroup) view);
+            InMobiNative.bind(view, imNative);
             for (View clickable : clickables) {
                 clickable.setOnClickListener(clickListener);
             }

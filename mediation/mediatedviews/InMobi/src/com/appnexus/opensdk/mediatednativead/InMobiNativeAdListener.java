@@ -19,13 +19,10 @@ package com.appnexus.opensdk.mediatednativead;
 import com.appnexus.opensdk.MediatedNativeAdController;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.utils.Clog;
-import com.inmobi.monetization.IMErrorCode;
-import com.inmobi.monetization.IMNative;
-import com.inmobi.monetization.IMNativeListener;
+import com.inmobi.ads.InMobiAdRequestStatus;
+import com.inmobi.ads.InMobiNative;
 
-import java.lang.ref.WeakReference;
-
-public class InMobiNativeAdListener implements IMNativeListener {
+public class InMobiNativeAdListener implements InMobiNative.NativeAdListener {
     private final MediatedNativeAdController controller;
 
     public InMobiNativeAdListener(MediatedNativeAdController controller) {
@@ -33,48 +30,40 @@ public class InMobiNativeAdListener implements IMNativeListener {
     }
 
     @Override
-    public void onNativeRequestFailed(IMErrorCode imErrorCode) {
-        Clog.d(Clog.mediationLogTag, "InMobi: " + imErrorCode.toString());
+    public void onAdLoadSucceeded(InMobiNative inMobiNative) {
+        if (inMobiNative != null) {
+            if (controller != null) {
+                InMobiNativeAdResponse response = new InMobiNativeAdResponse();
+                if (response.setResources(inMobiNative)) {
+                    controller.onAdLoaded(response);
+                } else {
+                    controller.onAdFailed(ResultCode.UNABLE_TO_FILL);
+                }
+            }
 
-        ResultCode code = ResultCode.INTERNAL_ERROR;
-
-        switch (imErrorCode) {
-
-            case INVALID_REQUEST:
-                code = ResultCode.INVALID_REQUEST;
-                break;
-            case INTERNAL_ERROR:
-                break;
-            case NO_FILL:
-                code = ResultCode.UNABLE_TO_FILL;
-                break;
-            case DO_MONETIZE:
-                break;
-            case DO_NOTHING:
-                break;
-            case NETWORK_ERROR:
-                code = ResultCode.NETWORK_ERROR;
-                break;
         }
+    }
 
+    @Override
+    public void onAdLoadFailed(InMobiNative inMobiNative, InMobiAdRequestStatus inMobiAdRequestStatus) {
+        Clog.d(Clog.mediationLogTag, "InMobi: " + inMobiAdRequestStatus.toString());
         if (controller != null) {
-            controller.onAdFailed(code);
+            controller.onAdFailed(InMobiSettings.getResultCode(inMobiAdRequestStatus));
         }
+    }
+
+    @Override
+    public void onAdDismissed(InMobiNative inMobiNative) {
 
     }
 
     @Override
-    public void onNativeRequestSucceeded(IMNative imNative) {
-        if (imNative != null) {
-            InMobiNativeAdResponse response = new InMobiNativeAdResponse();
-            if (response.setResources(imNative)) {
-                controller.onAdLoaded(response);
-                return;
-            }
-        }
-        if (controller != null) {
-            controller.onAdFailed(ResultCode.UNABLE_TO_FILL);
-        }
+    public void onAdDisplayed(InMobiNative inMobiNative) {
+
+    }
+
+    @Override
+    public void onUserLeftApplication(InMobiNative inMobiNative) {
 
     }
 }

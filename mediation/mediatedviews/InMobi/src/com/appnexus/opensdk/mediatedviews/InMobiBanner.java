@@ -18,6 +18,7 @@ package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
@@ -25,7 +26,8 @@ import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.mediatednativead.InMobiSettings;
 import com.appnexus.opensdk.utils.Clog;
-import com.inmobi.monetization.IMBanner;
+import com.appnexus.opensdk.utils.StringUtil;
+
 
 /**
  * This class is the InMobi banner ad view adapter - it allows an application that integrates with
@@ -34,7 +36,8 @@ import com.inmobi.monetization.IMBanner;
  * application.
  */
 public class InMobiBanner implements MediatedBannerAdView {
-    IMBanner imBanner;
+    com.inmobi.ads.InMobiBanner imBanner;
+
 
     /**
      * @param mBC       The controller to notify on load, failure, etc.
@@ -55,45 +58,36 @@ public class InMobiBanner implements MediatedBannerAdView {
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter,
                           String uid, int width, int height, TargetingParameters tp) {
-        if (InMobiSettings.INMOBI_APP_ID == null || InMobiSettings.INMOBI_APP_ID.isEmpty()) {
-            Clog.e(Clog.mediationLogTag, "InMobi mediation failed. Call InMobiSettings.setInMobiAppId(String key, Context context) to set the app id.");
-            if (mBC != null) {
+        if (mBC != null) {
+            if (StringUtil.isEmpty(InMobiSettings.INMOBI_APP_ID)) {
+                Clog.e(Clog.mediationLogTag, "InMobi mediation failed. Call InMobiSettings.setInMobiAppId(String key, Context context) to set the app id.");
                 mBC.onAdFailed(ResultCode.MEDIATED_SDK_UNAVAILABLE);
+                return null;
             }
-            return null;
-        }
-        IMBanner imBanner;
-        int adSize;
-        if (width == 300 && height == 250) {
-            adSize = IMBanner.INMOBI_AD_UNIT_300X250;
-        } else if (width == 120 && height == 600) {
-            adSize = IMBanner.INMOBI_AD_UNIT_120X600;
-        } else if (width == 468 && height == 60) {
-            adSize = IMBanner.INMOBI_AD_UNIT_468X60;
-        } else if (width == 728 && height == 90) {
-            adSize = IMBanner.INMOBI_AD_UNIT_728X90;
-        } else {
-            if (mBC != null) {
+            try {
+                long placementID = Long.parseLong(uid);
+                imBanner = new com.inmobi.ads.InMobiBanner(activity, placementID);
+                imBanner.setEnableAutoRefresh(false);
+
+                ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(width, height);
+                imBanner.setLayoutParams(lp);
+                InMobiSettings.setTargetingParams(tp);
+
+                imBanner.setListener(new InMobiListener(mBC, this.getClass().getSimpleName()));
+                imBanner.load();
+                return imBanner;
+            } catch (NumberFormatException e) {
                 mBC.onAdFailed(ResultCode.INVALID_REQUEST);
             }
-            return null;
         }
-        InMobiSettings.setTargetingParams(tp);
-        if (uid != null && !uid.isEmpty()) {
-            imBanner = new IMBanner(activity, uid, adSize);
-        } else {
-            imBanner = new IMBanner(activity, InMobiSettings.INMOBI_APP_ID, adSize);
-        }
-        imBanner.setRefreshInterval(IMBanner.REFRESH_INTERVAL_OFF);
-        imBanner.setIMBannerListener(new InMobiListener(mBC, this.getClass().getSimpleName()));
-        imBanner.loadBanner();
-        return imBanner;
+
+        return null;
     }
 
     @Override
     public void destroy() {
         if (imBanner != null) {
-            imBanner.setIMBannerListener(null);
+            imBanner.setListener(null);
             imBanner = null;
         }
     }

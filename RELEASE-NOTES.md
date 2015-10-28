@@ -1,3 +1,7 @@
+## RC2.7
++ MS-1688 InMobi Adapter update
+
+
 ## RC2.6
 + MS-1627 Bug fix for conccurency modification in RequestParams
 + MS-1629 Bug fix for using comma as decimal points when user sets certain languages

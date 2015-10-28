@@ -23,7 +23,8 @@ import com.appnexus.opensdk.MediatedNativeAdController;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.utils.Clog;
-import com.inmobi.monetization.IMNative;
+import com.appnexus.opensdk.utils.StringUtil;
+import com.inmobi.ads.InMobiNative;
 
 /**
  * This class is the InMobi native ad adapter - it allows an application that integrates with AppNexus
@@ -43,21 +44,23 @@ public class InMobiNativeAd implements MediatedNativeAd {
      */
     @Override
     public void requestNativeAd(Context context, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
-        if (InMobiSettings.INMOBI_APP_ID == null || InMobiSettings.INMOBI_APP_ID.isEmpty()) {
-            Clog.e(Clog.mediationLogTag, "InMobi mediation failed. Call InMobiSettings.setInMobiAppId(String key, Context context) to set the app id.");
-            if (mBC != null) {
+        if (mBC != null) {
+            if (StringUtil.isEmpty(InMobiSettings.INMOBI_APP_ID)) {
+                Clog.e(Clog.mediationLogTag, "InMobi mediation failed. Call InMobiSettings.setInMobiAppId(String key, Context context) to set the app id.");
                 mBC.onAdFailed(ResultCode.MEDIATED_SDK_UNAVAILABLE);
+                return;
             }
-            return;
+            try {
+                long placementID = Long.parseLong(uid);
+                InMobiNativeAdListener nativeAdListener = new InMobiNativeAdListener(mBC);
+                InMobiNative nativeAd = new InMobiNative(placementID, nativeAdListener);
+                InMobiSettings.setTargetingParams(tp);
+                nativeAd.load();
+            } catch (NumberFormatException e) {
+                mBC.onAdFailed(ResultCode.INVALID_REQUEST);
+            }
         }
-        IMNative nativeAd;
-        if (uid == null || uid.isEmpty()) {
-            nativeAd = new IMNative(InMobiSettings.INMOBI_APP_ID, new InMobiNativeAdListener(mBC));
-        } else {
-            nativeAd = new IMNative(uid, new InMobiNativeAdListener(mBC));
-        }
-        InMobiSettings.setTargetingParams(tp);
-        nativeAd.loadAd();
+
     }
 
 }
