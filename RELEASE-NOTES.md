@@ -1,5 +1,6 @@
 ## RC2.7
 + MS-1688 InMobi Adapter update
++ MS-1669 MoPub update to 3.11.0 
 
 
 ## RC2.6
