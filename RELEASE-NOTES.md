@@ -2,6 +2,18 @@
 + MS-1688 InMobi Adapter update
 + MS-1669 MoPub update to 3.11.0 
 + MS-1424 Millennial Media update
++ Supported networks:
+    AdColony 2.3.0, interstitial, native
+    Amazon 5.6.20, banner, interstitial
+    Chartboost 5.5.3, interstitial
+    Facebook 4.7.0, banner, interstitial, native
+    Google Play services 7.8.0, only depend on the ads library now, DFP/AdMob banner, interstitial
+    InMobi 5.0.0, banner, interstitial, native
+    MM Media 6.0.0, banner, interstitial
+    MoPub 3.11.0, banner, interstitial, native
+    Vdopia lw1.5, banner, interstitial
+    Vungle 3.3.2, interstitials	
+    Yahoo Flurry 6.1.0 banner, interstitial, native
 
 ## RC2.6
 + MS-1627 Bug fix for conccurency modification in RequestParams
