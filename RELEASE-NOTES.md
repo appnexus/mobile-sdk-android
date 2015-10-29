@@ -1,7 +1,7 @@
 ## RC2.7
-+ MS-1688 InMobi SDK and Adapter update from 4.5.5
-+ MS-1669 MoPub update to 3.13.0 
-+ MS-1424 Millennial Media update
++ MS-1688 InMobi mediation adapters upgraded to support InMobi SDK 5.0.0
++ MS-1669 MoPub SDK update to 3.13.0 
++ MS-1424 Millennial Media mediation adapters upgraded to support MMSDK 6.0.0
 + Supported networks:
     AdColony 2.3.0, interstitial, native
     Amazon 5.6.20, banner, interstitial
