@@ -1,4 +1,4 @@
-## RC2.7
+## RC2.7.1
 + MS-1688 InMobi mediation adapters upgraded to support InMobi SDK 5.0.0
 + MS-1669 MoPub SDK update to 3.13.0 
 + MS-1424 Millennial Media mediation adapters upgraded to support MMSDK 6.0.0
