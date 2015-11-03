@@ -53,12 +53,7 @@
 			<artifactId>android</artifactId>
 			<version>6.0.0</version>
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.millennialmedia</groupId>
-			<artifactId>admobadapter</artifactId>
-			<version>1.5.0</version>
-			<scope>compile</scope>
+			<type>aar</type>
 		</dependency>
 		<dependency>
 			<groupId>com.appnexus.opensdk</groupId>
