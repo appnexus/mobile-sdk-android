@@ -75,6 +75,9 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
 
     @Override
     public boolean shouldHandleBackPress() {
+        if (!preventExitOnBackPress){
+            skipAd();
+        }
         return preventExitOnBackPress;
     }
 
@@ -269,12 +272,16 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
     View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (videoPlayer != null) {
-                videoPlayer.skipVideo();
-            } else if (adActivity != null) {
-                adActivity.finish();
-            }
+            skipAd();
         }
     };
+
+    private void skipAd() {
+        if (videoPlayer != null) {
+            videoPlayer.skipVideo();
+        } else if (adActivity != null) {
+            adActivity.finish();
+        }
+    }
 
 }

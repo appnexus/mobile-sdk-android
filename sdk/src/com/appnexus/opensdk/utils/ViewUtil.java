@@ -34,6 +34,10 @@ import android.widget.RelativeLayout;
 import com.appnexus.opensdk.R;
 
 public class ViewUtil {
+
+    public static final int MUTE_BUTTON_SIZE = 32;
+    public static final int MUTE_BUTTON_MARGIN = 10;
+
     public static ImageButton createCloseButton(Context context, boolean custom_close) {
         final ImageButton close = new ImageButton(context);
         if (!custom_close){
@@ -50,16 +54,19 @@ public class ViewUtil {
     }
 
     public static ImageView createMuteButtonInRelativeLayout(Context context) {
-        final ImageView muteButton = new ImageButton(context);
-
+        final ImageView muteButton = new ImageView(context);
+        muteButton.setScaleType(ImageView.ScaleType.FIT_XY);
         muteButton.setImageResource(R.drawable.unmute);
-        muteButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        int sizeInDP = getSizeInDP(context, MUTE_BUTTON_SIZE);
+        int marginInDp = getSizeInDP(context, MUTE_BUTTON_MARGIN);
+
         RelativeLayout.LayoutParams blp = new RelativeLayout.LayoutParams(
-                getSizeInDP(context, 60),getSizeInDP(context, 60));
+                sizeInDP, sizeInDP);
+
+        blp.setMargins(0, 0, marginInDp, marginInDp);
         blp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         blp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         muteButton.setLayoutParams(blp);
-        muteButton.setBackgroundColor(Color.TRANSPARENT);
 
         return muteButton;
     }
@@ -131,14 +138,14 @@ public class ViewUtil {
         }
     }
 
-    /**
+ /**
      * Returns the value according to device's density pixels.
      *
      * @param context
      * @param pixelSize
      * @return
      */
-    public static int getSizeInDP(Context context, int pixelSize) {
+    public static int getSizeInDP(Context context, double pixelSize) {
         final float scale = context.getResources().getDisplayMetrics().density;
         int sizeInDP = (int) (pixelSize * scale);
         return sizeInDP;

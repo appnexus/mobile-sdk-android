@@ -150,12 +150,14 @@ class UTAdResponse {
      * @throws Exception
      */
     private void parseVastVideoAd(JSONObject adObject) throws Exception {
-        VastResponseParser vastResponseParser = new VastResponseParser();
+
         JSONObject videoObject = JsonUtil.getJSONObject(adObject, RESPONSE_KEY_VIDEO);
         if(videoObject != null) {
             String vastResponse = JsonUtil.getJSONString(videoObject, RESPONSE_KEY_CONTENT);
             if(!StringUtil.isEmpty(vastResponse)) {
                 InputStream stream = new ByteArrayInputStream(vastResponse.getBytes(Charset.forName(UTF_8)));
+
+                VastResponseParser vastResponseParser = new VastResponseParser();
                 this.vastAdResponse = vastResponseParser.readVAST(stream);
                 if(this.vastAdResponse != null && this.vastAdResponse.containsLinearAd()) {
                     containsAds = true;
