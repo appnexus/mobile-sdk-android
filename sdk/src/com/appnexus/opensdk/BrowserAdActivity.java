@@ -241,6 +241,14 @@ class BrowserAdActivity implements AdActivity.AdActivityImplementation {
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             adActivity.startActivity(i);
+
+            /**
+             * TODO: shouldDestroyActivity's importance to be discussed.
+             *
+             * Ideally WebView should be destroyed when finishing the activity to avoid memory leaks.
+             */
+            shouldDestroyActivity = true;
+            destroy();
             finishAdActivity();
         } catch (ActivityNotFoundException e) {
             Clog.w(Clog.browserLogTag,
