@@ -79,7 +79,9 @@ public class Settings {
     public static String COOKIE_DOMAIN = "http://mediation.adnxs.com";
     public static final String AN_UUID = "uuid2";
     public static String BASE_URL = "http://mediation.adnxs.com/";
-    public static final String BASE_URL_UT = "http://ib.adnxs.com/ut/v1";
+//    public static final String BASE_URL_UT = "http://rlissack.adnxs.net:8080/jtest/utv2html";
+    public static final String BASE_URL_UT = "http://rlissack.adnxs.net:8080/jtest/utv2video";
+//    public static final String BASE_URL_UT = "http://ib.adnxs.com/ut/v1";
     public static String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
     public static String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
 
