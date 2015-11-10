@@ -374,21 +374,9 @@ class AdWebView extends WebView implements Displayable {
     }
 
     // returns success or failure
-    private boolean checkStore(String url) {
-        if (url.contains("://play.google.com") || url.contains("market://")) {
-            Clog.d(Clog.baseLogTag,
-                    Clog.getString(R.string.opening_app_store));
-            return openNativeIntent(url);
-        }
-
-        return false;
-    }
-
-    // returns success or failure
     private boolean checkForApp(String url) {
         if (url.contains("://play.google.com") || (!url.startsWith("http") && !url.startsWith("about:blank"))) {
-            Clog.i(Clog.baseLogTag,
-                    Clog.getString(R.string.opening_app_store) +" -- Opening App URL: "+ url);
+            Clog.i(Clog.baseLogTag, Clog.getString(R.string.opening_app_store));
             return openNativeIntent(url);
         }
 
@@ -421,19 +409,16 @@ class AdWebView extends WebView implements Displayable {
 
     // handles browser logic for shouldOverrideUrl
     void loadURLInCorrectBrowser(String url) {
-        if (!adView.getOpensNativeBrowser()
-                && url.startsWith("http")) {
-            Clog.d(Clog.baseLogTag,
-                    Clog.getString(R.string.opening_inapp));
+        if (!adView.getOpensNativeBrowser()) {
+
+            Clog.d(Clog.baseLogTag, Clog.getString(R.string.opening_inapp));
 
             //If it's a direct URL to the play store, just open it.
-            if (checkStore(url)) {
+            if (checkForApp(url)) {
                 return;
             }
 
-
             final WebView out;
-
             // Unless disabled by the user, handle redirects in background
 
             if(adView.getLoadsInBackground()) {
@@ -461,14 +446,7 @@ class AdWebView extends WebView implements Displayable {
             }else{
                 // Stick the URL directly into the new activity.
                 out = new WebView(getContext());
-
                 WebviewUtil.setWebViewSettings(out);
-
-                /**
-                 * TODO: Added temporarily to test the click to app behaviour
-                 */
-                out.getSettings().setUserAgentString("Dalvik/1.4.0 (Linux; U; Android 2.3.5; HTC Desire HD A9191 Build/GRJ90)");
-
                 out.loadUrl(url);
                 openInAppBrowser(out);
             }
@@ -757,11 +735,6 @@ class AdWebView extends WebView implements Displayable {
             super(context);
 
             WebviewUtil.setWebViewSettings(this);
-
-            /**
-             * TODO: Added temporarily to test the click to app behaviour. Needs to be removed.
-             */
-            this.getSettings().setUserAgentString("Dalvik/1.4.0 (Linux; U; Android 2.3.5; HTC Desire HD A9191 Build/GRJ90)");
             this.setWebViewClient(new WebViewClient() {
                 private boolean isOpeningAppStore = false;
 
