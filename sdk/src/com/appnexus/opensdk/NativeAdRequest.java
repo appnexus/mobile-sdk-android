@@ -74,9 +74,12 @@ public class NativeAdRequest implements Ad {
     }
 
     /**
-     * Set the placement id for ad request.
+     * Sets the placement id of the NativeAdRequest. The placement ID
+     * identifies the location in your application where ads will
+     * be shown.  You must have a valid, active placement ID to
+     * monetize your application.
      *
-     * @param placementID Placement ID.
+     * @param placementID The placement ID to use.
      */
     public void setPlacementID(String placementID) {
         Clog.d(Clog.nativeLogTag, Clog.getString(
@@ -85,7 +88,7 @@ public class NativeAdRequest implements Ad {
     }
 
     /**
-     * Get the placement id for ad request
+     * Retrieve the placement id for ad request.
      *
      * @return The Placement ID
      */
@@ -93,6 +96,38 @@ public class NativeAdRequest implements Ad {
         Clog.d(Clog.nativeLogTag, Clog.getString(
                 R.string.get_placement_id, requestParameters.getPlacementID()));
         return requestParameters.getPlacementID();
+    }
+
+    /**
+     * Sets the inventory code and member id of this native ad request. The
+     * inventory code provides a more human readable way to identify the location
+     * in your application where ads will be shown. Member id is required to for
+     * using this feature. If both inventory code and placement id are presented,
+     * inventory code will be used instead of placement id on the ad request.
+     *
+     * @param memberID      The member id that this native ad belongs to.
+     * @param inventoryCode The inventory code of this native ad.
+     */
+    public void setInventoryCodeAndMemberID(int memberID, String inventoryCode) {
+        requestParameters.setInventoryCodeAndMemberID(memberID, inventoryCode);
+    }
+
+    /**
+     * Retrieve the member ID.
+     *
+     * @return the member id that this AdView belongs to.
+     */
+    public int getMemberID() {
+        return requestParameters.getMemberID();
+    }
+
+    /**
+     * Retrieve the inventory code.
+     *
+     * @return the current inventory code.
+     */
+    public String getInventoryCode() {
+        return requestParameters.getInvCode();
     }
 
     /**

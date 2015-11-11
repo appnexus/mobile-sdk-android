@@ -38,6 +38,8 @@ import java.util.Locale;
 class RequestParameters {
     private MediaType mediaType;
     private String placementID;
+    private int memberID;
+    private String invCode;
     private boolean opensNativeBrowser = false;
     private int width = -1;
     private int height = -1;
@@ -64,6 +66,19 @@ class RequestParameters {
 
     void setPlacementID(String placementID) {
         this.placementID = placementID;
+    }
+
+    void setInventoryCodeAndMemberID(int memberId, String invCode) {
+        this.memberID = memberId;
+        this.invCode = invCode;
+    }
+
+    int getMemberID() {
+        return memberID;
+    }
+
+    public String getInvCode() {
+        return invCode;
     }
 
     Context getContext() {
@@ -232,16 +247,17 @@ class RequestParameters {
     }
 
     /**
-     * Check if request parameters are set for a certain media type
+     * Check if required parameters are set for a certain media type
      *
      * @return true if ready for request
      */
     boolean isReadyForRequest() {
-        if (StringUtil.isEmpty(placementID)) {
-            Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_placement_id));
+        if ((StringUtil.isEmpty(invCode) || memberID <= 0) && StringUtil.isEmpty(placementID)) {
+            Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_identification));
             return false;
         }
         if (!mediaType.equals(MediaType.NATIVE)) {
+            // Size info must be presented for BannerAdView and InterstitialAdView
             int tempMaxWidth;
             int tempMaxHeight;
             if (overrideMaxSize) {
@@ -282,11 +298,13 @@ class RequestParameters {
         StringBuilder sb;
         Settings settings = Settings.getSettings();
         sb = new StringBuilder(Settings.REQUEST_BASE_URL);
-        sb.append("id=");
-        if (placementID != null) {
-            sb.append(Uri.encode(placementID));
+        if (!StringUtil.isEmpty(invCode) && memberID > 0) {
+            sb.append("member=").append(memberID);
+            sb.append("&inv_code=").append(Uri.encode(invCode));
+        } else if (!StringUtil.isEmpty(placementID)) {
+            sb.append("id=").append(Uri.encode(placementID));
         } else {
-            sb.append("NO-PLACEMENT-ID");
+            sb.append("id=").append("NO-PLACEMENT-ID");
         }
         if (!StringUtil.isEmpty(settings.hidmd5))
             sb.append("&md5udid=").append(Uri.encode(settings.hidmd5));
