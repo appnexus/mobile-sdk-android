@@ -18,6 +18,7 @@ package com.appnexus.opensdk;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.JsonUtil;
+import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.vastdata.AdModel;
 import com.appnexus.opensdk.vastdata.VastResponseParser;
@@ -74,7 +75,11 @@ class UTAdResponse {
         Clog.i(Clog.httpRespLogTag, "Media type: "+mediaType);
 
         this.mediaType = mediaType;
-        parseResponseV2(body);
+        if(Settings.useUniversalTagV2){
+            parseResponseV2(body);
+        }else {
+            parseResponse(body);
+        }
     }
 
 
