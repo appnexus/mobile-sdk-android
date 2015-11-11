@@ -1,3 +1,6 @@
+## RC2.8
++ MS-1702 Support for requesting ads with inventory code and member id
+
 ## RC2.7.1
 + MS-1688 InMobi mediation adapters upgraded to support InMobi SDK 5.0.0
 + MS-1669 MoPub SDK update to 3.13.0 

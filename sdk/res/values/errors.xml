@@ -1,5 +1,5 @@
 <resources>
-	<string formatted="false" name="no_placement_id">E104: No placement ID set. onAdRequestFailed will not be called</string>
+	<string formatted="false" name="no_identification">E104: No identification set(either placement id or inventory code should be presented). onAdRequestFailed will not be called</string>
 	<string formatted="false" name="already_expanded">Cannot load a new ad while the current ad is expanded. onAdRequestFailed will not be called</string>
 	<string formatted="false" name="moot_restart">AdFetcher requested to start, but tasker already instantiated</string>
 	<string formatted="false" name="fetcher_start_single">AdFetcher starting in single-use mode</string>
