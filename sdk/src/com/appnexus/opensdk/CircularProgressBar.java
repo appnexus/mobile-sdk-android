@@ -90,13 +90,11 @@ public class CircularProgressBar extends ProgressBar{
 
 		backgroundColorPaint.setAntiAlias(true);
 		backgroundColorPaint.setStyle(Style.STROKE);
-//		backgroundColorPaint.setShadowLayer(2, 1, 1, Color.DKGRAY);
 		backgroundColorPaint.setStrokeWidth(strokeWidth);
 
 		titlePaint.setTextSize(TITLE_FONT_SIZE);
 		titlePaint.setStyle(Style.FILL);
 		titlePaint.setAntiAlias(true);
-//		titlePaint.setShadowLayer(2, 1, 1, Color.DKGRAY);
 		titlePaint.setTypeface(Typeface.create(MONACO, Typeface.BOLD));
 	}
 
