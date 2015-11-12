@@ -82,6 +82,9 @@ public class Settings {
 
     public static final boolean useUniversalTagV2 = false;
 
+    /**
+     * TODO: Temporary flag to toggle between UT - V1 and V2 requests. Needs to be removed.
+     */
 //    public static final String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2html";
     public static final String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2video";
     public static final String BASE_URL_UT = "http://ib.adnxs.com/ut/v1";
