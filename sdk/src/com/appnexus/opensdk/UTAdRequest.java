@@ -138,7 +138,11 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
             RequestParameters parameters = requester.getRequestParams();
                 try {
 
-                    URL url = new URL(Settings.BASE_URL_UT);
+                    String baseUrl = Settings.BASE_URL_UT;
+                    if(Settings.useUniversalTagV2){
+                        baseUrl = Settings.BASE_URL_UT_V2;
+                    }
+                    URL url = new URL(baseUrl);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setDoOutput(true);
                     conn.setDoInput(true);
