@@ -21,10 +21,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import com.appnexus.opensdk.InterstitialAdView;
-
 public class SimpleActivity extends Activity {
-    InterstitialAdView iav;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +43,5 @@ public class SimpleActivity extends Activity {
             }
         });
     }
-
-
 
 }
