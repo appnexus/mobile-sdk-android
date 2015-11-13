@@ -88,6 +88,7 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
 
     private void showCloseButton() {
         if(countdownWidget != null) {
+            countdownWidget.setProgress(0);
             countdownWidget.setTitle("X");
             countdownWidget.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -140,7 +141,6 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
     public void interacted() {
         if (countdownTimer != null && countdownWidget != null) {
             countdownTimer.cancelTimer();
-            countdownWidget.setProgress(0);
             showCloseButton();
         }
     }

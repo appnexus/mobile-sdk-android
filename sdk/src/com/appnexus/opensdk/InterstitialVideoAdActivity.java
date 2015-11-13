@@ -153,6 +153,7 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
 
             @Override
             public void onDisplayCloseButton() {
+                countdownWidget.setProgress(0);
                 countdownWidget.setTitle("X");
                 countdownWidget.setOnClickListener(clickListener);
                 preventExitOnBackPress = false;
