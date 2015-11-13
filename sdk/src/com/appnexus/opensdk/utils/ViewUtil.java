@@ -31,12 +31,15 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.appnexus.opensdk.CircularProgressBar;
 import com.appnexus.opensdk.R;
 
 public class ViewUtil {
 
     public static final int MUTE_BUTTON_SIZE = 32;
     public static final int MUTE_BUTTON_MARGIN = 10;
+    public static final int CCD_MARGIN = 10;
+    public static final int CCD_DIMENSIONS = 30;
 
     public static ImageButton createCloseButton(Context context, boolean custom_close) {
         final ImageButton close = new ImageButton(context);
@@ -136,6 +139,35 @@ public class ViewUtil {
         for (int i = 0; i < pixels.length; i++) {
             pixels[i] = (int) ((pixels[i] * scale) + 0.5f);
         }
+    }
+
+
+    public static CircularProgressBar addCountdownWidget(Activity activity, RelativeLayout layout) {
+        CircularProgressBar countdownWidget = (CircularProgressBar) activity.getLayoutInflater().inflate(R.layout.countdown_widget, null);
+        int size = ViewUtil.getSizeInDP(activity, CCD_DIMENSIONS);
+        int margin = ViewUtil.getSizeInDP(activity, CCD_MARGIN);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(size, size);
+        params.setMargins(0, margin, margin, 0);
+        countdownWidget.setVisibility(View.GONE);
+        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        countdownWidget.setLayoutParams(params);
+        layout.addView(countdownWidget);
+        return countdownWidget;
+    }
+
+    public static CircularProgressBar addCountdownWidget(Activity activity, FrameLayout layout) {
+        CircularProgressBar countdownWidget = (CircularProgressBar) activity.getLayoutInflater().inflate(R.layout.countdown_widget, null);
+        int size = ViewUtil.getSizeInDP(activity, CCD_DIMENSIONS);
+        int margin = ViewUtil.getSizeInDP(activity, CCD_MARGIN);
+
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                size, size, Gravity.END | Gravity.TOP);
+        params.setMargins(0, margin, margin, 0);
+        countdownWidget.setVisibility(View.GONE);
+        countdownWidget.setLayoutParams(params);
+        layout.addView(countdownWidget);
+        return countdownWidget;
     }
 
  /**

@@ -56,21 +56,7 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
                 System.currentTimeMillis());
         setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
 
-        addCountdownWidget();
-
-    }
-
-    private void addCountdownWidget() {
-        countdownWidget = (CircularProgressBar) adActivity.getLayoutInflater().inflate(R.layout.countdown_widget, null);
-        int size = ViewUtil.getSizeInDP(adActivity, CCD_DIMENSIONS);
-        int margin = ViewUtil.getSizeInDP(adActivity, MARGIN);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(size, size);
-        params.setMargins(0, margin, margin, 0);
-        countdownWidget.setVisibility(View.GONE);
-        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-        countdownWidget.setLayoutParams(params);
-        layout.addView(countdownWidget);
+        countdownWidget = ViewUtil.addCountdownWidget(adActivity, layout);
     }
 
     @Override
