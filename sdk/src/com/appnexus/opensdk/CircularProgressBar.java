@@ -20,15 +20,15 @@ import com.appnexus.opensdk.utils.ViewUtil;
 
 public class CircularProgressBar extends ProgressBar{
 
-    private static final int DEFAULT_STROKE_WIDTH = 3;
-    public static final int TITLE_FONT_SIZE = 16;
+    private static final double DEFAULT_STROKE_WIDTH = 2.5;
+    public static final int TITLE_FONT_SIZE = 14;
     public static final String MONACO = "Monaco";
     public static final String CLOSE_X = "&#xd7;";
     public static final int CROSS_X_FONT_SIZE = 24;
 
     private String title = "";
 
-	private int strokeWidth = DEFAULT_STROKE_WIDTH;
+	private int strokeWidth = 0;
 
 	private final RectF circleBounds = new RectF();
 	private final Paint progressColorPaint = new Paint();
@@ -102,7 +102,7 @@ public class CircularProgressBar extends ProgressBar{
 	protected synchronized void onDraw(Canvas canvas) {
 		canvas.drawArc(circleBounds, 0, 360, false, backgroundColorPaint);
 		float scale = getMax() > 0 ? (float)getProgress()/getMax() * 360: 0;
-		canvas.drawArc(circleBounds, 270, scale, false, progressColorPaint);
+		canvas.drawArc(circleBounds, 270, -scale, false, progressColorPaint);
 
         if (!TextUtils.isEmpty(title)){
 			int x =  (int)(getMeasuredWidth()/2 - titlePaint.measureText(title) / 2);

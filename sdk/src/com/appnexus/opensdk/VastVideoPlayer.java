@@ -52,7 +52,7 @@ abstract class VastVideoPlayer implements OnCompletionListener,
         HibernationListener, GestureDetector.OnGestureListener,
         GestureDetector.OnDoubleTapListener {
 
-    public static final int COUNTDOWN_INTERVAL = 10;
+    public static final int COUNTDOWN_INTERVAL = 1;
     protected Context context;
     protected VideoView videoView;
     protected Handler handler;
@@ -327,7 +327,7 @@ abstract class VastVideoPlayer implements OnCompletionListener,
     private void startVideoCountDown() {
 
         startCountdownTimer((int) skipOffsetMillis);
-        countDownTimer = new ANCountdownTimer((long) videoLength + 1000, COUNTDOWN_INTERVAL) {
+        countDownTimer = new ANCountdownTimer((long) videoLength, COUNTDOWN_INTERVAL) {
             @Override
             public void onTick(long leftTimeInMilliseconds) {
                 handleVideoProgress(leftTimeInMilliseconds);

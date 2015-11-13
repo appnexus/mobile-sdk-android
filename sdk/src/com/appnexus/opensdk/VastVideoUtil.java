@@ -293,7 +293,7 @@ public class VastVideoUtil {
             if (vastAd != null && vastAd.getCreativesArrayList() != null && vastAd.getCreativesArrayList().size()> 0) {
                 for (CreativeModel creativeModel : vastAd.getCreativesArrayList()) {
                     LinearAdModel linearAdModel = creativeModel.getLinearAdModel();
-                    if (creativeModel != null) {
+                    if (linearAdModel != null) {
                         for (VideoClickModel videoClickModel : linearAdModel.getVideoClicksArrayList()) {
                             if (videoClickModel != null) {
                                 for (ClickTrackingModel clickTrackingModel : videoClickModel.getClickTrackingArrayList()) {

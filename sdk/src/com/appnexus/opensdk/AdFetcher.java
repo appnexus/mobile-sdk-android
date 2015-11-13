@@ -58,9 +58,6 @@ class AdFetcher {
         this.period = period;
         if ((periodChanged) && !state.equals(STATE.STOPPED)) {
             // We should reset.
-            Clog.i("test", "AdFetcher refresh period changed to " + this.period);
-            Clog.i("test", "Resetting AdFetcher");
-
             stop();
             start();
         }
