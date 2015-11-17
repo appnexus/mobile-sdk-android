@@ -19,6 +19,7 @@ package com.appnexus.opensdk;
 import android.content.Intent;
 import android.webkit.WebView;
 
+import com.appnexus.opensdk.AdActivity;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.shadows.ShadowWebView;
@@ -117,7 +118,7 @@ public class AdActivityTest extends BaseRoboTest {
     public void testBrowserDestroy() {
         testBrowserCreate();
         runActivityLifecycle();
-        assertEquals(1, BrowserAdActivity.BROWSER_QUEUE.size());
+        assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
     }
 
     @Test
@@ -152,7 +153,7 @@ public class AdActivityTest extends BaseRoboTest {
         testBrowserImplementationCreate();
 
         implementation.destroy();
-        assertEquals(1, BrowserAdActivity.BROWSER_QUEUE.size());
+        assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
     }
 
     @Test
@@ -166,14 +167,18 @@ public class AdActivityTest extends BaseRoboTest {
 
     @Test
     public void testBrowserImplementationRotation() {
-        // original implementation. 'destroy' it as if rotating
-        testBrowserImplementationDestroy();
+        createActivity(AdActivity.ACTIVITY_TYPE_BROWSER);
+        WebView webView = new WebView(Robolectric.application);
+        BrowserAdActivity.BROWSER_QUEUE.add(webView);
 
-        // create it again
+        // create in one rotation
         implementation = new BrowserAdActivity(adActivity);
         implementation.create();
         assertNotNull(implementation.getWebView());
         assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
+
+        // @TODO rotate activity
+        // assert implementation's webview is the same one
 
         // actually destroy it this time
         implementation.backPressed();

@@ -44,6 +44,16 @@ public class NativeAdRequest implements Ad {
         dispatcher = new NativeAdDispatcher();
     }
 
+    public NativeAdRequest(Context context, String inventoryCode, int memberID) {
+        AdvertistingIDUtil.retrieveAndSetAAID(context);
+        requestParameters = new RequestParameters(context);
+        requestParameters.setInventoryCodeAndMemberID(memberID, inventoryCode);
+        requestParameters.setMediaType(MediaType.NATIVE);
+        mAdFetcher = new AdFetcher(this);
+        mAdFetcher.setPeriod(-1);
+        dispatcher = new NativeAdDispatcher();
+    }
+
     /**
      * Retrieve the setting that determines whether or not the
      * device's native browser is used instead of the in-app
@@ -253,7 +263,7 @@ public class NativeAdRequest implements Ad {
 
     @Override
     public boolean isReadyToStart() {
-        return this.listener != null;
+        return this.listener != null && requestParameters.isReadyForRequest();
     }
 
     /**
@@ -271,11 +281,14 @@ public class NativeAdRequest implements Ad {
             return false;
         }
 
-        mAdFetcher.stop();
-        mAdFetcher.clearDurations();
-        mAdFetcher.start();
-        isLoading = true;
-        return true;
+        if (requestParameters.isReadyForRequest()) {
+            mAdFetcher.stop();
+            mAdFetcher.clearDurations();
+            mAdFetcher.start();
+            isLoading = true;
+            return true;
+        }
+        return false;
     }
 
     boolean isLoading = false;

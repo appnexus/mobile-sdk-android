@@ -1,5 +1,6 @@
 ## RC2.8
 + MS-1702 Support for requesting ads with inventory code and member id
++ MS-1745 Update unit tests for inventory code and member id
 
 ## RC2.7.1
 + MS-1688 InMobi mediation adapters upgraded to support InMobi SDK 5.0.0
