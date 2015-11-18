@@ -56,21 +56,7 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
                 System.currentTimeMillis());
         setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
 
-        addCountdownWidget();
-
-    }
-
-    private void addCountdownWidget() {
-        countdownWidget = (CircularProgressBar) adActivity.getLayoutInflater().inflate(R.layout.countdown_widget, null);
-        int size = ViewUtil.getSizeInDP(adActivity, CCD_DIMENSIONS);
-        int margin = ViewUtil.getSizeInDP(adActivity, MARGIN);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(size, size);
-        params.setMargins(0, margin, margin, 0);
-        countdownWidget.setVisibility(View.GONE);
-        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-        countdownWidget.setLayoutParams(params);
-        layout.addView(countdownWidget);
+        countdownWidget = ViewUtil.addCountdownWidget(adActivity, layout);
     }
 
     @Override
@@ -146,30 +132,37 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
 
             @Override
             public void onStartCountdownTimer(String skipOffset) {
-                countdownWidget.setVisibility(View.VISIBLE);
-                countdownWidget.bringToFront();
-                preventExitOnBackPress = true;
-                int skipOffsetInt = getSkipOffsetIntValue(skipOffset);
-                countdownWidget.setMax(skipOffsetInt);
-                countdownWidget.setProgress(skipOffsetInt);
-                int seconds = (int) (skipOffsetInt / 1000) + 1;
-                countdownWidget.setTitle(seconds+"");
-                countdownWidget.setOnClickListener(null);
+                if(countdownWidget != null) {
+                    countdownWidget.setVisibility(View.VISIBLE);
+                    countdownWidget.bringToFront();
+                    preventExitOnBackPress = true;
+                    int skipOffsetInt = getSkipOffsetIntValue(skipOffset);
+                    countdownWidget.setMax(skipOffsetInt);
+                    countdownWidget.setProgress(skipOffsetInt);
+                    int seconds = (int) (skipOffsetInt / 1000) + 1;
+                    countdownWidget.setTitle(seconds + "");
+                    countdownWidget.setOnClickListener(null);
+                }
             }
 
             @Override
             public void onUpdateCountdownTimer(String skipOffset) {
-                int skipOffsetInt = getSkipOffsetIntValue(skipOffset);
-                int seconds = (int) (skipOffsetInt / 1000) + 1;
-                countdownWidget.setProgress(skipOffsetInt);
-                countdownWidget.setTitle(seconds+"");
+                if(countdownWidget != null) {
+                    int skipOffsetInt = getSkipOffsetIntValue(skipOffset);
+                    int seconds = (int) (skipOffsetInt / 1000) + 1;
+                    countdownWidget.setProgress(skipOffsetInt);
+                    countdownWidget.setTitle(seconds + "");
+                }
             }
 
             @Override
             public void onDisplayCloseButton() {
-                countdownWidget.setTitle("X");
-                countdownWidget.setOnClickListener(clickListener);
-                preventExitOnBackPress = false;
+                if(countdownWidget != null) {
+                    countdownWidget.setProgress(0);
+                    countdownWidget.setTitle("X");
+                    countdownWidget.setOnClickListener(clickListener);
+                    preventExitOnBackPress = false;
+                }
             }
         });
 

@@ -80,13 +80,13 @@ public class Settings {
     public static final String AN_UUID = "uuid2";
     public static String BASE_URL = "http://mediation.adnxs.com/";
 
-    public static final boolean useUniversalTagV2 = false;
-
     /**
      * TODO: Temporary flag to toggle between UT - V1 and V2 requests. Needs to be removed.
      */
-//    public static final String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2html";
-    public static final String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2video";
+    public static final boolean useUniversalTagV2 = true;
+
+    public static final String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2html";
+//    public static final String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2video";
     public static final String BASE_URL_UT = "http://ib.adnxs.com/ut/v1";
     public static String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
     public static String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
