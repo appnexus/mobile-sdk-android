@@ -303,6 +303,7 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
             tag.put(TAG_PREBID, false);
             tag.put(TAG_DISABLE_PSA, !params.getShouldServePSAs());
         } catch (JSONException e) {
+            Clog.e(Clog.baseLogTag, "Exception: "+e.getMessage());
         }
         if (tag.length() > 0) {
             tags.put(tag);

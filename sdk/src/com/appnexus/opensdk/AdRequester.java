@@ -16,6 +16,8 @@
 
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.adresponsedata.BaseAdResponse;
+
 import java.util.LinkedList;
 
 interface AdRequester {
@@ -64,6 +66,8 @@ interface AdRequester {
     public void execute();
 
     public LinkedList<MediatedAd> getMediatedAds();
+
+    public LinkedList<BaseAdResponse> getAdList();
 
     public RequestParameters getRequestParams();
 

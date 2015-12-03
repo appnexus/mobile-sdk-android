@@ -151,7 +151,7 @@ class RequestParameters {
         if (mediaType == MediaType.INTERSTITIAL) {
             return allowedSizes;
         } else {
-            return null;
+            return new ArrayList<AdSize>();
         }
     }
 

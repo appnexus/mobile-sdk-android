@@ -32,14 +32,26 @@ import android.os.Build;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Pair;
-import android.view.*;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+
 import com.appnexus.opensdk.AdView.BrowserStyle;
-import com.appnexus.opensdk.utils.*;
+import com.appnexus.opensdk.adresponsedata.BaseAdResponse;
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.HTTPGet;
+import com.appnexus.opensdk.utils.HTTPResponse;
+import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.StringUtil;
+import com.appnexus.opensdk.utils.ViewUtil;
+import com.appnexus.opensdk.utils.WebviewUtil;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -145,6 +157,40 @@ class AdWebView extends WebView implements Displayable {
         this.loadDataWithBaseURL(Settings.BASE_URL, html, "text/html", "UTF-8", null);
     }
 
+
+    public void loadAd(BaseAdResponse ad) {
+        if(ad==null){
+            fail();
+            return;
+        }
+        String html = ad.getAdContent();
+        // set creative size
+        setCreativeHeight(ad.getHeight());
+        setCreativeWidth(ad.getWidth());
+        // Safety Check: content is verified in AdResponse, so this should never be empty
+        if (StringUtil.isEmpty(html)) {
+            fail();
+            return;
+        }
+
+        Clog.i(Clog.baseLogTag, Clog.getString(R.string.webview_loading, html));
+
+        parseAdResponseExtras(ad.getExtras());
+
+        html = preLoadContent(html);
+        html = prependRawResources(html);
+
+        final float scale = adView.getContext().getResources()
+                .getDisplayMetrics().density;
+        int rheight = (int) (ad.getHeight() * scale + 0.5f);
+        int rwidth = (int) (ad.getWidth() * scale + 0.5f);
+        AdView.LayoutParams resize = new AdView.LayoutParams(rwidth, rheight,
+                Gravity.CENTER);
+        this.setLayoutParams(resize);
+
+        this.loadDataWithBaseURL(Settings.BASE_URL, html, "text/html", "UTF-8", null);
+    }
+
     public void loadAd(ServerResponse ad) {
         if(ad==null){
             return;
@@ -180,9 +226,7 @@ class AdWebView extends WebView implements Displayable {
     // The webview about to load the ad, and the html ad content
     private String preLoadContent(String html) {
         // Check to ensure <html> tags are present
-        /**
-         * TODO: Added a null check. Needs to be reviewed
-         */
+
         if(StringUtil.isEmpty(html)){
             return null;
         }
@@ -690,8 +734,7 @@ class AdWebView extends WebView implements Displayable {
 
         int[] screenSize = ViewUtil.getScreenSizeAsPixels((Activity) this.getContext());
 
-        this.isOnscreen = (right > 0) && (left < screenSize[0])
-                && (bottom > 0) && (top < screenSize[1]);
+        this.isOnscreen = (right > 0) && (left < screenSize[0]) && (bottom > 0) && (top < screenSize[1]);
 
         // update current position
         if (implementation != null) {
