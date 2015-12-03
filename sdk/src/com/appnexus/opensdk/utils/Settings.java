@@ -85,8 +85,14 @@ public class Settings {
      */
     public static final boolean useUniversalTagV2 = true;
 
-    public static final String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2html";
+//    public static final String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2html";
+//    public static final String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2csminterstitial";
+//    public static final String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2csmbanner";
 //    public static final String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2video";
+//    public static final String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2ssmbanner";
+
+    public static final String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2ssmbannernobid";
+
     public static final String BASE_URL_UT = "http://ib.adnxs.com/ut/v1";
     public static String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
     public static String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";

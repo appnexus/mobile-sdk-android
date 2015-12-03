@@ -19,6 +19,8 @@ package com.appnexus.opensdk;
 import android.os.AsyncTask;
 import android.os.Build;
 
+import com.appnexus.opensdk.adresponsedata.BaseAdResponse;
+import com.appnexus.opensdk.adresponsedata.CSMAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ import java.util.LinkedList;
 
 abstract class RequestManager implements AdRequester{
     private LinkedList<MediatedAd> mediatedAds;
+    private LinkedList<BaseAdResponse> adList;
     protected AdRequest adRequest;
     protected UTAdRequest utAdRequest;
     private long totalLatencyStart = -1;
@@ -95,8 +98,17 @@ abstract class RequestManager implements AdRequester{
         return mediatedAds;
     }
 
+    @Override
+    public LinkedList<BaseAdResponse> getAdList() {
+        return adList;
+    }
+
     protected void setMediatedAds(LinkedList<MediatedAd> mediatedAds) {
         this.mediatedAds = mediatedAds;
+    }
+
+    protected void setAdList(LinkedList<BaseAdResponse> adList) {
+        this.adList = adList;
     }
 
     // returns the first mediated ad if available
@@ -104,6 +116,19 @@ abstract class RequestManager implements AdRequester{
         if ((mediatedAds != null) && (mediatedAds.getFirst() != null)) {
             mediatedClasses.add(mediatedAds.getFirst().getClassName());
             return mediatedAds.removeFirst();
+        }
+        return null;
+    }
+
+    // returns the first mediated ad if available
+    protected BaseAdResponse popAd() {
+        if ((adList != null) && (adList.getFirst() != null)) {
+            if (adList.getFirst().getContentSource() != null && adList.getFirst().getContentSource().equalsIgnoreCase("csm")){
+                CSMAdResponse csmAdResponse = (CSMAdResponse)adList.getFirst();
+                mediatedClasses.add(csmAdResponse.getClassName());
+            }
+
+            return adList.removeFirst();
         }
         return null;
     }

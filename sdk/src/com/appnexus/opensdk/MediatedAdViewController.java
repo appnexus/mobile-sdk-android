@@ -15,13 +15,11 @@
  */
 package com.appnexus.opensdk;
 
-import android.annotation.SuppressLint;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 
+import com.appnexus.opensdk.adresponsedata.CSMAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
@@ -50,7 +48,8 @@ public abstract class MediatedAdViewController {
     protected MediaType mediaType;
     protected MediatedAdView mAV;
     private WeakReference<AdRequester> caller_requester;
-    protected MediatedAd currentAd;
+//    protected MediatedAd currentAd;
+    protected CSMAdResponse currentAd;
     protected AdDispatcher listener;
     protected MediatedDisplayable mediatedDisplayable = new MediatedDisplayable(this);
 
@@ -58,7 +57,28 @@ public abstract class MediatedAdViewController {
     boolean hasSucceeded = false;
     protected boolean destroyed=false;
 
-    MediatedAdViewController(AdRequester requester, MediatedAd currentAd, AdDispatcher listener, MediaType type) {
+//    MediatedAdViewController(AdRequester requester, MediatedAd currentAd, AdDispatcher listener, MediaType type) {
+//        this.caller_requester = new WeakReference<AdRequester>(requester);
+//        this.currentAd = currentAd;
+//        this.listener = listener;
+//        this.mediaType = type;
+//
+//        ResultCode errorCode = null;
+//
+//        if (currentAd == null) {
+//            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_no_ads));
+//            errorCode = ResultCode.UNABLE_TO_FILL;
+//        } else {
+//            boolean instantiateSuccessful = instantiateNewMediatedAd();
+//            if (!instantiateSuccessful)
+//                errorCode = ResultCode.MEDIATED_SDK_UNAVAILABLE;
+//        }
+//
+//        if (errorCode != null)
+//            onAdFailed(errorCode);
+//    }
+
+    MediatedAdViewController(AdRequester requester, CSMAdResponse currentAd, AdDispatcher listener, MediaType type) {
         this.caller_requester = new WeakReference<AdRequester>(requester);
         this.currentAd = currentAd;
         this.listener = listener;
@@ -303,57 +323,69 @@ public abstract class MediatedAdViewController {
             listener.onAdClicked();
     }
 
-    /*
-     Result CB Code
-     */
-    @SuppressLint({ "InlinedApi", "NewApi" }) /* suppress AsyncTask.THREAD_POOL_EXECUTOR warning for < HONEYCOMB */
-	private void fireResultCB(final ResultCode result) {
+//    /*
+//     Result CB Code
+//     */
+//    @SuppressLint({ "InlinedApi", "NewApi" }) /* suppress AsyncTask.THREAD_POOL_EXECUTOR warning for < HONEYCOMB */
+//	private void fireResultCB(final ResultCode result) {
+//        if (hasFailed) return;
+//
+//
+//        AdRequester requester = this.caller_requester.get();
+//        // if resultCB is empty don't fire resultCB, and just continue to next ad
+//        if ((currentAd == null) || StringUtil.isEmpty(currentAd.getResultCB())) {
+//            if(result == ResultCode.SUCCESS) return;
+//            Clog.w(Clog.mediationLogTag, Clog.getString(R.string.fire_cb_result_null));
+//            // just making sure
+//            if (requester == null) {
+//                Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
+//                return;
+//            }
+//            requester.onReceiveServerResponse(null);
+//            return;
+//        }
+//
+//        boolean ignoreResult = false; // default is to not ignore
+//        if ((requester != null)
+//                && (requester.getMediatedAds() != null)) {
+//            // ignore resultCB except on the last mediated ad
+//            ignoreResult = requester.getMediatedAds().size() > 0;
+//        }
+//
+//        // ignore resultCB if succeeded already
+//        if (result == ResultCode.SUCCESS) {
+//            ignoreResult = true;
+//        }
+//
+//        //fire call to result cb url
+//        ResultCBRequest cb = new ResultCBRequest(requester,
+//                currentAd.getResultCB(), result,
+//                currentAd.getExtras(), ignoreResult,
+//                getLatencyParam(), getTotalLatencyParam(requester));
+//
+//        // Spawn GET call
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+//            cb.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//        } else {
+//            cb.execute();
+//        }
+//
+//        if (ignoreResult && result != ResultCode.SUCCESS) {
+//            if (requester != null) {
+//                requester.onReceiveServerResponse(null);
+//            }
+//        }
+//
+//    }
+
+
+    private void fireResultCB(final ResultCode result) {
         if (hasFailed) return;
 
-
         AdRequester requester = this.caller_requester.get();
-        // if resultCB is empty don't fire resultCB, and just continue to next ad
-        if ((currentAd == null) || StringUtil.isEmpty(currentAd.getResultCB())) {
-            if(result == ResultCode.SUCCESS) return;
-            Clog.w(Clog.mediationLogTag, Clog.getString(R.string.fire_cb_result_null));
-            // just making sure
-            if (requester == null) {
-                Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
-                return;
-            }
-            requester.onReceiveServerResponse(null);
-            return;
-        }
-
-        boolean ignoreResult = false; // default is to not ignore
-        if ((requester != null)
-                && (requester.getMediatedAds() != null)) {
-            // ignore resultCB except on the last mediated ad
-            ignoreResult = requester.getMediatedAds().size() > 0;
-        }
-
-        // ignore resultCB if succeeded already
-        if (result == ResultCode.SUCCESS) {
-            ignoreResult = true;
-        }
-
-        //fire call to result cb url
-        ResultCBRequest cb = new ResultCBRequest(requester,
-                currentAd.getResultCB(), result,
-                currentAd.getExtras(), ignoreResult,
-                getLatencyParam(), getTotalLatencyParam(requester));
-
-        // Spawn GET call
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            cb.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else {
-            cb.execute();
-        }
-
-        if (ignoreResult && result != ResultCode.SUCCESS) {
-            if (requester != null) {
-                requester.onReceiveServerResponse(null);
-            }
+        if (currentAd == null || result != ResultCode.SUCCESS) {
+            // if current ad is not available, continue to process next ad
+            requester.onReceiveUTResponse(null);
         }
 
     }
