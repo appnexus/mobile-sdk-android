@@ -947,6 +947,7 @@ public abstract class AdView extends FrameLayout implements Ad {
                             }
                         } else {
                             display(ad.getDisplayable());
+                            fireImpressions(ad);
                         }
                         if (adListener != null)
                             adListener.onAdLoaded(AdView.this);
@@ -1014,7 +1015,20 @@ public abstract class AdView extends FrameLayout implements Ad {
                 }
             });
         }
+
+        private void fireImpressions(AdResponse ad) {
+            if(ad.getResponseData() != null && ad.getMediaType().equals(MediaType.INTERSTITIAL)) {
+                VisibilityDetector visibilityDetector = VisibilityDetector.create(ad.getDisplayable().getView());
+
+                for (String impressionUrl : ad.getResponseData().getImpressionURLs()) {
+                    Clog.i(Clog.baseLogTag, "Impressions: " + impressionUrl);
+                    ImpressionTracker.create(impressionUrl, visibilityDetector, getContext());
+                }
+            }
+        }
     }
+
+
 
     @Override
     public AdDispatcher getAdDispatcher() {

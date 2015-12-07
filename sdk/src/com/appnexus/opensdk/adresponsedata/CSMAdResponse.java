@@ -24,6 +24,7 @@ public class CSMAdResponse extends BaseAdResponse {
     private String id;
     private String className;
     private String param;
+    private String responseUrl;
 
     public CSMAdResponse(int width, int height, String adType, String notifyUrl, ArrayList<String> impressionURLs) {
         super(width, height, adType, notifyUrl, impressionURLs);
@@ -52,5 +53,13 @@ public class CSMAdResponse extends BaseAdResponse {
 
     public void setParam(String param) {
         this.param = param;
+    }
+
+    public String getResponseUrl() {
+        return responseUrl;
+    }
+
+    public void setResponseUrl(String responseUrl) {
+        this.responseUrl = responseUrl;
     }
 }

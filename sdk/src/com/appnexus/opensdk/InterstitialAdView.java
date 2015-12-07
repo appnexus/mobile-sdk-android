@@ -206,7 +206,6 @@ public class InterstitialAdView extends AdView {
             return false;
         if (mAdFetcher != null) {
             // Load an interstitial ad
-            Clog.i("test", "InterstitialAdView: Stop");
             mAdFetcher.stop();
             mAdFetcher.start();
             return true;

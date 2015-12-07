@@ -29,19 +29,14 @@ import com.appnexus.opensdk.utils.Clog;
  */
 
 public class MediatedBannerAdViewController extends MediatedAdViewController {
-//    static MediatedBannerAdViewController create(
-//            Activity activity, AdRequester requester,
-//            MediatedAd mediatedAd, AdDispatcher listener) {
-//        MediatedBannerAdViewController out = new MediatedBannerAdViewController(activity, requester, mediatedAd, listener);
-//        return out.hasFailed ? null : out;
-//    }
-
     static MediatedBannerAdViewController create(
             Activity activity, AdRequester requester,
-            CSMAdResponse mediatedAd, AdDispatcher listener) {
+            MediatedAd mediatedAd, AdDispatcher listener) {
         MediatedBannerAdViewController out = new MediatedBannerAdViewController(activity, requester, mediatedAd, listener);
         return out.hasFailed ? null : out;
     }
+
+
 
     @Override
     boolean isReady(){
@@ -54,58 +49,8 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
         return;
     }
 
-//    private MediatedBannerAdViewController(
-//            Activity activity, AdRequester requester, MediatedAd mediatedAd,
-//            AdDispatcher listener) {
-//        super(requester, mediatedAd, listener, MediaType.BANNER);
-//
-//        if (!isValid(MediatedBannerAdView.class))
-//            return;
-//
-//        // if controller is valid, request an ad
-//        Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediated_request));
-//
-//        ResultCode errorCode = null;
-//
-//        startTimeout();
-//        markLatencyStart();
-//
-//        try {
-//            if(activity!=null && !destroyed){
-//                View viewFromMediatedAdaptor = ((MediatedBannerAdView) mAV).requestAd(this,
-//                        activity,
-//                        currentAd.getParam(),
-//                        currentAd.getId(),
-//                        currentAd.getWidth(),
-//                        currentAd.getHeight(),
-//                        getTargetingParameters());
-//                mediatedDisplayable.setView(viewFromMediatedAdaptor);
-//            }else{
-//                Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_null_activity));
-//                errorCode = ResultCode.INTERNAL_ERROR;
-//            }
-//        } catch (Exception e) {
-//            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
-//            errorCode = ResultCode.INTERNAL_ERROR;
-//        } catch (Error e) {
-//            // catch errors. exceptions will be caught above.
-//            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_error), e);
-//            errorCode = ResultCode.INTERNAL_ERROR;
-//        }
-//
-//        if ((errorCode == null) && (mediatedDisplayable.getView() == null)) {
-//            // To check that if by accident instantiated an interstitial ad
-//            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_view_null));
-//            errorCode = ResultCode.INTERNAL_ERROR;
-//        }
-//
-//        if (errorCode != null) {
-//            onAdFailed(errorCode);
-//        }
-//    }
-
     private MediatedBannerAdViewController(
-            Activity activity, AdRequester requester, CSMAdResponse mediatedAd,
+            Activity activity, AdRequester requester, MediatedAd mediatedAd,
             AdDispatcher listener) {
         super(requester, mediatedAd, listener, MediaType.BANNER);
 
@@ -128,6 +73,64 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
                         currentAd.getId(),
                         currentAd.getWidth(),
                         currentAd.getHeight(),
+                        getTargetingParameters());
+                mediatedDisplayable.setView(viewFromMediatedAdaptor);
+            }else{
+                Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_null_activity));
+                errorCode = ResultCode.INTERNAL_ERROR;
+            }
+        } catch (Exception e) {
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
+            errorCode = ResultCode.INTERNAL_ERROR;
+        } catch (Error e) {
+            // catch errors. exceptions will be caught above.
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_error), e);
+            errorCode = ResultCode.INTERNAL_ERROR;
+        }
+
+        if ((errorCode == null) && (mediatedDisplayable.getView() == null)) {
+            // To check that if by accident instantiated an interstitial ad
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_view_null));
+            errorCode = ResultCode.INTERNAL_ERROR;
+        }
+
+        if (errorCode != null) {
+            onAdFailed(errorCode);
+        }
+    }
+
+
+    static MediatedBannerAdViewController create(
+            Activity activity, AdRequester requester,
+            CSMAdResponse mediatedAd, AdDispatcher listener) {
+        MediatedBannerAdViewController out = new MediatedBannerAdViewController(activity, requester, mediatedAd, listener);
+        return out.hasFailed ? null : out;
+    }
+
+    private MediatedBannerAdViewController(
+            Activity activity, AdRequester requester, CSMAdResponse mediatedAd,
+            AdDispatcher listener) {
+        super(requester, mediatedAd, listener, MediaType.BANNER);
+
+        if (!isValid(MediatedBannerAdView.class))
+            return;
+
+        // if controller is valid, request an ad
+        Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediated_request));
+
+        ResultCode errorCode = null;
+
+        startTimeout();
+        markLatencyStart();
+
+        try {
+            if(activity!=null && !destroyed){
+                View viewFromMediatedAdaptor = ((MediatedBannerAdView) mAV).requestAd(this,
+                        activity,
+                        currentCSMAd.getParam(),
+                        currentCSMAd.getId(),
+                        currentCSMAd.getWidth(),
+                        currentCSMAd.getHeight(),
                         getTargetingParameters());
                 mediatedDisplayable.setView(viewFromMediatedAdaptor);
             }else{
