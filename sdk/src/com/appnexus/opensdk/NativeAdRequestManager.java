@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.adresponsedata.BaseAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 
 import java.lang.ref.WeakReference;
@@ -36,6 +37,7 @@ class NativeAdRequestManager extends RequestManager {
             adRequest = null;
         }
         setMediatedAds(null);
+        setAdList(null);
         if (controller != null) {
             controller.cancel(true);
             controller = null;
@@ -118,6 +120,15 @@ class NativeAdRequestManager extends RequestManager {
                     @Override
                     public NativeAdResponse getNativeAdResponse() {
                         return nativeAdResponse;
+                    }
+
+                    /**
+                     * TODO: UT currently not implemented for Native
+                     * @return
+                     */
+                    @Override
+                    public BaseAdResponse getResponseData() {
+                        return null;
                     }
 
                     @Override

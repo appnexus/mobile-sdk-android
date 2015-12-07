@@ -17,8 +17,11 @@ package com.appnexus.opensdk;
 
 import android.app.Activity;
 
+import com.appnexus.opensdk.adresponsedata.BaseAdResponse;
 import com.appnexus.opensdk.adresponsedata.CSMAdResponse;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.HTTPGet;
+import com.appnexus.opensdk.utils.HTTPResponse;
 
 /**
 * An object of this type is sent to the third-party SDK's {@link
@@ -29,62 +32,15 @@ import com.appnexus.opensdk.utils.Clog;
 
 public class MediatedInterstitialAdViewController extends MediatedAdViewController {
 
-//    static MediatedInterstitialAdViewController create(
-//            Activity activity, AdRequester requester,
-//            MediatedAd mediatedAd, AdDispatcher listener) {
-//        MediatedInterstitialAdViewController out = new MediatedInterstitialAdViewController(activity, requester, mediatedAd, listener);
-//        return out.hasFailed ? null : out;
-//    }
-//
-//    private MediatedInterstitialAdViewController(
-//            Activity activity, AdRequester requester, MediatedAd mediatedAd,
-//            AdDispatcher listener) {
-//        super(requester, mediatedAd, listener, MediaType.INTERSTITIAL);
-//
-//        if (!isValid(MediatedInterstitialAdView.class))
-//            return;
-//
-//        // if controller is valid, request an ad
-//        Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediated_request));
-//
-//        ResultCode errorCode = null;
-//
-//        startTimeout();
-//        markLatencyStart();
-//
-//        try {
-//            if(activity!=null){
-//                ((MediatedInterstitialAdView) mAV).requestAd(this,
-//                        activity,
-//                        currentAd.getParam(),
-//                        currentAd.getId(),
-//                        getTargetingParameters());
-//            }else{
-//                Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_null_activity));
-//                errorCode = ResultCode.INTERNAL_ERROR;
-//            }
-//        } catch (Exception e) {
-//            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
-//            errorCode = ResultCode.INTERNAL_ERROR;
-//        } catch (Error e) {
-//            // catch errors. exceptions will be caught above.
-//            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_error), e);
-//            errorCode = ResultCode.INTERNAL_ERROR;
-//        }
-//
-//        if (errorCode != null)
-//            onAdFailed(errorCode);
-//    }
-
     static MediatedInterstitialAdViewController create(
             Activity activity, AdRequester requester,
-            CSMAdResponse mediatedAd, AdDispatcher listener) {
+            MediatedAd mediatedAd, AdDispatcher listener) {
         MediatedInterstitialAdViewController out = new MediatedInterstitialAdViewController(activity, requester, mediatedAd, listener);
         return out.hasFailed ? null : out;
     }
 
     private MediatedInterstitialAdViewController(
-            Activity activity, AdRequester requester, CSMAdResponse mediatedAd,
+            Activity activity, AdRequester requester, MediatedAd mediatedAd,
             AdDispatcher listener) {
         super(requester, mediatedAd, listener, MediaType.INTERSTITIAL);
 
@@ -123,11 +79,81 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
             onAdFailed(errorCode);
     }
 
+    static MediatedInterstitialAdViewController create(
+            Activity activity, AdRequester requester,
+            CSMAdResponse mediatedAd, AdDispatcher listener) {
+        MediatedInterstitialAdViewController out = new MediatedInterstitialAdViewController(activity, requester, mediatedAd, listener);
+        return out.hasFailed ? null : out;
+    }
+
+    private MediatedInterstitialAdViewController(
+            Activity activity, AdRequester requester, CSMAdResponse mediatedAd,
+            AdDispatcher listener) {
+        super(requester, mediatedAd, listener, MediaType.INTERSTITIAL);
+
+        if (!isValid(MediatedInterstitialAdView.class))
+            return;
+
+        // if controller is valid, request an ad
+        Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediated_request));
+
+        ResultCode errorCode = null;
+
+        startTimeout();
+        markLatencyStart();
+
+        try {
+            if(activity!=null){
+                ((MediatedInterstitialAdView) mAV).requestAd(this,
+                        activity,
+                        currentCSMAd.getParam(),
+                        currentCSMAd.getId(),
+                        getTargetingParameters());
+            }else{
+                Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_null_activity));
+                errorCode = ResultCode.INTERNAL_ERROR;
+            }
+        } catch (Exception e) {
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
+            errorCode = ResultCode.INTERNAL_ERROR;
+        } catch (Error e) {
+            // catch errors. exceptions will be caught above.
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_error), e);
+            errorCode = ResultCode.INTERNAL_ERROR;
+        }
+
+        if (errorCode != null)
+            onAdFailed(errorCode);
+    }
+
     void show() {
         if (mAV != null && !destroyed) {
             ((MediatedInterstitialAdView) mAV).show();
+            fireImpressions(currentCSMAd);
         }
     }
+
+    private void fireImpressions(BaseAdResponse responseData) {
+
+        for (final String impressionUrl: responseData.getImpressionURLs()){
+            Clog.i(Clog.baseLogTag, "Impressions: "+impressionUrl);
+            new HTTPGet() {
+                @Override
+                protected void onPostExecute(HTTPResponse response) {
+                    if(response.getSucceeded()) {
+                        Clog.i(Clog.baseLogTag, "Impression sent successfully ");
+                    }
+                }
+
+                @Override
+                protected String getUrl() {
+                    return impressionUrl;
+                }
+            }.execute();
+        }
+    }
+
+
 
     @Override
     boolean isReady() {

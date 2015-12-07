@@ -23,6 +23,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 
+import com.appnexus.opensdk.adresponsedata.BaseAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
@@ -146,6 +147,11 @@ public class MediatedNativeAdController {
                 @Override
                 public NativeAdResponse getNativeAdResponse() {
                     return response;
+                }
+
+                @Override
+                public BaseAdResponse getResponseData() {
+                    return null;
                 }
 
                 @Override
