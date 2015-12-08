@@ -32,14 +32,25 @@ import android.os.Build;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Pair;
-import android.view.*;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+
 import com.appnexus.opensdk.AdView.BrowserStyle;
-import com.appnexus.opensdk.utils.*;
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.HTTPGet;
+import com.appnexus.opensdk.utils.HTTPResponse;
+import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.StringUtil;
+import com.appnexus.opensdk.utils.ViewUtil;
+import com.appnexus.opensdk.utils.WebviewUtil;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -407,12 +418,12 @@ class AdWebView extends WebView implements Displayable {
     }
 
     // returns success or failure
-    private boolean checkStore(String url) {
-        if (url.contains("://play.google.com") || url.contains("market://")) {
-            Clog.d(Clog.baseLogTag,
-                    Clog.getString(R.string.opening_app_store));
+    private boolean checkForApp(String url) {
+        if (url.contains("://play.google.com") || (!url.startsWith("http") && !url.startsWith("about:blank"))) {
+            Clog.i(Clog.baseLogTag, Clog.getString(R.string.opening_app_store));
             return openNativeIntent(url);
         }
+
         return false;
     }
 
@@ -442,18 +453,16 @@ class AdWebView extends WebView implements Displayable {
 
     // handles browser logic for shouldOverrideUrl
     void loadURLInCorrectBrowser(String url) {
-        if (!adView.getOpensNativeBrowser()
-                && url.startsWith("http")) {
-            Clog.d(Clog.baseLogTag,
-                    Clog.getString(R.string.opening_inapp));
+        if (!adView.getOpensNativeBrowser()) {
+
+            Clog.d(Clog.baseLogTag, Clog.getString(R.string.opening_inapp));
 
             //If it's a direct URL to the play store, just open it.
-            if (checkStore(url)) {
+            if (checkForApp(url)) {
                 return;
             }
 
             final WebView out;
-
             // Unless disabled by the user, handle redirects in background
 
             if(adView.getLoadsInBackground()) {
@@ -463,27 +472,27 @@ class AdWebView extends WebView implements Displayable {
                 out.loadUrl(url);
                 out.setVisibility(View.GONE);
                 adView.addView(out);
+
+                if(this.adView.getShowLoadingIndicator()) {
+                    //Show a dialog box
+                    progressDialog = new ProgressDialog(((ViewGroup)this.getParent()).getContext());
+                    progressDialog.setCancelable(true);
+                    progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialogInterface) {
+                            out.stopLoading();
+                        }
+                    });
+                    progressDialog.setMessage(getContext().getResources().getString(R.string.loading));
+                    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    progressDialog.show();
+                }
             }else{
                 // Stick the URL directly into the new activity.
                 out = new WebView(getContext());
                 WebviewUtil.setWebViewSettings(out);
                 out.loadUrl(url);
                 openInAppBrowser(out);
-            }
-
-            if(this.adView.getShowLoadingIndicator()) {
-                //Show a dialog box
-                progressDialog = new ProgressDialog(((ViewGroup)this.getParent()).getContext());
-                progressDialog.setCancelable(true);
-                progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialogInterface) {
-                        out.stopLoading();
-                    }
-                });
-                progressDialog.setMessage(getContext().getResources().getString(R.string.loading));
-                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                progressDialog.show();
             }
 
         } else {
@@ -770,14 +779,13 @@ class AdWebView extends WebView implements Displayable {
             super(context);
 
             WebviewUtil.setWebViewSettings(this);
-
             this.setWebViewClient(new WebViewClient() {
                 private boolean isOpeningAppStore = false;
 
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
                     Clog.v(Clog.browserLogTag, "Redirecting to URL: " + url);
-                    isOpeningAppStore = checkStore(url);
+                    isOpeningAppStore = checkForApp(url);
 
                     if (isOpeningAppStore) {
                         if(progressDialog != null) {
@@ -799,6 +807,7 @@ class AdWebView extends WebView implements Displayable {
 
                     if (isOpeningAppStore) {
                         isOpeningAppStore = false;
+                        RedirectWebView.this.destroy();
                         return;
                     }
 

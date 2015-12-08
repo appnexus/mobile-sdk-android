@@ -44,7 +44,6 @@ class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     static LinkedList<WebView> BROWSER_QUEUE = new LinkedList<WebView>();
     private Activity adActivity;
     private WebView webView;
-    private boolean shouldDestroyActivity = false;
 
 
     private String clickUrl;
@@ -250,6 +249,7 @@ class BrowserAdActivity implements AdActivity.AdActivityImplementation {
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             adActivity.startActivity(i);
+            destroy();
             finishAdActivity();
         } catch (ActivityNotFoundException e) {
             Clog.w(Clog.browserLogTag,
@@ -259,7 +259,6 @@ class BrowserAdActivity implements AdActivity.AdActivityImplementation {
 
     @Override
     public boolean shouldHandleBackPress() {
-        shouldDestroyActivity = true;
         return false;
     }
 
@@ -269,13 +268,7 @@ class BrowserAdActivity implements AdActivity.AdActivityImplementation {
             return;
         }
         ViewUtil.removeChildFromParent(webView);
-        if (shouldDestroyActivity) {
-            // clean up webView
-            webView.destroy();
-        } else {
-            // activity is just rotating, push webView to recreate
-            BROWSER_QUEUE.addFirst(webView);
-        }
+        webView.destroy();
     }
 
     @Override
@@ -289,7 +282,6 @@ class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     }
 
     private void finishAdActivity() {
-        shouldDestroyActivity = true;
         adActivity.finish();
     }
 

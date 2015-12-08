@@ -42,7 +42,7 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
-
+	
       <activity
           android:name="com.example.simple.SimpleBanner"
           android:label="@string/app_name"
@@ -57,5 +57,6 @@
 
     <activity android:name="com.appnexus.opensdk.AdActivity"
               android:configChanges="orientation|screenLayout|screenSize|keyboardHidden"/>
+
   </application>
 </manifest>

@@ -1,3 +1,36 @@
+## RC2.8
++ MS-1702 Support for requesting ads with inventory code and member id
++ MS-1745 Update unit tests for inventory code and member id
++ Supported networks:
+    AdColony 2.3.0, interstitial, native
+    Amazon 5.6.20, banner, interstitial
+    Chartboost 5.5.3, interstitial
+    Facebook 4.7.0, banner, interstitial, native
+    Google Play services 7.8.0, only depend on the ads library now, DFP/AdMob banner, interstitial
+    InMobi 5.0.0, banner, interstitial, native
+    MM Media 6.0.0, banner, interstitial
+    MoPub 3.13.0, banner, interstitial, native
+    Vdopia lw1.5, banner, interstitial
+    Vungle 3.3.2, interstitials
+    Yahoo Flurry 6.1.0 banner, interstitial, native
+
+## RC2.7.1
++ MS-1688 InMobi mediation adapters upgraded to support InMobi SDK 5.0.0
++ MS-1669 MoPub SDK update to 3.13.0 
++ MS-1424 Millennial Media mediation adapters upgraded to support MMSDK 6.0.0
++ Supported networks:
+    AdColony 2.3.0, interstitial, native
+    Amazon 5.6.20, banner, interstitial
+    Chartboost 5.5.3, interstitial
+    Facebook 4.7.0, banner, interstitial, native
+    Google Play services 7.8.0, only depend on the ads library now, DFP/AdMob banner, interstitial
+    InMobi 5.0.0, banner, interstitial, native
+    MM Media 6.0.0, banner, interstitial
+    MoPub 3.13.0, banner, interstitial, native
+    Vdopia lw1.5, banner, interstitial
+    Vungle 3.3.2, interstitials	
+    Yahoo Flurry 6.1.0 banner, interstitial, native
+
 ## RC2.6
 + MS-1627 Bug fix for conccurency modification in RequestParams
 + MS-1629 Bug fix for using comma as decimal points when user sets certain languages

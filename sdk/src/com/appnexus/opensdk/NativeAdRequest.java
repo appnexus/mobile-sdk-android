@@ -44,6 +44,16 @@ public class NativeAdRequest implements Ad {
         dispatcher = new NativeAdDispatcher();
     }
 
+    public NativeAdRequest(Context context, String inventoryCode, int memberID) {
+        AdvertistingIDUtil.retrieveAndSetAAID(context);
+        requestParameters = new RequestParameters(context);
+        requestParameters.setInventoryCodeAndMemberID(memberID, inventoryCode);
+        requestParameters.setMediaType(MediaType.NATIVE);
+        mAdFetcher = new AdFetcher(this);
+        mAdFetcher.setPeriod(-1);
+        dispatcher = new NativeAdDispatcher();
+    }
+
     /**
      * Retrieve the setting that determines whether or not the
      * device's native browser is used instead of the in-app
@@ -74,9 +84,12 @@ public class NativeAdRequest implements Ad {
     }
 
     /**
-     * Set the placement id for ad request.
+     * Sets the placement id of the NativeAdRequest. The placement ID
+     * identifies the location in your application where ads will
+     * be shown.  You must have a valid, active placement ID to
+     * monetize your application.
      *
-     * @param placementID Placement ID.
+     * @param placementID The placement ID to use.
      */
     public void setPlacementID(String placementID) {
         Clog.d(Clog.nativeLogTag, Clog.getString(
@@ -85,7 +98,7 @@ public class NativeAdRequest implements Ad {
     }
 
     /**
-     * Get the placement id for ad request
+     * Retrieve the placement id for ad request.
      *
      * @return The Placement ID
      */
@@ -93,6 +106,38 @@ public class NativeAdRequest implements Ad {
         Clog.d(Clog.nativeLogTag, Clog.getString(
                 R.string.get_placement_id, requestParameters.getPlacementID()));
         return requestParameters.getPlacementID();
+    }
+
+    /**
+     * Sets the inventory code and member id of this native ad request. The
+     * inventory code provides a more human readable way to identify the location
+     * in your application where ads will be shown. Member id is required to for
+     * using this feature. If both inventory code and placement id are presented,
+     * inventory code will be used instead of placement id on the ad request.
+     *
+     * @param memberID      The member id that this native ad belongs to.
+     * @param inventoryCode The inventory code of this native ad.
+     */
+    public void setInventoryCodeAndMemberID(int memberID, String inventoryCode) {
+        requestParameters.setInventoryCodeAndMemberID(memberID, inventoryCode);
+    }
+
+    /**
+     * Retrieve the member ID.
+     *
+     * @return the member id that this AdView belongs to.
+     */
+    public int getMemberID() {
+        return requestParameters.getMemberID();
+    }
+
+    /**
+     * Retrieve the inventory code.
+     *
+     * @return the current inventory code.
+     */
+    public String getInventoryCode() {
+        return requestParameters.getInvCode();
     }
 
     /**
@@ -218,7 +263,7 @@ public class NativeAdRequest implements Ad {
 
     @Override
     public boolean isReadyToStart() {
-        return this.listener != null;
+        return this.listener != null && requestParameters.isReadyForRequest();
     }
 
     /**
@@ -236,11 +281,14 @@ public class NativeAdRequest implements Ad {
             return false;
         }
 
-        mAdFetcher.stop();
-        mAdFetcher.clearDurations();
-        mAdFetcher.start();
-        isLoading = true;
-        return true;
+        if (requestParameters.isReadyForRequest()) {
+            mAdFetcher.stop();
+            mAdFetcher.clearDurations();
+            mAdFetcher.start();
+            isLoading = true;
+            return true;
+        }
+        return false;
     }
 
     boolean isLoading = false;

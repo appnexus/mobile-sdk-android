@@ -8,7 +8,7 @@ android {
         minSdkVersion 9
         targetSdkVersion 22
         versionCode 1
-        versionName "3.11.0"
+        versionName "3.13.0"
         consumerProguardFiles 'proguard-project.txt'
     }
 
@@ -30,8 +30,12 @@ dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
     compile project(':sdk')
     compile 'com.android.support:support-v4:22.2.0'
-    compile 'com.android.support:support-annotations:22.0.0'
+    compile 'com.android.support:support-annotations:22.2.0'
+    compile 'com.android.support:recyclerview-v7:22.2.0'
     compile 'com.mopub.volley:mopub-volley:1.1.0'
+    compile('com.mopub:mopub-sdk:3.13.0@aar') {
+        transitive = true
+    }
 }
 
 repositories {

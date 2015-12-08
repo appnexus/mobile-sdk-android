@@ -5,7 +5,7 @@ android {
 
     defaultConfig {
         versionCode 29
-        versionName "2.6"
+        versionName "2.8"
         consumerProguardFiles 'proguard-project.txt'
         minSdkVersion 9
         targetSdkVersion 22

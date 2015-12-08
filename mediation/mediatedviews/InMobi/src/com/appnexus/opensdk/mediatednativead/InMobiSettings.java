@@ -3,9 +3,15 @@ package com.appnexus.opensdk.mediatednativead;
 
 import android.content.Context;
 
+import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
-import com.inmobi.commons.GenderType;
-import com.inmobi.commons.InMobi;
+import com.appnexus.opensdk.utils.StringUtil;
+import com.inmobi.ads.InMobiAdRequestStatus;
+import com.inmobi.sdk.InMobiSdk;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class InMobiSettings {
     static String KEY_TITLE = "title";
@@ -20,8 +26,8 @@ public class InMobiSettings {
 
     public static void setInMobiAppId(String key, Context context) {
         INMOBI_APP_ID = key;
-        if (INMOBI_APP_ID != null && !INMOBI_APP_ID.isEmpty()) {
-            InMobi.initialize(context, INMOBI_APP_ID);
+        if (!StringUtil.isEmpty(INMOBI_APP_ID)) {
+            InMobiSdk.init(context, INMOBI_APP_ID);
         }
     }
 
@@ -57,24 +63,91 @@ public class InMobiSettings {
         KEY_RATING = key;
     }
 
+    public static ResultCode getResultCode(InMobiAdRequestStatus status) {
+        ResultCode code = ResultCode.INTERNAL_ERROR;
+        switch (status.getStatusCode()) {
+            case NETWORK_UNREACHABLE:
+                code = ResultCode.NETWORK_ERROR;
+                break;
+            case NO_FILL:
+                code = ResultCode.UNABLE_TO_FILL;
+                break;
+            case REQUEST_INVALID:
+                code = ResultCode.INVALID_REQUEST;
+                break;
+            case REQUEST_PENDING:
+                break;
+            case REQUEST_TIMED_OUT:
+                code = ResultCode.NETWORK_ERROR;
+                break;
+            case INTERNAL_ERROR:
+                break;
+            case SERVER_ERROR:
+                code = ResultCode.UNABLE_TO_FILL;
+                break;
+            case AD_ACTIVE:
+                code = ResultCode.INVALID_REQUEST;
+                break;
+            case EARLY_REFRESH_REQUEST:
+                code = ResultCode.INVALID_REQUEST;
+                break;
+        }
+        return code;
+    }
+
     public static void setTargetingParams(TargetingParameters tp) {
         if (tp == null) return;
         switch (tp.getGender()) {
             case UNKNOWN:
-                InMobi.setGender(GenderType.UNKNOWN);
                 break;
             case MALE:
-                InMobi.setGender(GenderType.MALE);
+                InMobiSdk.setGender(InMobiSdk.Gender.MALE);
                 break;
             case FEMALE:
-                InMobi.setGender(GenderType.FEMALE);
+                InMobiSdk.setGender(InMobiSdk.Gender.FEMALE);
                 break;
         }
-        if (Integer.getInteger(tp.getAge()) != null) {
-            InMobi.setAge(Integer.getInteger(tp.getAge()));
+        if (tp.getAge() != null) {
+            int age = 0;
+            try {
+                String age_string = tp.getAge();
+                if (age_string.contains("-")) {
+                    int dash = age_string.indexOf("-");
+                    int age1 = Integer.parseInt(age_string.substring(0, dash));
+                    int age2 = Integer.parseInt(age_string.substring(dash + 1));
+                    age = (age1 + age2) / 2;
+                } else {
+                    age = Integer.parseInt(tp.getAge());
+                    if (age > 1900) {
+                        GregorianCalendar calendar = new GregorianCalendar();
+                        Date date = new Date();
+                        calendar.setTime(date);
+                        int year = calendar.get(Calendar.YEAR);
+                        age = year - age;
+                    }
+                }
+            } catch (NumberFormatException e) {
+            } catch (IllegalArgumentException e1) {
+            } catch (ArrayIndexOutOfBoundsException e2) {
+            }
+            if (age > 0) {
+                InMobiSdk.setAge(age);
+                if (age < 18) {
+                    InMobiSdk.setAgeGroup(InMobiSdk.AgeGroup.BELOW_18);
+                } else if (age <= 20) {
+                    InMobiSdk.setAgeGroup(InMobiSdk.AgeGroup.BETWEEN_18_AND_20);
+                } else if (age <= 24) {
+                    InMobiSdk.setAgeGroup(InMobiSdk.AgeGroup.BETWEEN_21_AND_24);
+                } else if (age <= 34) {
+                    InMobiSdk.setAgeGroup(InMobiSdk.AgeGroup.BETWEEN_25_AND_34);
+                } else if (age <= 54) {
+                    InMobiSdk.setAgeGroup(InMobiSdk.AgeGroup.BETWEEN_35_AND_54);
+                }
+            }
         }
+
         if (tp.getLocation() != null) {
-            InMobi.setCurrentLocation(tp.getLocation());
+            InMobiSdk.setLocation(tp.getLocation());
         }
     }
 }

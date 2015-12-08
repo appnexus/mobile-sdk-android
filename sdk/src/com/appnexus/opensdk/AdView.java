@@ -37,7 +37,11 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import com.appnexus.opensdk.utils.*;
+
+import com.appnexus.opensdk.utils.AdvertistingIDUtil;
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.ViewUtil;
 
 import java.util.ArrayList;
 
@@ -45,22 +49,20 @@ import java.util.ArrayList;
  * The parent class of {@link InterstitialAdView} and {@link
  * BannerAdView}.  This may not be instantiated directly.  Its public
  * methods are accessed through one of its sub classes.
- *
- *
  */
-public abstract class AdView extends FrameLayout implements Ad{
+public abstract class AdView extends FrameLayout implements Ad {
 
-	AdFetcher mAdFetcher;
-	boolean mraid_changing_size_or_visibility = false;
+    AdFetcher mAdFetcher;
+    boolean mraid_changing_size_or_visibility = false;
     int creativeWidth;
     int creativeHeight;
-	private AdListener adListener;
+    private AdListener adListener;
     private AppEventListener appEventListener;
-	private BrowserStyle browserStyle;
+    private BrowserStyle browserStyle;
 
-	final Handler handler = new Handler(Looper.getMainLooper());
-	protected Displayable lastDisplayable;
-	private AdViewDispatcher dispatcher;
+    final Handler handler = new Handler(Looper.getMainLooper());
+    protected Displayable lastDisplayable;
+    private AdViewDispatcher dispatcher;
     boolean loadedOffscreen = false;
     boolean isMRAIDExpanded = false;
     boolean doesLoadingInBackground = true;
@@ -87,56 +89,56 @@ public abstract class AdView extends FrameLayout implements Ad{
     }
 
     void setup(Context context, AttributeSet attrs) {
-		dispatcher = new AdViewDispatcher(handler);
+        dispatcher = new AdViewDispatcher(handler);
         requestParameters = new RequestParameters(context);
 
         AdvertistingIDUtil.retrieveAndSetAAID(context);
 
-		// Store self.context in the settings for errors
-		Clog.setErrorContext(this.getContext());
+        // Store self.context in the settings for errors
+        Clog.setErrorContext(this.getContext());
 
-		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.new_adview));
+        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.new_adview));
 
-		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(context);
-		if (prefs.getBoolean("opensdk_first_launch", true)) {
-			// This is the first launch, store a value to remember
-			Clog.v(Clog.baseLogTag,
-					Clog.getString(R.string.first_opensdk_launch));
-			Settings.getSettings().first_launch = true;
-			prefs.edit().putBoolean("opensdk_first_launch", false).commit();
-		} else {
-			// Found the stored value, this is NOT the first launch
-			Clog.v(Clog.baseLogTag,
-					Clog.getString(R.string.not_first_opensdk_launch));
-			Settings.getSettings().first_launch = false;
-		}
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        if (prefs.getBoolean("opensdk_first_launch", true)) {
+            // This is the first launch, store a value to remember
+            Clog.v(Clog.baseLogTag,
+                    Clog.getString(R.string.first_opensdk_launch));
+            Settings.getSettings().first_launch = true;
+            prefs.edit().putBoolean("opensdk_first_launch", false).commit();
+        } else {
+            // Found the stored value, this is NOT the first launch
+            Clog.v(Clog.baseLogTag,
+                    Clog.getString(R.string.not_first_opensdk_launch));
+            Settings.getSettings().first_launch = false;
+        }
 
-		// Store the UA in the settings
-		Settings.getSettings().ua = new WebView(context).getSettings()
-				.getUserAgentString();
-		Clog.v(Clog.baseLogTag,
-				Clog.getString(R.string.ua, Settings.getSettings().ua));
+        // Store the UA in the settings
+        Settings.getSettings().ua = new WebView(context).getSettings()
+                .getUserAgentString();
+        Clog.v(Clog.baseLogTag,
+                Clog.getString(R.string.ua, Settings.getSettings().ua));
 
-		// Store the AppID in the settings
-		Settings.getSettings().app_id = context.getApplicationContext()
-				.getPackageName();
-		Clog.v(Clog.baseLogTag,
-				Clog.getString(R.string.appid, Settings.getSettings().app_id));
+        // Store the AppID in the settings
+        Settings.getSettings().app_id = context.getApplicationContext()
+                .getPackageName();
+        Clog.v(Clog.baseLogTag,
+                Clog.getString(R.string.appid, Settings.getSettings().app_id));
 
-		Clog.v(Clog.baseLogTag, Clog.getString(R.string.making_adman));
+        Clog.v(Clog.baseLogTag, Clog.getString(R.string.making_adman));
 
         // Some AdMob creatives won't load unless we set their parent's viewgroup's padding to 0-0-0-0
-        setPadding(0,0,0,0);
-		// Make an AdFetcher - Continue the creation pass
-		mAdFetcher = new AdFetcher(this);
-		// Load user variables only if attrs isn't null
-		if (attrs != null)
-			loadVariablesFromXML(context, attrs);
+        setPadding(0, 0, 0, 0);
+        // Make an AdFetcher - Continue the creation pass
+        mAdFetcher = new AdFetcher(this);
+        // Load user variables only if attrs isn't null
+        if (attrs != null)
+            loadVariablesFromXML(context, attrs);
 
-		// We don't start the ad requesting here, since the view hasn't been
-		// sized yet.
-	}
+        // We don't start the ad requesting here, since the view hasn't been
+        // sized yet.
+    }
 
     /**
      * The view layout
@@ -153,38 +155,32 @@ public abstract class AdView extends FrameLayout implements Ad{
 
     @Override
     public boolean isReadyToStart() {
-		if (isMRAIDExpanded()) {
-			Clog.e(Clog.baseLogTag, Clog.getString(R.string.already_expanded));
-			return false;
-		}
-		if (StringUtil.isEmpty(requestParameters.getPlacementID())) {
-			Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_placement_id));
-			return false;
-		}
-		return true;
-	}
+        if (isMRAIDExpanded()) {
+            Clog.e(Clog.baseLogTag, Clog.getString(R.string.already_expanded));
+            return false;
+        }
+        return requestParameters.isReadyForRequest();
+    }
 
-	/**
-	 * Loads a new ad, if the ad space is visible.  You should
-	 * have called setPlacementID before invoking this method.
-	 *
-	 * @return true means the ad will begin loading; false otherwise.
-	 *
-	 */
+    /**
+     * Loads a new ad, if the ad space is visible.  You should
+     * have called setPlacementID before invoking this method.
+     *
+     * @return true means the ad will begin loading; false otherwise.
+     */
     @Override
-	public boolean loadAd() {
-		if (!isReadyToStart())
-			return false;
-		if (this.getWindowVisibility() == VISIBLE && mAdFetcher != null) {
-			// Reload Ad Fetcher to get new ad at user's request
-            Clog.i("test", "AdView Stop");
-			mAdFetcher.stop();
-			mAdFetcher.clearDurations();
-			mAdFetcher.start();
-			return true;
-		}
-		return false;
-	}
+    public boolean loadAd() {
+        if (!isReadyToStart())
+            return false;
+        if (this.getWindowVisibility() == VISIBLE && mAdFetcher != null) {
+            // Reload Ad Fetcher to get new ad at user's request
+            mAdFetcher.stop();
+            mAdFetcher.clearDurations();
+            mAdFetcher.start();
+            return true;
+        }
+        return false;
+    }
 
     public void loadAdOffscreen() {
         if (!isReadyToStart())
@@ -198,18 +194,17 @@ public abstract class AdView extends FrameLayout implements Ad{
         }
     }
 
-	/**
-	 * Loads a new ad, if the ad space is visible, and sets the
-	 * AdView's placement ID.
-	 *
-	 * @param placementID The new placement ID to use.
-	 *
-	 * @return true means the ad will begin loading; false otherwise.
-	 */
-	public boolean loadAd(String placementID) {
-		requestParameters.setPlacementID(placementID);
-		return loadAd();
-	}
+    /**
+     * Loads a new ad, if the ad space is visible, and sets the
+     * AdView's placement ID.
+     *
+     * @param placementID The new placement ID to use.
+     * @return true means the ad will begin loading; false otherwise.
+     */
+    public boolean loadAd(String placementID) {
+        requestParameters.setPlacementID(placementID);
+        return loadAd();
+    }
 
     protected void loadAdFromHtml(String html, int width, int height) {
         // load an ad directly from html
@@ -220,84 +215,115 @@ public abstract class AdView extends FrameLayout implements Ad{
         display(output);
     }
 
-	protected abstract void loadVariablesFromXML(Context context,
-			AttributeSet attrs);
+    protected abstract void loadVariablesFromXML(Context context,
+                                                 AttributeSet attrs);
 
 	/*
-	 * End Construction
+     * End Construction
 	 */
 
     protected abstract void display(Displayable d);
+
     protected abstract void displayMediated(MediatedDisplayable d);
 
     void unhide() {
-		if (getVisibility() != VISIBLE) {
-			setVisibility(VISIBLE);
-		}
-	}
+        if (getVisibility() != VISIBLE) {
+            setVisibility(VISIBLE);
+        }
+    }
 
-	void hide() {
-		if (getVisibility() != GONE)
-			setVisibility(GONE);
-	}
+    void hide() {
+        if (getVisibility() != GONE)
+            setVisibility(GONE);
+    }
 
-	/**
-	 * Retrieve the current placement ID.
-	 *
-	 * @return The current placement id.
-	 */
-	public String getPlacementID() {
-		Clog.d(Clog.publicFunctionsLogTag,
-				Clog.getString(R.string.get_placement_id, requestParameters.getPlacementID()));
-		return requestParameters.getPlacementID();
-	}
+    /**
+     * Retrieve the current placement ID.
+     *
+     * @return The current placement id.
+     */
+    public String getPlacementID() {
+        Clog.d(Clog.publicFunctionsLogTag,
+                Clog.getString(R.string.get_placement_id, requestParameters.getPlacementID()));
+        return requestParameters.getPlacementID();
+    }
 
-	/**
-	 * Sets the placement id of the AdView.  The placement ID
-	 * identifies the location in your application where ads will
-	 * be shown.  You must have a valid, active placement ID to
-	 * monetize your application.
-	 *
-	 * @param placementID
-	 *            The placement ID to use.
-	 */
-	public void setPlacementID(String placementID) {
-		Clog.d(Clog.publicFunctionsLogTag,
-				Clog.getString(R.string.set_placement_id, placementID));
-		requestParameters.setPlacementID(placementID);
-	}
+    /**
+     * Sets the placement id of the AdView. The placement ID
+     * identifies the location in your application where ads will
+     * be shown.  You must have a valid, active placement ID to
+     * monetize your application.
+     *
+     * @param placementID The placement ID to use.
+     */
+    public void setPlacementID(String placementID) {
+        Clog.d(Clog.publicFunctionsLogTag,
+                Clog.getString(R.string.set_placement_id, placementID));
+        requestParameters.setPlacementID(placementID);
+    }
 
-	@Override
-	protected void finalize() {
-		try {
-			super.finalize();
-		} catch (Throwable e) {
-		}
-		// Just in case, kill the adfetcher's service
-        Clog.e("test","AdView: finalize(): stop");
-		if (mAdFetcher != null)
-			mAdFetcher.stop();
-	}
+    /**
+     * Sets the inventory code and member id of the AdView. The inventory code
+     * provides a more human readable way to identify the location in your
+     * application where ads will be shown. Member id is required to for using
+     * this feature. If both inventory code and placement id are presented,
+     * inventory code will be used instead of placement id on the ad request.
+     *
+     * @param memberID      The member id that this AdView belongs to.
+     * @param inventoryCode The inventory code of this AdView.
+     */
+    public void setInventoryCodeAndMemberID(int memberID, String inventoryCode) {
+        requestParameters.setInventoryCodeAndMemberID(memberID, inventoryCode);
+    }
+
+    /**
+     * Retrieve the member ID.
+     *
+     * @return the member id that this AdView belongs to.
+     */
+    public int getMemberID() {
+        return requestParameters.getMemberID();
+    }
+
+    /**
+     * Retrieve the inventory code.
+     *
+     * @return the current inventory code.
+     */
+    public String getInventoryCode() {
+        return requestParameters.getInvCode();
+    }
+
+    @Override
+    protected void finalize() {
+        try {
+            super.finalize();
+        } catch (Throwable e) {
+        }
+        // Just in case, kill the adfetcher's service
+        if (mAdFetcher != null)
+            mAdFetcher.stop();
+    }
 
     /**
      * This must be called from the UI thread,
      * when permanently remove the AdView from the view hierarchy.
      */
-    public void destroy(){
+    public void destroy() {
         Clog.d(Clog.baseLogTag, "called destroy() on AdView");
-        if(this.lastDisplayable != null) {
+        if (this.lastDisplayable != null) {
             this.lastDisplayable.destroy();
             this.lastDisplayable = null;
         }
     }
 
-	int getContainerWidth() {
-		return requestParameters.getContainerWidth();
-	}
+    int getContainerWidth() {
+        return requestParameters.getContainerWidth();
+    }
 
-	int getContainerHeight() {
-		return requestParameters.getContainerHeight();
-	}
+    int getContainerHeight() {
+        return requestParameters.getContainerHeight();
+    }
 
     protected void setShouldResizeParent(boolean shouldResizeParent) {
         this.shouldResizeParent = shouldResizeParent;
@@ -312,7 +338,7 @@ public abstract class AdView extends FrameLayout implements Ad{
     static MRAIDImplementation mraidFullscreenImplementation;
     static AdWebView.MRAIDFullscreenListener mraidFullscreenListener;
 
-    protected void close(int w, int h, MRAIDImplementation caller){
+    protected void close(int w, int h, MRAIDImplementation caller) {
         // Remove MRAID close button
         ViewUtil.removeChildFromParent(close_button);
         close_button = null;
@@ -358,7 +384,7 @@ public abstract class AdView extends FrameLayout implements Ad{
         }
     }
 
-    protected void mraidFullscreenExpand(final MRAIDImplementation caller, boolean use_custom_close, AdWebView.MRAIDFullscreenListener listener){
+    protected void mraidFullscreenExpand(final MRAIDImplementation caller, boolean use_custom_close, AdWebView.MRAIDFullscreenListener listener) {
         caller.setDefaultContainer((ViewGroup) caller.owner.getParent());
 
         //Make a new framelayout to contain webview and button
@@ -368,7 +394,8 @@ public abstract class AdView extends FrameLayout implements Ad{
         ViewUtil.removeChildFromParent(caller.owner);
         fslayout.addView(caller.owner);
 
-        if(close_button==null) close_button = ViewUtil.createCloseButton(this.getContext(), use_custom_close);
+        if (close_button == null)
+            close_button = ViewUtil.createCloseButton(this.getContext(), use_custom_close);
         if (!use_custom_close) fslayout.addView(close_button);
 
         mraidFullscreenContainer = fslayout;
@@ -390,8 +417,8 @@ public abstract class AdView extends FrameLayout implements Ad{
     }
 
     void expand(int w, int h, boolean custom_close,
-                          final MRAIDImplementation caller,
-                          AdWebView.MRAIDFullscreenListener listener) {
+                final MRAIDImplementation caller,
+                AdWebView.MRAIDFullscreenListener listener) {
         MRAIDChangeSize(w, h);
 
         // Add a stock close_button button to the top right corner
@@ -400,7 +427,7 @@ public abstract class AdView extends FrameLayout implements Ad{
 
         // place the close button at the top right of the adview if it isn't fullscreen
         if (!caller.owner.isFullScreen) {
-            if(getChildAt(0)!=null){
+            if (getChildAt(0) != null) {
                 blp.rightMargin = (this.getMeasuredWidth()
                         - this.getChildAt(0).getMeasuredWidth()) / 2;
             }
@@ -428,34 +455,34 @@ public abstract class AdView extends FrameLayout implements Ad{
     int buttonPxSideLength = 0;
 
     void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean,
-                       final MRAIDImplementation caller) {
+                final MRAIDImplementation caller) {
         MRAIDChangeSize(w, h);
 
         // Add a stock close_button button to the top right corner
         ViewUtil.removeChildFromParent(close_button);
 
-        if(!(buttonPxSideLength >0)){
+        if (!(buttonPxSideLength > 0)) {
             final float scale = caller.owner.getContext().getResources().getDisplayMetrics().density;
-            buttonPxSideLength = (int)(50*scale);
+            buttonPxSideLength = (int) (50 * scale);
         }
 
-        close_button = new ImageButton(this.getContext()){
+        close_button = new ImageButton(this.getContext()) {
 
             @SuppressWarnings("deprecation")
             @SuppressLint({"NewApi", "DrawAllocation"})
             @Override
-            public void onLayout(boolean changed, int left, int top, int right, int bottom){
+            public void onLayout(boolean changed, int left, int top, int right, int bottom) {
                 int close_button_loc[] = new int[2];
                 this.getLocationOnScreen(close_button_loc);
 
                 //Determine container width and height
                 Point container_size;
-                Point screen_size=new Point(0,0);
+                Point screen_size = new Point(0, 0);
                 Activity a = null;
                 boolean useScreenSizeForAddedAccuracy = true;
-                try{
-                    a = (Activity)caller.owner.getContext();
-                }catch (ClassCastException e){
+                try {
+                    a = (Activity) caller.owner.getContext();
+                } catch (ClassCastException e) {
                     useScreenSizeForAddedAccuracy = false;
                 }
 
@@ -469,37 +496,37 @@ public abstract class AdView extends FrameLayout implements Ad{
                 }
 
                 int adviewLoc[] = new int[2];
-                if(getMediaType().equals(MediaType.INTERSTITIAL)){
+                if (getMediaType().equals(MediaType.INTERSTITIAL)) {
                     InterstitialAdView.INTERSTITIALADVIEW_TO_USE.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
                     InterstitialAdView.INTERSTITIALADVIEW_TO_USE.getLocationOnScreen(adviewLoc);
                     container_size = new Point(InterstitialAdView.INTERSTITIALADVIEW_TO_USE.getMeasuredWidth(),
-                                                  InterstitialAdView.INTERSTITIALADVIEW_TO_USE.getMeasuredHeight());
-                }else{
+                            InterstitialAdView.INTERSTITIALADVIEW_TO_USE.getMeasuredHeight());
+                } else {
                     AdView.this.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
                     AdView.this.getLocationOnScreen(adviewLoc);
                     container_size = new Point(AdView.this.getMeasuredWidth(),
-                                                  AdView.this.getMeasuredHeight());
+                            AdView.this.getMeasuredHeight());
                 }
-                int max_x = (container_size.x- buttonPxSideLength);
-                int max_y = (container_size.y- buttonPxSideLength);
+                int max_x = (container_size.x - buttonPxSideLength);
+                int max_y = (container_size.y - buttonPxSideLength);
                 int min_x = 0;
                 int min_y = 0;
 
-                if(useScreenSizeForAddedAccuracy){
-                    max_x = adviewLoc[0]+Math.min(screen_size.x, container_size.x)- buttonPxSideLength;
-                    max_y = adviewLoc[1]+Math.min(screen_size.y, container_size.y)- buttonPxSideLength;
+                if (useScreenSizeForAddedAccuracy) {
+                    max_x = adviewLoc[0] + Math.min(screen_size.x, container_size.x) - buttonPxSideLength;
+                    max_y = adviewLoc[1] + Math.min(screen_size.y, container_size.y) - buttonPxSideLength;
                     min_x = adviewLoc[0];
                     min_y = adviewLoc[1];
                 }
 
-                if(close_button_loc[0]+1<min_x || close_button_loc[0]-1> max_x ||
-                   close_button_loc[1]+1<min_y || close_button_loc[1]-1> max_y){
+                if (close_button_loc[0] + 1 < min_x || close_button_loc[0] - 1 > max_x ||
+                        close_button_loc[1] + 1 < min_y || close_button_loc[1] - 1 > max_y) {
                     //Button is off screen, and must be relocated on screen
                     final FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(this.getLayoutParams());
-                    lp.setMargins(0,0,0,0);
-                    lp.gravity = Gravity.TOP  | Gravity.LEFT;
-                    this.post(new Runnable(){
-                        public void run(){
+                    lp.setMargins(0, 0, 0, 0);
+                    lp.gravity = Gravity.TOP | Gravity.LEFT;
+                    this.post(new Runnable() {
+                        public void run() {
                             setLayoutParams(lp);
                         }
                     });
@@ -515,8 +542,8 @@ public abstract class AdView extends FrameLayout implements Ad{
                 buttonPxSideLength, Gravity.CENTER);
 
         //Offsets from dead center
-        int btn_offset_y= h/2- buttonPxSideLength /2;
-        int btn_offset_x = w/2- buttonPxSideLength /2;
+        int btn_offset_y = h / 2 - buttonPxSideLength / 2;
+        int btn_offset_x = w / 2 - buttonPxSideLength / 2;
         switch (custom_close_position) {
             case bottom_center:
                 blp.topMargin = btn_offset_y;
@@ -562,39 +589,36 @@ public abstract class AdView extends FrameLayout implements Ad{
     }
 
     /**
-     *
      * @return true if the AdView is a {@link BannerAdView}.
      */
     abstract boolean isBanner();
 
     /**
-     *
      * @return true if the AdView is an {@link InterstitialAdView}.
      */
     abstract boolean isInterstitial();
 
-	/**
-	 * Sets the currently installed listener that the SDK will send events to.
-	 *
-	 * @param listener
-	 *            The {@link AdListener} object to use.
-	 */
-	public void setAdListener(AdListener listener) {
-		Clog.d(Clog.publicFunctionsLogTag,
-				Clog.getString(R.string.set_ad_listener));
-		adListener = listener;
-	}
+    /**
+     * Sets the currently installed listener that the SDK will send events to.
+     *
+     * @param listener The {@link AdListener} object to use.
+     */
+    public void setAdListener(AdListener listener) {
+        Clog.d(Clog.publicFunctionsLogTag,
+                Clog.getString(R.string.set_ad_listener));
+        adListener = listener;
+    }
 
-	/**
-	 * Gets the currently installed listener that the SDK will send events to.
-	 *
-	 * @return The {@link AdListener} object in use.
-	 */
-	public AdListener getAdListener() {
-		Clog.d(Clog.publicFunctionsLogTag,
+    /**
+     * Gets the currently installed listener that the SDK will send events to.
+     *
+     * @return The {@link AdListener} object in use.
+     */
+    public AdListener getAdListener() {
+        Clog.d(Clog.publicFunctionsLogTag,
                 Clog.getString(R.string.get_ad_listener));
-		return adListener;
-	}
+        return adListener;
+    }
 
     /**
      * Gets the currently installed app event listener that the SDK will send
@@ -616,123 +640,122 @@ public abstract class AdView extends FrameLayout implements Ad{
         this.appEventListener = appEventListener;
     }
 
-	/**
-	 * Retrieve the setting that determines whether or not the
-	 * device's native browser is used instead of the in-app
-	 * browser when the user clicks an ad.
-	 *
-	 * @return true if the device's native browser will be used; false otherwise.
-	 */
-	public boolean getOpensNativeBrowser() {
-		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
-				R.string.get_opens_native_browser, requestParameters.getOpensNativeBrowser()));
-		return requestParameters.getOpensNativeBrowser();
-	}
+    /**
+     * Retrieve the setting that determines whether or not the
+     * device's native browser is used instead of the in-app
+     * browser when the user clicks an ad.
+     *
+     * @return true if the device's native browser will be used; false otherwise.
+     */
+    public boolean getOpensNativeBrowser() {
+        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
+                R.string.get_opens_native_browser, requestParameters.getOpensNativeBrowser()));
+        return requestParameters.getOpensNativeBrowser();
+    }
 
-	/**
-	 * Set this to true to disable the in-app browser.  This will
-	 * cause URLs to open in a native browser such as Chrome so
-	 * that when the user clicks on an ad, your app will be paused
-	 * and the native browser will open.  Set this to false to
-	 * enable the in-app browser instead (a lightweight browser
-	 * that runs within your app).  The default value is false.
-	 *
-	 * @param opensNativeBrowser Whether or not the device's native browser should be used for
+    /**
+     * Set this to true to disable the in-app browser.  This will
+     * cause URLs to open in a native browser such as Chrome so
+     * that when the user clicks on an ad, your app will be paused
+     * and the native browser will open.  Set this to false to
+     * enable the in-app browser instead (a lightweight browser
+     * that runs within your app).  The default value is false.
+     *
+     * @param opensNativeBrowser Whether or not the device's native browser should be used for
      *                           landing pages.
-	 */
-	public void setOpensNativeBrowser(boolean opensNativeBrowser) {
-		Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
-				R.string.set_opens_native_browser, opensNativeBrowser));
-		requestParameters.setOpensNativeBrowser(opensNativeBrowser);
-	}
+     */
+    public void setOpensNativeBrowser(boolean opensNativeBrowser) {
+        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
+                R.string.set_opens_native_browser, opensNativeBrowser));
+        requestParameters.setOpensNativeBrowser(opensNativeBrowser);
+    }
 
-	BrowserStyle getBrowserStyle() {
-		return browserStyle;
-	}
+    BrowserStyle getBrowserStyle() {
+        return browserStyle;
+    }
 
-	protected void setBrowserStyle(BrowserStyle browserStyle) {
-		this.browserStyle = browserStyle;
-	}
+    protected void setBrowserStyle(BrowserStyle browserStyle) {
+        this.browserStyle = browserStyle;
+    }
 
-	/**
-	 * Retrieve the current PSA setting.  PSAs (Public Service
-	 * Announcements) are ads for various causes or nonprofit
-	 * organizations that can be served if there are no ads
-	 * available.  You can turn this on and off with
-	 * setShouldServePSAs.
-	 *
-	 * @return Whether this placement accepts PSAs if no ad is served.
-	 */
-	public boolean getShouldServePSAs() {
-		return requestParameters.getShouldServePSAs();
-	}
+    /**
+     * Retrieve the current PSA setting.  PSAs (Public Service
+     * Announcements) are ads for various causes or nonprofit
+     * organizations that can be served if there are no ads
+     * available.  You can turn this on and off with
+     * setShouldServePSAs.
+     *
+     * @return Whether this placement accepts PSAs if no ad is served.
+     */
+    public boolean getShouldServePSAs() {
+        return requestParameters.getShouldServePSAs();
+    }
 
-	/**
-	 * Allows overriding the platform behavior in the case there is no ad
-	 * currently available. If set to true the platform will retrieve and
-	 * display a PSA (Public Service Announcement) . Set the value to false it
-	 * will return no ad.
-	 *
-	 * @param shouldServePSAs
-	 *            Whether this placement is willing to accept a PSA if no other ad is available.
-	 */
-	public void setShouldServePSAs(boolean shouldServePSAs) {
-		requestParameters.setShouldServePSAs(shouldServePSAs);
-	}
+    /**
+     * Allows overriding the platform behavior in the case there is no ad
+     * currently available. If set to true the platform will retrieve and
+     * display a PSA (Public Service Announcement) . Set the value to false it
+     * will return no ad.
+     *
+     * @param shouldServePSAs Whether this placement is willing to accept a PSA if no other ad is available.
+     */
+    public void setShouldServePSAs(boolean shouldServePSAs) {
+        requestParameters.setShouldServePSAs(shouldServePSAs);
+    }
 
-	/**
-	 * Retrieve the reserve price.  The reserve price is the
-	 * minimum price you will accept in order to show an ad.  A
-	 * value of 0 indicates that there is no minimum.
-	 *
-	 * @return The reserve price.  A value of 0 indicates that no reserve is set.
-	 */
-	public float getReserve() {
-		return requestParameters.getReserve();
-	}
+    /**
+     * Retrieve the reserve price.  The reserve price is the
+     * minimum price you will accept in order to show an ad.  A
+     * value of 0 indicates that there is no minimum.
+     *
+     * @return The reserve price.  A value of 0 indicates that no reserve is set.
+     */
+    public float getReserve() {
+        return requestParameters.getReserve();
+    }
 
-	/**
-	 * Set a reserve price.  The reserve price is the minimum
-	 * price you will accept in order to show an ad.  Note that
-	 * setting a reserve price may negatively affect monetization,
-	 * since there may not be any buyers willing to pay more than
-	 * your reserve.  Setting this value to zero disables the
-	 * reserve price.  The default value is zero.
-	 *
-	 * @param reserve The reserve price expressed in CPM, e.g., 0.50f.
-	 */
-	public void setReserve(float reserve) {
-		requestParameters.setReserve(reserve);
-	}
+    /**
+     * Set a reserve price.  The reserve price is the minimum
+     * price you will accept in order to show an ad.  Note that
+     * setting a reserve price may negatively affect monetization,
+     * since there may not be any buyers willing to pay more than
+     * your reserve.  Setting this value to zero disables the
+     * reserve price.  The default value is zero.
+     *
+     * @param reserve The reserve price expressed in CPM, e.g., 0.50f.
+     */
+    public void setReserve(float reserve) {
+        requestParameters.setReserve(reserve);
+    }
 
-	/**
-	 * Retrieve the current user's age.  Note that this is a
-	 * string as it may come in one of several formats: age, birth
-	 * year, or age range.  The default value is an empty string.
-	 *
-	 * @return The current user's age.
-	 */
-	public String getAge() {
-		return requestParameters.getAge();
-	}
+    /**
+     * Retrieve the current user's age.  Note that this is a
+     * string as it may come in one of several formats: age, birth
+     * year, or age range.  The default value is an empty string.
+     *
+     * @return The current user's age.
+     */
+    public String getAge() {
+        return requestParameters.getAge();
+    }
 
-	/**
-	 * Set the current user's age.  This should be set if the
-	 * user's age or age range is known, as it can help make
-	 * buying the ad space more attractive to advertisers.
-	 *
-	 * @param age A string containing a numeric age, birth year,
-	 *            or hyphenated age range.  For example: "56",
-	 *            "1974", or "25-35".
-	 */
-	public void setAge(String age) {
-		requestParameters.setAge(age);
-	}
+    /**
+     * Set the current user's age.  This should be set if the
+     * user's age or age range is known, as it can help make
+     * buying the ad space more attractive to advertisers.
+     *
+     * @param age A string containing a numeric age, birth year,
+     *            or hyphenated age range.  For example: "56",
+     *            "1974", or "25-35".
+     */
+    public void setAge(String age) {
+        requestParameters.setAge(age);
+    }
 
     /**
      * Get whether or not the banner or interstitial should show the loading indicator
      * after being pressed, but before able to launch the browser.
-     *
+     * <p/>
      * Default is false
      *
      * @return true if the loading indicator will be displayed, else false
@@ -744,115 +767,107 @@ public abstract class AdView extends FrameLayout implements Ad{
     /**
      * Set whether or not the banner or interstitial should show the loading indicator
      * after being pressed, but before able to launch the browser.
-     *
+     * <p/>
      * Default is false
      *
      * @param show True if you desire the loading indicator to be displayed, else set to false
      */
-    public void setShowLoadingIndicator(boolean show){
-        showLoadingIndicator=show;
+    public void setShowLoadingIndicator(boolean show) {
+        showLoadingIndicator = show;
     }
 
     /**
-	 *
-	 * The user's gender.
-	 *
-	 */
-	public enum GENDER {
-		UNKNOWN,
-		MALE,
-		FEMALE,
+     * The user's gender.
+     */
+    public enum GENDER {
+        UNKNOWN,
+        MALE,
+        FEMALE,
 
-	}
+    }
 
-	/**
-	 * Get the current user's gender, if it's available.  The
-	 * default value is UNKNOWN.
-	 *
-	 * @return The user's gender.
-	 */
-	public GENDER getGender() {
-		return requestParameters.getGender();
-	}
+    /**
+     * Get the current user's gender, if it's available.  The
+     * default value is UNKNOWN.
+     *
+     * @return The user's gender.
+     */
+    public GENDER getGender() {
+        return requestParameters.getGender();
+    }
 
-	/**
-	 * Set the user's gender.  This should be set if the user's
-	 * gender is known, as it can help make buying the ad space
-	 * more attractive to advertisers.  The default value is
-	 * UNKNOWN.
-	 *
-	 * @param gender
-	 *            The user's gender.
-	 */
-	public void setGender(GENDER gender) {
-		requestParameters.setGender(gender);
-	}
+    /**
+     * Set the user's gender.  This should be set if the user's
+     * gender is known, as it can help make buying the ad space
+     * more attractive to advertisers.  The default value is
+     * UNKNOWN.
+     *
+     * @param gender The user's gender.
+     */
+    public void setGender(GENDER gender) {
+        requestParameters.setGender(gender);
+    }
 
-	/**
-	 * Add a custom keyword to the request URL for the ad.  This
-	 * is used to set custom targeting parameters within the
-	 * AppNexus platform.  You will be given the keys and values
-	 * to use by your AppNexus account representative or your ad
-	 * network.
-	 *
-	 * @param key
-	 *            The key to add; this cannot be null or empty.
-	 * @param value
-	 *            The value to add; this cannot be null or empty.
-	 */
-	public void addCustomKeywords(String key, String value) {
-		requestParameters.addCustomKeywords(key, value);
-	}
+    /**
+     * Add a custom keyword to the request URL for the ad.  This
+     * is used to set custom targeting parameters within the
+     * AppNexus platform.  You will be given the keys and values
+     * to use by your AppNexus account representative or your ad
+     * network.
+     *
+     * @param key   The key to add; this cannot be null or empty.
+     * @param value The value to add; this cannot be null or empty.
+     */
+    public void addCustomKeywords(String key, String value) {
+        requestParameters.addCustomKeywords(key, value);
+    }
 
-	/**
-	 *
-	 * Remove a custom keyword from the request URL for the ad.
-	 * Use this to remove a keyword previously set using
-	 * addCustomKeywords.
-	 *
-	 * @param key
-	 *            The key to remove; this cannot be null or empty.
-	 */
-	public void removeCustomKeyword(String key) {
-		requestParameters.removeCustomKeyword(key);
-	}
+    /**
+     * Remove a custom keyword from the request URL for the ad.
+     * Use this to remove a keyword previously set using
+     * addCustomKeywords.
+     *
+     * @param key The key to remove; this cannot be null or empty.
+     */
+    public void removeCustomKeyword(String key) {
+        requestParameters.removeCustomKeyword(key);
+    }
 
     /**
      * Clear all custom keywords from the request URL.
-     *
      */
-    public void clearCustomKeywords(){
+    public void clearCustomKeywords() {
         requestParameters.clearCustomKeywords();
     }
 
-	/**
-	 * Retrieve the array of custom keywords associated with the
-	 * current AdView.
-	 *
-	 * @return The current list of key-value pairs of custom
-	 * keywords.
-	 */
-	public ArrayList<Pair<String, String>> getCustomKeywords() {
-		return requestParameters.getCustomKeywords();
-	}
+    /**
+     * Retrieve the array of custom keywords associated with the
+     * current AdView.
+     *
+     * @return The current list of key-value pairs of custom
+     * keywords.
+     */
+    public ArrayList<Pair<String, String>> getCustomKeywords() {
+        return requestParameters.getCustomKeywords();
+    }
 
-	static class BrowserStyle {
+    static class BrowserStyle {
 
-		public BrowserStyle(Drawable forwardButton, Drawable backButton,
-				Drawable refreshButton) {
-			this.forwardButton = forwardButton;
-			this.backButton = backButton;
-			this.refreshButton = refreshButton;
-		}
+        public BrowserStyle(Drawable forwardButton, Drawable backButton,
+                            Drawable refreshButton) {
+            this.forwardButton = forwardButton;
+            this.backButton = backButton;
+            this.refreshButton = refreshButton;
+        }
 
-		final Drawable forwardButton;
-		final Drawable backButton;
-		final Drawable refreshButton;
+        final Drawable forwardButton;
+        final Drawable backButton;
+        final Drawable refreshButton;
 
-		static final ArrayList<Pair<String, BrowserStyle>> bridge = new ArrayList<Pair<String, BrowserStyle>>();
-	}
+        static final ArrayList<Pair<String, BrowserStyle>> bridge = new ArrayList<Pair<String, BrowserStyle>>();
+    }
 
-    void setCreativeWidth(int w){
+    void setCreativeWidth(int w) {
         creativeWidth = w;
     }
 
@@ -863,11 +878,11 @@ public abstract class AdView extends FrameLayout implements Ad{
      * @return the width
      */
 
-    public int getCreativeWidth(){
+    public int getCreativeWidth() {
         return creativeWidth;
     }
 
-    void setCreativeHeight(int h){
+    void setCreativeHeight(int h) {
         creativeHeight = h;
     }
 
@@ -878,7 +893,7 @@ public abstract class AdView extends FrameLayout implements Ad{
      * @return the height
      */
 
-    public int getCreativeHeight(){
+    public int getCreativeHeight() {
         return creativeHeight;
     }
 
@@ -889,7 +904,7 @@ public abstract class AdView extends FrameLayout implements Ad{
      *
      * @param doesLoadingInBackground Whether or not to load landing pages in background.
      */
-    public void setLoadsInBackground(boolean doesLoadingInBackground){
+    public void setLoadsInBackground(boolean doesLoadingInBackground) {
         this.doesLoadingInBackground = doesLoadingInBackground;
     }
 
@@ -900,16 +915,15 @@ public abstract class AdView extends FrameLayout implements Ad{
      *
      * @return Whether or not redirects and landing pages are loaded/processed in the background before being displayed.
      */
-    public boolean getLoadsInBackground(){
+    public boolean getLoadsInBackground() {
         return this.doesLoadingInBackground;
     }
 
-	/**
-	 * Private class to bridge events from mediation to the user
-	 * AdListener class.
-	 *
-	 */
-	private class AdViewDispatcher implements AdDispatcher {
+    /**
+     * Private class to bridge events from mediation to the user
+     * AdListener class.
+     */
+    private class AdViewDispatcher implements AdDispatcher {
 
         Handler handler;
 
@@ -1003,25 +1017,22 @@ public abstract class AdView extends FrameLayout implements Ad{
     }
 
     @Override
-	public AdDispatcher getAdDispatcher() {
-		return this.dispatcher;
-	}
+    public AdDispatcher getAdDispatcher() {
+        return this.dispatcher;
+    }
 
     /**
      * To be called by the developer when the fragment/activity's onDestroy() function is called.
-     *
      */
     abstract public void activityOnDestroy();
 
     /**
      * To be called by the developer when the fragment/activity's onPause() function is called.
-     *
      */
     abstract public void activityOnPause();
 
     /**
      * To be called by the developer when the fragment/activity's onResume() function is called.
-     *
      */
     abstract public void activityOnResume();
 
