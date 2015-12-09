@@ -175,7 +175,11 @@ class AdViewRequestManager extends RequestManager {
             protected void onPostExecute(HTTPResponse response) {
                 if(response != null && response.getSucceeded()) {
                     ssmAdResponse.setAdContent(response.getResponseBody());
-                    initiateWebview(owner, ssmAdResponse);
+                    if(ssmAdResponse.getAdType().equalsIgnoreCase(UTAdResponse.RESPONSE_KEY_BANNER)) {
+                        initiateWebview(owner, ssmAdResponse);
+                    }else if(ssmAdResponse.getAdType().equalsIgnoreCase(UTAdResponse.RESPONSE_KEY_VIDEO)){
+                        initiateVastAdView(owner, ssmAdResponse);
+                    }
                 }else {
                     // Process next available ad response
                     onReceiveUTResponse(null);

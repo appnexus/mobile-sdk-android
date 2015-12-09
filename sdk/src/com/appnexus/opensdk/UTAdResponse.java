@@ -45,8 +45,8 @@ class UTAdResponse {
 
     private static final String RESPONSE_KEY_TAGS = "tags";
     private static final String RESPONSE_KEY_AD = "ad";
-    private static final String RESPONSE_KEY_VIDEO = "video";
-    private static final String RESPONSE_KEY_BANNER = "banner";
+    protected static final String RESPONSE_KEY_VIDEO = "video";
+    protected static final String RESPONSE_KEY_BANNER = "banner";
     private static final String RESPONSE_KEY_CONTENT = "content";
     private static final String RESPONSE_KEY_WIDTH = "width";
     private static final String RESPONSE_KEY_HEIGHT = "height";

@@ -22,6 +22,7 @@ import com.appnexus.opensdk.adresponsedata.CSMAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
+import com.appnexus.opensdk.utils.Settings;
 
 /**
 * An object of this type is sent to the third-party SDK's {@link
@@ -134,22 +135,25 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
     }
 
     private void fireImpressions(BaseAdResponse responseData) {
+        if(Settings.useUniversalTagV2) {
+            if (responseData != null && responseData.getImpressionURLs() != null) {
+                for (final String impressionUrl : responseData.getImpressionURLs()) {
+                    Clog.i(Clog.baseLogTag, "Impressions: " + impressionUrl);
+                    new HTTPGet() {
+                        @Override
+                        protected void onPostExecute(HTTPResponse response) {
+                            if (response.getSucceeded()) {
+                                Clog.i(Clog.baseLogTag, "Impression sent successfully ");
+                            }
+                        }
 
-        for (final String impressionUrl: responseData.getImpressionURLs()){
-            Clog.i(Clog.baseLogTag, "Impressions: "+impressionUrl);
-            new HTTPGet() {
-                @Override
-                protected void onPostExecute(HTTPResponse response) {
-                    if(response.getSucceeded()) {
-                        Clog.i(Clog.baseLogTag, "Impression sent successfully ");
-                    }
+                        @Override
+                        protected String getUrl() {
+                            return impressionUrl;
+                        }
+                    }.execute();
                 }
-
-                @Override
-                protected String getUrl() {
-                    return impressionUrl;
-                }
-            }.execute();
+            }
         }
     }
 
