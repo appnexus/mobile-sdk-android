@@ -63,6 +63,7 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
     public static final String TAG_ALLOWED_MEDIA_AD_TYPES = "ad_types";
     public static final String TAG_DISABLE_PSA = "disable_psa";
     public static final String TAG_PREBID = "prebid";
+    public static final String TAG_CODE = "code";
     public static final String USER = "user";
     public static final String USER_AGE = "age";
     public static final String USER_GENDER = "gender";
@@ -88,6 +89,7 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
     public static final String APP = "app";
     public static final String APP_ID = "appid";
     public static final String KEYWORDS = "keywords";
+    public static final String MEMBER_ID = "member_id";
     public static final String KEYVAL_KEY = "key";
     public static final String KEYVAL_VALUE = "value";
     public static final String ALLOWED_TYPE_BANNER = "banner";
@@ -247,7 +249,7 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
         JSONObject postData = new JSONObject();
         try {
             // add tags
-            JSONArray tags = getTagsObject();
+            JSONArray tags = getTagsObject(postData);
             if (tags != null && tags.length() > 0) {
                 postData.put(TAGS, tags);
             }
@@ -278,11 +280,19 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
         return postData.toString();
     }
 
-    private JSONArray getTagsObject() {
+    private JSONArray getTagsObject(JSONObject postData) {
         JSONArray tags = new JSONArray();
         JSONObject tag = new JSONObject();
         try {
-            tag.put(TAG_ID, StringUtil.getIntegerValue(params.getPlacementID()));
+
+            if(!StringUtil.isEmpty(params.getInvCode()) && params.getMemberID()>0){
+                tag.put(TAG_CODE, params.getInvCode());
+                postData.put(MEMBER_ID, params.getMemberID());
+            }else if (!StringUtil.isEmpty(params.getPlacementID())) {
+                tag.put(TAG_ID, StringUtil.getIntegerValue(params.getPlacementID()));
+            }else{
+                tag.put(TAG_ID, StringUtil.getIntegerValue("NO-PLACEMENT-ID"));
+            }
 
             JSONObject size = new JSONObject();
             ArrayList<AdSize> allowedSizes = params.getAllowedSizes();
