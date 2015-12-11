@@ -290,6 +290,8 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
                 postData.put(MEMBER_ID, params.getMemberID());
             }else if (!StringUtil.isEmpty(params.getPlacementID())) {
                 tag.put(TAG_ID, StringUtil.getIntegerValue(params.getPlacementID()));
+            }else{
+                tag.put(TAG_ID, 0);
             }
 
             JSONObject size = new JSONObject();
