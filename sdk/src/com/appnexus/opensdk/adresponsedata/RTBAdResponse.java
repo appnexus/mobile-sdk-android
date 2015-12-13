@@ -16,26 +16,11 @@
 
 package com.appnexus.opensdk.adresponsedata;
 
-import com.appnexus.opensdk.vastdata.AdModel;
-
 import java.util.ArrayList;
 
 
 public class RTBAdResponse extends BaseAdResponse {
-
-    private AdModel vastAdResponse;
-
     public RTBAdResponse(int width, int height, String adType, String notifyUrl, ArrayList<String> impressionURLs) {
         super(width, height, adType, notifyUrl, impressionURLs);
     }
-
-    public AdModel getVastAdResponse() {
-        return vastAdResponse;
-    }
-
-    public void setVastAdResponse(AdModel vastAdResponse) {
-        this.vastAdResponse = vastAdResponse;
-    }
-
-
 }

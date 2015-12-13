@@ -197,7 +197,7 @@ class AdFetcher {
                     fetcher.requestManager = new AdViewRequestManager((BannerAdView) fetcher.owner);
                     break;
                 case INTERSTITIAL:
-                    fetcher.requestManager = new AdViewRequestManager((InterstitialAdView) fetcher.owner);
+                    fetcher.requestManager = new InterstitialAdRequestManager((InterstitialAdView) fetcher.owner);
                     break;
                 case NATIVE:
                     fetcher.requestManager = new NativeAdRequestManager((NativeAdRequest) fetcher.owner);

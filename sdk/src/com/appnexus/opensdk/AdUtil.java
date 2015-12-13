@@ -24,8 +24,7 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.StringUtil;
 
 
-public class AdUtil {
-
+class AdUtil {
 
     public static boolean openBrowser(Context context, String clickThroughURL, boolean shouldOpenNativeBrowser){
         if (shouldOpenNativeBrowser){

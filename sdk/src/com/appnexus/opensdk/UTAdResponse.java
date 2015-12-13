@@ -20,9 +20,9 @@ import com.appnexus.opensdk.adresponsedata.BaseAdResponse;
 import com.appnexus.opensdk.adresponsedata.CSMAdResponse;
 import com.appnexus.opensdk.adresponsedata.RTBAdResponse;
 import com.appnexus.opensdk.adresponsedata.SSMAdResponse;
+import com.appnexus.opensdk.utils.ANConstants;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.JsonUtil;
-import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.vastdata.AdModel;
 import com.appnexus.opensdk.vastdata.VastResponseParser;
@@ -35,7 +35,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
 
@@ -44,7 +43,6 @@ class UTAdResponse {
     private static final String UTF_8 = "UTF-8";
 
     private static final String RESPONSE_KEY_TAGS = "tags";
-    private static final String RESPONSE_KEY_AD = "ad";
     protected static final String RESPONSE_KEY_VIDEO = "video";
     protected static final String RESPONSE_KEY_BANNER = "banner";
     private static final String RESPONSE_KEY_CONTENT = "content";
@@ -52,7 +50,6 @@ class UTAdResponse {
     private static final String RESPONSE_KEY_HEIGHT = "height";
     public static final String RESPONSE_KEY_NO_BID = "nobid";
 
-    //UT-V2
     private static final String RESPONSE_KEY_RTB = "rtb";
     private static final String RESPONSE_KEY_ADS = "ads";
     private static final String RESPONSE_KEY_NOTIFY_URL = "notify_url";
@@ -71,35 +68,15 @@ class UTAdResponse {
     private static final String RESPONSE_KEY_TRACKERS = "trackers";
     private static final String RESPONSE_KEY_IMPRESSION_URLS = "impression_urls";
     private static final String RESPONSE_KEY_TIMEOUT = "timeout_ms";
-    public static final String CSM = "csm";
-    public static final String SSM = "ssm";
-    public static final String RTB = "rtb";
-
-
-    /**
-     * TODO: Will be removed -----------------------
-     */
-
-    private AdModel vastAdResponse;
-    private String content;
-    private int height;
-    private int width;
-    private MediaType mediaType;
-
-    private HashMap<String, Object> extras = new HashMap<String, Object>();
-
-    /**
-     * TODO: Till here --------------
-     */
+    private static final String RESPONSE_KEY_RESPONSE_URL = "response_url";
 
     private boolean containsAds = false;
-
     private boolean isHttpError = false;
     private LinkedList<BaseAdResponse> adList;
 
 
 
-    public UTAdResponse(String body, MediaType mediaType) {
+    public UTAdResponse(String body) {
         if (StringUtil.isEmpty(body)) {
             Clog.clearLastResponse();
             return;
@@ -108,14 +85,8 @@ class UTAdResponse {
         Clog.setLastResponse(body);
 
         Clog.i(Clog.httpRespLogTag, Clog.getString(R.string.response_body, body));
-        Clog.i(Clog.httpRespLogTag, "Media type: "+mediaType);
 
-        this.mediaType = mediaType;
-        if(Settings.useUniversalTagV2){
-            parseResponseV2(body);
-        }else {
-            parseResponse(body);
-        }
+        parseResponseV2(body);
     }
 
 
@@ -123,107 +94,6 @@ class UTAdResponse {
         this.isHttpError = isHttpError;
     }
 
-
-    private void parseResponse(String body) {
-        JSONObject response;
-
-        try {
-            if (!StringUtil.isEmpty(body)) {
-                response = new JSONObject(body);
-            } else {
-                return;
-            }
-        } catch (JSONException e) {
-            Clog.e(Clog.httpRespLogTag,  Clog.getString(R.string.response_json_error, body));
-            return;
-        }
-
-        try {
-            JSONArray tagsArray = JsonUtil.getJSONArray(response, RESPONSE_KEY_TAGS);
-            if(tagsArray != null) {
-
-                JSONObject tagObject = JsonUtil.getJSONObjectFromArray(tagsArray, 0);
-
-                // If it contains nobid response, don't parse further.
-                if (JsonUtil.getJSONBoolean(tagObject, RESPONSE_KEY_NO_BID)){
-                    return;
-                }
-
-                JSONObject adObject = JsonUtil.getJSONObject(tagObject, RESPONSE_KEY_AD);
-                if (adObject != null) {
-                    if(adObject.has(RESPONSE_KEY_BANNER)) {
-                        Clog.i(Clog.httpReqLogTag, "it's an HTML Ad");
-                        parseHTMLAd(adObject);
-                    }else{
-                        Clog.i(Clog.httpReqLogTag, "it's a Video Ad");
-                        parseVastVideoAd(adObject);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            // Catches XMLPullParserException, JSONException, NullPointerException and IOException
-            Clog.e(Clog.httpReqLogTag, "Error parsing the ad response: " + e.getMessage());
-            containsAds = false;
-        }
-    }
-
-
-
-    /**
-     * Parses HTML ad response
-     * @param adObject
-     * @throws Exception
-     */
-    private void parseHTMLAd(JSONObject adObject) throws Exception{
-        JSONObject bannerObject = JsonUtil.getJSONObject(adObject, RESPONSE_KEY_BANNER);
-        if(bannerObject != null) {
-            height = JsonUtil.getJSONInt(bannerObject, RESPONSE_KEY_HEIGHT);
-            width = JsonUtil.getJSONInt(bannerObject, RESPONSE_KEY_WIDTH);
-            content = JsonUtil.getJSONString(bannerObject, RESPONSE_KEY_CONTENT);
-            if (StringUtil.isEmpty(content)) {
-                Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.blank_ad));
-            } else {
-                if (content.contains(ServerResponse.MRAID_JS_FILENAME)) {
-                    addToExtras(ServerResponse.EXTRAS_KEY_MRAID, true);
-                }
-                Clog.i(Clog.httpReqLogTag, "parseHTMLAd: true");
-                containsAds = true;
-            }
-        }
-    }
-
-
-    /**
-     * Parses VAST ad response
-     * @param adObject
-     * @throws Exception
-     */
-    private void parseVastVideoAd(JSONObject adObject) throws Exception {
-
-        JSONObject videoObject = JsonUtil.getJSONObject(adObject, RESPONSE_KEY_VIDEO);
-        if(videoObject != null) {
-            String vastResponse = JsonUtil.getJSONString(videoObject, RESPONSE_KEY_CONTENT);
-            if(!StringUtil.isEmpty(vastResponse)) {
-                InputStream stream = new ByteArrayInputStream(vastResponse.getBytes(Charset.forName(UTF_8)));
-
-                VastResponseParser vastResponseParser = new VastResponseParser();
-                this.vastAdResponse = vastResponseParser.readVAST(stream);
-                if(this.vastAdResponse != null && this.vastAdResponse.containsLinearAd()) {
-                    containsAds = true;
-                    Clog.i(Clog.httpReqLogTag, "Vast response parsed");
-                }
-            }
-        }
-    }
-
-    /**
-     * ********** UT-V2 Parsing ************
-     */
-
-    /**
-     * Parse UT-V2 response
-     * @param body
-     */
 
     private void parseResponseV2(String body) {
         JSONObject response;
@@ -250,20 +120,6 @@ class UTAdResponse {
                 }
 
                 handleAdResponse(tagObject);
-
-//                JSONArray adArray = JsonUtil.getJSONArray(tagObject, RESPONSE_KEY_ADS);
-//                JSONObject adObject = JsonUtil.getJSONObjectFromArray(adArray, 0);
-//
-//                JSONObject rtbObject = JsonUtil.getJSONObject(adObject, RESPONSE_KEY_RTB);
-//                if (rtbObject != null) {
-//                    if(rtbObject.has(RESPONSE_KEY_BANNER)) {
-//                        Clog.i(Clog.httpReqLogTag, "it's an HTML Ad");
-//                        parseHTMLAdV2(rtbObject);
-//                    }else{
-//                        Clog.i(Clog.httpReqLogTag, "it's a Video Ad");
-//                        parseVastVideoAdV2(rtbObject, adObject.getString(RESPONSE_KEY_NOTIFY_URL));
-//                    }
-//                }
             }
         } catch (Exception e) {
             // Catches XMLPullParserException, JSONException, NullPointerException and IOException
@@ -272,61 +128,6 @@ class UTAdResponse {
         }
     }
 
-/**
- * TODO: Will be removed -----------------
- */
-    /**
-     * Parse UT-V2 HTML response
-     * @param rtbObject
-     * @throws Exception
-     */
-    private void parseHTMLAdV2(JSONObject rtbObject) throws Exception{
-        JSONObject bannerObject = JsonUtil.getJSONObject(rtbObject, RESPONSE_KEY_BANNER);
-        if(bannerObject != null) {
-            height = JsonUtil.getJSONInt(bannerObject, RESPONSE_KEY_HEIGHT);
-            width = JsonUtil.getJSONInt(bannerObject, RESPONSE_KEY_WIDTH);
-            content = JsonUtil.getJSONString(bannerObject, RESPONSE_KEY_CONTENT);
-            if (StringUtil.isEmpty(content)) {
-                Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.blank_ad));
-            } else {
-                if (content.contains(ServerResponse.MRAID_JS_FILENAME)) {
-                    addToExtras(ServerResponse.EXTRAS_KEY_MRAID, true);
-                }
-                Clog.i(Clog.httpReqLogTag, "parseHTMLAd: true");
-                containsAds = true;
-            }
-        }
-    }
-
-    /**
-     *  Parse UT-V2 VAST response
-     * @param rtbObject
-     * @throws Exception
-     */
-    private void parseVastVideoAdV2(JSONObject rtbObject, String impressionUrl) throws Exception {
-
-        JSONObject videoObject = JsonUtil.getJSONObject(rtbObject, RESPONSE_KEY_VIDEO);
-        if(videoObject != null) {
-            String vastResponse = JsonUtil.getJSONString(videoObject, RESPONSE_KEY_CONTENT);
-            if(!StringUtil.isEmpty(vastResponse)) {
-                InputStream stream = new ByteArrayInputStream(vastResponse.getBytes(Charset.forName(UTF_8)));
-
-                VastResponseParser vastResponseParser = new VastResponseParser();
-                this.vastAdResponse = vastResponseParser.readVAST(stream);
-                if(this.vastAdResponse != null && this.vastAdResponse.containsLinearAd()) {
-                    containsAds = true;
-                    if(impressionUrl != null) {
-                        this.vastAdResponse.getImpressionArrayList().add(impressionUrl);
-                    }
-                    Clog.i(Clog.httpReqLogTag, "Vast response parsed");
-                }
-            }
-        }
-    }
-
-    /**
-     * TODO: Till here ---------------------------------
-     */
 
     /**
      *
@@ -347,9 +148,9 @@ class UTAdResponse {
                 String notifyUrl = JsonUtil.getJSONString(ad, RESPONSE_KEY_NOTIFY_URL);
                 String contentSource = JsonUtil.getJSONString(ad, RESPONSE_KEY_CONTENT_SOURCE);
 
-                if (contentSource != null && contentSource.equalsIgnoreCase("csm")){
+                if (contentSource != null && contentSource.equalsIgnoreCase(ANConstants.CSM)){
                     handleCSM(ad, adType, notifyUrl);
-                }else if(contentSource != null && contentSource.equalsIgnoreCase("ssm")){
+                }else if(contentSource != null && contentSource.equalsIgnoreCase(ANConstants.SSM)){
                     handleSSM(ad, adType, notifyUrl);
                 }else {
                     handleRTB(ad, adType, notifyUrl);
@@ -364,24 +165,21 @@ class UTAdResponse {
         return false;
     }
 
-
-
-
     private void handleRTB(JSONObject adObject, String adType, String notifyUrl) throws Exception {
         JSONObject rtbObject = JsonUtil.getJSONObject(adObject, RESPONSE_KEY_RTB);
         if (rtbObject != null) {
             if(rtbObject.has(RESPONSE_KEY_BANNER)) {
                 Clog.i(Clog.httpReqLogTag, "it's an HTML Ad");
-                parseHTMLAdV2Temp(rtbObject, adType, notifyUrl);
+                parseHtmlAdResponse(rtbObject, adType, notifyUrl);
             }else{
                 Clog.i(Clog.httpReqLogTag, "it's a Video Ad");
-                parseVastVideoAdV2Temp(rtbObject, adType, notifyUrl);
+                parseVastAdReponse(rtbObject, adType, notifyUrl);
             }
         }
     }
 
 
-    private void parseHTMLAdV2Temp(JSONObject rtbObject, String adType, String notifyUrl) throws Exception{
+    private void parseHtmlAdResponse(JSONObject rtbObject, String adType, String notifyUrl) throws Exception{
         JSONObject bannerObject = JsonUtil.getJSONObject(rtbObject, RESPONSE_KEY_BANNER);
         if(bannerObject != null) {
             int height = JsonUtil.getJSONInt(bannerObject, RESPONSE_KEY_HEIGHT);
@@ -393,7 +191,7 @@ class UTAdResponse {
             } else {
                 RTBAdResponse rtbAd = new RTBAdResponse(width, height, adType, notifyUrl, getImpressionUrls(rtbObject));
                 rtbAd.setAdContent(content);
-                rtbAd.setContentSource(RTB);
+                rtbAd.setContentSource(ANConstants.RTB);
                 if (content.contains(ServerResponse.MRAID_JS_FILENAME)) {
                     rtbAd.addToExtras(ServerResponse.EXTRAS_KEY_MRAID, true);
                 }
@@ -410,7 +208,7 @@ class UTAdResponse {
      * @param adType
      * @throws Exception
      */
-    private void parseVastVideoAdV2Temp(JSONObject rtbObject, String adType, String notifyUrl) throws Exception {
+    private void parseVastAdReponse(JSONObject rtbObject, String adType, String notifyUrl) throws Exception {
 
         JSONObject videoObject = JsonUtil.getJSONObject(rtbObject, RESPONSE_KEY_VIDEO);
         if(videoObject != null) {
@@ -423,7 +221,7 @@ class UTAdResponse {
                 if(vastAdResponse != null && vastAdResponse.containsLinearAd()) {
                     RTBAdResponse rtbAd = new RTBAdResponse(-1, -1, adType, notifyUrl, getImpressionUrls(rtbObject));
                     rtbAd.setVastAdResponse(vastAdResponse);
-                    rtbAd.setContentSource(RTB);
+                    rtbAd.setContentSource(ANConstants.RTB);
                     adList.add(rtbAd);
                     containsAds = true;
                     Clog.i(Clog.httpReqLogTag, "Vast response parsed");
@@ -439,6 +237,7 @@ class UTAdResponse {
         if (csm != null) {
             JSONArray handler = JsonUtil.getJSONArray(csm, RESPONSE_KEY_HANDLER);
             ArrayList<String> impressionUrls = getImpressionUrls(csm);
+            String responseUrl = JsonUtil.getJSONString(csm, RESPONSE_KEY_RESPONSE_URL);
 
             if (handler != null) {
                 for (int j = 0; j < handler.length(); j++) {
@@ -462,7 +261,8 @@ class UTAdResponse {
                                 csmAd.setClassName(className);
                                 csmAd.setId(adId);
                                 csmAd.setParam(param);
-                                csmAd.setContentSource(CSM);
+                                csmAd.setResponseUrl(responseUrl);
+                                csmAd.setContentSource(ANConstants.CSM);
                                 adList.add(csmAd);
                             }
                         }
@@ -492,7 +292,7 @@ class UTAdResponse {
                             SSMAdResponse ssmAd = new SSMAdResponse(width, height, adType, notifyUrl, impressionUrls);
                             ssmAd.setAdUrl(handlerUrl);
                             ssmAd.setSsmTimeout(ssmTimeout);
-                            ssmAd.setContentSource(SSM);
+                            ssmAd.setContentSource(ANConstants.SSM);
                             adList.add(ssmAd);
                         }
                     }
@@ -507,9 +307,6 @@ class UTAdResponse {
 
         ArrayList<String> impressionUrls = new ArrayList<String>();
         if (trackers != null) {
-            /**
-             * TODO: Revisit
-             */
             JSONObject impressionsObj = JsonUtil.getJSONObjectFromArray(trackers, 0);
             JSONArray impressionsArray = JsonUtil.getJSONArray(impressionsObj, RESPONSE_KEY_IMPRESSION_URLS);
             impressionUrls = JsonUtil.getStringArrayList(impressionsArray);
@@ -523,41 +320,12 @@ class UTAdResponse {
         return adList;
     }
 
-
-    MediaType getMediaType() {
-        return mediaType;
-    }
-
-    AdModel getVastAdResponse() {
-        return vastAdResponse;
-    }
-
-    String getContent() {
-        return content != null ? content : "";
-    }
-
-    int getHeight() {
-        return height;
-    }
-
-    int getWidth() {
-        return width;
-    }
-
     boolean containsAds() {
         return containsAds;
     }
 
     boolean isHttpError() {
         return isHttpError;
-    }
-
-    HashMap<String, Object> getExtras() {
-        return extras;
-    }
-
-    void addToExtras(String key, Object value) {
-        extras.put(key, value);
     }
 
 }

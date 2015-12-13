@@ -16,6 +16,8 @@
 
 package com.appnexus.opensdk.adresponsedata;
 
+import com.appnexus.opensdk.vastdata.AdModel;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -28,6 +30,7 @@ public abstract class BaseAdResponse {
     private String contentSource;
     private String adContent;
     private ArrayList<String> impressionURLs = new ArrayList<String>();
+    private AdModel vastAdResponse;
 
 
     private HashMap<String, Object> extras = new HashMap<String, Object>();
@@ -108,5 +111,13 @@ public abstract class BaseAdResponse {
 
     public void setAdContent(String adContent) {
         this.adContent = adContent;
+    }
+
+    public AdModel getVastAdResponse() {
+        return vastAdResponse;
+    }
+
+    public void setVastAdResponse(AdModel vastAdResponse) {
+        this.vastAdResponse = vastAdResponse;
     }
 }

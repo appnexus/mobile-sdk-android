@@ -124,7 +124,7 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
     private void fail(ResultCode code) {
         AdRequester requester = this.requester.get();
         if (requester != null) {
-            requester.failed(code);
+            requester.onReceiveUTResponse(null, code);
         }
         Clog.clearLastResponse();
     }
@@ -189,7 +189,7 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
                         // marked as UNABLE_TO_FILL
                         Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
                     }
-                    return new UTAdResponse(result, parameters.getMediaType());
+                    return new UTAdResponse(result);
                 }  catch (SocketTimeoutException e) {
                     Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_timeout));
                 } catch (IOException e) {
@@ -223,10 +223,10 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
         AdRequester requester = this.requester.get();
         if (requester != null) {
             // add the orientation extra for interstitial ads
-            if (requester.getRequestParams() != null) {
-                result.addToExtras(ServerResponse.EXTRAS_KEY_ORIENTATION, requester.getRequestParams().getOrientation());
-            }
-            requester.onReceiveUTResponse(result);
+//            if (requester.getRequestParams() != null) {
+//                result.addToExtras(ServerResponse.EXTRAS_KEY_ORIENTATION, requester.getRequestParams().getOrientation());
+//            }
+            requester.onReceiveUTResponse(result, ResultCode.SUCCESS);
         }
     }
 
@@ -283,16 +283,19 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
         JSONObject tag = new JSONObject();
         try {
             tag.put(TAG_ID, StringUtil.getIntegerValue(params.getPlacementID()));
-
-            JSONObject size = new JSONObject();
             ArrayList<AdSize> allowedSizes = params.getAllowedSizes();
-            for (AdSize s : allowedSizes) {
-                size.put(SIZE_WIDTH, s.width());
-                size.put(SIZE_HEIGHT, s.height());
+
+            if(allowedSizes != null && allowedSizes.size() > 0) {
+                JSONArray sizes = new JSONArray();
+                for (AdSize s : allowedSizes) {
+                    JSONObject size = new JSONObject();
+                    size.put(SIZE_WIDTH, s.width());
+                    size.put(SIZE_HEIGHT, s.height());
+                    sizes.put(size);
+                }
+                tag.put(TAG_SIZES, sizes);
             }
-            JSONArray sizes = new JSONArray();
-            sizes.put(size);
-            tag.put(TAG_SIZES, sizes);
+
             tag.put(TAG_ALLOW_SMALLER_SIZES, false);
 
             JSONArray allowedAdTypes = new JSONArray();

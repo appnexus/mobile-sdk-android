@@ -138,11 +138,10 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
         if(Settings.useUniversalTagV2) {
             if (responseData != null && responseData.getImpressionURLs() != null) {
                 for (final String impressionUrl : responseData.getImpressionURLs()) {
-                    Clog.i(Clog.baseLogTag, "Impressions: " + impressionUrl);
                     new HTTPGet() {
                         @Override
                         protected void onPostExecute(HTTPResponse response) {
-                            if (response.getSucceeded()) {
+                            if (response !=null && response.getSucceeded()) {
                                 Clog.i(Clog.baseLogTag, "Impression sent successfully ");
                             }
                         }

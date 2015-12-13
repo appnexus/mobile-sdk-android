@@ -57,10 +57,16 @@ abstract class RequestManager implements AdRequester{
     public abstract void onReceiveServerResponse(ServerResponse response);
 
     @Override
-    public abstract void onReceiveUTResponse(UTAdResponse response);
+    public abstract void onReceiveUTResponse(UTAdResponse response, ResultCode resultCode);
 
     @Override
     public abstract void onReceiveAd(AdResponse ad);
+
+    @Override
+    public abstract void currentAdFailed(ResultCode reason);
+
+    @Override
+    public abstract void currentAdLoaded(AdResponse ad);
 
     @Override
     public void markLatencyStart() {

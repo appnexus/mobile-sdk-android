@@ -64,10 +64,6 @@ class NativeAdRequestManager extends RequestManager {
         }
     }
 
-    @Override
-    public void onReceiveUTResponse(UTAdResponse response) {
-
-    }
 
     @Override
     public void onReceiveServerResponse(ServerResponse response) {
@@ -142,6 +138,11 @@ class NativeAdRequestManager extends RequestManager {
     }
 
     @Override
+    public void onReceiveUTResponse(UTAdResponse response, ResultCode resultCode) {
+
+    }
+
+    @Override
     public void onReceiveAd(AdResponse ad) {
         printMediatedClasses();
         if (controller != null) {
@@ -154,5 +155,15 @@ class NativeAdRequestManager extends RequestManager {
         } else {
             ad.destroy();
         }
+    }
+
+    @Override
+    public void currentAdFailed(ResultCode reason) {
+
+    }
+
+    @Override
+    public void currentAdLoaded(AdResponse ad) {
+
     }
 }

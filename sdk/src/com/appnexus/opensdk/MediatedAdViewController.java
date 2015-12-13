@@ -284,8 +284,56 @@ public abstract class MediatedAdViewController {
         markLatencyStop();
         cancelTimeout();
         hasSucceeded = true;
-
         AdRequester requester = this.caller_requester.get();
+
+        if(mediaType == MediaType.INTERSTITIAL){
+            handleInterstitialSuccess(requester);
+        }else{
+            handleBannerSuccess(requester);
+        }
+
+    }
+
+    private void handleInterstitialSuccess(AdRequester requester) {
+        if (requester != null) {
+            requester.currentAdLoaded(new AdResponse() {
+                @Override
+                public MediaType getMediaType() {
+                    return mediaType;
+                }
+
+                @Override
+                public boolean isMediated() {
+                    return true;
+                }
+
+                @Override
+                public Displayable getDisplayable() {
+                    return mediatedDisplayable;
+                }
+
+                @Override
+                public NativeAdResponse getNativeAdResponse() {
+                    return null;
+                }
+
+                @Override
+                public BaseAdResponse getResponseData() {
+                    return currentCSMAd;
+                }
+
+                @Override
+                public void destroy() {
+                    mediatedDisplayable.destroy();
+                }
+            });
+        } else {
+            mediatedDisplayable.destroy();
+        }
+        fireResponseUrl(ResultCode.SUCCESS, requester);
+    }
+
+    private void handleBannerSuccess(AdRequester requester) {
         if (requester != null) {
             requester.onReceiveAd(new AdResponse() {
                 @Override
@@ -321,10 +369,7 @@ public abstract class MediatedAdViewController {
         } else {
             mediatedDisplayable.destroy();
         }
-        if(mediaType != MediaType.INTERSTITIAL){
-            fireResultCB(ResultCode.SUCCESS);
-        }
-
+        fireResultCB(ResultCode.SUCCESS);
     }
 
     abstract boolean isReady();
@@ -350,7 +395,7 @@ public abstract class MediatedAdViewController {
         // don't call the listener here. the requester will call the listener
         // at the end of the waterfall
         if(mediaType == MediaType.INTERSTITIAL){
-            handleFailedUTResponse(reason);
+            handleInterstitialFailure(reason);
         }else {
             fireResultCB(reason);
         }
@@ -441,19 +486,36 @@ public abstract class MediatedAdViewController {
                 requester.onReceiveServerResponse(null);
             }
         }
-
     }
 
 
-    private void handleFailedUTResponse(final ResultCode result) {
+    private void handleInterstitialFailure(final ResultCode result) {
         if (hasFailed) return;
-
-        AdRequester requester = this.caller_requester.get();
-        if (currentAd == null || result != ResultCode.SUCCESS) {
-            // if current ad is not available, continue to process next ad
-            requester.onReceiveUTResponse(null);
+        final AdRequester requester = this.caller_requester.get();
+        fireResponseUrl(result, requester);
+        if (currentCSMAd == null || result != ResultCode.SUCCESS) {
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    requester.currentAdFailed(result);
+                }
+            });
         }
+    }
 
+    private void fireResponseUrl(ResultCode result, AdRequester requester) {
+        //fire call to response url
+        ResultCBRequest cb = new ResultCBRequest(requester,
+                currentCSMAd.getResponseUrl(), result,
+                currentCSMAd.getExtras(), true,
+                getLatencyParam(), getTotalLatencyParam(requester));
+
+        // Spawn GET call
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            cb.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            cb.execute();
+        }
     }
 
     private class ResultCBRequest extends HTTPGet {
