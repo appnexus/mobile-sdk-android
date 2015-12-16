@@ -267,7 +267,7 @@ public class VastVideoUtil {
                     if (creativeModel != null) {
                         for (TrackingModel a : creativeModel.getLinearAdModel().getTrackingEventArrayList()) {
                             if (a.getEvent().equalsIgnoreCase(eventType)) {
-                                Clog.d(Clog.vastLogTag, "TRACKING EVENT - " + a.getEvent() + " | URL - " + a.getURL());
+                                Clog.i(Clog.vastLogTag, "TRACKING EVENT - " + a.getEvent() + " | URL - " + a.getURL());
                                 urlList.add(a.getURL());
                             }
                         }

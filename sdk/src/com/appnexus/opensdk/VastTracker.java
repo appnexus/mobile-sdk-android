@@ -32,7 +32,7 @@ class VastTracker extends HTTPGet{
     @Override
     protected void onPostExecute(HTTPResponse response) {
         if (response != null && response.getSucceeded()) {
-            Clog.i(Clog.baseLogTag, "VAST event tracked");
+            Clog.i(Clog.vastLogTag, "VAST event has been tracked successfully!");
         }
     }
 
