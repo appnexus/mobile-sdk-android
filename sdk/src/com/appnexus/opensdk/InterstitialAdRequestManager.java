@@ -60,11 +60,11 @@ class InterstitialAdRequestManager extends RequestManager {
 
     @Override
     public void cancel() {
-        if (adRequest != null) {
-            adRequest.cancel(true);
-            adRequest = null;
+        if (utAdRequest != null) {
+            utAdRequest.cancel(true);
+            utAdRequest = null;
         }
-        setMediatedAds(null);
+        setAdList(null);
         if (controller != null) {
             controller.cancel(true);
             controller = null;
@@ -79,7 +79,6 @@ class InterstitialAdRequestManager extends RequestManager {
         } else {
             return null;
         }
-
     }
 
     @Override
@@ -112,11 +111,11 @@ class InterstitialAdRequestManager extends RequestManager {
         }
     }
 
-    private void handleResponseFailure(ResultCode resultCode) {
+    private void handleResponseFailure(ResultCode reason) {
         printMediatedClasses();
         AdView owner = this.owner.get();
         if (owner != null) {
-            owner.getAdDispatcher().onAdFailed(resultCode);
+            owner.getAdDispatcher().onAdFailed(reason);
         }
     }
 
@@ -125,11 +124,6 @@ class InterstitialAdRequestManager extends RequestManager {
         // If we're about to dispatch a creative to a banner
         // that has been resized by ad stretching, reset its size
         AdView owner = this.owner.get();
-        if (owner.getMediaType().equals(MediaType.BANNER)) {
-            BannerAdView bav = (BannerAdView) owner;
-            bav.resetContainerIfNeeded();
-        }
-
         if (getAdList() != null && !getAdList().isEmpty()) {
             BaseAdResponse baseAdResponse = popAd();
             if (baseAdResponse.getContentSource().equalsIgnoreCase(ANConstants.RTB)) {
@@ -180,6 +174,9 @@ class InterstitialAdRequestManager extends RequestManager {
                         InputStream stream = new ByteArrayInputStream(vastResponse.getBytes(Charset.forName(ANConstants.UTF_8)));
                         VastResponseParser vastResponseParser = new VastResponseParser();
                         AdModel vastAdResponse = vastResponseParser.readVAST(stream);
+                        if(ssmAdResponse.getImpressionURLs() != null && ssmAdResponse.getImpressionURLs().size() > 0) {
+                            vastAdResponse.getImpressionArrayList().addAll(ssmAdResponse.getImpressionURLs());
+                        }
                         ssmAdResponse.setVastAdResponse(vastAdResponse);
                     } catch (Exception e) {
                         Clog.e(Clog.httpRespLogTag, "Exception parsing vast response: "+e.getMessage());
@@ -191,14 +188,13 @@ class InterstitialAdRequestManager extends RequestManager {
             @Override
             protected void onPostExecute(HTTPResponse response) {
                 if(response != null && response.getSucceeded()) {
-                    if(ssmAdResponse.getAdType().equalsIgnoreCase(UTAdResponse.RESPONSE_KEY_BANNER)) {
+                    if(ANConstants.AD_TYPE_HTML.equalsIgnoreCase(ssmAdResponse.getAdType())){
                         initiateWebview(owner, ssmAdResponse);
-                    }else if(ssmAdResponse.getAdType().equalsIgnoreCase(UTAdResponse.RESPONSE_KEY_VIDEO)){
+                    }else if(ANConstants.AD_TYPE_VIDEO.equalsIgnoreCase(ssmAdResponse.getAdType())){
                         if(ssmAdResponse.getVastAdResponse() != null && ssmAdResponse.getVastAdResponse().containsLinearAd()) {
-                            initiateVastAdView(owner, ssmAdResponse.getVastAdResponse());
+                            initiateVastAdView(owner, ssmAdResponse);
                         }else{
                             Clog.e(Clog.httpRespLogTag, "Vast ad is not available");
-
                             currentAdFailed(ResultCode.UNABLE_TO_FILL);
                         }
                     }
@@ -215,13 +211,7 @@ class InterstitialAdRequestManager extends RequestManager {
     }
 
     private void handleCSMResponse(AdView owner, CSMAdResponse csmAdResponse) {
-        if (owner.getMediaType().equals(MediaType.BANNER)) {
-            controller = MediatedBannerAdViewController.create(
-                    (Activity) owner.getContext(),
-                    InterstitialAdRequestManager.this,
-                    csmAdResponse,
-                    owner.getAdDispatcher());
-        } else if (owner.getMediaType().equals(MediaType.INTERSTITIAL)) {
+        if (owner.getMediaType().equals(MediaType.INTERSTITIAL)) {
             controller = MediatedInterstitialAdViewController.create(
                     (Activity) owner.getContext(),
                     InterstitialAdRequestManager.this,
@@ -234,15 +224,51 @@ class InterstitialAdRequestManager extends RequestManager {
     }
 
     private void handleRTBResponse(AdView owner, RTBAdResponse rtbAdResponse) {
-        if (rtbAdResponse.getVastAdResponse() != null) {
-            // Vast ads
-            initiateVastAdView(owner, rtbAdResponse.getVastAdResponse());
-        } else if(rtbAdResponse.getAdContent() != null){
-            // Standard ads
-            initiateWebview(owner, rtbAdResponse);
+        if(rtbAdResponse.getAdContent() != null) {
+            if (ANConstants.AD_TYPE_VIDEO.equalsIgnoreCase(rtbAdResponse.getAdType())) {
+                // Vast ads
+                handleVASTResponse(owner, rtbAdResponse);
+
+            } else if (ANConstants.AD_TYPE_HTML.equalsIgnoreCase(rtbAdResponse.getAdType())) {
+                // Standard ads
+                initiateWebview(owner, rtbAdResponse);
+            } else {
+                currentAdFailed(ResultCode.UNABLE_TO_FILL);
+            }
         }else{
             currentAdFailed(ResultCode.UNABLE_TO_FILL);
         }
+    }
+
+    private void handleVASTResponse(final AdView owner, final RTBAdResponse rtbAdResponse) {
+
+        if (!StringUtil.isEmpty(rtbAdResponse.getAdContent())) {
+            new AsyncTask<String, Void, AdModel>() {
+                @Override
+                protected AdModel doInBackground(String... params) {
+                    try {
+                        InputStream stream = new ByteArrayInputStream(params[0].getBytes(Charset.forName(ANConstants.UTF_8)));
+                        VastResponseParser vastResponseParser = new VastResponseParser();
+                        return vastResponseParser.readVAST(stream);
+                    }catch(Exception e){
+                        e.printStackTrace();
+                        return null;
+                    }
+                }
+
+                @Override
+                protected void onPostExecute(AdModel vastAdResponse) {
+                    if (vastAdResponse != null && vastAdResponse.containsLinearAd()) {
+                        rtbAdResponse.setVastAdResponse(vastAdResponse);
+                        Clog.d(Clog.httpRespLogTag, "Vast response parsed");
+                        initiateVastAdView(owner, rtbAdResponse);
+                    }else{
+                        currentAdFailed(ResultCode.UNABLE_TO_FILL);
+                    }
+                }
+            }.execute(rtbAdResponse.getAdContent());
+        }
+
     }
 
 
@@ -254,14 +280,7 @@ class InterstitialAdRequestManager extends RequestManager {
         final AdWebView output = new AdWebView(owner);
         output.loadAd(response);
 
-        if (owner.getMediaType().equals(MediaType.BANNER)) {
-            BannerAdView bav = (BannerAdView) owner;
-            if (bav.getExpandsToFitScreenWidth()) {
-                bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), output);
-            }
-        }
-
-        onReceiveAd(new AdResponse() {
+        currentAdLoaded(new AdResponse() {
             @Override
             public MediaType getMediaType() {
                 return owner.getMediaType();
@@ -294,10 +313,10 @@ class InterstitialAdRequestManager extends RequestManager {
         });
     }
 
-    private void initiateVastAdView(final AdView owner, AdModel vastAdResponse) {
-        final VastVideoView adVideoView = new VastVideoView(owner.getContext(), vastAdResponse);
+    private void initiateVastAdView(final AdView owner, final BaseAdResponse response) {
+        final VastVideoView adVideoView = new VastVideoView(owner.getContext(), response.getVastAdResponse());
 
-        onReceiveAd(new AdResponse() {
+        currentAdLoaded(new AdResponse() {
             @Override
             public MediaType getMediaType() {
                 return owner.getMediaType();
@@ -320,7 +339,7 @@ class InterstitialAdRequestManager extends RequestManager {
 
             @Override
             public BaseAdResponse getResponseData() {
-                return null;
+                return response;
             }
 
             @Override
@@ -331,7 +350,5 @@ class InterstitialAdRequestManager extends RequestManager {
     }
 
     @Override
-    public void onReceiveAd(AdResponse ad) {
-
-    }
+    public void onReceiveAd(AdResponse ad) {}
 }

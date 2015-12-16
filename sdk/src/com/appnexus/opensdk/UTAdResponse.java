@@ -24,31 +24,24 @@ import com.appnexus.opensdk.utils.ANConstants;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.JsonUtil;
 import com.appnexus.opensdk.utils.StringUtil;
-import com.appnexus.opensdk.vastdata.AdModel;
-import com.appnexus.opensdk.vastdata.VastResponseParser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Locale;
 
 class UTAdResponse {
 
-    private static final String UTF_8 = "UTF-8";
-
     private static final String RESPONSE_KEY_TAGS = "tags";
-    protected static final String RESPONSE_KEY_VIDEO = "video";
-    protected static final String RESPONSE_KEY_BANNER = "banner";
+    private static final String RESPONSE_KEY_VIDEO = "video";
+    private static final String RESPONSE_KEY_BANNER = "banner";
     private static final String RESPONSE_KEY_CONTENT = "content";
     private static final String RESPONSE_KEY_WIDTH = "width";
     private static final String RESPONSE_KEY_HEIGHT = "height";
-    public static final String RESPONSE_KEY_NO_BID = "nobid";
+    private static final String RESPONSE_KEY_NO_BID = "nobid";
 
     private static final String RESPONSE_KEY_RTB = "rtb";
     private static final String RESPONSE_KEY_ADS = "ads";
@@ -84,7 +77,7 @@ class UTAdResponse {
 
         Clog.setLastResponse(body);
 
-        Clog.i(Clog.httpRespLogTag, Clog.getString(R.string.response_body, body));
+        Clog.d(Clog.httpRespLogTag, Clog.getString(R.string.response_body, body));
 
         parseResponseV2(body);
     }
@@ -123,7 +116,7 @@ class UTAdResponse {
             }
         } catch (Exception e) {
             // Catches XMLPullParserException, JSONException, NullPointerException and IOException
-            Clog.e(Clog.httpReqLogTag, "Error parsing the ad response: " + e.getMessage());
+            Clog.e(Clog.httpRespLogTag, "Error parsing the ad response: " + e.getMessage());
             containsAds = false;
         }
     }
@@ -169,10 +162,10 @@ class UTAdResponse {
         JSONObject rtbObject = JsonUtil.getJSONObject(adObject, RESPONSE_KEY_RTB);
         if (rtbObject != null) {
             if(rtbObject.has(RESPONSE_KEY_BANNER)) {
-                Clog.i(Clog.httpReqLogTag, "it's an HTML Ad");
+                Clog.i(Clog.httpRespLogTag, "it's an HTML Ad");
                 parseHtmlAdResponse(rtbObject, adType, notifyUrl);
             }else{
-                Clog.i(Clog.httpReqLogTag, "it's a Video Ad");
+                Clog.i(Clog.httpRespLogTag, "it's a Video Ad");
                 parseVastAdReponse(rtbObject, adType, notifyUrl);
             }
         }
@@ -196,7 +189,7 @@ class UTAdResponse {
                     rtbAd.addToExtras(ServerResponse.EXTRAS_KEY_MRAID, true);
                 }
                 adList.add(rtbAd);
-                Clog.i(Clog.httpReqLogTag, "parseHTMLAd: true");
+                Clog.d(Clog.httpRespLogTag, "Html response parsed");
                 containsAds = true;
             }
         }
@@ -214,18 +207,11 @@ class UTAdResponse {
         if(videoObject != null) {
             String vastResponse = JsonUtil.getJSONString(videoObject, RESPONSE_KEY_CONTENT);
             if(!StringUtil.isEmpty(vastResponse)) {
-                InputStream stream = new ByteArrayInputStream(vastResponse.getBytes(Charset.forName(UTF_8)));
-
-                VastResponseParser vastResponseParser = new VastResponseParser();
-                AdModel vastAdResponse = vastResponseParser.readVAST(stream);
-                if(vastAdResponse != null && vastAdResponse.containsLinearAd()) {
-                    RTBAdResponse rtbAd = new RTBAdResponse(-1, -1, adType, notifyUrl, getImpressionUrls(rtbObject));
-                    rtbAd.setVastAdResponse(vastAdResponse);
-                    rtbAd.setContentSource(ANConstants.RTB);
-                    adList.add(rtbAd);
-                    containsAds = true;
-                    Clog.i(Clog.httpReqLogTag, "Vast response parsed");
-                }
+                RTBAdResponse rtbAd = new RTBAdResponse(-1, -1, adType, notifyUrl, getImpressionUrls(rtbObject));
+                rtbAd.setAdContent(vastResponse);
+                rtbAd.setContentSource(ANConstants.RTB);
+                adList.add(rtbAd);
+                containsAds = true;
             }
         }
     }
