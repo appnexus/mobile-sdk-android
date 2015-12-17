@@ -17,6 +17,7 @@ package com.appnexus.opensdk;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
@@ -593,9 +594,18 @@ abstract class VastVideoPlayer implements OnCompletionListener,
                     countDownTimer.pauseTimer();
                 }
                 setVideoPausePosition(getCurrentPosition());
-                if (AdUtil.openBrowser(context, clickUrl, videoConfiguration.openInNativeBrowser())) {
-                    isFromBrowser = true;
-                }
+
+                isFromBrowser = AdUtil.openBrowser(context, clickUrl, videoConfiguration, new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        if(videoView != null) {
+                            videoView.start();
+                        }
+                        if (countDownTimer != null) {
+                            countDownTimer.resumeTimer();
+                        }
+                    }
+                });
             }
         } catch (Exception exp) {
             Clog.e(Clog.vastLogTag, "Exception occurred while clicking the video - " + exp.getMessage());

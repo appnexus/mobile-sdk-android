@@ -17,7 +17,9 @@ package com.appnexus.opensdk;
 
 public class VastVideoConfiguration {
     private boolean openInNativeBrowser =false;
-    
+    private boolean shouldLoadInBackground = false;
+    private boolean showLoadingIndicator = false;
+
     enum SKIP_OFFSET_TYPE{
     	ABSOLUTE, RELATIVE
     }
@@ -71,5 +73,23 @@ public class VastVideoConfiguration {
     protected SKIP_OFFSET_TYPE getSkipOffsetType() {
 		return skipOffsetType;
 	}
-	
+
+    public boolean shouldLoadInBackground() {
+        return shouldLoadInBackground;
+    }
+
+    public void setShouldLoadInBackground(boolean shouldLoadInBackground) {
+        this.shouldLoadInBackground = shouldLoadInBackground;
+    }
+
+
+    public boolean showLoadingIndicator() {
+        return showLoadingIndicator;
+    }
+
+    public void setShowLoadingIndicator(boolean showLoadingIndicator) {
+        this.showLoadingIndicator = showLoadingIndicator;
+    }
+
+
 }
