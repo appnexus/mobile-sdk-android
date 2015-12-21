@@ -34,6 +34,10 @@ import com.appnexus.opensdk.utils.WebviewUtil;
 
 class AdUtil {
 
+    public static boolean openBrowser(Context context, String clickThroughURL, boolean shouldOpenInNativeBrowser, boolean shouldLoadInBackground, boolean shouldShowLoadingIndicator){
+        return openBrowser(context, clickThroughURL, shouldOpenInNativeBrowser, shouldLoadInBackground, shouldShowLoadingIndicator, null);
+    }
+
     public static boolean openBrowser(Context context, String clickThroughURL, boolean shouldOpenInNativeBrowser, boolean shouldLoadInBackground, boolean shouldShowLoadingIndicator, final DialogInterface.OnCancelListener clickCancelListener){
         if (shouldOpenInNativeBrowser){
             return openNativeBrowser(context, clickThroughURL);
