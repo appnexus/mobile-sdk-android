@@ -339,7 +339,7 @@ abstract class VastVideoPlayer implements OnCompletionListener,
 
             @Override
             public void onFinish() {
-                Clog.i(Clog.vastLogTag, "onFinish : ");
+                Clog.d(Clog.vastLogTag, "Video countdown timer has been finished!");
             }
         };
         countDownTimer.startTimer();
@@ -442,7 +442,7 @@ abstract class VastVideoPlayer implements OnCompletionListener,
         }
 
         startVideoCountDown();
-        Clog.i(Clog.vastLogTag, "onPrepared skipOffsetValue " + skipOffsetMillis);
+        Clog.d(Clog.vastLogTag, "Skip Offset Value: " + skipOffsetMillis);
     }
 
     private void hideLoader() {
@@ -530,7 +530,7 @@ abstract class VastVideoPlayer implements OnCompletionListener,
     private void unregisterReceiver() {
         try {
             if (mReceiver != null && context != null) {
-                Clog.i(Clog.vastLogTag, "Unregistering the receiver ");
+                Clog.d(Clog.vastLogTag, "Unregistering the screen display broadcast receiver");
                 context.unregisterReceiver(mReceiver);
                 mReceiver = null;
             }
@@ -608,7 +608,7 @@ abstract class VastVideoPlayer implements OnCompletionListener,
                 });
             }
         } catch (Exception exp) {
-            Clog.e(Clog.vastLogTag, "Exception occurred while clicking the video - " + exp.getMessage());
+            Clog.e(Clog.vastLogTag, "Exception occurred while launching the browser - " + exp.getMessage());
         }
         return false;
     }

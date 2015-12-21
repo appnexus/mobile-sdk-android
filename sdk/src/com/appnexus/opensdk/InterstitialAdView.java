@@ -137,7 +137,6 @@ public class InterstitialAdView extends AdView {
 
         ArrayList<AdSize> allowedSizes = new ArrayList<AdSize>();
 
-
         if (new AdSize(300, 250).fitsIn(measuredWidth, measuredHeight))
             allowedSizes.add(new AdSize(300, 250));
         if (new AdSize(320, 480).fitsIn(measuredWidth, measuredHeight))
@@ -318,6 +317,22 @@ public class InterstitialAdView extends AdView {
         super.setOpensNativeBrowser(opensNativeBrowser);
         if (videoConfiguration != null) {
             videoConfiguration.setOpenInNativeBrowser(opensNativeBrowser);
+        }
+    }
+
+    @Override
+    public void setLoadsInBackground(boolean doesLoadingInBackground) {
+        super.setLoadsInBackground(doesLoadingInBackground);
+        if (videoConfiguration != null) {
+            videoConfiguration.setShouldLoadInBackground(doesLoadingInBackground);
+        }
+    }
+
+    @Override
+    public void setShowLoadingIndicator(boolean show) {
+        super.setShowLoadingIndicator(show);
+        if (videoConfiguration != null) {
+            videoConfiguration.setShowLoadingIndicator(show);
         }
     }
 

@@ -39,33 +39,36 @@ class AdUtil {
             return openNativeBrowser(context, clickThroughURL);
         }else{
             if(videoConfiguration.shouldLoadInBackground()) {
-                ProgressDialog progressDialog = new ProgressDialog(context);
-                final RedirectBrowserWebview out = new RedirectBrowserWebview(context, progressDialog);
-                out.loadUrl(clickThroughURL);
-                out.setVisibility(View.GONE);
-//                adView.addView(out);
-
-                if(videoConfiguration.showLoadingIndicator()) {
-                    //Show a dialog box
-                    progressDialog.setCancelable(true);
-                    progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialogInterface) {
-                            out.stopLoading();
-                            if(clickCancelListener != null){
-                                clickCancelListener.onCancel(dialogInterface);
-                            }
-                        }
-                    });
-                    progressDialog.setMessage(context.getResources().getString(R.string.loading));
-                    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                    progressDialog.show();
-                }
-                return true;
+                return openInAppRedirectBrowser(context, clickThroughURL, videoConfiguration, clickCancelListener);
             }else {
                 return openInAppBrowser(context, clickThroughURL);
             }
         }
+    }
+
+    private static boolean openInAppRedirectBrowser(Context context, String clickThroughURL, VastVideoConfiguration videoConfiguration, final DialogInterface.OnCancelListener clickCancelListener) {
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        final RedirectBrowserWebview out = new RedirectBrowserWebview(context, progressDialog);
+        out.loadUrl(clickThroughURL);
+        out.setVisibility(View.GONE);
+
+        if(videoConfiguration.showLoadingIndicator()) {
+            //Show a dialog box
+            progressDialog.setCancelable(true);
+            progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialogInterface) {
+                    out.stopLoading();
+                    if(clickCancelListener != null){
+                        clickCancelListener.onCancel(dialogInterface);
+                    }
+                }
+            });
+            progressDialog.setMessage(context.getResources().getString(R.string.loading));
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.show();
+        }
+        return true;
     }
 
 
@@ -88,8 +91,6 @@ class AdUtil {
 
 
     static boolean openInAppBrowser(Context context, String clickThroughURL) {
-
-
         if (!StringUtil.isEmpty(clickThroughURL) && context != null) {
             Intent intent = new Intent(context, AdActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -163,7 +164,6 @@ class AdUtil {
                 @Override
                 public void onPageFinished(WebView view, String url) {
                     Clog.v(Clog.browserLogTag, "Opening URL: " + url);
-//                    ViewUtil.removeChildFromParent(RedirectBrowserWebview.this);
 
                     if(progressDialog != null && progressDialog.isShowing()) {
                         progressDialog.dismiss();
