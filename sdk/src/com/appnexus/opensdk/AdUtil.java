@@ -34,25 +34,25 @@ import com.appnexus.opensdk.utils.WebviewUtil;
 
 class AdUtil {
 
-    public static boolean openBrowser(Context context, String clickThroughURL, VastVideoConfiguration videoConfiguration, final DialogInterface.OnCancelListener clickCancelListener){
-        if (videoConfiguration.openInNativeBrowser()){
+    public static boolean openBrowser(Context context, String clickThroughURL, boolean shouldOpenInNativeBrowser, boolean shouldLoadInBackground, boolean shouldShowLoadingIndicator, final DialogInterface.OnCancelListener clickCancelListener){
+        if (shouldOpenInNativeBrowser){
             return openNativeBrowser(context, clickThroughURL);
         }else{
-            if(videoConfiguration.shouldLoadInBackground()) {
-                return openInAppRedirectBrowser(context, clickThroughURL, videoConfiguration, clickCancelListener);
+            if(shouldLoadInBackground) {
+                return openInAppRedirectBrowser(context, clickThroughURL, shouldShowLoadingIndicator, clickCancelListener);
             }else {
                 return openInAppBrowser(context, clickThroughURL);
             }
         }
     }
 
-    private static boolean openInAppRedirectBrowser(Context context, String clickThroughURL, VastVideoConfiguration videoConfiguration, final DialogInterface.OnCancelListener clickCancelListener) {
+    private static boolean openInAppRedirectBrowser(Context context, String clickThroughURL, boolean shouldShowLoadingIndicator, final DialogInterface.OnCancelListener clickCancelListener) {
         ProgressDialog progressDialog = new ProgressDialog(context);
         final RedirectBrowserWebview out = new RedirectBrowserWebview(context, progressDialog);
         out.loadUrl(clickThroughURL);
         out.setVisibility(View.GONE);
 
-        if(videoConfiguration.showLoadingIndicator()) {
+        if(shouldShowLoadingIndicator) {
             //Show a dialog box
             progressDialog.setCancelable(true);
             progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {

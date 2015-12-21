@@ -595,7 +595,8 @@ abstract class VastVideoPlayer implements OnCompletionListener,
                 }
                 setVideoPausePosition(getCurrentPosition());
 
-                isFromBrowser = AdUtil.openBrowser(context, clickUrl, videoConfiguration, new DialogInterface.OnCancelListener() {
+                isFromBrowser = AdUtil.openBrowser(context, clickUrl, videoConfiguration.openInNativeBrowser(),
+                        videoConfiguration.shouldLoadInBackground(), videoConfiguration.showLoadingIndicator(), new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {
                         if(videoView != null) {
