@@ -19,7 +19,6 @@ package com.appnexus.opensdk;
 import android.content.Context;
 import android.media.CamcorderProfile;
 import android.os.Build;
-import android.util.Log;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Connectivity;
@@ -268,7 +267,7 @@ public class VastVideoUtil {
                     if (creativeModel != null) {
                         for (TrackingModel a : creativeModel.getLinearAdModel().getTrackingEventArrayList()) {
                             if (a.getEvent().equalsIgnoreCase(eventType)) {
-                                Log.d("", "TRACKING EVENT - " + a.getEvent() + " | URL - " + a.getURL());
+                                Clog.i(Clog.vastLogTag, "TRACKING EVENT - " + a.getEvent() + " | URL - " + a.getURL());
                                 urlList.add(a.getURL());
                             }
                         }
@@ -297,7 +296,6 @@ public class VastVideoUtil {
                         for (VideoClickModel videoClickModel : linearAdModel.getVideoClicksArrayList()) {
                             if (videoClickModel != null) {
                                 for (ClickTrackingModel clickTrackingModel : videoClickModel.getClickTrackingArrayList()) {
-                                    Log.d("", "Video Click Tracking url - " + clickTrackingModel.getURL());
                                     if (clickTrackingModel.getURL() != null) {
                                         urlList.add(clickTrackingModel.getURL());
                                     }

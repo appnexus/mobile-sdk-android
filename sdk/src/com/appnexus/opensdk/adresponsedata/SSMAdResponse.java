@@ -14,31 +14,32 @@
  *    limitations under the License.
  */
 
-package com.appnexus.opensdk;
+package com.appnexus.opensdk.adresponsedata;
 
-import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.HTTPGet;
-import com.appnexus.opensdk.utils.HTTPResponse;
+import java.util.ArrayList;
 
 
-class VastTracker extends HTTPGet{
+public class SSMAdResponse extends BaseAdResponse {
+    private String adUrl;
+    private int ssmTimeout;
 
-    private String url;
-
-    VastTracker(String url) {
-        this.url = url;
+    public SSMAdResponse(int width, int height, String adType, String notifyUrl, ArrayList<String> impressionURLs) {
+        super(width, height, adType, notifyUrl, impressionURLs);
     }
 
-    @Override
-    protected void onPostExecute(HTTPResponse response) {
-        if (response != null && response.getSucceeded()) {
-            Clog.i(Clog.vastLogTag, "VAST event has been tracked successfully!");
-        }
+    public String getAdUrl() {
+        return adUrl;
     }
 
-    @Override
-    protected String getUrl() {
-        return url;
+    public void setAdUrl(String adUrl) {
+        this.adUrl = adUrl;
     }
 
+    public int getSsmTimeout() {
+        return ssmTimeout;
+    }
+
+    public void setSsmTimeout(int ssmTimeout) {
+        this.ssmTimeout = ssmTimeout;
+    }
 }

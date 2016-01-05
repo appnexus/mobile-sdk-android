@@ -63,6 +63,7 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
     public static final String TAG_ALLOWED_MEDIA_AD_TYPES = "ad_types";
     public static final String TAG_DISABLE_PSA = "disable_psa";
     public static final String TAG_PREBID = "prebid";
+    public static final String TAG_CODE = "code";
     public static final String USER = "user";
     public static final String USER_AGE = "age";
     public static final String USER_GENDER = "gender";
@@ -88,6 +89,7 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
     public static final String APP = "app";
     public static final String APP_ID = "appid";
     public static final String KEYWORDS = "keywords";
+    public static final String MEMBER_ID = "member_id";
     public static final String KEYVAL_KEY = "key";
     public static final String KEYVAL_VALUE = "value";
     public static final String ALLOWED_TYPE_BANNER = "banner";
@@ -124,7 +126,7 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
     private void fail(ResultCode code) {
         AdRequester requester = this.requester.get();
         if (requester != null) {
-            requester.failed(code);
+            requester.onReceiveUTResponse(null, code);
         }
         Clog.clearLastResponse();
     }
@@ -189,7 +191,7 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
                         // marked as UNABLE_TO_FILL
                         Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
                     }
-                    return new UTAdResponse(result, parameters.getMediaType());
+                    return new UTAdResponse(result);
                 }  catch (SocketTimeoutException e) {
                     Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_timeout));
                 } catch (IOException e) {
@@ -223,10 +225,10 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
         AdRequester requester = this.requester.get();
         if (requester != null) {
             // add the orientation extra for interstitial ads
-            if (requester.getRequestParams() != null) {
-                result.addToExtras(ServerResponse.EXTRAS_KEY_ORIENTATION, requester.getRequestParams().getOrientation());
-            }
-            requester.onReceiveUTResponse(result);
+//            if (requester.getRequestParams() != null) {
+//                result.addToExtras(ServerResponse.EXTRAS_KEY_ORIENTATION, requester.getRequestParams().getOrientation());
+//            }
+            requester.onReceiveUTResponse(result, ResultCode.SUCCESS);
         }
     }
 
@@ -247,7 +249,7 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
         JSONObject postData = new JSONObject();
         try {
             // add tags
-            JSONArray tags = getTagsObject();
+            JSONArray tags = getTagsObject(postData);
             if (tags != null && tags.length() > 0) {
                 postData.put(TAGS, tags);
             }
@@ -278,21 +280,32 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
         return postData.toString();
     }
 
-    private JSONArray getTagsObject() {
+    private JSONArray getTagsObject(JSONObject postData) {
         JSONArray tags = new JSONArray();
         JSONObject tag = new JSONObject();
         try {
-            tag.put(TAG_ID, StringUtil.getIntegerValue(params.getPlacementID()));
-
-            JSONObject size = new JSONObject();
-            ArrayList<AdSize> allowedSizes = params.getAllowedSizes();
-            for (AdSize s : allowedSizes) {
-                size.put(SIZE_WIDTH, s.width());
-                size.put(SIZE_HEIGHT, s.height());
+            if(!StringUtil.isEmpty(params.getInvCode()) && params.getMemberID()>0){
+                tag.put(TAG_CODE, params.getInvCode());
+                postData.put(MEMBER_ID, params.getMemberID());
+            }else if (!StringUtil.isEmpty(params.getPlacementID())) {
+                tag.put(TAG_ID, StringUtil.getIntegerValue(params.getPlacementID()));
+            }else{
+                tag.put(TAG_ID, 0);
             }
-            JSONArray sizes = new JSONArray();
-            sizes.put(size);
-            tag.put(TAG_SIZES, sizes);
+
+            ArrayList<AdSize> allowedSizes = params.getAllowedSizes();
+
+            if(allowedSizes != null && allowedSizes.size() > 0) {
+                JSONArray sizes = new JSONArray();
+                for (AdSize s : allowedSizes) {
+                    JSONObject size = new JSONObject();
+                    size.put(SIZE_WIDTH, s.width());
+                    size.put(SIZE_HEIGHT, s.height());
+                    sizes.put(size);
+                }
+                tag.put(TAG_SIZES, sizes);
+            }
+
             tag.put(TAG_ALLOW_SMALLER_SIZES, false);
 
             JSONArray allowedAdTypes = new JSONArray();
@@ -303,6 +316,7 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
             tag.put(TAG_PREBID, false);
             tag.put(TAG_DISABLE_PSA, !params.getShouldServePSAs());
         } catch (JSONException e) {
+            Clog.e(Clog.baseLogTag, "Exception: "+e.getMessage());
         }
         if (tag.length() > 0) {
             tags.put(tag);

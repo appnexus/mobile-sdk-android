@@ -44,6 +44,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.appnexus.opensdk.AdView.BrowserStyle;
+import com.appnexus.opensdk.adresponsedata.BaseAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
@@ -123,12 +124,13 @@ class AdWebView extends WebView implements Displayable {
         setWebViewClient(new AdWebViewClient());
     }
 
-    public void loadAd(UTAdResponse ad) {
+
+    public void loadAd(BaseAdResponse ad) {
         if(ad==null){
             fail();
             return;
         }
-        String html = ad.getContent();
+        String html = ad.getAdContent();
         // set creative size
         setCreativeHeight(ad.getHeight());
         setCreativeWidth(ad.getWidth());
@@ -191,9 +193,7 @@ class AdWebView extends WebView implements Displayable {
     // The webview about to load the ad, and the html ad content
     private String preLoadContent(String html) {
         // Check to ensure <html> tags are present
-        /**
-         * TODO: Added a null check. Needs to be reviewed
-         */
+
         if(StringUtil.isEmpty(html)){
             return null;
         }
@@ -699,8 +699,7 @@ class AdWebView extends WebView implements Displayable {
 
         int[] screenSize = ViewUtil.getScreenSizeAsPixels((Activity) this.getContext());
 
-        this.isOnscreen = (right > 0) && (left < screenSize[0])
-                && (bottom > 0) && (top < screenSize[1]);
+        this.isOnscreen = (right > 0) && (left < screenSize[0]) && (bottom > 0) && (top < screenSize[1]);
 
         // update current position
         if (implementation != null) {

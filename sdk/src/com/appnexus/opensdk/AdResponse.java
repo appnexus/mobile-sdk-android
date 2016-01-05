@@ -16,6 +16,8 @@
 
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.adresponsedata.BaseAdResponse;
+
 interface AdResponse {
     /**
      * @return MediaType of the ad respone
@@ -40,6 +42,8 @@ interface AdResponse {
      * @return null if media type is not native
      */
     public NativeAdResponse getNativeAdResponse();
+
+    public BaseAdResponse getResponseData();
 
     /**
      * Call this to destroy the ad response

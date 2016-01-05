@@ -22,6 +22,8 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 
+import com.appnexus.opensdk.adresponsedata.BaseAdResponse;
+import com.appnexus.opensdk.adresponsedata.CSMAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
@@ -50,7 +52,10 @@ public abstract class MediatedAdViewController {
     protected MediaType mediaType;
     protected MediatedAdView mAV;
     private WeakReference<AdRequester> caller_requester;
+
+
     protected MediatedAd currentAd;
+    protected CSMAdResponse currentCSMAd;
     protected AdDispatcher listener;
     protected MediatedDisplayable mediatedDisplayable = new MediatedDisplayable(this);
 
@@ -71,6 +76,27 @@ public abstract class MediatedAdViewController {
             errorCode = ResultCode.UNABLE_TO_FILL;
         } else {
             boolean instantiateSuccessful = instantiateNewMediatedAd();
+            if (!instantiateSuccessful)
+                errorCode = ResultCode.MEDIATED_SDK_UNAVAILABLE;
+        }
+
+        if (errorCode != null)
+            onAdFailed(errorCode);
+    }
+
+    MediatedAdViewController(AdRequester requester, CSMAdResponse currentAd, AdDispatcher listener, MediaType type) {
+        this.caller_requester = new WeakReference<AdRequester>(requester);
+        this.currentCSMAd = currentAd;
+        this.listener = listener;
+        this.mediaType = type;
+
+        ResultCode errorCode = null;
+
+        if (currentAd == null) {
+            Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_no_ads));
+            errorCode = ResultCode.UNABLE_TO_FILL;
+        } else {
+            boolean instantiateSuccessful = instantiateCSMAd();
             if (!instantiateSuccessful)
                 errorCode = ResultCode.MEDIATED_SDK_UNAVAILABLE;
         }
@@ -174,6 +200,55 @@ public abstract class MediatedAdViewController {
         return false;
     }
 
+
+    private boolean instantiateCSMAd() {
+        Clog.d(Clog.mediationLogTag, Clog.getString(
+                R.string.instantiating_class, currentCSMAd.getClassName()));
+
+        try {
+            String className = currentCSMAd.getClassName();
+            String intermediaryAdaptorClassName = Settings.getSettings().externalMediationClasses.get(className);
+            Class<?> c;
+
+            if (StringUtil.isEmpty(intermediaryAdaptorClassName)) {
+                c = Class.forName(className);
+                mAV = (MediatedAdView) c.newInstance();
+            } else {
+                c = Class.forName(intermediaryAdaptorClassName);
+                Constructor<?> constructor = c.getConstructor(String.class);
+                mAV = (MediatedAdView) constructor.newInstance(className);
+            }
+
+            // exceptions will skip down to return false
+            return true;
+        } catch (ClassNotFoundException e) {
+            // exception in Class.forName
+            handleInstantiationFailure(e, currentCSMAd.getClassName());
+        } catch (LinkageError e) {
+            // error in Class.forName
+            // also catches subclass ExceptionInInitializerError
+            handleInstantiationFailure(e, currentCSMAd.getClassName());
+        } catch (InstantiationException e) {
+            // exception in Class.newInstance
+            handleInstantiationFailure(e, currentCSMAd.getClassName());
+        } catch (IllegalAccessException e) {
+            // exception in Class.newInstance
+            handleInstantiationFailure(e, currentCSMAd.getClassName());
+        } catch (ClassCastException e) {
+            // exception in object cast
+            handleInstantiationFailure(e, currentCSMAd.getClassName());
+        } catch (NoSuchMethodException e) {
+            // exception in Class.getConstructor
+            // intermediary adaptor case
+            handleInstantiationFailure(e, currentCSMAd.getClassName());
+        } catch (InvocationTargetException e) {
+            // exception in Constructor.newInstance
+            // intermediary adaptor case
+            handleInstantiationFailure(e, currentCSMAd.getClassName());
+        }
+        return false;
+    }
+
     // Accepts both Exceptions and Errors
     private void handleInstantiationFailure(Throwable throwable, String className) {
         Clog.e(Clog.mediationLogTag,
@@ -209,8 +284,56 @@ public abstract class MediatedAdViewController {
         markLatencyStop();
         cancelTimeout();
         hasSucceeded = true;
-
         AdRequester requester = this.caller_requester.get();
+
+        if(mediaType == MediaType.INTERSTITIAL){
+            handleInterstitialSuccess(requester);
+        }else{
+            handleBannerSuccess(requester);
+        }
+
+    }
+
+    private void handleInterstitialSuccess(AdRequester requester) {
+        if (requester != null) {
+            requester.currentAdLoaded(new AdResponse() {
+                @Override
+                public MediaType getMediaType() {
+                    return mediaType;
+                }
+
+                @Override
+                public boolean isMediated() {
+                    return true;
+                }
+
+                @Override
+                public Displayable getDisplayable() {
+                    return mediatedDisplayable;
+                }
+
+                @Override
+                public NativeAdResponse getNativeAdResponse() {
+                    return null;
+                }
+
+                @Override
+                public BaseAdResponse getResponseData() {
+                    return currentCSMAd;
+                }
+
+                @Override
+                public void destroy() {
+                    mediatedDisplayable.destroy();
+                }
+            });
+        } else {
+            mediatedDisplayable.destroy();
+        }
+        fireResponseUrl(ResultCode.SUCCESS, requester);
+    }
+
+    private void handleBannerSuccess(AdRequester requester) {
         if (requester != null) {
             requester.onReceiveAd(new AdResponse() {
                 @Override
@@ -231,6 +354,11 @@ public abstract class MediatedAdViewController {
                 @Override
                 public NativeAdResponse getNativeAdResponse() {
                     return null;
+                }
+
+                @Override
+                public BaseAdResponse getResponseData() {
+                    return currentCSMAd;
                 }
 
                 @Override
@@ -266,7 +394,11 @@ public abstract class MediatedAdViewController {
 
         // don't call the listener here. the requester will call the listener
         // at the end of the waterfall
-        fireResultCB(reason);
+        if(mediaType == MediaType.INTERSTITIAL){
+            handleInterstitialFailure(reason);
+        }else {
+            fireResultCB(reason);
+        }
         hasFailed = true;
         finishController();
     }
@@ -309,7 +441,6 @@ public abstract class MediatedAdViewController {
     @SuppressLint({ "InlinedApi", "NewApi" }) /* suppress AsyncTask.THREAD_POOL_EXECUTOR warning for < HONEYCOMB */
 	private void fireResultCB(final ResultCode result) {
         if (hasFailed) return;
-
 
         AdRequester requester = this.caller_requester.get();
         // if resultCB is empty don't fire resultCB, and just continue to next ad
@@ -355,7 +486,36 @@ public abstract class MediatedAdViewController {
                 requester.onReceiveServerResponse(null);
             }
         }
+    }
 
+
+    private void handleInterstitialFailure(final ResultCode result) {
+        if (hasFailed) return;
+        final AdRequester requester = this.caller_requester.get();
+        fireResponseUrl(result, requester);
+        if (currentCSMAd == null || result != ResultCode.SUCCESS) {
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    requester.currentAdFailed(result);
+                }
+            });
+        }
+    }
+
+    private void fireResponseUrl(ResultCode result, AdRequester requester) {
+        //fire call to response url
+        ResultCBRequest cb = new ResultCBRequest(requester,
+                currentCSMAd.getResponseUrl(), result,
+                currentCSMAd.getExtras(), true,
+                getLatencyParam(), getTotalLatencyParam(requester));
+
+        // Spawn GET call
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            cb.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            cb.execute();
+        }
     }
 
     private class ResultCBRequest extends HTTPGet {

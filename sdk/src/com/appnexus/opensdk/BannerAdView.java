@@ -26,7 +26,6 @@ import android.content.res.TypedArray;
 import android.graphics.Point;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Pair;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -35,7 +34,6 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
-import android.widget.ViewAnimator;
 
 import com.appnexus.opensdk.transitionanimation.Animator;
 import com.appnexus.opensdk.transitionanimation.TransitionDirection;
@@ -45,8 +43,7 @@ import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.WebviewUtil;
 
 import java.lang.ref.WeakReference;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.ArrayList;
 
 
 /**
@@ -652,6 +649,10 @@ public class BannerAdView extends AdView {
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_size, w, h));
         requestParameters.setAdWidth(w);
         requestParameters.setAdHeight(h);
+        AdSize size = new AdSize(w,h);
+        ArrayList<AdSize> sizes = new ArrayList<AdSize>();
+        sizes.add(size);
+        requestParameters.setAllowedSizes(sizes);
     }
 
     /**
