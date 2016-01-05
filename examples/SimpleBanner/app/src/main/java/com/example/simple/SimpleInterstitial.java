@@ -41,7 +41,7 @@ public class SimpleInterstitial extends Activity {
 //        iav.setPlacementID("5706860"); // Use this id to get VAST Video Interstitial ads
         iav.setShouldServePSAs(false);
         iav.setOpensNativeBrowser(false);
-        iav.setSkipOffset(1, false);
+        iav.setCloseButtonDelay(7000);
 
         iav.setAdListener(new AdListener() {
             @Override

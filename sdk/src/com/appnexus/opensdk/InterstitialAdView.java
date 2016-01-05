@@ -459,33 +459,6 @@ public class InterstitialAdView extends AdView {
         return backgroundColor;
     }
 
-    /**
-    * Returns the skip countdown value
-     *
-     * @return
-     */
-    public int getSkipOffset() {
-        return videoConfiguration.getSkipOffset();
-    }
-
-    /**
-     * Returns the skip countdown value
-     *
-     * @return
-     */
-    public VastVideoConfiguration.SKIP_OFFSET_TYPE getSkipOffsetType() {
-        return videoConfiguration.getSkipOffsetType();
-    }
-
-    /**
-     * Sets the countdown timer label position
-    * @param skipOffset - Value of skip offset
-     * @param isRelative - Relative or Absolute skip offset type
-     */
-    public void setSkipOffset(int skipOffset, boolean isRelative) {
-        videoConfiguration.setSkipOffset(skipOffset, isRelative);
-    }
-
 
     protected VastVideoConfiguration getVideoConfiguration() {
         return videoConfiguration;
@@ -516,7 +489,6 @@ public class InterstitialAdView extends AdView {
     @Override
     public void destroy() {
         super.destroy();
-        Clog.i("test", Clog.getString(R.string.destroy_int));
         if (this.mAdFetcher != null)
             mAdFetcher.stop();
         adQueue.clear();
@@ -546,6 +518,8 @@ public class InterstitialAdView extends AdView {
      */
     public void setCloseButtonDelay(int closeButtonDelay) {
         this.closeButtonDelay = Math.min(closeButtonDelay, Settings.DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
+        videoConfiguration.setSkipOffset(closeButtonDelay/1000, false);
+
     }
 
     void setAdImplementation(AdActivity.AdActivityImplementation adImplementation) {

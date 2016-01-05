@@ -54,6 +54,7 @@ abstract class VastVideoPlayer implements OnCompletionListener,
         GestureDetector.OnDoubleTapListener {
 
     public static final int COUNTDOWN_INTERVAL = 1;
+    private static final boolean MUTED_BY_DEFAULT = true;
     protected Context context;
     protected VideoView videoView;
     protected Handler handler;
@@ -87,6 +88,7 @@ abstract class VastVideoPlayer implements OnCompletionListener,
         this.vastAd = videoView.getVastAd();
         this.relativeLayout = relativeLayout;
         this.videoConfiguration = videoConfiguration;
+        isMuted = MUTED_BY_DEFAULT;
     }
 
     public void setVideoAdListener(VideoAdEventsListener videoAdListener) {
@@ -221,7 +223,6 @@ abstract class VastVideoPlayer implements OnCompletionListener,
         Clog.d("onCompletion", "onCompletion VAST Interstitial released");
         handler.post(new Runnable() {
             public void run() {
-                isMuted = false;
                 stopProgressChecker();
 
                 if (videoEventHandler != null) {
@@ -307,8 +308,7 @@ abstract class VastVideoPlayer implements OnCompletionListener,
     }
 
     private void addMuteButton() {
-        isMuted = false;
-        muteButton = ViewUtil.createMuteButtonInRelativeLayout(context);
+        muteButton = ViewUtil.createMuteButtonInRelativeLayout(context, isMuted);
         muteButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -405,6 +405,11 @@ abstract class VastVideoPlayer implements OnCompletionListener,
             if (muteButton != null) {
                 muteButton.setVisibility(View.VISIBLE);
                 muteButton.bringToFront();
+            }
+            if(isMuted) {
+                mediaPlayer.setVolume(0, 0);
+            }else {
+                mediaPlayer.setVolume(1, 1);
             }
         } catch (Exception e) {
             String errorMessage = "Exception occurred while preparing video player - " + e.getMessage();

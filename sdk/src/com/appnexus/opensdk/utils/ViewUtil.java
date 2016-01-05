@@ -56,10 +56,14 @@ public class ViewUtil {
         return close;
     }
 
-    public static ImageView createMuteButtonInRelativeLayout(Context context) {
+    public static ImageView createMuteButtonInRelativeLayout(Context context, boolean isMuted) {
         final ImageView muteButton = new ImageView(context);
         muteButton.setScaleType(ImageView.ScaleType.FIT_XY);
-        muteButton.setImageResource(R.drawable.unmute);
+        if(isMuted) {
+            muteButton.setImageResource(R.drawable.mute);
+        }else{
+            muteButton.setImageResource(R.drawable.unmute);
+        }
         int sizeInDP = getSizeInDP(context, MUTE_BUTTON_SIZE);
         int marginInDp = getSizeInDP(context, MUTE_BUTTON_MARGIN);
 
