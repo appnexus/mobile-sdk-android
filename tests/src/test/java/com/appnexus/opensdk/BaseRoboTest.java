@@ -3,18 +3,13 @@ package com.appnexus.opensdk;
 import android.app.Activity;
 
 import com.appnexus.opensdk.util.Lock;
-import com.appnexus.opensdk.utils.Settings;
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.mockwebserver.MockWebServer;
 
 import org.junit.After;
 import org.junit.Before;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.httpclient.FakeHttp;
-import org.robolectric.shadows.httpclient.FakeHttpLayer;
 import org.robolectric.util.Scheduler;
 
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 

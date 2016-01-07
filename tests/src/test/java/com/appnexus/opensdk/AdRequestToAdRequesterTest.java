@@ -16,10 +16,10 @@
 
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.adresponsedata.BaseAdResponse;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.utils.Settings;
-import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -171,6 +171,17 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
         this.response = response;
     }
 
+    /**
+     * Called when a Universal Tag response from AppNexus server is received
+     *
+     * @param response   UTAdResponse which was received.
+     * @param resultCode
+     */
+    @Override
+    public void onReceiveUTResponse(UTAdResponse response, ResultCode resultCode) {
+
+    }
+
     @Override
     public void onReceiveAd(AdResponse ad) {
         requesterReceivedAd = true;
@@ -202,7 +213,22 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
     }
 
     @Override
+    public LinkedList<BaseAdResponse> getAdList() {
+        return null;
+    }
+
+    @Override
     public RequestParameters getRequestParams() {
         return requestParameters;
+    }
+
+    @Override
+    public void currentAdLoaded(AdResponse ad) {
+
+    }
+
+    @Override
+    public void currentAdFailed(ResultCode reason) {
+
     }
 }
