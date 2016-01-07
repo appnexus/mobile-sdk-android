@@ -1,19 +1,74 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 buildscript {
-    repositories {
-        jcenter()
-    }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath 'com.android.tools.build:gradle:1.3.0'
     }
-}
-
-allprojects {
     repositories {
         jcenter()
     }
 }
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+    enforceUniquePackageName = false
+    defaultConfig {
+        applicationId 'com.appnexus.opensdk'
+        minSdkVersion 9
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+    }
+    sourceSets {
+        main.manifest.srcFile 'AndroidManifest.xml'
+        main.java.srcDirs 'src/main/java'
+        main.res.srcDir 'res'
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    testOptions {
+        unitTests {
+            all {
+                // configure the test JVM arguments, turn off byte code verification when running our unit tests.
+                jvmArgs '-noverify'
+                systemProperty 'robolectric.logging.enable', true
+            }
+
+        }
+        unitTests.returnDefaultValues = true
+    }
+    productFlavors {
+    }
+}
+
+dependencies {
+    compile project(':sdk')
+    compile 'com.android.support:support-v4:21.0.2'
+    compile('com.google.android.gms:play-services:4.+') {
+        exclude group: 'com.android.support'
+    }
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.assertj:assertj-core:1.7.0'
+    testCompile 'org.robolectric:robolectric:3.0'
+    testCompile 'org.robolectric:shadows-httpclient:3.0'
+    testCompile 'com.squareup.okhttp:mockwebserver:2.5.0'
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+
+
+
+
