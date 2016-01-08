@@ -3,18 +3,13 @@ package com.appnexus.opensdk;
 import android.app.Activity;
 
 import com.appnexus.opensdk.util.Lock;
-import com.appnexus.opensdk.utils.Settings;
-import com.squareup.okhttp.HttpUrl;
-import com.squareup.okhttp.mockwebserver.MockWebServer;
 
 import org.junit.After;
 import org.junit.Before;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.httpclient.FakeHttp;
-import org.robolectric.shadows.httpclient.FakeHttpLayer;
 import org.robolectric.util.Scheduler;
 
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -47,14 +42,6 @@ public class BaseRoboTest {
         FakeHttp.clearPendingHttpResponses();
         activity.finish();
     }
-
-    /**
-     * Convenience methods and strings
-     */
-    static final String MOCK_SERVER_NOT_STARTED = "Mock server was not started successfully";
-    static final String JSON_EXCEPTION = "Error parsing json response";
-    static final String CUSTOM_KEY = "key";
-    static final String CUSTOM_VALUE = "value";
 
     public void scheduleTimerToCheckForTasks() {
         Timer timer = new Timer();
