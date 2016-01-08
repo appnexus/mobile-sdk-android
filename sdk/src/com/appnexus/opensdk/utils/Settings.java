@@ -88,7 +88,7 @@ public class Settings {
 //    public static final String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2html";
 //    public static final String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2csminterstitial";
 //    public static final String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2csmbanner";
-    public static final String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2video";
+    public static String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2video";
 //    public static final String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2ssmbanner";
 //    public static final String BASE_URL_UT_V2 = "http://rlissack.adnxs.net:8080/jtest/utv2ssmbannernobid";
 

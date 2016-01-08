@@ -18,7 +18,10 @@ package com.appnexus.opensdk;
 
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
+import com.appnexus.opensdk.utils.Settings;
+import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.mockwebserver.MockResponse;
+import com.squareup.okhttp.mockwebserver.MockWebServer;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +30,8 @@ import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowWebView;
 import org.robolectric.shadows.httpclient.FakeHttp;
+
+import java.io.IOException;
 
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
@@ -74,6 +79,35 @@ public class AdListenerTest extends BaseViewAdTest {
     }
 
     @Test
+    public void testInterstitialVideoAdLoaded() {
+        try {
+            setupMockServer(TestUTResponses.video());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        requestManager = new InterstitialAdRequestManager(interstitialAdView);
+        requestManager.execute();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        shutdownServer();
+
+        FakeHttp.addPendingHttpResponse(200, TestUTResponses.getVastInlineResponse());
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertCallbacks(true);
+    }
+
+
+    private void setupMockServer(String response) throws IOException {
+        server = new MockWebServer();
+        server.start();
+
+        HttpUrl url = server.url("/");
+        Settings.BASE_URL_UT_V2 = url.toString();
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(response));
+    }
+
+    @Test
     public void testInterstitialAdFailed() {
         FakeHttp.addPendingHttpResponse(200, TestResponses.blank());
         requestManager = new AdViewRequestManager(interstitialAdView);
@@ -81,5 +115,21 @@ public class AdListenerTest extends BaseViewAdTest {
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         assertCallbacks(false);
+    }
+
+    @Override
+    public void tearDown() {
+        super.tearDown();
+        shutdownServer();
+    }
+
+    private void shutdownServer() {
+        try {
+            if(server != null) {
+                server.shutdown();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
