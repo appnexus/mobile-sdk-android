@@ -197,6 +197,79 @@ public class UTAdRequestTest extends BaseRoboTest {
         inspectSizes(allowedSizes, tag);
     }
 
+    /**
+     * Validates if PSA is enabled
+     * @throws InterruptedException
+     * @throws JSONException
+     */
+    @Test
+    public void testPSAEnabled() throws InterruptedException, JSONException {
+        System.out.println("Enabling PSA flag in public API...");
+        inspectPSAFlag(true);
+    }
+
+
+    /**
+     * Validates if PSA is disabled
+     * @throws InterruptedException
+     * @throws JSONException
+     */
+    @Test
+    public void testPSADisabled() throws InterruptedException, JSONException {
+        System.out.println("Disabling PSA flag in public API...");
+        inspectPSAFlag(false);
+    }
+
+    /**
+     * Tests the value of allowed ad types
+     * @throws Exception
+     */
+    @Test
+    public void testAdTypes() throws Exception {
+        owner.setPlacementID(String.valueOf(PLACEMENT_ID));
+        clearAAIDAsyncTasks();
+        adFetcher = new AdFetcher(owner);
+        adFetcher.start();
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        JSONObject postData = inspectPostData();
+        JSONObject tag = getTagsData(postData);
+        assertTrue(tag.has(UTAdRequest.TAG_ID));
+        assertEquals(PLACEMENT_ID, tag.getInt(UTAdRequest.TAG_ID));
+
+        assertTrue(tag.has(UTAdRequest.TAG_ALLOWED_MEDIA_AD_TYPES));
+        JSONArray allowedAdTypes = tag.getJSONArray(UTAdRequest.TAG_ALLOWED_MEDIA_AD_TYPES);
+        assertNotNull(allowedAdTypes);
+        assertEquals(2, allowedAdTypes.length());
+        assertEquals(ANConstants.AD_TYPE_HTML, allowedAdTypes.getString(0));
+        assertEquals(ANConstants.AD_TYPE_VIDEO, allowedAdTypes.getString(1));
+    }
+
+    /**
+     * Checks whether the request has pre-bid enabled
+     * @throws Exception
+     */
+    @Test
+    public void testForPrebid() throws Exception {
+        owner.setPlacementID(String.valueOf(PLACEMENT_ID));
+        owner.setShouldServePSAs(false);
+        clearAAIDAsyncTasks();
+        adFetcher = new AdFetcher(owner);
+        adFetcher.start();
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        JSONObject postData = inspectPostData();
+        JSONObject tag = getTagsData(postData);
+        assertTrue(tag.has(UTAdRequest.TAG_ID));
+        assertEquals(PLACEMENT_ID, tag.getInt(UTAdRequest.TAG_ID));
+
+        assertTrue(tag.has(UTAdRequest.TAG_PREBID));
+        assertEquals(false, tag.getBoolean(UTAdRequest.TAG_PREBID));
+    }
 
 
     @Override
@@ -346,11 +419,12 @@ public class UTAdRequestTest extends BaseRoboTest {
         return gender;
     }
 
-    @Test
-    public void testUTPostRequest() throws Exception {
-        owner.addCustomKeywords(TEST_KEY, TEST_VALUE);
-        owner.setPlacementID("" + PLACEMENT_ID);
-        owner.setShouldServePSAs(false);
+
+    private void inspectPSAFlag(boolean shouldEnablePSA) throws InterruptedException, JSONException {
+        System.out.println("Validating PSA flag...");
+        owner.setPlacementID(String.valueOf(PLACEMENT_ID));
+        owner.setShouldServePSAs(shouldEnablePSA);
+        clearAAIDAsyncTasks();
 
         adFetcher = new AdFetcher(owner);
         adFetcher.start();
@@ -362,28 +436,14 @@ public class UTAdRequestTest extends BaseRoboTest {
         JSONObject tag = getTagsData(postData);
         assertTrue(tag.has(UTAdRequest.TAG_ID));
         assertEquals(PLACEMENT_ID, tag.getInt(UTAdRequest.TAG_ID));
-        assertTrue(tag.has(UTAdRequest.TAG_SIZES));
-        JSONArray sizes = tag.getJSONArray(UTAdRequest.TAG_SIZES);
-        assertNotNull(sizes);
-        assertEquals(1, sizes.length());
-        JSONObject size = sizes.getJSONObject(0);
-        assertNotNull(size);
-        assertTrue(size.has(UTAdRequest.SIZE_WIDTH));
-        assertEquals(300, size.getInt(UTAdRequest.SIZE_WIDTH));
-        assertTrue(size.has(UTAdRequest.SIZE_HEIGHT));
-        assertEquals(250, size.getInt(UTAdRequest.SIZE_HEIGHT));
-        assertTrue(tag.has(UTAdRequest.TAG_ALLOW_SMALLER_SIZES));
-        assertEquals(false, tag.getBoolean(UTAdRequest.TAG_ALLOW_SMALLER_SIZES));
-        assertTrue(tag.has(UTAdRequest.TAG_ALLOWED_MEDIA_AD_TYPES));
-        JSONArray allowedAdTypes = tag.getJSONArray(UTAdRequest.TAG_ALLOWED_MEDIA_AD_TYPES);
-        assertNotNull(allowedAdTypes);
-        assertEquals(2, allowedAdTypes.length());
-        assertEquals(ANConstants.AD_TYPE_HTML, allowedAdTypes.getString(0));
-        assertTrue(tag.has(UTAdRequest.TAG_PREBID));
-        assertEquals(false, tag.getBoolean(UTAdRequest.TAG_PREBID));
+
         assertTrue(tag.has(UTAdRequest.TAG_DISABLE_PSA));
-        assertEquals(true, tag.getBoolean(UTAdRequest.TAG_DISABLE_PSA));
+        assertEquals(!shouldEnablePSA, tag.getBoolean(UTAdRequest.TAG_DISABLE_PSA));
+
+        System.out.println("Is PSA Disabled: " + tag.getBoolean(UTAdRequest.TAG_DISABLE_PSA));
+        System.out.println("PSA validity test passed!");
     }
+
 
     private void setupMockServer() throws IOException {
         server = new MockWebServer();
