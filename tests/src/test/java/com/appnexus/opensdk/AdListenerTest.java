@@ -97,6 +97,24 @@ public class AdListenerTest extends BaseViewAdTest {
         assertCallbacks(true);
     }
 
+    @Test
+    public void testUTRTBAdLoaded() {
+        try {
+            setupMockServer(TestUTResponses.utHTMLBanner());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        requestManager = new AdViewRequestManager(bannerAdView);
+        requestManager.execute();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        shutdownServer();
+
+        FakeHttp.addPendingHttpResponse(200, TestUTResponses.getUTHTMLResponse());
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertCallbacks(true);
+    }
 
     private void setupMockServer(String response) throws IOException {
         server = new MockWebServer();
