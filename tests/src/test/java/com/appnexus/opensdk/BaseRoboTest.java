@@ -3,7 +3,6 @@ package com.appnexus.opensdk;
 import android.app.Activity;
 
 import com.appnexus.opensdk.util.Lock;
-import com.squareup.okhttp.mockwebserver.MockWebServer;
 
 import org.junit.After;
 import org.junit.Before;
@@ -22,7 +21,6 @@ public class BaseRoboTest {
     public static final int height = 50;
     Activity activity;
     Scheduler uiScheduler, bgScheduler;
-    MockWebServer server;
 
     @Before
     public void setup() {

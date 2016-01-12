@@ -39,6 +39,8 @@ import java.io.IOException;
 @RunWith(RobolectricGradleTestRunner.class)
 public class AdListenerTest extends BaseViewAdTest {
 
+    MockWebServer server;
+
     @Override
     public void setup() {
         super.setup();
@@ -79,7 +81,7 @@ public class AdListenerTest extends BaseViewAdTest {
      */
     @Test
     public void testInterstitialHtmlRTBAdLoaded() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.getUTHTMLResponse()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.html()));
         requestManager = new InterstitialAdRequestManager(interstitialAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
@@ -99,7 +101,7 @@ public class AdListenerTest extends BaseViewAdTest {
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
 
-        FakeHttp.addPendingHttpResponse(200, TestUTResponses.getVastInlineResponse());
+        FakeHttp.addPendingHttpResponse(200, TestUTResponses.vastInline());
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         assertCallbacks(true);
@@ -123,7 +125,7 @@ public class AdListenerTest extends BaseViewAdTest {
      */
     @Test
     public void testInterstitialFailedWithNoBidResponse() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.getNoBidResponse()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.noBid()));
         requestManager = new InterstitialAdRequestManager(interstitialAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
