@@ -20,6 +20,9 @@ import com.appnexus.opensdk.util.TestUtil;
 
 import java.util.ArrayList;
 
+/**
+ * Used for mock responses
+ */
 public class TestResponses {
 
     public static final String RESULTCB = "http://result.com/";
