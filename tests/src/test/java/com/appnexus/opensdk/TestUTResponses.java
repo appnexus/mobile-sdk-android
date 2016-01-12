@@ -62,10 +62,6 @@ public class TestUTResponses {
         return templateAdsResponse("banner", 320, 50, "content");
     }
 
-    public static String utHTMLBanner() {
-        return templateAdsResponse("banner", 320, 480, "content");
-    }
-
     public static String video(){
         return templateUTVideoResponse(STATUS_OK, VAST_XML_RESPONSE);
     }
