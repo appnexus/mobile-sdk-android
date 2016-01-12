@@ -31,7 +31,7 @@ public class TestUTResponses {
     private static final String CLASSNAME = "com.appnexus.opensdk.testviews.%s";
 
     // impbus response
-
+    private static final String UT_NO_BID_RESPONSE = "{\"version\":\"0.0.2\",\"tags\":[{\"auction_id\":9055535852024653375,\"nobid\":1,\"tag_id\":2140063,\"uuid\":null}]}";
     private static final String UT_RESPONSE = "{\"version\":\"0.0.2\",\"tags\":[{\"uuid\":\"null\",\"auction_id\":\"5049928823070184480\",\"ut_url\":\"\",\"tag_id\":5778861,\"ads\":[{\"content_source\":\"rtb\",\"ad_type\":\"video\",\"buyer_member_id\":3535,\"creative_id\":37357778,\"media_type_id\":4,\"media_subtype_id\":64,\"notify_url\":\"\",\"rtb\":{\"video\":{\"player_width\":0,\"duration_ms\":142000,\"playback_methods\":[\"auto_play_sound_off\"],\"frameworks\":[],\"content\":\"%s\"}}}]}]}";
     private static final String UT_HTML_RESPONSE = "{\"version\":\"0.0.2\",\"tags\":[{\"uuid\":\"null\",\"auction_id\":\"5049928823070184480\",\"ut_url\":\"\",\"tag_id\":5778861,\"ads\":[{\"content_source\":\"rtb\",\"ad_type\":\"banner\",\"buyer_member_id\":229,\"creative_id\":10124375,\"media_type_id\":1,\"media_subtype_id\":1,\"notify_url\":\"\",\"rtb\":{\"banner\":{\"width\":320,\"height\":480,\"content\":\"%s\"}}}]}]}";
     private static final String UT_HTML_RESPONSE_CSM = "{\"version\":\"0.0.2\",\"tags\":[{\"uuid\":\"null\",\"auction_id\":\"4005765276550092434\",\"ut_url”:”%s”,\"tag_id\":2140061,\t\"no_ad_url\": “%s”,\"ads\":[{\"content_source\":\"csm\",\"ad_type\":\"interstitial\",\"buyer_member_id\":229,\"creative_id\":10124375,\"media_type_id\":1,\"media_subtype_id\":1,\"notify_url”:”%s”,\"csm\":{\"interstitial\":{},\"timeout_ms\":500,\"handler\":[{\"param\":\"\",\"id\":\"210827375150_10154672420735151\",\"type\":\"ios\",\"class\":\"ANAdAdapterInterstitialFacebook\"},{\"param\":\"\",\"id\":\"210827375150_10154672420735151\",\"type\":\"android\",\"class\":\"com.appnexus.opensdk.mediatedviews.FacebookInterstitial\"}],\"trackers\":[{\"impression_urls\":[“%s”,“%s”]}],\"request_url”:”%s”}}]}]}";
@@ -57,6 +57,10 @@ public class TestUTResponses {
 
     public static String blank() {
         return "";
+    }
+
+    public static String getNoBidResponse() {
+        return UT_NO_BID_RESPONSE;
     }
 
     public static String banner() {

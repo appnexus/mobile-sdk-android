@@ -251,7 +251,7 @@ class InterstitialAdRequestManager extends RequestManager {
                         VastResponseParser vastResponseParser = new VastResponseParser();
                         return vastResponseParser.readVAST(stream);
                     }catch(Exception e){
-                        e.printStackTrace();
+                        Clog.e(Clog.vastLogTag, "Exception processing the VAST response: "+e.getMessage());
                         return null;
                     }
                 }
