@@ -32,6 +32,7 @@ import org.robolectric.shadows.ShadowWebView;
 import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
@@ -106,6 +107,11 @@ public class AdListenerTest extends BaseViewAdTest {
         }
         requestManager = new InterstitialAdRequestManager(interstitialAdView);
         requestManager.execute();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertCallbacks(true);
+
+        server.enqueue(new MockResponse().setResponseCode(HttpURLConnection.HTTP_OK).setBody(TestUTResponses.getUTHTMLResponseForCSM()));
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         assertCallbacks(true);
