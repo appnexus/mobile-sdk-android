@@ -18,7 +18,6 @@ package com.appnexus.opensdk;
 
 import android.net.Uri;
 
-import com.appnexus.opensdk.util.TestUtil;
 import com.appnexus.opensdk.vastdata.AdModel;
 import com.appnexus.opensdk.vastdata.ClickTrackingModel;
 import com.appnexus.opensdk.vastdata.CreativeModel;
@@ -34,47 +33,18 @@ import java.util.ArrayList;
  */
 public class TestUTResponses {
 
-    public static final String RESULTCB = "http://result.com/";
-
-    // template strings
-    private static final String CLASSNAME = "com.appnexus.opensdk.testviews.%s";
-
-    // impbus response
-
     // /ut mock response
     private static final String UT_RESPONSE = "{\"version\":\"0.0.2\",\"tags\":[{\"uuid\":\"null\",\"auction_id\":\"5049928823070184480\",\"ut_url\":\"\",\"tag_id\":5778861,\"ads\":[{\"content_source\":\"rtb\",\"ad_type\":\"%s\",\"buyer_member_id\":3535,\"creative_id\":37357778,\"media_type_id\":4,\"media_subtype_id\":64,\"notify_url\":\"\",\"rtb\":{\"video\":{\"player_width\":0,\"duration_ms\":142000,\"playback_methods\":[\"auto_play_sound_off\"],\"frameworks\":[],\"content\":\"%s\"}}}]}]}";
     private static final String UT_AD_TYPE_BANNER = "banner";
     private static final String UT_AD_TYPE_VIDEO = "video";
-    private static final String UT_HTML_RESPONSE = "{\"version\":\"0.0.2\",\"tags\":[{\"uuid\":\"null\",\"auction_id\":\"5049928823070184480\",\"ut_url\":\"\",\"tag_id\":5778861,\"ads\":[{\"content_source\":\"rtb\",\"ad_type\":\"banner\",\"buyer_member_id\":229,\"creative_id\":10124375,\"media_type_id\":1,\"media_subtype_id\":1,\"notify_url\":\"\",\"rtb\":{\"banner\":{\"width\":320,\"height\":480,\"content\":\"%s\"}}}]}]}";
     private static final String VAST_XML_RESPONSE = "<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?><VAST version=\\\"2.0\\\"><Ad id=\\\"37357778\\\"><Wrapper><AdSystem version=\\\"2.0\\\">adnxs</AdSystem><VASTAdTagURI><![CDATA[/]]></VASTAdTagURI><Error><![CDATA[http://nym1.ib.adnxs.com/vast_track?e=wqT_3QKcBPBCEwIAAAIA1gAFCNmV6rEFEKCo68Ck8LyKRhjwpr3Ju4qAuhEgASotCXsUrkfheoQ_EXsUrkfheoQ_GQAAAAAAAPA_IRESACkRCagwrdvgAjjPG0DPG0gCUNKR6BFY2oYzYABo5MMBeLTQAoABAYoBA1VTRJIBAQbwUpgBwAKgAeADqAEBsAEAuAEAwAEDyAEA0AEA2AEA4AEA8AEAigI6dWYoJ2EnLCA2NTI4ODcsIDE0NDY2NzcyMDkpO3VmKCdyJywgMzczNTc3NzgsMh4A8LSSAqUBIU5pZk8td2piMDU0RkVOS1I2QkVZQUNEYWhqTXdBRGdBUUFSSXp4dFFyZHZnQWxnQVlGaG9BSEFBZUFDQUFRQ0lBUUNRQVFHWUFRR2dBUUdvQVFPd0FRQzVBWHNVcmtmaGVvUV93UUY3Rks1SDRYcUVQOGtCX1p2clU1SmdfVF9aQVFBQUFBQUFBUEFfNEFFQTlRRUFBQUFBbUFLS2lNeUVEZy4umgIdIWxRYXNQZ2piLqgA8Hcyb1l6SUFRLtgCAOACpKsrgAMAiAMBkAMAmAMXoAMBqgMAsAMAuAMAwAOQHMgDANIDKAgAEiRhNjVjMTExYy1kMjI4LTQ2OTctODAxZC0wYTMyODI1OGEwYzbYAwDgAwDoAwDwAwD4AwCABACSBAYvdXQvdjGYBAA.&event=4&s=09b6f53d34cc1ac313608a19d6920de34f1140f8]]></Error><Impression id=\\\"adnxs\\\"><![CDATA[http://nym1.ib.adnxs.com/vast_track?e=wqT_3QKcBPBCEwIAAAIA1gAFCNmV6rEFEKCo68Ck8LyKRhjwpr3Ju4qAuhEgASotCXsUrkfheoQ_EXsUrkfheoQ_GQAAAAAAAPA_IRESACkRCagwrdvgAjjPG0DPG0gCUNKR6BFY2oYzYABo5MMBeLTQAoABAYoBA1VTRJIBAQbwUpgBwAKgAeADqAEBsAEAuAEAwAEDyAEA0AEA2AEA4AEA8AEAigI6dWYoJ2EnLCA2NTI4ODcsIDE0NDY2NzcyMDkpO3VmKCdyJywgMzczNTc3NzgsMh4A8LSSAqUBIU5pZk8td2piMDU0RkVOS1I2QkVZQUNEYWhqTXdBRGdBUUFSSXp4dFFyZHZnQWxnQVlGaG9BSEFBZUFDQUFRQ0lBUUNRQVFHWUFRR2dBUUdvQVFPd0FRQzVBWHNVcmtmaGVvUV93UUY3Rks1SDRYcUVQOGtCX1p2clU1SmdfVF9aQVFBQUFBQUFBUEFfNEFFQTlRRUFBQUFBbUFLS2lNeUVEZy4umgIdIWxRYXNQZ2piLqgA8Hcyb1l6SUFRLtgCAOACpKsrgAMAiAMBkAMAmAMXoAMBqgMAsAMAuAMAwAOQHMgDANIDKAgAEiRhNjVjMTExYy1kMjI4LTQ2OTctODAxZC0wYTMyODI1OGEwYzbYAwDgAwDoAwDwAwD4AwCABACSBAYvdXQvdjGYBAA.&event=9&s=09b6f53d34cc1ac313608a19d6920de34f1140f8]]></Impression><Creatives><Creative id=\\\"9408\\\"><Linear><TrackingEvents><Tracking event=\\\"start\\\"><![CDATA[http://nym1.ib.adnxs.com/vast_track?e=wqT_3QKcBPBCEwIAAAIA1gAFCNmV6rEFEKCo68Ck8LyKRhjwpr3Ju4qAuhEgASotCXsUrkfheoQ_EXsUrkfheoQ_GQAAAAAAAPA_IRESACkRCagwrdvgAjjPG0DPG0gCUNKR6BFY2oYzYABo5MMBeLTQAoABAYoBA1VTRJIBAQbwUpgBwAKgAeADqAEBsAEAuAEAwAEDyAEA0AEA2AEA4AEA8AEAigI6dWYoJ2EnLCA2NTI4ODcsIDE0NDY2NzcyMDkpO3VmKCdyJywgMzczNTc3NzgsMh4A8LSSAqUBIU5pZk8td2piMDU0RkVOS1I2QkVZQUNEYWhqTXdBRGdBUUFSSXp4dFFyZHZnQWxnQVlGaG9BSEFBZUFDQUFRQ0lBUUNRQVFHWUFRR2dBUUdvQVFPd0FRQzVBWHNVcmtmaGVvUV93UUY3Rks1SDRYcUVQOGtCX1p2clU1SmdfVF9aQVFBQUFBQUFBUEFfNEFFQTlRRUFBQUFBbUFLS2lNeUVEZy4umgIdIWxRYXNQZ2piLqgA8Hcyb1l6SUFRLtgCAOACpKsrgAMAiAMBkAMAmAMXoAMBqgMAsAMAuAMAwAOQHMgDANIDKAgAEiRhNjVjMTExYy1kMjI4LTQ2OTctODAxZC0wYTMyODI1OGEwYzbYAwDgAwDoAwDwAwD4AwCABACSBAYvdXQvdjGYBAA.&event=2&s=09b6f53d34cc1ac313608a19d6920de34f1140f8]]></Tracking><Tracking event=\\\"firstQuartile\\\"><![CDATA[http://nym1.ib.adnxs.com/vast_track?e=wqT_3QKcBPBCEwIAAAIA1gAFCNmV6rEFEKCo68Ck8LyKRhjwpr3Ju4qAuhEgASotCXsUrkfheoQ_EXsUrkfheoQ_GQAAAAAAAPA_IRESACkRCagwrdvgAjjPG0DPG0gCUNKR6BFY2oYzYABo5MMBeLTQAoABAYoBA1VTRJIBAQbwUpgBwAKgAeADqAEBsAEAuAEAwAEDyAEA0AEA2AEA4AEA8AEAigI6dWYoJ2EnLCA2NTI4ODcsIDE0NDY2NzcyMDkpO3VmKCdyJywgMzczNTc3NzgsMh4A8LSSAqUBIU5pZk8td2piMDU0RkVOS1I2QkVZQUNEYWhqTXdBRGdBUUFSSXp4dFFyZHZnQWxnQVlGaG9BSEFBZUFDQUFRQ0lBUUNRQVFHWUFRR2dBUUdvQVFPd0FRQzVBWHNVcmtmaGVvUV93UUY3Rks1SDRYcUVQOGtCX1p2clU1SmdfVF9aQVFBQUFBQUFBUEFfNEFFQTlRRUFBQUFBbUFLS2lNeUVEZy4umgIdIWxRYXNQZ2piLqgA8Hcyb1l6SUFRLtgCAOACpKsrgAMAiAMBkAMAmAMXoAMBqgMAsAMAuAMAwAOQHMgDANIDKAgAEiRhNjVjMTExYy1kMjI4LTQ2OTctODAxZC0wYTMyODI1OGEwYzbYAwDgAwDoAwDwAwD4AwCABACSBAYvdXQvdjGYBAA.&event=5&s=09b6f53d34cc1ac313608a19d6920de34f1140f8]]></Tracking><Tracking event=\\\"midpoint\\\"><![CDATA[http://nym1.ib.adnxs.com/vast_track?e=wqT_3QKcBPBCEwIAAAIA1gAFCNmV6rEFEKCo68Ck8LyKRhjwpr3Ju4qAuhEgASotCXsUrkfheoQ_EXsUrkfheoQ_GQAAAAAAAPA_IRESACkRCagwrdvgAjjPG0DPG0gCUNKR6BFY2oYzYABo5MMBeLTQAoABAYoBA1VTRJIBAQbwUpgBwAKgAeADqAEBsAEAuAEAwAEDyAEA0AEA2AEA4AEA8AEAigI6dWYoJ2EnLCA2NTI4ODcsIDE0NDY2NzcyMDkpO3VmKCdyJywgMzczNTc3NzgsMh4A8LSSAqUBIU5pZk8td2piMDU0RkVOS1I2QkVZQUNEYWhqTXdBRGdBUUFSSXp4dFFyZHZnQWxnQVlGaG9BSEFBZUFDQUFRQ0lBUUNRQVFHWUFRR2dBUUdvQVFPd0FRQzVBWHNVcmtmaGVvUV93UUY3Rks1SDRYcUVQOGtCX1p2clU1SmdfVF9aQVFBQUFBQUFBUEFfNEFFQTlRRUFBQUFBbUFLS2lNeUVEZy4umgIdIWxRYXNQZ2piLqgA8Hcyb1l6SUFRLtgCAOACpKsrgAMAiAMBkAMAmAMXoAMBqgMAsAMAuAMAwAOQHMgDANIDKAgAEiRhNjVjMTExYy1kMjI4LTQ2OTctODAxZC0wYTMyODI1OGEwYzbYAwDgAwDoAwDwAwD4AwCABACSBAYvdXQvdjGYBAA.&event=6&s=09b6f53d34cc1ac313608a19d6920de34f1140f8]]></Tracking><Tracking event=\\\"thirdQuartile\\\"><![CDATA[http://nym1.ib.adnxs.com/vast_track?e=wqT_3QKcBPBCEwIAAAIA1gAFCNmV6rEFEKCo68Ck8LyKRhjwpr3Ju4qAuhEgASotCXsUrkfheoQ_EXsUrkfheoQ_GQAAAAAAAPA_IRESACkRCagwrdvgAjjPG0DPG0gCUNKR6BFY2oYzYABo5MMBeLTQAoABAYoBA1VTRJIBAQbwUpgBwAKgAeADqAEBsAEAuAEAwAEDyAEA0AEA2AEA4AEA8AEAigI6dWYoJ2EnLCA2NTI4ODcsIDE0NDY2NzcyMDkpO3VmKCdyJywgMzczNTc3NzgsMh4A8LSSAqUBIU5pZk8td2piMDU0RkVOS1I2QkVZQUNEYWhqTXdBRGdBUUFSSXp4dFFyZHZnQWxnQVlGaG9BSEFBZUFDQUFRQ0lBUUNRQVFHWUFRR2dBUUdvQVFPd0FRQzVBWHNVcmtmaGVvUV93UUY3Rks1SDRYcUVQOGtCX1p2clU1SmdfVF9aQVFBQUFBQUFBUEFfNEFFQTlRRUFBQUFBbUFLS2lNeUVEZy4umgIdIWxRYXNQZ2piLqgA8Hcyb1l6SUFRLtgCAOACpKsrgAMAiAMBkAMAmAMXoAMBqgMAsAMAuAMAwAOQHMgDANIDKAgAEiRhNjVjMTExYy1kMjI4LTQ2OTctODAxZC0wYTMyODI1OGEwYzbYAwDgAwDoAwDwAwD4AwCABACSBAYvdXQvdjGYBAA.&event=7&s=09b6f53d34cc1ac313608a19d6920de34f1140f8]]></Tracking><Tracking event=\\\"complete\\\"><![CDATA[http://nym1.ib.adnxs.com/vast_track?e=wqT_3QKcBPBCEwIAAAIA1gAFCNmV6rEFEKCo68Ck8LyKRhjwpr3Ju4qAuhEgASotCXsUrkfheoQ_EXsUrkfheoQ_GQAAAAAAAPA_IRESACkRCagwrdvgAjjPG0DPG0gCUNKR6BFY2oYzYABo5MMBeLTQAoABAYoBA1VTRJIBAQbwUpgBwAKgAeADqAEBsAEAuAEAwAEDyAEA0AEA2AEA4AEA8AEAigI6dWYoJ2EnLCA2NTI4ODcsIDE0NDY2NzcyMDkpO3VmKCdyJywgMzczNTc3NzgsMh4A8LSSAqUBIU5pZk8td2piMDU0RkVOS1I2QkVZQUNEYWhqTXdBRGdBUUFSSXp4dFFyZHZnQWxnQVlGaG9BSEFBZUFDQUFRQ0lBUUNRQVFHWUFRR2dBUUdvQVFPd0FRQzVBWHNVcmtmaGVvUV93UUY3Rks1SDRYcUVQOGtCX1p2clU1SmdfVF9aQVFBQUFBQUFBUEFfNEFFQTlRRUFBQUFBbUFLS2lNeUVEZy4umgIdIWxRYXNQZ2piLqgA8Hcyb1l6SUFRLtgCAOACpKsrgAMAiAMBkAMAmAMXoAMBqgMAsAMAuAMAwAOQHMgDANIDKAgAEiRhNjVjMTExYy1kMjI4LTQ2OTctODAxZC0wYTMyODI1OGEwYzbYAwDgAwDoAwDwAwD4AwCABACSBAYvdXQvdjGYBAA.&event=8&s=09b6f53d34cc1ac313608a19d6920de34f1140f8]]></Tracking></TrackingEvents><VideoClicks><ClickTracking id=\\\"adnxs\\\"><![CDATA[http://nym1.ib.adnxs.com/click?exSuR-F6hD97FK5H4XqEPwAAAAAAAPA_exSuR-F6hD97FK5H4XqEPyDUGkiC8xRGcFMvuVMAdBHZijpWAAAAAK0tWADPDQAAzw0AAAIAAADSCDoCWsMMAAAAAQBVU0QAVVNEAEAB4AHkYQAANKgBAAMAAQAAAKYARSJsoQAAAAA./cnd=%21lQasPgjb054FENKR6BEY2oYzIAQ./]]></ClickTracking></VideoClicks></Linear></Creative></Creatives></Wrapper></Ad></VAST>";
     private static final String VAST_INLINE_RESPONSE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><VAST xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n" +
             "\t  xsi:noNamespaceSchemaLocation=\"vast2.xsd\" version=\"2.0\"><Ad id=\"Customized\"><InLine><AdSystem>Open AdStream</AdSystem><AdTitle>Customized</AdTitle><Description>ad Description</Description><Impression><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ieg/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?]]></Impression><Creatives><Creative><Linear><Duration>00:01:01</Duration><TrackingEvents><Tracking event=\"start\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=start&XE]]></Tracking><Tracking event=\"midpoint\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=midpoint&XE]]></Tracking><Tracking event=\"firstQuartile\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=firstQuartile&XE]]></Tracking><Tracking event=\"thirdQuartile\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=thirdQuartile&XE]]></Tracking><Tracking event=\"complete\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=complete&XE]]></Tracking><Tracking event=\"mute\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=mute&XE]]></Tracking><Tracking event=\"pause\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=pause&XE]]></Tracking><Tracking event=\"fullscreen\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=fullscreen&XE]]></Tracking><Tracking event=\"rewind\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=rewind&XE]]></Tracking><Tracking event=\"unmute\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=unmute&XE]]></Tracking><Tracking event=\"expand\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=expand&XE]]></Tracking><Tracking event=\"collapse\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=collapse&XE]]></Tracking><Tracking event=\"acceptInvitation\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=acceptInvitation&XE]]></Tracking><Tracking event=\"close\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=close&XE]]></Tracking><Tracking event=\"resume\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=resume&XE]]></Tracking><Tracking event=\"creativeView\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=creativeView&XE]]></Tracking></TrackingEvents><VideoClicks><ClickThrough><![CDATA[http://oasc18.247realmedia.com/5c/video-demo.appnexus.com/outstream_1/L35/1298238887/x01/TJM_Imp/demo_outstream_1/creative_3_vast_x01.xml/574e6d6d2b46574d4d3077414270354f?]]></ClickThrough></VideoClicks><MediaFiles><MediaFile delivery=\"progressive\" bitrate=\"1049\" width=\"854\" height=\"480\" type=\"video/mp4\"><![CDATA[http://imagec18.247realmedia.com/0/TJM_Imp/demo_outstream_1/524D5F5641535431_creative_3_vast_x01.mp4/1446478842]]></MediaFile></MediaFiles></Linear></Creative></Creatives></InLine></Ad></VAST>";
-    private static final String BANNER = "temp content"; // TODO add mock content here
-
-    // /mob mock response
-    private static final String RESPONSE = "{\"status\":\"%s\",\"ads\":%s,\"mediated\":%s,\"native\":%s,\"version\":%d}";
-    private static final String ADS = "[{ \"type\": \"%s\", \"width\": %d, \"height\": %d, \"content\": \"%s\" }]";
-    private static final String MEDIATED_AD = "{\"type\":\"%s\",\"class\":\"%s\",\"param\":\"%s\",\"width\":\"%d\",\"height\":\"%d\",\"id\":\"%s\"}";
-    private static final String MEDIATED_ARRAY_SINGLE_AD = "[{ \"handler\": [{\"type\":\"%s\",\"class\":\"%s\",\"param\":\"%s\",\"width\":\"%d\",\"height\":\"%d\",\"id\":\"%s\"}],\"result_cb\":\"%s\"}]";
-    private static final String HANDLER = "{ \"handler\": [%s],\"result_cb\":\"%s\"}";
-    private static final String HANDLER_NO_RESULTCB = "{ \"handler\": [%s]}";
-    private static final String MEDIATED_ARRAY = "[%s]";
-
-    private static final String MRAID_CONTENT = "<script type=\\\"text/javascript\\\" src=\\\"mraid.js\\\"></script><script type=\\\"text/javascript\\\">document.write('<div style=\\\"background-color:#EF8200;height:1000px;width:1000px;\\\"><p>%s</p></div>');</script>";
-
-    private static final String AN_NATIVE_RESPONSE = "[{\"type\":\"%s\",\"title\":\"%s\",\"description\":\"%s\",\"full_text\":\"%s\",\"context\":\"%s\",\"icon_img_url\":\"%s\",\"main_media\":%s,\"cta\":\"%s\",\"click_trackers\":[%s],\"impression_trackers\":[%s],\"rating\":%s,\"click_url\":\"%s\",\"click_fallback_url\":\"%s\",\"custom\":%s}]";
-    private static final String NATIVE_MAIN_MEDIA = "[{\"url\":\"%s\",\"width\":%d,\"height\":%d,\"label\":\"default\"},{\"url\":\"%s\",\"width\":%d,\"height\":%d},{\"url\":\"%s\",\"width\":%d,\"height\":%d}]";
-    private static final String NATIVE_RATING = "{\"value\":%.2f,\"scale\":%.2f}";
-    private static final String EMPTY_ARRAY = "[]";
-    private static final String STATUS_OK = "ok";
-    private static final String STATUS_NO_BID = "no_bid";
+    private static final String HTML_BANNER = "temp content"; // TODO add mock content here
+    private static final String UT_NO_BID_RESPONSE = "{\"version\":\"0.0.1\",\"tags\":[{\"uuid\":\"null\",\"tag_id\":6061613,\"auction_id\":\"1624069400592692505\",\"nobid\":true}]}";
 
     public static String blank() {
         return "";
-    }
-
-    public static String utHTMLBanner() {
-        return templateAdsResponse("banner", 320, 480, "content");
     }
 
     public static String videoUT() {
@@ -82,30 +52,21 @@ public class TestUTResponses {
     }
 
     public static String bannerUT() {
-        return templateUTResponse(UT_AD_TYPE_BANNER, BANNER);
+        return templateUTResponse(UT_AD_TYPE_BANNER, HTML_BANNER);
     }
 
-    public static String getVastInlineResponse() {
-        return VAST_INLINE_RESPONSE;
-    }
 
-    public static String getUTHTMLResponse() {
-        return UT_HTML_RESPONSE;
-    }
-
-    public static String templateUTResponse(String adType, String content) {
+    static String templateUTResponse(String adType, String content) {
         return String.format(UT_RESPONSE, adType, content);
     }
 
-    // templates
 
-    public static String templateResponse(String status, String ads, String mediated, String nativeResponse, int version) {
-        return String.format(RESPONSE, status, ads, mediated, nativeResponse, version);
+    public static String noBid() {
+        return UT_NO_BID_RESPONSE;
     }
 
-    public static String templateAdsResponse(String type, int width, int height, String content) {
-        String ads = String.format(ADS, type, width, height, content);
-        return templateResponse(STATUS_OK, ads, EMPTY_ARRAY, EMPTY_ARRAY, TestUtil.VERSION);
+    public static String vastInline() {
+        return VAST_INLINE_RESPONSE;
     }
 
 

@@ -52,7 +52,7 @@ public class VideoActivitiesTest extends BaseViewAdTest {
             Robolectric.flushBackgroundThreadScheduler();
             Robolectric.flushForegroundThreadScheduler();
             // Feed the wrapper response
-            FakeHttp.addPendingHttpResponse(200, TestUTResponses.getVastInlineResponse());
+            FakeHttp.addPendingHttpResponse(200, TestUTResponses.vastInline());
             Robolectric.flushBackgroundThreadScheduler();
             Robolectric.flushForegroundThreadScheduler();
             // Show the video

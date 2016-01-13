@@ -35,8 +35,11 @@ public class UTAdRequestTest extends BaseRoboTest {
     public static final String INVENTORY_CODE = "test_inv_code";
     public static final String TEST_KEY = "testKey";
     public static final String TEST_VALUE = "testValue";
+    public static final int DEFAULT_WIDTH = 300;
+    public static final int DEFAULT_HEIGHT = 250;
     AdFetcher adFetcher;
     MockAdOwner owner;
+    MockWebServer server;
     public static final int PLACEMENT_ID = 1234;
 
     @Override
@@ -183,6 +186,30 @@ public class UTAdRequestTest extends BaseRoboTest {
         AdSize adSize2 = new AdSize(480, 800);
         allowedSizes.add(adSize2);
         owner.setAllowedSizes(allowedSizes);
+        clearAAIDAsyncTasks();
+        adFetcher = new AdFetcher(owner);
+        adFetcher.start();
+
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        JSONObject postData = inspectPostData();
+        JSONObject tag = getTagsData(postData);
+
+        inspectSizes(allowedSizes, tag);
+    }
+
+    /**
+     * Tests whether allowed sizes data is passed correctly in the request
+     * @throws Exception
+     */
+    @Test
+    public void testDefaultAllowedSizes() throws Exception{
+
+        ArrayList<AdSize> allowedSizes = new ArrayList<AdSize>();
+        allowedSizes.add(new AdSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+
         clearAAIDAsyncTasks();
         adFetcher = new AdFetcher(owner);
         adFetcher.start();

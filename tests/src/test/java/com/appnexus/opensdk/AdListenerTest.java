@@ -34,9 +34,16 @@ import java.io.IOException;
 @Config(constants = BuildConfig.class)
 public class AdListenerTest extends BaseViewAdTest {
 
+    MockWebServer server;
+
     @Override
     public void setup() {
         super.setup();
+        try {
+            setupMockServer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // Banner Testing
@@ -63,74 +70,88 @@ public class AdListenerTest extends BaseViewAdTest {
 
     // Interstitial Testing
 
-    @Test
-    public void testInterstitialAdLoaded() {
-        FakeHttp.addPendingHttpResponse(200, TestResponses.banner());
-        requestManager = new AdViewRequestManager(interstitialAdView);
-        requestManager.execute();
-        Robolectric.flushBackgroundThreadScheduler();
-        Robolectric.flushForegroundThreadScheduler();
-        assertCallbacks(true);
-    }
 
+    /**
+     * Validates if success callback is firing correctly when HTML Interstitial has been successfully loaded.
+     */
     @Test
-    public void testInterstitialVideoAdLoaded() {
-        try {
-            setupMockServer(TestUTResponses.videoUT());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void testInterstitialHtmlRTBAdLoaded() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.bannerUT()));
         requestManager = new InterstitialAdRequestManager(interstitialAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
-        shutdownServer();
-
-        FakeHttp.addPendingHttpResponse(200, TestUTResponses.getVastInlineResponse());
-        Robolectric.flushBackgroundThreadScheduler();
-        Robolectric.flushForegroundThreadScheduler();
         assertCallbacks(true);
     }
 
+    /**
+     * Validates if success callback is firing correctly when Interstitial VAST has been successfully loaded.
+     * This includes going through multiple wrappers and getting the final inline response.
+     */
     @Test
-    public void testUTRTBAdLoaded() {
-        try {
-            // TODO /mob should be using FakeHttp to add response
-            setupMockServer(TestUTResponses.utHTMLBanner());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // TODO this is /mob why checking against UT RTB response?
-        requestManager = new AdViewRequestManager(bannerAdView);
+    public void testInterstitialVastRTBAdLoaded() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.videoUT()));
+        requestManager = new InterstitialAdRequestManager(interstitialAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
-        shutdownServer();
 
-        FakeHttp.addPendingHttpResponse(200, TestUTResponses.getUTHTMLResponse());
+        FakeHttp.addPendingHttpResponse(200, TestUTResponses.vastInline());
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         assertCallbacks(true);
     }
 
-    private void setupMockServer(String response) throws IOException {
+    /**
+     * Validates if failure callback is firing correctly if there is a blank response.
+     */
+    @Test
+    public void testInterstitialFailedWithBlankResponse() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.blank()));
+        requestManager = new InterstitialAdRequestManager(interstitialAdView);
+        requestManager.execute();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertCallbacks(false);
+    }
+
+    /**
+     * Validates if failure callback is firing correctly if there is a no bid response.
+     */
+    @Test
+    public void testInterstitialFailedWithNoBidResponse() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.noBid()));
+        requestManager = new InterstitialAdRequestManager(interstitialAdView);
+        requestManager.execute();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertCallbacks(false);
+    }
+
+    /**
+     * Validates if failure callback is firing correctly if VAST wrapper has failed to load.
+     */
+    @Test
+    public void testInterstitialVastWrapperFailed() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.videoUT()));
+        requestManager = new InterstitialAdRequestManager(interstitialAdView);
+        requestManager.execute();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+
+        FakeHttp.addPendingHttpResponse(200, TestUTResponses.blank());
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertCallbacks(false);
+    }
+
+
+    private void setupMockServer() throws IOException {
         server = new MockWebServer();
         server.start();
 
         HttpUrl url = server.url("/");
         Settings.BASE_URL_UT_V2 = url.toString();
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(response));
-    }
-
-    @Test
-    public void testInterstitialAdFailed() {
-        // TODO should be using mock web server here
-        FakeHttp.addPendingHttpResponse(200, TestResponses.blank());
-        requestManager = new AdViewRequestManager(interstitialAdView);
-        requestManager.execute();
-        Robolectric.flushBackgroundThreadScheduler();
-        Robolectric.flushForegroundThreadScheduler();
-        assertCallbacks(false);
     }
 
     @Override
