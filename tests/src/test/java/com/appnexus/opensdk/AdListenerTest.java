@@ -90,6 +90,23 @@ public class AdListenerTest extends BaseViewAdTest {
     }
 
     /**
+     * Validates if success callback is firing correctly when SSM Interstitial for HTML ad has been successfully loaded.
+     */
+    @Test
+    public void testInterstitialHTMLSSMAdLoaded() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.ssmHtml()));
+        requestManager = new InterstitialAdRequestManager(interstitialAdView);
+        requestManager.execute();
+        Robolectric.flushBackgroundThreadScheduler();
+        shutdownServer();
+        Robolectric.flushForegroundThreadScheduler();
+        FakeHttp.addPendingHttpResponse(200, TestUTResponses.htmlResponse());
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertCallbacks(true);
+    }
+
+    /**
      * Validates if success callback is firing correctly when SSM Interstitial VAST Inline ad has been successfully loaded.
      * This includes going through multiple wrappers and getting the final inline response.
      */
