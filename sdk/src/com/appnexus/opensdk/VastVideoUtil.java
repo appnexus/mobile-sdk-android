@@ -39,6 +39,7 @@ import java.util.List;
 public class VastVideoUtil {
 
     public static final int MAX_VIDEO_HEIGHT = 720;
+    public static final int DEFAULT_MAX_VIDEO_WIDTH = 720; // TODO discuss the value with the team
     public final static String VAST_ADTAGURI_TAG = "VASTAdTagURI";
     public final static String VAST_START_TAG = "VAST";
     public final static String VAST_AD_TAG = "Ad";
@@ -222,26 +223,31 @@ public class VastVideoUtil {
     private static int getBestSupportedFrameWidth(Context context) {
         CamcorderProfile profile = getCamcorderProfile(context);
 
-        Clog.i(Clog.vastLogTag, "Rendition Max Width: " + profile.videoFrameWidth);
-        Clog.i(Clog.vastLogTag, "Rendition Max Height: " + profile.videoFrameHeight);
+        if (profile != null) {
+            Clog.i(Clog.vastLogTag, "Rendition Max Width: " + profile.videoFrameWidth);
+            Clog.i(Clog.vastLogTag, "Rendition Max Height: " + profile.videoFrameHeight);
 
-        return profile.videoFrameWidth;
+            return profile.videoFrameWidth;
+        }
+
+        return DEFAULT_MAX_VIDEO_WIDTH;
+
     }
 
     private static CamcorderProfile getCamcorderProfile(Context context) {
+        CamcorderProfile profile;
         if(Connectivity.isConnectionFast(context)) {
-            CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
-            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
+            profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB && profile != null) {
                 // Set a max limit to 720
                 if(profile.videoFrameHeight > MAX_VIDEO_HEIGHT) {
                     profile = CamcorderProfile.get(CamcorderProfile.QUALITY_720P);
                 }
             }
-            return profile;
         }else{
-            return CamcorderProfile.get(CamcorderProfile.QUALITY_LOW);
+            profile = CamcorderProfile.get(CamcorderProfile.QUALITY_LOW);
         }
-
+        return profile;
     }
 
     private static boolean isFormatSupported(String extension) {

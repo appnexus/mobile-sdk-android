@@ -18,8 +18,6 @@ package com.appnexus.opensdk;
 
 import android.view.View;
 
-import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
-import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.testviews.DummyView;
 import com.appnexus.opensdk.testviews.NoFillView;
 import com.appnexus.opensdk.testviews.NoRequestBannerView;
@@ -34,7 +32,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowWebView;
 import org.robolectric.shadows.httpclient.FakeHttp;
 
 import static com.appnexus.opensdk.ResultCode.INTERNAL_ERROR;
@@ -46,10 +43,8 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
-@Config(constants = BuildConfig.class, sdk = 21,
-        shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class})
 @RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class)
 public class MediatedAdViewControllerTest extends BaseViewAdTest {
     boolean requestQueued = false;
 

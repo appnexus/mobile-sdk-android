@@ -18,23 +18,17 @@ package com.appnexus.opensdk;
 
 import android.webkit.WebView;
 
-import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
-import com.appnexus.opensdk.shadows.ShadowWebSettings;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowWebView;
 import org.robolectric.shadows.httpclient.FakeHttp;
 
 import static junit.framework.Assert.assertTrue;
 
-@Config(constants = BuildConfig.class, sdk = 21,
-        shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class})
 @RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class)
 public class MRAIDTest extends BaseViewAdTest {
 
     WebView webView;

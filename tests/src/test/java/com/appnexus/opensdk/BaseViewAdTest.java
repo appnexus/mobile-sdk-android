@@ -9,7 +9,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
+@Config(constants = BuildConfig.class)
 public class BaseViewAdTest extends BaseRoboTest implements AdListener {
 
     BannerAdView bannerAdView;

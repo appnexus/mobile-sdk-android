@@ -16,8 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
-import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.utils.Settings;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.mockwebserver.MockResponse;
@@ -28,15 +26,12 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowWebView;
 import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.io.IOException;
 
-@Config(constants = BuildConfig.class, sdk = 21,
-        shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class})
 @RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class)
 public class AdListenerTest extends BaseViewAdTest {
 
     @Override
@@ -81,7 +76,7 @@ public class AdListenerTest extends BaseViewAdTest {
     @Test
     public void testInterstitialVideoAdLoaded() {
         try {
-            setupMockServer(TestUTResponses.video());
+            setupMockServer(TestUTResponses.videoUT());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -100,10 +95,12 @@ public class AdListenerTest extends BaseViewAdTest {
     @Test
     public void testUTRTBAdLoaded() {
         try {
+            // TODO /mob should be using FakeHttp to add response
             setupMockServer(TestUTResponses.utHTMLBanner());
         } catch (IOException e) {
             e.printStackTrace();
         }
+        // TODO this is /mob why checking against UT RTB response?
         requestManager = new AdViewRequestManager(bannerAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
@@ -127,6 +124,7 @@ public class AdListenerTest extends BaseViewAdTest {
 
     @Test
     public void testInterstitialAdFailed() {
+        // TODO should be using mock web server here
         FakeHttp.addPendingHttpResponse(200, TestResponses.blank());
         requestManager = new AdViewRequestManager(interstitialAdView);
         requestManager.execute();
@@ -143,7 +141,7 @@ public class AdListenerTest extends BaseViewAdTest {
 
     private void shutdownServer() {
         try {
-            if(server != null) {
+            if (server != null) {
                 server.shutdown();
             }
         } catch (IOException e) {
