@@ -169,7 +169,7 @@ class InterstitialAdRequestManager extends RequestManager {
                 HTTPResponse response = super.doInBackground(params);
                 String vastResponse = response.getResponseBody();
                 ssmAdResponse.setAdContent(response.getResponseBody());
-                if(!StringUtil.isEmpty(vastResponse)) {
+                if(!StringUtil.isEmpty(vastResponse) && ANConstants.AD_TYPE_VIDEO.equalsIgnoreCase(ssmAdResponse.getAdType())) {
                     try {
                         InputStream stream = new ByteArrayInputStream(vastResponse.getBytes(Charset.forName(ANConstants.UTF_8)));
                         VastResponseParser vastResponseParser = new VastResponseParser();
@@ -188,7 +188,7 @@ class InterstitialAdRequestManager extends RequestManager {
             @Override
             protected void onPostExecute(HTTPResponse response) {
                 if(response != null && response.getSucceeded()) {
-                    if(ANConstants.AD_TYPE_HTML.equalsIgnoreCase(ssmAdResponse.getAdType())){
+                    if(ANConstants.AD_TYPE_HTML.equalsIgnoreCase(ssmAdResponse.getAdType()) && !StringUtil.isEmpty(ssmAdResponse.getAdContent())){
                         initiateWebview(owner, ssmAdResponse);
                     }else if(ANConstants.AD_TYPE_VIDEO.equalsIgnoreCase(ssmAdResponse.getAdType())){
                         if(ssmAdResponse.getVastAdResponse() != null && ssmAdResponse.getVastAdResponse().containsLinearAd()) {
@@ -197,6 +197,8 @@ class InterstitialAdRequestManager extends RequestManager {
                             Clog.e(Clog.httpRespLogTag, "Vast ad is not available");
                             currentAdFailed(ResultCode.UNABLE_TO_FILL);
                         }
+                    }else{
+                        currentAdFailed(ResultCode.UNABLE_TO_FILL);
                     }
                 }else {
                     currentAdFailed(ResultCode.UNABLE_TO_FILL);

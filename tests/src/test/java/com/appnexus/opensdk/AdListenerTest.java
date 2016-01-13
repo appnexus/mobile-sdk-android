@@ -98,12 +98,46 @@ public class AdListenerTest extends BaseViewAdTest {
         requestManager = new InterstitialAdRequestManager(interstitialAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
-        shutdownServer();
         Robolectric.flushForegroundThreadScheduler();
+        shutdownServer();
         FakeHttp.addPendingHttpResponse(200, TestUTResponses.htmlResponse());
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         assertCallbacks(true);
+    }
+
+    /**
+     * Validates if failure callback is firing correctly when SSM Interstitial for HTML ad has been failed.
+     */
+    @Test
+    public void testInterstitialHTMLSSMAdFailed() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.ssmHtml()));
+        requestManager = new InterstitialAdRequestManager(interstitialAdView);
+        requestManager.execute();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        shutdownServer();
+        FakeHttp.addPendingHttpResponse(200, TestUTResponses.blank());
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertCallbacks(false);
+    }
+
+    /**
+     * Validates if failure callback is firing correctly when SSM Interstitial for HTML ad has been failed.
+     */
+    @Test
+    public void testInterstitialVideoSSMAdFailed() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.ssmVideo()));
+        requestManager = new InterstitialAdRequestManager(interstitialAdView);
+        requestManager.execute();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        shutdownServer();
+        FakeHttp.addPendingHttpResponse(200, TestUTResponses.blank());
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertCallbacks(false);
     }
 
     /**
@@ -117,7 +151,6 @@ public class AdListenerTest extends BaseViewAdTest {
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
         shutdownServer();
-//        FakeHttp.addPendingHttpResponse(200, TestUTResponses.vastXML());
         Robolectric.flushForegroundThreadScheduler();
         FakeHttp.addPendingHttpResponse(200, TestUTResponses.vastInline());
         Robolectric.flushBackgroundThreadScheduler();
