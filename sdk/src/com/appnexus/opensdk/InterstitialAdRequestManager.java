@@ -178,6 +178,7 @@ class InterstitialAdRequestManager extends RequestManager {
                             vastAdResponse.getImpressionArrayList().addAll(ssmAdResponse.getImpressionURLs());
                         }
                         ssmAdResponse.setVastAdResponse(vastAdResponse);
+                        // TODO add the rest of the trackers
                     } catch (Exception e) {
                         Clog.e(Clog.httpRespLogTag, "Exception parsing vast response: "+e.getMessage());
                     }

@@ -16,8 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
-import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.utils.Settings;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.mockwebserver.MockResponse;
@@ -28,15 +26,12 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowWebView;
 import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.io.IOException;
 
-@Config(constants = BuildConfig.class, sdk = 21,
-        shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class})
 @RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class)
 public class AdListenerTest extends BaseViewAdTest {
 
     MockWebServer server;
@@ -81,7 +76,7 @@ public class AdListenerTest extends BaseViewAdTest {
      */
     @Test
     public void testInterstitialHtmlRTBAdLoaded() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.html()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.bannerUT()));
         requestManager = new InterstitialAdRequestManager(interstitialAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
@@ -185,7 +180,7 @@ public class AdListenerTest extends BaseViewAdTest {
      */
     @Test
     public void testInterstitialVastRTBAdLoaded() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.videoUT()));
         requestManager = new InterstitialAdRequestManager(interstitialAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
@@ -228,7 +223,7 @@ public class AdListenerTest extends BaseViewAdTest {
      */
     @Test
     public void testInterstitialVastWrapperFailed() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.videoUT()));
         requestManager = new InterstitialAdRequestManager(interstitialAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
@@ -257,7 +252,7 @@ public class AdListenerTest extends BaseViewAdTest {
 
     private void shutdownServer() {
         try {
-            if(server != null) {
+            if (server != null) {
                 server.shutdown();
             }
         } catch (IOException e) {

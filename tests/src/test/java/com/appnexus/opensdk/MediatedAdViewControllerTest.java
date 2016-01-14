@@ -18,8 +18,6 @@ package com.appnexus.opensdk;
 
 import android.view.View;
 
-import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
-import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.testviews.DummyView;
 import com.appnexus.opensdk.testviews.NoFillView;
 import com.appnexus.opensdk.testviews.NoRequestBannerView;
@@ -27,8 +25,6 @@ import com.appnexus.opensdk.testviews.SuccessfulBanner;
 import com.appnexus.opensdk.testviews.SuccessfulBanner2;
 import com.appnexus.opensdk.util.Lock;
 import com.appnexus.opensdk.utils.Settings;
-import com.squareup.okhttp.mockwebserver.MockResponse;
-import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.apache.http.client.methods.HttpUriRequest;
 import org.junit.Test;
@@ -36,10 +32,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowWebView;
 import org.robolectric.shadows.httpclient.FakeHttp;
-
-import java.util.LinkedList;
 
 import static com.appnexus.opensdk.ResultCode.INTERNAL_ERROR;
 import static com.appnexus.opensdk.ResultCode.MEDIATED_SDK_UNAVAILABLE;
@@ -50,12 +43,9 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
-@Config(constants = BuildConfig.class, sdk = 21,
-        shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class})
 @RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class)
 public class MediatedAdViewControllerTest extends BaseViewAdTest {
-    LinkedList<RecordedRequest> list;
     boolean requestQueued = false;
 
     @Override
@@ -64,13 +54,6 @@ public class MediatedAdViewControllerTest extends BaseViewAdTest {
         requestManager = new AdViewRequestManager(bannerAdView);
         SuccessfulBanner.didPass = false;
         SuccessfulBanner2.didPass = false;
-        list = new LinkedList<>();
-    }
-
-    @Override
-    public void tearDown() {
-        super.tearDown();
-        list.clear();
     }
 
     // checks that the resultCB appends the reason code correctly
@@ -264,7 +247,7 @@ public class MediatedAdViewControllerTest extends BaseViewAdTest {
 
         runBasicResultCBTest(SUCCESS, true);
         assertTrue("Banner " + SuccessfulBanner.didPass, SuccessfulBanner.didPass);
-        assertFalse("Banner2 " + SuccessfulBanner2.didPass , SuccessfulBanner2.didPass);
+        assertFalse("Banner2 " + SuccessfulBanner2.didPass, SuccessfulBanner2.didPass);
     }
 
     // Verify that a response with 2 mediated ads continues after the first (failure) ad

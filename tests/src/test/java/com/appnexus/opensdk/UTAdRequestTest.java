@@ -4,8 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Pair;
 
-import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
-import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.utils.ANConstants;
 import com.appnexus.opensdk.utils.Settings;
 import com.squareup.okhttp.HttpUrl;
@@ -21,8 +19,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowWebView;
-import org.robolectric.shadows.ShadowWindowManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,9 +28,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21,
-        shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class, ShadowWindowManager.class})
+@Config(constants = BuildConfig.class)
 public class UTAdRequestTest extends BaseRoboTest {
 
     public static final int MEMBER_ID = 5;
@@ -61,10 +55,11 @@ public class UTAdRequestTest extends BaseRoboTest {
 
     /**
      * Tests InventoryCode and MemberID validity in the request
+     *
      * @throws Exception
      */
     @Test
-    public void testMemberIdAndInventoryCode() throws Exception{
+    public void testMemberIdAndInventoryCode() throws Exception {
         owner.setInventoryCodeAndMemberID(MEMBER_ID, INVENTORY_CODE);
         clearAAIDAsyncTasks();
 
@@ -80,10 +75,11 @@ public class UTAdRequestTest extends BaseRoboTest {
 
     /**
      * Tests PlacementId validity in the request
+     *
      * @throws Exception
      */
     @Test
-    public void testPlacementId() throws Exception{
+    public void testPlacementId() throws Exception {
         owner.setPlacementID(String.valueOf(PLACEMENT_ID));
         clearAAIDAsyncTasks();
         adFetcher = new AdFetcher(owner);
@@ -98,10 +94,11 @@ public class UTAdRequestTest extends BaseRoboTest {
 
     /**
      * Tests PlacementId validity in the request
+     *
      * @throws Exception
      */
     @Test
-    public void testCustomKeywords() throws Exception{
+    public void testCustomKeywords() throws Exception {
         owner.addCustomKeywords("key1", "value1");
         Pair<String, String> keywordsToTest1 = new Pair<>("key1", "value1");
 
@@ -128,10 +125,11 @@ public class UTAdRequestTest extends BaseRoboTest {
 
     /**
      * Validates the age in the request
+     *
      * @throws Exception
      */
     @Test
-    public void testUserAge() throws Exception{
+    public void testUserAge() throws Exception {
         String ageToTest = "25";
         owner.setAge(ageToTest);
 
@@ -151,10 +149,11 @@ public class UTAdRequestTest extends BaseRoboTest {
 
     /**
      * Validates the Gender in the request
+     *
      * @throws Exception
      */
     @Test
-    public void testUserGender() throws Exception{
+    public void testUserGender() throws Exception {
         AdView.GENDER genderToTest = AdView.GENDER.FEMALE;
         int genderInt = getGenderInt(genderToTest);
 
@@ -175,10 +174,11 @@ public class UTAdRequestTest extends BaseRoboTest {
 
     /**
      * Tests whether allowed sizes data is passed correctly in the request
+     *
      * @throws Exception
      */
     @Test
-    public void testAllowedSizes() throws Exception{
+    public void testAllowedSizes() throws Exception {
 
         ArrayList<AdSize> allowedSizes = new ArrayList<AdSize>();
         AdSize adSize = new AdSize(300, 250);
@@ -226,6 +226,7 @@ public class UTAdRequestTest extends BaseRoboTest {
 
     /**
      * Validates if PSA is enabled
+     *
      * @throws InterruptedException
      * @throws JSONException
      */
@@ -238,6 +239,7 @@ public class UTAdRequestTest extends BaseRoboTest {
 
     /**
      * Validates if PSA is disabled
+     *
      * @throws InterruptedException
      * @throws JSONException
      */
@@ -249,6 +251,7 @@ public class UTAdRequestTest extends BaseRoboTest {
 
     /**
      * Tests the value of allowed ad types
+     *
      * @throws Exception
      */
     @Test
@@ -276,6 +279,7 @@ public class UTAdRequestTest extends BaseRoboTest {
 
     /**
      * Checks whether the request has pre-bid enabled
+     *
      * @throws Exception
      */
     @Test
@@ -303,7 +307,7 @@ public class UTAdRequestTest extends BaseRoboTest {
     public void tearDown() {
         super.tearDown();
         try {
-            if(server != null) {
+            if (server != null) {
                 server.shutdown();
             }
         } catch (IOException e) {
@@ -323,7 +327,7 @@ public class UTAdRequestTest extends BaseRoboTest {
         assertNotNull(sizes);
         assertEquals(allowedSizes.size(), sizes.length());
 
-        for (int i =0; i<sizes.length(); i++) {
+        for (int i = 0; i < sizes.length(); i++) {
             JSONObject size = sizes.getJSONObject(i);
             assertNotNull(size);
             System.out.println("Validating size: (" + allowedSizes.get(i).width() + " , " + allowedSizes.get(i).height() + ")");
@@ -344,7 +348,7 @@ public class UTAdRequestTest extends BaseRoboTest {
         JSONObject postData = inspectPostData();
         JSONObject tag = getTagsData(postData);
 
-        if(isMemberIdAndInvCodeAvailable) {
+        if (isMemberIdAndInvCodeAvailable) {
             System.out.println("Testing Inventory Code...");
             assertTrue(tag.has(UTAdRequest.TAG_CODE));
             assertEquals(INVENTORY_CODE, tag.getString(UTAdRequest.TAG_CODE));
@@ -355,7 +359,7 @@ public class UTAdRequestTest extends BaseRoboTest {
             assertEquals(MEMBER_ID, postData.getInt(UTAdRequest.MEMBER_ID));
             System.out.println("Member Id validity passed!");
 
-        }else{
+        } else {
             System.out.println("Testing Placement Id...");
             assertTrue(tag.has(UTAdRequest.TAG_ID));
             assertEquals(PLACEMENT_ID, tag.getInt(UTAdRequest.TAG_ID));
@@ -401,8 +405,8 @@ public class UTAdRequestTest extends BaseRoboTest {
 
 
     private void clearAAIDAsyncTasks() {
-            Robolectric.flushBackgroundThreadScheduler();
-            Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
     }
 
     private void inspectCustomKeywords(ArrayList<Pair> keywordsList, JSONObject postData) throws JSONException {
@@ -410,11 +414,11 @@ public class UTAdRequestTest extends BaseRoboTest {
         assertTrue(postData.has(UTAdRequest.KEYWORDS));
 
         JSONArray keywordsJsonArray = postData.getJSONArray(UTAdRequest.KEYWORDS);
-        for(int i=0; i<keywordsJsonArray.length(); i++){
+        for (int i = 0; i < keywordsJsonArray.length(); i++) {
             assertNotNull(keywordsJsonArray.get(i));
 
             assertEquals(keywordsList.get(i).first, ((JSONObject) keywordsJsonArray.get(i)).getString("key"));
-            assertEquals(keywordsList.get(i).second,((JSONObject) keywordsJsonArray.get(i)).getString("value"));
+            assertEquals(keywordsList.get(i).second, ((JSONObject) keywordsJsonArray.get(i)).getString("value"));
         }
         System.out.println("Custom keywords validity test passed!");
     }
