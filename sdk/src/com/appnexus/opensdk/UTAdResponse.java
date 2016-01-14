@@ -181,6 +181,8 @@ class UTAdResponse {
 
             if (StringUtil.isEmpty(content)) {
                 Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.blank_ad));
+            } else if (width == 1 && height == 1) {
+                Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.one_by_one_sized_ad));
             } else {
                 RTBAdResponse rtbAd = new RTBAdResponse(width, height, adType, notifyUrl, getImpressionUrls(rtbObject));
                 rtbAd.setAdContent(content);

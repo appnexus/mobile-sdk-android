@@ -147,15 +147,18 @@ public class AdModel {
 	public void setImpressionArrayList(ArrayList<String> impressionArrayList) {
 		this.impressionArrayList = impressionArrayList;
 	}
-	
-	public boolean containsLinearAd(){
-        if (this.getCreativesArrayList() != null
-                && this.getCreativesArrayList().size() > 0
-                && this.getCreativesArrayList().get(0) != null
-                && this.getCreativesArrayList().get(0).getLinearAdModel() != null) {
-            return true;
-        }
-        return false;
-    }
+
+
+	public boolean containsMediaUrl(){
+		if (this.getCreativesArrayList() != null
+				&& this.getCreativesArrayList().size() > 0
+				&& this.getCreativesArrayList().get(0) != null
+				&& this.getCreativesArrayList().get(0).getLinearAdModel() != null
+				&& this.getCreativesArrayList().get(0).getLinearAdModel().getMediaFilesArrayList() != null
+				&& this.getCreativesArrayList().get(0).getLinearAdModel().getMediaFilesArrayList().size() > 0) {
+			return true;
+		}
+		return false;
+	}
 
 }

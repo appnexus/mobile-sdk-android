@@ -132,7 +132,7 @@ public class InterstitialAdView extends AdView {
         measuredHeight = (int) (measuredHeight / scale + 0.5f);
         measuredWidth = (int) (measuredWidth / scale + 0.5f);
 
-        requestParameters.setContainereWidth(measuredWidth);
+        requestParameters.setContainerWidth(measuredWidth);
         requestParameters.setContainerHeight(measuredHeight);
 
         ArrayList<AdSize> allowedSizes = new ArrayList<AdSize>();

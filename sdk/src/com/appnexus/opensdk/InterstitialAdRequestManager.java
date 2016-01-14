@@ -191,7 +191,7 @@ class InterstitialAdRequestManager extends RequestManager {
                     if(ANConstants.AD_TYPE_HTML.equalsIgnoreCase(ssmAdResponse.getAdType()) && !StringUtil.isEmpty(ssmAdResponse.getAdContent())){
                         initiateWebview(owner, ssmAdResponse);
                     }else if(ANConstants.AD_TYPE_VIDEO.equalsIgnoreCase(ssmAdResponse.getAdType())){
-                        if(ssmAdResponse.getVastAdResponse() != null && ssmAdResponse.getVastAdResponse().containsLinearAd()) {
+                        if(ssmAdResponse.getVastAdResponse() != null && ssmAdResponse.getVastAdResponse().containsMediaUrl()) {
                             initiateVastAdView(owner, ssmAdResponse);
                         }else{
                             Clog.e(Clog.httpRespLogTag, "Vast ad is not available");
@@ -260,7 +260,7 @@ class InterstitialAdRequestManager extends RequestManager {
 
                 @Override
                 protected void onPostExecute(AdModel vastAdResponse) {
-                    if (vastAdResponse != null && vastAdResponse.containsLinearAd()) {
+                    if (vastAdResponse != null && vastAdResponse.containsMediaUrl()) {
                         rtbAdResponse.setVastAdResponse(vastAdResponse);
                         Clog.d(Clog.httpRespLogTag, "Vast response parsed");
                         initiateVastAdView(owner, rtbAdResponse);
