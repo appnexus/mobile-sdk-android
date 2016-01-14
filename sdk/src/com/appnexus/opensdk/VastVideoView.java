@@ -43,7 +43,7 @@ class VastVideoView extends VideoView implements OnErrorListener, Displayable {
 		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		params.addRule(RelativeLayout.CENTER_IN_PARENT);
 		setLayoutParams(params);
-        int videoViewId = VastVideoUtil.VIDEO_VIEW; // TODO why this?
+        int videoViewId = VastVideoUtil.VIDEO_VIEW;
         setId(videoViewId);
 		setOnErrorListener(this);
 	}

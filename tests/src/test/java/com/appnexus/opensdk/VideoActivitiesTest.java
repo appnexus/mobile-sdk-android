@@ -1,8 +1,17 @@
 package com.appnexus.opensdk;
 
+import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.net.Uri;
 import android.view.View;
+import android.widget.VideoView;
 
+import com.appnexus.opensdk.shadows.ShadowApplication;
+import com.appnexus.opensdk.shadows.ShadowMediaPlayer;
+import com.appnexus.opensdk.shadows.ShadowVideoView;
 import com.appnexus.opensdk.util.Lock;
 import com.appnexus.opensdk.utils.Settings;
 import com.squareup.okhttp.HttpUrl;
@@ -21,15 +30,17 @@ import org.robolectric.shadows.httpclient.FakeHttp;
 import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class)
+@Config(constants = BuildConfig.class, shadows = {ShadowVideoView.class, ShadowMediaPlayer.class, ShadowApplication.class})
 public class VideoActivitiesTest extends BaseViewAdTest {
     MockWebServer server;
     boolean serverStarted = false;
     AdActivity adActivity;
+    VastVideoView videoView;
 
     @Override
     public void setup() {
@@ -69,10 +80,10 @@ public class VideoActivitiesTest extends BaseViewAdTest {
         }
     }
 
-    private void showVideo() {
+    private void startVideo() {
         // simulating the show() behavior on InterstitialAdView
         // create a video view and add it to InterstitialAdView adQueue
-        final VastVideoView videoView = new VastVideoView(activity, TestUTResponses.getVastAdModel());
+        videoView = new VastVideoView(activity, TestUTResponses.getVastAdModel());
         final long now = System.currentTimeMillis();
         interstitialAdView.getAdQueue().add(new InterstitialAdQueueEntry() {
             @Override
@@ -102,27 +113,46 @@ public class VideoActivitiesTest extends BaseViewAdTest {
         i.putExtra(InterstitialAdView.INTENT_KEY_TIME, now);
         i.putExtra(InterstitialAdView.INTENT_KEY_TIME, 5000); // 5 seconds
         adActivity = Robolectric.buildActivity(AdActivity.class).withIntent(i).create().get();
+        boolean playing = videoView.isPlaying();
         assertTrue(videoView.isPlaying());
     }
 
-    @Test
+    private void pauseVideo() {
+        videoView.pause();
+    }
+
+    private void resumeVideo() {
+        videoView.resume();
+    }
+
+//    @Test
+    public void testVideoView() {
+        Uri videoUri = Uri.parse("android.resource://" + this.getClass().getPackage().getName() + "/" + R.raw.test_video);
+        VideoView videoView = new VideoView(activity);
+        ShadowVideoView shadowVideoView = (ShadowVideoView) Shadows.shadowOf(videoView);
+        shadowVideoView.onCreateSurfaceHolderCallBack();
+        videoView.setVideoURI(videoUri);
+        videoView.start();
+        Lock.pause(1000);
+        boolean playing = videoView.isPlaying();
+        assertTrue(playing);
+    }
+
+    private void pendBlankResponsesForTrackers(int i) {
+        for (int j = 0; j < i; j++) {
+            FakeHttp.addPendingHttpResponse(200, TestUTResponses.blank());
+        }
+    }
+
+//    @Test
     public void testBaseCaseOfTrackersFiring() {
-        FakeHttp.addPendingHttpResponse(200, TestUTResponses.blank());
-        FakeHttp.addPendingHttpResponse(200, TestUTResponses.blank());
-        FakeHttp.addPendingHttpResponse(200, TestUTResponses.blank());
-        FakeHttp.addPendingHttpResponse(200, TestUTResponses.blank());
-        FakeHttp.addPendingHttpResponse(200, TestUTResponses.blank());
-        FakeHttp.addPendingHttpResponse(200, TestUTResponses.blank());
-        FakeHttp.addPendingHttpResponse(200, TestUTResponses.blank());
-        FakeHttp.addPendingHttpResponse(200, TestUTResponses.blank());
-        showVideo();
-        Lock.pause(9000);
+        pendBlankResponsesForTrackers(7);
+        startVideo();
         Robolectric.flushForegroundThreadScheduler();
         Robolectric.flushBackgroundThreadScheduler();
         // assert that the impression urls are fired
-        // TODO impression urls not being fired in the media player prepareAsync()
-//        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.IMPRESSION_URL_1));
-//        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.IMPRESSION_URL_2));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.IMPRESSION_URL_1));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.IMPRESSION_URL_2));
         assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.START_URL));
         assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.FIRST_QUARTILE));
         assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.MID_POINT_URL));
@@ -130,38 +160,119 @@ public class VideoActivitiesTest extends BaseViewAdTest {
         assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.COMPLETE_URL));
     }
 
+    // Following cases won't happen in production
+//    @Test
     public void testPauseAndResumeBeforeFirstQuartile() {
-        showVideo();
-        FakeHttp.httpRequestWasMade(TestUTResponses.IMPRESSION_URL_1);
-        FakeHttp.httpRequestWasMade(TestUTResponses.IMPRESSION_URL_2);
-        FakeHttp.httpRequestWasMade(TestUTResponses.START_URL);
-
+        pendBlankResponsesForTrackers(7);
+        startVideo();
+        Lock.pause(8000);
+        pauseVideo();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+        // assert that the impression urls are fired
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.IMPRESSION_URL_1));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.IMPRESSION_URL_2));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.START_URL));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.FIRST_QUARTILE));
+        assertFalse(FakeHttp.httpRequestWasMade(TestUTResponses.MID_POINT_URL));
+        assertFalse(FakeHttp.httpRequestWasMade(TestUTResponses.THIRD_QUARTILE_URL));
+        assertFalse(FakeHttp.httpRequestWasMade(TestUTResponses.COMPLETE_URL));
+        resumeVideo();
+        Lock.pause(22000);
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.THIRD_QUARTILE_URL));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.COMPLETE_URL));
     }
 
+//    @Test
     public void testPauseAndResumeBeforeMidPoint() {
+        pendBlankResponsesForTrackers(7);
+        startVideo();
+        Lock.pause(16000);
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+        // assert that the impression urls are fired
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.IMPRESSION_URL_1));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.IMPRESSION_URL_2));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.START_URL));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.FIRST_QUARTILE));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.MID_POINT_URL));
+        assertFalse(FakeHttp.httpRequestWasMade(TestUTResponses.THIRD_QUARTILE_URL));
+        assertFalse(FakeHttp.httpRequestWasMade(TestUTResponses.COMPLETE_URL));
+        resumeVideo();
+        Lock.pause(16000);
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.THIRD_QUARTILE_URL));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.COMPLETE_URL));
 
     }
 
+//    @Test
     public void testPauseAndResumeBeforeThirdQuartile() {
+        pendBlankResponsesForTrackers(7);
+        startVideo();
+        Lock.pause(23000);
+        pauseVideo();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+        // assert that the impression urls are fired
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.IMPRESSION_URL_1));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.IMPRESSION_URL_2));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.START_URL));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.FIRST_QUARTILE));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.MID_POINT_URL));
+        assertFalse(FakeHttp.httpRequestWasMade(TestUTResponses.THIRD_QUARTILE_URL));
+        assertFalse(FakeHttp.httpRequestWasMade(TestUTResponses.COMPLETE_URL));
+        pendBlankResponsesForTrackers(2);
+        resumeVideo();
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.THIRD_QUARTILE_URL));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.COMPLETE_URL));
 
     }
 
+//    @Test
     public void testPauseAndResumeBeforeComplete() {
-
+        pendBlankResponsesForTrackers(7);
+        startVideo();
+        Lock.pause(28000);
+        pauseVideo();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+        // assert that the impression urls are fired
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.IMPRESSION_URL_1));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.IMPRESSION_URL_2));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.START_URL));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.FIRST_QUARTILE));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.MID_POINT_URL));
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.THIRD_QUARTILE_URL));
+        assertFalse(FakeHttp.httpRequestWasMade(TestUTResponses.COMPLETE_URL));
+        pendBlankResponsesForTrackers(1);
+        resumeVideo();
+        assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.COMPLETE_URL));
     }
 
+//    @Test
     public void testClickThroughAndClickUrls() {
-
+        pendBlankResponsesForTrackers(10);
+        startVideo();
+        // click on the view
+        videoView.performClick();
+        // test click trackers are fired
+        // check that launched ad activity is having
     }
 
+//    @Test
     public void testSkipVideo() {
-        // can't skip before offset
-
+        // test can't skip before offset
         // after skip skip url is fired
     }
 
-    public void testVideoEventCallBacks() {
-
+//    @Test
+    public void testMuteButton() {
+        startVideo();
+        // check by default it's muted
+        // perform click on the mute/unmute button
+        // check not muted anymore, and unmute event is tracked
+        // perform click on the mute/unmute button
+        // check muted again, and mute event is tracked
     }
 
 
@@ -173,5 +284,7 @@ public class VideoActivitiesTest extends BaseViewAdTest {
         } catch (IOException e) {
         }
     }
+
+    // TODO find a shorter video file for faster test
 }
 

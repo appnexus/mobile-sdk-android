@@ -33,6 +33,10 @@ import java.util.ArrayList;
  */
 public class TestUTResponses {
 
+    /**
+     * Wei's mock response start
+     */
+
     // /ut mock response
     private static final String UT_RESPONSE = "{\"version\":\"0.0.2\",\"tags\":[{\"uuid\":\"null\",\"auction_id\":\"5049928823070184480\",\"ut_url\":\"\",\"tag_id\":5778861,\"ads\":[{\"content_source\":\"rtb\",\"ad_type\":\"%s\",\"buyer_member_id\":3535,\"creative_id\":37357778,\"media_type_id\":4,\"media_subtype_id\":64,\"notify_url\":\"\",\"rtb\":{\"video\":{\"player_width\":0,\"duration_ms\":142000,\"playback_methods\":[\"auto_play_sound_off\"],\"frameworks\":[],\"content\":\"%s\"}}}]}]}";
     private static final String UT_AD_TYPE_BANNER = "banner";
@@ -69,8 +73,10 @@ public class TestUTResponses {
         return VAST_INLINE_RESPONSE;
     }
 
+    /**
+     * Wei's mock response end
+     */
 
-    // Following are wei's Code
     public static AdModel getVastAdModel() {
         AdModel adModel = new AdModel();
         // add a linear ad to the creatives list
@@ -159,7 +165,8 @@ public class TestUTResponses {
         linearAdModel.setTrackingEventArrayList(trackingList);
         ArrayList<MediaFileModel> mediaFileList = new ArrayList<MediaFileModel>();
         MediaFileModel mediaFileModel = new MediaFileModel();
-        Uri videoUri = Uri.parse("android.resource://" + TestUTResponses.class.getPackage().getName() + "/" + R.raw.test_video);
+//        Uri videoUri = Uri.parse("android.resource://" + TestUTResponses.class.getPackage().getName() + "/" + R.raw.test_video);
+        Uri videoUri = Uri.parse("android.resource://" + TestUTResponses.class.getPackage().getName() + "/");
         mediaFileModel.setUrl(videoUri.toString());
         mediaFileModel.setBitrate("500");
         mediaFileModel.setWidth("720");
@@ -201,7 +208,7 @@ public class TestUTResponses {
         // add Advertiser
         adModel.setAdvertiser("AppNexus");
         // add Pricing
-        adModel.setPricing("1.0"); // TODO this should not be a string
+        adModel.setPricing("1.0");
         // add Survey
         adModel.setSurvey(SURVEY_URL);
         // set Error

@@ -39,7 +39,7 @@ import java.util.List;
 public class VastVideoUtil {
 
     public static final int MAX_VIDEO_HEIGHT = 720;
-    public static final int DEFAULT_MAX_VIDEO_WIDTH = 720; // TODO discuss the value with the team
+    public static final int DEFAULT_MAX_VIDEO_WIDTH = 1280;
     public final static String VAST_ADTAGURI_TAG = "VASTAdTagURI";
     public final static String VAST_START_TAG = "VAST";
     public final static String VAST_AD_TAG = "Ad";
