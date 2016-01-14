@@ -1,10 +1,6 @@
 package com.appnexus.opensdk;
 
-import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.view.View;
 import android.widget.VideoView;
@@ -125,7 +121,7 @@ public class VideoActivitiesTest extends BaseViewAdTest {
         videoView.resume();
     }
 
-//    @Test
+    //    @Test
     public void testVideoView() {
         Uri videoUri = Uri.parse("android.resource://" + this.getClass().getPackage().getName() + "/" + R.raw.test_video);
         VideoView videoView = new VideoView(activity);
@@ -144,7 +140,7 @@ public class VideoActivitiesTest extends BaseViewAdTest {
         }
     }
 
-//    @Test
+    //    @Test
     public void testBaseCaseOfTrackersFiring() {
         pendBlankResponsesForTrackers(7);
         startVideo();
@@ -183,7 +179,7 @@ public class VideoActivitiesTest extends BaseViewAdTest {
         assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.COMPLETE_URL));
     }
 
-//    @Test
+    //    @Test
     public void testPauseAndResumeBeforeMidPoint() {
         pendBlankResponsesForTrackers(7);
         startVideo();
@@ -205,7 +201,7 @@ public class VideoActivitiesTest extends BaseViewAdTest {
 
     }
 
-//    @Test
+    //    @Test
     public void testPauseAndResumeBeforeThirdQuartile() {
         pendBlankResponsesForTrackers(7);
         startVideo();
@@ -228,7 +224,7 @@ public class VideoActivitiesTest extends BaseViewAdTest {
 
     }
 
-//    @Test
+    //    @Test
     public void testPauseAndResumeBeforeComplete() {
         pendBlankResponsesForTrackers(7);
         startVideo();
@@ -249,7 +245,7 @@ public class VideoActivitiesTest extends BaseViewAdTest {
         assertTrue(FakeHttp.httpRequestWasMade(TestUTResponses.COMPLETE_URL));
     }
 
-//    @Test
+    //    @Test
     public void testClickThroughAndClickUrls() {
         pendBlankResponsesForTrackers(10);
         startVideo();
@@ -259,13 +255,13 @@ public class VideoActivitiesTest extends BaseViewAdTest {
         // check that launched ad activity is having
     }
 
-//    @Test
+    //    @Test
     public void testSkipVideo() {
         // test can't skip before offset
         // after skip skip url is fired
     }
 
-//    @Test
+    //    @Test
     public void testMuteButton() {
         startVideo();
         // check by default it's muted
