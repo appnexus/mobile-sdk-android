@@ -60,6 +60,15 @@ class UTAdResponse {
     private static final String RESPONSE_KEY_HANDLER = "handler";
     private static final String RESPONSE_KEY_TRACKERS = "trackers";
     private static final String RESPONSE_KEY_IMPRESSION_URLS = "impression_urls";
+    private static final String RESPONSE_KEY_ERROR_URLS = "error_urls";
+    private static final String RESPONSE_KEY_VIDEO_CLICK_URLS = "video_click_urls";
+    private static final String RESPONSE_KEY_VIDEO_EVENTS = "video_events";
+    private static final String RESPONSE_KEY_VIDEO_START_EVENT = "start";
+    private static final String RESPONSE_KEY_VIDEO_SKIP_EVENT = "skip";
+    private static final String RESPONSE_KEY_VIDEO_FIRST_QUARTILE_EVENT = "firstQuartile";
+    private static final String RESPONSE_KEY_VIDEO_MIDPOINT_EVENT = "midpoint";
+    private static final String RESPONSE_KEY_VIDEO_THIRD_QUARTILE_EVENT = "thirdQuartile";
+    private static final String RESPONSE_KEY_VIDEO_COMPLETE_EVENT = "complete";
     private static final String RESPONSE_KEY_TIMEOUT = "timeout_ms";
     private static final String RESPONSE_KEY_RESPONSE_URL = "response_url";
 
@@ -270,17 +279,28 @@ class UTAdResponse {
             int height = JsonUtil.getJSONInt(banner, RESPONSE_KEY_HEIGHT);
             int width = JsonUtil.getJSONInt(banner, RESPONSE_KEY_WIDTH);
 
-            ArrayList<String> impressionUrls = getImpressionUrls(ssm);
+
             if (handler != null) {
                 for (int j = 0; j < handler.length(); j++) {
                     JSONObject handlerElement = JsonUtil.getJSONObjectFromArray(handler, j);
                     if (handlerElement != null) {
                         String handlerUrl = JsonUtil.getJSONString(handlerElement, RESPONSE_KEY_HANDLER_URL);
                         if (!StringUtil.isEmpty(handlerUrl)) {
-                            SSMAdResponse ssmAd = new SSMAdResponse(width, height, adType, notifyUrl, impressionUrls);
+                            SSMAdResponse ssmAd = new SSMAdResponse(width, height, adType, notifyUrl, getImpressionUrls(ssm));
                             ssmAd.setAdUrl(handlerUrl);
                             ssmAd.setSsmTimeout(ssmTimeout);
                             ssmAd.setContentSource(ANConstants.SSM);
+
+                            if(ANConstants.AD_TYPE_VIDEO.equalsIgnoreCase(adType)) {
+                                ssmAd.setErrorURLs(getErrorUrls(ssm));
+                                ssmAd.setVideoClickURLs(getVideoClickUrls(ssm));
+                                ssmAd.setStart(getStartTrackingUrls(ssm));
+                                ssmAd.setSkip(getSkipTrackingUrls(ssm));
+                                ssmAd.setFirstQuartile(getFirstQuartileTrackingUrls(ssm));
+                                ssmAd.setMidpoint(getMidPointTrackingUrls(ssm));
+                                ssmAd.setThirdQuartile(getThirdQuartileTrackingUrls(ssm));
+                                ssmAd.setComplete(getCompleteTrackingUrls(ssm));
+                            }
                             adList.add(ssmAd);
                         }
                     }
@@ -302,6 +322,118 @@ class UTAdResponse {
         }
         return impressionUrls;
     }
+
+    private ArrayList<String> getErrorUrls(JSONObject contentSourceObject) {
+        JSONArray trackers = JsonUtil.getJSONArray(contentSourceObject, RESPONSE_KEY_TRACKERS);
+
+        ArrayList<String> impressionUrls = new ArrayList<String>();
+        if (trackers != null) {
+            JSONObject trackerObject = JsonUtil.getJSONObjectFromArray(trackers, 0);
+            JSONArray urlJsonArray = JsonUtil.getJSONArray(trackerObject, RESPONSE_KEY_ERROR_URLS);
+            impressionUrls = JsonUtil.getStringArrayList(urlJsonArray);
+
+        }
+        return impressionUrls;
+    }
+
+    private ArrayList<String> getVideoClickUrls(JSONObject contentSourceObject) {
+        JSONArray trackers = JsonUtil.getJSONArray(contentSourceObject, RESPONSE_KEY_TRACKERS);
+
+        ArrayList<String> videoClickUrls = new ArrayList<String>();
+        if (trackers != null) {
+            JSONObject trackerObject = JsonUtil.getJSONObjectFromArray(trackers, 0);
+            JSONArray urlJsonArray = JsonUtil.getJSONArray(trackerObject, RESPONSE_KEY_VIDEO_CLICK_URLS);
+            videoClickUrls = JsonUtil.getStringArrayList(urlJsonArray);
+
+        }
+        return videoClickUrls;
+    }
+
+    private ArrayList<String> getStartTrackingUrls(JSONObject contentSourceObject) {
+        JSONArray trackers = JsonUtil.getJSONArray(contentSourceObject, RESPONSE_KEY_TRACKERS);
+
+        ArrayList<String> trackerUrls = new ArrayList<String>();
+        if (trackers != null) {
+            JSONObject trackerObject = JsonUtil.getJSONObjectFromArray(trackers, 0);
+            JSONObject videoEventsObject = JsonUtil.getJSONObject(trackerObject, RESPONSE_KEY_VIDEO_EVENTS);
+            JSONArray urlJsonArray = JsonUtil.getJSONArray(videoEventsObject, RESPONSE_KEY_VIDEO_START_EVENT);
+            trackerUrls = JsonUtil.getStringArrayList(urlJsonArray);
+
+        }
+        return trackerUrls;
+    }
+
+    private ArrayList<String> getSkipTrackingUrls(JSONObject contentSourceObject) {
+        JSONArray trackers = JsonUtil.getJSONArray(contentSourceObject, RESPONSE_KEY_TRACKERS);
+
+        ArrayList<String> trackerUrls = new ArrayList<String>();
+        if (trackers != null) {
+            JSONObject trackerObject = JsonUtil.getJSONObjectFromArray(trackers, 0);
+            JSONObject videoEventsObject = JsonUtil.getJSONObject(trackerObject, RESPONSE_KEY_VIDEO_EVENTS);
+            JSONArray urlJsonArray = JsonUtil.getJSONArray(videoEventsObject, RESPONSE_KEY_VIDEO_SKIP_EVENT);
+            trackerUrls = JsonUtil.getStringArrayList(urlJsonArray);
+
+        }
+        return trackerUrls;
+    }
+
+    private ArrayList<String> getFirstQuartileTrackingUrls(JSONObject contentSourceObject) {
+        JSONArray trackers = JsonUtil.getJSONArray(contentSourceObject, RESPONSE_KEY_TRACKERS);
+
+        ArrayList<String> trackerUrls = new ArrayList<String>();
+        if (trackers != null) {
+            JSONObject trackerObject = JsonUtil.getJSONObjectFromArray(trackers, 0);
+            JSONObject videoEventsObject = JsonUtil.getJSONObject(trackerObject, RESPONSE_KEY_VIDEO_EVENTS);
+            JSONArray urlJsonArray = JsonUtil.getJSONArray(videoEventsObject, RESPONSE_KEY_VIDEO_FIRST_QUARTILE_EVENT);
+            trackerUrls = JsonUtil.getStringArrayList(urlJsonArray);
+
+        }
+        return trackerUrls;
+    }
+
+    private ArrayList<String> getMidPointTrackingUrls(JSONObject contentSourceObject) {
+        JSONArray trackers = JsonUtil.getJSONArray(contentSourceObject, RESPONSE_KEY_TRACKERS);
+
+        ArrayList<String> trackerUrls = new ArrayList<String>();
+        if (trackers != null) {
+            JSONObject trackerObject = JsonUtil.getJSONObjectFromArray(trackers, 0);
+            JSONObject videoEventsObject = JsonUtil.getJSONObject(trackerObject, RESPONSE_KEY_VIDEO_EVENTS);
+            JSONArray urlJsonArray = JsonUtil.getJSONArray(videoEventsObject, RESPONSE_KEY_VIDEO_MIDPOINT_EVENT);
+            trackerUrls = JsonUtil.getStringArrayList(urlJsonArray);
+
+        }
+        return trackerUrls;
+    }
+
+    private ArrayList<String> getThirdQuartileTrackingUrls(JSONObject contentSourceObject) {
+        JSONArray trackers = JsonUtil.getJSONArray(contentSourceObject, RESPONSE_KEY_TRACKERS);
+
+        ArrayList<String> trackerUrls = new ArrayList<String>();
+        if (trackers != null) {
+            JSONObject trackerObject = JsonUtil.getJSONObjectFromArray(trackers, 0);
+            JSONObject videoEventsObject = JsonUtil.getJSONObject(trackerObject, RESPONSE_KEY_VIDEO_EVENTS);
+            JSONArray urlJsonArray = JsonUtil.getJSONArray(videoEventsObject, RESPONSE_KEY_VIDEO_THIRD_QUARTILE_EVENT);
+            trackerUrls = JsonUtil.getStringArrayList(urlJsonArray);
+
+        }
+        return trackerUrls;
+    }
+
+    private ArrayList<String> getCompleteTrackingUrls(JSONObject contentSourceObject) {
+        JSONArray trackers = JsonUtil.getJSONArray(contentSourceObject, RESPONSE_KEY_TRACKERS);
+
+        ArrayList<String> trackerUrls = new ArrayList<String>();
+        if (trackers != null) {
+            JSONObject trackerObject = JsonUtil.getJSONObjectFromArray(trackers, 0);
+            JSONObject videoEventsObject = JsonUtil.getJSONObject(trackerObject, RESPONSE_KEY_VIDEO_EVENTS);
+            JSONArray urlJsonArray = JsonUtil.getJSONArray(videoEventsObject, RESPONSE_KEY_VIDEO_COMPLETE_EVENT);
+            trackerUrls = JsonUtil.getStringArrayList(urlJsonArray);
+
+        }
+        return trackerUrls;
+    }
+
+
 
 
     LinkedList<BaseAdResponse> getAdList(){

@@ -23,6 +23,15 @@ public class SSMAdResponse extends BaseAdResponse {
     private String adUrl;
     private int ssmTimeout;
 
+    private ArrayList<String> errorURLs = new ArrayList<>();
+    private ArrayList<String> videoClickURLs = new ArrayList<>();
+    private ArrayList<String> start = new ArrayList<>();
+    private ArrayList<String> skip  = new ArrayList<>();
+    private ArrayList<String> firstQuartile = new ArrayList<>();
+    private ArrayList<String> midpoint = new ArrayList<>();
+    private ArrayList<String> thirdQuartile  = new ArrayList<>();
+    private ArrayList<String> complete = new ArrayList<>();
+
     public SSMAdResponse(int width, int height, String adType, String notifyUrl, ArrayList<String> impressionURLs) {
         super(width, height, adType, notifyUrl, impressionURLs);
     }
@@ -41,5 +50,78 @@ public class SSMAdResponse extends BaseAdResponse {
 
     public void setSsmTimeout(int ssmTimeout) {
         this.ssmTimeout = ssmTimeout;
+    }
+
+
+    public ArrayList<String> getErrorURLs() {
+        return errorURLs;
+    }
+
+    public void setErrorURLs(ArrayList<String> errorURLs) {
+        if(errorURLs == null) return;
+        this.errorURLs = errorURLs;
+    }
+
+    public ArrayList<String> getStart() {
+        return start;
+    }
+
+    public void setStart(ArrayList<String> start) {
+        if(start == null) return;
+        this.start = start;
+    }
+
+    public ArrayList<String> getSkip() {
+        return skip;
+    }
+
+    public void setSkip(ArrayList<String> skip) {
+        if(skip == null) return;
+        this.skip = skip;
+    }
+
+    public ArrayList<String> getFirstQuartile() {
+        return firstQuartile;
+    }
+
+    public void setFirstQuartile(ArrayList<String> firstQuartile) {
+        if(firstQuartile == null) return;
+        this.firstQuartile = firstQuartile;
+    }
+
+    public ArrayList<String> getMidpoint() {
+        return midpoint;
+    }
+
+    public void setMidpoint(ArrayList<String> midpoint) {
+        if(midpoint == null) return;
+        this.midpoint = midpoint;
+    }
+
+    public ArrayList<String> getThirdQuartile() {
+        return thirdQuartile;
+    }
+
+    public void setThirdQuartile(ArrayList<String> thirdQuartile) {
+        if(thirdQuartile == null) return;
+        this.thirdQuartile = thirdQuartile;
+    }
+
+    public ArrayList<String> getComplete() {
+        return complete;
+    }
+
+    public void setComplete(ArrayList<String> complete) {
+        if(complete == null) return;
+        this.complete = complete;
+    }
+
+    public ArrayList<String> getVideoClickURLs() {
+        return videoClickURLs;
+    }
+
+    public void setVideoClickURLs(ArrayList<String> videoClickURLs) {
+        if(videoClickURLs == null) return;
+        this.videoClickURLs = videoClickURLs;
     }
 }
