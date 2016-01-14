@@ -59,7 +59,7 @@ public class VideoActivitiesTest extends BaseViewAdTest {
     public void testVideoAdActivityLaunchedCorrectly() {
         if (serverStarted) {
             // Feed the UT response
-            server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.videoUT()));
+            server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video()));
             requestManager = new InterstitialAdRequestManager(interstitialAdView);
             requestManager.execute();
             Robolectric.flushBackgroundThreadScheduler();

@@ -76,7 +76,7 @@ public class AdListenerTest extends BaseViewAdTest {
      */
     @Test
     public void testInterstitialHtmlRTBAdLoaded() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.bannerUT()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.html()));
         requestManager = new InterstitialAdRequestManager(interstitialAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
@@ -180,7 +180,7 @@ public class AdListenerTest extends BaseViewAdTest {
      */
     @Test
     public void testInterstitialVastRTBAdLoaded() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.videoUT()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video()));
         requestManager = new InterstitialAdRequestManager(interstitialAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
@@ -223,7 +223,7 @@ public class AdListenerTest extends BaseViewAdTest {
      */
     @Test
     public void testInterstitialVastWrapperFailed() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.videoUT()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video()));
         requestManager = new InterstitialAdRequestManager(interstitialAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
