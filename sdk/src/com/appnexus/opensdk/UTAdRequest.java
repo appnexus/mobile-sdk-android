@@ -59,7 +59,8 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
     public static final String TAG_ID = "id";
     public static final String TAG_SIZES = "sizes";
     public static final String TAG_ALLOW_SMALLER_SIZES = "allow_smaller_sizes";
-    public static final String TAG_ALLOWED_MEDIA_AD_TYPES = "ad_types";
+    public static final String TAG_ALLOWED_AD_TYPES = "ad_types";
+    public static final String TAG_ALLOWED_MEDIA_AD_TYPES = "allowed_media_types";
     public static final String TAG_DISABLE_PSA = "disable_psa";
     public static final String TAG_PREBID = "prebid";
     public static final String TAG_CODE = "code";
@@ -91,8 +92,9 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
     public static final String MEMBER_ID = "member_id";
     public static final String KEYVAL_KEY = "key";
     public static final String KEYVAL_VALUE = "value";
-    public static final String ALLOWED_TYPE_BANNER = "banner";
-    public static final String ALLOWED_TYPE_VIDEO = "video";
+    public static final int ALLOWED_TYPE_BANNER = 1;
+    public static final int ALLOWED_TYPE_INTERSTITIAL = 3;
+    public static final int ALLOWED_TYPE_VIDEO = 4;
 
     private WeakReference<AdRequester> requester; // The instance of AdRequester which is filing this request.
     private RequestParameters params;
@@ -304,11 +306,12 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
 
             tag.put(TAG_ALLOW_SMALLER_SIZES, false);
 
-            JSONArray allowedAdTypes = new JSONArray();
-            allowedAdTypes.put(ALLOWED_TYPE_BANNER);
-            allowedAdTypes.put(ALLOWED_TYPE_VIDEO);
+            JSONArray allowedMediaAdTypes = new JSONArray();
+            allowedMediaAdTypes.put(ALLOWED_TYPE_BANNER);
+            allowedMediaAdTypes.put(ALLOWED_TYPE_INTERSTITIAL);
+            allowedMediaAdTypes.put(ALLOWED_TYPE_VIDEO);
+            tag.put(TAG_ALLOWED_MEDIA_AD_TYPES, allowedMediaAdTypes);
 
-            tag.put(TAG_ALLOWED_MEDIA_AD_TYPES, allowedAdTypes);
             tag.put(TAG_PREBID, false);
             tag.put(TAG_DISABLE_PSA, !params.getShouldServePSAs());
         } catch (JSONException e) {

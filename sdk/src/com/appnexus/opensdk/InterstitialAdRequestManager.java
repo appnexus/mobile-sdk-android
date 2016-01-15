@@ -107,11 +107,12 @@ class InterstitialAdRequestManager extends RequestManager {
                 processNextAd();
             }
         }else{
-            handleResponseFailure(resultCode);
+            handleResponseFailure(resultCode, null);
         }
     }
 
-    private void handleResponseFailure(ResultCode reason) {
+    private void handleResponseFailure(ResultCode reason, String noAdUrl) {
+        fireTracker(noAdUrl);
         printMediatedClasses();
         AdView owner = this.owner.get();
         if (owner != null) {
@@ -137,10 +138,10 @@ class InterstitialAdRequestManager extends RequestManager {
     }
 
     @Override
-    public void currentAdFailed(ResultCode reason) {
+    public void currentAdFailed(ResultCode reason, String noAdUrl) {
 
         if(getAdList() == null || getAdList().isEmpty()){
-            handleResponseFailure(reason);
+            handleResponseFailure(reason, noAdUrl);
         }else {
             // Process next available ad response
             processNextAd();
@@ -177,7 +178,6 @@ class InterstitialAdRequestManager extends RequestManager {
                         AdModel vastAdResponse = vastResponseParser.readVAST(stream);
                         VastVideoUtil.addANTrackers(vastAdResponse, ssmAdResponse);
                         ssmAdResponse.setVastAdResponse(vastAdResponse);
-                        // TODO add the rest of the trackers
                     } catch (Exception e) {
                         Clog.e(Clog.httpRespLogTag, "Exception processing vast response: "+e.getMessage());
                     }
@@ -195,13 +195,13 @@ class InterstitialAdRequestManager extends RequestManager {
                             initiateVastAdView(owner, ssmAdResponse);
                         }else{
                             Clog.e(Clog.httpRespLogTag, "Vast ad is not available");
-                            currentAdFailed(ResultCode.UNABLE_TO_FILL);
+                            currentAdFailed(ResultCode.UNABLE_TO_FILL, ssmAdResponse.getNoAdUrl());
                         }
                     }else{
-                        currentAdFailed(ResultCode.UNABLE_TO_FILL);
+                        currentAdFailed(ResultCode.UNABLE_TO_FILL, ssmAdResponse.getNoAdUrl());
                     }
                 }else {
-                    currentAdFailed(ResultCode.UNABLE_TO_FILL);
+                    currentAdFailed(ResultCode.UNABLE_TO_FILL, ssmAdResponse.getNoAdUrl());
                 }
             }
 
@@ -237,16 +237,17 @@ class InterstitialAdRequestManager extends RequestManager {
                 // Standard ads
                 initiateWebview(owner, rtbAdResponse);
             } else {
-                currentAdFailed(ResultCode.UNABLE_TO_FILL);
+                currentAdFailed(ResultCode.UNABLE_TO_FILL, rtbAdResponse.getNoAdUrl());
             }
         }else{
-            currentAdFailed(ResultCode.UNABLE_TO_FILL);
+            currentAdFailed(ResultCode.UNABLE_TO_FILL, rtbAdResponse.getNoAdUrl());
         }
     }
 
     private void handleVASTResponse(final AdView owner, final RTBAdResponse rtbAdResponse) {
 
         if (!StringUtil.isEmpty(rtbAdResponse.getAdContent())) {
+            fireNotifyUrlForVideo(rtbAdResponse);
             new AsyncTask<String, Void, AdModel>() {
                 @Override
                 protected AdModel doInBackground(String... params) {
@@ -267,12 +268,37 @@ class InterstitialAdRequestManager extends RequestManager {
                         Clog.d(Clog.httpRespLogTag, "Vast response parsed");
                         initiateVastAdView(owner, rtbAdResponse);
                     }else{
-                        currentAdFailed(ResultCode.UNABLE_TO_FILL);
+                        currentAdFailed(ResultCode.UNABLE_TO_FILL, rtbAdResponse.getNoAdUrl());
                     }
                 }
             }.execute(rtbAdResponse.getAdContent());
         }
 
+    }
+
+
+    private void fireNotifyUrlForVideo(BaseAdResponse adResponse) {
+        if(ANConstants.AD_TYPE_VIDEO.equalsIgnoreCase(adResponse.getAdType())){
+            fireTracker(adResponse.getNotifyUrl());
+        }
+    }
+
+    private void fireTracker(final String trackerUrl) {
+        if(trackerUrl == null) return;
+
+        new HTTPGet() {
+            @Override
+            protected void onPostExecute(HTTPResponse response) {
+                if (response != null && response.getSucceeded()) {
+                    Clog.i(Clog.baseLogTag, "Tracker fired successfully!");
+                }
+            }
+
+            @Override
+            protected String getUrl() {
+                return trackerUrl;
+            }
+        }.execute();
     }
 
 

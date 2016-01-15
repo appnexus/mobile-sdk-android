@@ -74,6 +74,6 @@ interface AdRequester {
 
     public void currentAdLoaded(AdResponse ad);
 
-    public void currentAdFailed(ResultCode reason);
+    public void currentAdFailed(ResultCode reason, String noAdUrl);
 
 }

@@ -71,6 +71,7 @@ class UTAdResponse {
     private static final String RESPONSE_KEY_VIDEO_COMPLETE_EVENT = "complete";
     private static final String RESPONSE_KEY_TIMEOUT = "timeout_ms";
     private static final String RESPONSE_KEY_RESPONSE_URL = "response_url";
+    private static final String RESPONSE_KEY_NO_AD_URL = "no_ad_url";
 
     private boolean containsAds = false;
     private boolean isHttpError = false;
@@ -140,6 +141,7 @@ class UTAdResponse {
     // returns true if response contains an ad, false if not
     private boolean handleAdResponse(JSONObject response) throws Exception {
 
+        String noAdUrl = JsonUtil.getJSONString(response, RESPONSE_KEY_NO_AD_URL);
         JSONArray ads = JsonUtil.getJSONArray(response, RESPONSE_KEY_ADS);
         if (ads != null) {
             adList = new LinkedList<BaseAdResponse>();
@@ -149,13 +151,12 @@ class UTAdResponse {
                 String adType = JsonUtil.getJSONString(ad, RESPONSE_KEY_AD_TYPE);
                 String notifyUrl = JsonUtil.getJSONString(ad, RESPONSE_KEY_NOTIFY_URL);
                 String contentSource = JsonUtil.getJSONString(ad, RESPONSE_KEY_CONTENT_SOURCE);
-
                 if (contentSource != null && contentSource.equalsIgnoreCase(ANConstants.CSM)){
-                    handleCSM(ad, adType, notifyUrl);
+                    handleCSM(ad, adType, notifyUrl, noAdUrl);
                 }else if(contentSource != null && contentSource.equalsIgnoreCase(ANConstants.SSM)){
-                    handleSSM(ad, adType, notifyUrl);
+                    handleSSM(ad, adType, notifyUrl, noAdUrl);
                 }else {
-                    handleRTB(ad, adType, notifyUrl);
+                    handleRTB(ad, adType, notifyUrl, noAdUrl);
                 }
             }
 
@@ -167,21 +168,21 @@ class UTAdResponse {
         return false;
     }
 
-    private void handleRTB(JSONObject adObject, String adType, String notifyUrl) throws Exception {
+    private void handleRTB(JSONObject adObject, String adType, String notifyUrl, String noAdUrl) throws Exception {
         JSONObject rtbObject = JsonUtil.getJSONObject(adObject, RESPONSE_KEY_RTB);
         if (rtbObject != null) {
             if(rtbObject.has(RESPONSE_KEY_BANNER)) {
                 Clog.i(Clog.httpRespLogTag, "it's an HTML Ad");
-                parseHtmlAdResponse(rtbObject, adType, notifyUrl);
+                parseHtmlAdResponse(rtbObject, adType, notifyUrl, noAdUrl);
             }else{
                 Clog.i(Clog.httpRespLogTag, "it's a Video Ad");
-                parseVastAdReponse(rtbObject, adType, notifyUrl);
+                parseVastAdReponse(rtbObject, adType, notifyUrl, noAdUrl);
             }
         }
     }
 
 
-    private void parseHtmlAdResponse(JSONObject rtbObject, String adType, String notifyUrl) throws Exception{
+    private void parseHtmlAdResponse(JSONObject rtbObject, String adType, String notifyUrl, String noAdUrl) throws Exception{
         JSONObject bannerObject = JsonUtil.getJSONObject(rtbObject, RESPONSE_KEY_BANNER);
         if(bannerObject != null) {
             int height = JsonUtil.getJSONInt(bannerObject, RESPONSE_KEY_HEIGHT);
@@ -196,6 +197,7 @@ class UTAdResponse {
                 RTBAdResponse rtbAd = new RTBAdResponse(width, height, adType, notifyUrl, getImpressionUrls(rtbObject));
                 rtbAd.setAdContent(content);
                 rtbAd.setContentSource(ANConstants.RTB);
+                rtbAd.setNoAdUrl(noAdUrl);
                 if (content.contains(ServerResponse.MRAID_JS_FILENAME)) {
                     rtbAd.addToExtras(ServerResponse.EXTRAS_KEY_MRAID, true);
                 }
@@ -210,9 +212,10 @@ class UTAdResponse {
      *  Parse UT-V2 VAST response
      * @param rtbObject
      * @param adType
+     * @param noAdUrl
      * @throws Exception
      */
-    private void parseVastAdReponse(JSONObject rtbObject, String adType, String notifyUrl) throws Exception {
+    private void parseVastAdReponse(JSONObject rtbObject, String adType, String notifyUrl, String noAdUrl) throws Exception {
 
         JSONObject videoObject = JsonUtil.getJSONObject(rtbObject, RESPONSE_KEY_VIDEO);
         if(videoObject != null) {
@@ -221,6 +224,7 @@ class UTAdResponse {
                 RTBAdResponse rtbAd = new RTBAdResponse(-1, -1, adType, notifyUrl, getImpressionUrls(rtbObject));
                 rtbAd.setAdContent(vastResponse);
                 rtbAd.setContentSource(ANConstants.RTB);
+                rtbAd.setNoAdUrl(noAdUrl);
                 adList.add(rtbAd);
                 containsAds = true;
             }
@@ -228,7 +232,7 @@ class UTAdResponse {
     }
 
 
-    private void handleCSM(JSONObject ad, String adType, String notifyUrl) {
+    private void handleCSM(JSONObject ad, String adType, String notifyUrl, String noAdUrl) {
         JSONObject csm = JsonUtil.getJSONObject(ad, RESPONSE_KEY_CLIENT_SIDE_MEDIATION);
 
         if (csm != null) {
@@ -260,6 +264,7 @@ class UTAdResponse {
                                 csmAd.setParam(param);
                                 csmAd.setResponseUrl(responseUrl);
                                 csmAd.setContentSource(ANConstants.CSM);
+                                csmAd.setNoAdUrl(noAdUrl);
                                 adList.add(csmAd);
                             }
                         }
@@ -270,7 +275,7 @@ class UTAdResponse {
     }
 
 
-    private void handleSSM(JSONObject ad, String adType, String notifyUrl) {
+    private void handleSSM(JSONObject ad, String adType, String notifyUrl, String noAdUrl) {
         JSONObject ssm = JsonUtil.getJSONObject(ad, RESPONSE_KEY_SERVER_SIDE_MEDIATION);
         if (ssm != null) {
             JSONArray handler = JsonUtil.getJSONArray(ssm, RESPONSE_KEY_HANDLER);
@@ -290,6 +295,7 @@ class UTAdResponse {
                             ssmAd.setAdUrl(handlerUrl);
                             ssmAd.setSsmTimeout(ssmTimeout);
                             ssmAd.setContentSource(ANConstants.SSM);
+                            ssmAd.setNoAdUrl(noAdUrl);
 
                             if(ANConstants.AD_TYPE_VIDEO.equalsIgnoreCase(adType)) {
                                 ssmAd.setErrorURLs(getErrorUrls(ssm));

@@ -497,7 +497,7 @@ public abstract class MediatedAdViewController {
             new Handler().post(new Runnable() {
                 @Override
                 public void run() {
-                    requester.currentAdFailed(result);
+                    requester.currentAdFailed(result, currentCSMAd.getNoAdUrl());
                 }
             });
         }
