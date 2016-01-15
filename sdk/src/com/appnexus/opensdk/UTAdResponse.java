@@ -231,7 +231,7 @@ class UTAdResponse {
     private void handleCSM(JSONObject ad, String adType, String notifyUrl) {
         JSONObject csm = JsonUtil.getJSONObject(ad, RESPONSE_KEY_CLIENT_SIDE_MEDIATION);
 
-        if (csm != null && !ANConstants.AD_TYPE_VIDEO.equalsIgnoreCase(adType)) {
+        if (csm != null) {
             JSONArray handler = JsonUtil.getJSONArray(csm, RESPONSE_KEY_HANDLER);
             ArrayList<String> impressionUrls = getImpressionUrls(csm);
             String responseUrl = JsonUtil.getJSONString(csm, RESPONSE_KEY_RESPONSE_URL);
