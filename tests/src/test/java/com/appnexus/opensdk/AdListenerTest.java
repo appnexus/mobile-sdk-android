@@ -241,7 +241,7 @@ public class AdListenerTest extends BaseViewAdTest {
         server.start();
 
         HttpUrl url = server.url("/");
-        Settings.BASE_URL_UT_V2 = url.toString();
+        Settings.BASE_URL_UT = url.toString();
     }
 
     @Override
