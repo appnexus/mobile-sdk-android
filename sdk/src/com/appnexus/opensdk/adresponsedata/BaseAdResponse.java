@@ -120,4 +120,5 @@ public abstract class BaseAdResponse {
     public void setVastAdResponse(AdModel vastAdResponse) {
         this.vastAdResponse = vastAdResponse;
     }
+
 }

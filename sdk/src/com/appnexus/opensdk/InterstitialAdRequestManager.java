@@ -40,6 +40,7 @@ import java.nio.charset.Charset;
 class InterstitialAdRequestManager extends RequestManager {
     private final WeakReference<AdView> owner;
     private MediatedAdViewController controller;
+    private String noAdUrl;
 
     InterstitialAdRequestManager(AdView owner) {
         super();
@@ -103,15 +104,17 @@ class InterstitialAdRequestManager extends RequestManager {
                     // if non-mediated ad is overriding the list,
                     // this will be null and skip the loop for mediation
                     setAdList(response.getAdList());
+                    noAdUrl = response.getNoAdUrl();
                 }
                 processNextAd();
             }
         }else{
-            handleResponseFailure(resultCode);
+            handleResponseFailure(resultCode, null);
         }
     }
 
-    private void handleResponseFailure(ResultCode reason) {
+    private void handleResponseFailure(ResultCode reason, String noAdUrl) {
+        fireTracker(noAdUrl);
         printMediatedClasses();
         AdView owner = this.owner.get();
         if (owner != null) {
@@ -140,7 +143,7 @@ class InterstitialAdRequestManager extends RequestManager {
     public void currentAdFailed(ResultCode reason) {
 
         if(getAdList() == null || getAdList().isEmpty()){
-            handleResponseFailure(reason);
+            handleResponseFailure(reason, noAdUrl);
         }else {
             // Process next available ad response
             processNextAd();
@@ -177,7 +180,6 @@ class InterstitialAdRequestManager extends RequestManager {
                         AdModel vastAdResponse = vastResponseParser.readVAST(stream);
                         VastVideoUtil.addANTrackers(vastAdResponse, ssmAdResponse);
                         ssmAdResponse.setVastAdResponse(vastAdResponse);
-                        // TODO add the rest of the trackers
                     } catch (Exception e) {
                         Clog.e(Clog.httpRespLogTag, "Exception processing vast response: "+e.getMessage());
                     }
@@ -247,6 +249,7 @@ class InterstitialAdRequestManager extends RequestManager {
     private void handleVASTResponse(final AdView owner, final RTBAdResponse rtbAdResponse) {
 
         if (!StringUtil.isEmpty(rtbAdResponse.getAdContent())) {
+            fireNotifyUrlForVideo(rtbAdResponse);
             new AsyncTask<String, Void, AdModel>() {
                 @Override
                 protected AdModel doInBackground(String... params) {
@@ -273,6 +276,31 @@ class InterstitialAdRequestManager extends RequestManager {
             }.execute(rtbAdResponse.getAdContent());
         }
 
+    }
+
+
+    private void fireNotifyUrlForVideo(BaseAdResponse adResponse) {
+        if(ANConstants.AD_TYPE_VIDEO.equalsIgnoreCase(adResponse.getAdType())){
+            fireTracker(adResponse.getNotifyUrl());
+        }
+    }
+
+    private void fireTracker(final String trackerUrl) {
+        if(trackerUrl == null) return;
+
+        new HTTPGet() {
+            @Override
+            protected void onPostExecute(HTTPResponse response) {
+                if (response != null && response.getSucceeded()) {
+                    Clog.i(Clog.baseLogTag, "Tracker fired successfully!");
+                }
+            }
+
+            @Override
+            protected String getUrl() {
+                return trackerUrl;
+            }
+        }.execute();
     }
 
 

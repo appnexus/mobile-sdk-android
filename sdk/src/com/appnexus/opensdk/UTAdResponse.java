@@ -71,10 +71,13 @@ class UTAdResponse {
     private static final String RESPONSE_KEY_VIDEO_COMPLETE_EVENT = "complete";
     private static final String RESPONSE_KEY_TIMEOUT = "timeout_ms";
     private static final String RESPONSE_KEY_RESPONSE_URL = "response_url";
+    private static final String RESPONSE_KEY_NO_AD_URL = "no_ad_url";
 
     private boolean containsAds = false;
     private boolean isHttpError = false;
     private LinkedList<BaseAdResponse> adList;
+    private String noAdUrl;
+
 
 
 
@@ -140,6 +143,7 @@ class UTAdResponse {
     // returns true if response contains an ad, false if not
     private boolean handleAdResponse(JSONObject response) throws Exception {
 
+        noAdUrl = JsonUtil.getJSONString(response, RESPONSE_KEY_NO_AD_URL);
         JSONArray ads = JsonUtil.getJSONArray(response, RESPONSE_KEY_ADS);
         if (ads != null) {
             adList = new LinkedList<BaseAdResponse>();
@@ -149,7 +153,6 @@ class UTAdResponse {
                 String adType = JsonUtil.getJSONString(ad, RESPONSE_KEY_AD_TYPE);
                 String notifyUrl = JsonUtil.getJSONString(ad, RESPONSE_KEY_NOTIFY_URL);
                 String contentSource = JsonUtil.getJSONString(ad, RESPONSE_KEY_CONTENT_SOURCE);
-
                 if (contentSource != null && contentSource.equalsIgnoreCase(ANConstants.CSM)){
                     handleCSM(ad, adType, notifyUrl);
                 }else if(contentSource != null && contentSource.equalsIgnoreCase(ANConstants.SSM)){
@@ -446,6 +449,11 @@ class UTAdResponse {
 
     boolean isHttpError() {
         return isHttpError;
+    }
+
+
+    public String getNoAdUrl() {
+        return noAdUrl;
     }
 
 }
