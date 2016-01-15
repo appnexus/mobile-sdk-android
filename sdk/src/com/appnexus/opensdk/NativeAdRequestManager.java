@@ -158,7 +158,7 @@ class NativeAdRequestManager extends RequestManager {
     }
 
     @Override
-    public void currentAdFailed(ResultCode reason, String noAdUrl) {
+    public void currentAdFailed(ResultCode reason) {
 
     }
 

@@ -40,6 +40,7 @@ import java.nio.charset.Charset;
 class InterstitialAdRequestManager extends RequestManager {
     private final WeakReference<AdView> owner;
     private MediatedAdViewController controller;
+    private String noAdUrl;
 
     InterstitialAdRequestManager(AdView owner) {
         super();
@@ -103,6 +104,7 @@ class InterstitialAdRequestManager extends RequestManager {
                     // if non-mediated ad is overriding the list,
                     // this will be null and skip the loop for mediation
                     setAdList(response.getAdList());
+                    noAdUrl = response.getNoAdUrl();
                 }
                 processNextAd();
             }
@@ -138,7 +140,7 @@ class InterstitialAdRequestManager extends RequestManager {
     }
 
     @Override
-    public void currentAdFailed(ResultCode reason, String noAdUrl) {
+    public void currentAdFailed(ResultCode reason) {
 
         if(getAdList() == null || getAdList().isEmpty()){
             handleResponseFailure(reason, noAdUrl);
@@ -195,13 +197,13 @@ class InterstitialAdRequestManager extends RequestManager {
                             initiateVastAdView(owner, ssmAdResponse);
                         }else{
                             Clog.e(Clog.httpRespLogTag, "Vast ad is not available");
-                            currentAdFailed(ResultCode.UNABLE_TO_FILL, ssmAdResponse.getNoAdUrl());
+                            currentAdFailed(ResultCode.UNABLE_TO_FILL);
                         }
                     }else{
-                        currentAdFailed(ResultCode.UNABLE_TO_FILL, ssmAdResponse.getNoAdUrl());
+                        currentAdFailed(ResultCode.UNABLE_TO_FILL);
                     }
                 }else {
-                    currentAdFailed(ResultCode.UNABLE_TO_FILL, ssmAdResponse.getNoAdUrl());
+                    currentAdFailed(ResultCode.UNABLE_TO_FILL);
                 }
             }
 
@@ -237,10 +239,10 @@ class InterstitialAdRequestManager extends RequestManager {
                 // Standard ads
                 initiateWebview(owner, rtbAdResponse);
             } else {
-                currentAdFailed(ResultCode.UNABLE_TO_FILL, rtbAdResponse.getNoAdUrl());
+                currentAdFailed(ResultCode.UNABLE_TO_FILL);
             }
         }else{
-            currentAdFailed(ResultCode.UNABLE_TO_FILL, rtbAdResponse.getNoAdUrl());
+            currentAdFailed(ResultCode.UNABLE_TO_FILL);
         }
     }
 
@@ -268,7 +270,7 @@ class InterstitialAdRequestManager extends RequestManager {
                         Clog.d(Clog.httpRespLogTag, "Vast response parsed");
                         initiateVastAdView(owner, rtbAdResponse);
                     }else{
-                        currentAdFailed(ResultCode.UNABLE_TO_FILL, rtbAdResponse.getNoAdUrl());
+                        currentAdFailed(ResultCode.UNABLE_TO_FILL);
                     }
                 }
             }.execute(rtbAdResponse.getAdContent());

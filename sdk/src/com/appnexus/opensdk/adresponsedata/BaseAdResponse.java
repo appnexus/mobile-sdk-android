@@ -27,7 +27,6 @@ public abstract class BaseAdResponse {
     private int height;
     private String adType;
     private String notifyUrl;
-    private String noAdUrl;
     private String contentSource;
     private String adContent;
     private ArrayList<String> impressionURLs = new ArrayList<String>();
@@ -122,11 +121,4 @@ public abstract class BaseAdResponse {
         this.vastAdResponse = vastAdResponse;
     }
 
-    public String getNoAdUrl() {
-        return noAdUrl;
-    }
-
-    public void setNoAdUrl(String noAdUrl) {
-        this.noAdUrl = noAdUrl;
-    }
 }

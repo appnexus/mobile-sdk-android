@@ -63,7 +63,7 @@ abstract class RequestManager implements AdRequester{
     public abstract void onReceiveAd(AdResponse ad);
 
     @Override
-    public abstract void currentAdFailed(ResultCode reason, String noAdUrl);
+    public abstract void currentAdFailed(ResultCode reason);
 
     @Override
     public abstract void currentAdLoaded(AdResponse ad);
