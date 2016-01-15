@@ -108,7 +108,7 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
     }
 
     @Override
-    public boolean shouldHandleBackPress() {
+    public boolean shouldOverrideBackPress() {
         return preventExitOnBackPress;
     }
 

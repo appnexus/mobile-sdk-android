@@ -60,7 +60,7 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
     }
 
     @Override
-    public boolean shouldHandleBackPress() {
+    public boolean shouldOverrideBackPress() {
         if (!preventExitOnBackPress){
             skipAd();
         }

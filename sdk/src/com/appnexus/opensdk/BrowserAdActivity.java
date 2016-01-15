@@ -258,7 +258,7 @@ class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     }
 
     @Override
-    public boolean shouldHandleBackPress() {
+    public boolean shouldOverrideBackPress() {
         return false;
     }
 
