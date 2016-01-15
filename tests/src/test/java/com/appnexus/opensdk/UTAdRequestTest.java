@@ -481,7 +481,7 @@ public class UTAdRequestTest extends BaseRoboTest {
         server.start();
 
         HttpUrl url = server.url("/");
-        Settings.BASE_URL_UT_V2 = url.toString();
+        Settings.BASE_URL_UT = url.toString();
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.blank()));
     }
 

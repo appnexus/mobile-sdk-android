@@ -25,7 +25,10 @@ import com.appnexus.opensdk.InterstitialAdView;
 import com.appnexus.opensdk.ResultCode;
 
 public class SimpleInterstitial extends Activity {
+    public static final String BANNER_PLACEMENT = "1281482";
+    public static final String VAST_VIDEO_PLACEMENT = "5706860";
     InterstitialAdView iav;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,11 +37,10 @@ public class SimpleInterstitial extends Activity {
         showInterstitialAd();
     }
 
-    private void showInterstitialAd(){
+    private void showInterstitialAd() {
         iav = new InterstitialAdView(this);
-
-        iav.setPlacementID("1281482"); // Use this id to get Rich Media Interstitial ads
-//        iav.setPlacementID("5706860"); // Use this id to get VAST Video Interstitial ads
+//        iav.setPlacementID(BANNER_PLACEMENT); // Banner
+        iav.setPlacementID(VAST_VIDEO_PLACEMENT); // Video
         iav.setShouldServePSAs(false);
         iav.setOpensNativeBrowser(false);
         iav.setCloseButtonDelay(7000);
