@@ -60,7 +60,7 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
     }
 
     @Override
-    public boolean shouldHandleBackPress() {
+    public boolean shouldOverrideBackPress() {
         if (!preventExitOnBackPress){
             skipAd();
         }
@@ -157,11 +157,11 @@ class InterstitialVideoAdActivity implements AdActivity.AdActivityImplementation
 
             @Override
             public void onDisplayCloseButton() {
+                preventExitOnBackPress = false;
                 if(countdownWidget != null) {
                     countdownWidget.setProgress(0);
                     countdownWidget.setTitle("X");
                     countdownWidget.setOnClickListener(clickListener);
-                    preventExitOnBackPress = false;
                 }
             }
         });
