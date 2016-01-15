@@ -169,18 +169,17 @@ class InterstitialAdRequestManager extends RequestManager {
                 HTTPResponse response = super.doInBackground(params);
                 String vastResponse = response.getResponseBody();
                 ssmAdResponse.setAdContent(response.getResponseBody());
+                
                 if(!StringUtil.isEmpty(vastResponse) && ANConstants.AD_TYPE_VIDEO.equalsIgnoreCase(ssmAdResponse.getAdType())) {
                     try {
                         InputStream stream = new ByteArrayInputStream(vastResponse.getBytes(Charset.forName(ANConstants.UTF_8)));
                         VastResponseParser vastResponseParser = new VastResponseParser();
                         AdModel vastAdResponse = vastResponseParser.readVAST(stream);
-                        if(ssmAdResponse.getImpressionURLs() != null && ssmAdResponse.getImpressionURLs().size() > 0) {
-                            vastAdResponse.getImpressionArrayList().addAll(ssmAdResponse.getImpressionURLs());
-                        }
+                        VastVideoUtil.addANTrackers(vastAdResponse, ssmAdResponse);
                         ssmAdResponse.setVastAdResponse(vastAdResponse);
                         // TODO add the rest of the trackers
                     } catch (Exception e) {
-                        Clog.e(Clog.httpRespLogTag, "Exception parsing vast response: "+e.getMessage());
+                        Clog.e(Clog.httpRespLogTag, "Exception processing vast response: "+e.getMessage());
                     }
                 }
                 return response;
@@ -192,7 +191,7 @@ class InterstitialAdRequestManager extends RequestManager {
                     if(ANConstants.AD_TYPE_HTML.equalsIgnoreCase(ssmAdResponse.getAdType()) && !StringUtil.isEmpty(ssmAdResponse.getAdContent())){
                         initiateWebview(owner, ssmAdResponse);
                     }else if(ANConstants.AD_TYPE_VIDEO.equalsIgnoreCase(ssmAdResponse.getAdType())){
-                        if(ssmAdResponse.getVastAdResponse() != null && ssmAdResponse.getVastAdResponse().containsLinearAd()) {
+                        if(ssmAdResponse.getVastAdResponse() != null && ssmAdResponse.getVastAdResponse().containsMediaUrl()) {
                             initiateVastAdView(owner, ssmAdResponse);
                         }else{
                             Clog.e(Clog.httpRespLogTag, "Vast ad is not available");
@@ -212,6 +211,8 @@ class InterstitialAdRequestManager extends RequestManager {
             }
         }.execute();
     }
+
+
 
     private void handleCSMResponse(AdView owner, CSMAdResponse csmAdResponse) {
         if (owner.getMediaType().equals(MediaType.INTERSTITIAL)) {
@@ -261,7 +262,7 @@ class InterstitialAdRequestManager extends RequestManager {
 
                 @Override
                 protected void onPostExecute(AdModel vastAdResponse) {
-                    if (vastAdResponse != null && vastAdResponse.containsLinearAd()) {
+                    if (vastAdResponse != null && vastAdResponse.containsMediaUrl()) {
                         rtbAdResponse.setVastAdResponse(vastAdResponse);
                         Clog.d(Clog.httpRespLogTag, "Vast response parsed");
                         initiateVastAdView(owner, rtbAdResponse);

@@ -288,17 +288,19 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
             }
 
             ArrayList<AdSize> allowedSizes = params.getAllowedSizes();
-
-            if (allowedSizes != null && allowedSizes.size() > 0) {
-                JSONArray sizes = new JSONArray();
+            JSONArray sizes = new JSONArray();
+            if(allowedSizes != null && allowedSizes.size() > 0) {
                 for (AdSize s : allowedSizes) {
                     JSONObject size = new JSONObject();
                     size.put(SIZE_WIDTH, s.width());
                     size.put(SIZE_HEIGHT, s.height());
                     sizes.put(size);
                 }
-                tag.put(TAG_SIZES, sizes);
             }
+            addScreenSize(sizes);
+            addOneByOneSize(sizes);
+
+            tag.put(TAG_SIZES, sizes);
 
             tag.put(TAG_ALLOW_SMALLER_SIZES, false);
 
@@ -316,6 +318,26 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
             tags.put(tag);
         }
         return tags;
+    }
+
+
+    private void addScreenSize(JSONArray sizes) throws JSONException {
+        int maxHeight = params.getContainerHeight();
+        int maxWidth = params.getContainerWidth();
+        if (maxHeight > 0 && maxWidth > 0) {
+            JSONObject size = new JSONObject();
+            size.put(SIZE_WIDTH, maxWidth);
+            size.put(SIZE_HEIGHT, maxHeight);
+            sizes.put(size);
+        }
+    }
+
+
+    private void addOneByOneSize(JSONArray sizes) throws JSONException {
+        JSONObject size = new JSONObject();
+        size.put(SIZE_WIDTH, 1);
+        size.put(SIZE_HEIGHT, 1);
+        sizes.put(size);
     }
 
     private JSONObject getUserObject() {

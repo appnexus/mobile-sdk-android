@@ -249,7 +249,7 @@ public class BannerAdView extends AdView {
                 // next changes, and maybe the error will be amended.
                 return;
             }
-            requestParameters.setContainereWidth(measuredWidth);
+            requestParameters.setContainerWidth(measuredWidth);
             requestParameters.setContainerHeight(measuredHeight);
             // Hide the adview
             if (!measured && !loadedOffscreen) {

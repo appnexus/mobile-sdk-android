@@ -20,6 +20,7 @@ import android.content.Context;
 import android.media.CamcorderProfile;
 import android.os.Build;
 
+import com.appnexus.opensdk.adresponsedata.SSMAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Connectivity;
 import com.appnexus.opensdk.utils.StringUtil;
@@ -255,6 +256,49 @@ public class VastVideoUtil {
                 || extension.startsWith("3GP") || extension.startsWith("mkv") || extension.startsWith("MKV");
     }
 
+    public static void addANTrackers(AdModel vastAdResponse, SSMAdResponse ssmAdResponse) {
+        if(ssmAdResponse.getImpressionURLs() != null && ssmAdResponse.getImpressionURLs().size() > 0) {
+            vastAdResponse.getImpressionArrayList().addAll(ssmAdResponse.getImpressionURLs());
+        }
+
+        if (vastAdResponse != null && vastAdResponse.getCreativesArrayList() != null && vastAdResponse.getCreativesArrayList().size() > 0) {
+            for (CreativeModel creativeModel : vastAdResponse.getCreativesArrayList()) {
+                if (creativeModel != null) {
+                    LinearAdModel linearAdModel = creativeModel.getLinearAdModel();
+                    if(linearAdModel != null) {
+                        addANVastEventTrackers(linearAdModel, EVENT_START, ssmAdResponse.getStart());
+                        addANVastEventTrackers(linearAdModel, EVENT_SKIP, ssmAdResponse.getSkip());
+                        addANVastEventTrackers(linearAdModel, EVENT_FIRST_QUARTILE, ssmAdResponse.getFirstQuartile());
+                        addANVastEventTrackers(linearAdModel, EVENT_MIDPOINT, ssmAdResponse.getMidpoint());
+                        addANVastEventTrackers(linearAdModel, EVENT_THIRD_QUARTILE, ssmAdResponse.getThirdQuartile());
+                        addANVastEventTrackers(linearAdModel, EVENT_COMPLETE, ssmAdResponse.getComplete());
+                    }
+                }
+            }
+        }
+    }
+    /**
+     * Returns a list of VAST event URLs
+     *
+     * @param linearAdModel
+     * @param eventType
+     * @return
+     */
+    public static void addANVastEventTrackers(LinearAdModel linearAdModel, String eventType, ArrayList<String> urlList) {
+        try {
+            if(urlList != null && urlList.size() > 0) {
+                for (String url : urlList) {
+                    TrackingModel trackingModel = new TrackingModel();
+                    trackingModel.setEvent(eventType);
+                    trackingModel.setURL(url);
+                    Clog.i(Clog.vastLogTag, "Adding EVENT - " + trackingModel.getEvent() + " | URL - " + trackingModel.getURL());
+                    linearAdModel.getTrackingEventArrayList().add(trackingModel);
+                }
+            }
+        }catch (Exception e){
+            Clog.e(Clog.vastLogTag, "Exception adding AppNexus VAST tracking urls " + e.getMessage());
+        }
+    }
 
 
     /**

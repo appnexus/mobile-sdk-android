@@ -102,7 +102,7 @@ abstract class VastVideoPlayer implements OnCompletionListener,
 
     protected void initiateVASTVideoPlayer() {
         try {
-            if (vastAd != null && vastAd.containsLinearAd()) {
+            if (vastAd != null && vastAd.containsMediaUrl()) {
                 showLoader();
                 isFromBrowser = false;
                 this.videoView.setOnCompletionListener(this);
