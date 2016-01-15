@@ -137,4 +137,5 @@
     <string formatted="false" name="transition_direction">transition direction has been set in xml</string>
     <string formatted="false" name="transition_duration">transition duration has been set in xml</string>
 	<string formatted="false" name="xml_load_landing_page_in_background">setDoesLoadingInBackground has been set to %b in xml</string>
+	<string formatted="false" name="missing_dependency">Missing dependency, please include %s in your project to %s.</string>
 </resources>

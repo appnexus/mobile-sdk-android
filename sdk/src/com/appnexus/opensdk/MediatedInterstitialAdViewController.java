@@ -22,14 +22,13 @@ import com.appnexus.opensdk.adresponsedata.CSMAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
-import com.appnexus.opensdk.utils.Settings;
 
 /**
-* An object of this type is sent to the third-party SDK's {@link
-* MediatedInterstitialAdView} object.  The third-party SDK uses this
-* object from within its interstitial view implementation to send
-* events back to the AppNexus SDK.
-*/
+ * An object of this type is sent to the third-party SDK's {@link
+ * MediatedInterstitialAdView} object.  The third-party SDK uses this
+ * object from within its interstitial view implementation to send
+ * events back to the AppNexus SDK.
+ */
 
 public class MediatedInterstitialAdViewController extends MediatedAdViewController {
 
@@ -57,13 +56,13 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
         markLatencyStart();
 
         try {
-            if(activity!=null){
+            if (activity != null) {
                 ((MediatedInterstitialAdView) mAV).requestAd(this,
                         activity,
                         currentAd.getParam(),
                         currentAd.getId(),
                         getTargetingParameters());
-            }else{
+            } else {
                 Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_null_activity));
                 errorCode = ResultCode.INTERNAL_ERROR;
             }
@@ -104,13 +103,13 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
         markLatencyStart();
 
         try {
-            if(activity!=null){
+            if (activity != null) {
                 ((MediatedInterstitialAdView) mAV).requestAd(this,
                         activity,
                         currentCSMAd.getParam(),
                         currentCSMAd.getId(),
                         getTargetingParameters());
-            }else{
+            } else {
                 Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_null_activity));
                 errorCode = ResultCode.INTERNAL_ERROR;
             }
@@ -135,27 +134,24 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
     }
 
     private void fireImpressions(BaseAdResponse responseData) {
-        if(Settings.useUniversalTagV2) {
-            if (responseData != null && responseData.getImpressionURLs() != null) {
-                for (final String impressionUrl : responseData.getImpressionURLs()) {
-                    new HTTPGet() {
-                        @Override
-                        protected void onPostExecute(HTTPResponse response) {
-                            if (response !=null && response.getSucceeded()) {
-                                Clog.i(Clog.baseLogTag, "Impression sent successfully ");
-                            }
+        if (responseData != null && responseData.getImpressionURLs() != null) {
+            for (final String impressionUrl : responseData.getImpressionURLs()) {
+                new HTTPGet() {
+                    @Override
+                    protected void onPostExecute(HTTPResponse response) {
+                        if (response != null && response.getSucceeded()) {
+                            Clog.i(Clog.baseLogTag, "Impression sent successfully ");
                         }
+                    }
 
-                        @Override
-                        protected String getUrl() {
-                            return impressionUrl;
-                        }
-                    }.execute();
-                }
+                    @Override
+                    protected String getUrl() {
+                        return impressionUrl;
+                    }
+                }.execute();
             }
         }
     }
-
 
 
     @Override
@@ -165,22 +161,22 @@ public class MediatedInterstitialAdViewController extends MediatedAdViewControll
 
     @Override
     public void onDestroy() {
-        destroyed=true;
-        if(mAV!=null) {
+        destroyed = true;
+        if (mAV != null) {
             mAV.onDestroy();
         }
     }
 
     @Override
     public void onPause() {
-        if(mAV!=null) {
+        if (mAV != null) {
             mAV.onPause();
         }
     }
 
     @Override
     public void onResume() {
-        if(mAV!=null) {
+        if (mAV != null) {
             mAV.onResume();
         }
     }
