@@ -21,6 +21,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Pair;
 
+import com.appnexus.opensdk.R;
 import com.appnexus.opensdk.SDKSettings;
 
 import java.lang.ref.WeakReference;
@@ -94,6 +95,7 @@ public class AdvertistingIDUtil {
                     limited = (Boolean) mIsLimitAdTrackingEnabled.invoke(adInfoObject);
                 }
             } catch (ClassNotFoundException ignored) {
+                Clog.w(Clog.baseLogTag, Clog.getString(R.string.missing_dependency, "com.google.android.gms:play-services-ads", "to retrieve AAID settings"));
             } catch (InvocationTargetException ignored) {
             } catch (NoSuchMethodException ignored) {
             } catch (IllegalAccessException ignored) {

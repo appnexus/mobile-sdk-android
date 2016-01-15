@@ -16,8 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
-import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.utils.Settings;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.mockwebserver.MockResponse;
@@ -28,15 +26,12 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowWebView;
 import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.io.IOException;
 
-@Config(constants = BuildConfig.class, sdk = 21,
-        shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class})
 @RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class)
 public class AdListenerTest extends BaseViewAdTest {
 
     MockWebServer server;
@@ -246,7 +241,7 @@ public class AdListenerTest extends BaseViewAdTest {
         server.start();
 
         HttpUrl url = server.url("/");
-        Settings.BASE_URL_UT_V2 = url.toString();
+        Settings.BASE_URL_UT = url.toString();
     }
 
     @Override
@@ -257,7 +252,7 @@ public class AdListenerTest extends BaseViewAdTest {
 
     private void shutdownServer() {
         try {
-            if(server != null) {
+            if (server != null) {
                 server.shutdown();
             }
         } catch (IOException e) {

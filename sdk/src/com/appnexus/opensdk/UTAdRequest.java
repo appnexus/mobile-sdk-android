@@ -44,16 +44,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.ref.WeakReference;
-import java.net.CookieHandler;
-import java.net.CookieManager;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
-
     public static final String SIZE_WIDTH = "width";
     public static final String SIZE_HEIGHT = "height";
     public static final String TAGS = "tags";
@@ -95,8 +94,6 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
     public static final String ALLOWED_TYPE_BANNER = "banner";
     public static final String ALLOWED_TYPE_VIDEO = "video";
 
-
-    private static ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
     private WeakReference<AdRequester> requester; // The instance of AdRequester which is filing this request.
     private RequestParameters params;
 
@@ -105,10 +102,8 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
 
     public UTAdRequest(AdRequester adRequester) {
         this.requester = new WeakReference<AdRequester>(adRequester);
-         params = adRequester.getRequestParams();
+        params = adRequester.getRequestParams();
         if (params != null) {
-            AdvertistingIDUtil.retrieveAndSetAAID(params.getContext());
-
             SharedNetworkManager networkManager = SharedNetworkManager.getInstance(params.getContext());
             if (!networkManager.isConnected(params.getContext())) {
                 fail(ResultCode.NETWORK_ERROR);
@@ -137,74 +132,67 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
 
         AdRequester requester = this.requester.get();
         if (requester != null) {
-            RequestParameters parameters = requester.getRequestParams();
-                try {
+            try {
+                String baseUrl = Settings.BASE_URL_UT;
+                URL url = new URL(baseUrl);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("Accept", "application/json");
+                conn.setRequestProperty("User-Agent", Settings.getSettings().ua);
+                conn.setRequestMethod("POST");
 
-                    String baseUrl = Settings.BASE_URL_UT;
-                    if(Settings.useUniversalTagV2){
-                        baseUrl = Settings.BASE_URL_UT_V2;
+                conn.setConnectTimeout(Settings.HTTP_CONNECTION_TIMEOUT);
+                // Make post request
+                String postData = getPostData();
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+                wr.write(postData);
+                wr.flush();
+
+                // Start the connection
+                conn.connect();
+
+                // Read request response
+                int httpResult = conn.getResponseCode();
+                StringBuilder builder = new StringBuilder();
+                if (httpResult == HttpURLConnection.HTTP_OK) {
+                    InputStream is = conn.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, "utf-8"));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        builder.append(line);
                     }
-                    URL url = new URL(baseUrl);
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setDoOutput(true);
-                    conn.setDoInput(true);
-                    conn.setRequestProperty("Content-Type", "application/json");
-                    conn.setRequestProperty("Accept", "application/json");
-                    conn.setRequestProperty("User-Agent", Settings.getSettings().ua);
-                    conn.setRequestMethod("POST");
-
-                    conn.setConnectTimeout(Settings.HTTP_CONNECTION_TIMEOUT);
-                    // Make post request
-                    String postData = getPostData();
-                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-                    wr.write(postData);
-                    wr.flush();
-
-                    // Start the connection
-                    conn.connect();
-
-                    // Read request response
-                    int httpResult = conn.getResponseCode();
-                    StringBuilder builder = new StringBuilder();
-                    if (httpResult == HttpURLConnection.HTTP_OK) {
-                        InputStream is = conn.getInputStream();
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(is, "utf-8"));
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            builder.append(line);
-                        }
-                        reader.close();
-                        is.close();
-                    }else{
-                        Clog.d(Clog.httpRespLogTag, Clog.getString(R.string.http_bad_status, httpResult));
-                        return UTAdRequest.HTTP_ERROR;
-                    }
-                    String result = builder.toString();
-
-                    Clog.i(Clog.httpRespLogTag, "RESPONSE - "+result);
-                    CookieManager cookieManager = new CookieManager();
-                    CookieHandler.setDefault(cookieManager);
-
-                    WebviewUtil.httpCookieSync(cookieManager.getCookieStore().getCookies());
-                    if (result.equals("")) {
-                        // just log and return a valid AdResponse object so that it is
-                        // marked as UNABLE_TO_FILL
-                        Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
-                    }
-                    return new UTAdResponse(result);
-                }  catch (SocketTimeoutException e) {
-                    Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_timeout));
-                } catch (IOException e) {
-                    Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_io));
-                } catch (SecurityException se) {
-                    Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.permissions_internet));
-                } catch (IllegalArgumentException ie) {
-                    Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unknown));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.unknown_exception));
+                    reader.close();
+                    is.close();
+                } else {
+                    Clog.d(Clog.httpRespLogTag, Clog.getString(R.string.http_bad_status, httpResult));
+                    return UTAdRequest.HTTP_ERROR;
                 }
+                String result = builder.toString();
+
+                Clog.i(Clog.httpRespLogTag, "RESPONSE - " + result);
+                Map<String, List<String>> headers = conn.getHeaderFields();
+                WebviewUtil.httpCookieSync(headers);
+                if (result.equals("")) {
+                    // just log and return a valid AdResponse object so that it is
+                    // marked as UNABLE_TO_FILL
+                    Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
+                }
+                return new UTAdResponse(result);
+            } catch (SocketTimeoutException e) {
+                Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_timeout));
+            } catch (IOException e) {
+                Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_io));
+            } catch (SecurityException se) {
+                Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.permissions_internet));
+            } catch (IllegalArgumentException ie) {
+                Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unknown));
+            } catch (Exception e) {
+                e.printStackTrace();
+                Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.unknown_exception));
             }
+        }
         return null;
     }
 
@@ -224,6 +212,12 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
 
         AdRequester requester = this.requester.get();
         if (requester != null) {
+            // TODO Discuss this
+            // orientation is retrieved from context when the request url is generated for /mob
+            // if only ut is being used, orientation will never be set in request params
+            // the question is, when we display Interstitial, do we want to use the current orientation
+            // or the orientation when the request was made
+
             // add the orientation extra for interstitial ads
 //            if (requester.getRequestParams() != null) {
 //                result.addToExtras(ServerResponse.EXTRAS_KEY_ORIENTATION, requester.getRequestParams().getOrientation());
@@ -274,7 +268,7 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
                 postData.put(KEYWORDS, keywordsArray);
             }
         } catch (JSONException e) {
-            Clog.e(Clog.httpRespLogTag, "JSONException: "+e.getMessage());
+            Clog.e(Clog.httpRespLogTag, "JSONException: " + e.getMessage());
         }
         Clog.i(Clog.httpRespLogTag, "POST data: " + postData.toString());
         return postData.toString();
@@ -284,17 +278,16 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
         JSONArray tags = new JSONArray();
         JSONObject tag = new JSONObject();
         try {
-            if(!StringUtil.isEmpty(params.getInvCode()) && params.getMemberID()>0){
+            if (!StringUtil.isEmpty(params.getInvCode()) && params.getMemberID() > 0) {
                 tag.put(TAG_CODE, params.getInvCode());
                 postData.put(MEMBER_ID, params.getMemberID());
-            }else if (!StringUtil.isEmpty(params.getPlacementID())) {
+            } else if (!StringUtil.isEmpty(params.getPlacementID())) {
                 tag.put(TAG_ID, StringUtil.getIntegerValue(params.getPlacementID()));
-            }else{
+            } else {
                 tag.put(TAG_ID, 0);
             }
 
             ArrayList<AdSize> allowedSizes = params.getAllowedSizes();
-
             JSONArray sizes = new JSONArray();
             if(allowedSizes != null && allowedSizes.size() > 0) {
                 for (AdSize s : allowedSizes) {
@@ -319,7 +312,7 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
             tag.put(TAG_PREBID, false);
             tag.put(TAG_DISABLE_PSA, !params.getShouldServePSAs());
         } catch (JSONException e) {
-            Clog.e(Clog.baseLogTag, "Exception: "+e.getMessage());
+            Clog.e(Clog.baseLogTag, "Exception: " + e.getMessage());
         }
         if (tag.length() > 0) {
             tags.put(tag);

@@ -33,6 +33,7 @@ import com.appnexus.opensdk.utils.Clog;
 
 public class SimpleBanner extends Activity {
     InterstitialAdView iav;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,9 +63,9 @@ public class SimpleBanner extends Activity {
             @Override
             public void onAdRequestFailed(AdView bav, ResultCode errorCode) {
                 if (errorCode == null) {
-                Clog.v("SIMPLEBANNER", "Call to loadAd failed");
+                    Clog.v("SIMPLEBANNER", "Call to loadAd failed");
                 } else {
-                Clog.v("SIMPLEBANNER", "Ad request failed: " + errorCode);
+                    Clog.v("SIMPLEBANNER", "Ad request failed: " + errorCode);
                 }
             }
 
@@ -87,7 +88,7 @@ public class SimpleBanner extends Activity {
             public void onAdClicked(AdView bav) {
                 Clog.v("SIMPLEBANNER", "Ad clicked; opening browser");
             }
-            };
+        };
 
         bav.setAdListener(adListener);
         bav.setAutoRefreshInterval(0);
@@ -95,14 +96,14 @@ public class SimpleBanner extends Activity {
         // Get the device's location and send it on the ad call so the
         // impression is more attractive to advertisers.
         LocationManager locationManager =
-            (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+                (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
 
         Location location =
-            locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
         SDKSettings.setLocation(location);
 
-        FrameLayout layout = (FrameLayout)findViewById(android.R.id.content);
+        FrameLayout layout = (FrameLayout) findViewById(android.R.id.content);
         layout.addView(bav);
 
         // If auto-refresh is enabled (the default), a call to

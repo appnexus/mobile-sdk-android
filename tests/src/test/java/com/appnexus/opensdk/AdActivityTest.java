@@ -18,28 +18,20 @@ package com.appnexus.opensdk;
 
 import android.content.Intent;
 
-import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
-import com.appnexus.opensdk.shadows.ShadowCookieManager;
-import com.appnexus.opensdk.shadows.ShadowWebSettings;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowWebView;
 import org.robolectric.util.ActivityController;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
-
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21,
-        shadows = {ShadowAsyncTaskNoExecutor.class,
-        ShadowWebView.class, ShadowWebSettings.class, ShadowCookieManager.class})
+@Config(constants = BuildConfig.class)
 public class AdActivityTest extends BaseRoboTest {
 
     public static final String CLICK_URL = "http://www.appnexus.com";

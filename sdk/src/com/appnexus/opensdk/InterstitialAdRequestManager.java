@@ -177,6 +177,7 @@ class InterstitialAdRequestManager extends RequestManager {
                         AdModel vastAdResponse = vastResponseParser.readVAST(stream);
                         VastVideoUtil.addANTrackers(vastAdResponse, ssmAdResponse);
                         ssmAdResponse.setVastAdResponse(vastAdResponse);
+                        // TODO add the rest of the trackers
                     } catch (Exception e) {
                         Clog.e(Clog.httpRespLogTag, "Exception processing vast response: "+e.getMessage());
                     }
