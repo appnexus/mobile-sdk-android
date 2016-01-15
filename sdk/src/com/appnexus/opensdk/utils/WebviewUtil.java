@@ -185,7 +185,7 @@ public class WebviewUtil {
                     for (String cookieStr : entry.getValue()) {
                         if (!StringUtil.isEmpty(cookieStr) && cookieStr.contains(Settings.AN_UUID)) {
                             // pass uuid2 to WebView Cookie jar if it's empty or outdated
-                            if (existingUUID == null || cookieStr.contains(existingUUID)) {
+                            if (existingUUID == null || !cookieStr.contains(existingUUID)) {
                                 Clog.i(Clog.httpRespLogTag, "set-cookie: " + cookieStr);
                                 cm.setCookie(Settings.COOKIE_DOMAIN, cookieStr);
                                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
