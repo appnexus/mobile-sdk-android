@@ -37,6 +37,7 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
     private InterstitialAdView adView;
     private ANCountdownTimer countdownTimer;
     private CircularProgressBar countdownWidget;
+    private boolean preventExitOnBackPress;
 
     public InterstitialAdActivity(Activity adActivity) {
         this.adActivity = adActivity;
@@ -69,6 +70,7 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
     }
 
     private void startCountdownTimer(final long closeButtonDelay) {
+        preventExitOnBackPress = true;
         countdownTimer = new ANCountdownTimer(closeButtonDelay, COUNTDOWN_INTERVAL) {
             @Override
             public void onTick(long leftTimeInMilliseconds) {
@@ -87,6 +89,7 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
     }
 
     private void showCloseButton() {
+        preventExitOnBackPress = false;
         if(countdownWidget != null) {
             countdownWidget.setProgress(0);
             countdownWidget.setTitle("X");
@@ -106,8 +109,7 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
 
     @Override
     public boolean shouldHandleBackPress() {
-        // do nothing
-        return false;
+        return preventExitOnBackPress;
     }
 
     @Override
