@@ -1,3 +1,36 @@
+## Version 3.0-alpha-1
+
+# New Features
+
+For the interstitial ad format:
+
+1. VAST video demand can now serve alongside HTML & mediation demand.
+2. A more robust request/response format is supported in the backend which reduces latency for fetching ads.
+3. Impressions are counted client-side when the ads become viewable.
+4. The countdown timer & close button look and feel has been redesigned.
+5. SDK now prevents user from closing the interstitial ad until close button is displayed.
+
+# Known Issues
+
+
+* **Setting the reserve price directly on the InterstitialAdView is not supported**
+
+_Workaround_: Set the reserve price for any interstitial placements in Console.
+
+* **VAST error tracking is not supported**
+
+_Workaround_: None.
+
+* **VAST companion ads are not supported**
+
+_Workaround_: None.
+
+* **Ad server is returning 1x1 HTML ads which are unsupported by the SDK**
+
+_Workaround_: Monitor impression traffic and block 1x1 creatives on your ad profile in Console in order to mitigate any fill issues.
+
+
+
 ## RC2.8
 + MS-1702 Support for requesting ads with inventory code and member id
 + MS-1745 Update unit tests for inventory code and member id
