@@ -214,16 +214,6 @@ class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
 
         AdRequester requester = this.requester.get();
         if (requester != null) {
-            // TODO Discuss this
-            // orientation is retrieved from context when the request url is generated for /mob
-            // if only ut is being used, orientation will never be set in request params
-            // the question is, when we display Interstitial, do we want to use the current orientation
-            // or the orientation when the request was made
-
-            // add the orientation extra for interstitial ads
-//            if (requester.getRequestParams() != null) {
-//                result.addToExtras(ServerResponse.EXTRAS_KEY_ORIENTATION, requester.getRequestParams().getOrientation());
-//            }
             requester.onReceiveUTResponse(result, ResultCode.SUCCESS);
         }
     }

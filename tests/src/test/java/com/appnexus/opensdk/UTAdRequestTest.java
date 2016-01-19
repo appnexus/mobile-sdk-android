@@ -197,6 +197,7 @@ public class UTAdRequestTest extends BaseRoboTest {
         JSONObject postData = inspectPostData();
         JSONObject tag = getTagsData(postData);
 
+
         inspectSizes(allowedSizes, tag);
     }
 
@@ -272,9 +273,10 @@ public class UTAdRequestTest extends BaseRoboTest {
         assertTrue(tag.has(UTAdRequest.TAG_ALLOWED_MEDIA_AD_TYPES));
         JSONArray allowedAdTypes = tag.getJSONArray(UTAdRequest.TAG_ALLOWED_MEDIA_AD_TYPES);
         assertNotNull(allowedAdTypes);
-        assertEquals(2, allowedAdTypes.length());
-        assertEquals(ANConstants.AD_TYPE_HTML, allowedAdTypes.getString(0));
-        assertEquals(ANConstants.AD_TYPE_VIDEO, allowedAdTypes.getString(1));
+        assertEquals(3, allowedAdTypes.length());
+        assertEquals(UTAdRequest.ALLOWED_TYPE_BANNER, allowedAdTypes.getInt(0));
+        assertEquals(UTAdRequest.ALLOWED_TYPE_INTERSTITIAL, allowedAdTypes.getInt(1));
+        assertEquals(UTAdRequest.ALLOWED_TYPE_VIDEO, allowedAdTypes.getInt(2));
     }
 
     /**
@@ -321,13 +323,15 @@ public class UTAdRequestTest extends BaseRoboTest {
      */
 
     private void inspectSizes(ArrayList<AdSize> allowedSizes, JSONObject tag) throws JSONException {
+
+
         System.out.println("Checking sizes validity...");
         assertTrue(tag.has(UTAdRequest.TAG_SIZES));
         JSONArray sizes = tag.getJSONArray(UTAdRequest.TAG_SIZES);
         assertNotNull(sizes);
-        assertEquals(allowedSizes.size(), sizes.length());
+        assertEquals(allowedSizes.size() + 2, sizes.length());
 
-        for (int i = 0; i < sizes.length(); i++) {
+        for (int i = 0; i < sizes.length()-2; i++) {
             JSONObject size = sizes.getJSONObject(i);
             assertNotNull(size);
             System.out.println("Validating size: (" + allowedSizes.get(i).width() + " , " + allowedSizes.get(i).height() + ")");
