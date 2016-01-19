@@ -144,7 +144,7 @@ public class AdActivityTest extends BaseRoboTest {
     public void testBrowserImplementationBackPressToDestroy() {
         testBrowserImplementationCreate();
 
-        implementation.shouldHandleBackPress();
+        implementation.shouldOverrideBackPress();
         implementation.destroy();
         assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
     }
@@ -163,7 +163,7 @@ public class AdActivityTest extends BaseRoboTest {
         // assert implementation's webview is the same one
 
         // actually destroy it this time
-        implementation.shouldHandleBackPress();
+        implementation.shouldOverrideBackPress();
         implementation.destroy();
         assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
     }
