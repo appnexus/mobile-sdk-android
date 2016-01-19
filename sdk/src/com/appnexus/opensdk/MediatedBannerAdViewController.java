@@ -35,6 +35,8 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
         return out.hasFailed ? null : out;
     }
 
+
+
     @Override
     boolean isReady(){
         return true;

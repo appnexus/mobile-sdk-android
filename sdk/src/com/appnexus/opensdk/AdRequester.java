@@ -16,6 +16,8 @@
 
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.adresponsedata.BaseAdResponse;
+
 import java.util.LinkedList;
 
 interface AdRequester {
@@ -33,8 +35,16 @@ interface AdRequester {
      */
     public void onReceiveServerResponse(ServerResponse response);
 
+    /**
+     * Called when a Universal Tag response from AppNexus server is received
+     *
+     * @param response UTAdResponse which was received.
+     */
+    public void onReceiveUTResponse(UTAdResponse response, ResultCode resultCode);
+
 
     public void onReceiveAd(AdResponse ad);
+
     /**
      * Mark the beginning of an ad request for latency recording
      */
@@ -58,6 +68,12 @@ interface AdRequester {
 
     public LinkedList<MediatedAd> getMediatedAds();
 
+    public LinkedList<BaseAdResponse> getAdList();
+
     public RequestParameters getRequestParams();
+
+    public void currentAdLoaded(AdResponse ad);
+
+    public void currentAdFailed(ResultCode reason);
 
 }

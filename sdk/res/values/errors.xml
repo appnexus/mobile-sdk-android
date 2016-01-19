@@ -77,6 +77,7 @@
 	<string formatted="false" name="empty_queue">show() was called, and wants an interstitial ad, but there are no valid interstitials in the queue. Load more?</string>
 	<string formatted="false" name="too_old">An interstitial ad was told to display, but is over the 60s age limit.</string>
 	<string formatted="false" name="webclient_error">E205: WebClient error: %d %s</string>
+	<string formatted="false" name="one_by_one_sized_ad">The server returned an ad with 1 x 1 size.</string>
 	<string formatted="false" name="blank_ad">E302: The server returned an ad with the response, but it was blank. There is probably an issue with the creative.</string>
 	<string formatted="false" name="webview_received_error">E206: Error %d received, %s, while fetching url %s</string>
 	<string formatted="false" name="console_message">Received console message: %s at line %d with sourceId %s</string>
@@ -137,4 +138,5 @@
     <string formatted="false" name="transition_direction">transition direction has been set in xml</string>
     <string formatted="false" name="transition_duration">transition duration has been set in xml</string>
 	<string formatted="false" name="xml_load_landing_page_in_background">setDoesLoadingInBackground has been set to %b in xml</string>
+	<string formatted="false" name="missing_dependency">Missing dependency, please include %s in your project to %s.</string>
 </resources>

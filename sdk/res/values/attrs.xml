@@ -55,4 +55,11 @@
         <attr name="load_landing_page_in_background"/>
     </declare-styleable>
 
+    <declare-styleable name="CircularProgressBar">
+        <attr name="ccd_progressColor" format="string"/>
+        <attr name="ccd_backgroundColor" format="string"/>
+        <attr name="ccd_title" format="string"/>
+        <attr name="ccd_titleColor" format="string"/>
+        <attr name="ccd_strokeWidth" format="integer"/>
+    </declare-styleable>
 </resources>

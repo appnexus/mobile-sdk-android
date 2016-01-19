@@ -84,10 +84,11 @@ class AdRequest extends AsyncTask<Void, Integer, ServerResponse> {
                 try {
                     String query_string = parameters.getRequestUrl();
 
+                    Clog.i(Clog.vastLogTag, "AdRequest - URL : "+query_string);
+
                     Clog.setLastRequest(query_string);
 
-                    Clog.d(Clog.httpReqLogTag,
-                            Clog.getString(R.string.fetch_url, query_string));
+                    Clog.d(Clog.httpReqLogTag, Clog.getString(R.string.fetch_url, query_string));
 
                     HttpParams p = new BasicHttpParams();
                     HttpConnectionParams.setConnectionTimeout(p,
@@ -104,6 +105,8 @@ class AdRequest extends AsyncTask<Void, Integer, ServerResponse> {
                         return AdRequest.HTTP_ERROR;
                     }
                     String out = EntityUtils.toString(r.getEntity());
+
+                    Clog.i(Clog.httpRespLogTag, "AdRequest RESPONSE -- "+out);
                     WebviewUtil.cookieSync(h.getCookieStore().getCookies());
                     if (out.equals("")) {
                         // just log and return a valid AdResponse object so that it is
@@ -170,6 +173,7 @@ class AdRequest extends AsyncTask<Void, Integer, ServerResponse> {
             if (requester.getRequestParams() != null) {
                 result.addToExtras(ServerResponse.EXTRAS_KEY_ORIENTATION, requester.getRequestParams().getOrientation());
             }
+
             requester.onReceiveServerResponse(result);
         }
     }

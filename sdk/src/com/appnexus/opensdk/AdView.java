@@ -38,6 +38,7 @@ import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
+import com.appnexus.opensdk.utils.ANConstants;
 import com.appnexus.opensdk.utils.AdvertistingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
@@ -947,6 +948,7 @@ public abstract class AdView extends FrameLayout implements Ad {
                             }
                         } else {
                             display(ad.getDisplayable());
+                            fireImpressions(ad);
                         }
                         if (adListener != null)
                             adListener.onAdLoaded(AdView.this);
@@ -1014,7 +1016,19 @@ public abstract class AdView extends FrameLayout implements Ad {
                 }
             });
         }
+
+        private void fireImpressions(AdResponse ad) {
+            if(ad.getResponseData() != null && ad.getMediaType().equals(MediaType.INTERSTITIAL) && ANConstants.AD_TYPE_HTML.equalsIgnoreCase(ad.getResponseData().getAdType())) {
+                VisibilityDetector visibilityDetector = VisibilityDetector.create(ad.getDisplayable().getView());
+                for (String impressionUrl : ad.getResponseData().getImpressionURLs()) {
+                    Clog.i(Clog.baseLogTag, "Impressions: " + impressionUrl);
+                    ImpressionTracker.create(impressionUrl, visibilityDetector, getContext());
+                }
+            }
+        }
     }
+
+
 
     @Override
     public AdDispatcher getAdDispatcher() {

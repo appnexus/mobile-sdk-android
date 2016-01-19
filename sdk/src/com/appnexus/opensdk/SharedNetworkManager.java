@@ -25,7 +25,6 @@ import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.HttpErrorCode;
 
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -88,10 +87,10 @@ class SharedNetworkManager {
                                 final UrlObject urlObject = urls.remove(0);
                                 if (urlObject.retryTimes < TOTAL_RETRY_TIMES) {
                                     {
-
                                         new HTTPGet() {
                                             @Override
                                             protected void onPostExecute(HTTPResponse response) {
+
                                                 if (response == null ||
                                                         (!response.getSucceeded() && response.getErrorCode() == HttpErrorCode.CONNECTION_FAILURE)) {
                                                     urlObject.retryTimes += 1;

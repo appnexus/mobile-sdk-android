@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.adresponsedata.BaseAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 
 import java.lang.ref.WeakReference;
@@ -36,6 +37,7 @@ class NativeAdRequestManager extends RequestManager {
             adRequest = null;
         }
         setMediatedAds(null);
+        setAdList(null);
         if (controller != null) {
             controller.cancel(true);
             controller = null;
@@ -61,6 +63,7 @@ class NativeAdRequestManager extends RequestManager {
             owner.getAdDispatcher().onAdFailed(code);
         }
     }
+
 
     @Override
     public void onReceiveServerResponse(ServerResponse response) {
@@ -115,6 +118,15 @@ class NativeAdRequestManager extends RequestManager {
                         return nativeAdResponse;
                     }
 
+                    /**
+                     * TODO: UT currently not implemented for Native
+                     * @return
+                     */
+                    @Override
+                    public BaseAdResponse getResponseData() {
+                        return null;
+                    }
+
                     @Override
                     public void destroy() {
                         nativeAdResponse.destroy();
@@ -123,6 +135,11 @@ class NativeAdRequestManager extends RequestManager {
 
             }
         }
+    }
+
+    @Override
+    public void onReceiveUTResponse(UTAdResponse response, ResultCode resultCode) {
+
     }
 
     @Override
@@ -138,5 +155,15 @@ class NativeAdRequestManager extends RequestManager {
         } else {
             ad.destroy();
         }
+    }
+
+    @Override
+    public void currentAdFailed(ResultCode reason) {
+
+    }
+
+    @Override
+    public void currentAdLoaded(AdResponse ad) {
+
     }
 }

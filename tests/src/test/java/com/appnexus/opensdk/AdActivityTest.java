@@ -17,10 +17,6 @@
 package com.appnexus.opensdk;
 
 import android.content.Intent;
-import android.webkit.WebView;
-
-import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
-import com.appnexus.opensdk.shadows.ShadowWebSettings;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,20 +24,17 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowWebView;
 import org.robolectric.util.ActivityController;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
-
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21,
-        shadows = {ShadowAsyncTaskNoExecutor.class,
-        ShadowWebView.class, ShadowWebSettings.class})
+@Config(constants = BuildConfig.class)
 public class AdActivityTest extends BaseRoboTest {
 
+    public static final String CLICK_URL = "http://www.appnexus.com";
     AdActivity adActivity;
     ActivityController<AdActivity> activityController;
     AdActivity.AdActivityImplementation implementation;
@@ -76,26 +69,16 @@ public class AdActivityTest extends BaseRoboTest {
     private void createBrowserActivity() {
         // creating AdActivity creates an implementation,
         // which consumes a webview
-        WebView webView = new WebView(RuntimeEnvironment.application);
-        BrowserAdActivity.BROWSER_QUEUE.add(webView);
         createActivity(AdActivity.ACTIVITY_TYPE_BROWSER);
-
         assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
     }
 
     private void createBrowserImplementation() {
         // create AdActivity object for implementation
         createBrowserActivity();
-
-        // creating an implementation consumes a webview
-        WebView webView = new WebView(RuntimeEnvironment.application);
-        BrowserAdActivity.BROWSER_QUEUE.add(webView);
-        assertEquals(1, BrowserAdActivity.BROWSER_QUEUE.size());
-
-        implementation = new BrowserAdActivity(adActivity);
+        implementation = new BrowserAdActivity(adActivity, CLICK_URL);
         implementation.create();
         assertNotNull(implementation.getWebView());
-
         assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
     }
 
@@ -161,7 +144,7 @@ public class AdActivityTest extends BaseRoboTest {
     public void testBrowserImplementationBackPressToDestroy() {
         testBrowserImplementationCreate();
 
-        implementation.backPressed();
+        implementation.shouldHandleBackPress();
         implementation.destroy();
         assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
     }
@@ -169,11 +152,9 @@ public class AdActivityTest extends BaseRoboTest {
     @Test
     public void testBrowserImplementationRotation() {
         createActivity(AdActivity.ACTIVITY_TYPE_BROWSER);
-        WebView webView = new WebView(RuntimeEnvironment.application);
-        BrowserAdActivity.BROWSER_QUEUE.add(webView);
 
         // create in one rotation
-        implementation = new BrowserAdActivity(adActivity);
+        implementation = new BrowserAdActivity(adActivity, CLICK_URL);
         implementation.create();
         assertNotNull(implementation.getWebView());
         assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
@@ -182,7 +163,7 @@ public class AdActivityTest extends BaseRoboTest {
         // assert implementation's webview is the same one
 
         // actually destroy it this time
-        implementation.backPressed();
+        implementation.shouldHandleBackPress();
         implementation.destroy();
         assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());
     }
@@ -191,7 +172,7 @@ public class AdActivityTest extends BaseRoboTest {
     public void testBrowserImplementationCreateWithNullWebView() {
         // check for no crash
         createBrowserActivity();
-        implementation = new BrowserAdActivity(adActivity);
+        implementation = new BrowserAdActivity(adActivity, null);
         implementation.create();
         assertNull(implementation.getWebView());
         assertEquals(0, BrowserAdActivity.BROWSER_QUEUE.size());

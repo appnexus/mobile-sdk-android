@@ -17,29 +17,27 @@
 package com.appnexus.opensdk;
 
 import android.app.Activity;
-import android.os.Handler;
-import android.os.Message;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 
+import com.appnexus.opensdk.utils.ANCountdownTimer;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.ViewUtil;
 
-import java.lang.ref.WeakReference;
-
 class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
+    public static final int COUNTDOWN_INTERVAL = 1;
     private Activity adActivity;
     private AdWebView webView;
 
     private FrameLayout layout;
     private long now;
     private InterstitialAdView adView;
-    private static final int CLOSE_BUTTON_MESSAGE_ID = 8000;
-    private ImageButton closeButton;
+    private ANCountdownTimer countdownTimer;
+    private CircularProgressBar countdownWidget;
+    private boolean preventExitOnBackPress;
 
     public InterstitialAdActivity(Activity adActivity) {
         this.adActivity = adActivity;
@@ -54,18 +52,64 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
         now = adActivity.getIntent().getLongExtra(InterstitialAdView.INTENT_KEY_TIME,
                 System.currentTimeMillis());
         setIAdView(InterstitialAdView.INTERSTITIALADVIEW_TO_USE);
+        displayCountdownWidget();
+    }
 
-        // Add a close button after a delay.
+    private void displayCountdownWidget() {
         int closeButtonDelay = adActivity.getIntent().getIntExtra(
                 InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY,
                 Settings.DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
 
-        new CloseButtonHandler(this).sendEmptyMessageDelayed(CLOSE_BUTTON_MESSAGE_ID, closeButtonDelay);
+        countdownWidget = ViewUtil.addCountdownWidget(adActivity, layout);
+        countdownWidget.setMax(closeButtonDelay);
+        countdownWidget.setProgress(closeButtonDelay);
+        countdownWidget.setVisibility(View.VISIBLE);
+        countdownWidget.bringToFront();
+
+        startCountdownTimer(closeButtonDelay);
+    }
+
+    private void startCountdownTimer(final long closeButtonDelay) {
+        preventExitOnBackPress = true;
+        countdownTimer = new ANCountdownTimer(closeButtonDelay, COUNTDOWN_INTERVAL) {
+            @Override
+            public void onTick(long leftTimeInMilliseconds) {
+                if(countdownWidget != null) {
+                    countdownWidget.setProgress((int) leftTimeInMilliseconds);
+                    int seconds = (int) (leftTimeInMilliseconds / 1000) + 1;
+                    countdownWidget.setTitle(String.valueOf(seconds));
+                }
+            }
+            @Override
+            public void onFinish() {
+                showCloseButton();
+            }
+        };
+        countdownTimer.startTimer();
+    }
+
+    private void showCloseButton() {
+        preventExitOnBackPress = false;
+        if(countdownWidget != null) {
+            countdownWidget.setProgress(0);
+            countdownWidget.setTitle("X");
+            countdownWidget.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (adActivity != null) {
+                        if (adView != null && adView.getAdDispatcher() != null) {
+                            adView.getAdDispatcher().onAdCollapsed();
+                        }
+                        adActivity.finish();
+                    }
+                }
+            });
+        }
     }
 
     @Override
-    public void backPressed() {
-        // do nothing
+    public boolean shouldOverrideBackPress() {
+        return preventExitOnBackPress;
     }
 
     @Override
@@ -76,15 +120,31 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
             webView.destroy();
         }
 
-        // cleanup adView
+        // clean up adView
         if (adView != null) {
             adView.setAdImplementation(null);
+        }
+
+        // clean up circular progressbar
+        if(countdownWidget != null) {
+            countdownWidget.setOnClickListener(null);
+            ViewUtil.removeChildFromParent(countdownWidget);
+            countdownWidget = null;
+        }
+
+        // cancel the countdown timer
+        if(countdownTimer != null){
+            countdownTimer.cancelTimer();
+            countdownTimer = null;
         }
     }
 
     @Override
     public void interacted() {
-        addCloseButton();
+        if (countdownTimer != null && countdownWidget != null) {
+            countdownTimer.cancelTimer();
+            showCloseButton();
+        }
     }
 
     @Override
@@ -121,39 +181,5 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
         AdActivity.lockToConfigOrientation(adActivity, webView.getOrientation());
 
         layout.addView(webView);
-    }
-
-    // add the close button if it hasn't been added already
-    private void addCloseButton() {
-        if ((layout == null) || (closeButton != null)) return;
-
-        closeButton = ViewUtil.createCloseButton(adActivity, false);
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (adActivity != null) {
-                    if (adView != null && adView.getAdDispatcher() != null) {
-                        adView.getAdDispatcher().onAdCollapsed();
-                    }
-                    adActivity.finish();
-                }
-            }
-        });
-
-        layout.addView(closeButton);
-    }
-
-    static class CloseButtonHandler extends Handler {
-        WeakReference<InterstitialAdActivity> weakReferenceIAA;
-
-        public CloseButtonHandler(InterstitialAdActivity a) {
-            weakReferenceIAA = new WeakReference<InterstitialAdActivity>(a);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            InterstitialAdActivity iAA = weakReferenceIAA.get();
-            if (msg.what == CLOSE_BUTTON_MESSAGE_ID && iAA != null) iAA.addCloseButton();
-        }
     }
 }

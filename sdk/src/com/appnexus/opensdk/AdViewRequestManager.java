@@ -18,6 +18,7 @@ package com.appnexus.opensdk;
 
 import android.app.Activity;
 
+import com.appnexus.opensdk.adresponsedata.BaseAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 
 import java.lang.ref.WeakReference;
@@ -30,6 +31,12 @@ class AdViewRequestManager extends RequestManager {
         super();
         this.owner = new WeakReference<AdView>(owner);
     }
+
+    @Override
+    public void execute() {
+        super.execute();
+    }
+
 
     @Override
     public void cancel() {
@@ -62,6 +69,10 @@ class AdViewRequestManager extends RequestManager {
         if (owner != null) {
             owner.getAdDispatcher().onAdFailed(code);
         }
+    }
+
+    @Override
+    public void onReceiveUTResponse(UTAdResponse response, ResultCode resultCode) {
     }
 
     @Override
@@ -120,49 +131,59 @@ class AdViewRequestManager extends RequestManager {
                                     Clog.e(Clog.baseLogTag, "Request type can not be identified.");
                                     owner.getAdDispatcher().onAdFailed(ResultCode.INVALID_REQUEST);
                                 }
-                            } else if (response != null) { // null-check response in case
-                                // standard ads
-                                final AdWebView output = new AdWebView(owner);
-                                output.loadAd(response);
-
-                                if (owner.getMediaType().equals(MediaType.BANNER)) {
-                                    BannerAdView bav = (BannerAdView) owner;
-                                    if (bav.getExpandsToFitScreenWidth()) {
-                                        bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), output);
-                                    }
-                                }
-                                onReceiveAd(new AdResponse() {
-                                    @Override
-                                    public MediaType getMediaType() {
-                                        return owner.getMediaType();
-                                    }
-
-                                    @Override
-                                    public boolean isMediated() {
-                                        return false;
-                                    }
-
-                                    @Override
-                                    public Displayable getDisplayable() {
-                                        return output;
-                                    }
-
-                                    @Override
-                                    public NativeAdResponse getNativeAdResponse() {
-                                        return null;
-                                    }
-
-                                    @Override
-                                    public void destroy() {
-                                        output.destroy();
-                                    }
-                                });
+                            } else if (response != null) { // null-check response
+                                initiateWebview(owner, response);
                             }
                         }
                     }
             );
         }
     }
+
+    private void initiateWebview(final AdView owner, ServerResponse response) {
+        final AdWebView output = new AdWebView(owner);
+        output.loadAd(response);
+
+        if (owner.getMediaType().equals(MediaType.BANNER)) {
+            BannerAdView bav = (BannerAdView) owner;
+            if (bav.getExpandsToFitScreenWidth()) {
+                bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), output);
+            }
+        }
+
+        onReceiveAd(new AdResponse() {
+            @Override
+            public MediaType getMediaType() {
+                return owner.getMediaType();
+            }
+
+            @Override
+            public boolean isMediated() {
+                return false;
+            }
+
+            @Override
+            public Displayable getDisplayable() {
+                return output;
+            }
+
+            @Override
+            public NativeAdResponse getNativeAdResponse() {
+                return null;
+            }
+
+            @Override
+            public BaseAdResponse getResponseData() {
+                return null;
+            }
+
+            @Override
+            public void destroy() {
+                output.destroy();
+            }
+        });
+    }
+
 
     @Override
     public void onReceiveAd(AdResponse ad) {
@@ -177,5 +198,15 @@ class AdViewRequestManager extends RequestManager {
         } else {
             ad.destroy();
         }
+    }
+
+    @Override
+    public void currentAdFailed(ResultCode reason) {
+
+    }
+
+    @Override
+    public void currentAdLoaded(AdResponse ad) {
+
     }
 }

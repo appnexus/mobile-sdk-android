@@ -44,6 +44,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.appnexus.opensdk.AdView.BrowserStyle;
+import com.appnexus.opensdk.adresponsedata.BaseAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
@@ -123,6 +124,40 @@ class AdWebView extends WebView implements Displayable {
         setWebViewClient(new AdWebViewClient());
     }
 
+
+    public void loadAd(BaseAdResponse ad) {
+        if(ad==null){
+            fail();
+            return;
+        }
+        String html = ad.getAdContent();
+        // set creative size
+        setCreativeHeight(ad.getHeight());
+        setCreativeWidth(ad.getWidth());
+        // Safety Check: content is verified in AdResponse, so this should never be empty
+        if (StringUtil.isEmpty(html)) {
+            fail();
+            return;
+        }
+
+        Clog.i(Clog.baseLogTag, Clog.getString(R.string.webview_loading, html));
+
+        parseAdResponseExtras(ad.getExtras());
+
+        html = preLoadContent(html);
+        html = prependRawResources(html);
+
+        final float scale = adView.getContext().getResources()
+                .getDisplayMetrics().density;
+        int rheight = (int) (ad.getHeight() * scale + 0.5f);
+        int rwidth = (int) (ad.getWidth() * scale + 0.5f);
+        AdView.LayoutParams resize = new AdView.LayoutParams(rwidth, rheight,
+                Gravity.CENTER);
+        this.setLayoutParams(resize);
+
+        this.loadDataWithBaseURL(Settings.BASE_URL, html, "text/html", "UTF-8", null);
+    }
+
     public void loadAd(ServerResponse ad) {
         if(ad==null){
             return;
@@ -158,6 +193,10 @@ class AdWebView extends WebView implements Displayable {
     // The webview about to load the ad, and the html ad content
     private String preLoadContent(String html) {
         // Check to ensure <html> tags are present
+
+        if(StringUtil.isEmpty(html)){
+            return null;
+        }
         if (!html.contains("<html>")) {
             StringBuilder bodyBuilder = new StringBuilder();
             html = bodyBuilder.append("<html><head></head><body style='padding:0;margin:0;'>").append(html).append("</body></html>").toString();
@@ -170,6 +209,9 @@ class AdWebView extends WebView implements Displayable {
     }
 
     private String prependRawResources(String html) {
+        if(StringUtil.isEmpty(html)){
+            return null;
+        }
         Resources res = getResources();
         StringBuilder htmlSB = new StringBuilder("<head><script>");
 
@@ -197,6 +239,7 @@ class AdWebView extends WebView implements Displayable {
         }
 
         if (extras.containsKey(ServerResponse.EXTRAS_KEY_ORIENTATION)
+                && extras.get(ServerResponse.EXTRAS_KEY_ORIENTATION) != null
                 && extras.get(ServerResponse.EXTRAS_KEY_ORIENTATION).equals("h")) {
             this.orientation = Configuration.ORIENTATION_LANDSCAPE;
         } else {
@@ -208,7 +251,8 @@ class AdWebView extends WebView implements Displayable {
         new HTTPGet() {
             @Override
             protected void onPostExecute(HTTPResponse response) {
-                if(response.getSucceeded()){
+
+                if(response.getSucceeded() && response.getResponseBody() != null){
                     String html = preLoadContent(response.getResponseBody());
                     html = prependRawResources(html);
                     String baseString;
@@ -655,8 +699,7 @@ class AdWebView extends WebView implements Displayable {
 
         int[] screenSize = ViewUtil.getScreenSizeAsPixels((Activity) this.getContext());
 
-        this.isOnscreen = (right > 0) && (left < screenSize[0])
-                && (bottom > 0) && (top < screenSize[1]);
+        this.isOnscreen = (right > 0) && (left < screenSize[0]) && (bottom > 0) && (top < screenSize[1]);
 
         // update current position
         if (implementation != null) {

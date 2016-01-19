@@ -28,7 +28,7 @@ public class StringUtil {
 	 * @return True if and only if the string isn't null and has a non-zero length
 	 */
 	public static boolean isEmpty(String s) {
-		return s == null || s.length() == 0;
+		return s == null || s.trim().length() == 0;
 	}
 
     // returns true if success, false if exception
@@ -43,5 +43,17 @@ public class StringUtil {
             scanner.close();
             return false;
         }
+    }
+
+    public static int getIntegerValue(String s){
+        if(s == null) return 0;
+
+        int value = 0;
+        try {
+            value = Integer.parseInt(s);
+        }catch (NumberFormatException e){
+            Clog.e(Clog.baseLogTag, "Exception while parsing integer value from string: "+s + " - "+e.getMessage());
+        }
+        return value;
     }
 }

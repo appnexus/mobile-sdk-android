@@ -21,11 +21,26 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
-import android.view.*;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+
+import com.appnexus.opensdk.CircularProgressBar;
+import com.appnexus.opensdk.R;
 
 public class ViewUtil {
+
+    public static final int MUTE_BUTTON_SIZE = 32;
+    public static final int MUTE_BUTTON_MARGIN = 10;
+    public static final int CCD_MARGIN = 10;
+    public static final int CCD_DIMENSIONS = 30;
+
     public static ImageButton createCloseButton(Context context, boolean custom_close) {
         final ImageButton close = new ImageButton(context);
         if (!custom_close){
@@ -40,6 +55,29 @@ public class ViewUtil {
         close.setBackgroundColor(Color.TRANSPARENT);
         return close;
     }
+
+    public static ImageView createMuteButtonInRelativeLayout(Context context, boolean isMuted) {
+        final ImageView muteButton = new ImageView(context);
+        muteButton.setScaleType(ImageView.ScaleType.FIT_XY);
+        if(isMuted) {
+            muteButton.setImageResource(R.drawable.mute);
+        }else{
+            muteButton.setImageResource(R.drawable.unmute);
+        }
+        int sizeInDP = getSizeInDP(context, MUTE_BUTTON_SIZE);
+        int marginInDp = getSizeInDP(context, MUTE_BUTTON_MARGIN);
+
+        RelativeLayout.LayoutParams blp = new RelativeLayout.LayoutParams(
+                sizeInDP, sizeInDP);
+
+        blp.setMargins(0, 0, marginInDp, marginInDp);
+        blp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        blp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        muteButton.setLayoutParams(blp);
+
+        return muteButton;
+    }
+
 
     public static void removeChildFromParent(View view) {
         if ((view != null) && (view.getParent() != null)) {
@@ -105,5 +143,47 @@ public class ViewUtil {
         for (int i = 0; i < pixels.length; i++) {
             pixels[i] = (int) ((pixels[i] * scale) + 0.5f);
         }
+    }
+
+
+    public static CircularProgressBar addCountdownWidget(Activity activity, RelativeLayout layout) {
+        CircularProgressBar countdownWidget = (CircularProgressBar) activity.getLayoutInflater().inflate(R.layout.countdown_widget, null);
+        int size = ViewUtil.getSizeInDP(activity, CCD_DIMENSIONS);
+        int margin = ViewUtil.getSizeInDP(activity, CCD_MARGIN);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(size, size);
+        params.setMargins(0, margin, margin, 0);
+        countdownWidget.setVisibility(View.GONE);
+        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        countdownWidget.setLayoutParams(params);
+        layout.addView(countdownWidget);
+        return countdownWidget;
+    }
+
+    public static CircularProgressBar addCountdownWidget(Activity activity, FrameLayout layout) {
+        CircularProgressBar countdownWidget = (CircularProgressBar) activity.getLayoutInflater().inflate(R.layout.countdown_widget, null);
+        int size = ViewUtil.getSizeInDP(activity, CCD_DIMENSIONS);
+        int margin = ViewUtil.getSizeInDP(activity, CCD_MARGIN);
+
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                size, size, Gravity.END | Gravity.TOP);
+        params.setMargins(0, margin, margin, 0);
+        countdownWidget.setVisibility(View.GONE);
+        countdownWidget.setLayoutParams(params);
+        layout.addView(countdownWidget);
+        return countdownWidget;
+    }
+
+ /**
+     * Returns the value according to device's density pixels.
+     *
+     * @param context
+     * @param pixelSize
+     * @return
+     */
+    public static int getSizeInDP(Context context, double pixelSize) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        int sizeInDP = (int) (pixelSize * scale);
+        return sizeInDP;
     }
 }

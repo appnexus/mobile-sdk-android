@@ -142,7 +142,7 @@ class RequestParameters {
         }
     }
 
-    void setContainereWidth(int width) {
+    void setContainerWidth(int width) {
         this.measuredWidth = width;
     }
 
@@ -166,7 +166,7 @@ class RequestParameters {
         if (mediaType == MediaType.INTERSTITIAL) {
             return allowedSizes;
         } else {
-            return null;
+            return new ArrayList<AdSize>();
         }
     }
 
@@ -318,6 +318,7 @@ class RequestParameters {
             sb.append("&devmake=").append(Uri.encode(settings.deviceMake));
         if (!StringUtil.isEmpty(settings.deviceModel))
             sb.append("&devmodel=").append(Uri.encode(settings.deviceModel));
+
         // Get carrier
         if (settings.carrierName == null) {
             TelephonyManager telephonyManager = (TelephonyManager) context

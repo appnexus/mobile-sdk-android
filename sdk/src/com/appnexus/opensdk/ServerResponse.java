@@ -17,10 +17,13 @@
 package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
+
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.JsonUtil;
 import com.appnexus.opensdk.utils.StringUtil;
+import com.appnexus.opensdk.vastdata.AdModel;
+
 import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,6 +35,14 @@ import java.util.Locale;
 
 @SuppressLint("NewApi")
 class ServerResponse {
+    // TODO add this to track the response content type
+    enum ContentType {
+        NATIVE_ASSETS,
+        HTML,
+        VAST
+    }
+
+    private AdModel vastAdResponse;
     private String content;
     private int height;
     private int width;
@@ -46,7 +57,7 @@ class ServerResponse {
 
     private boolean isHttpError = false;
 
-    private static final String MRAID_JS_FILENAME = "mraid.js";
+    static final String MRAID_JS_FILENAME = "mraid.js";
     private static final String RESPONSE_KEY_STATUS = "status";
     private static final String RESPONSE_KEY_ERROR_MESSAGE = "errorMessage";
     private static final String RESPONSE_KEY_ADS = "ads";
@@ -111,6 +122,7 @@ class ServerResponse {
         }
     }
 
+
     private void parseResponse(String body) {
         JSONObject response;
 
@@ -122,16 +134,17 @@ class ServerResponse {
             }
         } catch (JSONException e) {
             Clog.e(Clog.httpRespLogTag,
-                Clog.getString(R.string.response_json_error, body));
+                    Clog.getString(R.string.response_json_error, body));
             return;
         }
         // response will never be null at this point
 
         // stop parsing if status is not valid
         if (!checkStatusIsValid(response)) return;
-        if (mediaType != MediaType.NATIVE) {
+        if (mediaType == MediaType.BANNER || mediaType == MediaType.INTERSTITIAL) {
             // stop parsing if we get an ad from ads[]
             if (handleStdAds(response)) return;
+
         } else {
             // stop parsing if we get an ad from native[]
             // the order needs to be handled
@@ -169,8 +182,7 @@ class ServerResponse {
             if (StringUtil.isEmpty(content)) {
                 Clog.e(Clog.httpRespLogTag,
                         Clog.getString(R.string.blank_ad));
-            }
-            else {
+            } else {
                 if (content.contains(MRAID_JS_FILENAME)) {
                     addToExtras(EXTRAS_KEY_MRAID, true);
                 }
@@ -191,13 +203,15 @@ class ServerResponse {
             JSONObject firstAd = JsonUtil.getJSONObjectFromArray(nativeAd, 0);
             type = JsonUtil.getJSONString(firstAd, RESPONSE_KEY_TYPE);
             anNativeAdResponse = ANNativeAdResponse.create(firstAd);
-            if (anNativeAdResponse != null){
+            if (anNativeAdResponse != null) {
                 containsAds = true;
                 return true;
             }
         }
         return false;
     }
+
+
 
     // returns true if response contains an ad, false if not
     private boolean handleMediatedAds(JSONObject response) {
@@ -253,6 +267,10 @@ class ServerResponse {
 
     MediaType getMediaType() {
         return mediaType;
+    }
+
+    AdModel getVastAdResponse() {
+        return vastAdResponse;
     }
 
     String getContent() {
