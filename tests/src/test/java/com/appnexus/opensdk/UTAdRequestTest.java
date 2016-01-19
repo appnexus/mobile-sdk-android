@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Pair;
 
-import com.appnexus.opensdk.utils.ANConstants;
 import com.appnexus.opensdk.utils.Settings;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.mockwebserver.MockResponse;
@@ -37,6 +36,8 @@ public class UTAdRequestTest extends BaseRoboTest {
     public static final String TEST_VALUE = "testValue";
     public static final int DEFAULT_WIDTH = 300;
     public static final int DEFAULT_HEIGHT = 250;
+    public static final int SCREEN_WIDTH = 320;
+    public static final int SCREEN_HEIGHT = 533;
     AdFetcher adFetcher;
     MockAdOwner owner;
     MockWebServer server;
@@ -324,14 +325,16 @@ public class UTAdRequestTest extends BaseRoboTest {
 
     private void inspectSizes(ArrayList<AdSize> allowedSizes, JSONObject tag) throws JSONException {
 
+        allowedSizes.add(new AdSize(SCREEN_WIDTH, SCREEN_HEIGHT));
+        allowedSizes.add(new AdSize(1, 1));
 
         System.out.println("Checking sizes validity...");
         assertTrue(tag.has(UTAdRequest.TAG_SIZES));
         JSONArray sizes = tag.getJSONArray(UTAdRequest.TAG_SIZES);
         assertNotNull(sizes);
-        assertEquals(allowedSizes.size() + 2, sizes.length());
+        assertEquals(allowedSizes.size(), sizes.length());
 
-        for (int i = 0; i < sizes.length()-2; i++) {
+        for (int i = 0; i < sizes.length(); i++) {
             JSONObject size = sizes.getJSONObject(i);
             assertNotNull(size);
             System.out.println("Validating size: (" + allowedSizes.get(i).width() + " , " + allowedSizes.get(i).height() + ")");
