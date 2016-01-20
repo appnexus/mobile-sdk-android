@@ -277,6 +277,7 @@ public class VastVideoUtil {
             }
         }
     }
+
     /**
      * Returns a list of VAST event URLs
      *
@@ -291,7 +292,7 @@ public class VastVideoUtil {
                     TrackingModel trackingModel = new TrackingModel();
                     trackingModel.setEvent(eventType);
                     trackingModel.setURL(url);
-                    Clog.i(Clog.vastLogTag, "Adding EVENT - " + trackingModel.getEvent() + " | URL - " + trackingModel.getURL());
+                    Clog.d(Clog.vastLogTag, "Adding EVENT - " + trackingModel.getEvent() + " | URL - " + trackingModel.getURL());
                     linearAdModel.getTrackingEventArrayList().add(trackingModel);
                 }
             }

@@ -26,8 +26,8 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.appnexus.opensdk.mediatedviews</groupId>
-	<artifactId>appnexus-googleplay-mediation</artifactId>
-	<version>2.8-7.8.0</version>
+	<artifactId>appnexus-googleplay-mediation-alpha</artifactId>
+	<version>3.0-7.8.0</version>
 	<packaging>aar</packaging>
 
 	<distributionManagement>
@@ -56,8 +56,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.appnexus.opensdk</groupId>
-			<artifactId>appnexus-sdk</artifactId>
-			<version>2.8</version>
+			<artifactId>appnexus-sdk-alpha</artifactId>
+			<version>3.0</version>
 			<scope>compile</scope>
 			<type>aar</type>
 		</dependency>

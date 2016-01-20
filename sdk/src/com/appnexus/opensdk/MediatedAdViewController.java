@@ -504,6 +504,7 @@ public abstract class MediatedAdViewController {
     }
 
     private void fireResponseUrl(ResultCode result, AdRequester requester) {
+        Clog.i(Clog.httpRespLogTag, "Firing response url...");
         //fire call to response url
         ResultCBRequest cb = new ResultCBRequest(requester,
                 currentCSMAd.getResponseUrl(), result,
