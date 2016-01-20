@@ -23,14 +23,14 @@ public class SSMAdResponse extends BaseAdResponse {
     private String adUrl;
     private int ssmTimeout;
 
-    private ArrayList<String> errorURLs = new ArrayList<>();
-    private ArrayList<String> videoClickURLs = new ArrayList<>();
-    private ArrayList<String> start = new ArrayList<>();
-    private ArrayList<String> skip  = new ArrayList<>();
-    private ArrayList<String> firstQuartile = new ArrayList<>();
-    private ArrayList<String> midpoint = new ArrayList<>();
-    private ArrayList<String> thirdQuartile  = new ArrayList<>();
-    private ArrayList<String> complete = new ArrayList<>();
+    private ArrayList<String> errorURLs = new ArrayList<String>();
+    private ArrayList<String> videoClickURLs = new ArrayList<String>();
+    private ArrayList<String> start = new ArrayList<String>();
+    private ArrayList<String> skip  = new ArrayList<String>();
+    private ArrayList<String> firstQuartile = new ArrayList<String>();
+    private ArrayList<String> midpoint = new ArrayList<String>();
+    private ArrayList<String> thirdQuartile  = new ArrayList<String>();
+    private ArrayList<String> complete = new ArrayList<String>();
 
     public SSMAdResponse(int width, int height, String adType, String notifyUrl, ArrayList<String> impressionURLs) {
         super(width, height, adType, notifyUrl, impressionURLs);
