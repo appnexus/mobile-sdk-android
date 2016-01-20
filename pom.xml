@@ -48,6 +48,13 @@
 			<version>5.1_r1</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.android.support</groupId>
+			<artifactId>support-v4</artifactId>
+			<version>22.2.1</version>
+			<scope>provided</scope>
+			<type>aar</type>
+		</dependency>
 	</dependencies>
 	<build>
 		<sourceDirectory>sdk/src</sourceDirectory>
