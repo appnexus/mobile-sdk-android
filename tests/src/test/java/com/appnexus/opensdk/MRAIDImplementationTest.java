@@ -26,7 +26,6 @@ import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowWebView;
 
@@ -55,6 +54,28 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
     public void testInitialization() {
         assertEquals(implementation.owner, mockAdWebView);
     }
+
+    @Test
+    public void testANJAMDispatchAppEvent() {
+        String eventName = "testEvent";
+        String eventData = "testData";
+        String anjamCall = String.format("anjam://DispatchAppEvent?event=%s&data=%s", eventName, eventData);
+        ANJAMImplementation.handleUrl(mockAdWebView, anjamCall);
+
+        MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
+        System.out.println("Verifying app event callback");
+        assertTrue(mockAdDispatcher.appEventOccured);
+        System.out.println("App event received!");
+
+        System.out.println("Validating event name");
+        assertEquals(mockAdDispatcher.eventName, eventName);
+        System.out.println("event name validated!");
+
+        System.out.println("Validating event data");
+        assertEquals(mockAdDispatcher.eventData, eventData);
+        System.out.println("event data validated!");
+    }
+
 
     @Test
     public void testMRAIDOpenSuccess() {
@@ -277,7 +298,9 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
     }
 
     static class MockAdDispatcher implements AdDispatcher {
-        boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked;
+        boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked, appEventOccured;
+
+        String eventName, eventData;
 
         @Override
         public void onAdLoaded(AdResponse ad) {
@@ -306,7 +329,9 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
 
         @Override
         public void onAppEvent(String name, String data) {
-
+            appEventOccured = true;
+            eventName = name;
+            eventData = data;
         }
     }
 }
