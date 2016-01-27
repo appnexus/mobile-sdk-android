@@ -418,6 +418,10 @@ class AdWebView extends WebView implements Displayable {
                 return;
             }
 
+            if(!WebviewUtil.isWebViewPackageAvailable(getContext())){
+                return;
+            }
+
             final WebView out;
             // Unless disabled by the user, handle redirects in background
 

@@ -27,12 +27,14 @@ import com.appnexus.opensdk.utils.Clog;
 
 public class MyActivity extends Activity {
 
+	private BannerAdView bav = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
 
-        final BannerAdView bav = new BannerAdView(this);
+        bav = new BannerAdView(this);
 
 	// This is your AppNexus placement ID.
         bav.setPlacementID("1326299");
@@ -109,4 +111,12 @@ public class MyActivity extends Activity {
 		}
 	    }, 0);
     }
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if(bav != null){
+			bav.destroy();
+		}
+	}
 }

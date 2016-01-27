@@ -337,6 +337,9 @@ public class ANNativeAdResponse implements NativeAdResponse {
             return false;
         } else {
             // launch Browser Activity
+            if(!WebviewUtil.isWebViewPackageAvailable(context)){
+                return false;
+            }
             Class<?> activity_clz = AdActivity.getActivityClass();
 
             Intent intent = new Intent(context, activity_clz);

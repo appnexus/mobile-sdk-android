@@ -22,6 +22,7 @@ import android.os.Message;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.WebviewUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.Executors;
@@ -183,6 +184,10 @@ class AdFetcher {
                     || !fetcher.owner.isReadyToStart())
                 return;
 
+            //Don't send the ad request if webview package is unavailable
+            if(!WebviewUtil.isWebViewPackageAvailable(((AdView) fetcher.owner).getContext())){
+                return;
+            }
             // Update last fetch time once
             // For sane logging, don't report negative times
             if (fetcher.lastFetchTime != -1) {

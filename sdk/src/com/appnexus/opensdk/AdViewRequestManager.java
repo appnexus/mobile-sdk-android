@@ -19,6 +19,7 @@ package com.appnexus.opensdk;
 import android.app.Activity;
 
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.WebviewUtil;
 
 import java.lang.ref.WeakReference;
 
@@ -121,48 +122,64 @@ class AdViewRequestManager extends RequestManager {
                                     owner.getAdDispatcher().onAdFailed(ResultCode.INVALID_REQUEST);
                                 }
                             } else if (response != null) { // null-check response in case
-                                // standard ads
-                                final AdWebView output = new AdWebView(owner);
-                                output.loadAd(response);
+                                handleStandardAds(owner, response);
 
-                                if (owner.getMediaType().equals(MediaType.BANNER)) {
-                                    BannerAdView bav = (BannerAdView) owner;
-                                    if (bav.getExpandsToFitScreenWidth()) {
-                                        bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), output);
-                                    }
-                                }
-                                onReceiveAd(new AdResponse() {
-                                    @Override
-                                    public MediaType getMediaType() {
-                                        return owner.getMediaType();
-                                    }
-
-                                    @Override
-                                    public boolean isMediated() {
-                                        return false;
-                                    }
-
-                                    @Override
-                                    public Displayable getDisplayable() {
-                                        return output;
-                                    }
-
-                                    @Override
-                                    public NativeAdResponse getNativeAdResponse() {
-                                        return null;
-                                    }
-
-                                    @Override
-                                    public void destroy() {
-                                        output.destroy();
-                                    }
-                                });
                             }
                         }
                     }
             );
         }
     }
+
+    private void handleStandardAds(final AdView owner, ServerResponse response) {
+        // standard ads
+        if(!WebviewUtil.isWebViewPackageAvailable(owner.getContext())){
+            failed(ResultCode.INTERNAL_ERROR);
+            return;
+        }
+        try {
+            final AdWebView output = new AdWebView(owner);
+            output.loadAd(response);
+
+            if (owner.getMediaType().equals(MediaType.BANNER)) {
+                BannerAdView bav = (BannerAdView) owner;
+                if (bav.getExpandsToFitScreenWidth()) {
+                    bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), output);
+                }
+            }
+            onReceiveAd(new AdResponse() {
+                @Override
+                public MediaType getMediaType() {
+                    return owner.getMediaType();
+                }
+
+                @Override
+                public boolean isMediated() {
+                    return false;
+                }
+
+                @Override
+                public Displayable getDisplayable() {
+                    return output;
+                }
+
+                @Override
+                public NativeAdResponse getNativeAdResponse() {
+                    return null;
+                }
+
+                @Override
+                public void destroy() {
+                    output.destroy();
+                }
+            });
+        } catch (Exception e) {
+            // Catches PackageManager$NameNotFoundException for webview
+            Clog.e(Clog.baseLogTag, "Exception initializing the webview: " + e.getMessage());
+            failed(ResultCode.INTERNAL_ERROR);
+        }
+    }
+
 
     @Override
     public void onReceiveAd(AdResponse ad) {

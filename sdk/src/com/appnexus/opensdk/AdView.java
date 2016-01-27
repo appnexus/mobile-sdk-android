@@ -42,6 +42,7 @@ import com.appnexus.opensdk.utils.AdvertistingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.ViewUtil;
+import com.appnexus.opensdk.utils.WebviewUtil;
 
 import java.util.ArrayList;
 
@@ -115,10 +116,12 @@ public abstract class AdView extends FrameLayout implements Ad {
         }
 
         // Store the UA in the settings
-        Settings.getSettings().ua = new WebView(context).getSettings()
-                .getUserAgentString();
-        Clog.v(Clog.baseLogTag,
-                Clog.getString(R.string.ua, Settings.getSettings().ua));
+        if(WebviewUtil.isWebViewPackageAvailable(context)) {
+            Settings.getSettings().ua = new WebView(context).getSettings()
+                    .getUserAgentString();
+            Clog.v(Clog.baseLogTag,
+                    Clog.getString(R.string.ua, Settings.getSettings().ua));
+        }
 
         // Store the AppID in the settings
         Settings.getSettings().app_id = context.getApplicationContext()
