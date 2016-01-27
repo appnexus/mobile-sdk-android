@@ -25,11 +25,11 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.DateUtils;
 
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
 public class WebviewUtil {
+
 
     /**
      * Convenience method to set generic WebView settings
@@ -38,24 +38,29 @@ public class WebviewUtil {
      */
     @SuppressLint("SetJavaScriptEnabled")
     public static void setWebViewSettings(WebView webView) {
-        if (webView == null) {
-            return;
-        }
-        webView.getSettings().setBuiltInZoomControls(false);
-        webView.getSettings().setSupportZoom(true);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setDomStorageEnabled(true);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            CookieManager cm = CookieManager.getInstance();
-            if (cm != null) {
-                cm.setAcceptThirdPartyCookies(webView, true);
-            } else {
-                Clog.d(Clog.baseLogTag, "Failed to set Webview to accept 3rd party cookie");
+        try {
+            if (webView == null) {
+                return;
             }
+            webView.getSettings().setBuiltInZoomControls(false);
+            webView.getSettings().setSupportZoom(true);
+            webView.getSettings().setUseWideViewPort(true);
+            webView.getSettings().setJavaScriptEnabled(true);
+            webView.getSettings().setDomStorageEnabled(true);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                CookieManager cm = CookieManager.getInstance();
+                if (cm != null) {
+                    cm.setAcceptThirdPartyCookies(webView, true);
+                } else {
+                    Clog.d(Clog.baseLogTag, "Failed to set Webview to accept 3rd party cookie");
+                }
+            }
+        }catch (Exception e){
+            // Catches PackageManager$NameNotFoundException for webview
+            Clog.e(Clog.httpRespLogTag, "Unable update webview settings - Exception: "+e.getMessage());
         }
     }
 
@@ -153,17 +158,25 @@ public class WebviewUtil {
             }
         } catch (IllegalStateException ise) {
         } catch (Exception e) {
+            // Catches PackageManager$NameNotFoundException for webview
+            Clog.e(Clog.httpRespLogTag, "Unable to find a CookieManager - Exception: "+e.getMessage());
         }
 
     }
 
     public static String getCookie() {
-        CookieManager cm = CookieManager.getInstance();
-        if (cm == null) {
-            Clog.i(Clog.httpRespLogTag, "Unable to find a CookieManager");
-            return null;
+        try {
+            CookieManager cm = CookieManager.getInstance();
+            if (cm == null) {
+                Clog.i(Clog.httpRespLogTag, "Unable to find a CookieManager");
+                return null;
+            }
+            return cm.getCookie(Settings.BASE_URL);
+        }catch (Exception e){
+            // Catches PackageManager$NameNotFoundException for webview
+            Clog.e(Clog.httpRespLogTag, "Unable to find a CookieManager - Exception: "+e.getMessage());
         }
-        String wvcookie = cm.getCookie(Settings.BASE_URL);
-        return wvcookie;
+        return null;
     }
+
 }

@@ -115,10 +115,16 @@ public abstract class AdView extends FrameLayout implements Ad {
         }
 
         // Store the UA in the settings
-        Settings.getSettings().ua = new WebView(context).getSettings()
-                .getUserAgentString();
-        Clog.v(Clog.baseLogTag,
-                Clog.getString(R.string.ua, Settings.getSettings().ua));
+        try {
+            Settings.getSettings().ua = new WebView(context).getSettings()
+                    .getUserAgentString();
+            Clog.v(Clog.baseLogTag,
+                    Clog.getString(R.string.ua, Settings.getSettings().ua));
+        }catch (Exception e){
+            // Catches PackageManager$NameNotFoundException for webview
+            Settings.getSettings().ua = "";
+            Clog.e(Clog.baseLogTag, " Exception: "+e.getMessage());
+        }
 
         // Store the AppID in the settings
         Settings.getSettings().app_id = context.getApplicationContext()

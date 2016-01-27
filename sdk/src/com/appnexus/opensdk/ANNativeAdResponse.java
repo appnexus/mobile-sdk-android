@@ -338,23 +338,26 @@ public class ANNativeAdResponse implements NativeAdResponse {
         } else {
             // launch Browser Activity
             Class<?> activity_clz = AdActivity.getActivityClass();
-
-            Intent intent = new Intent(context, activity_clz);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
-
-            WebView out = new WebView(context);
-            WebviewUtil.setWebViewSettings(out);
-            out.loadUrl(clickUrl);
-            BrowserAdActivity.BROWSER_QUEUE.add(out);
-
             try {
+                WebView out = new WebView(context);
+                WebviewUtil.setWebViewSettings(out);
+                out.loadUrl(clickUrl);
+                BrowserAdActivity.BROWSER_QUEUE.add(out);
+
+                Intent intent = new Intent(context, activity_clz);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
                 context.startActivity(intent);
                 return true;
             } catch (ActivityNotFoundException e) {
                 Clog.w(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing, activity_clz.getName()));
                 BrowserAdActivity.BROWSER_QUEUE.remove();
+            } catch (Exception e){
+                // Catches PackageManager$NameNotFoundException for webview
+                Clog.e(Clog.baseLogTag, "Exception initializing the redirect webview: " + e.getMessage());
+                return false;
             }
+
             return false;
         }
     }

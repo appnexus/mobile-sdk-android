@@ -418,44 +418,50 @@ class AdWebView extends WebView implements Displayable {
                 return;
             }
 
-            final WebView out;
-            // Unless disabled by the user, handle redirects in background
+            try {
 
-            if(adView.getLoadsInBackground()) {
-                // Otherwise, create an invisible 1x1 webview to load the landing
-                // page and detect if we're redirecting to a market url
-                out = new RedirectWebView(this.getContext());
-                out.loadUrl(url);
-                out.setVisibility(View.GONE);
-                adView.addView(out);
+                final WebView out;
+                // Unless disabled by the user, handle redirects in background
 
-                if(this.adView.getShowLoadingIndicator()) {
-                    //Show a dialog box
-                    progressDialog = new ProgressDialog(((ViewGroup)this.getParent()).getContext());
-                    progressDialog.setCancelable(true);
-                    progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialogInterface) {
-                            out.stopLoading();
-                        }
-                    });
-                    progressDialog.setMessage(getContext().getResources().getString(R.string.loading));
-                    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                    progressDialog.show();
+                if (adView.getLoadsInBackground()) {
+                    // Otherwise, create an invisible 1x1 webview to load the landing
+                    // page and detect if we're redirecting to a market url
+                    out = new RedirectWebView(this.getContext());
+                    out.loadUrl(url);
+                    out.setVisibility(View.GONE);
+                    adView.addView(out);
+
+                    if (this.adView.getShowLoadingIndicator()) {
+                        //Show a dialog box
+                        progressDialog = new ProgressDialog(((ViewGroup) this.getParent()).getContext());
+                        progressDialog.setCancelable(true);
+                        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialogInterface) {
+                                out.stopLoading();
+                            }
+                        });
+                        progressDialog.setMessage(getContext().getResources().getString(R.string.loading));
+                        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                        progressDialog.show();
+                    }
+                } else {
+                    // Stick the URL directly into the new activity.
+                    out = new WebView(getContext());
+                    WebviewUtil.setWebViewSettings(out);
+                    out.loadUrl(url);
+                    openInAppBrowser(out);
                 }
-            }else{
-                // Stick the URL directly into the new activity.
-                out = new WebView(getContext());
-                WebviewUtil.setWebViewSettings(out);
-                out.loadUrl(url);
-                openInAppBrowser(out);
+            }catch (Exception e){
+                // Catches PackageManager$NameNotFoundException for webview
+                Clog.e(Clog.baseLogTag, "Exception initializing the redirect webview: " + e.getMessage());
             }
-
         } else {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(R.string.opening_native));
             openNativeIntent(url);
         }
+
     }
 
     private void fail() {

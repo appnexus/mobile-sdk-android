@@ -289,23 +289,28 @@ class MRAIDImplementation {
             //second webview to forward the close event back
 
             //"This" mraid implementation is *not* reused by the second webview
-            expandedWebView = new MRAIDTwoPartExpandWebView(this.owner.adView, this);
-            expandedWebView.loadUrlWithMRAID(uri);
+            try{
+                expandedWebView = new MRAIDTwoPartExpandWebView(this.owner.adView, this);
+                expandedWebView.loadUrlWithMRAID(uri);
 
-            final boolean allowOrientationChangeInner = allowOrientationChange;
-            final AdActivity.OrientationEnum forceOrientationInner = forceOrientation;
-            this.owner.adView.mraidFullscreenExpand(expandedWebView.getMRAIDImplementation(),
-                    useCustomClose, new AdWebView.MRAIDFullscreenListener(){
-                @Override
-                public void onCreateCompleted() {
-                    // lock orientation if necessary
-                    if (getFullscreenActivity() != null) {
-                        expandedWebView.lockOrientationFromExpand(getFullscreenActivity(),
-                                allowOrientationChangeInner, forceOrientationInner);
-                        AdView.mraidFullscreenListener = null; // only listen once
-                    }
-                }
-            });
+                final boolean allowOrientationChangeInner = allowOrientationChange;
+                final AdActivity.OrientationEnum forceOrientationInner = forceOrientation;
+                this.owner.adView.mraidFullscreenExpand(expandedWebView.getMRAIDImplementation(),
+                        useCustomClose, new AdWebView.MRAIDFullscreenListener() {
+                            @Override
+                            public void onCreateCompleted() {
+                                // lock orientation if necessary
+                                if (getFullscreenActivity() != null) {
+                                    expandedWebView.lockOrientationFromExpand(getFullscreenActivity(),
+                                            allowOrientationChangeInner, forceOrientationInner);
+                                    AdView.mraidFullscreenListener = null; // only listen once
+                                }
+                            }
+                        });
+            }catch (Exception e){
+                // Catches PackageManager$NameNotFoundException for webview
+                Clog.e(Clog.baseLogTag, "Exception initializing the redirect webview: " + e.getMessage());
+            }
         }else {
             owner.expand(width, height, useCustomClose, this, allowOrientationChange, forceOrientation);
         }
