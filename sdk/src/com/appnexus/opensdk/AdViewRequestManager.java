@@ -19,7 +19,6 @@ package com.appnexus.opensdk;
 import android.app.Activity;
 
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.WebviewUtil;
 
 import java.lang.ref.WeakReference;
 
@@ -133,10 +132,6 @@ class AdViewRequestManager extends RequestManager {
 
     private void handleStandardAds(final AdView owner, ServerResponse response) {
         // standard ads
-        if(!WebviewUtil.isWebViewPackageAvailable(owner.getContext())){
-            failed(ResultCode.INTERNAL_ERROR);
-            return;
-        }
         try {
             final AdWebView output = new AdWebView(owner);
             output.loadAd(response);

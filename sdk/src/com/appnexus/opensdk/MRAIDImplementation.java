@@ -289,7 +289,7 @@ class MRAIDImplementation {
             //second webview to forward the close event back
 
             //"This" mraid implementation is *not* reused by the second webview
-            if(WebviewUtil.isWebViewPackageAvailable(this.owner.getContext())) {
+            try{
                 expandedWebView = new MRAIDTwoPartExpandWebView(this.owner.adView, this);
                 expandedWebView.loadUrlWithMRAID(uri);
 
@@ -307,6 +307,9 @@ class MRAIDImplementation {
                                 }
                             }
                         });
+            }catch (Exception e){
+                // Catches PackageManager$NameNotFoundException for webview
+                Clog.e(Clog.baseLogTag, "Exception initializing the redirect webview: " + e.getMessage());
             }
         }else {
             owner.expand(width, height, useCustomClose, this, allowOrientationChange, forceOrientation);

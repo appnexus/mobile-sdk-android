@@ -42,7 +42,6 @@ import com.appnexus.opensdk.utils.AdvertistingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.ViewUtil;
-import com.appnexus.opensdk.utils.WebviewUtil;
 
 import java.util.ArrayList;
 
@@ -116,11 +115,15 @@ public abstract class AdView extends FrameLayout implements Ad {
         }
 
         // Store the UA in the settings
-        if(WebviewUtil.isWebViewPackageAvailable(context)) {
+        try {
             Settings.getSettings().ua = new WebView(context).getSettings()
                     .getUserAgentString();
             Clog.v(Clog.baseLogTag,
                     Clog.getString(R.string.ua, Settings.getSettings().ua));
+        }catch (Exception e){
+            // Catches PackageManager$NameNotFoundException for webview
+            Settings.getSettings().ua = "";
+            Clog.e(Clog.baseLogTag, " Exception: "+e.getMessage());
         }
 
         // Store the AppID in the settings

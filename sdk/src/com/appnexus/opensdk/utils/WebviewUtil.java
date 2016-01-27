@@ -16,8 +16,6 @@
 package com.appnexus.opensdk.utils;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
@@ -182,18 +180,4 @@ public class WebviewUtil {
         return null;
     }
 
-    public static boolean isWebViewPackageAvailable(Context context) {
-        try {
-            PackageManager pm = context.getPackageManager();
-            pm.getPackageInfo(WEBVIEW_PACKAGE_NAME, PackageManager.GET_ACTIVITIES);
-            return true;
-        } catch (PackageManager.NameNotFoundException e) {
-            // Catches PackageManager$NameNotFoundException for webview
-            Clog.e(Clog.baseLogTag, " Exception: Webview package not available. "+e.getMessage());
-            return false;
-        } catch (Exception e){
-            Clog.e(Clog.baseLogTag, " Exception: "+e.getMessage());
-            return false;
-        }
-    }
 }
