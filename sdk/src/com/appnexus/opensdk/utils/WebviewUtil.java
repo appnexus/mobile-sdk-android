@@ -30,7 +30,6 @@ import java.util.List;
 
 public class WebviewUtil {
 
-    public static final String WEBVIEW_PACKAGE_NAME = "com.google.android.webview";
 
     /**
      * Convenience method to set generic WebView settings
