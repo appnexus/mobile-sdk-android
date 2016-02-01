@@ -17,13 +17,13 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
-import android.util.Pair;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
+import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.utils.Clog;
 import com.rfm.sdk.RFMAdRequest;
@@ -32,7 +32,8 @@ import com.rfm.sdk.RFMConstants;
 import com.rfm.sdk.RFMInterstitialAdViewListener;
 import com.rfm.util.RFMLog;
 
-import java.util.HashMap;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * This class is the MoPub banner adaptor it provides the functionality needed to allow
@@ -44,21 +45,55 @@ import java.util.HashMap;
  * SDK.
  */
 public class RubiconInterstitialAdView implements MediatedInterstitialAdView {
-    public static final String DEFAULT_SERVER_NAME = "http://mrp.rubiconproject.com/";
+
     private RFMAdView adView;
-    public static final String DEFAULT_AD_ID = "281844F0497A0130031D123139244773";
-    public static final String DEFAULT_PUB_ID = "111008";
 
+    @Override
+    public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid, TargetingParameters targetingParameters) {
 
-    private String getCustomKeywords(TargetingParameters targetingParameters){
-        String customKeywordString = "";
-        for (Pair<String,String> keyword:targetingParameters.getCustomKeywords()) {
-            customKeywordString = customKeywordString + keyword.first + "=" +keyword.second + ",";
+        String adId = null;
+        String serverName = null;
+        String pubId = null;
+        try {
+            if(uid != null){
+                JSONObject idObject = new JSONObject(uid);
+                adId = idObject.getString("adId");
+                serverName = idObject.getString("serverName");
+                pubId = idObject.getString("pubId");
+            }else{
+                mIC.onAdFailed(ResultCode.INVALID_REQUEST);
+            }
+        } catch (JSONException e) {
+            mIC.onAdFailed(ResultCode.INVALID_REQUEST);
         }
-        if(customKeywordString.trim().length() > 0){
-            customKeywordString = customKeywordString.substring(0, customKeywordString.length()-1);
+
+        RFMInterstitialAdViewListener adViewListener = new RubiconListener(mIC, this.getClass().getSimpleName());
+        adView = new RFMAdView(activity);
+        RFMAdRequest rfmAdRequest = new RFMAdRequest();
+        rfmAdRequest.setRFMParams(serverName, pubId, adId);
+
+        rfmAdRequest.setAdDimensionParams(-1, -1);
+        rfmAdRequest.setRFMAdAsInterstitial(true);
+        adView.setRFMAdViewListener(adViewListener);
+        adView.enableHWAcceleration(true);
+
+        /**
+         * TODO: These 3 lines need to be removed
+         */
+        RFMLog.setRFMLogLevel(RFMLog.INFO);
+        rfmAdRequest.setRFMAdMode(RFMConstants.RFM_AD_MODE_TEST);
+        rfmAdRequest.setRFMTestAdId(adId);
+
+        if (targetingParameters != null) {
+            if (targetingParameters.getLocation() != null) {
+                rfmAdRequest.setLocation(targetingParameters.getLocation());
+            }
+            //Optional Ad Targeting info
+            rfmAdRequest.setTargetingParams(RubiconSettings.getTargetingParams(targetingParameters));
         }
-        return customKeywordString;
+
+        adView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER));
+        adView.requestRFMAd(rfmAdRequest);
     }
 
     @Override
@@ -83,45 +118,7 @@ public class RubiconInterstitialAdView implements MediatedInterstitialAdView {
         destroy();
     }
 
-    @Override
-    public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid, TargetingParameters targetingParameters) {
-        RFMInterstitialAdViewListener adViewListener = new RubiconListener(mIC, this.getClass().getSimpleName());
-        adView = new RFMAdView(activity);
-        RFMAdRequest rfmAdRequest = new RFMAdRequest();
-        rfmAdRequest.setRFMParams(DEFAULT_SERVER_NAME, DEFAULT_PUB_ID, DEFAULT_AD_ID);
 
-        rfmAdRequest.setAdDimensionParams(-1, -1);
-        rfmAdRequest.setRFMAdAsInterstitial(true);
-        adView.setRFMAdViewListener(adViewListener);
-        adView.enableHWAcceleration(true);
-
-        /**
-         * TODO: NEED TO BE REMOVED
-         */
-        RFMLog.setRFMLogLevel(RFMLog.INFO);
-        rfmAdRequest.setRFMAdMode(RFMConstants.RFM_AD_MODE_TEST);
-        rfmAdRequest.setRFMTestAdId(DEFAULT_AD_ID);
-
-        if (targetingParameters != null) {
-            if (targetingParameters.getLocation() != null) {
-                rfmAdRequest.setLocation(targetingParameters.getLocation());
-            }
-
-            //Optional Ad Targeting info
-            HashMap<String,String> mTargetingInfo = new HashMap<String, String>();
-            mTargetingInfo.put("GENDER", targetingParameters.getGender().toString());
-            mTargetingInfo.put("AGE", targetingParameters.getAge());
-            if(targetingParameters.getCustomKeywords().size() > 0) {
-                mTargetingInfo.put("NBA_KV", getCustomKeywords(targetingParameters));
-            }
-
-//            rfmAdRequest.setTargetingParams(mTargetingInfo);
-        }
-
-        adView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER));
-
-        adView.requestRFMAd(rfmAdRequest);
-    }
 
 
     @Override

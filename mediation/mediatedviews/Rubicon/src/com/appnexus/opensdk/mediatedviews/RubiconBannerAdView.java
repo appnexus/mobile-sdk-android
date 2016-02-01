@@ -17,7 +17,6 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
-import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,15 +24,16 @@ import android.widget.FrameLayout;
 
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
+import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
-import com.appnexus.opensdk.utils.Clog;
 import com.rfm.sdk.RFMAdRequest;
 import com.rfm.sdk.RFMAdView;
 import com.rfm.sdk.RFMAdViewListener;
 import com.rfm.sdk.RFMConstants;
 import com.rfm.util.RFMLog;
 
-import java.util.HashMap;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * This class is the MoPub banner adaptor it provides the functionality needed to allow
@@ -45,33 +45,42 @@ import java.util.HashMap;
  * SDK.
  */
 public class RubiconBannerAdView implements MediatedBannerAdView {
-    public static final String DEFAULT_SERVER_NAME = "http://mrp.rubiconproject.com/";
     private RFMAdView adView;
-    private RFMAdViewListener adViewListener;
-    public static final String DEFAULT_AD_ID = "281844F0497A0130031D123139244773";
-    public static final String DEFAULT_PUB_ID = "111008";
-
-
 
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
                           int width, int height, TargetingParameters targetingParameters) {
-        Clog.i("MediatedClass", "RubiconBannerAdView Initialised: "+uid);
-        adViewListener = new RubiconListener(mBC, this.getClass().getSimpleName());
+        String adId = null;
+        String serverName = null;
+        String pubId = null;
+        try {
+            if(uid != null){
+                JSONObject idObject = new JSONObject(uid);
+                adId = idObject.getString("adId");
+                serverName = idObject.getString("serverName");
+                pubId = idObject.getString("pubId");
+            }else{
+                mBC.onAdFailed(ResultCode.INVALID_REQUEST);
+            }
+        } catch (JSONException e) {
+            mBC.onAdFailed(ResultCode.INVALID_REQUEST);
+        }
+
+        RFMAdViewListener  adViewListener = new RubiconListener(mBC, this.getClass().getSimpleName());
         adView = new RFMAdView(activity);
         RFMAdRequest rfmAdRequest = new RFMAdRequest();
-        rfmAdRequest.setRFMParams(DEFAULT_SERVER_NAME, DEFAULT_PUB_ID, uid);
+        rfmAdRequest.setRFMParams(serverName, pubId, adId);
 
         rfmAdRequest.setAdDimensionParams(width, height);
         adView.setRFMAdViewListener(adViewListener);
         adView.enableHWAcceleration(true);
 
         /**
-         * TODO: NEED TO BE REMOVED
+         * TODO: These 3 lines need to be removed
          */
         RFMLog.setRFMLogLevel(RFMLog.INFO);
         rfmAdRequest.setRFMAdMode(RFMConstants.RFM_AD_MODE_TEST);
-        rfmAdRequest.setRFMTestAdId(DEFAULT_AD_ID);
+        rfmAdRequest.setRFMTestAdId(adId);
 
         if (targetingParameters != null) {
             if (targetingParameters.getLocation() != null) {
@@ -79,14 +88,7 @@ public class RubiconBannerAdView implements MediatedBannerAdView {
             }
 
             //Optional Ad Targeting info
-            HashMap<String,String> mTargetingInfo = new HashMap<String, String>();
-            mTargetingInfo.put("GENDER", targetingParameters.getGender().toString());
-            mTargetingInfo.put("AGE", targetingParameters.getAge());
-            if(targetingParameters.getCustomKeywords().size() > 0) {
-                mTargetingInfo.put("NBA_KV", getCustomKeywords(targetingParameters));
-            }
-
-//            rfmAdRequest.setTargetingParams(mTargetingInfo);
+            rfmAdRequest.setTargetingParams(RubiconSettings.getTargetingParams(targetingParameters));
         }
 
         adView.setMinimumWidth(width);
@@ -97,16 +99,6 @@ public class RubiconBannerAdView implements MediatedBannerAdView {
         return adView;
     }
 
-    private String getCustomKeywords(TargetingParameters targetingParameters){
-        String customKeywordString = "";
-        for (Pair<String,String> keyword:targetingParameters.getCustomKeywords()) {
-            customKeywordString = customKeywordString + keyword.first + "=" +keyword.second + ",";
-        }
-        if(customKeywordString.trim().length() > 0){
-            customKeywordString = customKeywordString.substring(0, customKeywordString.length()-1);
-        }
-        return customKeywordString;
-    }
 
     @Override
     public void destroy() {

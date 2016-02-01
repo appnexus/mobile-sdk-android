@@ -24,14 +24,14 @@ public class RubiconListener implements RFMAdViewListener, RFMInterstitialAdView
 
     @Override
     public void onAdRequested(RFMAdView rfmAdView, String s, boolean b) {
-        printToClog("onAdRequested: "+s);
+        printToClog("onAdRequested - ad request url: "+s);
         rfmAdView.setVisibility(View.GONE);
     }
 
     @Override
     public void onAdReceived(RFMAdView rfmAdView) {
-        rfmAdView.setVisibility(View.VISIBLE);
         printToClog("onAdReceived");
+        rfmAdView.setVisibility(View.VISIBLE);
         if(this.mediatedAdViewController != null){
             this.mediatedAdViewController.onAdLoaded();
         }
@@ -75,7 +75,7 @@ public class RubiconListener implements RFMAdViewListener, RFMInterstitialAdView
 
     @Override
     public void didFailedToDisplayAd(RFMAdView rfmAdView, String s) {
-        printToClogError("didFailedToDisplayAd: "+s);
+        printToClogError("didFailedToDisplayAd: " + s);
     }
 
     @Override
@@ -99,4 +99,5 @@ public class RubiconListener implements RFMAdViewListener, RFMInterstitialAdView
     void printToClogError(String s) {
         Clog.e(Clog.mediationLogTag, className + " - " + s);
     }
+
 }
