@@ -16,8 +16,11 @@ public class RubiconSettings {
     @NonNull
     public static HashMap<String, String> getTargetingParams(TargetingParameters targetingParameters) {
         HashMap<String,String> mTargetingInfo = new HashMap<String, String>();
+
         mTargetingInfo.put("GENDER", targetingParameters.getGender().toString());
-        mTargetingInfo.put("AGE", targetingParameters.getAge());
+        if(targetingParameters.getAge() != null) {
+            mTargetingInfo.put("AGE", targetingParameters.getAge());
+        }
         if(targetingParameters.getCustomKeywords().size() > 0) {
             mTargetingInfo.put("NBA_KV", getCustomKeywords(targetingParameters));
         }
