@@ -112,6 +112,7 @@ public class RubiconBannerAdView implements MediatedBannerAdView {
     public void destroy() {
         if (adView != null) {
             adView.setRFMAdViewListener(null);
+            adView.rfmAdViewDestroy();
             adView = null;
         }
     }

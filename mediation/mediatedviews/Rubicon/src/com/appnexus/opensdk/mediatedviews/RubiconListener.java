@@ -3,7 +3,6 @@ package com.appnexus.opensdk.mediatedviews;
 import android.view.View;
 
 import com.appnexus.opensdk.MediatedAdViewController;
-import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.utils.Clog;
 import com.rfm.sdk.RFMAdView;
@@ -18,7 +17,7 @@ public class RubiconListener implements RFMAdViewListener, RFMInterstitialAdView
     private final MediatedAdViewController mediatedAdViewController;
     private final String className;
 
-    public RubiconListener(MediatedBannerAdViewController mediatedAdViewController, String className) {
+    public RubiconListener(MediatedAdViewController mediatedAdViewController, String className) {
         this.mediatedAdViewController = mediatedAdViewController;
         this.className = className;
     }
@@ -94,7 +93,7 @@ public class RubiconListener implements RFMAdViewListener, RFMInterstitialAdView
 
 
     void printToClog(String s) {
-        Clog.d(Clog.mediationLogTag, className + " - " + s);
+        Clog.i(Clog.mediationLogTag, className + " - " + s);
     }
 
     void printToClogError(String s) {
