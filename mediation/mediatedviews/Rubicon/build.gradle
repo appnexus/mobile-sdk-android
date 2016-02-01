@@ -1,13 +1,12 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
 
     defaultConfig {
-        applicationId "com.appnexus.rubiconproject"
-        minSdkVersion 22
-        targetSdkVersion 23
+        minSdkVersion 16
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
     }
@@ -19,6 +18,7 @@ android {
         main.assets.srcDir 'assets'
         main.resources.srcDir 'src'
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -29,7 +29,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile files('libs/RFMSDK.jar')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:22.0.0'
     compile project(':sdk')
 }

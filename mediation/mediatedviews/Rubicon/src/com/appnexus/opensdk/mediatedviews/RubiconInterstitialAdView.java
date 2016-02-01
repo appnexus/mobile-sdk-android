@@ -26,12 +26,9 @@ import android.widget.FrameLayout;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
-import com.appnexus.opensdk.utils.Clog;
 import com.rfm.sdk.RFMAdRequest;
 import com.rfm.sdk.RFMAdView;
-import com.rfm.sdk.RFMAdViewListener;
-import com.rfm.sdk.RFMConstants;
-import com.rfm.util.RFMLog;
+import com.rfm.sdk.RFMInterstitialAdViewListener;
 
 import java.util.HashMap;
 
@@ -44,10 +41,9 @@ import java.util.HashMap;
  * This class also serves as an example of how to write a Mediation adaptor for the AppNexus
  * SDK.
  */
-public class RubiconBannerAdView implements MediatedBannerAdView {
+public class RubiconInterstitialAdView implements MediatedBannerAdView {
     public static final String DEFAULT_SERVER_NAME = "http://mrp.rubiconproject.com/";
     private RFMAdView adView;
-    private RFMAdViewListener adViewListener;
     public static final String DEFAULT_AD_ID = "281844F0497A0130031D123139244773";
     public static final String DEFAULT_PUB_ID = "111008";
 
@@ -56,22 +52,15 @@ public class RubiconBannerAdView implements MediatedBannerAdView {
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
                           int width, int height, TargetingParameters targetingParameters) {
-        Clog.i("MediatedClass", "RubiconBannerAdView Initialised: "+uid);
-        adViewListener = new RubiconListener(mBC, this.getClass().getSimpleName());
+        RFMInterstitialAdViewListener adViewListener = new RubiconListener(mBC, this.getClass().getSimpleName());
         adView = new RFMAdView(activity);
         RFMAdRequest rfmAdRequest = new RFMAdRequest();
-        rfmAdRequest.setRFMParams(DEFAULT_SERVER_NAME, DEFAULT_PUB_ID, uid);
+        rfmAdRequest.setRFMParams(DEFAULT_SERVER_NAME, DEFAULT_PUB_ID, DEFAULT_AD_ID);
 
         rfmAdRequest.setAdDimensionParams(width, height);
+        rfmAdRequest.setRFMAdAsInterstitial(true);
         adView.setRFMAdViewListener(adViewListener);
         adView.enableHWAcceleration(true);
-
-        /**
-         * TODO: NEED TO BE REMOVED
-         */
-        RFMLog.setRFMLogLevel(RFMLog.INFO);
-        rfmAdRequest.setRFMAdMode(RFMConstants.RFM_AD_MODE_TEST);
-        rfmAdRequest.setRFMTestAdId(DEFAULT_AD_ID);
 
         if (targetingParameters != null) {
             if (targetingParameters.getLocation() != null) {
@@ -86,12 +75,12 @@ public class RubiconBannerAdView implements MediatedBannerAdView {
                 mTargetingInfo.put("NBA_KV", getCustomKeywords(targetingParameters));
             }
 
-//            rfmAdRequest.setTargetingParams(mTargetingInfo);
+            rfmAdRequest.setTargetingParams(mTargetingInfo);
         }
 
         adView.setMinimumWidth(width);
         adView.setMinimumHeight(height);
-        adView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
+        adView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER));
 
         adView.requestRFMAd(rfmAdRequest);
         return adView;
