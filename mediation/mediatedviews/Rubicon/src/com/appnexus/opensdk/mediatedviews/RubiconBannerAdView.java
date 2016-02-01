@@ -45,6 +45,7 @@ import org.json.JSONObject;
  * SDK.
  */
 public class RubiconBannerAdView implements MediatedBannerAdView {
+
     private RFMAdView adView;
 
     @Override
@@ -56,9 +57,9 @@ public class RubiconBannerAdView implements MediatedBannerAdView {
         try {
             if(uid != null){
                 JSONObject idObject = new JSONObject(uid);
-                adId = idObject.getString("adId");
-                serverName = idObject.getString("serverName");
-                pubId = idObject.getString("pubId");
+                adId = idObject.getString(RubiconSettings.AD_ID);
+                serverName = idObject.getString(RubiconSettings.SERVER_NAME);
+                pubId = idObject.getString(RubiconSettings.PUB_ID);
             }else{
                 mBC.onAdFailed(ResultCode.INVALID_REQUEST);
             }
@@ -67,11 +68,12 @@ public class RubiconBannerAdView implements MediatedBannerAdView {
         }
 
         RFMAdViewListener  adViewListener = new RubiconListener(mBC, this.getClass().getSimpleName());
-        adView = new RFMAdView(activity);
+
         RFMAdRequest rfmAdRequest = new RFMAdRequest();
         rfmAdRequest.setRFMParams(serverName, pubId, adId);
-
         rfmAdRequest.setAdDimensionParams(width, height);
+
+        adView = new RFMAdView(activity);
         adView.setRFMAdViewListener(adViewListener);
         adView.enableHWAcceleration(true);
 
@@ -86,7 +88,6 @@ public class RubiconBannerAdView implements MediatedBannerAdView {
             if (targetingParameters.getLocation() != null) {
                 rfmAdRequest.setLocation(targetingParameters.getLocation());
             }
-
             //Optional Ad Targeting info
             rfmAdRequest.setTargetingParams(RubiconSettings.getTargetingParams(targetingParameters));
         }

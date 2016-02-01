@@ -13,6 +13,10 @@ import java.util.HashMap;
  */
 public class RubiconSettings {
 
+    public static final String AD_ID = "adId";
+    public static final String SERVER_NAME = "serverName";
+    public static final String PUB_ID = "pubId";
+
     @NonNull
     public static HashMap<String, String> getTargetingParams(TargetingParameters targetingParameters) {
         HashMap<String,String> mTargetingInfo = new HashMap<String, String>();

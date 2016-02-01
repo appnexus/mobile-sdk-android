@@ -57,9 +57,9 @@ public class RubiconInterstitialAdView implements MediatedInterstitialAdView {
         try {
             if(uid != null){
                 JSONObject idObject = new JSONObject(uid);
-                adId = idObject.getString("adId");
-                serverName = idObject.getString("serverName");
-                pubId = idObject.getString("pubId");
+                adId = idObject.getString(RubiconSettings.AD_ID);
+                serverName = idObject.getString(RubiconSettings.SERVER_NAME);
+                pubId = idObject.getString(RubiconSettings.PUB_ID);
             }else{
                 mIC.onAdFailed(ResultCode.INVALID_REQUEST);
             }
@@ -117,9 +117,6 @@ public class RubiconInterstitialAdView implements MediatedInterstitialAdView {
     public void onDestroy() {
         destroy();
     }
-
-
-
 
     @Override
     public void show() {
