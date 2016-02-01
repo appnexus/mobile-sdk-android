@@ -35,15 +35,6 @@ import com.rfm.util.RFMLog;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * This class is the MoPub banner adaptor it provides the functionality needed to allow
- * an application using the AppNexus SDK to load a banner ad through the MoPub SDK. The instantiation
- * of this class is done in response from the AppNexus server for a banner placement that is configured
- * to use MoPub to serve it. This class is never directly instantiated by the application.
- * <p/>
- * This class also serves as an example of how to write a Mediation adaptor for the AppNexus
- * SDK.
- */
 public class RubiconBannerAdView implements MediatedBannerAdView {
 
     private RFMAdView adView;
