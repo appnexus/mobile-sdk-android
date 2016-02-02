@@ -22,10 +22,9 @@ import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.utils.Clog;
 import com.rfm.sdk.RFMAdView;
 import com.rfm.sdk.RFMAdViewListener;
-import com.rfm.sdk.RFMInterstitialAdViewListener;
 
 
-public class RubiconListener implements RFMAdViewListener, RFMInterstitialAdViewListener{
+public class RubiconListener implements RFMAdViewListener{
 
     private final MediatedAdViewController mediatedAdViewController;
     private final String className;
@@ -89,19 +88,6 @@ public class RubiconListener implements RFMAdViewListener, RFMInterstitialAdView
     @Override
     public void didFailedToDisplayAd(RFMAdView rfmAdView, String s) {
         printToClogError("didFailedToDisplayAd: " + s);
-    }
-
-    @Override
-    public void onInterstitialAdWillDismiss(RFMAdView rfmAdView) {
-        printToClogError("onInterstitialAdWillDismiss");
-    }
-
-    @Override
-    public void onInterstitialAdDismissed(RFMAdView rfmAdView) {
-        printToClogError("onInterstitialAdDismissed");
-        if(this.mediatedAdViewController != null){
-            this.mediatedAdViewController.onDestroy();
-        }
     }
 
 
