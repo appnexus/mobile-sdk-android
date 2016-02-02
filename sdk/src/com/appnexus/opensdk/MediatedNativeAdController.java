@@ -31,6 +31,7 @@ import com.appnexus.opensdk.utils.StringUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
+import java.util.concurrent.RejectedExecutionException;
 
 public class MediatedNativeAdController {
     WeakReference<AdRequester> requester;
@@ -224,10 +225,17 @@ public class MediatedNativeAdController {
                 getLatencyParam(), getTotalLatencyParam(requester));
 
         // Spawn GET call
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            cb.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else {
-            cb.execute();
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                cb.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                cb.execute();
+            }
+        } catch (RejectedExecutionException rejectedExecutionException) {
+            Clog.e(Clog.baseLogTag, "Concurrent Thread Exception while firing ResultCB: "
+                    + rejectedExecutionException.getMessage());
+        } catch (Exception exception) {
+            Clog.e(Clog.baseLogTag, "Exception while firing ResultCB: " + exception.getMessage());
         }
 
         // if currentAd failed and next ad is available, continue to next ad

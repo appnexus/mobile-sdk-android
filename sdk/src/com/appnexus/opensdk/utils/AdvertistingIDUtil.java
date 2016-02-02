@@ -26,6 +26,7 @@ import com.appnexus.opensdk.SDKSettings;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  * Utility class for retrieving and setting
@@ -45,12 +46,20 @@ public class AdvertistingIDUtil {
             return;
         }
 
-        AAIDTask getAAIDTask = new AAIDTask(context);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            getAAIDTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else {
-            getAAIDTask.execute();
+        try {
+            AAIDTask getAAIDTask = new AAIDTask(context);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                getAAIDTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                getAAIDTask.execute();
+            }
+        } catch (RejectedExecutionException rejectedExecutionException) {
+            Clog.e(Clog.baseLogTag, "Concurrent Thread Exception while firing ResultCB: "
+                    + rejectedExecutionException.getMessage());
+        } catch (Exception exception) {
+            Clog.e(Clog.baseLogTag, "Exception while firing ResultCB: " + exception.getMessage());
         }
+
     }
 
     /**
