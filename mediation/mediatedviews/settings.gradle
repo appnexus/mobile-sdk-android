@@ -1,4 +1,4 @@
-include ':sdk',
+include ':sdk'
 project(':sdk').projectDir = new File(settingsDir, '../../sdk')
 
 include ':AdColony'
