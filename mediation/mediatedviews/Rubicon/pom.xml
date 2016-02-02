@@ -48,7 +48,7 @@
         <dependency>
             <groupId>android</groupId>
             <artifactId>android</artifactId>
-            <version>5.1.1_r2</version>
+            <version>5.1_r1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -63,8 +63,6 @@
             <artifactId>rubicon-sdk</artifactId>
             <version>4.0.0</version>
             <scope>compile</scope>
-            <type>aar</type>
-
         </dependency>
     </dependencies>
     <build>
