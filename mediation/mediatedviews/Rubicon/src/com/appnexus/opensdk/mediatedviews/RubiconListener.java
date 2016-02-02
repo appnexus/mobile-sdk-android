@@ -61,6 +61,7 @@ public class RubiconListener implements RFMAdViewListener, RFMInterstitialAdView
     @Override
     public void onAdStateChangeEvent(RFMAdView rfmAdView, RFMAdViewEvent rfmAdViewEvent) {
         printToClog("onAdStateChangeEvent: "+rfmAdViewEvent.toString());
+
         switch(rfmAdViewEvent){
             case FULL_SCREEN_AD_DISPLAYED:
                 if(this.mediatedAdViewController != null){
@@ -73,7 +74,6 @@ public class RubiconListener implements RFMAdViewListener, RFMInterstitialAdView
                 }
                 break;
         }
-
     }
 
     @Override

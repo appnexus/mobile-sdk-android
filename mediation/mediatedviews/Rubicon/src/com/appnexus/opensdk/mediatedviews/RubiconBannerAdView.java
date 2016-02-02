@@ -17,6 +17,8 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,18 +28,22 @@ import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
+import com.appnexus.opensdk.utils.StringUtil;
 import com.rfm.sdk.RFMAdRequest;
 import com.rfm.sdk.RFMAdView;
 import com.rfm.sdk.RFMAdViewListener;
-import com.rfm.sdk.RFMConstants;
-import com.rfm.util.RFMLog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+
 public class RubiconBannerAdView implements MediatedBannerAdView {
 
     private RFMAdView adView;
+    public static final String AD_ID = "adId";
+    public static final String SERVER_NAME = "serverName";
+    public static final String PUB_ID = "pubId";
 
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid,
@@ -46,19 +52,21 @@ public class RubiconBannerAdView implements MediatedBannerAdView {
         String serverName = null;
         String pubId = null;
         try {
-            if(uid != null){
+            if (!StringUtil.isEmpty(uid)) {
                 JSONObject idObject = new JSONObject(uid);
-                adId = idObject.getString(RubiconSettings.AD_ID);
-                serverName = idObject.getString(RubiconSettings.SERVER_NAME);
-                pubId = idObject.getString(RubiconSettings.PUB_ID);
-            }else{
+                adId = idObject.getString(AD_ID);
+                serverName = idObject.getString(SERVER_NAME);
+                pubId = idObject.getString(PUB_ID);
+            } else {
                 mBC.onAdFailed(ResultCode.INVALID_REQUEST);
+                return null;
             }
         } catch (JSONException e) {
             mBC.onAdFailed(ResultCode.INVALID_REQUEST);
+            return null;
         }
 
-        RFMAdViewListener  adViewListener = new RubiconListener(mBC, this.getClass().getSimpleName());
+        RFMAdViewListener adViewListener = new RubiconListener(mBC, this.getClass().getSimpleName());
 
         RFMAdRequest rfmAdRequest = new RFMAdRequest();
         rfmAdRequest.setRFMParams(serverName, pubId, adId);
@@ -68,19 +76,13 @@ public class RubiconBannerAdView implements MediatedBannerAdView {
         adView.setRFMAdViewListener(adViewListener);
         adView.enableHWAcceleration(true);
 
-        /**
-         * TODO: These 3 lines need to be removed
-         */
-        RFMLog.setRFMLogLevel(RFMLog.INFO);
-        rfmAdRequest.setRFMAdMode(RFMConstants.RFM_AD_MODE_TEST);
-        rfmAdRequest.setRFMTestAdId(adId);
 
         if (targetingParameters != null) {
             if (targetingParameters.getLocation() != null) {
                 rfmAdRequest.setLocation(targetingParameters.getLocation());
             }
             //Optional Ad Targeting info
-            rfmAdRequest.setTargetingParams(RubiconSettings.getTargetingParams(targetingParameters));
+            rfmAdRequest.setTargetingParams(getTargetingParams(targetingParameters));
         }
 
         adView.setMinimumWidth(width);
@@ -89,6 +91,23 @@ public class RubiconBannerAdView implements MediatedBannerAdView {
 
         adView.requestRFMAd(rfmAdRequest);
         return adView;
+    }
+
+    @NonNull
+    private HashMap<String, String> getTargetingParams(TargetingParameters targetingParameters) {
+        HashMap<String,String> targetingKeywords = new HashMap<String, String>();
+
+        targetingKeywords.put("GENDER", targetingParameters.getGender().toString());
+        if(targetingParameters.getAge() != null) {
+            targetingKeywords.put("AGE", targetingParameters.getAge());
+        }
+
+        if(targetingParameters.getCustomKeywords() != null) {
+            for (Pair<String, String> keyword : targetingParameters.getCustomKeywords()) {
+                targetingKeywords.put(keyword.first, keyword.second);
+            }
+        }
+        return targetingKeywords;
     }
 
 
