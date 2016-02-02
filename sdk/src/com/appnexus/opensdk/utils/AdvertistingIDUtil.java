@@ -56,7 +56,7 @@ public class AdvertistingIDUtil {
             Clog.e(Clog.baseLogTag, "Concurrent Thread Exception while fetching the AAID: "
                     + rejectedExecutionException.getMessage());
         } catch (Exception exception) {
-            Clog.e(Clog.baseLogTag, "Exception while while fetching the AAID: " + exception.getMessage());
+            Clog.e(Clog.baseLogTag, "Exception while fetching the AAID: " + exception.getMessage());
         }
 
     }
