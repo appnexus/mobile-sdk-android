@@ -1,4 +1,4 @@
-include ':sdk', ':Rubicon'
+include ':sdk',
 project(':sdk').projectDir = new File(settingsDir, '../../sdk')
 
 include ':AdColony'
@@ -13,3 +13,4 @@ include ':MoPub'
 include ':Vdopia'
 include ':Vungle'
 include ':Yahoo'
+include ':Rubicon'

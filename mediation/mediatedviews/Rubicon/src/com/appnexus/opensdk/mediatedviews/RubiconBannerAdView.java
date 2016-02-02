@@ -17,7 +17,6 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
-import android.support.annotation.NonNull;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
@@ -93,7 +92,6 @@ public class RubiconBannerAdView implements MediatedBannerAdView {
         return adView;
     }
 
-    @NonNull
     private HashMap<String, String> getTargetingParams(TargetingParameters targetingParameters) {
         HashMap<String,String> targetingKeywords = new HashMap<String, String>();
 
