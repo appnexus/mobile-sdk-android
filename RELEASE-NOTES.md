@@ -1,3 +1,6 @@
+## RC2.9
++ MS-1813 AdMarvel Integration - Banner Interstitial
+
 ## RC2.8
 + MS-1702 Support for requesting ads with inventory code and member id
 + MS-1745 Update unit tests for inventory code and member id
