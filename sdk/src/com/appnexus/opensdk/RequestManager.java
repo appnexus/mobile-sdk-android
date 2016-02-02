@@ -23,8 +23,9 @@ import com.appnexus.opensdk.utils.Clog;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.concurrent.RejectedExecutionException;
 
-abstract class RequestManager implements AdRequester{
+abstract class RequestManager implements AdRequester {
     private LinkedList<MediatedAd> mediatedAds;
     protected AdRequest adRequest;
     private long totalLatencyStart = -1;
@@ -36,10 +37,17 @@ abstract class RequestManager implements AdRequester{
     public void execute() {
         adRequest = new AdRequest(this);
         markLatencyStart();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            adRequest.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else {
-            adRequest.execute();
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                adRequest.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                adRequest.execute();
+            }
+        } catch (RejectedExecutionException rejectedExecutionException) {
+            Clog.e(Clog.baseLogTag, "Concurrent Thread Exception while firing new ad request: "
+                    + rejectedExecutionException.getMessage());
+        } catch (Exception exception) {
+            Clog.e(Clog.baseLogTag, "Exception while firing new ad request: " + exception.getMessage());
         }
     }
 

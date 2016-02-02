@@ -32,6 +32,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.concurrent.RejectedExecutionException;
 
 /**
  * <p>
@@ -344,10 +345,17 @@ public abstract class MediatedAdViewController {
                 getLatencyParam(), getTotalLatencyParam(requester));
 
         // Spawn GET call
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            cb.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else {
-            cb.execute();
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                cb.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                cb.execute();
+            }
+        }catch (RejectedExecutionException rejectedExecutionException){
+            Clog.e(Clog.baseLogTag, "Concurrent Thread Exception while firing ResultCB: "
+                    + rejectedExecutionException.getMessage());
+        } catch (Exception exception){
+            Clog.e(Clog.baseLogTag, "Exception while firing ResultCB: "+ exception.getMessage());
         }
 
         if (ignoreResult && result != ResultCode.SUCCESS) {
@@ -355,7 +363,6 @@ public abstract class MediatedAdViewController {
                 requester.onReceiveServerResponse(null);
             }
         }
-
     }
 
     private class ResultCBRequest extends HTTPGet {
