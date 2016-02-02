@@ -45,19 +45,18 @@ public class AdvertistingIDUtil {
         if (!StringUtil.isEmpty(SDKSettings.getAAID())) {
             return;
         }
-
+        AAIDTask getAAIDTask = new AAIDTask(context);
         try {
-            AAIDTask getAAIDTask = new AAIDTask(context);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 getAAIDTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
                 getAAIDTask.execute();
             }
         } catch (RejectedExecutionException rejectedExecutionException) {
-            Clog.e(Clog.baseLogTag, "Concurrent Thread Exception while firing ResultCB: "
+            Clog.e(Clog.baseLogTag, "Concurrent Thread Exception while fetching the AAID: "
                     + rejectedExecutionException.getMessage());
         } catch (Exception exception) {
-            Clog.e(Clog.baseLogTag, "Exception while firing ResultCB: " + exception.getMessage());
+            Clog.e(Clog.baseLogTag, "Exception while while fetching the AAID: " + exception.getMessage());
         }
 
     }
