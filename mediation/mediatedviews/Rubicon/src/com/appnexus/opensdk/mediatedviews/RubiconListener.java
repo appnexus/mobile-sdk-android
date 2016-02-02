@@ -106,7 +106,7 @@ public class RubiconListener implements RFMAdViewListener, RFMInterstitialAdView
 
 
     void printToClog(String s) {
-        Clog.i(Clog.mediationLogTag, className + " - " + s);
+        Clog.d(Clog.mediationLogTag, className + " - " + s);
     }
 
     void printToClogError(String s) {
