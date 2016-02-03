@@ -49,8 +49,8 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.facebook</groupId>
-			<artifactId>ads</artifactId>
+			<groupId>com.facebook.android</groupId>
+			<artifactId>facebook-android-sdk</artifactId>
 			<version>4.9.0</version>
 			<scope>compile</scope>
 		</dependency>
