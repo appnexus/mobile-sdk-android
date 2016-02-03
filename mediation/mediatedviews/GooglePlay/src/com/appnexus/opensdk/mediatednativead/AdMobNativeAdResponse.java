@@ -36,8 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class AdMobNativeAdResponse implements NativeAdResponse {
-
-
     private String title;
     private String description;
     private String imageUrl;
@@ -248,7 +246,7 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
 
     @Override
     public boolean registerView(View view, NativeAdEventListener listener) {
-        if (view != null && !registered) {
+        if (view != null && !registered && !expired) {
             try {
                 switch (type) {
                     case APP_INSTALL:
@@ -258,10 +256,13 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
                         adView = (NativeContentAdView) view;
                         break;
                 }
+
                 adView.setNativeAd(nativeAd);
                 // no way to pass on click action to listener
                 this.listener = listener;
                 registered = true;
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.removeCallbacks(runnable);
                 return true;
             } catch (ClassCastException e) {
                 Clog.w(Clog.mediationLogTag, "The view registered for AdMob native response has to be a subclass of com.google.android.gms.ads.formats.NativeAdView");
@@ -277,6 +278,9 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
 
     @Override
     public void unregisterViews() {
+        if (expired) {
+            Clog.d(Clog.mediationLogTag, "This NativeAdResponse has expired.");
+        }
         if (adView != null) {
             adView.setNativeAd(null);
             adView = null;
