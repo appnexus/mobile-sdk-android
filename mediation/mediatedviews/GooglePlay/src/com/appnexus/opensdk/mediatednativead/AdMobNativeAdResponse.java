@@ -247,16 +247,23 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
     @Override
     public boolean registerView(View view, NativeAdEventListener listener) {
         if (view != null && !registered && !expired) {
-            try {
-                switch (type) {
-                    case APP_INSTALL:
+            switch (type) {
+                case APP_INSTALL:
+                    try {
                         adView = (NativeAppInstallAdView) view;
-                        break;
-                    case CONTENT_AD:
+                    } catch (ClassCastException e) {
+                        Clog.w(Clog.mediationLogTag, "The view registered for AdMob AppInstallNativeAd has to be a subclass of com.google.android.gms.ads.formats.NativeAppInstallAdView");
+                    }
+                    break;
+                case CONTENT_AD:
+                    try {
                         adView = (NativeContentAdView) view;
-                        break;
-                }
-
+                    } catch (ClassCastException e) {
+                        Clog.w(Clog.mediationLogTag, "The view registered for AdMob ContentAd has to be a subclass of com.google.android.gms.ads.formats.NativeContentAdView");
+                    }
+                    break;
+            }
+            if (adView != null) {
                 adView.setNativeAd(nativeAd);
                 // no way to pass on click action to listener
                 this.listener = listener;
@@ -264,11 +271,9 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
                 Handler handler = new Handler(Looper.getMainLooper());
                 handler.removeCallbacks(runnable);
                 return true;
-            } catch (ClassCastException e) {
-                Clog.w(Clog.mediationLogTag, "The view registered for AdMob native response has to be a subclass of com.google.android.gms.ads.formats.NativeAdView");
             }
         }
-        return true;
+        return false;
     }
 
     @Override

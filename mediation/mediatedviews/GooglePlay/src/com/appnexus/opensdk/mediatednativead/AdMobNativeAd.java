@@ -19,8 +19,10 @@ import android.content.Context;
 
 import com.appnexus.opensdk.MediatedNativeAd;
 import com.appnexus.opensdk.MediatedNativeAdController;
+import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.mediatedviews.GooglePlayServicesBanner;
+import com.appnexus.opensdk.utils.Clog;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.formats.NativeAdOptions;
 
@@ -41,15 +43,24 @@ public class AdMobNativeAd implements MediatedNativeAd {
      */
     @Override
     public void requestNativeAd(Context context, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
-        AdMobNativeListener adMobNativeListener = new AdMobNativeListener(mBC);
-        AdLoader.Builder builder = new AdLoader.Builder(context, uid).withAdListener(adMobNativeListener)
-                .withNativeAdOptions(new NativeAdOptions.Builder().setReturnUrlsForImageAssets(true).build());
-        if (AdMobNativeSettings.enableAppInstallAd) {
-            builder.forAppInstallAd(adMobNativeListener);
+        if (mBC != null) {
+            if (AdMobNativeSettings.enableAppInstallAd || AdMobNativeSettings.enableContentAd) {
+                AdMobNativeListener adMobNativeListener = new AdMobNativeListener(mBC);
+                AdLoader.Builder builder = new AdLoader.Builder(context, uid).withAdListener(adMobNativeListener)
+                        .withNativeAdOptions(new NativeAdOptions.Builder().setReturnUrlsForImageAssets(true).build());
+                if (AdMobNativeSettings.enableAppInstallAd) {
+                    builder.forAppInstallAd(adMobNativeListener);
+                }
+                if (AdMobNativeSettings.enableContentAd) {
+                    builder.forContentAd(adMobNativeListener);
+                }
+                builder.build().loadAd(GooglePlayServicesBanner.buildRequest(tp));
+            } else {
+                Clog.w(Clog.mediationLogTag, "Unable to get AdMob Native ad since both AdMobNativeSettings.setEnableContentAd() and AdMobNativeSettings.setEnableAppInstallAd() were not called.");
+                mBC.onAdFailed(ResultCode.MEDIATED_SDK_UNAVAILABLE);
+            }
         }
-        if (AdMobNativeSettings.enableContentAd) {
-            builder.forContentAd(adMobNativeListener);
-        }
-        builder.build().loadAd(GooglePlayServicesBanner.buildRequest(tp));
+
+
     }
 }
