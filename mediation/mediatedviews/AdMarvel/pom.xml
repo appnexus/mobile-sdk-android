@@ -58,7 +58,12 @@
             <scope>compile</scope>
             <type>aar</type>
         </dependency>
-        <!-- TODO add dependency of the AdMarvel lib on maven-->
+        <dependency>
+            <groupId>com.admarvel</groupId>
+            <artifactId>ads</artifactId>
+            <version>admarvel-adcolony-bundle</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <build>
         <sourceDirectory>src</sourceDirectory>
