@@ -8,7 +8,7 @@ android {
         minSdkVersion 9
         targetSdkVersion 19
         versionCode 1
-        versionName "4.5.1"
+        versionName "4.9.0"
         consumerProguardFiles 'proguard-project.txt'
     }
 
@@ -27,7 +27,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
+    compile 'com.facebook.android:audience-network-sdk:4.9.0'
     compile project(':sdk')
 }
 
