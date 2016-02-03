@@ -28,10 +28,10 @@ import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.utils.Clog;
+import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.mediation.admob.AdMobExtras;
 
 /**
  * This class is the Google Play Services banner adaptor it provides the functionality needed to allow
@@ -120,34 +120,37 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
         destroy();
     }
 
-    private AdRequest buildRequest(TargetingParameters targetingParameters) {
+    public static AdRequest buildRequest(TargetingParameters targetingParameters) {
         AdRequest.Builder builder = new AdRequest.Builder();
 
-        switch (targetingParameters.getGender()) {
-            case UNKNOWN:
-                builder.setGender(AdRequest.GENDER_UNKNOWN);
-                break;
-            case FEMALE:
-                builder.setGender(AdRequest.GENDER_FEMALE);
-                break;
-            case MALE:
-                builder.setGender(AdRequest.GENDER_MALE);
-                break;
+        if (targetingParameters != null) {
+            switch (targetingParameters.getGender()) {
+                case UNKNOWN:
+                    builder.setGender(AdRequest.GENDER_UNKNOWN);
+                    break;
+                case FEMALE:
+                    builder.setGender(AdRequest.GENDER_FEMALE);
+                    break;
+                case MALE:
+                    builder.setGender(AdRequest.GENDER_MALE);
+                    break;
+            }
+            if (targetingParameters.getLocation() != null) {
+                builder.setLocation(targetingParameters.getLocation());
+            }
+            Bundle bundle = new Bundle();
+
+            if (targetingParameters.getAge() != null) {
+                bundle.putString("Age", targetingParameters.getAge());
+            }
+
+            for (Pair<String, String> p : targetingParameters.getCustomKeywords()) {
+                bundle.putString(p.first, p.second);
+            }
+
+            builder.addNetworkExtrasBundle(AdMobAdapter.class, bundle);
         }
 
-        Bundle bundle = new Bundle();
-
-        if (targetingParameters.getAge() != null) {
-            bundle.putString("Age", targetingParameters.getAge());
-        }
-        if (targetingParameters.getLocation() != null) {
-            builder.setLocation(targetingParameters.getLocation());
-        }
-        for (Pair<String, String> p : targetingParameters.getCustomKeywords()) {
-            bundle.putString(p.first, p.second);
-        }
-
-        builder.addNetworkExtras(new AdMobExtras(bundle));
 
         return builder.build();
     }

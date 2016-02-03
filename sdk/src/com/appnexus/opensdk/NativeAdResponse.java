@@ -30,6 +30,7 @@ public interface NativeAdResponse {
         INMOBI,
         ADCOLONY,
         YAHOO,
+        ADMOB,
         CUSTOM
     }
     /**
