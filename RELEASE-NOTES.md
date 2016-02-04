@@ -8,6 +8,7 @@
     Facebook 4.9.0 - banner, interstitial, native
     InMobi 5.2.0 - banner, interstitial, native
     MoPub 4.3.0 - banner, interstitial (Removed the native mediation temporarily due to incompatibility issues)
+    GooglePlay 8.4.0 - banner, interstitial, native
 
 
 ## RC2.8
