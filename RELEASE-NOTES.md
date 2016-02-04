@@ -3,7 +3,7 @@
 + MS-2030 AdMob Integration - Native ads
 + MS-1819 Rubicon Integration - Banner ads
 + MS-2046 Handle RejectedExecutionException to fix a one-off crash
-+ MS-2047 Handle PackageManager Exception when webview updates while using the app
++ MS-2047 Handle PackageManagerException when System Webview gets updated while using the app
 + Updated Mediated SDKs
     Facebook 4.9.0 - banner, interstitial, native
     InMobi 5.2.0 - banner, interstitial, native
