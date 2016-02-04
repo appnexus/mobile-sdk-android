@@ -5,9 +5,9 @@
 + MS-2046 Handle RejectedExecutionException to fix a one-off crash
 + MS-2047 Handle PackageManager Exception when webview updates while using the app
 + Updated Mediated SDKs
-    Facebook 4.9.0 banner, interstitial, native
-    InMobi 5.2.0 banner, interstitial, native
-    MoPub 4.3.0, banner, interstitial (Removed the native mediation due to incompatibility issues)
+    Facebook 4.9.0 - banner, interstitial, native
+    InMobi 5.2.0 - banner, interstitial, native
+    MoPub 4.3.0 - banner, interstitial (Removed the native mediation temporarily due to incompatibility issues)
 
 
 ## RC2.8
