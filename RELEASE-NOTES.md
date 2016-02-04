@@ -1,5 +1,15 @@
 ## RC2.9
-+ MS-1813 AdMarvel Integration - Banner Interstitial
++ MS-1813 AdMarvel Integration - Banner and Interstitial ads
++ MS-2030 AdMob Integration - Native ads
++ MS-1819 Rubicon Integration - Banner ads
++ MS-2046 Handle RejectedExecutionException to fix a one-off crash
++ MS-2047 Handle PackageManagerException when System Webview gets updated while using the app
++ Updated Mediated SDKs
+    Facebook 4.9.0 - banner, interstitial, native
+    InMobi 5.2.0 - banner, interstitial, native
+    MoPub 4.3.0 - banner, interstitial (Removed the native mediation temporarily due to incompatibility issues)
+    GooglePlay 8.4.0 - banner, interstitial, native
+
 
 ## RC2.8
 + MS-1702 Support for requesting ads with inventory code and member id
@@ -35,7 +45,7 @@
     Yahoo Flurry 6.1.0 banner, interstitial, native
 
 ## RC2.6
-+ MS-1627 Bug fix for conccurency modification in RequestParams
++ MS-1627 Bug fix for concurrency modification in RequestParams
 + MS-1629 Bug fix for using comma as decimal points when user sets certain languages
 + MS-1619 Bug fix for DFP banner impression logging
 + MS-1592 Bug fix for InterstitialAdView not passing back onAdCollapsed
