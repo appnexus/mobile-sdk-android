@@ -94,6 +94,7 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
 
     private void loadAssets() {
         nativeElements.put(AdMobNativeSettings.NATIVE_ELEMENT_TYPE_KEY, type);
+        nativeElements.put(AdMobNativeSettings.NATIVE_ELEMENT_OBJECT, nativeAd);
         switch (type) {
             case APP_INSTALL:
                 NativeAppInstallAd appInstallAd = (NativeAppInstallAd) nativeAd;
