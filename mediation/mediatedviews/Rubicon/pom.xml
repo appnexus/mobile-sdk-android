@@ -3,8 +3,8 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <!-- SonaType Requirements -->
-    <name>AppNexus Android SDK: MoPub Mediation Adapter</name>
-    <description>AppNexus's Android Advertising Libraries: Mediation adapter for MoPub</description>
+    <name>AppNexus Android SDK: Rubicon Mediation Adapter</name>
+    <description>AppNexus's Android Advertising Libraries: Mediation adapter for Rubicon</description>
     <url>https://wiki.appnexus.com/display/sdk/Mobile+SDKs?src=search#MobileSDKs-Android</url>
     <scm>
         <connection>scm:git:git@github.com:appnexus/mobile-sdk-android.git</connection>
@@ -29,7 +29,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.appnexus.opensdk.mediatedviews</groupId>
-    <artifactId>appnexus-mopub-mediation</artifactId>
+    <artifactId>appnexus-rubicon-mediation</artifactId>
     <version>2.9-4.0.0</version>
     <packaging>aar</packaging>
 
@@ -59,7 +59,7 @@
             <type>aar</type>
         </dependency>
         <dependency>
-            <groupId>com.rfm</groupId>
+            <groupId>com.rmf</groupId>
             <artifactId>rubicon-sdk</artifactId>
             <version>4.0.0</version>
             <scope>compile</scope>
