@@ -48,7 +48,7 @@
         <dependency>
             <groupId>android</groupId>
             <artifactId>android</artifactId>
-            <version>5.1.1_r2</version>
+            <version>5.1_r1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -77,6 +77,12 @@
             <type>aar</type>
         </dependency>
         <dependency>
+            <groupId>com.google.android.exoplayer</groupId>
+            <artifactId>exoplayer</artifactId>
+            <version>r1.4.2</version>
+            <type>aar</type>
+        </dependency>
+        <dependency>
             <groupId>com.mopub</groupId>
             <artifactId>mopub-sdk</artifactId>
             <version>4.3.0</version>
@@ -90,6 +96,10 @@
                 <exclusion>
                     <groupId>com.android.support</groupId>
                     <artifactId>recyclerview-v7</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.android.exoplayer</groupId>
+                    <artifactId>exoplayer</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
