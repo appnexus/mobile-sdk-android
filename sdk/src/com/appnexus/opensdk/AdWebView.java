@@ -157,34 +157,36 @@ class AdWebView extends WebView implements Displayable {
 
     // The webview about to load the ad, and the html ad content
     private String preLoadContent(String html) {
-        // Check to ensure <html> tags are present
-        if (!html.contains("<html>")) {
-            StringBuilder bodyBuilder = new StringBuilder();
-            html = bodyBuilder.append("<html><head></head><body style='padding:0;margin:0;'>").append(html).append("</body></html>").toString();
-        } else if (!html.contains("<head>")) {
-            // The <html> tags are present, but there is no <head> section to
-            // inject the mraid js
-            html = html.replace("<html>", "<html><head></head>");
+        if (!StringUtil.isEmpty(html)) {
+            // trim leading and trailing spaces
+            html.trim();
+            // check to see if content is wrapped with <html> tag
+            if (!html.startsWith("<html>")) {
+                StringBuilder bodyBuilder = new StringBuilder();
+                html = bodyBuilder.append("<html><body style='padding:0;margin:0;'>").append(html).append("</body></html>").toString();
+            }
         }
         return html;
     }
 
     private String prependRawResources(String html) {
-        Resources res = getResources();
-        StringBuilder htmlSB = new StringBuilder("<head><script>");
+        if (!StringUtil.isEmpty(html)) {
+            Resources res = getResources();
+            StringBuilder htmlSB = new StringBuilder("<html><head><script>");
 
-        // retrieve source from raw resources
-        // insert sdkjs, anjam, mraid into html content, in that order
-        if (res == null
-                || !StringUtil.appendRes(htmlSB, res, R.raw.sdkjs)
-                || !StringUtil.appendRes(htmlSB, res, R.raw.anjam)
-                || !StringUtil.appendRes(htmlSB, res, R.raw.mraid)) {
-            Clog.e(Clog.baseLogTag, "Error reading SDK's raw resources.");
-            return html;
+            // retrieve source from raw resources
+            // insert sdkjs, anjam, mraid into html content, in that order
+            if (res == null
+                    || !StringUtil.appendRes(htmlSB, res, R.raw.sdkjs)
+                    || !StringUtil.appendRes(htmlSB, res, R.raw.anjam)
+                    || !StringUtil.appendRes(htmlSB, res, R.raw.mraid)) {
+                Clog.e(Clog.baseLogTag, "Error reading SDK's raw resources.");
+                return html;
+            }
+            htmlSB.append("</script></head>");
+            html = html.replaceFirst("<html>", htmlSB.toString());
         }
-        htmlSB.append("</script>");
-
-        return html.replace("<head>", htmlSB.toString());
+        return html;
     }
 
     private void parseAdResponseExtras(HashMap extras) {
