@@ -19,37 +19,50 @@ package com.appnexus.opensdk;
 import android.content.Context;
 
 /**
+ * <p>
  * This is the interface a mediation adaptor must implement for
  * requesting native ads.  The mediation interface allows third-party
- * SDKs to be called by the AppNexus SDK.  To integrate a third-party
- * SDK, create a class that implements
- * <code>MediatedNativeAd</code>.  Implement the required method
- * and configure it within the AppNexus Ad Network Manager to be
- * called whenever the targeting matches the conditions defined in the
- * Ad Network Manager. (The Ad Network Manager is a web application
- * that AppNexus platform members can use to work with ad networks
- * that are not on the platform.)
+ * SDKs to be called by the AppNexus SDK.
+ * </p>
+ * <p>
+ * To integrate a third-party SDK, create a class that implements
+ * <code>MediatedNativeAd</code>.  Implement the required method and
+ * configure it using the AppNexus Console for Publishers to be called
+ * whenever the targeting matches the conditions defined in the
+ * Console for Publishers.
+ * </p>
+ * <p>
+ * (Console for Publishers is a web application that AppNexus platform
+ * members can use to sell inventory across different demand sources,
+ * including ad networks that are not on the platform.)
+ * </p>
+ * @see <a href="https://wiki.appnexus.com/x/hpYFB">Console for Publishers</a>
+ * @see <a href="https://wiki.appnexus.com/x/h5oFB">SDK Mediation</a>.
  */
 public interface MediatedNativeAd {
 
     /**
-     * The AppNexus SDK will call this method to ask the
-     * third-party SDK to request an ad from its network.  The
-     * AppNexus SDK expects to be notified of events through the
-     * {@link MediatedNativeAdController}.  Note that once a
-     * requestAd call has been made, the AppNexus SDK expects
-     * onAdLoaded or onAdFailed to be called through the {@link
-     * MediatedNativeAdController} within 15 seconds or the
-     * mediation call is considered to have failed.
+     * <p>
+     * The AppNexus SDK will call this method to ask the third-party
+     * SDK to request an ad from its network.  The AppNexus SDK
+     * expects to be notified of events through the {@link
+     * MediatedNativeAdController}.
+     * </p>
+     * <p>
+     * Note that once a <code>requestNativeAd</code> call has been
+     * made, the AppNexus SDK expects <code>onAdLoaded</code> or
+     * <code>onAdFailed</code> to be called through the {@link
+     * MediatedNativeAdController} within 15 seconds or the mediation
+     * call is considered to have failed.
+     * </p>
      *
-     * @param mBC     The controller to notify on load, failure, etc.
-     * @param context The activity from which this method was
-     *                called.
-     * @param tp      Targeting parameters passed from SDK to adapter.wqw
+     * @param context The activity from which this method was called.
      * @param uid     The network ID for this ad call.  This ID is
      *                opaque to the AppNexus SDK and its contents and
      *                their encoding are up to the implementation of
      *                the third-party SDK.
+     * @param mBC     The controller to notify on load, failure, etc.
+     * @param tp      Targeting parameters passed from SDK to adapter.
      */
 
     public void requestNativeAd(Context context, String uid, MediatedNativeAdController mBC, TargetingParameters tp);
