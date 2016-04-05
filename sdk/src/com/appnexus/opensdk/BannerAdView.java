@@ -239,10 +239,10 @@ public class BannerAdView extends AdView {
             float density = getContext().getResources().getDisplayMetrics().density;
             int measuredWidth = (int) ((right - left) / density + 0.5f);
             int measuredHeight = (int) ((bottom - top) / density + 0.5f);
-            if ((measuredHeight < requestParameters.getAdHeight() || measuredWidth < requestParameters.getAdHeight())
-                    && measuredHeight > 0 && measuredWidth > 0) {
+            if ((measuredWidth < requestParameters.getAdWidth() || measuredHeight < requestParameters.getAdHeight())
+                    && measuredWidth > 0 && measuredHeight > 0) {
                 Clog.e(Clog.baseLogTag, Clog.getString(R.string.adsize_too_big,
-                        measuredWidth, measuredHeight, requestParameters.getAdHeight(), requestParameters.getAdHeight()));
+                        measuredWidth, measuredHeight, requestParameters.getAdWidth(), requestParameters.getAdHeight()));
                 // Hide the space, since no ad will be loaded due to error
                 hide();
                 // Stop any request in progress
