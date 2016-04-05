@@ -6,7 +6,7 @@ android {
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
         versionCode 29
-        versionName "2.9"
+        versionName "2.9.1"
         consumerProguardFiles 'proguard-project.txt'
         minSdkVersion 9
         targetSdkVersion 23

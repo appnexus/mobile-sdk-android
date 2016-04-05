@@ -1,5 +1,6 @@
-## RC2.10
+## RC2.9.1
 + MS-2101 Bug fix in AdWebView
++ MS-2016 Fixed the AdSize issue in onLayout method of BannerAdview
 
 ## RC2.9
 + MS-1813 AdMarvel Integration - Banner and Interstitial ads
