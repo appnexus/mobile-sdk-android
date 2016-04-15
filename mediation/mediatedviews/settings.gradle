@@ -3,6 +3,7 @@ project(':sdk').projectDir = new File(settingsDir, '../../sdk')
 
 include ':AdColony'
 include ':AdMob'
+include ':AdMarvel'
 include ':Amazon'
 include ':Chartboost'
 include ':Facebook'

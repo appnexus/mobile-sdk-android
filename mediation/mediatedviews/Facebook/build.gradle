@@ -31,3 +31,6 @@ dependencies {
     compile project(':sdk')
 }
 
+repositories {
+    jcenter()
+}
