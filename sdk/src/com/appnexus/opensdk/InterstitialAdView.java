@@ -299,7 +299,7 @@ public class InterstitialAdView extends AdView {
         ArrayList<InterstitialAdQueueEntry> staleAdsList = new ArrayList<InterstitialAdQueueEntry>();
         for (InterstitialAdQueueEntry iAQE : adQueue) {
             if (iAQE == null
-                    || (((now - iAQE.getTime()) > InterstitialAdView.MAX_AGE) || now - iAQE.getTime() < 0)) {
+                    || (((now - iAQE.getTime()) > InterstitialAdView.MAX_AGE) || now - iAQE.getTime() < 0) || (iAQE.isMediated() && iAQE.getMediatedAdViewController().destroyed)) {
                 staleAdsList.add(iAQE);
             } else {
                 // We've reached a valid ad, so we can stop looking
