@@ -141,7 +141,11 @@ class AdViewRequestManager extends RequestManager {
                 if (bav.getExpandsToFitScreenWidth()) {
                     bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), output);
                 }
+                if (bav.getResizeAdToFitContainer()) {
+                    bav.resizeWebViewToFitContainer(response.getWidth(), response.getHeight(), output);
+                }
             }
+
             onReceiveAd(new AdResponse() {
                 @Override
                 public MediaType getMediaType() {

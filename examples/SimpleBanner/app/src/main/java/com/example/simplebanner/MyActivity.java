@@ -16,13 +16,18 @@
 
 package com.example.simplebanner;
 
-import android.os.Bundle;
 import android.app.Activity;
-import android.widget.FrameLayout;
-import android.location.LocationManager;
 import android.location.Location;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.os.Handler;
-import com.appnexus.opensdk.*;
+import android.widget.RelativeLayout;
+
+import com.appnexus.opensdk.AdListener;
+import com.appnexus.opensdk.AdView;
+import com.appnexus.opensdk.BannerAdView;
+import com.appnexus.opensdk.ResultCode;
+import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.utils.Clog;
 
 public class MyActivity extends Activity {
@@ -34,79 +39,86 @@ public class MyActivity extends Activity {
 
         final BannerAdView bav = new BannerAdView(this);
 
-	// This is your AppNexus placement ID.
+        // This is your AppNexus placement ID.
         bav.setPlacementID("1326299");
-	
-	// Turning this on so we always get an ad during testing.
+
+        // Turning this on so we always get an ad during testing.
         bav.setShouldServePSAs(true);
 
-	// By default ad clicks open in an in-app WebView.
+        // By default ad clicks open in an in-app WebView.
         bav.setOpensNativeBrowser(true);
 
-	// Get a 300x50 ad.
-        bav.setAdSize(300, 50);
+        // Get a 300x50 ad.
+        bav.setAdSize(300, 250);
 
-	// Set up a listener on this ad view that logs events.
-	AdListener adListener = new AdListener() {
-		@Override
-		public void onAdRequestFailed(AdView bav, ResultCode errorCode) {
-		    if (errorCode == null) {
-			Clog.v("SIMPLEBANNER", "Call to loadAd failed");
-		    } else {
-			Clog.v("SIMPLEBANNER", "Ad request failed: " + errorCode);
-		    }
-		}
+        // Resizes the container size to fit the banner ad
+        bav.setResizeAdToFitContainer(true);
 
-		@Override
-		public void onAdLoaded(AdView bav) {
-		    Clog.v("SIMPLEBANNER", "The Ad Loaded!");
-		}
+        // Set up a listener on this ad view that logs events.
+        AdListener adListener = new AdListener() {
+            @Override
+            public void onAdRequestFailed(AdView bav, ResultCode errorCode) {
+                if (errorCode == null) {
+                    Clog.v("SIMPLEBANNER", "Call to loadAd failed");
+                } else {
+                    Clog.v("SIMPLEBANNER", "Ad request failed: " + errorCode);
+                }
+            }
 
-		@Override
-		public void onAdExpanded(AdView bav) {
-		    Clog.v("SIMPLEBANNER", "Ad expanded");
-		}
+            @Override
+            public void onAdLoaded(AdView bav) {
+                Clog.v("SIMPLEBANNER", "The Ad Loaded!");
+            }
 
-		@Override
-		public void onAdCollapsed(AdView bav) {
-		    Clog.v("SIMPLEBANNER", "Ad collapsed");
-		}
+            @Override
+            public void onAdExpanded(AdView bav) {
+                Clog.v("SIMPLEBANNER", "Ad expanded");
+            }
 
-		@Override
-		public void onAdClicked(AdView bav) {
-		    Clog.v("SIMPLEBANNER", "Ad clicked; opening browser");
-		}
-	    };
+            @Override
+            public void onAdCollapsed(AdView bav) {
+                Clog.v("SIMPLEBANNER", "Ad collapsed");
+            }
 
-	bav.setAdListener(adListener);
+            @Override
+            public void onAdClicked(AdView bav) {
+                Clog.v("SIMPLEBANNER", "Ad clicked; opening browser");
+            }
+        };
 
-	// Get the device's location and send it on the ad call so the
-	// impression is more attractive to advertisers.
-	LocationManager locationManager =
-	    (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+        bav.setAdListener(adListener);
 
-	Location location =
-	    locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        // Get the device's location and send it on the ad call so the
+        // impression is more attractive to advertisers.
+        LocationManager locationManager =
+                (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
 
-	SDKSettings.setLocation(location);
+        Location location =
+                locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
-        FrameLayout layout = (FrameLayout)findViewById(android.R.id.content);
+        SDKSettings.setLocation(location);
+
+        RelativeLayout layout = (RelativeLayout) findViewById(R.id.main_content);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+        bav.setLayoutParams(layoutParams);
         layout.addView(bav);
 
-	// If auto-refresh is enabled (the default), a call to
-	// `FrameLayout.addView()` followed directly by
-	// `BannerAdView.loadAd()` will succeed.  However, if
-	// auto-refresh is disabled, the call to
-	// `BannerAdView.loadAd()` needs to be wrapped in a `Handler`
-	// block to ensure that the banner ad view is in the view
-	// hierarchy *before* the call to `loadAd()`.  Otherwise the
-	// visibility check in `loadAd()` will fail, and no ad will be
-	// shown.
-	new Handler().postDelayed(new Runnable() {
-		@Override
-		public void run() {
-		    bav.loadAd();
-		}
-	    }, 0);
+        // If auto-refresh is enabled (the default), a call to
+        // `FrameLayout.addView()` followed directly by
+        // `BannerAdView.loadAd()` will succeed.  However, if
+        // auto-refresh is disabled, the call to
+        // `BannerAdView.loadAd()` needs to be wrapped in a `Handler`
+        // block to ensure that the banner ad view is in the view
+        // hierarchy *before* the call to `loadAd()`.  Otherwise the
+        // visibility check in `loadAd()` will fail, and no ad will be
+        // shown.
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                bav.loadAd();
+            }
+        }, 0);
     }
 }

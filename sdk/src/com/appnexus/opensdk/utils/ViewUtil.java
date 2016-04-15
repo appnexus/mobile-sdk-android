@@ -106,4 +106,9 @@ public class ViewUtil {
             pixels[i] = (int) ((pixels[i] * scale) + 0.5f);
         }
     }
+
+    public static int getValueInPixel(Context context, int valueInDP) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) ((valueInDP * scale) + 0.5f);
+    }
 }

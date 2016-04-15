@@ -142,7 +142,7 @@ class RequestParameters {
         }
     }
 
-    void setContainereWidth(int width) {
+    void setContainerWidth(int width) {
         this.measuredWidth = width;
     }
 
