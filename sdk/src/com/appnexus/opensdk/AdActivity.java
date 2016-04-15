@@ -53,6 +53,7 @@ public class AdActivity extends Activity {
         void backPressed();
         void destroy();
         void interacted();
+        void browserLaunched();
         WebView getWebView();
     }
 

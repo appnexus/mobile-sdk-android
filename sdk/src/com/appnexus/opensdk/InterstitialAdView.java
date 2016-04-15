@@ -46,6 +46,7 @@ public class InterstitialAdView extends AdView {
     static final long MAX_AGE = 270000; // 4.5 minutes
     private int backgroundColor = Color.BLACK;
     private int closeButtonDelay = Settings.DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY;
+    private boolean shouldDismissOnClick;
     static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
     private Queue<InterstitialAdQueueEntry> adQueue = new LinkedList<InterstitialAdQueueEntry>();
 
@@ -97,6 +98,14 @@ public class InterstitialAdView extends AdView {
      */
     public InterstitialAdView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+    }
+
+    public boolean shouldDismissOnClick() {
+        return shouldDismissOnClick;
+    }
+
+    public void setDismissOnClick(boolean shouldDismissOnClick) {
+        this.shouldDismissOnClick = shouldDismissOnClick;
     }
 
     @Override
@@ -268,6 +277,12 @@ public class InterstitialAdView extends AdView {
     void interacted() {
         if (adImplementation != null) {
             adImplementation.interacted();
+        }
+    }
+
+    void browserLaunched() {
+        if (adImplementation != null) {
+            adImplementation.browserLaunched();
         }
     }
 

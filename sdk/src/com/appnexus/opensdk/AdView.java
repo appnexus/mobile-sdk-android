@@ -1043,4 +1043,5 @@ public abstract class AdView extends FrameLayout implements Ad {
     abstract public void activityOnResume();
 
     abstract void interacted();
+
 }

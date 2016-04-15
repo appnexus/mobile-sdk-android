@@ -268,6 +268,11 @@ class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     }
 
     @Override
+    public void browserLaunched() {
+        // do nothing
+    }
+
+    @Override
     public WebView getWebView() {
         return webView;
     }

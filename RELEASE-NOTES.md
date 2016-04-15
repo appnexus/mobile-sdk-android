@@ -1,5 +1,6 @@
 ## RC2.10
 + Fix gradle build settings
++ MS-2136 Dismiss interstitial on click
 
 ## RC2.9.1
 + MS-2101 Bug fix in AdWebView

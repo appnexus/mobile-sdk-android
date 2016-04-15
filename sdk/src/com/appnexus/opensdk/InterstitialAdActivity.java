@@ -88,6 +88,13 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
     }
 
     @Override
+    public void browserLaunched() {
+        if(adView != null && adView.shouldDismissOnClick()){
+            dismissInterstitial();
+        }
+    }
+
+    @Override
     public WebView getWebView() {
         return webView;
     }
@@ -131,16 +138,20 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (adActivity != null) {
-                    if (adView != null && adView.getAdDispatcher() != null) {
-                        adView.getAdDispatcher().onAdCollapsed();
-                    }
-                    adActivity.finish();
-                }
+                dismissInterstitial();
             }
         });
 
         layout.addView(closeButton);
+    }
+
+    private void dismissInterstitial() {
+        if (adActivity != null) {
+            if (adView != null && adView.getAdDispatcher() != null) {
+                adView.getAdDispatcher().onAdCollapsed();
+            }
+            adActivity.finish();
+        }
     }
 
     static class CloseButtonHandler extends Handler {

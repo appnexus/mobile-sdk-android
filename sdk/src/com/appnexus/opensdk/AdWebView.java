@@ -403,6 +403,7 @@ class AdWebView extends WebView implements Displayable {
 
         try {
             adView.getContext().startActivity(intent);
+            triggerBrowserLaunchEvent();
         } catch (ActivityNotFoundException e) {
             Clog.w(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing, activity_clz.getName()));
             BrowserAdActivity.BROWSER_QUEUE.remove();
@@ -462,6 +463,7 @@ class AdWebView extends WebView implements Displayable {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(R.string.opening_native));
             openNativeIntent(url);
+            triggerBrowserLaunchEvent();
         }
 
     }
@@ -772,6 +774,7 @@ class AdWebView extends WebView implements Displayable {
                     if (isOpeningAppStore) {
                         isOpeningAppStore = false;
                         RedirectWebView.this.destroy();
+                        triggerBrowserLaunchEvent();
                         return;
                     }
 
@@ -779,6 +782,12 @@ class AdWebView extends WebView implements Displayable {
                     openInAppBrowser(RedirectWebView.this);
                 }
             });
+        }
+    }
+
+    private void triggerBrowserLaunchEvent() {
+        if (adView != null && adView instanceof InterstitialAdView) {
+            ((InterstitialAdView)adView).browserLaunched();
         }
     }
 }
