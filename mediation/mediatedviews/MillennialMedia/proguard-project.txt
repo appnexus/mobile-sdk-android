@@ -21,4 +21,4 @@
 
 -keep class com.millennialmedia.android.** { public *;}
 -keep class com.google.ads.mediation.millennial.** {public *;}
--dontwarn com.millennialmedia.android.NVASpeechKit*
+-dontwarn com.millennialmedia.**

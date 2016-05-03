@@ -1,2 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.appnexus.opensdk.mediatedviews.Vdopia"/>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.appnexus.opensdk.mediatedviews.Vdopia">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application>
+        <activity
+            android:name="com.vdopia.ads.lw.LVDOAdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
+        <activity
+            android:name="com.vdopia.ads.lw.mraid.LVDOBrowserActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
+    </application>
+</manifest>

@@ -20,9 +20,11 @@
 #}
 
 -keep public class com.jirbo.adcolony.** {public *;}
+-dontwarn com.immersion.**
+-dontnote com.immersion.**
 
 # uncomment for api 18+
-#-dontwarn android.webkit.**
+-dontwarn android.webkit.**
 
 
 

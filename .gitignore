@@ -13,3 +13,4 @@ bin/
 **/.DS_Store
 **/target/
 tests/gradle**
+**.properties

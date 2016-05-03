@@ -1,3 +1,6 @@
+// Project Properties
+version = "6.1.0" // supported Yahoo version
+
 apply plugin: 'com.android.library'
 
 android {
@@ -8,7 +11,7 @@ android {
         minSdkVersion 10
         targetSdkVersion 19
         versionCode 1
-        versionName "6.0.0"
+        versionName version
         consumerProguardFiles 'proguard-project.txt'
     }
 
@@ -29,5 +32,83 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
     compile project(':sdk')
+}
+
+/**
+ * Maven distribution
+ */
+// create a gradle.properties file and assign the following properties for the script to use your credentials
+//nexusUsername=
+//nexusPassword=
+//nexusRepositoryUrl=
+//nexusRepositoryUrlReleases= //optional
+//nexusRepositoryUrlSnapshots= // optional
+// To release the sdk to maven, please run
+// gradle clean assembleRelease publishYahooPublicationToMavenRepository
+// Can alternatively pass the parameters from command line using -PcustomProp=myProp
+
+apply plugin: 'maven-publish'
+
+ext {
+    pom_name = "AppNexus Android SDK: Yahoo Mediation Adapter"
+    pom_description = "AppNexus's Android Advertising Libraries: Mediation adapter for Yahoo"
+    pom_url = "https://wiki.appnexus.com/display/sdk/Mobile+SDKs?src=search#MobileSDKs-Android"
+
+    pom_groupId = "com.appnexus.opensdk.mediatedviews"
+    pom_artifactId = "appnexus-yahoo-mediation"
+    pom_packaging = "aar"
+
+    pom_distribution_snapshotRepo_id = "ossrh"
+    pom_distribution_snapshotRepo_url = "https://oss.sonatype.org/content/repositories/snapshots"
+    pom_distribution_repo_id = "ossrh"
+    pom_distribution_repo_url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+}
+
+publishing {
+    publications {
+        yahoo(MavenPublication) {
+            groupId project.pom_groupId
+            artifactId project.pom_artifactId
+            version project(':sdk').version + "-" + project.version
+            artifact("${project.buildDir}/outputs/aar/${project.name}-release.aar")
+
+            pom.withXml {
+                asNode().appendNode('description',
+                        project.pom_description)
+                asNode().appendNode('name',
+                        project.pom_name)
+                def scmNode = asNode().appendNode('scm')
+                scmNode.appendNode('connection', project(':sdk').pom_scm_connection)
+                scmNode.appendNode('developerConnection', project(':sdk').pom_scm_developerConnection)
+                scmNode.appendNode('url', project(':sdk').pom_scm_url)
+                def licencesNode = asNode().appendNode('licenses')
+                def licenseNode = licencesNode.appendNode('license')
+                licenseNode.appendNode('name', project(':sdk').pom_license_name)
+                licenseNode.appendNode('url', project(':sdk').pom_license_url)
+                def developersNode = asNode().appendNode('developers')
+                def developerNode = developersNode.appendNode('developer')
+                developerNode.appendNode('name', project(':sdk').pom_developer_name)
+                developerNode.appendNode('email', project(':sdk').pom_developer_email)
+                developerNode.appendNode('organization', project(':sdk').pom_developer_organization)
+                developerNode.appendNode('organizationUrl', project(':sdk').pom_developer_organizationUrl)
+                def dependenciesNode = asNode().appendNode('dependencies')
+                def sdkDependencyNode = dependenciesNode.appendNode('dependency')
+                sdkDependencyNode.appendNode('groupId', project(':sdk').pom_groupId)
+                sdkDependencyNode.appendNode('artifactId', project(':sdk').pom_artifactId)
+                sdkDependencyNode.appendNode('version', project(':sdk').version)
+                sdkDependencyNode.appendNode('scope', 'compile')
+                sdkDependencyNode.appendNode('type', project(':sdk').pom_packaging)
+            }
+        }
+    }
+    repositories {
+        maven {
+            credentials {
+                username project.hasProperty('nexusUsername') ? project.getProperties().get('nexusUsername') : "Replace your username here"
+                password project.hasProperty('nexusPassword') ? project.getProperties().get('nexusPassword') : "Replace your password here"
+            }
+            url project.hasProperty('nexusRepositoryUrl') ? project.getProperties().get('nexusRepositoryUrl') : project.pom_distribution_repo_url
+        }
+    }
 }
 

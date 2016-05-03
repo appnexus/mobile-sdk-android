@@ -10,6 +10,8 @@ include ':Facebook'
 include ':GooglePlay'
 include ':InMobi'
 include ':MillennialMedia'
+include ':mm-ad-sdk'
+project (':mm-ad-sdk').projectDir = new File(settingsDir, 'MillennialMedia/mm-ad-sdk')
 include ':MoPub'
 include ':Vdopia'
 include ':Vungle'

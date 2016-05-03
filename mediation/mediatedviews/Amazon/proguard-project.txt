@@ -20,3 +20,5 @@
 #}
 
 -keep public class com.amazon.device.ads.** { public *;}
+-dontwarn com.amazon.**
+-keepattributes InnerClasses,*Annotation*

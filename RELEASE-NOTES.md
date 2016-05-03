@@ -1,6 +1,7 @@
-## RC2.10
+## RC2.11
 + MS-2242 Added Facebook AdChoices icon and url to the nativeElements
           Also added NativeAd object of Facebook,InMobi and Yahoo to the nativeElements object
++ Gradle Release Automation
 
 ## RC2.10
 + Fix gradle build settings

@@ -21,6 +21,9 @@
 
 -keep public class com.appnexus.opensdk.** {public *;}
 -keep public interface com.appnexus.opensdk.* {*;}
+-keep public class * implements com.appnexus.opensdk.MediatedBannerAdView {public *;}
+-keep public class * implements com.appnexus.opensdk.MediatedInterstitialAdView {public *;}
+-keep public class * implements com.appnexus.opensdk.MediatedNativeAd {public *;}
 
 # Uncomment for Google Play Services library
 #-keep class * extends java.util.ListResourceBundle {

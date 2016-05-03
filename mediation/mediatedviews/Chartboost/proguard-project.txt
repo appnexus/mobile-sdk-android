@@ -19,4 +19,4 @@
 #   public *;
 #}
 
--keep public class com.chartboost.sdk.** { public *; }
+-keep class com.chartboost.** { *; }
