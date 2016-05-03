@@ -66,6 +66,9 @@ public class FBNativeAdResponse implements NativeAdResponse {
                     nativeAd.destroy();
                     nativeAd = null;
                 }
+                if(nativeElements != null && !nativeElements.isEmpty()){
+                    nativeElements.clear();
+                }
             }
         };
         Handler handler = new Handler(Looper.getMainLooper());
@@ -141,6 +144,13 @@ public class FBNativeAdResponse implements NativeAdResponse {
         if (nativeAd != null && nativeAd.isAdLoaded()) {
             title = nativeAd.getAdTitle();
             description = nativeAd.getAdBody();
+            nativeElements.put(FacebookNativeSettings.NATIVE_ELEMENT_OBJECT, nativeAd);
+            if(nativeAd.getAdChoicesIcon() != null) {
+                nativeElements.put(FacebookNativeSettings.KEY_ADCHOICES_ICON, nativeAd.getAdChoicesIcon());
+            }
+            if(nativeAd.getAdChoicesLinkUrl() != null) {
+                nativeElements.put(FacebookNativeSettings.KEY_ADCHOICES_LINKURL, nativeAd.getAdChoicesLinkUrl());
+            }
             if (nativeAd.getAdIcon() != null) {
                 iconUrl = nativeAd.getAdIcon().getUrl();
             }

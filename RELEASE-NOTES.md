@@ -1,4 +1,8 @@
 ## RC2.10
++ MS-2242 Added Facebook AdChoices icon and url to the nativeElements
+          Also added NativeAd object of Facebook,InMobi and Yahoo to the nativeElements object
+
+## RC2.10
 + Fix gradle build settings
 + MS-2136 Dismiss interstitial on click
 + MS-2034 Resize Ad for BannerAdview

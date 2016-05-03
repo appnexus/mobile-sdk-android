@@ -75,6 +75,9 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
                     InMobiNative.unbind(registeredView);
                     imNative = null;
                 }
+                if(nativeElements != null && !nativeElements.isEmpty()){
+                    nativeElements.clear();
+                }
                 registeredView = null;
                 registeredClickables = null;
             }
@@ -87,6 +90,7 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
     boolean setResources(final InMobiNative imNative) {
         this.imNative = imNative;
         try {
+            nativeElements.put(InMobiSettings.NATIVE_ELEMENT_OBJECT, imNative);
             JSONObject response = new JSONObject((String) imNative.getAdContent());
             title = JsonUtil.getJSONString(response, InMobiSettings.KEY_TITLE);
             callToAction = JsonUtil.getJSONString(response, InMobiSettings.KEY_CALL_TO_ACTION);

@@ -30,6 +30,7 @@ public class YahooFlurrySettings {
     public static String SECURE_RATING_IMG = "secRatingImg";
     public static String SECURE_HQ_RATING_IMG = "secHqRatingImg";
     public static String SHOW_RATING = "showRating";
+    public static String NATIVE_ELEMENT_OBJECT = "element";
 
     public static void init(Context context, String appKey) {
         FlurryAgent.init(context, appKey);

@@ -60,6 +60,7 @@ public class YahooFlurryNativeAdResponse implements NativeAdResponse {
         if (adNative != null) {
             YahooFlurryNativeAdResponse response = new YahooFlurryNativeAdResponse();
             response.adNative = adNative;
+            response.nativeElements.put(YahooFlurrySettings.NATIVE_ELEMENT_OBJECT, adNative);
             if (adNative.getAsset(HEADLINE) != null) {
                 response.title = adNative.getAsset(HEADLINE).getValue();
             }
@@ -127,6 +128,9 @@ public class YahooFlurryNativeAdResponse implements NativeAdResponse {
                     adNative.removeTrackingView();
                     adNative.destroy();
                     adNative = null;
+                }
+                if(nativeElements != null && !nativeElements.isEmpty()){
+                    nativeElements.clear();
                 }
                 registeredView = null;
                 registeredClickables = null;
