@@ -99,6 +99,16 @@ public class YahooFlurryNativeAd implements MediatedNativeAd, FlurryAdNativeList
     }
 
     @Override
+    public void onExpanded(FlurryAdNative flurryAdNative) {
+
+    }
+
+    @Override
+    public void onCollapsed(FlurryAdNative flurryAdNative) {
+
+    }
+
+    @Override
     public void onError(FlurryAdNative flurryAdNative, FlurryAdErrorType flurryAdErrorType, int i) {
         MediatedNativeAdController controller = this.controller.get();
         if (controller != null) {

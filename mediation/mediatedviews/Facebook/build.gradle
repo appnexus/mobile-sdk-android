@@ -1,15 +1,15 @@
 // Project Properties
-version = "4.9.0" // supported Facebook version
+version = "4.12.0" // supported Facebook version
 
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "19.1.0"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
-        minSdkVersion 11
-        targetSdkVersion 19
+        minSdkVersion 15
+        targetSdkVersion 23
         versionCode 1
         versionName version
         consumerProguardFiles 'proguard-project.txt'
@@ -30,7 +30,7 @@ android {
 }
 
 dependencies {
-    compile "com.facebook.android:audience-network-sdk:$version"
+    compile "com.facebook.android:audience-network-sdk:${project.version}@aar"
     compile project(':sdk')
 }
 

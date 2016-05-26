@@ -1,15 +1,15 @@
 // Project Properties
-version = "4.3.0" // supported MoPub version
+version = "4.6.1" // supported MoPub version
 
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "19.1.0"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 1
         versionName version
         consumerProguardFiles 'proguard-project.txt'
@@ -30,7 +30,7 @@ android {
 
 dependencies {
     compile project(':sdk')
-    compile('com.mopub:mopub-sdk:4.3.0@aar') {
+    compile("com.mopub:mopub-sdk:${project.version}@aar") {
         transitive = true
     }
 }

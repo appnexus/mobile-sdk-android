@@ -1,11 +1,11 @@
 // Project Properties
-version = "8.4.0" // supported Google version
+version = "9.0.0" // supported Google version
 
 apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "19.1.0"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         minSdkVersion 9
@@ -29,7 +29,7 @@ android {
 }
 
 dependencies {
-    compile "com.google.android.gms:play-services-ads:$version"
+    compile "com.google.android.gms:play-services-ads:${project.version}"
     compile project(':sdk')
 }
 
