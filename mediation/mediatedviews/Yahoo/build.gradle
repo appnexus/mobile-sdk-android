@@ -102,6 +102,18 @@ publishing {
                 sdkDependencyNode.appendNode('version', project(':sdk').version)
                 sdkDependencyNode.appendNode('scope', 'compile')
                 sdkDependencyNode.appendNode('type', project(':sdk').pom_packaging)
+                def flurryAdsDependencyNode = dependenciesNode.appendNode('dependency')
+                flurryAdsDependencyNode.appendNode('groupId', 'com.flurry.android')
+                flurryAdsDependencyNode.appendNode('artifactId', 'ads')
+                flurryAdsDependencyNode.appendNode('version', project.version)
+                flurryAdsDependencyNode.appendNode('scope', 'compile')
+                flurryAdsDependencyNode.appendNode('type', 'pom')
+                def flurryAnalyticsDependencyNode = dependenciesNode.appendNode('dependency')
+                flurryAnalyticsDependencyNode.appendNode('groupId', 'com.flurry.android')
+                flurryAnalyticsDependencyNode.appendNode('artifactId', 'analytics')
+                flurryAnalyticsDependencyNode.appendNode('version', project.version)
+                flurryAnalyticsDependencyNode.appendNode('scope', 'compile')
+                flurryAnalyticsDependencyNode.appendNode('type', 'pom')
             }
         }
     }
