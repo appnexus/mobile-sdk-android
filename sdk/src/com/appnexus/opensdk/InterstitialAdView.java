@@ -142,7 +142,7 @@ public class InterstitialAdView extends AdView {
 
         ArrayList<AdSize> allowedSizes = new ArrayList<AdSize>();
 
-
+        allowedSizes.add(new AdSize(1,1));
         if (new AdSize(300, 250).fitsIn(measuredWidth, measuredHeight))
             allowedSizes.add(new AdSize(300, 250));
         if (new AdSize(320, 480).fitsIn(measuredWidth, measuredHeight))

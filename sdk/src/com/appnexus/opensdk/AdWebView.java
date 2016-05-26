@@ -78,6 +78,7 @@ class AdWebView extends WebView implements Displayable {
     private int orientation;
     private ProgressDialog progressDialog;
     protected String initialMraidStateString;
+    private boolean MRAIDUseCustomClose=false;
 
     // touch detection
     private boolean userInteracted = false;
@@ -146,8 +147,14 @@ class AdWebView extends WebView implements Displayable {
 
         final float scale = adView.getContext().getResources()
                 .getDisplayMetrics().density;
-        int rheight = (int) (ad.getHeight() * scale + 0.5f);
-        int rwidth = (int) (ad.getWidth() * scale + 0.5f);
+        int rheight,rwidth;
+        if(ad.getHeight()==1 && ad.getWidth() == 1){
+            rwidth=ViewGroup.LayoutParams.MATCH_PARENT;
+            rheight=ViewGroup.LayoutParams.MATCH_PARENT;
+        }else{
+            rheight = (int) (ad.getHeight() * scale + 0.5f);
+            rwidth = (int) (ad.getWidth() * scale + 0.5f);
+        }
         AdView.LayoutParams resize = new AdView.LayoutParams(rwidth, rheight,
                 Gravity.CENTER);
         this.setLayoutParams(resize);
@@ -242,6 +249,12 @@ class AdWebView extends WebView implements Displayable {
     public boolean onTouchEvent(MotionEvent event) {
         userInteracted = true;
         return super.onTouchEvent(event);
+    }
+
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        checkPosition();
     }
 
     boolean getUserInteraction() {
@@ -520,6 +533,15 @@ class AdWebView extends WebView implements Displayable {
     @Override
     public void onDestroy() {
         destroy();
+    }
+
+
+    public boolean isMRAIDUseCustomClose() {
+        return MRAIDUseCustomClose;
+    }
+
+    public void setMRAIDUseCustomClose(boolean MRAIDUseCustomClose) {
+        this.MRAIDUseCustomClose = MRAIDUseCustomClose;
     }
 
     // MRAID code

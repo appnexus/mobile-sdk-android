@@ -327,6 +327,7 @@
         } else {
             expand_properties.useCustomClose = false;
         }
+       mraid.util.nativeCall("mraid://setUseCustomClose/?value=" + expand_properties.useCustomClose);
     }
 
     // Checks if a feature is supported by this device

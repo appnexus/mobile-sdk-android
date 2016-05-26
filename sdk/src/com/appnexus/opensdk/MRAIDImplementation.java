@@ -244,10 +244,20 @@ class MRAIDImplementation {
             expanded = false;
             resized = false;
             expandedWebView = null;
+        } else if (owner.adView.isInterstitial()) {
+            owner.adView.getAdDispatcher().onAdCollapsed();
+            Activity containerActivity = (Activity) ViewUtil.getTopContext(owner);
+            if ( containerActivity != null && !containerActivity.isFinishing()) {
+                containerActivity.finish();
+            }
         } else {
             // state must be default
             owner.hide();
         }
+    }
+
+    void setUseCustomClose(ArrayList<BasicNameValuePair> parameters) {
+        owner.setMRAIDUseCustomClose(Boolean.parseBoolean(parameters.get(0).getValue()));
     }
 
     private MRAIDTwoPartExpandWebView expandedWebView = null;
@@ -391,6 +401,8 @@ class MRAIDImplementation {
             } else {
                 Clog.w(Clog.mraidLogTag, Clog.getString(R.string.no_user_interaction, url));
             }
+        } else if (func.equals("setUseCustomClose")) {
+            setUseCustomClose(parameters);
         } else {
             if (func.equals("enable")) {
                 // suppress error for enable command
@@ -599,7 +611,7 @@ class MRAIDImplementation {
         }
 
         // orientationProperties only affects expanded state
-        if (expanded) {
+        if (expanded || owner.adView.isInterstitial()) {
             Activity containerActivity = owner.isFullScreen
                     ? getFullscreenActivity() : (Activity) ViewUtil.getTopContext(owner);
             if (allow_orientation_change) {

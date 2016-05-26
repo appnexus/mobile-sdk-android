@@ -125,7 +125,10 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
         webView = (AdWebView) iAQE.getView();
 
         // lock orientation to ad request orientation
-        AdActivity.lockToConfigOrientation(adActivity, webView.getOrientation());
+        //@TODO need to change this check condition to reflect MRAID spec
+        if(!(webView.getCreativeWidth()==1 && webView.getCreativeHeight()==1)) {
+            AdActivity.lockToConfigOrientation(adActivity, webView.getOrientation());
+        }
 
         layout.addView(webView);
     }
@@ -134,7 +137,7 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
     private void addCloseButton() {
         if ((layout == null) || (closeButton != null)) return;
 
-        closeButton = ViewUtil.createCloseButton(adActivity, false);
+        closeButton = ViewUtil.createCloseButton(adActivity, webView.isMRAIDUseCustomClose());
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
