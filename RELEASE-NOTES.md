@@ -4,7 +4,7 @@
 + Gradle Release Automation
 + MS-2307 Full Screen interstitial orientation support.
 + Updated Mediated SDKs
-    FaceBook SDK update to 4.12.0
+    FaceBook SDK update to 4.11.0
     GooglePlay SDK update to 9.0.0
     MillennialMedia SDK update to 6.0.0
     MoPub SDK update to 4.6.1

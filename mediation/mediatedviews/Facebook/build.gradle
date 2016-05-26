@@ -1,5 +1,5 @@
 // Project Properties
-version = "4.12.0" // supported Facebook version
+version = "4.11.0" // supported Facebook version
 
 apply plugin: 'com.android.library'
 
@@ -30,7 +30,7 @@ android {
 }
 
 dependencies {
-    compile "com.facebook.android:audience-network-sdk:${project.version}@aar"
+    compile "com.facebook.android:audience-network-sdk:${project.version}"
     compile project(':sdk')
 }
 
