@@ -35,6 +35,9 @@ dependencies {
     compile project(':sdk')
 }
 
+repositories {
+    jcenter()
+}
 /**
  * Maven distribution
  */
