@@ -1,5 +1,8 @@
 // Project Properties
 version = "4.6.1" // supported MoPub version
+ext {
+    sdk_version="2.11"
+}
 
 apply plugin: 'com.android.library'
 
@@ -30,6 +33,7 @@ android {
 
 dependencies {
     compile project(':sdk')
+    //compile "com.appnexus.opensdk:appnexus-sdk:${project.sdk_version}" //Use this compile statement for release builds.
     compile("com.mopub:mopub-sdk:${project.version}@aar") {
         transitive = true
     }
@@ -52,7 +56,7 @@ repositories {
 // gradle clean assembleRelease publishMopubPublicationToMavenRepository
 // Can alternatively pass the parameters from command line using -PcustomProp=myProp
 
-apply plugin: 'maven-publish'
+//apply plugin: 'maven-publish'
 
 ext {
     pom_name = "AppNexus Android SDK: MoPub Mediation Adapter"
@@ -62,14 +66,18 @@ ext {
     pom_groupId = "com.appnexus.opensdk.mediatedviews"
     pom_artifactId = "appnexus-mopub-mediation"
     pom_packaging = "aar"
+    pom_version = project.sdk_version + "-" + project.version
 
     pom_distribution_snapshotRepo_id = "ossrh"
     pom_distribution_snapshotRepo_url = "https://oss.sonatype.org/content/repositories/snapshots"
     pom_distribution_repo_id = "ossrh"
     pom_distribution_repo_url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+
+    username =project.hasProperty('nexusUsername') ? project.getProperties().get('nexusUsername') : "Replace your username here"
+    password = project.hasProperty('nexusPassword') ? project.getProperties().get('nexusPassword') : "Replace your password here"
 }
 
-publishing {
+/*publishing {
     publications {
         mopub(MavenPublication) {
             groupId project.pom_groupId
@@ -82,6 +90,7 @@ publishing {
                         project.pom_description)
                 asNode().appendNode('name',
                         project.pom_name)
+                asNode().appendNode('url', project.pom_url)
                 def scmNode = asNode().appendNode('scm')
                 scmNode.appendNode('connection', project(':sdk').pom_scm_connection)
                 scmNode.appendNode('developerConnection', project(':sdk').pom_scm_developerConnection)
@@ -119,6 +128,60 @@ publishing {
                 password project.hasProperty('nexusPassword') ? project.getProperties().get('nexusPassword') : "Replace your password here"
             }
             url project.hasProperty('nexusRepositoryUrl') ? project.getProperties().get('nexusRepositoryUrl') : project.pom_distribution_repo_url
+        }
+    }
+}*/
+
+
+
+
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+signing {
+    sign configurations.archives
+}
+
+
+uploadArchives {
+    configuration = configurations.archives
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            repository(url: project.pom_distribution_repo_url) {
+                authentication(userName: project.username, password: project.password)
+            }
+            snapshotRepository(url: project.pom_distribution_snapshotRepo_url) {
+                authentication(userName: project.username, password: project.password)
+            }
+            pom.project {
+                name project.pom_name
+                packaging project.pom_packaging
+                groupId project.pom_groupId
+                artifactId project.pom_artifactId
+                version project.pom_version
+                //artifact("${project.buildDir}/outputs/aar/${project.name}-release.aar")
+                description project.pom_description
+                url project.pom_url
+                scm {
+                    connection 'scm:git:git@github.com:appnexus/mobile-sdk-android.git'
+                    developerConnection 'scm:git:git@github.com:appnexus/mobile-sdk-android.git'
+                    url 'git@github.com:appnexus/mobile-sdk-android.git'
+                }
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        name 'AppNexus Mobile Team'
+                        email 'sdk@appnexus.com'
+                        organizationUrl 'http://www.appnexus.com'
+                    }
+                }
+            }
         }
     }
 }
