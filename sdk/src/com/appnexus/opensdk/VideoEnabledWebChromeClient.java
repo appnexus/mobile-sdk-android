@@ -118,8 +118,15 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
         }
         views = null;
 
-        if (customViewCallback != null)
-            customViewCallback.onCustomViewHidden();
+        if (customViewCallback != null){
+            // Try catch added to handle crash in 4.0.3 devices
+            try {
+                customViewCallback.onCustomViewHidden();
+            }catch (NullPointerException e) {
+                Clog.e(Clog.baseLogTag, "Exception calling customViewCallback  onCustomViewHidden: " + e.getMessage());
+            }
+        }
+
     }
 
     private void addCloseButton(FrameLayout layout) {

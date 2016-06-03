@@ -776,7 +776,7 @@ class AdWebView extends WebView implements Displayable {
                     isOpeningAppStore = checkForApp(url);
 
                     if (isOpeningAppStore) {
-                        if(progressDialog != null) {
+                        if(progressDialog != null && progressDialog.isShowing()) {
                             progressDialog.dismiss();
                         }
                     }
@@ -789,7 +789,7 @@ class AdWebView extends WebView implements Displayable {
                     Clog.v(Clog.browserLogTag, "Opening URL: " + url);
                     ViewUtil.removeChildFromParent(RedirectWebView.this);
 
-                    if(progressDialog != null) {
+                    if(progressDialog != null && progressDialog.isShowing()) {
                         progressDialog.dismiss();
                     }
 
@@ -810,6 +810,14 @@ class AdWebView extends WebView implements Displayable {
     private void triggerBrowserLaunchEvent() {
         if (adView != null && adView instanceof InterstitialAdView) {
             ((InterstitialAdView)adView).browserLaunched();
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if(progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
         }
     }
 }
