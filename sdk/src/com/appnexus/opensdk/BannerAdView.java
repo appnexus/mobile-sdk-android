@@ -926,15 +926,15 @@ public class BannerAdView extends AdView {
     protected void resizeWebViewToFitContainer(int adWidth, int adHeight, AdWebView webview) {
         int containerWidth;
         int containerHeight;
-        if (getLayoutParams().width <= 0) {
+        if (getWidth() <= 0) {
             containerWidth = getMeasuredWidth();
         } else {
-            containerWidth = getLayoutParams().width;
+            containerWidth = getWidth();
         }
-        if (getLayoutParams().height <= 0) {
+        if (getHeight() <= 0) {
             containerHeight = getMeasuredHeight();
         } else {
-            containerHeight = getLayoutParams().height;
+            containerHeight = getHeight();
         }
 
         if (containerHeight <= 0 || containerWidth <= 0) {
@@ -945,8 +945,8 @@ public class BannerAdView extends AdView {
         int webViewWidth;
         int webViewHeight;
 
-        float widthRatio = (float) (adWidth / containerWidth);
-        float heightRatio = (float) (adHeight / containerHeight);
+        float widthRatio = ((float) adWidth) / ((float)containerWidth);
+        float heightRatio = ((float) adHeight) / ((float)containerHeight);
 
         if (widthRatio < heightRatio) {
             //expand to full container height

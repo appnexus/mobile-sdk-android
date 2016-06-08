@@ -136,8 +136,11 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
     // add the close button if it hasn't been added already
     private void addCloseButton() {
         if ((layout == null) || (closeButton != null)) return;
-
-        closeButton = ViewUtil.createCloseButton(adActivity, webView.isMRAIDUseCustomClose());
+        boolean customClose = false;
+        if (webView != null) {
+            customClose = webView.isMRAIDUseCustomClose();
+        }
+        closeButton = ViewUtil.createCloseButton(adActivity, customClose);
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

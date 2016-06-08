@@ -280,6 +280,8 @@ class AdWebView extends WebView implements Displayable {
                     String host = Uri.parse(url).getHost();
                     if ((host != null) && host.equals("enable")) {
                         fireMRAIDEnabled();
+                    }else if((host != null) && host.equals("open")){
+                        implementation.dispatch_mraid_call(url, userInteracted);
                     }
                 }
                 return true;
