@@ -1,8 +1,6 @@
 // Project Properties
 version = "6.4.1" // supported Chartboost version
-ext {
-    sdk_version="2.11"
-}
+ext.sdk_version='2.12' // AppNexus SDK version
 
 apply plugin: 'com.android.library'
 
@@ -32,14 +30,9 @@ android {
 
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
     compile project(':sdk')
-    //compile "com.appnexus.opensdk:appnexus-sdk:${project.sdk_version}"//Use this compile statement for release builds.
 }
 
 /**

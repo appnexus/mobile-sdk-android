@@ -1,8 +1,6 @@
 // Project Properties
 version = "6.1.0" // supported Millennial version
-ext {
-    sdk_version="2.11"
-}
+ext.sdk_version='2.12' // AppNexus SDK version
 
 apply plugin: 'com.android.library'
 
@@ -32,23 +30,21 @@ android {
 
 }
 
-apply from: 'fat-aar.gradle'
-
 ext {
     pom_google_play_services_version = "8.4.0"
 }
 
 repositories {
     mavenCentral()
+
+        maven {
+            url 'http://cdn.adnxs.com/anx-sdk/maven'
+        }
 }
 
 dependencies {
     compile project(':sdk')
-    //compile "com.appnexus.opensdk:appnexus-sdk:${project.sdk_version}" //Use this compile statement for release builds.
-    // When build MillennialMedia from source
-    // Instead of embed the mm-ad-sdk, compile it
-//     compile project(':mm-ad-sdk')
-    embedded project(':mm-ad-sdk')
+    compile ("com.millennialmedia:android:$version@aar")
     // MM crashes the app if the right google play services package is not present in the app
     // To reduce pain in the the MM building from source integration, adding the dependencies here
     compile("com.google.android.gms:play-services-base:$project.pom_google_play_services_version") {
@@ -207,20 +203,4 @@ uploadArchives {
             }
         }
     }
-}
-
-
-// MArks MAven dependicies to optional true.
-def deployer = uploadArchives.repositories.mavenDeployer
-
-[deployer]*.pom*.whenConfigured {pom ->
-    pom.dependencies.find {dep -> dep.groupId == 'mediatedviews' && dep.artifactId == 'mm-ad-sdk' }.optional = true
-}
-
-[deployer]*.pom*.whenConfigured {pom ->
-    pom.dependencies.find {dep -> dep.groupId == 'com.google.android.gms' && dep.artifactId == 'play-services-base' }.optional = true
-}
-
-[deployer]*.pom*.whenConfigured {pom ->
-    pom.dependencies.find {dep -> dep.groupId == 'com.google.android.gms' && dep.artifactId == 'play-services-ads' }.optional = true
 }

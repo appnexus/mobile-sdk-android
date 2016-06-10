@@ -1,8 +1,6 @@
 // Project Properties
 version = "9.0.0" // supported Google version
-ext {
-    sdk_version="2.11"
-}
+ext.sdk_version='2.12' // AppNexus SDK version
 
 apply plugin: 'com.android.library'
 
@@ -31,14 +29,9 @@ android {
     }
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     compile "com.google.android.gms:play-services-ads:${project.version}"
     compile project(':sdk')
-    //compile "com.appnexus.opensdk:appnexus-sdk:${project.sdk_version}"//Use this compile statement for release builds.
 }
 
 /**

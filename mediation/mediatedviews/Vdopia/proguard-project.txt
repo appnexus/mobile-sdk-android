@@ -20,3 +20,6 @@
 #}
 
 -keep public class com.vdopia.ads.lw.** {public *;}
+-keepclassmembers class * implements android.os.Parcelable {
+    static ** CREATOR;
+}

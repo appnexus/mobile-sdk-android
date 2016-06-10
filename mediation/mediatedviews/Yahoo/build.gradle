@@ -1,8 +1,6 @@
 // Project Properties
 version = "6.3.1" // supported Yahoo version
-ext {
-    sdk_version="2.11"
-}
+ext.sdk_version='2.12' // AppNexus SDK version
 
 
 apply plugin: 'com.android.library'
@@ -37,7 +35,6 @@ dependencies {
     compile "com.flurry.android:analytics:${project.version}"
     compile "com.flurry.android:ads:${project.version}"
     compile project(':sdk')
-    //compile "com.appnexus.opensdk:appnexus-sdk:${project.sdk_version}" //Use this compile statement for release builds.
 }
 
 repositories {

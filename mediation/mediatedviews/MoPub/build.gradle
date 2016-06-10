@@ -1,8 +1,6 @@
 // Project Properties
 version = "4.6.1" // supported MoPub version
-ext {
-    sdk_version="2.11"
-}
+ext.sdk_version='2.12' // AppNexus SDK version
 
 apply plugin: 'com.android.library'
 
@@ -33,7 +31,6 @@ android {
 
 dependencies {
     compile project(':sdk')
-    //compile "com.appnexus.opensdk:appnexus-sdk:${project.sdk_version}" //Use this compile statement for release builds.
     compile("com.mopub:mopub-sdk:${project.version}@aar") {
         transitive = true
     }

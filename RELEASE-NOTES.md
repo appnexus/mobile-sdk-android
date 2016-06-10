@@ -1,3 +1,8 @@
+## RC2.12
++ MS-2319 Allowed creative to trigger MRAID open click through even when MRAID not enabled in SDK.
++ MS-2290 Handled VideoEnabledWebChromeClient crash
++ MS-2289 Fixed resizeToFitContainer expanding too much logic.
+
 ## RC2.11
 + MS-2242 Added Facebook AdChoices icon and url to the nativeElements
           Also added NativeAd object of Facebook,InMobi and Yahoo to the nativeElements object
@@ -6,7 +11,7 @@
 + Updated Mediated SDKs
     FaceBook SDK update to 4.11.0
     GooglePlay SDK update to 9.0.0
-    MillennialMedia SDK update to 6.0.0
+    MillennialMedia SDK update to 6.1.0
     MoPub SDK update to 4.6.1
     Vungle SDK update to 3.3.5
     Yahoo Flurry SDK update to 6.3.1
