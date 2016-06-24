@@ -400,9 +400,16 @@ public abstract class AdView extends FrameLayout implements Ad {
         ViewUtil.removeChildFromParent(caller.owner);
         fslayout.addView(caller.owner);
 
-        if (close_button == null)
+        if (close_button == null) {
             close_button = ViewUtil.createCloseButton(this.getContext(), use_custom_close);
-        if (!use_custom_close) fslayout.addView(close_button);
+            close_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    caller.close();
+                }
+            });
+        }
+        fslayout.addView(close_button);
 
         mraidFullscreenContainer = fslayout;
         mraidFullscreenImplementation = caller;
@@ -451,7 +458,7 @@ public abstract class AdView extends FrameLayout implements Ad {
             mraidFullscreenExpand(caller, custom_close, listener);
         } else {
             // if not fullscreen, just add the close button
-            if (!custom_close) this.addView(close_button);
+            this.addView(close_button);
         }
 
         isMRAIDExpanded = true;
