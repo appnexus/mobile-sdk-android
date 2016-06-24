@@ -190,10 +190,10 @@
             mraid.util.errorEvent("Invalid expandProperties. Retaining default values.", "mraid.setExpandProperties()");
             return;
         }
-        if (typeof properties.width === "number") {
+        if (!isNaN(properties.width)) {
             expand_properties.width = properties.width;
         }
-        if (typeof properties.height === "number") {
+        if (!isNaN(properties.height)) {
             expand_properties.height = properties.height;
         }
         if (typeof properties.useCustomClose === "boolean") {
@@ -466,7 +466,7 @@
             mraid.util.errorEvent("Invalid resizeProperties", callingFunctionName);
             return false;
         }
-        if (typeof properties.width !== "number" || typeof properties.height !== "number" || typeof properties.offsetX !== "number" || typeof properties.offsetY !== "number") {
+        if (isNaN(properties.width) || isNaN(properties.height) || isNaN(properties.offsetX) || isNaN(properties.offsetY)) {
             mraid.util.errorEvent("Incomplete resizeProperties. width, height, offsetX, offsetY required", callingFunctionName);
             return false;
         }
