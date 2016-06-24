@@ -144,6 +144,7 @@ class AdWebView extends WebView implements Displayable {
 
         html = preLoadContent(html);
         html = prependRawResources(html);
+        html = prependViewPort(html);
 
         final float scale = adView.getContext().getResources()
                 .getDisplayMetrics().density;
@@ -196,6 +197,15 @@ class AdWebView extends WebView implements Displayable {
         return html;
     }
 
+    private String prependViewPort(String html){
+        if (!StringUtil.isEmpty(html)) {
+            StringBuilder viewportSB = new StringBuilder("<head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0,user-scalable=no\"/>");
+            html = html.replaceFirst("<head>", viewportSB.toString());
+        }
+        return html;
+    }
+
+
     private void parseAdResponseExtras(HashMap extras) {
         if(extras.isEmpty()) {
             return;
@@ -220,15 +230,9 @@ class AdWebView extends WebView implements Displayable {
                 if(response.getSucceeded()){
                     String html = preLoadContent(response.getResponseBody());
                     html = prependRawResources(html);
-                    String baseString;
-                    try {
-                        baseString = new URL(url).getHost();
-                    } catch (MalformedURLException e) {
-                        baseString=null;
-                    }
+                    html = prependViewPort(html);
 
-                    loadDataWithBaseURL(baseString, html, "text/html", "UTF-8", null);
-
+                    loadDataWithBaseURL(Settings.BASE_URL, html, "text/html", "UTF-8", null);
                     fireMRAIDEnabled();
                 }
             }
