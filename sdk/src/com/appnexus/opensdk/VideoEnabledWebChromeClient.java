@@ -21,7 +21,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +30,6 @@ import android.widget.ImageButton;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ViewUtil;
 
-import java.util.LinkedList;
 
 class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     CustomViewCallback customViewCallback;
@@ -39,7 +37,6 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     Activity context;
     AdView adView;
     private AdWebView adWebView;
-    LinkedList<Pair<View, Integer>> views;
 
     public VideoEnabledWebChromeClient(Activity activity) {
         this.context = activity;
@@ -65,7 +62,13 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
             Clog.w(Clog.baseLogTag, Clog.getString(R.string.fullscreen_video_show_error));
             return;
         }
-        ViewGroup root = (ViewGroup) context.findViewById(android.R.id.content);
+        ViewGroup root;
+        if (adWebView != null) {
+            root = (ViewGroup) adWebView.getRootView().findViewById(android.R.id.content);
+        } else {
+            root = (ViewGroup) context.findViewById(android.R.id.content);
+        }
+
         if (root == null) {
             Clog.w(Clog.baseLogTag, Clog.getString(R.string.fullscreen_video_show_error));
             return;
@@ -74,17 +77,11 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
         customViewCallback = callback;
         if (view instanceof FrameLayout) {
             frame = (FrameLayout) view;
-
-            views = new LinkedList<Pair<View, Integer>>();
-            // hide other children so that the only view shown is the custom view
-            for (int i = 0; i < root.getChildCount(); i++) {
-                View child = root.getChildAt(i);
-                views.add(new Pair<View, Integer>(child, child.getVisibility()));
-                child.setVisibility(View.GONE);
-            }
+            frame.setClickable(true);
+            frame.setBackgroundColor(Color.BLACK);
             try {
                 addCloseButton(frame);
-                context.addContentView(frame,
+                root.addView(frame,
                         new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                 ViewGroup.LayoutParams.MATCH_PARENT));
             } catch (Exception e) {
@@ -102,21 +99,18 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
             Clog.w(Clog.baseLogTag, Clog.getString(R.string.fullscreen_video_hide_error));
             return;
         }
-        ViewGroup root = (ViewGroup) context.findViewById(android.R.id.content);
+        ViewGroup root;
+        if (adWebView != null) {
+            root = (ViewGroup) adWebView.getRootView().findViewById(android.R.id.content);
+        } else {
+            root = (ViewGroup) context.findViewById(android.R.id.content);
+        }
         if (root == null) {
             Clog.w(Clog.baseLogTag, Clog.getString(R.string.fullscreen_video_hide_error));
             return;
         }
 
         root.removeView(frame);
-
-        if (views != null) {
-            // restore the views that were originally there
-            for (Pair<View, Integer> child : views) {
-                child.first.setVisibility(child.second);
-            }
-        }
-        views = null;
 
         if (customViewCallback != null){
             // Try catch added to handle crash in 4.0.3 devices
