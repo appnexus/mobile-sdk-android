@@ -37,6 +37,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.webkit.CookieManager;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -105,6 +106,15 @@ class AdWebView extends WebView implements Displayable {
         this.getSettings().setUseWideViewPort(false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             this.getSettings().setMediaPlaybackRequiresUserGesture(false);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            CookieManager cm = CookieManager.getInstance();
+            if (cm != null) {
+                cm.setAcceptThirdPartyCookies(this, true);
+            } else {
+                Clog.d(Clog.baseLogTag, "Failed to set Webview to accept 3rd party cookie");
+            }
         }
 
         setHorizontalScrollbarOverlay(false);
