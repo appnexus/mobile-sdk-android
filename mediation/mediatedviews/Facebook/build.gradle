@@ -1,6 +1,5 @@
 // Project Properties
-version = "4.11.0" // supported Facebook version
-ext.sdk_version='2.12' // AppNexus SDK version
+version = "4.12.1" // supported Facebook version
 
 apply plugin: 'com.android.library'
 
@@ -31,7 +30,7 @@ android {
 }
 
 dependencies {
-    compile "com.facebook.android:audience-network-sdk:${project.version}"
+    compile "com.facebook.android:audience-network-sdk:${project.version}@aar"
     compile project(':sdk')
 }
 
@@ -53,7 +52,7 @@ repositories {
 // Can alternatively pass the parameters from command line using -PcustomProp=myProp
 
 //apply plugin: 'maven-publish'
-
+evaluationDependsOn(':sdk')
 ext {
     pom_name = "AppNexus Android SDK: Facebook Mediation Adapter"
     pom_description = "AppNexus's Android Advertising Libraries: Mediation adapter for Facebook"
@@ -62,7 +61,7 @@ ext {
     pom_groupId = "com.appnexus.opensdk.mediatedviews"
     pom_artifactId = "appnexus-facebook-mediation"
     pom_packaging = "aar"
-    pom_version = project.sdk_version + "-" + project.version
+    pom_version = project(':sdk').version + "-" + project.version
 
     pom_distribution_snapshotRepo_id = "ossrh"
     pom_distribution_snapshotRepo_url = "https://oss.sonatype.org/content/repositories/snapshots"

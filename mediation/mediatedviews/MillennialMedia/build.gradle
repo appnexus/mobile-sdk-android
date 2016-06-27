@@ -1,6 +1,5 @@
 // Project Properties
 version = "6.1.0" // supported Millennial version
-ext.sdk_version='2.12' // AppNexus SDK version
 
 apply plugin: 'com.android.library'
 
@@ -69,7 +68,7 @@ dependencies {
 // Can alternatively pass the parameters from command line using -PcustomProp=myProp
 
 //apply plugin: 'maven-publish'
-
+evaluationDependsOn(':sdk')
 ext {
     pom_name = "AppNexus Android SDK: Millennial Media Mediation Adapter"
     pom_description = "AppNexus's Android Advertising Libraries: Mediation adapter for Millennial Media"
@@ -78,7 +77,7 @@ ext {
     pom_groupId = "com.appnexus.opensdk.mediatedviews"
     pom_artifactId = "appnexus-millennialmedia-mediation"
     pom_packaging = "aar"
-    pom_version = project.sdk_version + "-" + project.version
+    pom_version = project(':sdk').version + "-" + project.version
 
     pom_distribution_snapshotRepo_id = "ossrh"
     pom_distribution_snapshotRepo_url = "https://oss.sonatype.org/content/repositories/snapshots"

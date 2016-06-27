@@ -1,3 +1,13 @@
+## RC2.13
++ MS-2332 Fixed interstitial FullScreen videoplayer issue
++ MS-2383 MRAID CustomClose 
++ MS-2324 Prepend viewport to HTML ads 
++ MS-2382 MRAID number validation changes.
++ Thirdparty cookies are now enabled on AdWebview.
++ Updated Mediated SDKs
+    FaceBook SDK update to 4.12.1
+    
+
 ## RC2.12
 + MS-2319 Allowed creative to trigger MRAID open click through even when MRAID not enabled in SDK.
 + MS-2290 Handled VideoEnabledWebChromeClient crash
