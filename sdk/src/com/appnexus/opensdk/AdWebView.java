@@ -108,6 +108,15 @@ class AdWebView extends WebView implements Displayable {
             this.getSettings().setMediaPlaybackRequiresUserGesture(false);
         }
 
+        this.getSettings().setAllowFileAccess(false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            this.getSettings().setAllowContentAccess(false);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            this.getSettings().setAllowFileAccessFromFileURLs(false);
+            this.getSettings().setAllowUniversalAccessFromFileURLs(false);
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager cm = CookieManager.getInstance();
             if (cm != null) {
