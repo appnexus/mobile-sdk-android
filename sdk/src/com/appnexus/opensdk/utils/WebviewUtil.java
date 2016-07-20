@@ -50,6 +50,14 @@ public class WebviewUtil {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
             }
+            webView.getSettings().setAllowFileAccess(false);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                webView.getSettings().setAllowContentAccess(false);
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                webView.getSettings().setAllowFileAccessFromFileURLs(false);
+                webView.getSettings().setAllowUniversalAccessFromFileURLs(false);
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 CookieManager cm = CookieManager.getInstance();
                 if (cm != null) {
