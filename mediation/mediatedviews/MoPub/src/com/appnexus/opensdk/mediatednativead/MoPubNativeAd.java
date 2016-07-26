@@ -56,7 +56,7 @@ public class MoPubNativeAd implements MediatedNativeAd {
         //As per Mopub documentation the context should be Activity context. Refer Mopub Changelog v4.1.0
         if (!(context instanceof Activity)) {
             Clog.w(Clog.mediationLogTag, "Required Activity Context");
-            mBC.onAdFailed(ResultCode.INTERNAL_ERROR);
+            mBC.onAdFailed(ResultCode.MEDIATED_SDK_UNAVAILABLE);
             return;
         }
 
