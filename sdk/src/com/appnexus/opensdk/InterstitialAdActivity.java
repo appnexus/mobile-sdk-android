@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 import android.app.Activity;
+import android.content.MutableContextWrapper;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
@@ -124,6 +125,10 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
             return;
         webView = (AdWebView) iAQE.getView();
 
+        // Update the context
+        if(webView.getContext() instanceof MutableContextWrapper) {
+            ((MutableContextWrapper) webView.getContext()).setBaseContext(adActivity);
+        }
         // lock orientation to ad request orientation
         //@TODO need to change this check condition to reflect MRAID spec
         if(!(webView.getCreativeWidth()==1 && webView.getCreativeHeight()==1)) {

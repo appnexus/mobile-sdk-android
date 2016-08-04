@@ -111,9 +111,8 @@ class MRAIDImplementation {
     }
 
     private void setDefaultPosition() {
-        if (!readyFired) return;
 
-        Activity a = (Activity) owner.getContext();
+        Activity a = (Activity) owner.getContextFromMutableContext();
 
         int[] location = new int[2];
         owner.getLocationOnScreen(location);
@@ -198,7 +197,7 @@ class MRAIDImplementation {
         position[2] = width;
         position[3] = height;
 
-        Activity a = (Activity) owner.getContext();
+        Activity a = (Activity) owner.getContextFromMutableContext();
         // current position is relative to max size, so subtract the status bar from y
         int contentViewTop = a.getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
         top -= contentViewTop;
@@ -238,7 +237,7 @@ class MRAIDImplementation {
             }
 
             // Allow orientation changes
-            Activity a = ((Activity) this.owner.getContext());
+            Activity a = ((Activity) this.owner.getContextFromMutableContext());
             if (a != null)
                 a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             expanded = false;
@@ -696,8 +695,8 @@ class MRAIDImplementation {
     }
 
     private void setMaxSize() {
-        if (owner.getContext() instanceof Activity) {
-            Activity a = ((Activity) owner.getContext());
+        if (owner.getContextFromMutableContext() instanceof Activity) {
+            Activity a = ((Activity) owner.getContextFromMutableContext());
 
             int[] screenSize = ViewUtil.getScreenSizeAsPixels(a);
             int maxWidth = screenSize[0];
@@ -717,8 +716,8 @@ class MRAIDImplementation {
     }
 
     private void setScreenSize() {
-        if (owner.getContext() instanceof Activity) {
-            int[] screenSize = ViewUtil.getScreenSizeAsDP(((Activity) owner.getContext()));
+        if (owner.getContextFromMutableContext() instanceof Activity) {
+            int[] screenSize = ViewUtil.getScreenSizeAsDP(((Activity) owner.getContextFromMutableContext()));
             screenWidth = screenSize[0];
             screenHeight = screenSize[1];
 

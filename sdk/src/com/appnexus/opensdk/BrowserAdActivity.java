@@ -21,6 +21,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.MutableContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -58,6 +59,9 @@ class BrowserAdActivity implements AdActivity.AdActivityImplementation {
         if ((webView == null) || (webView.getSettings() == null)) {
             finishAdActivity();
             return;
+        }
+        if(webView.getContext() instanceof MutableContextWrapper) {
+            ((MutableContextWrapper) webView.getContext()).setBaseContext(adActivity);
         }
         WebView webViewSpace = (WebView) adActivity.findViewById(R.id.web_view);
         ViewGroup.LayoutParams spaceParams = webViewSpace.getLayoutParams();

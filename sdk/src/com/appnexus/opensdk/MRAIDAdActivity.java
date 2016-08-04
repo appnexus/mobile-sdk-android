@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 import android.app.Activity;
+import android.content.MutableContextWrapper;
 import android.webkit.WebView;
 
 import com.appnexus.opensdk.utils.Clog;
@@ -24,7 +25,7 @@ import com.appnexus.opensdk.utils.ViewUtil;
 
 class MRAIDAdActivity implements AdActivity.AdActivityImplementation {
     private Activity adActivity;
-    private WebView webView;
+    private AdWebView webView;
 
     private MRAIDImplementation mraidFullscreenImplementation = null;
 
@@ -43,8 +44,12 @@ class MRAIDAdActivity implements AdActivity.AdActivityImplementation {
         // remove from any old parents to be safe
         ViewUtil.removeChildFromParent(AdView.mraidFullscreenContainer);
         adActivity.setContentView(AdView.mraidFullscreenContainer);
-        if (AdView.mraidFullscreenContainer.getChildAt(0) instanceof WebView) {
-            webView = (WebView) AdView.mraidFullscreenContainer.getChildAt(0);
+        if (AdView.mraidFullscreenContainer.getChildAt(0) instanceof AdWebView) {
+            webView = (AdWebView) AdView.mraidFullscreenContainer.getChildAt(0);
+        }
+        // Update the context
+        if(webView.getContext() instanceof MutableContextWrapper) {
+            ((MutableContextWrapper) webView.getContext()).setBaseContext(adActivity);
         }
         mraidFullscreenImplementation = AdView.mraidFullscreenImplementation;
         mraidFullscreenImplementation.setFullscreenActivity(adActivity);

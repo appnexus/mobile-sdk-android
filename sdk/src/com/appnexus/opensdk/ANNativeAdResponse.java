@@ -19,6 +19,7 @@ package com.appnexus.opensdk;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.MutableContextWrapper;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Handler;
@@ -339,7 +340,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
             // launch Browser Activity
             Class<?> activity_clz = AdActivity.getActivityClass();
             try {
-                WebView out = new WebView(context);
+                WebView out = new WebView(new MutableContextWrapper(context));
                 WebviewUtil.setWebViewSettings(out);
                 out.loadUrl(clickUrl);
                 BrowserAdActivity.BROWSER_QUEUE.add(out);

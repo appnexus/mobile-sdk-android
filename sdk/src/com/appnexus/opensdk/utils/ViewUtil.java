@@ -18,6 +18,7 @@ package com.appnexus.opensdk.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.MutableContextWrapper;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
@@ -54,6 +55,9 @@ public class ViewUtil {
         ViewParent parent = view.getParent();
 
         if ((parent == null) || !(parent instanceof View)) {
+            if(view.getContext() instanceof MutableContextWrapper){
+                return ((MutableContextWrapper)view.getContext()).getBaseContext();
+            }
             return view.getContext();
         }
 

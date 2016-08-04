@@ -43,7 +43,7 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     }
 
     public VideoEnabledWebChromeClient(AdWebView adWebView) {
-        this.context = (Activity) adWebView.getContext();
+        this.context = (Activity) adWebView.getContextFromMutableContext();
         this.adWebView = adWebView;
         this.adView = this.adWebView.adView;
     }

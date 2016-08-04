@@ -23,6 +23,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.MutableContextWrapper;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -85,7 +86,7 @@ class AdWebView extends WebView implements Displayable {
     private boolean userInteracted = false;
 
     public AdWebView(AdView adView) {
-        super(adView.getContext());
+        super(new MutableContextWrapper(adView.getContext()));
         this.adView = adView;
         this.initialMraidStateString = MRAIDImplementation.MRAID_INIT_STATE_STRINGS[
                 MRAIDImplementation.MRAID_INIT_STATE.STARTING_DEFAULT.ordinal()];
@@ -488,7 +489,7 @@ class AdWebView extends WebView implements Displayable {
                     }
                 } else {
                     // Stick the URL directly into the new activity.
-                    out = new WebView(getContext());
+                    out = new WebView(new MutableContextWrapper(getContext()));
                     WebviewUtil.setWebViewSettings(out);
                     out.loadUrl(url);
                     openInAppBrowser(out);
@@ -698,7 +699,7 @@ class AdWebView extends WebView implements Displayable {
     }
 
     protected void checkPosition() {
-        if (!(this.getContext() instanceof Activity)) return;
+        if (!(this.getContextFromMutableContext() instanceof Activity)) return;
 
         // check whether newly drawn view is onscreen or not,
         // fires a viewableChangeEvent with the result
@@ -710,7 +711,7 @@ class AdWebView extends WebView implements Displayable {
         int top = viewLocation[1];
         int bottom = viewLocation[1] + this.getHeight();
 
-        int[] screenSize = ViewUtil.getScreenSizeAsPixels((Activity) this.getContext());
+        int[] screenSize = ViewUtil.getScreenSizeAsPixels((Activity) this.getContextFromMutableContext());
 
         this.isOnscreen = (right > 0) && (left < screenSize[0])
                 && (bottom > 0) && (top < screenSize[1]);
@@ -789,7 +790,7 @@ class AdWebView extends WebView implements Displayable {
 
         @SuppressLint("SetJavaScriptEnabled")
         public RedirectWebView(Context context) {
-            super(context);
+            super(new MutableContextWrapper(context));
 
             WebviewUtil.setWebViewSettings(this);
             this.setWebViewClient(new WebViewClient() {
@@ -844,6 +845,15 @@ class AdWebView extends WebView implements Displayable {
         if(progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
+    }
+
+
+    // Helper method for getting Context if it is of type MutableContextWrapper.
+    protected Context getContextFromMutableContext() {
+        if (this.getContext() instanceof MutableContextWrapper) {
+           return  ((MutableContextWrapper) this.getContext()).getBaseContext();
+        }
+        return this.getContext();
     }
 }
 

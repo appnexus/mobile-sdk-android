@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.MutableContextWrapper;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -71,7 +72,6 @@ public abstract class AdView extends FrameLayout implements Ad {
     private boolean showLoadingIndicator = true;
 
     RequestParameters requestParameters;
-
     /**
      * Begin Construction
      */
@@ -138,6 +138,7 @@ public abstract class AdView extends FrameLayout implements Ad {
         setPadding(0, 0, 0, 0);
         // Make an AdFetcher - Continue the creation pass
         mAdFetcher = new AdFetcher(this);
+
         // Load user variables only if attrs isn't null
         if (attrs != null)
             loadVariablesFromXML(context, attrs);
@@ -357,6 +358,11 @@ public abstract class AdView extends FrameLayout implements Ad {
 
             if (caller.getFullscreenActivity() != null) {
                 caller.getFullscreenActivity().finish();
+            }
+
+            // Reset the context of MutableContext wrapper for banner expand and close case.
+            if (getMediaType().equals(MediaType.BANNER) && (caller.owner.getContext() instanceof MutableContextWrapper)) {
+                ((MutableContextWrapper)caller.owner.getContext()).setBaseContext(getContext());
             }
         }
         // null these out for safety
@@ -931,6 +937,7 @@ public abstract class AdView extends FrameLayout implements Ad {
     public boolean getLoadsInBackground() {
         return this.doesLoadingInBackground;
     }
+
 
     /**
      * Private class to bridge events from mediation to the user
