@@ -341,7 +341,7 @@
     }
 
     // call setup()
-    anjam.setup();
+     setTimeout(anjam.setup, 0);
 
     // -----
     // ----- INTERNAL API UTILITY FUNCTIONS -----
