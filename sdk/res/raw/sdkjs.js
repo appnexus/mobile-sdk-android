@@ -146,8 +146,8 @@
 
     sdkjs.postMessageToFrames = function (message) {
         for (var i = 0; i < anjamFrames.length; i++) {
-            var w = window.open("", anjamFrames[i], null, false);
-            w.postMessage(message, "*");
+            anjam.anlog("Dispatching message to window name " + anjamFrames[i].name);
+            anjamFrames[i].postMessage(message, "*");
         }
     }
 
@@ -158,7 +158,8 @@
 
     sdkjs.callInit = function (queryParameters) {
         var name = queryParameters.name;
-        anjamFrames.push(name);
+        var w = window.open("", name, null, false);
+        anjamFrames.push(w);
         sdkjs.fireMessage(CALL_READY);
     }
 
