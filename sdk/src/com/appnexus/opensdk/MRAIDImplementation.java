@@ -75,7 +75,7 @@ class MRAIDImplementation {
         this.owner = owner;
     }
 
-    void webViewFinishedLoading(WebView view, String startingState) {
+    void webViewFinishedLoading(AdWebView view, String startingState) {
         // Fire the ready event only once
         if (!readyFired) {
             String adType = owner.adView.isBanner() ? "inline" : "interstitial";
@@ -84,7 +84,7 @@ class MRAIDImplementation {
                             MRAID_INIT_STATE_STRINGS[MRAID_INIT_STATE.STARTING_EXPANDED.ordinal()]);
             owner.isFullScreen = isMRAIDTwoPartExpanded;
 
-            view.loadUrl("javascript:window.mraid.util.setPlacementType('"
+            view.injectJavaScript("javascript:window.mraid.util.setPlacementType('"
                     + adType + "')");
 
             if(!isMRAIDTwoPartExpanded) {
@@ -95,8 +95,8 @@ class MRAIDImplementation {
             }
 
             owner.checkPosition(); //set CURRENT position, in addition to default
-            view.loadUrl("javascript:window.mraid.util.stateChangeEvent('"+startingState+"')");
-            view.loadUrl("javascript:window.mraid.util.readyEvent();");
+            view.injectJavaScript("javascript:window.mraid.util.stateChangeEvent('"+startingState+"')");
+            view.injectJavaScript("javascript:window.mraid.util.readyEvent();");
 
             // Store width and height for close()
             default_width = owner.getLayoutParams().width;
@@ -128,16 +128,16 @@ class MRAIDImplementation {
         int[] size = {width, height};
         ViewUtil.convertFromPixelsToDP(a, size);
 
-        owner.loadUrl(String.format("javascript:window.mraid.util.setDefaultPosition(%d, %d, %d, %d)",
+        owner.injectJavaScript(String.format("javascript:window.mraid.util.setDefaultPosition(%d, %d, %d, %d)",
                 location[0], location[1], size[0], size[1]));
     }
 
-    private void setSupports(WebView view, String feature, boolean value) {
-        view.loadUrl(String.format("javascript:window.mraid.util.setSupports(\'%s\', %s)", feature, String.valueOf(value)));
+    private void setSupports(AdWebView view, String feature, boolean value) {
+        view.injectJavaScript(String.format("javascript:window.mraid.util.setSupports(\'%s\', %s)", feature, String.valueOf(value)));
     }
 
     @SuppressLint("NewApi")
-    private void setSupportsValues(WebView view) {
+    private void setSupportsValues(AdWebView view) {
         //SMS
         if (hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("sms:5555555555")))) {
             setSupports(view, "sms", true);
@@ -182,7 +182,7 @@ class MRAIDImplementation {
         if (!readyFired) return;
         isViewable = viewable;
 
-        owner.loadUrl("javascript:window.mraid.util.setIsViewable(" + viewable + ")");
+        owner.injectJavaScript("javascript:window.mraid.util.setIsViewable(" + viewable + ")");
     }
 
     // parameters are view properties in pixels
@@ -210,9 +210,9 @@ class MRAIDImplementation {
         top = properties[1];
         width = properties[2];
         height = properties[3];
-        owner.loadUrl(String.format("javascript:window.mraid.util.setCurrentPosition(%d, %d, %d, %d)",
+        owner.injectJavaScript(String.format("javascript:window.mraid.util.setCurrentPosition(%d, %d, %d, %d)",
                 left, top, width, height));
-        owner.loadUrl(String.format("javascript:window.mraid.util.sizeChangeEvent(%d, %d)",
+        owner.injectJavaScript(String.format("javascript:window.mraid.util.sizeChangeEvent(%d, %d)",
                 width, height));
     }
 
@@ -229,7 +229,7 @@ class MRAIDImplementation {
             }
             owner.setLayoutParams(lp);
             owner.close();
-            owner.loadUrl("javascript:window.mraid.util.stateChangeEvent('default');");
+            owner.injectJavaScript("javascript:window.mraid.util.stateChangeEvent('default');");
 
             //Avoid calling onAdCollapsed if this is the TwoPartView closing
             if (!owner.adView.isInterstitial() && !isMRAIDTwoPartExpanded) {
@@ -325,7 +325,7 @@ class MRAIDImplementation {
         }
 
         // Fire the stateChange to MRAID
-        this.owner.loadUrl("javascript:window.mraid.util.stateChangeEvent('expanded');");
+        this.owner.injectJavaScript("javascript:window.mraid.util.stateChangeEvent('expanded');");
         expanded = true;
 
         // Fire the AdListener event
@@ -672,7 +672,7 @@ class MRAIDImplementation {
         }
         //If the resized ad is larger than the screen, reject with great prejudice
         if (w > screenWidth && h > screenHeight) {
-            this.owner.loadUrl("javascript:mraid.util.errorEvent('Resize called with resizeProperties larger than the screen.', 'mraid.resize()')");
+            this.owner.injectJavaScript("javascript:mraid.util.errorEvent('Resize called with resizeProperties larger than the screen.', 'mraid.resize()')");
             return;
         }
 
@@ -689,7 +689,7 @@ class MRAIDImplementation {
         owner.fireAdClicked();
 
         this.owner
-                .loadUrl("javascript:window.mraid.util.stateChangeEvent('resized');");
+                .injectJavaScript("javascript:window.mraid.util.stateChangeEvent('resized');");
         resized = true;
 
     }
@@ -711,7 +711,7 @@ class MRAIDImplementation {
             maxHeight = (int) ((maxHeight / scale) + 0.5f);
             maxWidth = (int) ((maxWidth / scale) + 0.5f);
 
-            owner.loadUrl("javascript:window.mraid.util.setMaxSize(" + maxWidth + ", " + maxHeight + ")");
+            owner.injectJavaScript("javascript:window.mraid.util.setMaxSize(" + maxWidth + ", " + maxHeight + ")");
         }
     }
 
@@ -721,7 +721,7 @@ class MRAIDImplementation {
             screenWidth = screenSize[0];
             screenHeight = screenSize[1];
 
-            owner.loadUrl("javascript:window.mraid.util.setScreenSize(" + screenWidth + ", " + screenHeight + ")");
+            owner.injectJavaScript("javascript:window.mraid.util.setScreenSize(" + screenWidth + ", " + screenHeight + ")");
         }
     }
 

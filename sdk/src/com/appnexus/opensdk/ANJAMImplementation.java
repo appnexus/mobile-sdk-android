@@ -20,6 +20,7 @@ import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Pair;
 import android.view.View;
 import android.webkit.CookieSyncManager;
@@ -254,6 +255,10 @@ class ANJAMImplementation {
             }
         }
         String url = String.format("javascript:window.sdkjs.client.result(\"%s\")", params.toString());
-        webView.loadUrl(url);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            webView.evaluateJavascript(url, null);
+        } else {
+            webView.loadUrl(url);
+        }
     }
 }
