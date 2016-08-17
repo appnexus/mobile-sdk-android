@@ -66,7 +66,10 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
 
     @Override
     public void backPressed() {
-        // do nothing
+        // By default the AdActivity will finish onBackKeyPress. So just trigger onAdCollapsed.
+        if (adView != null && adView.getAdDispatcher() != null) {
+            adView.getAdDispatcher().onAdCollapsed();
+        }
     }
 
     @Override
