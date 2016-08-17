@@ -327,7 +327,11 @@ class AdWebView extends WebView implements Displayable {
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
             if (!firstPageFinished) {
-                view.loadUrl("javascript:window.mraid.util.pageFinished()");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    view.evaluateJavascript("javascript:window.mraid.util.pageFinished()", null);
+                } else {
+                    view.loadUrl("javascript:window.mraid.util.pageFinished()");
+                }
                 if (isMRAIDEnabled) {
                     implementation.webViewFinishedLoading(AdWebView.this, initialMraidStateString);
                     startCheckViewable();
@@ -854,6 +858,14 @@ class AdWebView extends WebView implements Displayable {
            return  ((MutableContextWrapper) this.getContext()).getBaseContext();
         }
         return this.getContext();
+    }
+
+    protected void injectJavaScript(String url){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            evaluateJavascript(url, null);
+        } else {
+            loadUrl(url);
+        }
     }
 }
 
