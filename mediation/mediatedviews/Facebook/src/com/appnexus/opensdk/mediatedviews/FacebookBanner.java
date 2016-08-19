@@ -53,7 +53,7 @@ public class FacebookBanner implements MediatedBannerAdView {
         } else if (height == 250) {
             adSize = AdSize.RECTANGLE_HEIGHT_250;
         } else {
-            Clog.d(Clog.mediationLogTag, "Facebook - Attempted to instantiate with size other than the allowed size of 320x50, -1x50, -1x90, -1x250");
+            Clog.e(Clog.mediationLogTag, "Facebook - Attempted to instantiate with size other than the allowed size of 320x50, -1x50, -1x90, -1x250");
             mBC.onAdFailed(ResultCode.UNABLE_TO_FILL);
             return null;
         }
