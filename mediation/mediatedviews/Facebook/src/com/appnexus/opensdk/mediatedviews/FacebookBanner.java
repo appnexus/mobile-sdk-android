@@ -21,6 +21,7 @@ import android.view.View;
 
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
+import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.utils.Clog;
 import com.facebook.ads.AdSize;
@@ -42,10 +43,21 @@ public class FacebookBanner implements MediatedBannerAdView {
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
         FacebookListener fbListener = new FacebookListener(mBC, this.getClass().getSimpleName());
-        adView = new AdView(activity, uid, AdSize.BANNER_320_50);
-        if (width != AdSize.BANNER_320_50.getWidth() || height != AdSize.BANNER_320_50.getHeight()) {
-            Clog.d(Clog.mediationLogTag, "Facebook - Attempted to instantiate with size other than the allowed size of 320x50. Instantiating with allowed size.");
+        AdSize adSize;
+        if (width == 320 && height == 50) {
+            adSize = AdSize.BANNER_320_50;
+        } else if (height == 50) {
+            adSize = AdSize.BANNER_HEIGHT_50;
+        } else if (height == 90) {
+            adSize = AdSize.BANNER_HEIGHT_90;
+        } else if (height == 250) {
+            adSize = AdSize.RECTANGLE_HEIGHT_250;
+        } else {
+            Clog.e(Clog.mediationLogTag, "Facebook - Attempted to instantiate with size other than the allowed size of 320x50, -1x50, -1x90, -1x250");
+            mBC.onAdFailed(ResultCode.UNABLE_TO_FILL);
+            return null;
         }
+        adView = new AdView(activity, uid, adSize);
         adView.setAdListener(fbListener);
         adView.loadAd();
         return adView;
@@ -57,11 +69,11 @@ public class FacebookBanner implements MediatedBannerAdView {
             adView.destroy();
             try {
                 adView.setAdListener(null);
-            }catch(NullPointerException npe){
+            } catch (NullPointerException npe) {
                 //Facebook's rate limiting makes this hard to test
                 //catch npe to be safe
             }
-            adView=null;
+            adView = null;
         }
     }
 
