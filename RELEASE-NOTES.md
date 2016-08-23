@@ -1,3 +1,16 @@
+## RC2.14
++ MS-2631 Support for new AdSizes in FaceBook banner mediation
++ MS-2586 WebView security improved.
++ MS-2539 Added onAdCollapse event for Ad dismiss using back button.
++ MS-2125 MoPub Native mediation has now been fixed.
++ MS-2017 ANJAM JS improved postMessage handling.
++ MS-2011 AdWebView context updated with MutableContextWrapper.
++ MS-1890 MRAID JS improved event firing.
++ Updated Mediated SDKs
+    FaceBook SDK update to 4.14.1
+
+
+
 ## RC2.13
 + MS-2332 Fixed interstitial FullScreen videoplayer issue
 + MS-2383 MRAID CustomClose 
