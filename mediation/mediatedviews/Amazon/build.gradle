@@ -1,5 +1,5 @@
 // Project Properties
-version = "5.6.20" // supported Amazon version
+version = "5.8.1" // supported Amazon version
 
 apply plugin: 'com.android.library'
 

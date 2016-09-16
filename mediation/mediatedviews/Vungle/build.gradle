@@ -1,5 +1,5 @@
 // Project Properties
-version = "3.3.5" // supported Vungle version
+version = "4.0.2" // supported Vungle version
 
 apply plugin: 'com.android.library'
 

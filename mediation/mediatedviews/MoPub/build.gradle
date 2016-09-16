@@ -1,5 +1,5 @@
 // Project Properties
-version = "4.6.1" // supported MoPub version
+version = "4.8.0" // supported MoPub version
 
 apply plugin: 'com.android.library'
 

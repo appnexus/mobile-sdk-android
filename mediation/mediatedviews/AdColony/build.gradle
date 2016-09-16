@@ -1,5 +1,5 @@
 // Project Properties
-version = "2.3.0" // supported AdColony version
+version = "2.3.6" // supported AdColony version
 
 apply plugin: 'com.android.library'
 

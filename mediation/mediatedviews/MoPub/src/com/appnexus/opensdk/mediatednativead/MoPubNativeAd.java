@@ -53,14 +53,6 @@ public class MoPubNativeAd implements MediatedNativeAd {
     @Override
     public void requestNativeAd(Context context, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
 
-        //As per Mopub documentation the context should be Activity context. Refer Mopub Changelog v4.1.0
-        if (!(context instanceof Activity)) {
-            Clog.w(Clog.mediationLogTag, "Required Activity Context");
-            mBC.onAdFailed(ResultCode.MEDIATED_SDK_UNAVAILABLE);
-            return;
-        }
-
-
         RequestParameters requestParameters = null;
         if (tp != null) {
             final EnumSet<RequestParameters.NativeAdAsset> desired
