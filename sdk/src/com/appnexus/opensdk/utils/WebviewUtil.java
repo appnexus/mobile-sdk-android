@@ -17,19 +17,24 @@ package com.appnexus.opensdk.utils;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
+import android.text.TextUtils;
+
+// We are using WebKit CookieManager to store and retrieve cookies,
+// This enables the cookies to be shared between HttpUrlConnection and the WebView.
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.cookie.DateUtils;
-
 import java.lang.reflect.Method;
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class WebviewUtil {
 
+
+    private static final String VERSION_ZERO_HEADER = "Set-cookie";
+    private static final String VERSION_ONE_HEADER = "Set-cookie2";
 
     /**
      * Convenience method to set generic WebView settings
@@ -46,6 +51,9 @@ public class WebviewUtil {
             webView.getSettings().setSupportZoom(true);
             webView.getSettings().setUseWideViewPort(true);
             webView.getSettings().setJavaScriptEnabled(true);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+            }
             webView.getSettings().setDomStorageEnabled(true);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
@@ -108,68 +116,69 @@ public class WebviewUtil {
 
     /**
      * Synchronize the uuid2 cookie to the Webview Cookie Jar
-     * This is only done if there is no present cookie.  
-     * @param cookies Cookies to sync
+     * This is only done if there is no present cookie.
+     * @param headers headers to extract cookies from for syncing
      */
-    public static void cookieSync(List<Cookie> cookies) {
+    @SuppressWarnings("deprecation")
+    public static void cookieSync(Map<String, List<String>> headers) {
+        if (headers == null || headers.isEmpty()) return;
+        CookieManager cm = CookieManager.getInstance();
+
+        if (cm == null) {
+           // Logger.i(Logger.LOGTAG, "Unable to find a CookieManager");
+            return;
+        }
         try {
-            CookieManager cm = CookieManager.getInstance();
-            if (cm == null) {
-                Clog.i(Clog.httpRespLogTag, "Unable to find a CookieManager");
-                return;
-            }
-            String wvcookie = cm.getCookie(Settings.BASE_URL);
-            if (!StringUtil.isEmpty(wvcookie)) {
-                Clog.d(Clog.httpRespLogTag, "Webview already has our cookie");
-                return;
-            }
+            String existingUUID = getExistingANUUID();
 
-            StringBuilder sb = new StringBuilder();
-            for (Cookie c : cookies) {
-                if (!Settings.AN_UUID.equals(c.getName())) {
-                    continue;
-                }
-                if (!StringUtil.isEmpty(c.getDomain())) {
-                    sb.append("domain=").append(c.getDomain()).append("; ");
-                }
-                if (!StringUtil.isEmpty(c.getPath())) {
-                    sb.append("path=").append(c.getPath()).append("; ");
-                }
-                sb.append(c.getName()).append('=').append(c.getValue())
-                        .append("; ");
+            for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+                String key = entry.getKey();
+                // Only "Set-cookie" and "Set-cookie2" pair will be parsed
+                if (key != null && (key.equalsIgnoreCase(VERSION_ZERO_HEADER)
+                        || key.equalsIgnoreCase(VERSION_ONE_HEADER))) {
+                    for (String cookieStr : entry.getValue()) {
+                        if (!TextUtils.isEmpty(cookieStr) && cookieStr.contains(Settings.AN_UUID)) {
+                            // pass uuid2 to WebView Cookie jar if it's empty or outdated
+                            if ((existingUUID == null || !cookieStr.contains(existingUUID))) {
+                                cm.setCookie(Settings.getCookieDomain(), cookieStr);
 
-                Date d = c.getExpiryDate();
-                if (d != null && d.getTime() > 0) {
-                    sb.append("expires=").append(DateUtils.formatDate(d))
-                            .append("; ");
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                                    // CookieSyncManager is deprecated in API 21 Lollipop
+                                    CookieSyncManager csm = CookieSyncManager.getInstance();
+                                    if (csm == null) {
+                                        Clog.i(Clog.httpRespLogTag,"Unable to find a CookieSyncManager");
+                                        return;
+                                    }
+                                    csm.sync();
+                                } else {
+                                    cm.flush();
+                                }
+                            }
+                        }
+                    }
                 }
-                if (c.isSecure()) {
-                    sb.append("secure");
-                } else {
-                    sb.append("HttpOnly");
-                }
-                Clog.d(Clog.httpRespLogTag, "set-cookie: " + sb.toString());
-                cm.setCookie(Settings.COOKIE_DOMAIN, sb.toString());
-
-            }
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                // CookieSyncManager is deprecated in API 21 Lollipop
-                CookieSyncManager csm = CookieSyncManager.getInstance();
-                if (csm == null) {
-                    Clog.i(Clog.httpRespLogTag,
-                            "Unable to find a CookieSyncManager");
-                    return;
-                }
-                csm.sync();
-            } else {
-                cm.flush();
             }
         } catch (IllegalStateException ise) {
         } catch (Exception e) {
-            // Catches PackageManager$NameNotFoundException for webview
-            Clog.e(Clog.httpRespLogTag, "Unable to find a CookieManager - Exception: "+e.getMessage());
         }
+    }
 
+
+
+    private static String getExistingANUUID() {
+        CookieManager cm = CookieManager.getInstance();
+        if (cm != null) {
+            String wvcookie = cm.getCookie(Settings.getCookieDomain());
+            if (!TextUtils.isEmpty(wvcookie)) {
+                String[] existingCookies = wvcookie.split("; ");
+                for (String cookie : existingCookies) {
+                    if (cookie != null && cookie.contains(Settings.AN_UUID)) {
+                        return cookie;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public static String getCookie() {
@@ -179,7 +188,7 @@ public class WebviewUtil {
                 Clog.i(Clog.httpRespLogTag, "Unable to find a CookieManager");
                 return null;
             }
-            return cm.getCookie(Settings.BASE_URL);
+            return cm.getCookie(Settings.getBaseUrl());
         }catch (Exception e){
             // Catches PackageManager$NameNotFoundException for webview
             Clog.e(Clog.httpRespLogTag, "Unable to find a CookieManager - Exception: "+e.getMessage());

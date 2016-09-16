@@ -2,7 +2,10 @@ package com.appnexus.opensdk;
 
 import android.app.Activity;
 
+import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.util.Lock;
+import com.squareup.okhttp.HttpUrl;
+import com.squareup.okhttp.mockwebserver.MockWebServer;
 
 import org.junit.After;
 import org.junit.Before;
@@ -10,6 +13,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.shadows.httpclient.FakeHttp;
 import org.robolectric.util.Scheduler;
 
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -21,13 +25,20 @@ public class BaseRoboTest {
     public static final int height = 50;
     Activity activity;
     Scheduler uiScheduler, bgScheduler;
+    public MockWebServer server;
 
     @Before
     public void setup() {
         activity = Robolectric.buildActivity(MockMainActivity.class).create().get();
         shadowOf(activity).grantPermissions("android.permission.INTERNET");
-        FakeHttp.getFakeHttpLayer().interceptHttpRequests(true);
-        FakeHttp.getFakeHttpLayer().interceptResponseContent(true);
+        server= new MockWebServer();
+        try {
+            server.start();
+            HttpUrl url= server.url("/");
+            ShadowSettings.setTestURL(url.toString());
+        } catch (IOException e) {
+            System.out.print("IOException");
+        }
         bgScheduler = Robolectric.getBackgroundThreadScheduler();
         uiScheduler = Robolectric.getForegroundThreadScheduler();
         Robolectric.flushBackgroundThreadScheduler();
@@ -39,7 +50,11 @@ public class BaseRoboTest {
 
     @After
     public void tearDown() {
-        FakeHttp.clearPendingHttpResponses();
+        try {
+            server.shutdown();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         activity.finish();
     }
 

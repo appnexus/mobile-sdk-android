@@ -15,19 +15,20 @@
  */
 package com.appnexus.opensdk.utils;
 
-import org.apache.http.Header;
+import java.util.List;
+import java.util.Map;
 
 public class HTTPResponse {
     private boolean succeeded;
     private String responseBody;
-    private Header[] headers;
+    private Map<String, List<String>> headers;
     private HttpErrorCode errorCode;
 
     public HTTPResponse() {
 
     }
 
-    public HTTPResponse(boolean succeeded, String responseBody, Header[] headers) {
+    public HTTPResponse(boolean succeeded, String responseBody, Map<String, List<String>> headers) {
         this.succeeded = succeeded;
         this.responseBody = responseBody;
         this.headers = headers;
@@ -57,11 +58,11 @@ public class HTTPResponse {
         this.responseBody = responseBody;
     }
 
-    public Header[] getHeaders() {
+    public Map<String, List<String>> getHeaders() {
         return headers;
     }
 
-    public void setHeaders(Header[] headers) {
+    public void setHeaders(Map<String, List<String>> headers) {
         this.headers = headers;
     }
 }

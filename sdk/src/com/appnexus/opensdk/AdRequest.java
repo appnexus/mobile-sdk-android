@@ -19,26 +19,23 @@ package com.appnexus.opensdk;
 import android.annotation.TargetApi;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.text.TextUtils;
 
 import com.appnexus.opensdk.utils.AdvertistingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.WebviewUtil;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.util.EntityUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 
 class AdRequest extends AsyncTask<Void, Integer, ServerResponse> {
 
@@ -89,36 +86,39 @@ class AdRequest extends AsyncTask<Void, Integer, ServerResponse> {
                     Clog.d(Clog.httpReqLogTag,
                             Clog.getString(R.string.fetch_url, query_string));
 
-                    HttpParams p = new BasicHttpParams();
-                    HttpConnectionParams.setConnectionTimeout(p,
-                            Settings.HTTP_CONNECTION_TIMEOUT);
-                    HttpConnectionParams.setSoTimeout(p,
-                            Settings.HTTP_SOCKET_TIMEOUT);
-                    HttpConnectionParams.setSocketBufferSize(p, 8192);
-                    DefaultHttpClient h = new DefaultHttpClient(p);
+                    //  Create and connect to HTTP service
+                    HttpURLConnection connection = createConnection(new URL(query_string));
+                    setConnectionParams(connection);
+                    connection.connect();
 
-                    HttpGet req = new HttpGet(query_string);
-                    req.setHeader("User-Agent", Settings.getSettings().ua);
-                    HttpResponse r = h.execute(req);
-                    if (!httpShouldContinue(r.getStatusLine())) {
+
+                    if (!httpShouldContinue(connection.getResponseCode())) {
                         return AdRequest.HTTP_ERROR;
                     }
-                    String out = EntityUtils.toString(r.getEntity());
-                    WebviewUtil.cookieSync(h.getCookieStore().getCookies());
+
+                    //Response parsing
+                    StringBuilder builder = new StringBuilder();
+                    InputStream is = connection.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is, "utf-8"));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        builder.append(line);
+                    }
+                    reader.close();
+                    is.close();
+                    String out = builder.toString();
                     if (out.equals("")) {
                         // just log and return a valid AdResponse object so that it is
                         // marked as UNABLE_TO_FILL
                         Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.response_blank));
                     }
-                    return new ServerResponse(out, r.getAllHeaders(), parameters.getMediaType());
-                } catch (ClientProtocolException e) {
-                    Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unknown));
-                } catch (ConnectTimeoutException e) {
-                    Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_timeout));
-                } catch (HttpHostConnectException he) {
-                    Clog.e(Clog.httpReqLogTag, Clog.getString(
-                            R.string.http_unreachable, he.getHost().getHostName(), he
-                                    .getHost().getPort()));
+
+                    //Cookie Sync here.
+                    WebviewUtil.cookieSync(connection.getHeaderFields());
+
+                    return new ServerResponse(out, connection.getHeaderFields(), parameters.getMediaType());
+                } catch (MalformedURLException e) {
+                    Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_url_malformed));
                 } catch (IOException e) {
                     Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_io));
                 } catch (SecurityException se) {
@@ -135,20 +135,37 @@ class AdRequest extends AsyncTask<Void, Integer, ServerResponse> {
         return null;
     }
 
-    private boolean httpShouldContinue(StatusLine statusLine) {
-        if (statusLine == null)
-            return false;
+    private boolean httpShouldContinue(int responseCode) {
 
-        int http_error_code = statusLine.getStatusCode();
-        switch (http_error_code) {
+        switch (responseCode) {
             default:
                 Clog.d(Clog.httpRespLogTag,
-                        Clog.getString(R.string.http_bad_status, http_error_code));
+                        Clog.getString(R.string.http_bad_status, responseCode));
                 return false;
-            case 200:
+            case HttpURLConnection.HTTP_OK:
                 return true;
         }
 
+    }
+
+
+    private HttpURLConnection createConnection(URL url) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setConnectTimeout(Settings.HTTP_CONNECTION_TIMEOUT);
+        connection.setReadTimeout(Settings.HTTP_SOCKET_TIMEOUT);
+        connection.setDoOutput(false);
+        connection.setDoInput(true);
+        connection.setUseCaches(false);
+        connection.setRequestMethod("GET");
+        return connection;
+    }
+
+    private void setConnectionParams(HttpURLConnection connection) throws ProtocolException{
+        connection.setRequestProperty("User-Agent", Settings.getSettings().ua);
+        String cookieString = WebviewUtil.getCookie();
+        if (!TextUtils.isEmpty(cookieString)) {
+            connection.setRequestProperty("Cookie",cookieString);
+        }
     }
 
     @Override

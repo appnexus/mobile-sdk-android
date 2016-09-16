@@ -297,7 +297,7 @@ class RequestParameters {
     String getRequestUrl() {
         StringBuilder sb;
         Settings settings = Settings.getSettings();
-        sb = new StringBuilder(Settings.REQUEST_BASE_URL);
+        sb = new StringBuilder(Settings.getRequestBaseUrl());
         if (!StringUtil.isEmpty(invCode) && memberID > 0) {
             sb.append("member=").append(memberID);
             sb.append("&inv_code=").append(Uri.encode(invCode));

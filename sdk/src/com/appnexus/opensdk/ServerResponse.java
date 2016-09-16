@@ -17,18 +17,21 @@
 package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
+import android.text.TextUtils;
+
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.JsonUtil;
 import com.appnexus.opensdk.utils.StringUtil;
-import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @SuppressLint("NewApi")
 class ServerResponse {
@@ -68,7 +71,7 @@ class ServerResponse {
     static final String EXTRAS_KEY_MRAID = "MRAID";
     static final String EXTRAS_KEY_ORIENTATION = "ORIENTATION";
 
-    public ServerResponse(String body, Header[] headers, MediaType mediaType) {
+    public ServerResponse(String body, Map<String, List<String>> headers, MediaType mediaType) {
         if (StringUtil.isEmpty(body)) {
             Clog.clearLastResponse();
             return;
@@ -101,12 +104,18 @@ class ServerResponse {
         this.height = height;
     }
 
-    private void printHeaders(Header[] headers) {
+    private void printHeaders(Map<String, List<String>> headers) {
         if (headers != null) {
-            for (Header h : headers) {
-                Clog.v(Clog.httpRespLogTag,
-                        Clog.getString(R.string.response_header, h.getName(),
-                                h.getValue()));
+            for (Map.Entry<String, List<String>> header : headers.entrySet()) {
+                if (header.getKey() != null) {
+                    for (String valueStr : header.getValue()) {
+                        if (!TextUtils.isEmpty(valueStr)) {
+                            Clog.v(Clog.httpRespLogTag,
+                                    Clog.getString(R.string.response_header, header.getKey(),
+                                            valueStr));
+                        }
+                    }
+                }
             }
         }
     }

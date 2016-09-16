@@ -40,6 +40,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.SslErrorHandler;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
@@ -54,8 +55,6 @@ import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 
 @SuppressLint("ViewConstructor")
@@ -108,7 +107,9 @@ class AdWebView extends WebView implements Displayable {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             this.getSettings().setMediaPlaybackRequiresUserGesture(false);
         }
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            this.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
         this.getSettings().setAllowFileAccess(false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             this.getSettings().setAllowContentAccess(false);
@@ -180,7 +181,7 @@ class AdWebView extends WebView implements Displayable {
                 Gravity.CENTER);
         this.setLayoutParams(resize);
 
-        this.loadDataWithBaseURL(Settings.BASE_URL, html, "text/html", "UTF-8", null);
+        this.loadDataWithBaseURL(Settings.getBaseUrl(), html, "text/html", "UTF-8", null);
     }
 
     // The webview about to load the ad, and the html ad content
@@ -252,7 +253,7 @@ class AdWebView extends WebView implements Displayable {
                     html = prependRawResources(html);
                     html = prependViewPort(html);
 
-                    loadDataWithBaseURL(Settings.BASE_URL, html, "text/html", "UTF-8", null);
+                    loadDataWithBaseURL(Settings.getBaseUrl(), html, "text/html", "UTF-8", null);
                     fireMRAIDEnabled();
                 }
             }

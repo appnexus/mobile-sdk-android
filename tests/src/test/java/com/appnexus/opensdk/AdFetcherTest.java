@@ -19,7 +19,9 @@ package com.appnexus.opensdk;
 import android.content.Context;
 
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
+import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
+import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +36,7 @@ import static junit.framework.Assert.assertNotSame;
 
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class})
+                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class})
 @RunWith(RobolectricGradleTestRunner.class)
 public class AdFetcherTest extends BaseRoboTest {
     private AdFetcher adFetcher;
@@ -122,7 +124,7 @@ public class AdFetcherTest extends BaseRoboTest {
     @Test
     public void testStop() {
         // not needed, but in case AdRequest is run
-        FakeHttp.addPendingHttpResponse(200, TestResponses.blank());
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponses.blank()));
 
         // start an AdFetcher normally, until an AdRequest is queued
         adFetcher.start();

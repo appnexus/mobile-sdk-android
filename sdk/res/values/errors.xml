@@ -15,6 +15,7 @@
 	<string formatted="false" name="http_timeout">E201: Connection to ad server timed out.</string>
 	<string formatted="false" name="http_unreachable">E202: %s:%d is unreachable.</string>
 	<string formatted="false" name="http_io">E203: Ad couldn\'t be fetched due to io error, probably http related.</string>
+	<string formatted="false" name="http_url_malformed">E208: Ad Request url was malformed..</string>
 	<string formatted="false" name="permissions_internet">E102: The SDK needs permission INTERNET in the host app.</string>
 	<string formatted="false" name="unknown_exception">E204: Ad couldn\'t be fetched due to unknown exception, see above trace.</string>
 	<string formatted="false" name="no_response">Request received no response from the server.</string>

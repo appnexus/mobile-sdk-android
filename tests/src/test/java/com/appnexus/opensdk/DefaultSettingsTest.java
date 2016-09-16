@@ -52,10 +52,10 @@ public class DefaultSettingsTest {
         assertEquals(3600000, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
         assertEquals(1000, Settings.NATIVE_AD_VISIBLE_PERIOD_MILLIS);
         assertEquals(50, Settings.MIN_PERCENTAGE_VIEWED);
-        assertEquals("http://mediation.adnxs.com", Settings.COOKIE_DOMAIN);
+        assertEquals("http://mediation.adnxs.com", Settings.getCookieDomain());
         assertEquals("uuid2", Settings.AN_UUID);
-        assertEquals("http://mediation.adnxs.com/", Settings.BASE_URL);
-        assertEquals("http://mediation.adnxs.com/mob?", Settings.REQUEST_BASE_URL);
-        assertEquals("http://mediation.adnxs.com/install?", Settings.INSTALL_BASE_URL);
+        assertEquals("http://mediation.adnxs.com/", Settings.getBaseUrl());
+        assertEquals("http://mediation.adnxs.com/mob?", Settings.getRequestBaseUrl());
+        assertEquals("http://mediation.adnxs.com/install?", Settings.getInstallBaseUrl());
     }
 }

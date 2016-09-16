@@ -33,6 +33,7 @@ public class Settings {
     public String carrierName = null;
     public String aaid = null;
     public boolean limitTrackingEnabled = false;
+    public boolean useHttps=false;
 
     public final String deviceMake = Build.MANUFACTURER;
     public final String deviceModel = Build.MODEL;
@@ -76,11 +77,11 @@ public class Settings {
 
     public static final int MIN_PERCENTAGE_VIEWED = 50;
 
-    public static String COOKIE_DOMAIN = "http://mediation.adnxs.com";
+    private static String COOKIE_DOMAIN = "http://mediation.adnxs.com";
     public static final String AN_UUID = "uuid2";
-    public static String BASE_URL = "http://mediation.adnxs.com/";
-    public static String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
-    public static String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
+    private static String BASE_URL = "http://mediation.adnxs.com/";
+    private static String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
+    private static String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
 
     private static Settings settings_instance = null;
 
@@ -123,4 +124,21 @@ public class Settings {
         }
         return null;
     }
+
+    public static String getBaseUrl() {
+        return Settings.getSettings().useHttps ? BASE_URL.replace("http:", "https:") : BASE_URL;
+    }
+
+    public static String getRequestBaseUrl() {
+        return Settings.getSettings().useHttps ? REQUEST_BASE_URL.replace("http:", "https:") : REQUEST_BASE_URL;
+    }
+
+    public static String getInstallBaseUrl() {
+        return Settings.getSettings().useHttps ? INSTALL_BASE_URL.replace("http:", "https:") : INSTALL_BASE_URL;
+    }
+
+    public static String getCookieDomain(){
+        return COOKIE_DOMAIN;
+    }
+
 }

@@ -156,4 +156,22 @@ public class SDKSettings {
     static void unregisterExternalMediationClass(String className) {
         Settings.getSettings().externalMediationClasses.put(className, null);
     }
+
+    /**
+     * Enable HTTPS in the SDK if set to true.
+     *
+     * @param useHttps whether to enable Https or not. default is false
+     */
+
+    public static void useHttps(boolean useHttps){
+        Settings.getSettings().useHttps=useHttps;
+    }
+
+    /**
+     * Returns true if the Https is enabled for the ad calls
+     * or false otherwise.
+     */
+    public static boolean isHttpsEnabled() {
+        return Settings.getSettings().useHttps;
+    }
 }

@@ -19,7 +19,9 @@ package com.appnexus.opensdk;
 import android.webkit.WebView;
 
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
+import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
+import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +35,7 @@ import static junit.framework.Assert.assertTrue;
 
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class})
+                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class})
 @RunWith(RobolectricGradleTestRunner.class)
 public class MRAIDTest extends BaseViewAdTest {
 
@@ -52,10 +54,9 @@ public class MRAIDTest extends BaseViewAdTest {
     }
 
     private void loadMraidBanner(String testName) {
-        FakeHttp.addPendingHttpResponse(200, TestResponses.mraidBanner(testName));
-        bannerAdView.setAdSize(320, 50);
-        bannerAdView.loadAdOffscreen();
-
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponses.mraidBanner(testName)));
+        requestManager = new AdViewRequestManager(bannerAdView);
+        requestManager.execute();
         // let AdFetcher queue AdRequest
         waitForTasks();
         // Flush AAID tasks before AdRequest tasks twice to make sure AdRequest gets executed

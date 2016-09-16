@@ -17,8 +17,10 @@
 package com.appnexus.opensdk;
 
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
+import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.utils.Settings;
+import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +34,7 @@ import static junit.framework.Assert.assertTrue;
 
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class})
+                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class})
 @RunWith(RobolectricGradleTestRunner.class)
 public class NativeRequestTest extends BaseNativeTest {
 
@@ -51,7 +53,7 @@ public class NativeRequestTest extends BaseNativeTest {
     @Test
     public void requestNative() {
         adRequest.loadAd();
-        FakeHttp.addPendingHttpResponse(200, TestResponses.anNative());
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponses.anNative()));
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();

@@ -17,8 +17,10 @@
 package com.appnexus.opensdk;
 
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
+import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.utils.Settings;
+import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +38,7 @@ import static junit.framework.Assert.assertTrue;
 
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class})
+                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class})
 @RunWith(RobolectricGradleTestRunner.class)
 public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdRequester {
     boolean requesterFailed, requesterReceivedServerResponse, requesterReceivedAd;
@@ -93,7 +95,7 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
         setBannerRequestParams();
         // adRequest initialization goes here because getOwner is called in the constructor
         adRequest = new AdRequest(this);
-        FakeHttp.addPendingHttpResponse(200, TestResponses.banner());
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponses.banner()));
         adRequest.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
@@ -108,7 +110,7 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
         setBannerRequestParams();
         adRequest = new AdRequest(this);
         // blanks are handled by requester
-        FakeHttp.addPendingHttpResponse(200, TestResponses.blank());
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponses.blank()));
         adRequest.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
@@ -120,7 +122,7 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
     public void testRequestStatusError() {
         setBannerRequestParams();
         adRequest = new AdRequest(this);
-        FakeHttp.addPendingHttpResponse(404, TestResponses.banner());
+        server.enqueue(new MockResponse().setResponseCode(404).setBody(TestResponses.banner()));
         adRequest.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
@@ -132,7 +134,7 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
     public void testRequestNativeSucceeded() {
         setNativeRequestParams();
         adRequest = new AdRequest(this);
-        FakeHttp.addPendingHttpResponse(200, TestResponses.anNative());
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponses.anNative()));
         adRequest.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
@@ -148,7 +150,7 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
         adRequest = new AdRequest(this);
 
         // Server response for banner and interstitial is the same
-        FakeHttp.addPendingHttpResponse(200, TestResponses.banner());
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponses.banner()));
         adRequest.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();

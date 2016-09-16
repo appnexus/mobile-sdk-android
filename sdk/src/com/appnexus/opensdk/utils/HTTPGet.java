@@ -19,20 +19,19 @@ package com.appnexus.opensdk.utils;
 import android.annotation.TargetApi;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.text.TextUtils;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.ConnectionPoolTimeoutException;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 
+import com.appnexus.opensdk.R;
+
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 
 
 public abstract class HTTPGet extends AsyncTask<Void, Void, HTTPResponse> {
@@ -42,47 +41,53 @@ public abstract class HTTPGet extends AsyncTask<Void, Void, HTTPResponse> {
         super();
     }
 
-	@Override
+    @Override
     protected HTTPResponse doInBackground(Void... params) {
         HTTPResponse out = new HTTPResponse();
-
-        HttpClient httpc = new DefaultHttpClient();
+        HttpURLConnection connection = null;
         try {
-            URI uri = new URI(getUrl());
-            if(uri.getHost()==null){
-                 Clog.w(Clog.httpReqLogTag, "An HTTP request with an invalid URL was attempted.", new IllegalStateException("An HTTP request with an invalid URL was attempted."));
+            URL reqUrl = new URL(getUrl());
+            if (reqUrl.getHost() == null) {
+                Clog.w(Clog.httpReqLogTag, "An HTTP request with an invalid URL was attempted.", new IllegalStateException("An HTTP request with an invalid URL was attempted."));
                 out.setSucceeded(false);
                 return out;
             }
-            HttpGet request = new HttpGet();
-            request.setHeader("User-Agent", Settings.getSettings().ua);
-            request.setURI(uri);
-            request.addHeader("Cookie", WebviewUtil.getCookie());
-            HttpResponse r = httpc.execute(request);
+            //  Create and connect to HTTP service
+            connection = createConnection(reqUrl);
+            setConnectionParams(connection);
+            connection.connect();
 
-            out.setHeaders(r.getAllHeaders());
-            out.setResponseBody(EntityUtils.toString(r.getEntity()));
-            boolean isStatusOK = (r.getStatusLine() != null)
-                    && (r.getStatusLine().getStatusCode()
-                    == 200);
+
+            //Response parsing
+            StringBuilder builder = new StringBuilder();
+            InputStream is = connection.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is, "utf-8"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+            }
+            reader.close();
+            is.close();
+            String responseString = builder.toString();
+
+
+            out.setHeaders(connection.getHeaderFields());
+            out.setResponseBody(responseString);
+            boolean isStatusOK = (connection.getResponseCode()
+                    == HttpURLConnection.HTTP_OK);
             out.setSucceeded(isStatusOK);
-        } catch (URISyntaxException e) {
+
+        }catch (MalformedURLException e) {
             out.setSucceeded(false);
             out.setErrorCode(HttpErrorCode.URI_SYNTAX_ERROR);
-        } catch (ClientProtocolException e) {
-            out.setSucceeded(false);
-            out.setErrorCode(HttpErrorCode.HTTP_PROTOCOL_ERROR);
-        } catch (ConnectionPoolTimeoutException e) {
-            out.setSucceeded(false);
-            out.setErrorCode(HttpErrorCode.CONNECTION_FAILURE);
-        } catch (ConnectTimeoutException e) {
-            out.setSucceeded(false);
-            out.setErrorCode(HttpErrorCode.CONNECTION_FAILURE);
+            Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_url_malformed));
         } catch (IOException e) {
             out.setSucceeded(false);
             out.setErrorCode(HttpErrorCode.TRANSPORT_ERROR);
+            Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_io));
         } finally {
-            httpc.getConnectionManager().shutdown();
+            if(connection!= null)
+                connection.disconnect();
         }
 
         return out;
@@ -99,5 +104,22 @@ public abstract class HTTPGet extends AsyncTask<Void, Void, HTTPResponse> {
 
 
     protected abstract String getUrl();
+
+    private HttpURLConnection createConnection(URL url) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setDoOutput(false);
+        connection.setDoInput(true);
+        connection.setUseCaches(false);
+        connection.setRequestMethod("GET");
+        return connection;
+    }
+
+    private void setConnectionParams(HttpURLConnection connection) throws ProtocolException {
+        connection.setRequestProperty("User-Agent", Settings.getSettings().ua);
+        String cookieString = WebviewUtil.getCookie();
+        if (!TextUtils.isEmpty(cookieString)) {
+            connection.setRequestProperty("Cookie",cookieString);
+        }
+    }
 
 }
