@@ -1,5 +1,5 @@
 // Project Properties
-version = "6.4.1" // supported Chartboost version
+version = "6.5.1" // supported Chartboost version
 
 apply plugin: 'com.android.library'
 

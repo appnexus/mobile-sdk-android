@@ -89,8 +89,9 @@ public class VungleInterstitial implements MediatedInterstitialAdView, EventList
     }
 
     @Override
-    public void onAdEnd(boolean b) {
-        Clog.d(Clog.mediationLogTag, className + ": onAdEnd " + b);
+    public void onAdEnd(boolean wasSuccessfulView, boolean wasCallToActionClicked) {
+        Clog.d(Clog.mediationLogTag, className + ": onAdEnd wasSuccessfulView " + wasSuccessfulView +
+                ": wasCallToActionClicked " + wasCallToActionClicked);
     }
 
     @Override
