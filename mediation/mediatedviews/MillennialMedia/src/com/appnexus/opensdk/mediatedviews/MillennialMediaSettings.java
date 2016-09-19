@@ -5,13 +5,31 @@ import android.util.Pair;
 
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.utils.StringUtil;
+import com.millennialmedia.AppInfo;
 import com.millennialmedia.UserData;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-class Settings {
+public class MillennialMediaSettings {
+
+    static String siteId = "";
+
+    /**
+     * Convenience method to pass siteId to be set in MMSDK.
+     *
+     * @param siteId
+     */
+    public static void setSiteId(String siteId) {
+        MillennialMediaSettings.siteId = siteId;
+    }
+
+    static AppInfo getAppInfo() {
+        AppInfo appInfo = new AppInfo();
+        appInfo.setSiteId(MillennialMediaSettings.siteId);
+        return appInfo;
+    }
 
     static UserData getUserData(final TargetingParameters tp, final Activity activity) {
         final UserData userData = new UserData();
