@@ -28,7 +28,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 import com.appnexus.opensdk.utils.*;
-import org.apache.http.message.BasicNameValuePair;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -95,9 +94,9 @@ class ANJAMImplementation {
             mayDeepLink = intent.resolveActivity(webView.getContext().getPackageManager()) != null;
         }
 
-        LinkedList<BasicNameValuePair> list = new LinkedList<BasicNameValuePair>();
-        list.add(new BasicNameValuePair(KEY_CALLER, CALL_MAYDEEPLINK));
-        list.add(new BasicNameValuePair("mayDeepLink", String.valueOf(mayDeepLink)));
+        LinkedList<Pair<String, String>> list = new LinkedList<Pair<String, String>>();
+        list.add(new Pair(KEY_CALLER, CALL_MAYDEEPLINK));
+        list.add(new Pair("mayDeepLink", String.valueOf(mayDeepLink)));
         loadResult(webView, cb, list);
     }
 
@@ -105,8 +104,8 @@ class ANJAMImplementation {
         String cb = uri.getQueryParameter("cb");
         String urlParam = uri.getQueryParameter("url");
 
-        LinkedList<BasicNameValuePair> list = new LinkedList<BasicNameValuePair>();
-        list.add(new BasicNameValuePair(KEY_CALLER, CALL_DEEPLINK));
+        LinkedList<Pair<String, String>> list = new LinkedList<Pair<String, String>>();
+        list.add(new Pair(KEY_CALLER, CALL_DEEPLINK));
 
         if ((webView.getContext() == null)
                 || (urlParam == null)) {
@@ -234,23 +233,23 @@ class ANJAMImplementation {
             idNameValue = "sha1udid";
         }
 
-        LinkedList<BasicNameValuePair> list = new LinkedList<BasicNameValuePair>();
-        list.add(new BasicNameValuePair(KEY_CALLER, CALL_GETDEVICEID));
-        list.add(new BasicNameValuePair("idname", idNameValue));
-        list.add(new BasicNameValuePair("id", idValue));
+        LinkedList<Pair<String, String>> list = new LinkedList<Pair<String, String>>();
+        list.add(new Pair(KEY_CALLER, CALL_GETDEVICEID));
+        list.add(new Pair("idname", idNameValue));
+        list.add(new Pair("id", idValue));
         loadResult(webView, cb, list);
     }
 
     // Send the result back to JS
 
-    private static void loadResult(WebView webView, String cb, List<BasicNameValuePair> paramsList) {
+    private static void loadResult(WebView webView, String cb, List<Pair<String , String>> paramsList) {
         StringBuilder params = new StringBuilder();
         params.append("cb=").append(cb != null ? cb : "-1");
         if (paramsList != null) {
-            for (BasicNameValuePair pair : paramsList) {
-                if ((pair.getName() != null) && (pair.getValue() != null)) {
-                    params.append("&").append(pair.getName())
-                            .append("=").append(Uri.encode(pair.getValue()));
+            for (Pair<String, String> pair : paramsList) {
+                if ((pair.first != null) && (pair.second != null)) {
+                    params.append("&").append(pair.first)
+                            .append("=").append(Uri.encode(pair.second));
                 }
             }
         }
