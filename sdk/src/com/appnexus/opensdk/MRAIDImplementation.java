@@ -245,7 +245,7 @@ class MRAIDImplementation {
             expandedWebView = null;
         } else if (owner.adView.isInterstitial()) {
             owner.adView.getAdDispatcher().onAdCollapsed();
-            Activity containerActivity = (Activity) ViewUtil.getTopContext(owner);
+            Activity containerActivity = ((Activity) this.owner.getContextFromMutableContext());
             if ( containerActivity != null && !containerActivity.isFinishing()) {
                 containerActivity.finish();
             }
