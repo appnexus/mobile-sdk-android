@@ -33,15 +33,14 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.CalendarContract;
 import android.util.Base64;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.webkit.WebView;
 import android.widget.FrameLayout;
 
 import com.appnexus.opensdk.utils.*;
-import org.apache.http.message.BasicNameValuePair;
 
 import java.io.*;
 import java.net.URLDecoder;
@@ -255,12 +254,13 @@ class MRAIDImplementation {
         }
     }
 
-    void setUseCustomClose(ArrayList<BasicNameValuePair> parameters) {
-        owner.setMRAIDUseCustomClose(Boolean.parseBoolean(parameters.get(0).getValue()));
+    void setUseCustomClose(ArrayList<Pair<String, String>> parameters) {
+        owner.setMRAIDUseCustomClose(Boolean.parseBoolean(parameters.get(0).second));
     }
 
     private MRAIDTwoPartExpandWebView expandedWebView = null;
-    void expand(ArrayList<BasicNameValuePair> parameters) {
+
+    void expand(ArrayList<Pair<String, String>> parameters) {
         // Default value is fullscreen.
         int width = -1;
         int height = -1;
@@ -268,27 +268,27 @@ class MRAIDImplementation {
         String uri = null;
         boolean allowOrientationChange = true;
         AdActivity.OrientationEnum forceOrientation = AdActivity.OrientationEnum.none;
-        for (BasicNameValuePair bnvp : parameters) {
-            if (bnvp.getName().equals("w"))
+        for (Pair<String, String> bnvp : parameters) {
+            if (bnvp.first.equals("w"))
                 try {
-                    width = Integer.parseInt(bnvp.getValue());
+                    width = Integer.parseInt(bnvp.second);
                 } catch (NumberFormatException e) {
                     // Do nothing
                 }
-            else if (bnvp.getName().equals("h"))
+            else if (bnvp.first.equals("h"))
                 try {
-                    height = Integer.parseInt(bnvp.getValue());
+                    height = Integer.parseInt(bnvp.second);
                 } catch (NumberFormatException e) {
                     // Do nothing
                 }
-            else if (bnvp.getName().equals("useCustomClose"))
-                useCustomClose = Boolean.parseBoolean(bnvp.getValue());
-            else if (bnvp.getName().equals("url")) {
-                uri = Uri.decode(bnvp.getValue());
-            } else if (bnvp.getName().equals("allow_orientation_change")) {
-                allowOrientationChange = Boolean.parseBoolean(bnvp.getValue());
-            } else if (bnvp.getName().equals("force_orientation")) {
-                forceOrientation = parseForceOrientation(bnvp.getValue());
+            else if (bnvp.first.equals("useCustomClose"))
+                useCustomClose = Boolean.parseBoolean(bnvp.second);
+            else if (bnvp.first.equals("url")) {
+                uri = Uri.decode(bnvp.second);
+            } else if (bnvp.first.equals("allow_orientation_change")) {
+                allowOrientationChange = Boolean.parseBoolean(bnvp.second);
+            } else if (bnvp.first.equals("force_orientation")) {
+                forceOrientation = parseForceOrientation(bnvp.second);
             }
         }
 
@@ -298,7 +298,7 @@ class MRAIDImplementation {
             //second webview to forward the close event back
 
             //"This" mraid implementation is *not* reused by the second webview
-            try{
+            try {
                 expandedWebView = new MRAIDTwoPartExpandWebView(this.owner.adView, this);
                 expandedWebView.loadUrlWithMRAID(uri);
 
@@ -316,11 +316,11 @@ class MRAIDImplementation {
                                 }
                             }
                         });
-            }catch (Exception e){
+            } catch (Exception e) {
                 // Catches PackageManager$NameNotFoundException for webview
                 Clog.e(Clog.baseLogTag, "Exception initializing the redirect webview: " + e.getMessage());
             }
-        }else {
+        } else {
             owner.expand(width, height, useCustomClose, this, allowOrientationChange, forceOrientation);
         }
 
@@ -342,7 +342,7 @@ class MRAIDImplementation {
         String[] qMarkSplit = url.split("\\?");
         String func = qMarkSplit[0].replaceAll("/", "");
         String params;
-        ArrayList<BasicNameValuePair> parameters = new ArrayList<BasicNameValuePair>();
+        ArrayList<Pair<String, String>> parameters = new ArrayList<Pair<String, String>>();
         if (qMarkSplit.length > 1) {
             params = url.substring(url.indexOf("?") + 1);
 
@@ -356,7 +356,7 @@ class MRAIDImplementation {
                     continue;
                 }
 
-                parameters.add(new BasicNameValuePair(pair[0], pair[1]));
+                parameters.add(new Pair(pair[0], pair[1]));
             }
         }
 
@@ -411,11 +411,11 @@ class MRAIDImplementation {
         }
     }
 
-    private void open(ArrayList<BasicNameValuePair> parameters) {
+    private void open(ArrayList<Pair<String, String>> parameters) {
         String uri = null;
-        for (BasicNameValuePair bnvp : parameters) {
-            if (bnvp.getName().equals("uri")) {
-                uri = Uri.decode(bnvp.getValue());
+        for (Pair<String, String> bnvp : parameters) {
+            if (bnvp.first.equals("uri")) {
+                uri = Uri.decode(bnvp.second);
             }
         }
 
@@ -425,11 +425,11 @@ class MRAIDImplementation {
         }
     }
 
-    private void storePicture(ArrayList<BasicNameValuePair> parameters) {
+    private void storePicture(ArrayList<Pair<String, String>> parameters) {
         String uri = null;
-        for (BasicNameValuePair bnvp : parameters) {
-            if (bnvp.getName().equals("uri")) {
-                uri = bnvp.getValue();
+        for (Pair<String, String> bnvp : parameters) {
+            if (bnvp.first.equals("uri")) {
+                uri = bnvp.second;
             }
         }
         if (uri == null) {
@@ -534,11 +534,11 @@ class MRAIDImplementation {
 
     }
 
-    private void playVideo(ArrayList<BasicNameValuePair> parameters) {
+    private void playVideo(ArrayList<Pair<String, String>> parameters) {
         String uri = null;
-        for (BasicNameValuePair bnvp : parameters) {
-            if (bnvp.getName().equals("uri")) {
-                uri = bnvp.getValue();
+        for (Pair<String, String> bnvp : parameters) {
+            if (bnvp.first.equals("uri")) {
+                uri = bnvp.second;
             }
         }
         if (uri == null) {
@@ -561,11 +561,11 @@ class MRAIDImplementation {
         }
     }
 
-    private void createCalendarEvent(ArrayList<BasicNameValuePair> parameters) {
+    private void createCalendarEvent(ArrayList<Pair<String, String>> parameters) {
         W3CEvent event = null;
         try {
             if (parameters != null && parameters.size() > 0) {
-                event = W3CEvent.createFromJSON(URLDecoder.decode(parameters.get(0).getValue(), "UTF-8"));
+                event = W3CEvent.createFromJSON(URLDecoder.decode(parameters.get(0).second, "UTF-8"));
             }
         } catch (UnsupportedEncodingException e) {
             return;
@@ -597,15 +597,15 @@ class MRAIDImplementation {
     }
 
     @SuppressWarnings({"UnusedDeclaration", "UnusedAssignment"})
-    private void setOrientationProperties(ArrayList<BasicNameValuePair> parameters) {
+    private void setOrientationProperties(ArrayList<Pair<String, String>> parameters) {
         boolean allow_orientation_change = true;
         AdActivity.OrientationEnum orientation = AdActivity.OrientationEnum.none;
 
-        for (BasicNameValuePair bnvp : parameters) {
-            if (bnvp.getName().equals("allow_orientation_change")) {
-                allow_orientation_change = Boolean.parseBoolean(bnvp.getValue());
-            } else if (bnvp.getName().equals("force_orientation")) {
-                orientation = parseForceOrientation(bnvp.getValue());
+        for (Pair<String, String> bnvp : parameters) {
+            if (bnvp.first.equals("allow_orientation_change")) {
+                allow_orientation_change = Boolean.parseBoolean(bnvp.second);
+            } else if (bnvp.first.equals("force_orientation")) {
+                orientation = parseForceOrientation(bnvp.second);
             }
         }
 
@@ -617,12 +617,12 @@ class MRAIDImplementation {
                 AdActivity.unlockOrientation(containerActivity);
             } else {
                 int androidOrientation = Configuration.ORIENTATION_UNDEFINED;
-                switch(orientation){
+                switch (orientation) {
                     case landscape:
-                        androidOrientation=Configuration.ORIENTATION_LANDSCAPE;
+                        androidOrientation = Configuration.ORIENTATION_LANDSCAPE;
                         break;
                     case portrait:
-                        androidOrientation=Configuration.ORIENTATION_PORTRAIT;
+                        androidOrientation = Configuration.ORIENTATION_PORTRAIT;
                         break;
                     case none:
                     default:
@@ -643,27 +643,27 @@ class MRAIDImplementation {
         bottom_center
     }
 
-    private void resize(ArrayList<BasicNameValuePair> parameters) {
+    private void resize(ArrayList<Pair<String, String>> parameters) {
         int w = -1;
         int h = -1;
         int offset_x = 0;
         int offset_y = 0;
         String custom_close_position = "top-right";
         boolean allow_offscrean = true;
-        for (BasicNameValuePair bnvp : parameters) {
+        for (Pair<String, String> bnvp : parameters) {
             try {
-                if (bnvp.getName().equals("w")) {
-                    w = Integer.parseInt(bnvp.getValue());
-                } else if (bnvp.getName().equals("h")) {
-                    h = Integer.parseInt(bnvp.getValue());
-                } else if (bnvp.getName().equals("offset_x")) {
-                    offset_x = Integer.parseInt(bnvp.getValue());
-                } else if (bnvp.getName().equals("offset_y")) {
-                    offset_y = Integer.parseInt(bnvp.getValue());
-                } else if (bnvp.getName().equals("custom_close_position")) {
-                    custom_close_position = bnvp.getValue();
-                } else if (bnvp.getName().equals("allow_offscreen")) {
-                    allow_offscrean = Boolean.parseBoolean(bnvp.getValue());
+                if (bnvp.first.equals("w")) {
+                    w = Integer.parseInt(bnvp.second);
+                } else if (bnvp.first.equals("h")) {
+                    h = Integer.parseInt(bnvp.second);
+                } else if (bnvp.first.equals("offset_x")) {
+                    offset_x = Integer.parseInt(bnvp.second);
+                } else if (bnvp.first.equals("offset_y")) {
+                    offset_y = Integer.parseInt(bnvp.second);
+                } else if (bnvp.first.equals("custom_close_position")) {
+                    custom_close_position = bnvp.second;
+                } else if (bnvp.first.equals("allow_offscreen")) {
+                    allow_offscrean = Boolean.parseBoolean(bnvp.second);
                 }
             } catch (NumberFormatException e) {
                 Clog.d(Clog.mraidLogTag, Clog.getString(R.string.number_format));
