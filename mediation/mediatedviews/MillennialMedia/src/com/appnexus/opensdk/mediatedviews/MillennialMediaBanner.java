@@ -51,8 +51,12 @@ public class MillennialMediaBanner implements MediatedBannerAdView {
                 mmListener.printToClog(String.format("requesting an ad: [%s, %s, %dx%d]", parameter, uid, width, height));
 
                 MMSDK.initialize(activity);
+                if (!MillennialMediaSettings.siteId.isEmpty()) {
+                    MMSDK.setAppInfo(MillennialMediaSettings.getAppInfo());
+                }
+
                 // SDK must be initialized first before creating userdata instance
-                UserData userData = Settings.getUserData(targetingParameters, activity);
+                UserData userData = MillennialMediaSettings.getUserData(targetingParameters, activity);
                 FrameLayout adContainer = new FrameLayout(activity);
                 adContainer.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 inlineAd = InlineAd.createInstance(uid, adContainer);

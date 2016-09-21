@@ -480,7 +480,7 @@ class AdWebView extends WebView implements Displayable {
 
                     if (this.adView.getShowLoadingIndicator()) {
                         //Show a dialog box
-                        progressDialog = new ProgressDialog(((ViewGroup) this.getParent()).getContext());
+                        progressDialog = new ProgressDialog(this.getContextFromMutableContext());
                         progressDialog.setCancelable(true);
                         progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                             @Override

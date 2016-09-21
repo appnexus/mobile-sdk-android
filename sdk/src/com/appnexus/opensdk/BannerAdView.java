@@ -856,6 +856,11 @@ public class BannerAdView extends AdView {
             this.currentDisplayable.onDestroy();
             this.currentDisplayable = null;
         }
+
+        dismantleBroadcast();
+        if (mAdFetcher != null) {
+            stop();
+        }
     }
 
     @Override
