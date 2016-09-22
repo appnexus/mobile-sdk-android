@@ -1,3 +1,20 @@
+## RC2.15
++ MS-2581 Added HTTPS support for SDK. New API introduced SDKSettings.useHttps(true).
++ MS-2708 Fixed bugs in MutableContextWrapper implementation.
++ MS-2710 Removed dependency on Legacy Apache library and moved to java.net.
++ MS-2730 Fixed context leak in loadAdOffscreen implementation.
++ Updated Mediated SDKs
+    AdColony SDK update to 2.3.6
+    Amazon SDK update to 5.8.1
+    Chartboost SDK update to 6.5.1
+    FaceBook SDK update to 4.15.0
+    GooglePlay SDK update to 9.4.0
+    InMobi SDK update to 5.3.1
+    MillennialMedia SDK update to 6.3.0
+    MoPub SDK update to 4.8.0
+    Vungle SDK update to 4.0.2
+    Yahoo Flurry SDK update to 6.4.2
+
 ## RC2.14
 + MS-2631 Support for new AdSizes in FaceBook banner mediation
 + MS-2586 WebView security improved.

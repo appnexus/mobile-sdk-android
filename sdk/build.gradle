@@ -1,5 +1,5 @@
 // Project properties
-version = "2.14"
+version = "2.15"
 group='com.appnexus.opensdk'
 
 // Android build
