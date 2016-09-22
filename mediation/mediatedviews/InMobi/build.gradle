@@ -29,6 +29,10 @@ android {
 
 }
 
+repositories {
+    jcenter()
+}
+
 dependencies {
     compile project(':sdk')
     compile "com.inmobi.monetization:inmobi-ads:${project.version}"
