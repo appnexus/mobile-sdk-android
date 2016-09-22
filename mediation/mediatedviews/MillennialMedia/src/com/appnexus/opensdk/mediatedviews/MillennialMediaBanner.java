@@ -50,8 +50,8 @@ public class MillennialMediaBanner implements MediatedBannerAdView {
                 MillennialMediaListener mmListener = new MillennialMediaListener(mBC, super.getClass().getSimpleName());
                 mmListener.printToClog(String.format("requesting an ad: [%s, %s, %dx%d]", parameter, uid, width, height));
 
-                MMSDK.initialize(activity);
-                if (!MillennialMediaSettings.siteId.isEmpty()) {
+                MMSDK.initialize(activity.getApplication());
+                if (MillennialMediaSettings.getAppInfo()!=null) {
                     MMSDK.setAppInfo(MillennialMediaSettings.getAppInfo());
                 }
 

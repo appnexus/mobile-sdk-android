@@ -69,7 +69,7 @@ public class InMobiBanner implements MediatedBannerAdView {
                 imBanner = new com.inmobi.ads.InMobiBanner(activity, placementID);
                 imBanner.setEnableAutoRefresh(false);
 
-                ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(width, height);
+                ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(toPixelUnits(activity,width), toPixelUnits(activity,height));
                 imBanner.setLayoutParams(lp);
                 InMobiSettings.setTargetingParams(tp);
 
@@ -105,5 +105,10 @@ public class InMobiBanner implements MediatedBannerAdView {
     @Override
     public void onDestroy() {
         destroy();
+    }
+
+    private int toPixelUnits(Activity activity, int dipUnit) {
+        float density = activity.getResources().getDisplayMetrics().density;
+        return Math.round(dipUnit * density);
     }
 }

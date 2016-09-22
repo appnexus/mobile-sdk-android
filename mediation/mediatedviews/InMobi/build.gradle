@@ -1,5 +1,5 @@
 // Project Properties
-version = "5.2.0" // supported InMobi version
+version = "5.3.1" // supported InMobi version
 
 apply plugin: 'com.android.library'
 
@@ -30,8 +30,8 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
     compile project(':sdk')
+    compile "com.inmobi.monetization:inmobi-ads:${project.version}"
 }
 
 /**

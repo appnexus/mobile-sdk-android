@@ -19,6 +19,9 @@
 #   public *;
 #}
 
--keep class com.millennialmedia.android.** { public *;}
+-keepclassmembers class com.millennialmedia** {
+public *;
+}
+-keep class com.millennialmedia**
 -keep class com.google.ads.mediation.millennial.** {public *;}
 -dontwarn com.millennialmedia.**

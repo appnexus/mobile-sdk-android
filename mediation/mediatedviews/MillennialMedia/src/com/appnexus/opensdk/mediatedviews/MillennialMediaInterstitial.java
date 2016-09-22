@@ -49,14 +49,15 @@ public class MillennialMediaInterstitial implements MediatedInterstitialAdView {
             weakActivity = new WeakReference<Activity>(activity);
             mmListener = new MillennialMediaListener(mIC, super.getClass().getSimpleName());
             mmListener.printToClog(String.format("requesting an interstitial ad: [%s, %s]", parameter, uid));
-
-            MMSDK.initialize(activity);
-            if (!MillennialMediaSettings.siteId.isEmpty()) {
-                MMSDK.setAppInfo(MillennialMediaSettings.getAppInfo());
-            }
-            // SDK must be initialized first before creating userdata instance
-            UserData userData = MillennialMediaSettings.getUserData(targetingParameters, activity);
             try {
+                MMSDK.initialize(activity.getApplication());
+
+                if (MillennialMediaSettings.getAppInfo()!=null) {
+                    MMSDK.setAppInfo(MillennialMediaSettings.getAppInfo());
+                }
+                // SDK must be initialized first before creating userdata instance
+                UserData userData = MillennialMediaSettings.getUserData(targetingParameters, activity);
+
                 interstitialAd = InterstitialAd.createInstance(uid);
                 interstitialAd.setListener(mmListener);
                 MMSDK.setUserData(userData);

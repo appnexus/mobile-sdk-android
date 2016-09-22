@@ -26,9 +26,13 @@ public class MillennialMediaSettings {
     }
 
     static AppInfo getAppInfo() {
-        AppInfo appInfo = new AppInfo();
-        appInfo.setSiteId(MillennialMediaSettings.siteId);
-        return appInfo;
+        if(!MillennialMediaSettings.siteId.isEmpty()) {
+            AppInfo appInfo = new AppInfo();
+            appInfo.setSiteId(MillennialMediaSettings.siteId);
+            return appInfo;
+        }else{
+            return null;
+        }
     }
 
     static UserData getUserData(final TargetingParameters tp, final Activity activity) {
