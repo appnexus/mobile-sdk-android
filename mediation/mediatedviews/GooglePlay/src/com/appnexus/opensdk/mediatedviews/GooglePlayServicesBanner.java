@@ -44,7 +44,6 @@ import com.google.android.gms.ads.AdView;
  */
 public class GooglePlayServicesBanner implements MediatedBannerAdView {
     private AdView adView;
-    private Activity adViewActivity;
     private Application.ActivityLifecycleCallbacks activityListener;
     private GooglePlayAdListener adListener;
 
@@ -78,12 +77,7 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
             adListener.onAdFailedToLoad(AdRequest.ERROR_CODE_NO_FILL);
         }
 
-        adViewActivity = activity;
-
-        registerActivityCallbacks();
-
         return adView;
-
     }
 
     @Override
@@ -91,11 +85,6 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
         if (adView != null) {
             adView.destroy();
             adView.setAdListener(null);
-        }
-        if ((adViewActivity != null) && (activityListener != null)) {
-            if (Build.VERSION.SDK_INT > 13) {
-                adViewActivity.getApplication().unregisterActivityLifecycleCallbacks(activityListener);
-            }
         }
         adListener = null;
         adView = null;
@@ -155,57 +144,4 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
         return builder.build();
     }
 
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    private void registerActivityCallbacks() {
-        if (Build.VERSION.SDK_INT > 13) {
-            activityListener = new Application.ActivityLifecycleCallbacks() {
-                @Override
-                public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-
-                }
-
-                @Override
-                public void onActivityStarted(Activity activity) {
-
-                }
-
-                @Override
-                public void onActivityResumed(Activity activity) {
-                    if (adViewActivity == activity) {
-                        Clog.d(Clog.mediationLogTag, "GooglePlayServicesBanner - onActivityResumed");
-                        if (adView != null) adView.resume();
-                    }
-                }
-
-                @Override
-                public void onActivityPaused(Activity activity) {
-                    if (adViewActivity == activity) {
-                        Clog.d(Clog.mediationLogTag, "GooglePlayServicesBanner - onActivityPaused");
-                        if (adView != null) adView.pause();
-                    }
-                }
-
-                @Override
-                public void onActivityStopped(Activity activity) {
-
-                }
-
-                @Override
-                public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-
-                }
-
-                @Override
-                public void onActivityDestroyed(Activity activity) {
-                    if (adViewActivity == activity) {
-                        Clog.d(Clog.mediationLogTag, "GooglePlayServicesBanner - onActivityDestroyed");
-                        if (adView != null) adView.destroy();
-                    }
-                    activity.getApplication().unregisterActivityLifecycleCallbacks(this);
-                }
-            };
-
-            adViewActivity.getApplication().registerActivityLifecycleCallbacks(activityListener);
-        }
-    }
 }
