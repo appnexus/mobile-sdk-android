@@ -615,30 +615,6 @@ public class BannerAdView extends AdView {
     }
 
     /**
-     * Set the height of the ad to request.
-     *
-     * @param h The height, in pixels, to use.
-     * @deprecated Favor setAdSize(int w, int h)
-     */
-    @Deprecated
-    public void setAdHeight(int h) {
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_height, h));
-        requestParameters.setAdHeight(h);
-    }
-
-    /**
-     * Set the width of the ad to request.
-     *
-     * @param w The width, in pixels, to use.
-     * @deprecated Favor setAdSize(int w, int h)
-     */
-    @Deprecated
-    public void setAdWidth(int w) {
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_width, w));
-        requestParameters.setAdWidth(w);
-    }
-
-    /**
      * Set the size of the ad to request.
      *
      * @param w The width of the ad, in pixels.
@@ -917,10 +893,10 @@ public class BannerAdView extends AdView {
 
 
     /**
-     * Check whether the ad will expand to fit the screen width.  This
+     * Check whether the ad will expand to fit the container width.  This
      * feature is disabled by default.
      *
-     * @return If true, the ad will expand to fit screen width.
+     * @return If true, the ad will expand to fit the container width.
      */
     public boolean getResizeAdToFitContainer() {
         return resizeToFitContainer;
