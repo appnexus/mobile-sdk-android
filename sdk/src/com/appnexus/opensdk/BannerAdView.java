@@ -878,11 +878,11 @@ public class BannerAdView extends AdView {
     }
 
     /**
-     * Set whether ads will expand to fit the container width.  This
-     * feature will cause ad creatives that are smaller than the view
-     * size to 'stretch' to the current size.  This may cause image
+     * Set whether ads will expand to fit the BannerAdView.  This
+     * feature will cause ad creatives that are smaller than the BannerAdView
+     * size to 'stretch' to the BannerAdView size.  This may cause image
      * quality degradation for the benefit of having an ad occupy the
-     * entire ad view.  This feature is disabled by default.
+     * entire BannerAdView.  This feature is disabled by default.
      *
      * @param resizeAdToFitContainer If true, automatic expansion is
      *                               enabled.
@@ -893,10 +893,10 @@ public class BannerAdView extends AdView {
 
 
     /**
-     * Check whether the ad will expand to fit the container width.  This
+     * Check whether the ad will expand to fit the BannerAdView.  This
      * feature is disabled by default.
      *
-     * @return If true, the ad will expand to fit the container width.
+     * @return If true, the ad will expand to fit the BannerAdView.
      */
     public boolean getResizeAdToFitContainer() {
         return resizeToFitContainer;
