@@ -163,11 +163,7 @@ class RequestParameters {
     }
 
     ArrayList<AdSize> getAllowedSizes() {
-        if (mediaType == MediaType.INTERSTITIAL) {
-            return allowedSizes;
-        } else {
-            return null;
-        }
+        return allowedSizes;
     }
 
     void setOpensNativeBrowser(boolean opensNativeBrowser) {
@@ -434,11 +430,10 @@ class RequestParameters {
             }
         }
 
-        // add allowed sizes for Interstitial Ad
-        if (mediaType.equals(MediaType.INTERSTITIAL)) {
+        ArrayList<AdSize> sizes = getAllowedSizes();
+        if (sizes != null) {
             // Make string for allowed_sizes
             String allowedSizesForInterstitial = "";
-            ArrayList<AdSize> sizes = getAllowedSizes();
             for (AdSize s : sizes) {
                 allowedSizesForInterstitial += "" + s.width() + "x" + s.height();
                 // If not last size, add a comma
