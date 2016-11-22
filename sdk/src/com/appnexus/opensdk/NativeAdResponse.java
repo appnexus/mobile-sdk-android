@@ -42,21 +42,21 @@ public interface NativeAdResponse {
     /**
      * The Title for this native ad
      *
-     * @return null if not present
+     * @return empty string "" if not present
      */
     public String getTitle();
 
     /**
      * The text description of the ad , the text body
      *
-     * @return null if not present
+     * @return empty string "" if not present
      */
     public String getDescription();
 
     /**
      * The URL of the main image can be used to manage image resources manually
      *
-     * @return null if not present
+     * @return empty string "" if not present
      */
     public String getImageUrl();
 
