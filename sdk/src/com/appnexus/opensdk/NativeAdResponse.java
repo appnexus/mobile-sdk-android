@@ -56,7 +56,7 @@ public interface NativeAdResponse {
     /**
      * The URL of the main image can be used to manage image resources manually
      *
-     * @return empty string "" if not present
+     * @return The URL of the main image or empty string "" if not present
      */
     public String getImageUrl();
 
@@ -78,7 +78,7 @@ public interface NativeAdResponse {
     /**
      * The URL of the Icon image resource can be used to manage image resources manually
      *
-     * @return The URL of the Icon
+     * @return The URL of the Icon or empty string "" if not present
      */
     public String getIconUrl();
 
@@ -100,7 +100,7 @@ public interface NativeAdResponse {
     /**
      * The text for the call to action
      *
-     * @return null if not present
+     * @return empty string "" if not present
      */
     public String getCallToAction();
 
@@ -113,6 +113,8 @@ public interface NativeAdResponse {
 
     /**
      * Retrieve the social context of the native ad response.
+     *
+     * @return empty string "" if not present
      */
     public String getSocialContext();
 
