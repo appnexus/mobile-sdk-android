@@ -66,19 +66,19 @@ public class JsonUtil {
     }
 
     public static String getStringFromArray(JSONArray array, int index) {
-        if (array == null) return null;
+        if (array == null) return "";
         try {
             return array.getString(index);
         } catch (JSONException ignored) {}
-        return null;
+        return "";
     }
 
     public static String getJSONString(JSONObject object, String key) {
-        if (object == null) return null;
+        if (object == null) return "";
         try {
             return object.getString(key);
         } catch (JSONException ignored) {}
-        return null;
+        return "";
     }
 
     public static int getJSONInt(JSONObject object, String key) {
