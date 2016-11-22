@@ -1,3 +1,11 @@
+## RC2.15.1
++ MS-2789 Removed registerActivityLifecycleCallbacks from Google Banner Mediation.
++ MS-2794 Removed deprecated methods setAdHeight and setAdWidth from BannerAdView
++ MS-2819 Support multiple sizes on BannerAdView. New API introduced setAdSizes(ArrayList<AdSize> adSizes).
++ MS-2831 Fixed SDK crashes.
+
+
+
 ## RC2.15
 + MS-2581 Added HTTPS support for SDK. New API introduced SDKSettings.useHttps(true).
 + MS-2708 Fixed bugs in MutableContextWrapper implementation.
