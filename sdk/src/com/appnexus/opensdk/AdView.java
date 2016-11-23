@@ -301,17 +301,6 @@ public abstract class AdView extends FrameLayout implements Ad {
         return requestParameters.getInvCode();
     }
 
-    @Override
-    protected void finalize() {
-        try {
-            super.finalize();
-        } catch (Throwable e) {
-        }
-        // Just in case, kill the adfetcher's service
-        if (mAdFetcher != null)
-            mAdFetcher.stop();
-    }
-
     /**
      * This must be called from the UI thread,
      * when permanently remove the AdView from the view hierarchy.
@@ -321,6 +310,10 @@ public abstract class AdView extends FrameLayout implements Ad {
         if (this.lastDisplayable != null) {
             this.lastDisplayable.destroy();
             this.lastDisplayable = null;
+        }
+        // Just in case, kill the adfetcher's service
+        if (mAdFetcher != null) {
+            mAdFetcher.stop();
         }
     }
 
