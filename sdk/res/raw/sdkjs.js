@@ -35,6 +35,7 @@
     var CALL_READY = "ready";
     var CALL_RESULT = "result";
     var CALL_MRAID = "mraid";
+    var CALL_PING = "ping";
 
     // public window variable to be invoked by mraid.js
     var sdkjs = window.sdkjs = {};
@@ -130,6 +131,9 @@
                 sdkjs.callGetDeviceID(queryParameters);
             } else if (path === CALL_MRAID) {
                 sdkjs.callMraid(queryParameters);
+            } else if (path === CALL_PING) {
+                var queryStringParameters = 'answer=1&cb=' + queryParameters.cb;
+                sdkjs.sendPingAnswer(queryStringParameters, window.top);
             }
         }
     }
@@ -166,6 +170,19 @@
         var w = window.open("", name, null, false);
         anjamFrames.push(w);
         sdkjs.fireMessage(CALL_READY);
+    }
+
+    // It send a ping answered for each frames
+    sdkjs.sendPingAnswer = function (queryStringParameters, currentWindow) {
+        try{
+            var frames = currentWindow.frames;
+            for (var i = 0; i < frames.length; i++) {
+                frames[i].postMessage( SDKJS_PROTOCOL + CALL_PING + "?" + queryStringParameters, "*");
+                sdkjs.sendPingAnswer(queryStringParameters, frames[i]);
+            }
+        } catch(_e) {
+            sdkjs.anlog("SDKJS can send properly ping answer to sub window." + _e.name);
+        }
     }
 
     sdkjs.dequeue = function () {

@@ -37,6 +37,7 @@
     var CALL_READY = "ready";
     var CALL_RESULT = "result";
     var CALL_MRAID = "mraid";
+    var CALL_PING = "ping";
     var MRAID_EVENT_PREFIX = "mraid_";
 
     var MRAID_STATE = "state";
@@ -137,6 +138,8 @@
 
             if (path === CALL_READY) {
                 anjam.onReadyEvent();
+            } else if (path === CALL_PING) {
+                anjam.onPingResult(queryParameters);
             } else if (path === CALL_RESULT) {
                 anjam.onResult(queryParameters);
             } else if (path === CALL_MRAID) {
@@ -384,6 +387,21 @@
         }
     }
 
+    anjam.onPingResult = function (queryParameters) {
+        var cb = -1;
+        if (queryParameters.cb) {
+            cb = parseInt(queryParameters.cb);
+        }
+
+        // remove the cb param
+        queryParameters.cb = null;
+        if (queryParameters.answer == 1 && (cb > -1) && (typeof callbacks[cb] === "function")) {
+            // invoke the callback, then release it
+            callbacks[cb](queryParameters);
+            callbacks[cb] = null;
+        }
+    }
+
     anjam.onMraidCall = function (params) {
         // forward all mraid events to anjam-mraid listeners
         if (params.event) {
@@ -576,6 +594,24 @@
 
         anjam.fireMessage(CALL_GETDEVICEID, [new anjam.pair(
             "cb", callbacksCounter)]);
+    }
+
+    // When the AppNexus SDK is available the callback is called
+    // The ping can be used without the inclusion of Anjam by this way:
+    // 1) Add a listener:
+    // eg.:
+    // window.addEventListener("message", function(_e) { if(_e.data === 'sdkjs:ping?answer=1&cb=toto') { console.log('Ping received'); } else { console.log('other event: ' + _e.data); } } );
+    //
+    // 2) Send a postMessage
+    // window.top.postMessage('anjam:ping?cb=toto', '*');
+    //
+    anjam.Ping = function (callback) {
+        if (typeof callback !== "function") {
+            anjam.anlog("ping error: callback parameter should be a function");
+            return;
+        }
+        anjam.addCallback(callback);
+        anjam.fireMessage(CALL_PING, [new anjam.pair("cb", callbacksCounter)]);
     }
 
 }());
