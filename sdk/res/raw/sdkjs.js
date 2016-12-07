@@ -146,7 +146,12 @@
 
     sdkjs.postMessageToFrames = function (message) {
         for (var i = 0; i < anjamFrames.length; i++) {
-            anjam.anlog("Dispatching message to window name " + anjamFrames[i].name);
+            try {
+                anjam.anlog("Dispatching message to window name " + anjamFrames[i].name);
+            } catch(e) {
+                // In Cross Domain communication, the window's name is not available
+                anjam.anlog("Dispatching message to a cross domain window");
+            }
             anjamFrames[i].postMessage(message, "*");
         }
     }
