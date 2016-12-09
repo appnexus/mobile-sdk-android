@@ -32,10 +32,10 @@
     var CALL_RECORDEVENT = "RecordEvent";
     var CALL_DISPATCHAPPEVENT = "DispatchAppEvent";
     var CALL_GETDEVICEID = "GetDeviceID";
+    var CALL_PING = "Ping";
     var CALL_READY = "ready";
     var CALL_RESULT = "result";
     var CALL_MRAID = "mraid";
-    var CALL_PING = "ping";
     var CALL_RESULT_PING = "resultPing";
 
     // public window variable to be invoked by mraid.js
