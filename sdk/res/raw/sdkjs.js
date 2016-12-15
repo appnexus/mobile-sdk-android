@@ -175,9 +175,9 @@
     // It send a ping answered for each frames
     sdkjs.sendPingAnswer = function (queryStringParameters, currentWindow) {
         try{
+            currentWindow.postMessage( SDKJS_PROTOCOL + CALL_RESULT + "?" + queryStringParameters, "*");
             var frames = currentWindow.frames;
             for (var i = 0; i < frames.length; i++) {
-                frames[i].postMessage( SDKJS_PROTOCOL + CALL_RESULT + "?" + queryStringParameters, "*");
                 sdkjs.sendPingAnswer(queryStringParameters, frames[i]);
             }
         } catch(_e) {
