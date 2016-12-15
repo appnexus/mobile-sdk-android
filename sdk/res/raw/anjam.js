@@ -37,7 +37,6 @@
     var CALL_READY = "ready";
     var CALL_RESULT = "result";
     var CALL_MRAID = "mraid";
-    var CALL_PING = "Ping";
     var MRAID_EVENT_PREFIX = "mraid_";
 
     var MRAID_STATE = "state";
@@ -577,24 +576,6 @@
 
         anjam.fireMessage(CALL_GETDEVICEID, [new anjam.pair(
             "cb", callbacksCounter)]);
-    }
-
-    // When the AppNexus SDK is available the callback is called
-    // The ping can be used without the inclusion of Anjam by this way:
-    // 1) Add a listener:
-    // eg.:
-    // window.addEventListener("message", function(_e) { if(_e.data === 'sdkjs:result?caller=Ping&answer=1&cb=toto') { console.log('Ping received'); } else { console.log('other event: ' + _e.data); } } );
-    //
-    // 2) Send a postMessage
-    // window.top.postMessage('anjam:Ping?cb=toto', '*');
-    //
-    anjam.Ping = function (callback) {
-        if (typeof callback !== "function") {
-            anjam.anlog("ping error: callback parameter should be a function");
-            return;
-        }
-        anjam.addCallback(callback);
-        anjam.fireMessage(CALL_PING, [new anjam.pair("cb", callbacksCounter)]);
     }
 
 }());
