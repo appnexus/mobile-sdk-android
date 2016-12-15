@@ -36,7 +36,6 @@
     var CALL_RESULT = "result";
     var CALL_MRAID = "mraid";
     var CALL_PING = "ping";
-    var CALL_RESULT_PING = "resultPing";
 
     // public window variable to be invoked by mraid.js
     var sdkjs = window.sdkjs = {};
@@ -133,7 +132,8 @@
             } else if (path === CALL_MRAID) {
                 sdkjs.callMraid(queryParameters);
             } else if (path === CALL_PING) {
-                sdkjs.callPing(queryParameters);
+                var queryStringParameters = 'answer=1&cb=' + queryParameters.cb;
+                sdkjs.sendPingAnswer(queryStringParameters, window.top);
             }
         }
     }
@@ -170,6 +170,19 @@
         var w = window.open("", name, null, false);
         anjamFrames.push(w);
         sdkjs.fireMessage(CALL_READY);
+    }
+
+    // It send a ping answered for each frames
+    sdkjs.sendPingAnswer = function (queryStringParameters, currentWindow) {
+        try{
+            var frames = currentWindow.frames;
+            for (var i = 0; i < frames.length; i++) {
+                frames[i].postMessage( SDKJS_PROTOCOL + CALL_PING + "?" + queryStringParameters, "*");
+                sdkjs.sendPingAnswer(queryStringParameters, frames[i]);
+            }
+        } catch(_e) {
+            sdkjs.anlog("SDKJS can send properly ping answer to sub window." + _e.name);
+        }
     }
 
     sdkjs.dequeue = function () {
@@ -236,11 +249,6 @@
         sdkjs.makeNativeCall("GetDeviceID?cb=" + cb);
     }
 
-    sdkjs.callPing = function (queryParameters) {
-        var cb = queryParameters.cb;
-        sdkjs.makeNativeCall("Ping?cb=" + cb);
-    }
-
     sdkjs.callMraid = function (queryParameters) {
         var key = "p0";
         var count = 0;
@@ -259,23 +267,6 @@
 
     sdkjs.client.result = function (params) {
         sdkjs.fireMessage(CALL_RESULT, params);
-    }
-
-    sdkjs.client.resultPing = function (params) {
-        sdkjs.sendPingAnswer(params, window.top);
-    }
-
-    // It sends a ping answered for each frames (recursively)
-    sdkjs.sendPingAnswer = function (params, currentWindow) {
-        try{
-            currentWindow.postMessage( SDKJS_PROTOCOL + CALL_RESULT_PING + "?" + params, "*");
-            var frames = currentWindow.frames;
-            for (var i = 0; i < frames.length; i++) {
-                sdkjs.sendPingAnswer(params, frames[i]);
-            }
-        } catch(_e) {
-            sdkjs.anlog("SDKJS cannot send properly ping answer to sub window: " + _e.name);
-        }
     }
 
     sdkjs.mraidEventHandler = function (eventName) {

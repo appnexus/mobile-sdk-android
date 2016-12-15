@@ -38,7 +38,6 @@
     var CALL_RESULT = "result";
     var CALL_MRAID = "mraid";
     var CALL_PING = "ping";
-    var CALL_RESULT_PING = "resultPing";
     var MRAID_EVENT_PREFIX = "mraid_";
 
     var MRAID_STATE = "state";
@@ -139,7 +138,7 @@
 
             if (path === CALL_READY) {
                 anjam.onReadyEvent();
-            } else if (path === CALL_RESULT_PING) {
+            } else if (path === CALL_PING) {
                 anjam.onPingResult(queryParameters);
             } else if (path === CALL_RESULT) {
                 anjam.onResult(queryParameters);

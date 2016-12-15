@@ -40,7 +40,6 @@ class ANJAMImplementation {
     private static final String CALL_RECORDEVENT = "RecordEvent";
     private static final String CALL_DISPATCHAPPEVENT = "DispatchAppEvent";
     private static final String CALL_GETDEVICEID = "GetDeviceID";
-    private static final String CALL_PING = "Ping";
 
     private static final String KEY_CALLER = "caller";
 
@@ -73,8 +72,6 @@ class ANJAMImplementation {
             callDispatchAppEvent(webView, uri);
         } else if (CALL_GETDEVICEID.equals(call)) {
             callGetDeviceID(webView, uri);
-        } else if (CALL_PING.equals(call)) {
-            callPing(webView, uri);
         } else {
             Clog.w(Clog.baseLogTag, "ANJAM called with unsupported function: " + call);
         }
@@ -243,24 +240,9 @@ class ANJAMImplementation {
         loadResult(webView, cb, list);
     }
 
-    // Ping answser from the SDK to JS file
-
-    private static void callPing(WebView webView, Uri uri) {
-        String cb = uri.getQueryParameter("cb");
-
-        LinkedList<Pair<String, String>> list = new LinkedList<Pair<String, String>>();
-        list.add(new Pair(KEY_CALLER, CALL_PING));
-        list.add(new Pair("answer", "1"));
-        loadResult(webView, cb, list, "resultPing");
-    }
-
     // Send the result back to JS
 
     private static void loadResult(WebView webView, String cb, List<Pair<String , String>> paramsList) {
-        loadResult(webView, cb, paramsList, "result");
-    }
-
-    private static void loadResult(WebView webView, String cb, List<Pair<String , String>> paramsList, String resultCallbackName) {
         StringBuilder params = new StringBuilder();
         params.append("cb=").append(cb != null ? cb : "-1");
         if (paramsList != null) {
@@ -271,7 +253,7 @@ class ANJAMImplementation {
                 }
             }
         }
-        String url = String.format("javascript:window.sdkjs.client.%s(\"%s\")", resultCallbackName, params.toString());
+        String url = String.format("javascript:window.sdkjs.client.result(\"%s\")", params.toString());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             webView.evaluateJavascript(url, null);
         } else {
