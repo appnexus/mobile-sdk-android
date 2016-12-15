@@ -35,7 +35,7 @@
     var CALL_READY = "ready";
     var CALL_RESULT = "result";
     var CALL_MRAID = "mraid";
-    var CALL_PING = "ping";
+    var CALL_PING = "Ping";
 
     // public window variable to be invoked by mraid.js
     var sdkjs = window.sdkjs = {};
@@ -132,7 +132,7 @@
             } else if (path === CALL_MRAID) {
                 sdkjs.callMraid(queryParameters);
             } else if (path === CALL_PING) {
-                var queryStringParameters = 'answer=1&cb=' + queryParameters.cb;
+                var queryStringParameters = 'caller=' + CALL_PING + '&answer=1&cb=' + queryParameters.cb;
                 sdkjs.sendPingAnswer(queryStringParameters, window.top);
             }
         }
@@ -177,7 +177,7 @@
         try{
             var frames = currentWindow.frames;
             for (var i = 0; i < frames.length; i++) {
-                frames[i].postMessage( SDKJS_PROTOCOL + CALL_PING + "?" + queryStringParameters, "*");
+                frames[i].postMessage( SDKJS_PROTOCOL + CALL_RESULT + "?" + queryStringParameters, "*");
                 sdkjs.sendPingAnswer(queryStringParameters, frames[i]);
             }
         } catch(_e) {
