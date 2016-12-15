@@ -34,11 +34,11 @@
     var CALL_DISPATCHAPPEVENT = "DispatchAppEvent";
     var CALL_GETVERSION = "GetVersion";
     var CALL_GETDEVICEID = "GetDeviceID";
-    var CALL_PING = "Ping";
-    var CALL_RESULT_PING = "resultPing";
     var CALL_READY = "ready";
     var CALL_RESULT = "result";
     var CALL_MRAID = "mraid";
+    var CALL_PING = "ping";
+    var CALL_RESULT_PING = "resultPing";
     var MRAID_EVENT_PREFIX = "mraid_";
 
     var MRAID_STATE = "state";
