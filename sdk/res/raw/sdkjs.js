@@ -190,7 +190,7 @@
                 sdkjs.sendPingAnswer(queryStringParameters, frames[i]);
             }
         } catch(_e) {
-            sdkjs.anlog("SDKJS can send properly ping answer to sub window." + _e.name);
+            sdkjs.anlog("SDKJS can send properly ping answer to sub window: " + _e);
         }
     }
 
