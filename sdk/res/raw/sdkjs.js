@@ -142,7 +142,7 @@
                  * window.addEventListener("message", function(_e) { if(_e.data === 'sdkjs:result?caller=Ping&answer=1&cb=toto') { console.log('Ping received'); } else { console.log('other event: ' + _e.data); } } );
                  */
                 var queryStringParameters = 'caller=' + CALL_PING + '&answer=1&cb=' + queryParameters.cb;
-                sdkjs.sendPingAnswer(queryStringParameters, window.top);
+                sdkjs.sendPingAnswer(queryStringParameters, event);
             }
         }
     }
@@ -181,14 +181,10 @@
         sdkjs.fireMessage(CALL_READY);
     }
 
-    // It send a ping answered for each frames
-    sdkjs.sendPingAnswer = function (queryStringParameters, currentWindow) {
+    // It sends a ping answer to the window which sends the ping initially
+    sdkjs.sendPingAnswer = function (queryStringParameters, event) {
         try{
-            currentWindow.postMessage( SDKJS_PROTOCOL + CALL_RESULT + "?" + queryStringParameters, "*");
-            var frames = currentWindow.frames;
-            for (var i = 0; i < frames.length; i++) {
-                sdkjs.sendPingAnswer(queryStringParameters, frames[i]);
-            }
+            event.source.postMessage( SDKJS_PROTOCOL + CALL_RESULT + "?" + queryStringParameters, "*");
         } catch(_e) {
             sdkjs.anlog("SDKJS can send properly ping answer to sub window: " + _e);
         }
