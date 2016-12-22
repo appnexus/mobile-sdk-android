@@ -186,7 +186,7 @@
         try{
             event.source.postMessage( SDKJS_PROTOCOL + CALL_RESULT + "?" + queryStringParameters, "*");
         } catch(_e) {
-            sdkjs.anlog("SDKJS can send properly ping answer to sub window: " + _e);
+            sdkjs.anlog("SDKJS can't send properly ping answer to sub window: " + _e);
         }
     }
 
