@@ -443,6 +443,10 @@ class RequestParameters {
             if (!StringUtil.isEmpty(allowedSizesForInterstitial))
                 sb.append("&promo_sizes=").append(allowedSizesForInterstitial);
         }
+        if (mediaType.equals(MediaType.NATIVE)) {
+            // passing 1x1 allows a placement id to be used for multiple media types in Console
+            sb.append("&size=1x1");
+        }
 
         if (!StringUtil.isEmpty(settings.mcc)) sb.append("&mcc=").append(Uri.encode(settings.mcc));
         if (!StringUtil.isEmpty(settings.mnc)) sb.append("&mnc=").append(Uri.encode(settings.mnc));
