@@ -1,10 +1,17 @@
+## 2.16
++ MS-2839 Fixed Anjam and sdk communication for creative served in iframe
++ MS-2841 Add a "ping" feature to the SDK without anjam.js injection
++ MS-2840 New mediation adapter, SmartAdServer Banner and Interstitial for Android
++ MS-2852 Added support for placements that accept both native and banner creatives 1x1 for Native.
++ Updated Mediated SDKs
+MillennialMedia SDK update to 6.3.1
+GooglePlay SDK update to 10.0.1
+
 ## RC2.15.1
 + MS-2789 Removed registerActivityLifecycleCallbacks from Google Banner Mediation.
 + MS-2794 Removed deprecated methods setAdHeight and setAdWidth from BannerAdView
 + MS-2819 Support multiple sizes on BannerAdView. New API introduced setAdSizes(ArrayList<AdSize> adSizes).
 + MS-2831 Fixed SDK crashes.
-
-
 
 ## RC2.15
 + MS-2581 Added HTTPS support for SDK. New API introduced SDKSettings.useHttps(true).
