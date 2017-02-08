@@ -19,5 +19,6 @@ package com.appnexus.opensdk;
 public enum MediaType {
     BANNER,
     INTERSTITIAL,
-    NATIVE
+    NATIVE,
+    INSTREAM_VIDEO
 }

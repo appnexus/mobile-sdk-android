@@ -39,8 +39,8 @@ import com.appnexus.opensdk.utils.ViewUtil;
 
 import java.util.LinkedList;
 
-class BrowserAdActivity implements AdActivity.AdActivityImplementation {
-    static LinkedList<WebView> BROWSER_QUEUE = new LinkedList<WebView>();
+public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
+    public static LinkedList<WebView> BROWSER_QUEUE = new LinkedList<WebView>();
     private Activity adActivity;
     private WebView webView;
 

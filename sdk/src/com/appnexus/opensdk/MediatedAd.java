@@ -18,7 +18,7 @@ package com.appnexus.opensdk;
 
 import java.util.HashMap;
 
-class MediatedAd {
+public class MediatedAd {
     private String className;
     private String param;
     private int width;

@@ -16,7 +16,7 @@
 
 package com.appnexus.opensdk;
 
-interface AdResponse {
+public interface AdResponse {
     /**
      * @return MediaType of the ad respone
      */

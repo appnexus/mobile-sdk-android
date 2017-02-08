@@ -20,7 +20,7 @@ package com.appnexus.opensdk;
  * Implement this interface and pass it to your {@link BannerAdView} and
  * {@link InterstitialAdView} objects to receive app events from the ad.
  */
-public interface AppEventListener {
+interface AppEventListener {
     /**
      * Called when the ad has sent the app an event via the
      * AppNexus Javascript API for Mobile call

@@ -97,4 +97,13 @@ public class JsonUtil {
         }
         return -1d;
     }
+
+
+    public static boolean getJSONBoolean(JSONObject object, String key) {
+        if (object == null) return false;
+        try {
+            return object.getBoolean(key);
+        } catch (JSONException ignored) {}
+        return false;
+    }
 }

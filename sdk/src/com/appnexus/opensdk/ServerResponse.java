@@ -34,7 +34,7 @@ import java.util.Locale;
 import java.util.Map;
 
 @SuppressLint("NewApi")
-class ServerResponse {
+public class ServerResponse {
     private String content;
     private int height;
     private int width;

@@ -82,6 +82,7 @@ public class Settings {
     private static String BASE_URL = "http://mediation.adnxs.com/";
     private static String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
     private static String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
+    private static String REQUEST_BASE_URL_UT_V2 = "http://mediation.adnxs.com/ut/v2";
 
     private static Settings settings_instance = null;
 
@@ -131,6 +132,10 @@ public class Settings {
 
     public static String getRequestBaseUrl() {
         return Settings.getSettings().useHttps ? REQUEST_BASE_URL.replace("http:", "https:") : REQUEST_BASE_URL;
+    }
+
+    public static String getRequestBaseUrlUTV2() {
+        return Settings.getSettings().useHttps ? REQUEST_BASE_URL_UT_V2.replace("http:", "https:") : REQUEST_BASE_URL_UT_V2;
     }
 
     public static String getInstallBaseUrl() {

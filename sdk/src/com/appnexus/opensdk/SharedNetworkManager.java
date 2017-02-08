@@ -31,11 +31,11 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-class SharedNetworkManager {
+public class SharedNetworkManager {
 
     private static SharedNetworkManager manager;
 
-    static SharedNetworkManager getInstance(Context context) {
+    public static SharedNetworkManager getInstance(Context context) {
         if (manager == null) {
             manager = new SharedNetworkManager(context);
         }
@@ -58,7 +58,7 @@ class SharedNetworkManager {
         permitted = (permissionStatus == PackageManager.PERMISSION_GRANTED);
     }
 
-    boolean isConnected(Context context) {
+    public boolean isConnected(Context context) {
         if (permitted) {
             ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();

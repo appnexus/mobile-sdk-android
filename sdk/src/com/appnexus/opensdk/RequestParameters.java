@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Locale;
 
-class RequestParameters {
+public class RequestParameters {
     private MediaType mediaType;
     private String placementID;
     private int memberID;
@@ -56,24 +56,24 @@ class RequestParameters {
     private boolean overrideMaxSize = false;
     private ArrayList<AdSize> allowedSizes;
 
-    RequestParameters(Context context) {
+    public RequestParameters(Context context) {
         this.context = context;
     }
 
-    String getPlacementID() {
+    public String getPlacementID() {
         return placementID;
     }
 
-    void setPlacementID(String placementID) {
+    public void setPlacementID(String placementID) {
         this.placementID = placementID;
     }
 
-    void setInventoryCodeAndMemberID(int memberId, String invCode) {
+    public void setInventoryCodeAndMemberID(int memberId, String invCode) {
         this.memberID = memberId;
         this.invCode = invCode;
     }
 
-    int getMemberID() {
+    public int getMemberID() {
         return memberID;
     }
 
@@ -81,19 +81,19 @@ class RequestParameters {
         return invCode;
     }
 
-    Context getContext() {
+    public Context getContext() {
         return this.context;
     }
 
-    void setContext(Context context) {
+    public void setContext(Context context) {
         this.context = context;
     }
 
-    void setAdWidth(int width) {
+    public void setAdWidth(int width) {
         this.width = width;
     }
 
-    int getAdWidth() {
+    public int getAdWidth() {
         if (mediaType == MediaType.BANNER) {
             return width;
         } else {
@@ -101,11 +101,11 @@ class RequestParameters {
         }
     }
 
-    void setAdHeight(int height) {
+    public void setAdHeight(int height) {
         this.height = height;
     }
 
-    int getAdHeight() {
+    public int getAdHeight() {
         if (mediaType == MediaType.BANNER) {
             return height;
         } else {
@@ -113,20 +113,20 @@ class RequestParameters {
         }
     }
 
-    void setOverrideMaxSize(boolean overrideMaxSize) {
+    public void setOverrideMaxSize(boolean overrideMaxSize) {
         this.overrideMaxSize = overrideMaxSize;
     }
 
-    boolean getOverrideMaxSize() {
+    public boolean getOverrideMaxSize() {
         return mediaType == MediaType.BANNER && this.overrideMaxSize;
     }
 
-    void setMaxSize(int maxW, int maxH) {
+    public void setMaxSize(int maxW, int maxH) {
         this.maximumWidth = maxW;
         this.maximumHeight = maxH;
     }
 
-    int getMaxWidth() {
+    public int getMaxWidth() {
         if (mediaType == MediaType.BANNER) {
             return this.maximumWidth;
         } else {
@@ -134,7 +134,7 @@ class RequestParameters {
         }
     }
 
-    int getMaxHeight() {
+    public int getMaxHeight() {
         if (mediaType == MediaType.BANNER) {
             return this.maximumHeight;
         } else {
@@ -142,43 +142,43 @@ class RequestParameters {
         }
     }
 
-    void setContainerWidth(int width) {
+    public void setContainerWidth(int width) {
         this.measuredWidth = width;
     }
 
-    int getContainerWidth() {
+    public int getContainerWidth() {
         return measuredWidth;
     }
 
-    void setContainerHeight(int height) {
+    public void setContainerHeight(int height) {
         this.measuredHeight = height;
     }
 
-    int getContainerHeight() {
+    public int getContainerHeight() {
         return measuredHeight;
     }
 
-    void setAllowedSizes(ArrayList<AdSize> allowed_sizes) {
+    public void setAllowedSizes(ArrayList<AdSize> allowed_sizes) {
         this.allowedSizes = allowed_sizes;
     }
 
-    ArrayList<AdSize> getAllowedSizes() {
-        return allowedSizes;
+    public ArrayList<AdSize> getAllowedSizes() {
+            return allowedSizes;
     }
 
-    void setOpensNativeBrowser(boolean opensNativeBrowser) {
+    public void setOpensNativeBrowser(boolean opensNativeBrowser) {
         this.opensNativeBrowser = opensNativeBrowser;
     }
 
-    boolean getOpensNativeBrowser() {
+    public boolean getOpensNativeBrowser() {
         return opensNativeBrowser;
     }
 
-    void setMediaType(MediaType mediaType) {
+    public void setMediaType(MediaType mediaType) {
         this.mediaType = mediaType;
     }
 
-    MediaType getMediaType() {
+    public MediaType getMediaType() {
         return mediaType;
     }
 
@@ -190,30 +190,30 @@ class RequestParameters {
         return reserve;
     }
 
-    void setAge(String age) {
+    public void setAge(String age) {
         this.age = age;
     }
 
-    String getAge() {
+    public String getAge() {
         return age;
     }
 
-    void setGender(AdView.GENDER gender) {
+    public void setGender(AdView.GENDER gender) {
         this.gender = gender;
     }
 
-    AdView.GENDER getGender() {
+    public AdView.GENDER getGender() {
         return gender;
     }
 
-    void addCustomKeywords(String key, String value) {
+    public void addCustomKeywords(String key, String value) {
         if (StringUtil.isEmpty(key) || (value == null)) {
             return;
         }
         this.customKeywords.add(new Pair<String, String>(key, value));
     }
 
-    void removeCustomKeyword(String key) {
+    public void removeCustomKeyword(String key) {
         if (StringUtil.isEmpty(key))
             return;
 
@@ -226,19 +226,19 @@ class RequestParameters {
         }
     }
 
-    void clearCustomKeywords() {
+    public void clearCustomKeywords() {
         customKeywords.clear();
     }
 
-    ArrayList<Pair<String, String>> getCustomKeywords() {
+    public ArrayList<Pair<String, String>> getCustomKeywords() {
         return customKeywords;
     }
 
-    void setShouldServePSAs(boolean shouldServePSAs) {
+    public void setShouldServePSAs(boolean shouldServePSAs) {
         this.shouldServePSAs = shouldServePSAs;
     }
 
-    boolean getShouldServePSAs() {
+    public boolean getShouldServePSAs() {
         return shouldServePSAs;
     }
 
@@ -247,12 +247,12 @@ class RequestParameters {
      *
      * @return true if ready for request
      */
-    boolean isReadyForRequest() {
+    public boolean isReadyForRequest() {
         if ((StringUtil.isEmpty(invCode) || memberID <= 0) && StringUtil.isEmpty(placementID)) {
             Clog.e(Clog.baseLogTag, Clog.getString(R.string.no_identification));
             return false;
         }
-        if (!mediaType.equals(MediaType.NATIVE)) {
+        if (!(mediaType.equals(MediaType.NATIVE) || mediaType.equals(MediaType.INSTREAM_VIDEO))) {
             // Size info must be presented for BannerAdView and InterstitialAdView
             int tempMaxWidth;
             int tempMaxHeight;

@@ -18,7 +18,7 @@ package com.appnexus.opensdk;
 
 import java.util.LinkedList;
 
-interface AdRequester {
+public interface AdRequester {
     /**
      * Called when the request made by the requester fails.
      *

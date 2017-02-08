@@ -60,14 +60,14 @@ public class AdActivity extends Activity {
     private AdActivityImplementation implementation;
 
     //Intent Keys
-    static final String INTENT_KEY_ACTIVITY_TYPE = "ACTIVITY_TYPE";
+    public static final String INTENT_KEY_ACTIVITY_TYPE = "ACTIVITY_TYPE";
     static final String ACTIVITY_TYPE_INTERSTITIAL = "INTERSTITIAL";
-    static final String ACTIVITY_TYPE_BROWSER = "BROWSER";
+    public static final String ACTIVITY_TYPE_BROWSER = "BROWSER";
     static final String ACTIVITY_TYPE_MRAID = "MRAID";
 
     static Class overrideActivity = AdActivity.class;
 
-    static Class getActivityClass() {
+    public static Class getActivityClass() {
         return overrideActivity;
     }
 
