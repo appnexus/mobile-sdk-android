@@ -181,7 +181,7 @@ class VideoWebView extends WebView {
         url = url.replaceFirst("video://", "");
         if (url.equals("adReady")) {
             owner.getAdDispatcher().onAdLoaded();
-        } else if (url.equals("video-error")) {
+        } else if (url.equals("video-error") || url.equals("Timed-out")) {
             handleVideoError();
         } else if (url.equals("video-skip")) {
             videoComplete();
