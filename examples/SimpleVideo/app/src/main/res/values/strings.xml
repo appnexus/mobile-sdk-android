@@ -3,7 +3,6 @@
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="content_url_1">http://acdn.adnxs.com/mobile/video_test/content/AppNexus_HighRes.mp4</string>
-    <string name="content_url_2">http://acdn.adnxs.com/mobile/video_test/content/VID_Portrait.mp4</string>
     <string name="ad_ready">AD_READY</string>
     <string name="first_quartile">FIRST_QUARTILE</string>
     <string name="mid_quartile">MID_QUARTILE</string>
