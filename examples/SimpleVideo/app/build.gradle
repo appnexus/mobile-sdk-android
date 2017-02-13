@@ -7,7 +7,7 @@ android {
         abortOnError false
     }
     defaultConfig {
-        applicationId "com.example.simplevideo"
+        applicationId "com.appnexus.example.simplevideo"
         minSdkVersion 9
         targetSdkVersion 25
         versionCode 1
@@ -32,4 +32,9 @@ android {
 dependencies {
     compile 'com.android.support:appcompat-v7:25.+'
     compile project(':instreamvideo')
+
+
+    // For setting AAID in ad request
+    compile("com.google.android.gms:play-services-base:10.0.1")
+    compile("com.google.android.gms:play-services-ads:10.0.1")
 }
