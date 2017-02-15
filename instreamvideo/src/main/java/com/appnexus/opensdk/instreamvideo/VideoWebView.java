@@ -25,6 +25,7 @@ import android.content.MutableContextWrapper;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,8 +59,14 @@ class VideoWebView extends WebView {
     private boolean adIsPlaying = false;
     private boolean failed = false;
     private VideoRequestManager manager;
+    private static final int TOTAL_RETRY_TIMES = 10;
+    private static final int WAIT_INTERVAL_MILLES = 300;
 
-    public VideoWebView(Context context, VideoAd owner,VideoRequestManager manager) {
+    // Using handler posts the playAd() call to the end of queue and fixes initial rendering black issue on Lollipop and below simulators.
+    // And during resume Ad, this handler is used to retry until the parent window comes in focus else fail gracefully. Its observed parent window gets focus approx 200ms after the resume of activity.
+    private Handler playAdHandler;
+
+    public VideoWebView(Context context, VideoAd owner, VideoRequestManager manager) {
         super(new MutableContextWrapper(context));
         this.owner = owner;
         this.manager = manager;
@@ -153,9 +160,9 @@ class VideoWebView extends WebView {
             Clog.d(ANConstants.videoLogTag, "onPageFinished");
             if (!firstPageLoadComplete) {
                 firstPageLoadComplete = true;
-                if (baseAdResponse.getContentSource().equalsIgnoreCase(ANConstants.CSM_VIDEO)){
+                if (baseAdResponse.getContentSource().equalsIgnoreCase(ANConstants.CSM_VIDEO)) {
                     processMediationAd();
-                }else{
+                } else {
                     createVastPlayerWithContent();
                 }
             }
@@ -197,10 +204,10 @@ class VideoWebView extends WebView {
             owner.getAdDispatcher().onAdCompleted();
         } else if (url.equals("audio-mute")) {
             owner.getAdDispatcher().isAudioMute(true);
-        }else if (url.equals("audio-unmute")) {
+        } else if (url.equals("audio-unmute")) {
             owner.getAdDispatcher().isAudioMute(false);
-        }else {
-            Clog.e(ANConstants.videoLogTag, "Error: Unhandled event::"+url);
+        } else {
+            Clog.e(ANConstants.videoLogTag, "Error: Unhandled event::" + url);
             return;
         }
     }
@@ -343,8 +350,30 @@ class VideoWebView extends WebView {
     }
 
     protected void playAd() {
-        adIsPlaying = true;
-        this.injectJavaScript("javascript:window.playAd()");
+
+        playAdHandler = new Handler();
+
+        Runnable runnableCode = new Runnable() {
+            int retryTimes= 0;
+            @Override
+            public void run() {
+                // Play the Ad if WindowFocus is true else retry after 300ms
+                if (hasWindowFocus()) {
+                    adIsPlaying = true;
+                    injectJavaScript("javascript:window.playAd()");
+                }else if (retryTimes < TOTAL_RETRY_TIMES) {
+                    Clog.i(ANConstants.videoLogTag,"Has no focus Retrying::"+retryTimes);
+                    retryTimes ++;
+                    playAdHandler.postDelayed(this, WAIT_INTERVAL_MILLES);
+                }else{
+                    Clog.e(ANConstants.videoLogTag,"Failed to play Video-Ad giving up");
+                    owner.getAdDispatcher().onPlaybackError();
+                }
+            }
+        };
+
+        // There is no delay for first playAd() call
+        playAdHandler.post(runnableCode);
     }
 
     protected void createVastPlayerWithContent() {
@@ -354,8 +383,8 @@ class VideoWebView extends WebView {
     }
 
     private void processMediationAd() {
-        String tag= ((CSMVideoAdResponse)baseAdResponse).getCSMVideoAdResponse();
-        if(tag != null && !tag.isEmpty()) {
+        String tag = ((CSMVideoAdResponse) baseAdResponse).getCSMVideoAdResponse();
+        if (tag != null && !tag.isEmpty()) {
             String inject = String.format("javascript:window.processMediationAd('%s')",
                     tag);
             this.injectJavaScript(inject);
@@ -423,7 +452,7 @@ class VideoWebView extends WebView {
     // Helper method for getting Context if it is of type MutableContextWrapper.
     protected Context getContextFromMutableContext() {
         if (this.getContext() instanceof MutableContextWrapper) {
-            return  ((MutableContextWrapper) this.getContext()).getBaseContext();
+            return ((MutableContextWrapper) this.getContext()).getBaseContext();
         }
         return this.getContext();
     }
@@ -446,15 +475,6 @@ class VideoWebView extends WebView {
         // This is for resuming the playback after pause.
         if (adIsPlaying) {
             playAd();
-            // This is the retry scenario. and sure this is not the reason for video restarting which we see at times and need a fix.
-            //@TODO  We should not try to replay video without checking condition. And the retry timeout should not be 500for sure. But ideally when we trigger play and due to any reason if the video dosent play we should be able to query for that passively
-            //@TODO  if videoisplaying with JS and if yes, happy do noting. If not retry every 100MS to resume the video with min possible delay.
-            /*new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    playAd();
-                }
-            }, 500);*/
         }
     }
 
@@ -463,9 +483,9 @@ class VideoWebView extends WebView {
         super.onDetachedFromWindow();
 
         // The ad has been removed from window time to reset all the state variables.
-        adIsPlaying=false;
-        firstPageLoadComplete=false;
-        failed=false;
+        adIsPlaying = false;
+        firstPageLoadComplete = false;
+        failed = false;
 
     }
 }
