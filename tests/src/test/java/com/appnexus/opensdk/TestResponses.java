@@ -29,7 +29,7 @@ public class TestResponses {
     private static final String CLASSNAME = "com.appnexus.opensdk.testviews.%s";
 
     //Cookie Strings
-    public static final String UUID_COOKIE_1="uuid2=1263546692102051030; Path=/; Max-Age=7776000; Expires=Wed, 07-Dec-2016 16:23:26 GMT; Domain=.adnxs.com; HttpOnly";
+    public static final String UUID_COOKIE_1="uuid2=1263546692102051030; Path=/; Max-Age=7776000; Expires=Wed, 07-Dec-2030 16:23:26 GMT; Domain=.adnxs.com; HttpOnly";
     public static final String UUID_COOKIE_RESET="uuid2=-1; Path=/; Max-Age=314496000; Expires=Thu, 27-Aug-2026 18:28:50 GMT; Domain=.adnxs.com; HttpOnly";
 
     // impbus response
