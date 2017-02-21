@@ -1,3 +1,6 @@
+// Project Properties
+version = "1.0" // Instream SDK version
+
 apply plugin: 'com.android.library'
 
 android {
@@ -7,22 +10,19 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 24
-        versionCode 1
-        versionName "1.0"
+        versionCode 1 // An integer value that represents the version of the code, relative to other versions. Increase for each release.
+        versionName version
+        consumerProguardFiles 'proguard-project.txt'
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
+    lintOptions {
+        abortOnError false
     }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:24.1.1'
-    compile 'com.android.support:design:24.1.1'
     compile project(':sdk')
+    testCompile 'com.android.support:design:24.1.1'
     testCompile 'junit:junit:4.12'
     testCompile 'org.assertj:assertj-core:1.7.0'
     testCompile 'org.robolectric:robolectric:3.1.1'
@@ -31,7 +31,80 @@ dependencies {
 }
 
 
+evaluationDependsOn(':sdk')
+ext {
+    pom_name = "AppNexus Android SDK: Instream Video"
+    pom_description = "AppNexus's Android Advertising Libraries: Instream Video SDK"
+    pom_url = "https://wiki.appnexus.com/display/sdk/Mobile+SDKs?src=search#MobileSDKs-Android"
+
+    pom_groupId = "com.appnexus.opensdk"
+    pom_artifactId = "appnexus-instreamvideo"
+    pom_packaging = "aar"
+    pom_version = project(':sdk').version + "-" + project.version
+
+    pom_distribution_snapshotRepo_id = "ossrh"
+    pom_distribution_snapshotRepo_url = "https://oss.sonatype.org/content/repositories/snapshots"
+    pom_distribution_repo_id = "ossrh"
+    pom_distribution_repo_url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+
+    username =project.hasProperty('nexusUsername') ? project.getProperties().get('nexusUsername') : "Replace your username here"
+    password = project.hasProperty('nexusPassword') ? project.getProperties().get('nexusPassword') : "Replace your password here"
+}
+
+
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+signing {
+    sign configurations.archives
+}
+
+
+uploadArchives {
+    configuration = configurations.archives
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            repository(url: project.pom_distribution_repo_url) {
+                authentication(userName: project.username, password: project.password)
+            }
+            snapshotRepository(url: project.pom_distribution_snapshotRepo_url) {
+                authentication(userName: project.username, password: project.password)
+            }
+            pom.project {
+                name project.pom_name
+                packaging project.pom_packaging
+                groupId project.pom_groupId
+                artifactId project.pom_artifactId
+                version project.pom_version
+                description project.pom_description
+                url project.pom_url
+                scm {
+                    connection 'scm:git:git@github.com:appnexus/mobile-sdk-android.git'
+                    developerConnection 'scm:git:git@github.com:appnexus/mobile-sdk-android.git'
+                    url 'git@github.com:appnexus/mobile-sdk-android.git'
+                }
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        name 'AppNexus Mobile Team'
+                        email 'sdk@appnexus.com'
+                        organizationUrl 'http://www.appnexus.com'
+                    }
+                }
+            }
+        }
+    }
+}
+
 repositories {
     jcenter()
     mavenCentral()
 }
+
+
