@@ -1,5 +1,5 @@
 // Project Properties
-version = "5.3.1" // supported InMobi version
+version = "6.1.0" // supported InMobi version
 
 apply plugin: 'com.android.library'
 
