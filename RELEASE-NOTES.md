@@ -1,3 +1,9 @@
+## 3.0
++ MS-2826 Mobile Instream SDK
++ MS-2914 Removed provider information from Admarvel mediation adapter AndroidManifest.xml
++ Updated Mediated SDKs
+InMobi SDK update to 6.1.0
+
 ## 2.16
 + MS-2839 Fixed Anjam and sdk communication for creative served in iframe
 + MS-2841 Add a "ping" feature to the SDK without anjam.js injection
