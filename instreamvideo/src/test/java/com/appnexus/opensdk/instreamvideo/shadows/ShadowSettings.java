@@ -49,10 +49,10 @@ public class ShadowSettings {
     }
 
     public static void setTestURL(String url) {
-            BASE_URL = url;
-            REQUEST_BASE_URL = url;
-            COOKIE_DOMAIN = url;
-            REQUEST_BASE_URL_UT_V2 = url;
+        BASE_URL = url;
+        REQUEST_BASE_URL = url;
+        COOKIE_DOMAIN = url;
+        REQUEST_BASE_URL_UT_V2 = url;
     }
 
 

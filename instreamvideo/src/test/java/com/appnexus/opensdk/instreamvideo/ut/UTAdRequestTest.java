@@ -1,6 +1,5 @@
 package com.appnexus.opensdk.instreamvideo.ut;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Pair;
 
@@ -11,6 +10,7 @@ import com.appnexus.opensdk.instreamvideo.BuildConfig;
 import com.appnexus.opensdk.instreamvideo.MockVideoAdOwner;
 import com.appnexus.opensdk.instreamvideo.TestUTResponses;
 import com.appnexus.opensdk.instreamvideo.shadows.ShadowSettings;
+import com.appnexus.opensdk.instreamvideo.util.RoboelectricTestRunnerWithResources;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
@@ -22,8 +22,6 @@ import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.io.IOException;
@@ -33,8 +31,8 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
-@RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class)
+@RunWith(RoboelectricTestRunnerWithResources.class)
+@Config(constants = BuildConfig.class, sdk = 21, shadows = ShadowSettings.class)
 public class UTAdRequestTest extends BaseRoboTest {
 
     public static final int MEMBER_ID = 5;
@@ -177,10 +175,10 @@ public class UTAdRequestTest extends BaseRoboTest {
 /*
     */
 /**
-     * Tests whether allowed sizes data is passed correctly in the request
-     *
-     * @throws Exception
-     *//*
+ * Tests whether allowed sizes data is passed correctly in the request
+ *
+ * @throws Exception
+ *//*
 
     @Test
     public void testAllowedSizes() throws Exception {
@@ -209,13 +207,13 @@ public class UTAdRequestTest extends BaseRoboTest {
 
     /**
      * Tests whether allowed sizes data is passed correctly in the request
+     *
      * @throws Exception
      */
     @Test
-    public void testDefaultAllowedSizes() throws Exception{
+    public void testDefaultAllowedSizes() throws Exception {
 
         ArrayList<AdSize> allowedSizes = new ArrayList<AdSize>();
-        allowedSizes.add(new AdSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 
         clearAAIDAsyncTasks();
         owner.startAdFetcher();
@@ -243,6 +241,8 @@ public class UTAdRequestTest extends BaseRoboTest {
         waitForTasks();
         Robolectric.flushForegroundThreadScheduler();
         Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
 
         JSONObject postData = inspectPostData();
         JSONObject tag = getTagsData(postData);
@@ -252,10 +252,8 @@ public class UTAdRequestTest extends BaseRoboTest {
         assertTrue(tag.has(UTAdRequest.TAG_ALLOWED_MEDIA_AD_TYPES));
         JSONArray allowedAdTypes = tag.getJSONArray(UTAdRequest.TAG_ALLOWED_MEDIA_AD_TYPES);
         assertNotNull(allowedAdTypes);
-        assertEquals(3, allowedAdTypes.length());
-        assertEquals(UTAdRequest.ALLOWED_TYPE_BANNER, allowedAdTypes.getInt(0));
-        assertEquals(UTAdRequest.ALLOWED_TYPE_INTERSTITIAL, allowedAdTypes.getInt(1));
-        assertEquals(UTAdRequest.ALLOWED_TYPE_VIDEO, allowedAdTypes.getInt(2));
+        assertEquals(1, allowedAdTypes.length());
+        assertEquals(UTAdRequest.ALLOWED_TYPE_VIDEO, allowedAdTypes.getInt(0));
     }
 
     /**
@@ -271,6 +269,10 @@ public class UTAdRequestTest extends BaseRoboTest {
         clearAAIDAsyncTasks();
         owner.startAdFetcher();
         waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         Robolectric.flushBackgroundThreadScheduler();
 
@@ -303,7 +305,6 @@ public class UTAdRequestTest extends BaseRoboTest {
 
     private void inspectSizes(ArrayList<AdSize> allowedSizes, JSONObject tag) throws JSONException {
 
-        allowedSizes.add(new AdSize(SCREEN_WIDTH, SCREEN_HEIGHT));
         allowedSizes.add(new AdSize(1, 1));
 
         System.out.println("Checking sizes validity...");
@@ -436,8 +437,6 @@ public class UTAdRequestTest extends BaseRoboTest {
     }
 
 
-
-
     private void setupMockServer() throws IOException {
         server = new MockWebServer();
         server.start();
@@ -446,8 +445,7 @@ public class UTAdRequestTest extends BaseRoboTest {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.blank()));
     }
 
-    private class UTVideoTest extends BaseRoboTest{
-
+    private class UTVideoTest extends BaseRoboTest {
 
 
     }
