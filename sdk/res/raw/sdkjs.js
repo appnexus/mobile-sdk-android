@@ -32,6 +32,7 @@
     var CALL_RECORDEVENT = "RecordEvent";
     var CALL_DISPATCHAPPEVENT = "DispatchAppEvent";
     var CALL_GETDEVICEID = "GetDeviceID";
+    var CALL_SETMRAIDREFRESHFREQUENCY = "SetMRAIDRefreshFrequency";
     var CALL_READY = "ready";
     var CALL_RESULT = "result";
     var CALL_MRAID = "mraid";
@@ -131,6 +132,8 @@
                 sdkjs.callGetDeviceID(queryParameters);
             } else if (path === CALL_MRAID) {
                 sdkjs.callMraid(queryParameters);
+            } else if (path === CALL_SETMRAIDREFRESHFREQUENCY) {
+                sdkjs.callSetMraidRefreshFrequency(queryParameters);
             } else if (path === CALL_PING) {
                 /* An iframe can send a post message directly to the top window
                  * in order to be sure to be inside the AppNexus SDK context (without injecting anjam.js):
@@ -252,6 +255,12 @@
         var cb = queryParameters.cb;
 
         sdkjs.makeNativeCall("GetDeviceID?cb=" + cb);
+    }
+
+    sdkjs.callSetMraidRefreshFrequency = function (queryParameters) {
+        var ms = queryParameters.ms;
+
+        sdkjs.makeNativeCall("SetMRAIDRefreshFrequency?ms=" + ms);
     }
 
     sdkjs.callMraid = function (queryParameters) {

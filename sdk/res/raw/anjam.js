@@ -21,7 +21,7 @@
 
     // constants
     var DEBUG = false;
-    var VERSION_NO = "1.0";
+    var VERSION_NO = "1.1";
     var ANJAM_PROTOCOL = "anjam:";
     var SDKJS_PROTOCOL = "sdkjs:";
     var WINDOW_NAME_PREFIX = "anjam_";
@@ -34,6 +34,7 @@
     var CALL_DISPATCHAPPEVENT = "DispatchAppEvent";
     var CALL_GETVERSION = "GetVersion";
     var CALL_GETDEVICEID = "GetDeviceID";
+    var CALL_SETMRAIDREFRESHFREQUENCY = "SetMRAIDRefreshFrequency";
     var CALL_READY = "ready";
     var CALL_RESULT = "result";
     var CALL_MRAID = "mraid";
@@ -341,7 +342,7 @@
     }
 
     // call setup()
-     setTimeout(anjam.setup, 0);
+    anjam.setup();
 
     // -----
     // ----- INTERNAL API UTILITY FUNCTIONS -----
@@ -576,6 +577,15 @@
 
         anjam.fireMessage(CALL_GETDEVICEID, [new anjam.pair(
             "cb", callbacksCounter)]);
+    }
+
+    anjam.SetMRAIDRefreshFrequency = function(milliseconds) {
+        if (isNaN(milliseconds)) {
+            return;
+        }
+
+        anjam.fireMessage(CALL_SETMRAIDREFRESHFREQUENCY, [new anjam.pair(
+            "ms", milliseconds)]);
     }
 
 }());

@@ -84,6 +84,8 @@ class AdWebView extends WebView implements Displayable {
     // touch detection
     private boolean userInteracted = false;
 
+    private int checkPositionTimeInterval = 1000;
+
     public AdWebView(AdView adView) {
         super(new MutableContextWrapper(adView.getContext()));
         this.adView = adView;
@@ -774,7 +776,7 @@ class AdWebView extends WebView implements Displayable {
         public void run() {
             if (viewableCheckPaused) return;
             checkPosition();
-            handler.postDelayed(this, 1000);
+            handler.postDelayed(this, checkPositionTimeInterval);
         }
     };
 
@@ -868,6 +870,13 @@ class AdWebView extends WebView implements Displayable {
             loadUrl(url);
         }
     }
+
+    public void setCheckPositionTimeInterval(int interval) {
+        checkPositionTimeInterval = interval;
+        stopCheckViewable();
+        startCheckViewable();
+    }
+
 }
 
 class MRAIDTwoPartExpandWebView extends AdWebView{
