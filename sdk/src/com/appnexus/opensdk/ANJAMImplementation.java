@@ -40,6 +40,7 @@ class ANJAMImplementation {
     private static final String CALL_RECORDEVENT = "RecordEvent";
     private static final String CALL_DISPATCHAPPEVENT = "DispatchAppEvent";
     private static final String CALL_GETDEVICEID = "GetDeviceID";
+    private static final String CALL_SETMRAIDREFRESHFREQUENCY = "SetMRAIDRefreshFrequency";
 
     private static final String KEY_CALLER = "caller";
 
@@ -72,6 +73,8 @@ class ANJAMImplementation {
             callDispatchAppEvent(webView, uri);
         } else if (CALL_GETDEVICEID.equals(call)) {
             callGetDeviceID(webView, uri);
+        } else if (CALL_SETMRAIDREFRESHFREQUENCY.equals(call)) {
+            callSetMraidRefreshFrequency(webView, uri);
         } else {
             Clog.w(Clog.baseLogTag, "ANJAM called with unsupported function: " + call);
         }
@@ -238,6 +241,11 @@ class ANJAMImplementation {
         list.add(new Pair("idname", idNameValue));
         list.add(new Pair("id", idValue));
         loadResult(webView, cb, list);
+    }
+
+    private static void callSetMraidRefreshFrequency(AdWebView webView, Uri uri) {
+        String milliseconds = uri.getQueryParameter("ms");
+        webView.setCheckPositionTimeInterval(Integer.parseInt(milliseconds));
     }
 
     // Send the result back to JS
