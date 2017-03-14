@@ -170,39 +170,42 @@ public class AdActivity extends Activity {
                 .equals("KFJWA"))) {
             isKindleFireHD = true;
         }
-        Display d = ((WindowManager) a.getSystemService(Context.WINDOW_SERVICE))
-                .getDefaultDisplay();
 
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
-                a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            } else {
-                int rotation = d.getRotation();
-                if (rotation == android.view.Surface.ROTATION_90
-                        || rotation == android.view.Surface.ROTATION_180) {
-                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
-                } else {
+        if(a!= null && !a.isFinishing()) {
+            Display d = ((WindowManager) a.getSystemService(Context.WINDOW_SERVICE))
+                    .getDefaultDisplay();
+
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
                     a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                }
-            }
-        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
-                a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            } else {
-                int rotation = d.getRotation();
-                if (!isKindleFireHD) {
-                    if (rotation == android.view.Surface.ROTATION_0
-                            || rotation == android.view.Surface.ROTATION_90) {
-                        a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                    } else {
-                        a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-                    }
                 } else {
-                    if (rotation == android.view.Surface.ROTATION_0
-                            || rotation == android.view.Surface.ROTATION_90) {
-                        a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+                    int rotation = d.getRotation();
+                    if (rotation == android.view.Surface.ROTATION_90
+                            || rotation == android.view.Surface.ROTATION_180) {
+                        a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
                     } else {
-                        a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                        a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    }
+                }
+            } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
+                    a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                } else {
+                    int rotation = d.getRotation();
+                    if (!isKindleFireHD) {
+                        if (rotation == android.view.Surface.ROTATION_0
+                                || rotation == android.view.Surface.ROTATION_90) {
+                            a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                        } else {
+                            a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+                        }
+                    } else {
+                        if (rotation == android.view.Surface.ROTATION_0
+                                || rotation == android.view.Surface.ROTATION_90) {
+                            a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+                        } else {
+                            a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                        }
                     }
                 }
             }
