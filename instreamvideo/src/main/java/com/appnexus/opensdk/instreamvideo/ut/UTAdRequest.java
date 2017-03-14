@@ -554,10 +554,12 @@ public class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
             ArrayList<Pair<String, String>> customKeywords = params.getCustomKeywords();
             if (customKeywords != null) {
                 for (Pair<String, String> pair : customKeywords) {
-                    if (!StringUtil.isEmpty(pair.first) && !StringUtil.isEmpty(pair.second)) {
+                    if (!StringUtil.isEmpty(pair.first) && !StringUtil.isEmpty(pair.second) && !updateIfKeyExists(pair.first,pair.second,keywords)) {
                         JSONObject key_val = new JSONObject();
                         key_val.put(KEYVAL_KEY, pair.first);
-                        key_val.put(KEYVAL_VALUE, pair.second);
+                        JSONArray val = new JSONArray();
+                        val.put(pair.second);
+                        key_val.put(KEYVAL_VALUE, val);
                         keywords.put(key_val);
                     }
                 }
@@ -567,4 +569,14 @@ public class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
         return keywords;
     }
 
+    private boolean updateIfKeyExists(String key,String value, JSONArray keywords) throws JSONException {
+        for (int i = 0; i < keywords.length(); i++) {
+            JSONObject key_val = keywords.getJSONObject(i);
+            if(key_val.getString(KEYVAL_KEY).equalsIgnoreCase(key)){
+                key_val.getJSONArray(KEYVAL_VALUE).put(value);
+                return true;
+            }
+        }
+        return false;
+    }
 }

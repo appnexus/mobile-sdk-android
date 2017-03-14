@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
@@ -37,8 +38,12 @@ public class UTAdRequestTest extends BaseRoboTest {
 
     public static final int MEMBER_ID = 5;
     public static final String INVENTORY_CODE = "test_inv_code";
-    public static final String TEST_KEY = "testKey";
-    public static final String TEST_VALUE = "testValue";
+    public static final String TEST_KEY_STATES = "states";
+    public static final String TEST_KEY_MUSIC_CATEGORY = "category";
+
+    public static final String TEST_VALUE_STATES_1 = "AZ";
+    public static final String TEST_VALUE_STATES_2 = "NY";
+    public static final String TEST_VALUE_MUSIC_CATEGORY_1 = "jazz";
     public static final int DEFAULT_WIDTH = 300;
     public static final int DEFAULT_HEIGHT = 250;
     public static final int SCREEN_WIDTH = 320;
@@ -96,32 +101,84 @@ public class UTAdRequestTest extends BaseRoboTest {
     }
 
     /**
-     * Tests PlacementId validity in the request
+     * Tests CustomKeyWords validity in the request
+     * Single Key and single Value
      *
      * @throws Exception
      */
     @Test
     public void testCustomKeywords() throws Exception {
-        owner.addCustomKeywords("key1", "value1");
-        Pair<String, String> keywordsToTest1 = new Pair<>("key1", "value1");
-
-        owner.addCustomKeywords("key2", "value2");
-        Pair<String, String> keywordsToTest2 = new Pair<>("key2", "value2");
-
-        ArrayList<Pair> keywordsList = new ArrayList<>();
-        keywordsList.add(keywordsToTest1);
-        keywordsList.add(keywordsToTest2);
-
+        String stringToTest=String.format("[{\"key\":\"%1$s\",\"value\":[\"%2$s\"]}]", TEST_KEY_STATES, TEST_VALUE_STATES_1);
+        owner.addCustomKeywords(TEST_KEY_STATES,TEST_VALUE_STATES_1);
         clearAAIDAsyncTasks();
         owner.startAdFetcher();
-
         waitForTasks();
         Robolectric.flushForegroundThreadScheduler();
         Robolectric.flushBackgroundThreadScheduler();
-
         JSONObject postData = inspectPostData();
+        inspectCustomKeywords(stringToTest, postData);
+    }
 
-        inspectCustomKeywords(keywordsList, postData);
+
+    /**
+     * Tests CustomKeyWords validity in the request
+     * Single Key and Multiple Value
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testCustomKeywords_MultipleValues() throws Exception {
+        String stringToTest=String.format("[{\"key\":\"%1$s\",\"value\":[\"%2$s\",\"%3$s\"]}]", TEST_KEY_STATES, TEST_VALUE_STATES_1,TEST_VALUE_STATES_2);
+        owner.addCustomKeywords(TEST_KEY_STATES,TEST_VALUE_STATES_1);
+        owner.addCustomKeywords(TEST_KEY_STATES,TEST_VALUE_STATES_2);
+        clearAAIDAsyncTasks();
+        owner.startAdFetcher();
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+        JSONObject postData = inspectPostData();
+        inspectCustomKeywords(stringToTest, postData);
+    }
+
+
+
+    /**
+     * Tests CustomKeyWords validity in the request
+     * Multiple Key and Multiple Value
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testCustomKeywords_MultipleKeys_And_Multiple_Values() throws Exception {
+        String stringToTest=String.format("[{\"key\":\"%1$s\",\"value\":[\"%2$s\",\"%3$s\"]},{\"key\":\"%4$s\",\"value\":[\"%5$s\"]}]", TEST_KEY_STATES, TEST_VALUE_STATES_1,TEST_VALUE_STATES_2,TEST_KEY_MUSIC_CATEGORY,TEST_VALUE_MUSIC_CATEGORY_1);
+        owner.addCustomKeywords(TEST_KEY_STATES,TEST_VALUE_STATES_1);
+        owner.addCustomKeywords(TEST_KEY_STATES,TEST_VALUE_STATES_2);
+        owner.addCustomKeywords(TEST_KEY_MUSIC_CATEGORY,TEST_VALUE_MUSIC_CATEGORY_1);
+        clearAAIDAsyncTasks();
+        owner.startAdFetcher();
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+        JSONObject postData = inspectPostData();
+        inspectCustomKeywords(stringToTest, postData);
+    }
+
+
+    /**
+     * Tests CustomKeyWords validity in the request
+     * Multiple Key and Multiple Value
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testNoCustomKeywords() throws Exception {
+        clearAAIDAsyncTasks();
+        owner.startAdFetcher();
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+        JSONObject postData = inspectPostData();
+        assertFalse(postData.has(UTAdRequest.KEYWORDS));
     }
 
 
@@ -286,6 +343,7 @@ public class UTAdRequestTest extends BaseRoboTest {
     }
 
 
+
     @Override
     public void tearDown() {
         super.tearDown();
@@ -395,17 +453,12 @@ public class UTAdRequestTest extends BaseRoboTest {
         Robolectric.flushForegroundThreadScheduler();
     }
 
-    private void inspectCustomKeywords(ArrayList<Pair> keywordsList, JSONObject postData) throws JSONException {
+    private void inspectCustomKeywords(String keywordString, JSONObject postData) throws JSONException {
         System.out.println("Checking custom keywords validity...");
         assertTrue(postData.has(UTAdRequest.KEYWORDS));
-
-        JSONArray keywordsJsonArray = postData.getJSONArray(UTAdRequest.KEYWORDS);
-        for (int i = 0; i < keywordsJsonArray.length(); i++) {
-            assertNotNull(keywordsJsonArray.get(i));
-
-            assertEquals(keywordsList.get(i).first, ((JSONObject) keywordsJsonArray.get(i)).getString("key"));
-            assertEquals(keywordsList.get(i).second, ((JSONObject) keywordsJsonArray.get(i)).getString("value"));
-        }
+        JSONArray keyWordObject = postData.getJSONArray(UTAdRequest.KEYWORDS);
+        assertNotNull(keyWordObject);
+        assertEquals(keywordString, keyWordObject.toString());
         System.out.println("Custom keywords validity test passed!");
     }
 
@@ -418,7 +471,6 @@ public class UTAdRequestTest extends BaseRoboTest {
         assertEquals(genderInt, userObject.getInt(UTAdRequest.USER_GENDER));
         System.out.println("Gender validity test passed!");
     }
-
 
     private int getGenderInt(AdView.GENDER genderToTest) {
         int gender = 0;
