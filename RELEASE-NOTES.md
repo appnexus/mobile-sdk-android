@@ -1,3 +1,10 @@
+## 3.1
++ MS-2853 Updated ANJAM to update position on the fly
++ MS-2957 Fixed a crash with setOrientationProperties in MRAID
++ Fixed ut/v2 custom keywords
++ Updated Mediated SDKs
+Facebook SDK update to 4.20.0
+
 ## 3.0
 + MS-2826 Mobile Instream SDK
 + MS-2914 Removed provider information from Admarvel mediation adapter AndroidManifest.xml
