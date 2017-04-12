@@ -16,6 +16,7 @@
 package com.appnexus.opensdk.instreamvideo.utils;
 
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Settings;
 
 public class ANConstants {
     public static final String CSM = "csm";
@@ -28,6 +29,11 @@ public class ANConstants {
     public static final String MRAID_JS_FILENAME = "mraid.js";
     public static final String EXTRAS_KEY_MRAID = "MRAID";
     public static final String videoLogTag = Clog.baseLogTag + "-InStVideo";
+    private static String WEBVIEW_PATH = "file:///android_asset/index.html";
+    private static String DEBUG_WEBVIEW_PATH = "http://mobile.devnxs.net/debug/index.html?ast_debug=true";
 
 
+    public static String getWebViewUrl() {
+        return Settings.getSettings().debug_mode ? DEBUG_WEBVIEW_PATH: WEBVIEW_PATH;
+    }
 }

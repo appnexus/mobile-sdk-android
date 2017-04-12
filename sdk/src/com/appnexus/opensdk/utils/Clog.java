@@ -36,7 +36,7 @@ public class Clog {
     private static void logIfLoggable(String LogTag, String message, int level, Throwable tr){
         //Allow logging if baseLogTag would allow it, or if this log tag
         //specifically allows it.
-        if(Log.isLoggable(LogTag, level) || Log.isLoggable(baseLogTag, level)) {
+        if(Log.isLoggable(LogTag, level) || Log.isLoggable(baseLogTag, level) || Settings.getSettings().debug_mode) {
             if (tr != null) {
                 switch (level) {
                     case Log.VERBOSE:

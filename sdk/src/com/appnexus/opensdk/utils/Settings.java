@@ -41,6 +41,8 @@ public class Settings {
     public String app_id = null;
 
     public boolean test_mode = false;
+
+    public boolean debug_mode = false; // This should always be false here.
     public String ua = null;
     public boolean first_launch;
     public final String sdkVersion = "3.1";
