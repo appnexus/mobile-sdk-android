@@ -221,7 +221,9 @@ class VideoWebView extends WebView {
             //@TODO there is possiblity of capturing more granular failure responses here but for that HTML should be first setup to send back granular Error codes.Currently lets keep all as UNABLE_TO_FILL
             manager.currentAdFailed(ResultCode.UNABLE_TO_FILL);
         }
-        destroy();
+        if(!Settings.getSettings().debug_mode) {
+            destroy();
+        }
     }
 
     void fireAdClicked() {
@@ -398,8 +400,7 @@ class VideoWebView extends WebView {
             return;
         }
         this.baseAdResponse = baseAdResponse;
-
-        this.loadUrl("file:///android_asset/index.html");
+        this.loadUrl(ANConstants.getWebViewUrl());
     }
 
 
