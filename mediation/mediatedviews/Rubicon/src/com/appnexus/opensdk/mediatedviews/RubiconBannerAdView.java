@@ -28,6 +28,7 @@ import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.utils.StringUtil;
+import com.appnexus.opensdk.utils.ViewUtil;
 import com.rfm.sdk.RFMAdRequest;
 import com.rfm.sdk.RFMAdView;
 import com.rfm.sdk.RFMAdViewListener;
@@ -65,15 +66,15 @@ public class RubiconBannerAdView implements MediatedBannerAdView {
             return null;
         }
 
-        RFMAdViewListener adViewListener = new RubiconListener(mBC, this.getClass().getSimpleName());
+
 
         RFMAdRequest rfmAdRequest = new RFMAdRequest();
         rfmAdRequest.setRFMParams(serverName, pubId, adId);
         rfmAdRequest.setAdDimensionParams(width, height);
 
         adView = new RFMAdView(activity);
+        RFMAdViewListener adViewListener = new RubiconListener(mBC, this.getClass().getSimpleName(),adView);
         adView.setRFMAdViewListener(adViewListener);
-        adView.enableHWAcceleration(true);
 
 
         if (targetingParameters != null) {
@@ -84,11 +85,12 @@ public class RubiconBannerAdView implements MediatedBannerAdView {
             rfmAdRequest.setTargetingParams(getTargetingParams(targetingParameters));
         }
 
-        adView.setMinimumWidth(width);
-        adView.setMinimumHeight(height);
+        adView.setMinimumWidth(ViewUtil.getValueInPixel(activity,width));
+        adView.setMinimumHeight(ViewUtil.getValueInPixel(activity,height));
         adView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
 
         adView.requestRFMAd(rfmAdRequest);
+
         return adView;
     }
 

@@ -28,16 +28,18 @@ public class RubiconListener implements RFMAdViewListener{
 
     private final MediatedAdViewController mediatedAdViewController;
     private final String className;
+    private final RFMAdView adView;
 
-    public RubiconListener(MediatedAdViewController mediatedAdViewController, String className) {
+    public RubiconListener(MediatedAdViewController mediatedAdViewController, String className, RFMAdView rfmAdView) {
         this.mediatedAdViewController = mediatedAdViewController;
         this.className = className;
+        this.adView = rfmAdView;
     }
 
     @Override
-    public void onAdRequested(RFMAdView rfmAdView, String s, boolean b) {
+    public void onAdRequested(String s, boolean b) {
         printToClog("onAdRequested - ad request url: "+s);
-        rfmAdView.setVisibility(View.GONE);
+        adView.setVisibility(View.GONE);
     }
 
     @Override
