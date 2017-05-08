@@ -210,7 +210,7 @@ class AdWebView extends WebView implements Displayable {
             if (res == null
                     || !StringUtil.appendRes(htmlSB, res, R.raw.sdkjs)
                     || !StringUtil.appendRes(htmlSB, res, R.raw.anjam)
-                    || !StringUtil.appendRes(htmlSB, res, R.raw.mraid)) {
+                    || !StringUtil.appendRes(htmlSB, res, R.raw.apn_mraid)) {
                 Clog.e(Clog.baseLogTag, "Error reading SDK's raw resources.");
                 return html;
             }
