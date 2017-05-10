@@ -1,3 +1,10 @@
+## 3.2
++ MS-2999 Renamed mraid.js to avoid conflicts with other SDK's in the app.
++ MS-3011 Fixed Fatal crash IllegalArgumentException in android v4.x
++ Added debug options for Instream SDK
++ Updated Mediated SDKs
+Rubicon SDK updated to 6.3.0
+
 ## 3.1
 + MS-2853 Updated ANJAM to update position on the fly
 + MS-2957 Fixed a crash with setOrientationProperties in MRAID
