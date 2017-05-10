@@ -143,4 +143,6 @@
 	<string formatted="false" name="get_ad_sizes">getAdSizes() called on banner.</string>
 	<string formatted="false" name="set_ad_sizes_null">setAdSizes() called with null adSizes</string>
 	<string formatted="false" name="set_ad_sizes_no_elements">setAdSizes() called with empty adSizes</string>
+	<string formatted="false" name="apn_webview_failed_to_destroy">Webview destroy failed</string>
+
 </resources>
