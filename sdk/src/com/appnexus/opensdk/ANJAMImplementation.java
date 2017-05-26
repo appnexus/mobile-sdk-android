@@ -21,6 +21,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.webkit.CookieSyncManager;
@@ -262,8 +263,16 @@ class ANJAMImplementation {
             }
         }
         String url = String.format("javascript:window.sdkjs.client.result(\"%s\")", params.toString());
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            webView.evaluateJavascript(url, null);
+            try {
+                webView.evaluateJavascript(url, null);
+            } catch (Exception exception) {
+                Clog.e(Clog.baseLogTag, "ANJAMImplementation.loadResult -- exception={exception.message}");
+                Clog.e(Clog.baseLogTag, "ANJAMImplementation.loadResult -- RECOVERING with webView.loadUrl...");
+            } finally {
+                webView.loadUrl(url);
+            }
         } else {
             webView.loadUrl(url);
         }

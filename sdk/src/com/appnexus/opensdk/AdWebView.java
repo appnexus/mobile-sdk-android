@@ -329,11 +329,22 @@ class AdWebView extends WebView implements Displayable {
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
+
+            String  javascript  = "javascript:window.mraid.util.pageFinished()";
+
             if (!firstPageFinished) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    view.evaluateJavascript("javascript:window.mraid.util.pageFinished()", null);
+                    try {
+                        view.evaluateJavascript(javascript, null);
+                    } catch (Exception exception) {
+                        Clog.e(Clog.baseLogTag, "AdWebView.onPageFinished -- exception={exception.message}");
+                        Clog.e(Clog.baseLogTag, "AdWebView.onPageFinished -- RECOVERING with view.loadUrl...");
+                    } finally {
+                        view.loadUrl(javascript);
+                    }
+
                 } else {
-                    view.loadUrl("javascript:window.mraid.util.pageFinished()");
+                    view.loadUrl(javascript);
                 }
                 if (isMRAIDEnabled) {
                     implementation.webViewFinishedLoading(AdWebView.this, initialMraidStateString);
@@ -870,8 +881,17 @@ class AdWebView extends WebView implements Displayable {
     }
 
     protected void injectJavaScript(String url){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            evaluateJavascript(url, null);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+        {
+            try {
+                evaluateJavascript(url, null);
+            } catch (Exception exception) {
+                Clog.e(Clog.baseLogTag, "AdWebView.injectJavaScript -- exception={exception.message}");
+                Clog.e(Clog.baseLogTag, "AdWebView.injectJavaScript -- RECOVERING with loadUrl...");
+            } finally {
+                loadUrl(url);
+            }
+
         } else {
             loadUrl(url);
         }
