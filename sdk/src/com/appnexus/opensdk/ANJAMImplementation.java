@@ -267,10 +267,9 @@ class ANJAMImplementation {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             try {
                 webView.evaluateJavascript(url, null);
-            } catch (Exception exception) {
-                Clog.e(Clog.baseLogTag, "ANJAMImplementation.loadResult -- exception={exception.message}");
-                Clog.e(Clog.baseLogTag, "ANJAMImplementation.loadResult -- RECOVERING with webView.loadUrl...");
-            } finally {
+            } catch (Throwable exception) {
+                Clog.e(Clog.baseLogTag, "ANJAMImplementation.loadResult -- Caught EXCEPTION...", exception);
+                Clog.e(Clog.baseLogTag, "ANJAMImplementation.loadResult -- ...Recovering with webView.loadUrl.");
                 webView.loadUrl(url);
             }
         } else {
