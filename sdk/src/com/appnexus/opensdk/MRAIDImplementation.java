@@ -612,7 +612,7 @@ class MRAIDImplementation {
         // orientationProperties only affects expanded state
         if (expanded || owner.adView.isInterstitial()) {
             Activity containerActivity = owner.isFullScreen
-                    ? getFullscreenActivity() : (Activity) ViewUtil.getTopContext(owner);
+                    ? getFullscreenActivity() : (Activity) owner.getContextFromMutableContext();
             if (allow_orientation_change) {
                 AdActivity.unlockOrientation(containerActivity);
             } else {
