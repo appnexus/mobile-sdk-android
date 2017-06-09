@@ -159,57 +159,63 @@ public class AdActivity extends Activity {
     }
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    private static void setOrientation(Activity a, int orientation) {
-        // Fix an accelerometer bug with kindle fire HDs
-        boolean isKindleFireHD = false;
-        String device = Settings.getSettings().deviceModel
-                .toUpperCase(Locale.US);
-        String make = Settings.getSettings().deviceMake.toUpperCase(Locale.US);
-        if (make.equals("AMAZON")
-                && (device.equals("KFTT") || device.equals("KFJWI") || device
-                .equals("KFJWA"))) {
+    private static void setOrientation(Activity a, int orientation)
+    {
+        boolean  isKindleFireHD  = false;  // Fix an accelerometer bug with kindle fire HDs
+
+        String  device   = Settings.getSettings() .deviceModel .toUpperCase(Locale.US);
+        String  make     = Settings.getSettings() .deviceMake  .toUpperCase(Locale.US);
+
+        if (        make.equals("AMAZON")
+                && (device.equals("KFTT") || device.equals("KFJWI") || device.equals("KFJWA")) )
+        {
             isKindleFireHD = true;
         }
 
-        if(a!= null && !a.isFinishing()) {
-            Display d = ((WindowManager) a.getSystemService(Context.WINDOW_SERVICE))
-                    .getDefaultDisplay();
+        if( (a != null) && !a.isFinishing() )
+        {
+            Display  d         = ((WindowManager) a.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+            int      rotation  = d.getRotation();
 
-            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+
+            if (orientation == Configuration.ORIENTATION_PORTRAIT)
+            {
                 if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
                     a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
                 } else {
-                    int rotation = d.getRotation();
-                    if (rotation == android.view.Surface.ROTATION_90
-                            || rotation == android.view.Surface.ROTATION_180) {
+                    if (rotation == android.view.Surface.ROTATION_180) {
                         a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
                     } else {
                         a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                     }
                 }
-            } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            }
+
+            else if (orientation == Configuration.ORIENTATION_LANDSCAPE)
+            {
                 if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
                     a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
                 } else {
-                    int rotation = d.getRotation();
-                    if (!isKindleFireHD) {
-                        if (rotation == android.view.Surface.ROTATION_0
-                                || rotation == android.view.Surface.ROTATION_90) {
-                            a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                        } else {
+                    if (isKindleFireHD) {
+                        if (rotation == android.view.Surface.ROTATION_0 || rotation == android.view.Surface.ROTATION_90) {
                             a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+                        } else {
+                            a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
                         }
+
                     } else {
-                        if (rotation == android.view.Surface.ROTATION_0
-                                || rotation == android.view.Surface.ROTATION_90) {
-                            a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-                        } else {
+                        if (rotation == android.view.Surface.ROTATION_0 || rotation == android.view.Surface.ROTATION_90) {
                             a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                        } else {
+                            a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
                         }
                     }
                 }
-            }
-        }
+            } //endif -- orientation is PORTRAIT; else LANDSCAPE
+        } //endif -- a && a
     }
 
     enum OrientationEnum {
