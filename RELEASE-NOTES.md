@@ -1,3 +1,10 @@
+
+## 3.3
++ Support for VPAID.
++ MS-2986  Fix MRAID case where request for portrait orientation resulted in reverse portrait.
++ MS-3012  Crash in one-off cases of Android v4.3 where evaluateJavaScript() is not properly supported.
++ MS-3013  Crash where internal utility failed to return proper result.
+
 ## 3.2
 + MS-2999 Renamed mraid.js to avoid conflicts with other SDK's in the app.
 + MS-3011 Fixed Fatal crash IllegalArgumentException in android v4.x
