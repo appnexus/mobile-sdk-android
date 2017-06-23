@@ -84,4 +84,8 @@ public class FacebookListener implements AdListener, InterstitialAdListener {
         }
     }
 
+    @Override
+    public void onLoggingImpression(Ad ad) {
+        Clog.e(Clog.mediationLogTag, "Facebook - onLoggingImpression");
+    }
 }

@@ -77,8 +77,10 @@ public class FacebookNativeAdListener implements AdListener {
                 listener.onAdWasClicked();
             }
         }
-
     }
 
-
+    @Override
+    public void onLoggingImpression(Ad ad) {
+        Clog.e(Clog.mediationLogTag, "Facebook - onLoggingImpression");
+    }
 }
