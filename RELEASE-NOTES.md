@@ -1,4 +1,7 @@
 
+## 3.4
++ Update Facebook SDK to v4.24.0.
+
 ## 3.3
 + Support for VPAID.
 + MS-2986  Fix MRAID case where request for portrait orientation resulted in reverse portrait.
