@@ -18,11 +18,14 @@ package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
 
+import com.adcolony.sdk.AdColony;
+import com.adcolony.sdk.AdColonyInterstitialListener;
+import com.adcolony.sdk.AdColonyZone;
 import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
+import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
-import com.jirbo.adcolony.AdColony;
-import com.jirbo.adcolony.AdColonyVideoAd;
+import com.appnexus.opensdk.utils.Clog;
 
 import java.lang.ref.WeakReference;
 
@@ -38,59 +41,139 @@ public class AdColonyInterstitial implements MediatedInterstitialAdView {
 
     String zoneId;
     WeakReference<Activity> weakActivity;
-    AdColonyVideoAd ad;
-    AdColonyListener listener;
+    com.adcolony.sdk.AdColonyInterstitial ad;
+    AdColonyInterstitialListener listener;
+    MediatedInterstitialAdViewController controller;
 
     @Override
     public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid, TargetingParameters tp) {
         zoneId = uid;
+        controller = mIC;
         weakActivity = new WeakReference<Activity>(activity);
-        listener = new AdColonyListener(mIC, this.getClass().getSimpleName());
-        String zoneStatus = AdColony.statusForZone(zoneId);
-        if (AdColonySettings.isActive(zoneStatus)) {
-            ad = new AdColonyVideoAd(zoneId).withListener(listener);
-            if (mIC != null) {
-                mIC.onAdLoaded();
-            }
-        } else {
-            listener.onZoneStatusNotActive(zoneStatus, zoneId);
+        listener = getAdColonyInterstitialListener();
+
+        // Configure AdColony if its first Time
+        if (!AdColonySettings.isConfigured()) {
+            Clog.d(Clog.mediationLogTag, getClass() + " - AdColony not configured configuring AdColony");
+            AdColony.configure(activity, AdColonySettings.getAdColonyAppOptions(tp), AdColonySettings.appID, AdColonySettings.zoneIds);
+        }
+
+        if(AdColonySettings.isAdColonyZoneValid(zoneId)) {
+            AdColony.requestInterstitial(zoneId, listener);
+        }else{
+            mIC.onAdFailed(ResultCode.INVALID_REQUEST);
         }
     }
 
     @Override
     public void show() {
-        if (isReady() && ad != null) {
-            ad.show();
+        if (!this.isReady()) {
+            Clog.d(Clog.mediationLogTag, getClass() + " - show called while interstitial ad view was unavailable");
+            return;
         }
+
+        boolean success = ad.show();
+
+        if (success) {
+            Clog.d(Clog.mediationLogTag, getClass() + " - display called successfully");
+        } else {
+            Clog.d(Clog.mediationLogTag, getClass() + " - display call failed");
+        }
+
     }
 
     @Override
     public boolean isReady() {
-        String status = AdColony.statusForZone(zoneId);
-        return AdColonySettings.isActive(status);
-    }
-
-    @Override
-    public void destroy() {
-        listener = null;
-        ad = null;
-    }
-
-    @Override
-    public void onPause() {
-        AdColony.pause();
-    }
-
-    @Override
-    public void onResume() {
-        Activity activity = this.weakActivity.get();
-        if (activity != null) {
-            AdColony.resume(activity);
+        if (ad != null && !ad.isExpired()) {
+            return true;
+        } else {
+            return false;
         }
     }
 
     @Override
-    public void onDestroy() {
+    public void destroy() {
+        if (ad != null) {
+            listener = null;
+            ad.setListener(null);
+            ad.destroy();
+            ad = null;
+        }
+    }
 
+    @Override
+    public void onPause() {
+        //AdColony lacks a pause api
+    }
+
+    @Override
+    public void onResume() {
+        //AdColony lacks a Resume api
+    }
+
+    @Override
+    public void onDestroy() {
+        destroy();
+    }
+
+
+    private AdColonyInterstitialListener getAdColonyInterstitialListener() {
+        if (listener != null) {
+            return listener;
+        } else {
+            return new AdColonyInterstitialListener() {
+                @Override
+                public void onRequestFilled(com.adcolony.sdk.AdColonyInterstitial interstitial) {
+                    ad = interstitial;
+                    Clog.d(Clog.mediationLogTag, getClass() + " - onRequestFilled");
+                    if (controller != null) {
+                        controller.onAdLoaded();
+                    }
+                }
+
+                @Override
+                public void onRequestNotFilled(AdColonyZone zone) {
+                    Clog.e(Clog.mediationLogTag, getClass() + " - onRequestNotFilled");
+                    if (controller != null) {
+                        controller.onAdFailed(ResultCode.UNABLE_TO_FILL);
+                    }
+                }
+
+                @Override
+                public void onClosed(com.adcolony.sdk.AdColonyInterstitial ad) {
+                    Clog.d(Clog.mediationLogTag, getClass() + " - onClosed");
+                    if (controller != null) {
+                        controller.onAdCollapsed();
+                    }
+                }
+
+                @Override
+                public void onOpened(com.adcolony.sdk.AdColonyInterstitial ad) {
+                    Clog.d(Clog.mediationLogTag, getClass() + " - onOpened");
+                    if (controller != null) {
+                        controller.onAdExpanded();
+                    }
+                }
+
+                @Override
+                public void onExpiring(com.adcolony.sdk.AdColonyInterstitial ad) {
+                    Clog.d(Clog.mediationLogTag, getClass() + " - onExpiring:: Requesting a new Ad");
+                    AdColony.requestInterstitial(ad.getZoneID(), listener);
+                }
+
+                @Override
+                public void onLeftApplication(com.adcolony.sdk.AdColonyInterstitial ad) {
+                    Clog.d(Clog.mediationLogTag, getClass() + " - onLeftApplication");
+                }
+
+                @Override
+                public void onClicked(com.adcolony.sdk.AdColonyInterstitial ad) {
+                    Clog.d(Clog.mediationLogTag, getClass() + " - onClicked");
+                    if (controller != null) {
+                        controller.onAdClicked();
+                    }
+                }
+            };
+        }
     }
 }
