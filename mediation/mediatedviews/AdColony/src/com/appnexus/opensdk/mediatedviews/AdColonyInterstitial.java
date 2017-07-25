@@ -44,6 +44,7 @@ public class AdColonyInterstitial implements MediatedInterstitialAdView {
     com.adcolony.sdk.AdColonyInterstitial ad;
     AdColonyInterstitialListener listener;
     MediatedInterstitialAdViewController controller;
+    boolean interstitialShown = false;
 
     @Override
     public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid, TargetingParameters tp) {
@@ -72,13 +73,8 @@ public class AdColonyInterstitial implements MediatedInterstitialAdView {
             return;
         }
 
-        boolean success = ad.show();
-
-        if (success) {
-            Clog.d(Clog.mediationLogTag, getClass() + " - display called successfully");
-        } else {
-            Clog.d(Clog.mediationLogTag, getClass() + " - display call failed");
-        }
+        ad.show();
+        interstitialShown = true;
 
     }
 
@@ -158,7 +154,9 @@ public class AdColonyInterstitial implements MediatedInterstitialAdView {
                 @Override
                 public void onExpiring(com.adcolony.sdk.AdColonyInterstitial ad) {
                     Clog.d(Clog.mediationLogTag, getClass() + " - onExpiring:: Requesting a new Ad");
-                    AdColony.requestInterstitial(ad.getZoneID(), listener);
+                    if(!interstitialShown) {
+                        AdColony.requestInterstitial(ad.getZoneID(), listener);
+                    }
                 }
 
                 @Override

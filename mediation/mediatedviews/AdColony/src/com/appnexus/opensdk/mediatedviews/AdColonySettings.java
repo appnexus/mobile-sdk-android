@@ -74,7 +74,12 @@ public class AdColonySettings {
             userMetadata.setUserAge(Integer.parseInt(tp.getAge()));
         }
 
+        if (tp.getLocation() != null) {
+            userMetadata.setUserLocation(tp.getLocation());
+        }
+
         adColonyAppOptions.setUserMetadata(userMetadata);
+
 
         for (Pair<String, String> p : tp.getCustomKeywords()) {
             // userMetadata.setMetadata(String key,String Value); // Not using User Meta data
@@ -93,7 +98,7 @@ public class AdColonySettings {
         if(zone != null && zone.isValid()){
             return true;
         }else{
-            Clog.e(Clog.mediationLogTag, "In valid AdColony Zone id:"+ zoneId);
+            Clog.e(Clog.mediationLogTag, "Invalid AdColony Zone id:"+ zoneId);
             return false;
         }
     }
