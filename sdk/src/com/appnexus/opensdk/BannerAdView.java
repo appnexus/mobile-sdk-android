@@ -253,7 +253,7 @@ public class BannerAdView extends AdView {
                 hide();
             }
 
-            if(getResizeAdToFitContainer() && loadedOffscreen) {
+            if(getResizeAdToFitContainer()) {
                 post(new Runnable() {
                     @Override
                     public void run() {
