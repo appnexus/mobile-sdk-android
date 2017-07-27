@@ -973,7 +973,6 @@ public class BannerAdView extends AdView {
     @SuppressLint("NewApi")
     @SuppressWarnings("deprecation")
     protected void resizeWebViewToFitContainer(int adWidth, int adHeight, AdWebView webview) {
-        Clog.d("Kowshick","resizeWebViewToFitContainer");
         int containerWidth;
         int containerHeight;
         if (getWidth() <= 0) {
