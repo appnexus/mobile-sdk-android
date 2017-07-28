@@ -253,6 +253,20 @@ public class BannerAdView extends AdView {
                 hide();
             }
 
+            if(getResizeAdToFitContainer()) {
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (getChildAt(0) instanceof AdWebView) {
+                            AdWebView adWebView = (AdWebView) getChildAt(0);
+                            resizeWebViewToFitContainer(adWebView.getCreativeWidth(), adWebView.getCreativeHeight(), adWebView);
+                            adWebView.requestLayout();
+                        }
+
+                    }
+                });
+            }
+
             loadedOffscreen = false;
             measured = true;
         }
