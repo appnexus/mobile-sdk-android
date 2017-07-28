@@ -19,6 +19,7 @@ package com.appnexus.opensdk.mediatedviews;
 import android.app.Activity;
 
 import com.adcolony.sdk.AdColony;
+import com.adcolony.sdk.AdColonyAppOptions;
 import com.adcolony.sdk.AdColonyInterstitialListener;
 import com.adcolony.sdk.AdColonyZone;
 import com.appnexus.opensdk.MediatedInterstitialAdView;
@@ -53,15 +54,18 @@ public class AdColonyInterstitial implements MediatedInterstitialAdView {
         weakActivity = new WeakReference<Activity>(activity);
         listener = getAdColonyInterstitialListener();
 
+        AdColonyAppOptions appOptions = AdColonySettings.buildAdColonyAppOptions(tp);
         // Configure AdColony if its first Time
         if (!AdColonySettings.isConfigured()) {
             Clog.d(Clog.mediationLogTag, getClass() + " - AdColony not configured configuring AdColony");
-            AdColony.configure(activity, AdColonySettings.getAdColonyAppOptions(tp), AdColonySettings.appID, AdColonySettings.zoneIds);
+            AdColony.configure(activity, appOptions, AdColonySettings.appID, AdColonySettings.zoneIds);
+        } else {
+            AdColony.setAppOptions(appOptions);
         }
 
-        if(AdColonySettings.isAdColonyZoneValid(zoneId)) {
+        if (AdColonySettings.isAdColonyZoneValid(zoneId)) {
             AdColony.requestInterstitial(zoneId, listener);
-        }else{
+        } else {
             mIC.onAdFailed(ResultCode.INVALID_REQUEST);
         }
     }
@@ -154,7 +158,7 @@ public class AdColonyInterstitial implements MediatedInterstitialAdView {
                 @Override
                 public void onExpiring(com.adcolony.sdk.AdColonyInterstitial ad) {
                     Clog.d(Clog.mediationLogTag, getClass() + " - onExpiring:: Requesting a new Ad");
-                    if(!interstitialShown) {
+                    if (!interstitialShown) {
                         AdColony.requestInterstitial(ad.getZoneID(), listener);
                     }
                 }

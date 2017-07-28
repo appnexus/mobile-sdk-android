@@ -45,21 +45,22 @@ public class AdColonySettings {
      * @param appID    appID for the app from AdColony
      * @param zoneIds  zoneIds for the app, at least one should be passed in
      */
-    public static void configure(Activity activity,String version, String store, String appID, String... zoneIds) {
+    public static void configure(Activity activity, String version, String store, String appID, String... zoneIds) {
         AdColonySettings.appID = appID;
         AdColonySettings.zoneIds = zoneIds;
         AdColonySettings.version = version;
         AdColonySettings.store = store;
     }
 
+    /**
+     * @param tp AppNexus TargetingParameters received in the mediation request
+     * @return A valid AdColonyAppOptions never null.
+     */
 
-    static AdColonyAppOptions getAdColonyAppOptions(TargetingParameters tp) {
-        AdColonyAppOptions adColonyAppOptions = new AdColonyAppOptions();
-        adColonyAppOptions.setOriginStore(AdColonySettings.store);
-        adColonyAppOptions.setAppVersion(AdColonySettings.version);
-
-        AdColonyUserMetadata userMetadata = new AdColonyUserMetadata();
-        switch(tp.getGender()){
+    static AdColonyAppOptions buildAdColonyAppOptions(TargetingParameters tp) {
+        AdColonyAppOptions adColonyAppOptions = getOrCreateAdColonyAppOptions();
+        AdColonyUserMetadata userMetadata = adColonyAppOptions.getUserMetadata();
+        switch (tp.getGender()) {
             case FEMALE:
                 userMetadata.setUserGender(AdColonyUserMetadata.USER_FEMALE);
                 break;
@@ -83,11 +84,42 @@ public class AdColonySettings {
 
         for (Pair<String, String> p : tp.getCustomKeywords()) {
             // userMetadata.setMetadata(String key,String Value); // Not using User Meta data
-            adColonyAppOptions.setOption(p.first,p.second);
+            adColonyAppOptions.setOption(p.first, p.second);
         }
         return adColonyAppOptions;
     }
 
+
+    /**
+     *
+     * Gets the app options for the current session or creates a new instance.
+     *
+     * @return the current app options for the session if AdColony is configured, or a new instance
+     * if AdColony is not configured
+     */
+    private static AdColonyAppOptions getOrCreateAdColonyAppOptions() {
+
+        AdColonyAppOptions adColonyAppOptions = AdColony.getAppOptions();
+
+        if (adColonyAppOptions == null) {
+            adColonyAppOptions = new AdColonyAppOptions();
+            adColonyAppOptions.setOriginStore(AdColonySettings.store);
+            adColonyAppOptions.setAppVersion(AdColonySettings.version);
+        }
+
+        if (adColonyAppOptions.getUserMetadata() == null) {
+            AdColonyUserMetadata userMetadata = new AdColonyUserMetadata();
+            adColonyAppOptions.setUserMetadata(userMetadata);
+        }
+        return adColonyAppOptions;
+    }
+
+
+    /**
+     * Checks to see if AdColony is configure based on AdColony SDK's version String. SDKVersion  will be
+     * an empty String if AdColony is not configured
+     * @return true if AdColony is already configure, false if not.
+     */
     static boolean isConfigured() {
         return !AdColony.getSDKVersion().isEmpty();
     }
@@ -95,10 +127,10 @@ public class AdColonySettings {
 
     static boolean isAdColonyZoneValid(String zoneId) {
         AdColonyZone zone = AdColony.getZone(zoneId);
-        if(zone != null && zone.isValid()){
+        if (zone != null && zone.isValid()) {
             return true;
-        }else{
-            Clog.e(Clog.mediationLogTag, "Invalid AdColony Zone id:"+ zoneId);
+        } else {
+            Clog.e(Clog.mediationLogTag, "Invalid AdColony Zone id:" + zoneId);
             return false;
         }
     }
