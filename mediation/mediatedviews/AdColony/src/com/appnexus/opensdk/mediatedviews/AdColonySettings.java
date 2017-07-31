@@ -16,18 +16,24 @@
 
 package com.appnexus.opensdk.mediatedviews;
 
-import android.app.Activity;
 
-import com.appnexus.opensdk.ResultCode;
-import com.jirbo.adcolony.AdColony;
+import android.app.Activity;
+import android.util.Pair;
+
+import com.adcolony.sdk.AdColony;
+import com.adcolony.sdk.AdColonyAppOptions;
+import com.adcolony.sdk.AdColonyUserMetadata;
+import com.adcolony.sdk.AdColonyZone;
+import com.appnexus.opensdk.TargetingParameters;
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.StringUtil;
 
 public class AdColonySettings {
-    static String appID = "";
-    static String client_options = "";
 
-    // key to retrieve video native ad view from native elements
-    public static final String KEY_NATIVE_AD_VIEW = "nativeAdView";
-    public static final String KEY_NATIVE_AD_WIDTH = "ad_width";
+    static String appID = "";
+    static String[] zoneIds;
+    static String version;
+    static String store;
 
     /**
      * Convenience method to initialize AdColony and cache video ads for zones. We recommend calling
@@ -41,68 +47,93 @@ public class AdColonySettings {
      */
     public static void configure(Activity activity, String version, String store, String appID, String... zoneIds) {
         AdColonySettings.appID = appID;
-        client_options = "version:" + version + ",store:" + store;
-        AdColony.configure(activity, client_options, appID, zoneIds);
+        AdColonySettings.zoneIds = zoneIds;
+        AdColonySettings.version = version;
+        AdColonySettings.store = store;
     }
 
-    public static enum AdColonyStatus {
-        INVALID ("invalid", "Invalid zone id."),
-        UNKNOWN ("unknown", "You haven't configured AdColony yet, call AdColonySetting.configure() in activity onCreate()"),
-        OFF ("off", "Zone id is turned off."),
-        LOADING ("loading", "No available ads yet."),
-        ACTIVE ("active", "Ad is ready.");
+    /**
+     * @param tp AppNexus TargetingParameters received in the mediation request
+     * @return A valid AdColonyAppOptions never null.
+     */
 
-        private final String status;
-        private final String errorMessage;
-
-        private AdColonyStatus(String s, String e) {
-            status = s;
-            errorMessage = e;
+    static AdColonyAppOptions buildAdColonyAppOptions(TargetingParameters tp) {
+        AdColonyAppOptions adColonyAppOptions = getOrCreateAdColonyAppOptions();
+        AdColonyUserMetadata userMetadata = adColonyAppOptions.getUserMetadata();
+        switch (tp.getGender()) {
+            case FEMALE:
+                userMetadata.setUserGender(AdColonyUserMetadata.USER_FEMALE);
+                break;
+            case MALE:
+                userMetadata.setUserGender(AdColonyUserMetadata.USER_MALE);
+                break;
+            default:
+                break;
         }
 
-        public String getErrorMessage() {
-            return errorMessage;
+        if (!StringUtil.isEmpty(tp.getAge())) {
+            userMetadata.setUserAge(Integer.parseInt(tp.getAge()));
         }
 
-        public String getStatus() {
-            return status;
+        if (tp.getLocation() != null) {
+            userMetadata.setUserLocation(tp.getLocation());
         }
 
-        public static AdColonyStatus getStatus(String s) {
-            for (AdColonyStatus status : AdColonyStatus.values()) {
-                if (status.getStatus().equals(s)) {
-                    return status;
-                }
-            }
-            return AdColonyStatus.INVALID;
-        }
+        adColonyAppOptions.setUserMetadata(userMetadata);
 
+
+        for (Pair<String, String> p : tp.getCustomKeywords()) {
+            // userMetadata.setMetadata(String key,String Value); // Not using User Meta data
+            adColonyAppOptions.setOption(p.first, p.second);
+        }
+        return adColonyAppOptions;
     }
 
-    public static ResultCode errorCodeForStatus(AdColonyStatus status) {
-        ResultCode code = ResultCode.INTERNAL_ERROR;
 
-        switch (status) {
-            case INVALID:
-                code = ResultCode.INVALID_REQUEST;
-                break;
-            case UNKNOWN:
-                code = ResultCode.INVALID_REQUEST;
-                break;
-            case OFF:
-                code = ResultCode.INVALID_REQUEST;
-                break;
-            case LOADING:
-                code = ResultCode.UNABLE_TO_FILL;
-                break;
-            case ACTIVE:
-                code = ResultCode.SUCCESS;
-                break;
+    /**
+     *
+     * Gets the app options for the current session or creates a new instance.
+     *
+     * @return the current app options for the session if AdColony is configured, or a new instance
+     * if AdColony is not configured
+     */
+    private static AdColonyAppOptions getOrCreateAdColonyAppOptions() {
+
+        AdColonyAppOptions adColonyAppOptions = AdColony.getAppOptions();
+
+        if (adColonyAppOptions == null) {
+            adColonyAppOptions = new AdColonyAppOptions();
+            adColonyAppOptions.setOriginStore(AdColonySettings.store);
+            adColonyAppOptions.setAppVersion(AdColonySettings.version);
         }
-        return code;
+
+        if (adColonyAppOptions.getUserMetadata() == null) {
+            AdColonyUserMetadata userMetadata = new AdColonyUserMetadata();
+            adColonyAppOptions.setUserMetadata(userMetadata);
+        }
+        return adColonyAppOptions;
     }
 
-    public static boolean isActive(String status) {
-        return status.equals(AdColonyStatus.ACTIVE.getStatus());
+
+    /**
+     * Checks to see if AdColony is configure based on AdColony SDK's version String. SDKVersion  will be
+     * an empty String if AdColony is not configured
+     * @return true if AdColony is already configure, false if not.
+     */
+    static boolean isConfigured() {
+        return !AdColony.getSDKVersion().isEmpty();
     }
+
+
+    static boolean isAdColonyZoneValid(String zoneId) {
+        AdColonyZone zone = AdColony.getZone(zoneId);
+        if (zone != null && zone.isValid()) {
+            return true;
+        } else {
+            Clog.e(Clog.mediationLogTag, "Invalid AdColony Zone id:" + zoneId);
+            return false;
+        }
+    }
+
+
 }

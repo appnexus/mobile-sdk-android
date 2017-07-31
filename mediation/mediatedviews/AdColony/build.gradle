@@ -1,15 +1,15 @@
 // Project Properties
-version = "2.3.6" // supported AdColony version
+version = "3.1.2" // supported AdColony version
 
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 19
+    compileSdkVersion 25
     buildToolsVersion '25.0.0'
 
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 19
+        targetSdkVersion 25
         versionCode 1
         versionName version
         consumerProguardFiles 'proguard-project.txt'
@@ -29,8 +29,15 @@ android {
 
 }
 
+
+repositories {
+    maven {
+        url  "https://adcolony.bintray.com/AdColony"
+    }
+}
+
 dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
+    compile "com.adcolony:sdk:${project.version}@aar"
     compile project(':sdk')
 }
 

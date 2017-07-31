@@ -18,13 +18,13 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+# For communication with AdColony's WebView
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}
 
--keep public class com.jirbo.adcolony.** {public *;}
--dontwarn com.immersion.**
--dontnote com.immersion.**
-
-# uncomment for api 18+
--dontwarn android.webkit.**
+# For removing warnings due to lack of Multi-Window support
+-dontwarn android.app.Activity
 
 
 

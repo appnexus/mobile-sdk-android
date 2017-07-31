@@ -28,7 +28,6 @@ public interface NativeAdResponse {
         MOPUB,
         APPNEXUS,
         INMOBI,
-        ADCOLONY,
         YAHOO,
         ADMOB,
         CUSTOM
