@@ -1,3 +1,6 @@
+## 3.5
++ Update AdColony SDK to v3.1.2
++ MS-3018 setResizeAdToFitContainer fails when BannerAdView width/height is 0
 
 ## 3.4
 + Update Facebook SDK to v4.24.0.
