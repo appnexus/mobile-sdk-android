@@ -17,7 +17,10 @@ package com.appnexus.opensdk;
 
 import android.app.Activity;
 
+import com.appnexus.opensdk.ut.UTAdRequester;
 import com.appnexus.opensdk.utils.Clog;
+
+import com.appnexus.opensdk.ut.adresponse.CSMSDKAdResponse;
 
 /**
 * An object of this type is sent to the third-party SDK's {@link
@@ -29,14 +32,14 @@ import com.appnexus.opensdk.utils.Clog;
 public class MediatedInterstitialAdViewController extends MediatedAdViewController {
 
     static MediatedInterstitialAdViewController create(
-            Activity activity, AdRequester requester,
-            MediatedAd mediatedAd, AdDispatcher listener) {
+            Activity activity, UTAdRequester requester,
+            CSMSDKAdResponse mediatedAd, AdDispatcher listener) {
         MediatedInterstitialAdViewController out = new MediatedInterstitialAdViewController(activity, requester, mediatedAd, listener);
         return out.hasFailed ? null : out;
     }
 
     private MediatedInterstitialAdViewController(
-            Activity activity, AdRequester requester, MediatedAd mediatedAd,
+            Activity activity, UTAdRequester requester, CSMSDKAdResponse mediatedAd,
             AdDispatcher listener) {
         super(requester, mediatedAd, listener, MediaType.INTERSTITIAL);
 

@@ -27,17 +27,16 @@ import com.squareup.okhttp.mockwebserver.MockResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowWebView;
-import org.robolectric.shadows.httpclient.FakeHttp;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class})
+                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RoboelectricTestRunnerWithResources.class)
 public class MediationCallbacksTest extends BaseViewAdTest {
 
@@ -72,8 +71,9 @@ public class MediationCallbacksTest extends BaseViewAdTest {
     }
 
     public void runCallbacksTest(int testNumber, boolean success) {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponses.callbacks(testNumber)));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponses.blank()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.callbacks(testNumber)));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for Response URL
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for NO AD URL
         Robolectric.flushForegroundThreadScheduler();
         Robolectric.flushBackgroundThreadScheduler();
 
@@ -104,7 +104,7 @@ public class MediationCallbacksTest extends BaseViewAdTest {
         runCallbacksTest(18, true);
     }
 
-    // TODO comment out this test temporarily because the deplayed runnables would all be executed if using Robolectric.flushForegroundTasks();
+    // TODO comment out this test temporarily because the displayed runnables would all be executed if using Robolectric.flushForegroundTasks();
     // find a better solution to test this
 /*    // Verifies that a timed-out network call to onAdLoaded fails
     @Test

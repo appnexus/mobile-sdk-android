@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
+import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.util.RoboelectricTestRunnerWithResources;
 
@@ -28,6 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowWebView;
 
 import static junit.framework.Assert.assertEquals;
@@ -36,7 +38,7 @@ import static junit.framework.Assert.assertTrue;
 
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class})
+                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RoboelectricTestRunnerWithResources.class)
 public class MRAIDImplementationTest extends BaseViewAdTest {
     MRAIDImplementation implementation;
@@ -65,7 +67,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
 
         MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
         System.out.println("Verifying app event callback");
-        assertTrue(mockAdDispatcher.appEventOccured);
+        assertTrue(mockAdDispatcher.appEventOccurred);
         System.out.println("App event received!");
 
         System.out.println("Validating event name");
@@ -155,7 +157,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
 
     @Test
     public void testMRAIDCloseToHidden() {
-        String mraidCall = String.format("mraid://close");
+        String mraidCall = "mraid://close";
         implementation.dispatch_mraid_call(mraidCall, true);
 
         assertTrue(mockAdWebView.hidden);
@@ -258,13 +260,13 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
         }
 
         @Override
-        public void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean) {
+        public void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscreen) {
             width = w;
             height = h;
             offsetX = offset_x;
             offsetY = offset_y;
             customClosePosition = custom_close_position;
-            allowOffscreen = allow_offscrean;
+            allowOffscreen = allow_offscreen;
         }
 
         @Override
@@ -299,7 +301,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
     }
 
     static class MockAdDispatcher implements AdDispatcher {
-        boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked, appEventOccured;
+        boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked, appEventOccurred;
 
         String eventName, eventData;
 
@@ -330,7 +332,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
 
         @Override
         public void onAppEvent(String name, String data) {
-            appEventOccured = true;
+            appEventOccurred = true;
             eventName = name;
             eventData = data;
         }

@@ -15,24 +15,19 @@
  */
 package com.appnexus.opensdk;
 
-import android.annotation.SuppressLint;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 
+import com.appnexus.opensdk.ut.UTAdRequester;
+import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
+import com.appnexus.opensdk.ut.adresponse.CSMSDKAdResponse;
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.HTTPGet;
-import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.concurrent.RejectedExecutionException;
 
 /**
  * <p>
@@ -50,17 +45,17 @@ import java.util.concurrent.RejectedExecutionException;
 public abstract class MediatedAdViewController {
     protected MediaType mediaType;
     protected MediatedAdView mAV;
-    private WeakReference<AdRequester> caller_requester;
-    protected MediatedAd currentAd;
+    private WeakReference<UTAdRequester> caller_requester;
+    protected CSMSDKAdResponse currentAd;
     protected AdDispatcher listener;
     protected MediatedDisplayable mediatedDisplayable = new MediatedDisplayable(this);
 
     boolean hasFailed = false;
     boolean hasSucceeded = false;
-    protected boolean destroyed=false;
+    protected boolean destroyed = false;
 
-    MediatedAdViewController(AdRequester requester, MediatedAd currentAd, AdDispatcher listener, MediaType type) {
-        this.caller_requester = new WeakReference<AdRequester>(requester);
+    MediatedAdViewController(UTAdRequester requester, CSMSDKAdResponse currentAd, AdDispatcher listener, MediaType type) {
+        this.caller_requester = new WeakReference<UTAdRequester>(requester);
         this.currentAd = currentAd;
         this.listener = listener;
         this.mediaType = type;
@@ -90,12 +85,11 @@ public abstract class MediatedAdViewController {
      *
      * @param callerClass The calling class that mAV (the
      *                    MediatedAdView) should be an instance of.
-     *
      * @return <code>true</code> if the controller is valid,
-     *         <code>false</code> otherwise.
+     * <code>false</code> otherwise.
      */
     @SuppressWarnings("rawtypes")
-	boolean isValid(Class callerClass) {
+    boolean isValid(Class callerClass) {
         if (hasFailed) {
             return false;
         }
@@ -109,8 +103,8 @@ public abstract class MediatedAdViewController {
         return true;
     }
 
-    protected TargetingParameters getTargetingParameters(){
-        AdRequester requester = this.caller_requester.get();
+    protected TargetingParameters getTargetingParameters() {
+        UTAdRequester requester = this.caller_requester.get();
         TargetingParameters tp = null;
         if (requester != null && requester.getRequestParams() != null) {
             tp = requester.getRequestParams().getTargetingParameters();
@@ -125,7 +119,7 @@ public abstract class MediatedAdViewController {
      * Attempts to instantiate the currentAd.
      *
      * @return <code>true</code> if instantiation was successful,
-     *         <code>false</code> otherwise.
+     * <code>false</code> otherwise.
      */
     private boolean instantiateNewMediatedAd() {
         Clog.d(Clog.mediationLogTag, Clog.getString(
@@ -192,7 +186,6 @@ public abstract class MediatedAdViewController {
         }
         destroyed = true;
         mAV = null;
-        currentAd = null;
         Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediation_finish));
     }
 
@@ -203,15 +196,14 @@ public abstract class MediatedAdViewController {
      * implementations of <code>requestAd</code> for banners and
      * interstitials in {@link MediatedBannerAdView} and {@link
      * MediatedInterstitialAdView}).
-     *
      */
     public void onAdLoaded() {
         if (hasSucceeded || hasFailed || destroyed) return;
         markLatencyStop();
         cancelTimeout();
         hasSucceeded = true;
-
-        AdRequester requester = this.caller_requester.get();
+        fireResponseURL(currentAd.getResponseUrl(), ResultCode.SUCCESS);
+        UTAdRequester requester = this.caller_requester.get();
         if (requester != null) {
             requester.onReceiveAd(new AdResponse() {
                 @Override
@@ -235,6 +227,11 @@ public abstract class MediatedAdViewController {
                 }
 
                 @Override
+                public BaseAdResponse getResponseData() {
+                    return currentAd;
+                }
+
+                @Override
                 public void destroy() {
                     mediatedDisplayable.destroy();
                 }
@@ -242,7 +239,6 @@ public abstract class MediatedAdViewController {
         } else {
             mediatedDisplayable.destroy();
         }
-        fireResultCB(ResultCode.SUCCESS);
     }
 
     abstract boolean isReady();
@@ -258,18 +254,19 @@ public abstract class MediatedAdViewController {
      * MediatedInterstitialAdView}).
      *
      * @param reason The reason why the ad call from the third-party
-     * SDK failed.
+     *               SDK failed.
      */
     public void onAdFailed(ResultCode reason) {
         if (hasSucceeded || hasFailed || destroyed) return;
         markLatencyStop();
         cancelTimeout();
-
-        // don't call the listener here. the requester will call the listener
-        // at the end of the waterfall
-        fireResultCB(reason);
+        if (currentAd != null && currentAd.getResponseUrl() != null) {
+            fireResponseURL(currentAd.getResponseUrl(), reason);
+        }
         hasFailed = true;
         finishController();
+        UTAdRequester requester = this.caller_requester.get();
+        requester.continueWaterfall(reason);
     }
 
     /**
@@ -304,136 +301,17 @@ public abstract class MediatedAdViewController {
             listener.onAdClicked();
     }
 
-    /*
-     Result CB Code
-     */
-    @SuppressLint({ "InlinedApi", "NewApi" }) /* suppress AsyncTask.THREAD_POOL_EXECUTOR warning for < HONEYCOMB */
-	private void fireResultCB(final ResultCode result) {
-        if (hasFailed) return;
+    private void fireResponseURL(final String responseURL, final ResultCode result) {
 
-
-        AdRequester requester = this.caller_requester.get();
-        // if resultCB is empty don't fire resultCB, and just continue to next ad
-        if ((currentAd == null) || StringUtil.isEmpty(currentAd.getResultCB())) {
-            if(result == ResultCode.SUCCESS) return;
-            Clog.w(Clog.mediationLogTag, Clog.getString(R.string.fire_cb_result_null));
-            // just making sure
-            if (requester == null) {
-                Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
-                return;
-            }
-            requester.onReceiveServerResponse(null);
+        if ((responseURL == null) || StringUtil.isEmpty(responseURL)) {
+            Clog.w(Clog.mediationLogTag, Clog.getString(R.string.fire_responseurl_null));
             return;
         }
-
-        boolean ignoreResult = false; // default is to not ignore
-        if ((requester != null)
-                && (requester.getMediatedAds() != null)) {
-            // ignore resultCB except on the last mediated ad
-            ignoreResult = requester.getMediatedAds().size() > 0;
-        }
-
-        // ignore resultCB if succeeded already
-        if (result == ResultCode.SUCCESS) {
-            ignoreResult = true;
-        }
-
-        //fire call to result cb url
-        ResultCBRequest cb = new ResultCBRequest(requester,
-                currentAd.getResultCB(), result,
-                currentAd.getExtras(), ignoreResult,
-                getLatencyParam(), getTotalLatencyParam(requester));
-
-        // Spawn GET call
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                cb.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            } else {
-                cb.execute();
-            }
-        }catch (RejectedExecutionException rejectedExecutionException){
-            Clog.e(Clog.baseLogTag, "Concurrent Thread Exception while firing ResultCB: "
-                    + rejectedExecutionException.getMessage());
-        } catch (Exception exception){
-            Clog.e(Clog.baseLogTag, "Exception while firing ResultCB: "+ exception.getMessage());
-        }
-
-        if (ignoreResult && result != ResultCode.SUCCESS) {
-            if (requester != null) {
-                requester.onReceiveServerResponse(null);
-            }
-        }
-    }
-
-    private class ResultCBRequest extends HTTPGet {
-        WeakReference<AdRequester> requester;
-        private final String resultCB;
-        final ResultCode result;
-        private final HashMap<String, Object> extras;
-        private final boolean ignoreResult;
-        private final long latency;
-        private final long totalLatency;
-
-        private ResultCBRequest(AdRequester requester, String resultCB, ResultCode result,
-                                HashMap<String, Object> extras, boolean ignoreResult,
-                                long latency, long totalLatency) {
-            this.requester = new WeakReference<AdRequester>(requester);
-            this.resultCB = resultCB;
-            this.result = result;
-            this.extras = extras;
-            this.ignoreResult = ignoreResult;
-            this.latency = latency;
-            this.totalLatency = totalLatency;
-        }
-
-        @Override
-        protected void onPostExecute(HTTPResponse httpResponse) {
-            if (this.ignoreResult) {
-                Clog.i(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_ignored));
-                return;
-            }
-            AdRequester requester = this.requester.get();
-            if (requester == null) {
-                Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.fire_cb_requester_null));
-                return;
-            }
-
-            ServerResponse response = null;
-            if ((httpResponse != null) && httpResponse.getSucceeded()) {
-                response = new ServerResponse(httpResponse, mediaType);
-                if (extras.containsKey(ServerResponse.EXTRAS_KEY_ORIENTATION)) {
-                    response.addToExtras(ServerResponse.EXTRAS_KEY_ORIENTATION,
-                            extras.get(ServerResponse.EXTRAS_KEY_ORIENTATION));
-                }
-            } else {
-                Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.result_cb_bad_response));
-            }
-
-            requester.onReceiveServerResponse(response);
-        }
-
-        @Override
-        protected String getUrl() {
-            // create the resultCB request
-            StringBuilder sb = new StringBuilder(this.resultCB);
-            sb.append("&reason=").append(this.result.ordinal());
-            // append the hashes of the device ID from settings
-            if (!StringUtil.isEmpty(Settings.getSettings().aaid)) {
-                sb.append("&aaid=").append(Uri.encode(Settings.getSettings().aaid));
-            } else {
-                sb.append("&md5udid=").append(Uri.encode(Settings.getSettings().hidmd5));
-                sb.append("&sha1udid=").append(Uri.encode(Settings.getSettings().hidsha1));
-            }
-
-            if (latency > 0) {
-                sb.append("&latency=").append(Uri.encode(String.valueOf(latency)));
-            }
-            if (totalLatency > 0) {
-                sb.append("&total_latency=").append(Uri.encode(String.valueOf(totalLatency)));
-            }
-
-            return sb.toString();
-        }
+        ResponseUrl responseUrl = new ResponseUrl.Builder(responseURL, result)
+                .latency(getLatencyParam())
+                .totalLatency(getTotalLatencyParam(caller_requester.get()))
+                .build();
+        responseUrl.execute();
     }
 
     /*
@@ -451,15 +329,15 @@ public abstract class MediatedAdViewController {
 
     static class TimeoutHandler extends Handler {
         WeakReference<MediatedAdViewController> mavc;
-        
+
         public TimeoutHandler(MediatedAdViewController mavc) {
             this.mavc = new WeakReference<MediatedAdViewController>(mavc);
         }
-        
+
         @Override
         public void handleMessage(Message msg) {
             MediatedAdViewController avc = mavc.get();
-            
+
             if (avc == null || avc.hasFailed) return;
             Clog.w(Clog.mediationLogTag, Clog.getString(R.string.mediation_timeout));
             try {
@@ -473,6 +351,7 @@ public abstract class MediatedAdViewController {
             }
         }
     }
+
     // if the mediated network fails to call us within the timeout period, fail
     private final Handler timeoutHandler = new TimeoutHandler(this);
 
@@ -501,6 +380,7 @@ public abstract class MediatedAdViewController {
 
     /**
      * The latency of the call to the mediated SDK.
+     *
      * @return the mediated SDK latency, -1 if `latencyStart`
      * or `latencyStop` not set.
      */
@@ -514,9 +394,10 @@ public abstract class MediatedAdViewController {
 
     /**
      * The running total latency of the ad call.
+     *
      * @return the running total latency, -1 if `latencyStop` not set.
      */
-    private long getTotalLatencyParam(AdRequester requester) {
+    private long getTotalLatencyParam(UTAdRequester requester) {
         if ((requester != null) && (latencyStop > 0)) {
             return requester.getLatency(latencyStop);
         }
@@ -526,7 +407,9 @@ public abstract class MediatedAdViewController {
 
     //Forwarded from the activity holding the AdView
     abstract public void onDestroy();
+
     abstract public void onPause();
+
     abstract public void onResume();
 
     protected boolean hasCancelled = false;

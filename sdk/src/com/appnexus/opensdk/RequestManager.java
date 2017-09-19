@@ -13,35 +13,69 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
 package com.appnexus.opensdk;
 
 import android.os.AsyncTask;
 import android.os.Build;
 
+import com.appnexus.opensdk.ut.UTAdRequest;
+import com.appnexus.opensdk.ut.UTAdRequester;
+import com.appnexus.opensdk.ut.UTAdResponse;
+import com.appnexus.opensdk.ut.UTRequestParameters;
+import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
+import com.appnexus.opensdk.ut.adresponse.CSMSDKAdResponse;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.HTTPGet;
+import com.appnexus.opensdk.utils.HTTPResponse;
+import com.appnexus.opensdk.utils.Settings;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.RejectedExecutionException;
 
-abstract class RequestManager implements AdRequester {
-    private LinkedList<MediatedAd> mediatedAds;
-    protected AdRequest adRequest;
-    private long totalLatencyStart = -1;
+public abstract class RequestManager implements UTAdRequester{
+    UTAdRequest utAdRequest;
+    private LinkedList<BaseAdResponse> adList;
+    String noAdUrl;
+
+    private long time;
+
+    /**
+     * Called when the request made by the requester fails.
+     *
+     * @param code reason why the request fails.
+     */
+    public abstract void failed(ResultCode code);
+
+    public abstract void onReceiveAd(AdResponse ad);
 
     @Override
+    public boolean isHttpsEnabled(){
+        return Settings.getSettings().isHttpsEnabled();
+    }
+
+    @Override
+    public void onReceiveUTResponse(UTAdResponse response){
+        //First set the NoAdUrl from response. This will be used to fire tracked for failed case.
+        if(response != null){
+            noAdUrl = response.getNoAdUrl();
+        }
+    }
+
+    public abstract void continueWaterfall(ResultCode reason);
+
     public abstract void cancel();
 
     @Override
     public void execute() {
-        adRequest = new AdRequest(this);
+        utAdRequest = new UTAdRequest(this);
         markLatencyStart();
+
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                adRequest.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                utAdRequest.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
-                adRequest.execute();
+                utAdRequest.execute();
             }
         } catch (RejectedExecutionException rejectedExecutionException) {
             Clog.e(Clog.baseLogTag, "Concurrent Thread Exception while firing new ad request: "
@@ -49,37 +83,21 @@ abstract class RequestManager implements AdRequester {
         } catch (Exception exception) {
             Clog.e(Clog.baseLogTag, "Exception while firing new ad request: " + exception.getMessage());
         }
+
     }
 
-    @Override
-    public abstract RequestParameters getRequestParams();
-
-    @Override
-    public abstract void failed(ResultCode code);
-
-    @Override
-    public abstract void onReceiveServerResponse(ServerResponse response);
-
-    @Override
-    public abstract void onReceiveAd(AdResponse ad);
+    public abstract UTRequestParameters getRequestParams();
 
     @Override
     public void markLatencyStart() {
-        totalLatencyStart = System.currentTimeMillis();
+
+        time = System.currentTimeMillis();
     }
 
     @Override
     public long getLatency(long now) {
-        if (totalLatencyStart > 0) {
-            return (now - totalLatencyStart);
-        }
-        // return -1 if `totalLatencyStart` was not set.
-        return -1;
+        return System.currentTimeMillis() - time;
     }
-
-    /*
-     * Meditated Ads
-     */
 
     // For logging mediated classes
     private ArrayList<String> mediatedClasses = new ArrayList<String>();
@@ -94,21 +112,46 @@ abstract class RequestManager implements AdRequester {
         mediatedClasses.clear();
     }
 
-    @Override
-    public LinkedList<MediatedAd> getMediatedAds() {
-        return mediatedAds;
-    }
+    protected void fireNoAdTracker(final String trackerUrl, final String trackerType) {
+        if((trackerUrl == null) || trackerUrl == "") return;
 
-    protected void setMediatedAds(LinkedList<MediatedAd> mediatedAds) {
-        this.mediatedAds = mediatedAds;
+        new HTTPGet() {
+            @Override
+            protected void onPostExecute(HTTPResponse response) {
+                if (response != null && response.getSucceeded()) {
+                    //noinspection ConstantConditions
+                    Clog.i(Clog.baseLogTag, trackerType.concat( Clog.getString(R.string.fire_tracker_succesfully_message)));
+                }
+            }
+
+            @Override
+            protected String getUrl() {
+                return trackerUrl;
+            }
+        }.execute();
     }
 
     // returns the first mediated ad if available
-    protected MediatedAd popMediatedAd() {
-        if ((mediatedAds != null) && (mediatedAds.getFirst() != null)) {
-            mediatedClasses.add(mediatedAds.getFirst().getClassName());
-            return mediatedAds.removeFirst();
+    protected BaseAdResponse popAd() {
+        if ((adList != null) && (adList.getFirst() != null)) {
+            if (adList.getFirst().getContentSource() != null && adList.getFirst().getContentSource().equalsIgnoreCase("csm")){
+                CSMSDKAdResponse CSMSDKAdResponse = (CSMSDKAdResponse)adList.getFirst();
+                mediatedClasses.add(CSMSDKAdResponse.getClassName());
+            }
+
+            return adList.removeFirst();
         }
         return null;
     }
+
+
+    @Override
+    public LinkedList<BaseAdResponse> getAdList() {
+        return adList;
+    }
+
+    protected void setAdList(LinkedList<BaseAdResponse> adList) {
+        this.adList = adList;
+    }
+
 }

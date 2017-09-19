@@ -3,13 +3,14 @@ version = "3.1.2" // supported AdColony version
 
 apply plugin: 'com.android.library'
 
+
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.1'
 
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName version
         consumerProguardFiles 'proguard-project.txt'

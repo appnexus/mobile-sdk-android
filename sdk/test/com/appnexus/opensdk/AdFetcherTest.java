@@ -29,14 +29,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+
+import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowWebView;
+import org.robolectric.util.Scheduler;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotSame;
 
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class})
+                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RoboelectricTestRunnerWithResources.class)
 public class AdFetcherTest extends BaseRoboTest {
     private AdFetcher adFetcher;
@@ -49,7 +52,6 @@ public class AdFetcherTest extends BaseRoboTest {
         MockAdOwner owner = new MockAdOwner(activity);
         owner.setPlacementID("0");
         owner.setAdSize(320, 50);
-        clearAAIDAsyncTasks();
         adFetcher = new AdFetcher(owner);
     }
 
@@ -78,10 +80,11 @@ public class AdFetcherTest extends BaseRoboTest {
         waitForTasks();
 
         // AdFetcher posts to a Handler which executes (queues) an AdRequest -- run the handler message
-        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
 
         // Check that the AdRequest was queued
         int bgTaskCount = Robolectric.getBackgroundThreadScheduler().size();
+
 
         assertEquals("Expected: " + expectedBgTaskCount + ", actual: " + bgTaskCount, expectedBgTaskCount, bgTaskCount);
     }
@@ -109,30 +112,28 @@ public class AdFetcherTest extends BaseRoboTest {
         adFetcher.setPeriod(30000);
         adFetcher.start();
         Lock.pause(1000); // added this so jenkins can have enough time to process
-
         // assert 2 here because a AAID async task is executed for each AdRequest
         assertExpectedBGTasksAfterOneAdRequest(2);
 
         assertEquals(AdFetcher.STATE.AUTO_REFRESH, adFetcher.getState());
 
         // reset background scheduler, clear tasks for the refresh
-        Robolectric.getBackgroundThreadScheduler().reset();
-        Robolectric.getBackgroundThreadScheduler().pause();
+        Lock.pause(30000+1000); // We wait for till autorefresh is triggered
 
         // in the following method, wait until next ad request is enqueued
-        assertExpectedBGTasksAfterOneAdRequest(2);
+        assertExpectedBGTasksAfterOneAdRequest(3);
         assertEquals(AdFetcher.STATE.AUTO_REFRESH, adFetcher.getState());
     }
 
     @Test
     public void testStop() {
         // not needed, but in case AdRequest is run
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponses.blank()));
-
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        clearAAIDAsyncTasks();
         // start an AdFetcher normally, until an AdRequest is queued
         adFetcher.start();
         Lock.pause(1000); // added this so jenkins can have enough time to process
-        assertExpectedBGTasksAfterOneAdRequest(2);
+        assertExpectedBGTasksAfterOneAdRequest(1);
         assertNotSame(AdFetcher.STATE.STOPPED, adFetcher.getState());
 
         adFetcher.stop();
@@ -149,7 +150,7 @@ public class AdFetcherTest extends BaseRoboTest {
         // A normally executed AdRequest will queue onPostExecute call to the UI thread,
         // but it should be canceled, and queue nothing
         int uiTaskCount = Robolectric.getForegroundThreadScheduler().size();
-        assertEquals(1, uiTaskCount);
+        assertEquals(0, uiTaskCount);
         assertEquals(AdFetcher.STATE.STOPPED, adFetcher.getState());
     }
 

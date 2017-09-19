@@ -40,9 +40,9 @@ import android.widget.FrameLayout;
 import com.appnexus.opensdk.AdActivity;
 import com.appnexus.opensdk.BrowserAdActivity;
 import com.appnexus.opensdk.ResultCode;
-import com.appnexus.opensdk.instreamvideo.adresponsedata.BaseAdResponse;
-import com.appnexus.opensdk.instreamvideo.adresponsedata.CSMVideoAdResponse;
-import com.appnexus.opensdk.instreamvideo.utils.ANConstants;
+import com.appnexus.opensdk.ut.UTConstants;
+import com.appnexus.opensdk.ut.adresponse.CSMVASTAdResponse;
+import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.ViewUtil;
@@ -61,6 +61,7 @@ class VideoWebView extends WebView {
     private VideoRequestManager manager;
     private static final int TOTAL_RETRY_TIMES = 10;
     private static final int WAIT_INTERVAL_MILLES = 300;
+    private static final String WEBVIEW_URL = "file:///android_asset/index.html";
 
     // Using handler posts the playAd() call to the end of queue and fixes initial rendering black issue on Lollipop and below simulators.
     // And during resume Ad, this handler is used to retry until the parent window comes in focus else fail gracefully. Its observed parent window gets focus approx 200ms after the resume of activity.
@@ -107,7 +108,7 @@ class VideoWebView extends WebView {
             if (cm != null) {
                 cm.setAcceptThirdPartyCookies(this, true);
             } else {
-                Clog.d(ANConstants.videoLogTag, "Failed to set Webview to accept 3rd party cookie");
+                Clog.d(Clog.videoLogTag, "Failed to set Webview to accept 3rd party cookie");
             }
         }
 
@@ -157,10 +158,10 @@ class VideoWebView extends WebView {
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            Clog.d(ANConstants.videoLogTag, "onPageFinished");
+            Clog.d(Clog.videoLogTag, "onPageFinished");
             if (!firstPageLoadComplete) {
                 firstPageLoadComplete = true;
-                if (baseAdResponse.getContentSource().equalsIgnoreCase(ANConstants.CSM_VIDEO)) {
+                if (baseAdResponse.getContentSource().equalsIgnoreCase(UTConstants.CSM_VIDEO)) {
                     processMediationAd();
                 } else {
                     createVastPlayerWithContent();
@@ -179,7 +180,7 @@ class VideoWebView extends WebView {
         @Override
         public void onReceivedError(WebView view, int errorCode,
                                     String description, String failingURL) {
-            Clog.d(ANConstants.videoLogTag, "error" + errorCode + description + failingURL);
+            Clog.d(Clog.videoLogTag, "error" + errorCode + description + failingURL);
         }
     }
 
@@ -207,7 +208,7 @@ class VideoWebView extends WebView {
         } else if (url.equals("audio-unmute")) {
             owner.getAdDispatcher().isAudioMute(false);
         } else {
-            Clog.e(ANConstants.videoLogTag, "Error: Unhandled event::" + url);
+            Clog.e(Clog.videoLogTag, "Error: Unhandled event::" + url);
             return;
         }
     }
@@ -219,7 +220,7 @@ class VideoWebView extends WebView {
         } else {
             //Calling VideoRequestManager here and continue Waterfall. Or fire no_ad_url.
             //@TODO there is possiblity of capturing more granular failure responses here but for that HTML should be first setup to send back granular Error codes.Currently lets keep all as UNABLE_TO_FILL
-            manager.currentAdFailed(ResultCode.UNABLE_TO_FILL);
+            manager.continueWaterfall(ResultCode.UNABLE_TO_FILL);
         }
         if(!Settings.getSettings().debug_mode) {
             destroy();
@@ -364,11 +365,11 @@ class VideoWebView extends WebView {
                     adIsPlaying = true;
                     injectJavaScript("javascript:window.playAd()");
                 }else if (retryTimes < TOTAL_RETRY_TIMES) {
-                    Clog.i(ANConstants.videoLogTag,"Has no focus Retrying::"+retryTimes);
+                    Clog.i(Clog.videoLogTag,"Has no focus Retrying::"+retryTimes);
                     retryTimes ++;
                     playAdHandler.postDelayed(this, WAIT_INTERVAL_MILLES);
                 }else{
-                    Clog.e(ANConstants.videoLogTag,"Failed to play Video-Ad giving up");
+                    Clog.e(Clog.videoLogTag,"Failed to play Video-Ad giving up");
                     owner.getAdDispatcher().onPlaybackError();
                 }
             }
@@ -385,7 +386,7 @@ class VideoWebView extends WebView {
     }
 
     private void processMediationAd() {
-        String tag = ((CSMVideoAdResponse) baseAdResponse).getCSMVideoAdResponse();
+        String tag = ((CSMVASTAdResponse) baseAdResponse).getCSMVASTAdResponse();
         if (tag != null && !tag.isEmpty()) {
             String inject = String.format("javascript:window.processMediationAd('%s')",
                     tag);
@@ -400,7 +401,7 @@ class VideoWebView extends WebView {
             return;
         }
         this.baseAdResponse = baseAdResponse;
-        this.loadUrl(ANConstants.getWebViewUrl());
+        this.loadUrl(WEBVIEW_URL);
     }
 
 
@@ -489,5 +490,6 @@ class VideoWebView extends WebView {
         failed = false;
 
     }
+
 }
 

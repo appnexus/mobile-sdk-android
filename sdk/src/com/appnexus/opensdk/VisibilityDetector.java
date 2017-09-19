@@ -111,7 +111,6 @@ class VisibilityDetector {
         if (totalArea <= 0) {
             return false;
         }
-
         return 100 * visibleViewArea >= Settings.MIN_PERCENTAGE_VIEWED * totalArea;
     }
 

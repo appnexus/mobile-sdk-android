@@ -1,8 +1,12 @@
 package com.appnexus.opensdk.util;
 
+import com.appnexus.opensdk.BuildConfig;
+
+import org.junit.runners.JUnit4;
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.internal.ConfigUtils;
 import org.robolectric.manifest.AndroidManifest;
 import org.robolectric.res.FileFsFile;
 import org.robolectric.res.FsFile;
@@ -23,37 +27,40 @@ public class RoboelectricTestRunnerWithResources extends RobolectricTestRunner {
         super(klass);
     }
 
-    // Use this for running from Android Studio 2.2.3+ and command line
+
+    // Works with Android Studio 2.3.3 and  buildToolsVersion '25.0.0' Upgrade to these if you are not using them dont change this setting untill unless the versions are incremented and to support newer versions.
     protected AndroidManifest getAppManifest(Config config) {
         AndroidManifest appManifest = super.getAppManifest(config);
         FsFile androidManifestFile = appManifest.getAndroidManifestFile();
+        FsFile resDirectory;
+        FsFile assetsDirectory;
 
-        if (androidManifestFile.exists()) {
-            return appManifest;
-        } else {
+
             String moduleRoot = getModuleRootPath(config);
-            androidManifestFile = FileFsFile.from(moduleRoot, appManifest.getAndroidManifestFile().getPath().replace("bundles", "manifests/full"));
-            FsFile resDirectory = FileFsFile.from(moduleRoot, appManifest.getResDirectory().getPath().replace("/res", "").replace("bundles", "res"));
-            FsFile assetsDirectory = FileFsFile.from(moduleRoot, appManifest.getAssetsDirectory().getPath().replace("/assets", "").replace("bundles", "assets"));
+            androidManifestFile = FileFsFile.from(moduleRoot, appManifest.getAndroidManifestFile().getPath().replace("bundles", "manifests/aapt"));
+
+            if(appManifest.getResDirectory().getPath().contains("release")) {
+                resDirectory = FileFsFile.from(moduleRoot, appManifest.getResDirectory().getPath().replace("release", "default"));
+                assetsDirectory = FileFsFile.from(moduleRoot, appManifest.getAssetsDirectory().getPath().replace("release", "default"));
+            }else{
+                resDirectory = FileFsFile.from(moduleRoot, appManifest.getResDirectory().getPath());
+                assetsDirectory = FileFsFile.from(moduleRoot, appManifest.getAssetsDirectory().getPath());
+            }
+
+
+            System.out.print(androidManifestFile.getPath() + '\n');
+            System.out.print(resDirectory.getPath() + '\n');
+            System.out.print(assetsDirectory.getPath() + '\n');
+
+
             return new AndroidManifest(androidManifestFile, resDirectory, assetsDirectory);
-        }
+
     }
-
-    // Use this for running from older version of Android Studio
-    /*protected AndroidManifest getAppManifest(Config config) {
-
-            AndroidManifest appManifest = super.getAppManifest(config);
-
-            FsFile androidManifestFile = FileFsFile.from(appManifest.getAndroidManifestFile().getPath());
-            FsFile resDirectory = FileFsFile.from(appManifest.getResDirectory().getPath().replace("debug", "androidTest/debug"));
-            FsFile assetsDirectory = FileFsFile.from(appManifest.getAssetsDirectory().getPath().replace("debug", "androidTest/debug"));
-
-            return new AndroidManifest(androidManifestFile, resDirectory, assetsDirectory);
-
-    }*/
 
     private String getModuleRootPath(Config config) {
         String moduleRoot = config.constants().getResource("").toString().replace("file:", "");
         return moduleRoot.substring(0, moduleRoot.indexOf("/build"));
     }
+
+
 }

@@ -270,8 +270,7 @@ public class W3CEvent {
             }
         }
         if (!StringUtil.isEmpty(getStart())) {
-            long start = -1;
-                start = millisFromDateString(getStart());
+            long start = millisFromDateString(getStart());
             if(start>0){
                 if (nativeMethod) {
                     i.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, start);
@@ -281,8 +280,7 @@ public class W3CEvent {
             }
         }
         if (!StringUtil.isEmpty(getEnd())) {
-            long end = -1;
-            end = millisFromDateString(getEnd());
+            long end = millisFromDateString(getEnd());
             if(end>0){
                 if (nativeMethod) {
                     i.putExtra(CalendarContract.EXTRA_EVENT_END_TIME, end);

@@ -49,6 +49,8 @@ public class InterstitialAdView extends AdView {
     private boolean shouldDismissOnClick;
     static InterstitialAdView INTERSTITIALADVIEW_TO_USE;
     private Queue<InterstitialAdQueueEntry> adQueue = new LinkedList<InterstitialAdQueueEntry>();
+    private int containerWidth;
+    private int containerHeight;
 
     //Intent Keys
     static final String INTENT_KEY_TIME = "TIME";
@@ -118,8 +120,8 @@ public class InterstitialAdView extends AdView {
                 .getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics dm = new DisplayMetrics();
         manager.getDefaultDisplay().getMetrics(dm);
-        int measuredHeight = dm.heightPixels;
-        int measuredWidth = dm.widthPixels;
+        containerHeight = dm.heightPixels;
+        containerWidth = dm.widthPixels;
         int h_adjust = 0;
 
         try{
@@ -128,31 +130,34 @@ public class InterstitialAdView extends AdView {
             a.getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
             h_adjust += a.getWindow().findViewById(Window.ID_ANDROID_CONTENT)
                     .getTop();
-            measuredHeight -= h_adjust;
+            containerHeight -= h_adjust;
         }catch(ClassCastException cce){
 
         }
 
         float scale = dm.density;
-        measuredHeight = (int) (measuredHeight / scale + 0.5f);
-        measuredWidth = (int) (measuredWidth / scale + 0.5f);
+        containerHeight = (int) (containerHeight / scale + 0.5f);
+        containerWidth = (int) (containerWidth / scale + 0.5f);
 
-        requestParameters.setContainerWidth(measuredWidth);
-        requestParameters.setContainerHeight(measuredHeight);
 
         ArrayList<AdSize> allowedSizes = new ArrayList<AdSize>();
-
         allowedSizes.add(new AdSize(1,1));
-        if (new AdSize(300, 250).fitsIn(measuredWidth, measuredHeight))
+
+        AdSize containerSize = new AdSize(containerWidth,containerHeight);
+        allowedSizes.add(containerSize);
+
+        if (new AdSize(300, 250).fitsIn(containerWidth, containerHeight))
             allowedSizes.add(new AdSize(300, 250));
-        if (new AdSize(320, 480).fitsIn(measuredWidth, measuredHeight))
+        if (new AdSize(320, 480).fitsIn(containerWidth, containerHeight))
             allowedSizes.add(new AdSize(320, 480));
-        if (new AdSize(900, 500).fitsIn(measuredWidth, measuredHeight))
+        if (new AdSize(900, 500).fitsIn(containerWidth, containerHeight))
             allowedSizes.add(new AdSize(900, 500));
-        if (new AdSize(1024, 1024).fitsIn(measuredWidth, measuredHeight))
+        if (new AdSize(1024, 1024).fitsIn(containerWidth, containerHeight))
             allowedSizes.add(new AdSize(1024, 1024));
 
-        requestParameters.setAllowedSizes(allowedSizes);
+        requestParameters.setPrimarySize(containerSize);
+        requestParameters.setSizes(allowedSizes);
+        requestParameters.setAllowSmallerSizes(false);
     }
 
     @Override
@@ -360,10 +365,19 @@ public class InterstitialAdView extends AdView {
         long now = System.currentTimeMillis();
         boolean validAdExists = removeStaleAds(now);
 
+
+
         //If the head of the queue is interstitial mediation, show that instead of our adactivity
         InterstitialAdQueueEntry top = adQueue.peek();
         if (top != null && top.isMediated()) {
             if (top.getMediatedAdViewController() != null) {
+
+                // Firing Impression trackers for Mediated Interstitial case.
+                if(impressionTrackers != null && impressionTrackers.size() > 0){
+                    //fire the impression tracker url
+                    fireImpressionTracker();
+                }
+
                 top.getMediatedAdViewController().show();
 
                 //Pop the mediated view;
@@ -382,6 +396,13 @@ public class InterstitialAdView extends AdView {
             i.putExtra(InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY, closeButtonDelay);
 
             INTERSTITIALADVIEW_TO_USE = this;
+
+            // Firing Impression trackers for Appnexus Interstitial Ads RTB/SSM.
+            if(impressionTrackers != null && impressionTrackers.size() > 0){
+                //fire the impression tracker url
+                fireImpressionTracker();
+            }
+
             try {
                 getContext().startActivity(i);
             } catch (ActivityNotFoundException e) {
@@ -395,6 +416,7 @@ public class InterstitialAdView extends AdView {
         return adQueue.size();
     }
 
+
     /**
      * Get a list of ad {@link AdSize}s which are allowed to be
      * displayed.
@@ -405,7 +427,7 @@ public class InterstitialAdView extends AdView {
     public ArrayList<AdSize> getAllowedSizes() {
         Clog.d(Clog.publicFunctionsLogTag,
                 Clog.getString(R.string.get_allowed_sizes));
-        return requestParameters.getAllowedSizes();
+        return requestParameters.getSizes();
     }
 
     /**
@@ -420,7 +442,18 @@ public class InterstitialAdView extends AdView {
     public void setAllowedSizes(ArrayList<AdSize> allowed_sizes) {
         Clog.d(Clog.publicFunctionsLogTag,
                 Clog.getString(R.string.set_allowed_sizes));
-        requestParameters.setAllowedSizes(allowed_sizes);
+        //append a 1x1 to this allowedSizes list
+        AdSize oneByOne = new AdSize(1,1);
+        if(!allowed_sizes.contains(oneByOne))
+            allowed_sizes.add(oneByOne);
+        //append container size for Interstitial
+        AdSize containerSize = new AdSize(containerWidth,containerHeight);
+        if(!allowed_sizes.contains(containerSize))
+            allowed_sizes.add(containerSize);
+
+        requestParameters.setPrimarySize(containerSize);
+        requestParameters.setSizes(allowed_sizes);
+        requestParameters.setAllowSmallerSizes(false);
     }
 
     /**

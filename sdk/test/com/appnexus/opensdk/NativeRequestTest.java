@@ -19,6 +19,7 @@ package com.appnexus.opensdk;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
+import com.appnexus.opensdk.util.Lock;
 import com.appnexus.opensdk.util.RoboelectricTestRunnerWithResources;
 import com.appnexus.opensdk.utils.Settings;
 import com.squareup.okhttp.mockwebserver.MockResponse;
@@ -26,16 +27,15 @@ import com.squareup.okhttp.mockwebserver.MockResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowWebView;
-import org.robolectric.shadows.httpclient.FakeHttp;
 
 import static junit.framework.Assert.assertTrue;
 
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class})
+                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RoboelectricTestRunnerWithResources.class)
 public class NativeRequestTest extends BaseNativeTest {
 
@@ -45,6 +45,12 @@ public class NativeRequestTest extends BaseNativeTest {
         assertTrue(loaded | adLoaded);
     }
 
+    public void assertAdFailed(Boolean loadFailed) {
+        assertTrue(adLoaded || adFailed);
+        assertTrue(loadFailed | !adLoaded);
+        assertTrue(loadFailed | adFailed);
+    }
+
     @Override
     public void setup() {
         super.setup();
@@ -52,15 +58,33 @@ public class NativeRequestTest extends BaseNativeTest {
     }
 
     @Test
-    public void requestNative() {
+    public void requestNativeSuccess() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
         adRequest.loadAd();
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponses.anNative()));
+        Lock.pause(1000);
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
+        waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
+
         assertAdLoaded(true);
+    }
+
+
+    @Test
+    public void requestNativeFailure() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.NO_BID));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertAdFailed(false);
     }
 
     @Override

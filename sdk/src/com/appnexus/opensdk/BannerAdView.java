@@ -83,8 +83,7 @@ import java.util.ArrayList;
  * RelativeLayout rl = (RelativeLayout)(findViewById(R.id.mainview));
  * AdView av = new BannerAdView(this);
  * LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, 100);
- * av.setAdHeight(50);
- * av.setAdWidth(320);
+ * av.setAdSize(320,50);
  * av.setLayoutParams(lp);
  * av.setPlacementID("12345");
  * rl.addView(av);
@@ -230,24 +229,10 @@ public class BannerAdView extends AdView {
         if (!measured || changed) {
             // Convert to dips
             float density = getContext().getResources().getDisplayMetrics().density;
-            int measuredWidth = (int) ((right - left) / density + 0.5f);
-            int measuredHeight = (int) ((bottom - top) / density + 0.5f);
-            if (requestParameters.getAllowedSizes() == null
-                    && (measuredWidth < requestParameters.getAdWidth() || measuredHeight < requestParameters.getAdHeight())
-                    && measuredWidth > 0 && measuredHeight > 0) {
-                Clog.e(Clog.baseLogTag, Clog.getString(R.string.adsize_too_big,
-                        measuredWidth, measuredHeight, requestParameters.getAdWidth(), requestParameters.getAdHeight()));
-                // Hide the space, since no ad will be loaded due to error
-                hide();
-                // Stop any request in progress
-                if (mAdFetcher != null)
-                    mAdFetcher.stop();
-                // Returning here allows the SDK to re-request when the layout
-                // next changes, and maybe the error will be amended.
-                return;
-            }
-            requestParameters.setContainerWidth(measuredWidth);
-            requestParameters.setContainerHeight(measuredHeight);
+            int containerWidth = (int) ((right - left) / density + 0.5f);
+            int containerHeight = (int) ((bottom - top) / density + 0.5f);
+
+            warnIfRequestSizesDoesNotFitContainerSize(containerWidth,containerHeight);
             // Hide the adview
             if (!measured && !loadedOffscreen) {
                 hide();
@@ -280,6 +265,18 @@ public class BannerAdView extends AdView {
         }
 
     }
+
+    private void warnIfRequestSizesDoesNotFitContainerSize(int containerWidth, int containerHeight) {
+        if(containerWidth >0 && containerHeight > 0 && requestParameters.getSizes()!=null) {
+            for (AdSize adsize : requestParameters.getSizes()) {
+                if (containerHeight < adsize.height() || containerWidth < adsize.width()) {
+                    Clog.w(Clog.baseLogTag, Clog.getString(R.string.adsize_too_big,
+                            containerWidth, containerHeight, adsize.width(), adsize.height()));
+                }
+            }
+        }
+    }
+
 
     // Make sure receiver is registered.
     private void onFirstLayout() {
@@ -333,7 +330,7 @@ public class BannerAdView extends AdView {
     private Displayable currentDisplayable;
 
     @Override
-    void interacted(){
+    void interacted() {
         // do nothing
     }
 
@@ -632,20 +629,23 @@ public class BannerAdView extends AdView {
 
     /**
      * Set the size of the ad to request.
+     * Use only one out of setMaxSize(maxW,maxH) or setAdSize(w,h) or setAdSizes(ArrayList<AdSizes>). Using one will override the value set by other.
      *
      * @param w The width of the ad, in pixels.
      * @param h The height of the ad, in pixels.
      */
     public void setAdSize(int w, int h) {
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_size, w, h));
-        requestParameters.setAdWidth(w);
-        requestParameters.setAdHeight(h);
+        ArrayList<AdSize> adSizeArrayList = new ArrayList();
+        adSizeArrayList.add(new AdSize(w, h));
+        setAdSizes(adSizeArrayList);
     }
 
     /**
      * Set the {@link AdSize}s which are allowed to be displayed.
      * This is a list of the platform ad sizes that may be inserted
      * into a banner ad view.
+     * Use only one out of setMaxSize(maxW,maxH) or setAdSize(w,h) or setAdSizes(ArrayList<AdSizes>). Using one will override the value set by other.
      *
      *
      * @param adSizes The {@link ArrayList} of {@link AdSize}s
@@ -664,112 +664,89 @@ public class BannerAdView extends AdView {
             return;
         }
 
-        requestParameters.setAdWidth(-1);
-        requestParameters.setAdHeight(-1);
-        requestParameters.setOverrideMaxSize(false);
-        requestParameters.setMaxSize(-1, -1);
-        requestParameters.setAllowedSizes(null);
-
-        AdSize primarySize = adSizes.get(0);
-        this.setAdSize(primarySize.width(), primarySize.height());
-
-        if (adSizes.size() > 1) {
-            ArrayList<AdSize> promoSizes = new ArrayList<>(adSizes.subList(1, adSizes.size()));
-            requestParameters.setAllowedSizes(promoSizes);
-        }
+        requestParameters.setPrimarySize(adSizes.get(0));
+        requestParameters.setSizes(adSizes);
+        requestParameters.setAllowSmallerSizes(false);
     }
 
     /**
-     * Set the maximum size of the desired ad. Used in place of AdSize if
-     * setOverrideMaxSize() has been set to true.
+     * Set the maximum size of the desired ad.
+     * Use only one out of setMaxSize(maxW,maxh) or setAdSize(w,h) or setAdSizes(ArrayList<AdSizes>). Using one will override the value set by other.
      *
      * @param maxW The maximum width in pixels.
      * @param maxH The maximum height in pixels.
      */
     public void setMaxSize(int maxW, int maxH) {
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_max_size, maxW, maxH));
-        requestParameters.setMaxSize(maxW, maxH);
+        AdSize maxAdSize = new AdSize(maxW,maxH);
+        ArrayList<AdSize> adSizeArrayList = new ArrayList();
+        adSizeArrayList.add(maxAdSize);
+
+        requestParameters.setPrimarySize(adSizeArrayList.get(0));
+        requestParameters.setSizes(adSizeArrayList);
+        requestParameters.setAllowSmallerSizes(true);
     }
 
     /**
-     * Sets whether to use the size value from {@link #setMaxSize} instead of
-     * values from {@link #setAdSize}. Call with value true in order override
-     * the value from {@link #setAdSize}.
+     * Check the maximum height of the ad to be requested. Previously set using setMaxSize().
      *
-     * @param shouldOverrideMaxSize Whether the ad will request an ad
-     *                              for a maximum size. Default is false.
-     */
-    public void setOverrideMaxSize(boolean shouldOverrideMaxSize) {
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.set_override_max_size, shouldOverrideMaxSize));
-        requestParameters.setOverrideMaxSize(shouldOverrideMaxSize);
-    }
-
-    /**
-     * Check the maximum height of the ad to be requested for this view.
-     * Only used if {@link #setOverrideMaxSize} has been set to true.
-     *
-     * @return The maximum height of the ad to be requested.
+     * @return The maximum height of the ad to be requested or
+     *          -1 if max height is not set or has been overridden by setAdSize/setAdSizes
      */
     public int getMaxHeight() {
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_max_height, requestParameters.getMaxHeight()));
-        return requestParameters.getMaxHeight();
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_max_height, requestParameters.getAllowSmallerSizes() ? requestParameters.getPrimarySize().height() : -1));
+        return requestParameters.getAllowSmallerSizes() ? requestParameters.getPrimarySize().height() : -1;
     }
 
     /**
-     * Check the maximum width of the ad to be requested for this view.
-     * Only used if {@link #setOverrideMaxSize} has been set to true.
+     * Check the maximum width of the ad to be requested. Previously set using setMaxSize().
      *
-     * @return The maximum width of the ad to be requested.
+     * @return The maximum width of the ad to be requested or
+     *          -1 if max width is not set or has been overridden by setAdSize()/setAdSizes()
      */
     public int getMaxWidth() {
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_max_width, requestParameters.getMaxWidth()));
-        return requestParameters.getMaxWidth();
-    }
-
-    /**
-     * Check whether the ad request will pass the value from
-     * {@link #setAdSize} or from {@link #setMaxSize}.
-     *
-     * @return If the maximum size will be passed instead of the ad size.
-     */
-    public boolean getOverrideMaxSize() {
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_override_max_size, requestParameters.getOverrideMaxSize()));
-        return requestParameters.getOverrideMaxSize();
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_max_width, requestParameters.getAllowSmallerSizes() ? requestParameters.getPrimarySize().width() : -1));
+        return requestParameters.getAllowSmallerSizes() ? requestParameters.getPrimarySize().width() : -1;
     }
 
     /**
      * Check the height of the ad to be requested for this view.
      *
-     * @return The height of the ad to request.
+     * @return The height of the ad to request or
+     *         -1 if max height is used in the request.
      */
     public int getAdHeight() {
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_height, requestParameters.getAdHeight()));
-        return requestParameters.getAdHeight();
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_height, requestParameters.getAllowSmallerSizes() ? -1 :requestParameters.getPrimarySize().height()));
+        return requestParameters.getAllowSmallerSizes() ? -1 :requestParameters.getPrimarySize().height();
     }
 
     /**
      * Check the width of the ad to be requested for this view.
      *
-     * @return The width of the ad to request.
+     * @return The width of the ad to request or
+     *         -1 if max width is used in the request.
      */
     public int getAdWidth() {
-        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_width, requestParameters.getAdWidth()));
-        return requestParameters.getAdWidth();
+        Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_width, requestParameters.getAllowSmallerSizes() ? -1 :requestParameters.getPrimarySize().width()));
+        return requestParameters.getAllowSmallerSizes() ? -1 :requestParameters.getPrimarySize().width();
     }
 
     /**
      * Check the ad sizes which will be requested for this view.
      *
-     * @return The sizes allowed to be displayed in this view.
+     * @return The sizes allowed to be displayed in this view set using setAdSize()/setAdSizes().
+     *         or an empty array if size is set using setMaxSize().
+     *
      */
     public ArrayList<AdSize> getAdSizes() {
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.get_ad_sizes));
-        ArrayList<AdSize> adSizes = new ArrayList<>();
-        adSizes.add(new AdSize(getAdWidth(), getAdHeight()));
-        if (requestParameters.getAllowedSizes() != null) {
-            adSizes.addAll(requestParameters.getAllowedSizes());
+        if(requestParameters.getAllowSmallerSizes()){
+            // Its always safe to return empty array than null.
+            ArrayList<AdSize> adSizes = new ArrayList<AdSize>();
+            return  adSizes;
+        }else {
+            return requestParameters.getSizes();
         }
-        return adSizes;
     }
 
     /**
@@ -994,8 +971,8 @@ public class BannerAdView extends AdView {
         int webViewWidth;
         int webViewHeight;
 
-        float widthRatio = ((float) adWidth) / ((float)containerWidth);
-        float heightRatio = ((float) adHeight) / ((float)containerHeight);
+        float widthRatio = ((float) adWidth) / ((float) containerWidth);
+        float heightRatio = ((float) adHeight) / ((float) containerHeight);
 
         if (widthRatio < heightRatio) {
             //expand to full container height
@@ -1034,7 +1011,7 @@ public class BannerAdView extends AdView {
         WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
 
-        int width = -1;
+        @SuppressWarnings("UnusedAssignment") int width = -1;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             Point p = new Point();
             display.getSize(p);
@@ -1117,7 +1094,7 @@ public class BannerAdView extends AdView {
     /**
      * Get the direction of the transition animation
      *
-     * @return TransionDirection
+     * @return TransitionDirection
      */
 
     public TransitionDirection getTransitionDirection() {

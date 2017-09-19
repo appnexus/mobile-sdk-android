@@ -39,8 +39,12 @@ import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
-import com.appnexus.opensdk.utils.AdvertistingIDUtil;
+import com.appnexus.opensdk.ut.UTRequestParameters;
+import com.appnexus.opensdk.ut.adresponse.RTBHTMLAdResponse;
+import com.appnexus.opensdk.utils.AdvertisingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.HTTPGet;
+import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.ViewUtil;
 
@@ -70,8 +74,12 @@ public abstract class AdView extends FrameLayout implements Ad {
 
     private boolean shouldResizeParent = false;
     private boolean showLoadingIndicator = true;
+    private boolean isAttachedToWindow = false;
 
-    RequestParameters requestParameters;
+    UTRequestParameters requestParameters;
+
+    protected ArrayList<String> impressionTrackers;
+
     /**
      * Begin Construction
      */
@@ -90,9 +98,9 @@ public abstract class AdView extends FrameLayout implements Ad {
 
     void setup(Context context, AttributeSet attrs) {
         dispatcher = new AdViewDispatcher(handler);
-        requestParameters = new RequestParameters(context);
+        requestParameters = new UTRequestParameters(context);
 
-        AdvertistingIDUtil.retrieveAndSetAAID(context);
+        AdvertisingIDUtil.retrieveAndSetAAID(context);
 
         // Store self.context in the settings for errors
         Clog.setErrorContext(this.getContext());
@@ -120,10 +128,10 @@ public abstract class AdView extends FrameLayout implements Ad {
                     .getUserAgentString();
             Clog.v(Clog.baseLogTag,
                     Clog.getString(R.string.ua, Settings.getSettings().ua));
-        }catch (Exception e){
+        } catch (Exception e) {
             // Catches PackageManager$NameNotFoundException for webview
             Settings.getSettings().ua = "";
-            Clog.e(Clog.baseLogTag, " Exception: "+e.getMessage());
+            Clog.e(Clog.baseLogTag, " Exception: " + e.getMessage());
         }
 
         // Store the AppID in the settings
@@ -217,7 +225,8 @@ public abstract class AdView extends FrameLayout implements Ad {
         // load an ad directly from html
         loadedOffscreen = true;
         AdWebView output = new AdWebView(this);
-        ServerResponse response = new ServerResponse(html, width, height);
+        RTBHTMLAdResponse response = new RTBHTMLAdResponse(width, height, getMediaType().toString(), null);
+        response.setAdContent(html);
         output.loadAd(response);
         display(output);
     }
@@ -311,19 +320,13 @@ public abstract class AdView extends FrameLayout implements Ad {
             this.lastDisplayable.destroy();
             this.lastDisplayable = null;
         }
+
         // Just in case, kill the adfetcher's service
         if (mAdFetcher != null) {
             mAdFetcher.stop();
         }
     }
 
-    int getContainerWidth() {
-        return requestParameters.getContainerWidth();
-    }
-
-    int getContainerHeight() {
-        return requestParameters.getContainerHeight();
-    }
 
     protected void setShouldResizeParent(boolean shouldResizeParent) {
         this.shouldResizeParent = shouldResizeParent;
@@ -334,7 +337,9 @@ public abstract class AdView extends FrameLayout implements Ad {
      */
     boolean mraid_is_closing = false;
     ImageButton close_button;
+    @SuppressLint("StaticFieldLeak")
     static FrameLayout mraidFullscreenContainer;
+    @SuppressLint("StaticFieldLeak")
     static MRAIDImplementation mraidFullscreenImplementation;
     static AdWebView.MRAIDFullscreenListener mraidFullscreenListener;
 
@@ -355,7 +360,7 @@ public abstract class AdView extends FrameLayout implements Ad {
 
             // Reset the context of MutableContext wrapper for banner expand and close case.
             if (getMediaType().equals(MediaType.BANNER) && (caller.owner.getContext() instanceof MutableContextWrapper)) {
-                ((MutableContextWrapper)caller.owner.getContext()).setBaseContext(getContext());
+                ((MutableContextWrapper) caller.owner.getContext()).setBaseContext(getContext());
             }
         }
         // null these out for safety
@@ -466,7 +471,7 @@ public abstract class AdView extends FrameLayout implements Ad {
 
     int buttonPxSideLength = 0;
 
-    void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean,
+    void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscreen,
                 final MRAIDImplementation caller) {
         MRAIDChangeSize(w, h);
 
@@ -961,11 +966,27 @@ public abstract class AdView extends FrameLayout implements Ad {
                         } else {
                             display(ad.getDisplayable());
                         }
+
+                        if (ad.getResponseData() != null && ad.getResponseData().getImpressionURLs().size() > 0) {
+                            impressionTrackers = ad.getResponseData().getImpressionURLs();
+                        }
+
+
+                        // Banner OnAdLoaded and if View is attached to window Impression is counted.
+                        if (getMediaType().equals(MediaType.BANNER)) {
+                            if (isAdViewAttachedToWindow()) {
+                                    if (impressionTrackers != null && impressionTrackers.size() > 0) {
+                                        fireImpressionTracker();
+                                    }
+                            }
+                        }
+
                         if (adListener != null)
                             adListener.onAdLoaded(AdView.this);
                     }
                 });
             } else {
+                Clog.e(Clog.baseLogTag, "UNKNOWN media type::" + ad.getMediaType());
                 onAdFailed(ResultCode.INTERNAL_ERROR);
             }
 
@@ -1028,6 +1049,66 @@ public abstract class AdView extends FrameLayout implements Ad {
             });
         }
     }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        isAttachedToWindow = true;
+        // OnAttaced to Window and Impresion tracker is non null then fire impression.
+        if (getMediaType().equals(MediaType.BANNER) &&  impressionTrackers != null && impressionTrackers.size() > 0) {
+            fireImpressionTracker();
+        }
+
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        isAttachedToWindow = false;
+    }
+
+    void fireImpressionTracker() {
+        synchronized (impressionTrackers) {
+            // Just to be fail safe since we are making it to null below to mark it as beign used.
+            if (impressionTrackers != null && impressionTrackers.size() > 0) {
+                for (String url : impressionTrackers) {
+                    fireImpressionTracker(url);
+                }
+                // Making it to null so that there is no duplicate firing. We fire exactly only once.
+                impressionTrackers = null;
+            }
+        }
+    }
+
+
+    void fireImpressionTracker(final String trackerUrl) {
+
+        new HTTPGet() {
+            @Override
+            protected void onPostExecute(HTTPResponse response) {
+                if (response != null && response.getSucceeded()) {
+                    Clog.d(Clog.baseLogTag, "Impression Tracked successfully!");
+                }
+            }
+
+            @Override
+            protected String getUrl() {
+                return trackerUrl;
+            }
+        }.execute();
+
+    }
+
+    boolean isAdViewAttachedToWindow() {
+
+        // Use the framework API value if its KITKAT and Aboev.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            return isAttachedToWindow();
+        } else {
+            return isAttachedToWindow;
+        }
+    }
+
 
     @Override
     public AdDispatcher getAdDispatcher() {

@@ -35,7 +35,7 @@ public class TargetingParameters {
     TargetingParameters() {
         
     }
-    TargetingParameters(String age, AdView.GENDER gender, ArrayList<Pair<String,String>> customKeywords, Location location){
+    public TargetingParameters(String age, AdView.GENDER gender, ArrayList<Pair<String, String>> customKeywords, Location location){
         this.age = age;
         this.gender = gender;
         this.customKeywords = customKeywords;

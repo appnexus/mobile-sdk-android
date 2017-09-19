@@ -24,8 +24,9 @@ public class ShadowSettings {
 
     private static String COOKIE_DOMAIN = "http://mediation.adnxs.com";
     private static String BASE_URL = "http://mediation.adnxs.com/";
-    private static String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
+    private static String REQUEST_BASE_URL = "http://mediation.adnxs.com/ut/v2";
     private static String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
+    public boolean test_mode = true;
 
     public static String getBaseUrl() {
         return Settings.getSettings().useHttps ? BASE_URL.replace("http:", "https:") : BASE_URL;
@@ -44,9 +45,9 @@ public class ShadowSettings {
     }
 
     public static void setTestURL(String url) {
-            BASE_URL = url;
-            REQUEST_BASE_URL = url;
-            COOKIE_DOMAIN = url;
+        BASE_URL = url;
+        REQUEST_BASE_URL = url;
+        COOKIE_DOMAIN = url;
     }
 
 

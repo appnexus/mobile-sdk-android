@@ -52,6 +52,7 @@ public abstract class HTTPGet extends AsyncTask<Void, Void, HTTPResponse> {
                 out.setSucceeded(false);
                 return out;
             }
+            Clog.i(Clog.httpReqLogTag, "HTTPGet ReqURL - " + reqUrl);
             //  Create and connect to HTTP service
             connection = createConnection(reqUrl);
             setConnectionParams(connection);
@@ -80,16 +81,17 @@ public abstract class HTTPGet extends AsyncTask<Void, Void, HTTPResponse> {
         }catch (MalformedURLException e) {
             out.setSucceeded(false);
             out.setErrorCode(HttpErrorCode.URI_SYNTAX_ERROR);
-            Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_url_malformed));
+            Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_get_url_malformed));
         } catch (IOException e) {
             out.setSucceeded(false);
             out.setErrorCode(HttpErrorCode.TRANSPORT_ERROR);
-            Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_io));
-        } finally {
-            if(connection!= null)
-                connection.disconnect();
+            Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_get_io));
+        } catch (Exception e) {
+            out.setSucceeded(false);
+            out.setErrorCode(HttpErrorCode.UNKNOWN_ERROR);
+            e.printStackTrace();
+            Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_get_unknown_exception));
         }
-
         return out;
     }
 
@@ -120,6 +122,8 @@ public abstract class HTTPGet extends AsyncTask<Void, Void, HTTPResponse> {
         if (!TextUtils.isEmpty(cookieString)) {
             connection.setRequestProperty("Cookie",cookieString);
         }
+        connection.setConnectTimeout(Settings.HTTP_CONNECTION_TIMEOUT);
+        connection.setReadTimeout(Settings.HTTP_SOCKET_TIMEOUT);
     }
 
 }

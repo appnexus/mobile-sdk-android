@@ -1,22 +1,31 @@
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
+import com.appnexus.opensdk.shadows.ShadowSettings;
+import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.util.RoboelectricTestRunnerWithResources;
+import com.appnexus.opensdk.util.TestUtil;
+import com.appnexus.opensdk.utils.Clog;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
+import org.robolectric.shadows.ShadowWebView;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
+@Config(constants = BuildConfig.class, sdk = 21,
+        shadows = {ShadowAsyncTaskNoExecutor.class,
+                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RoboelectricTestRunnerWithResources.class)
-@Config(constants = BuildConfig.class, sdk = 21)
 public class BaseViewAdTest extends BaseRoboTest implements AdListener {
 
     BannerAdView bannerAdView;
     InterstitialAdView interstitialAdView;
-    RequestManager requestManager;
+    AdViewRequestManager requestManager;
+
 
     boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked;
 
@@ -38,6 +47,7 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener {
         adExpanded = false;
         adCollapsed = false;
         adClicked = false;
+
     }
 
     public void assertCallbacks(boolean success) {
@@ -52,26 +62,31 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener {
 
     @Override
     public void onAdLoaded(AdView adView) {
+        Clog.w(TestUtil.testLogTag, "BaseViewAdTest onAdLoaded");
         adLoaded = true;
     }
 
     @Override
     public void onAdRequestFailed(AdView adView, ResultCode resultCode) {
+        Clog.w(TestUtil.testLogTag, "BaseViewAdTest onAdRequestFailed");
         adFailed = true;
     }
 
     @Override
     public void onAdExpanded(AdView adView) {
+        Clog.w(TestUtil.testLogTag, "BaseViewAdTest onAdExpanded");
         adExpanded = true;
     }
 
     @Override
     public void onAdCollapsed(AdView adView) {
+        Clog.w(TestUtil.testLogTag, "BaseViewAdTest onAdCollapsed");
         adCollapsed = true;
     }
 
     @Override
     public void onAdClicked(AdView adView) {
+        Clog.w(TestUtil.testLogTag, "BaseViewAdTest onAdClicked");
         adClicked = true;
     }
 

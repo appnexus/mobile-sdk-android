@@ -88,16 +88,6 @@ public class MyActivity extends Activity {
 
         bav.setAdListener(adListener);
 
-        // Get the device's location and send it on the ad call so the
-        // impression is more attractive to advertisers.
-        LocationManager locationManager =
-                (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
-
-        Location location =
-                locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-        SDKSettings.setLocation(location);
-
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.main_content);
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);

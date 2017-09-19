@@ -38,6 +38,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class ANNativeAdResponse implements NativeAdResponse {
     private String title;
@@ -112,7 +113,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
      * @param metaData JsonObject that contains info of native ad
      * @return ANNativeResponse if no issue happened during processing
      */
-    static ANNativeAdResponse create(JSONObject metaData) {
+    public static ANNativeAdResponse create(JSONObject metaData) {
         if (metaData == null) {
             return null;
         }
@@ -239,6 +240,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
             if (visibilityDetector == null) {
                 return false;
             }
+
             impressionTrackers = new ArrayList<ImpressionTracker>(imp_trackers.size());
             for (String url : imp_trackers) {
                 ImpressionTracker impressionTracker = ImpressionTracker.create(url, visibilityDetector, view.getContext());

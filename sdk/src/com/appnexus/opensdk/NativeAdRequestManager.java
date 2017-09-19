@@ -16,6 +16,12 @@
 
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.ut.UTAdResponse;
+import com.appnexus.opensdk.ut.UTConstants;
+import com.appnexus.opensdk.ut.UTRequestParameters;
+import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
+import com.appnexus.opensdk.ut.adresponse.CSMSDKAdResponse;
+import com.appnexus.opensdk.ut.adresponse.RTBNativeAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 
 import java.lang.ref.WeakReference;
@@ -24,6 +30,7 @@ class NativeAdRequestManager extends RequestManager {
     private final WeakReference<NativeAdRequest> owner;
     private MediatedNativeAdController controller;
 
+
     NativeAdRequestManager(NativeAdRequest owner) {
         super();
         this.owner = new WeakReference<NativeAdRequest>(owner);
@@ -31,11 +38,12 @@ class NativeAdRequestManager extends RequestManager {
 
     @Override
     public void cancel() {
-        if (adRequest != null) {
-            adRequest.cancel(true);
-            adRequest = null;
+        if (utAdRequest != null) {
+            utAdRequest.cancel(true);
+            utAdRequest = null;
         }
-        setMediatedAds(null);
+        setAdList(null);
+
         if (controller != null) {
             controller.cancel(true);
             controller = null;
@@ -44,7 +52,7 @@ class NativeAdRequestManager extends RequestManager {
     }
 
     @Override
-    public RequestParameters getRequestParams() {
+    public UTRequestParameters getRequestParams() {
         NativeAdRequest owner = this.owner.get();
         if (owner != null) {
             return owner.getRequestParameters();
@@ -54,8 +62,20 @@ class NativeAdRequestManager extends RequestManager {
     }
 
     @Override
+    public void continueWaterfall(ResultCode reason) {
+        Clog.d(Clog.baseLogTag,"Waterfall continueWaterfall");
+        if(getAdList() == null || getAdList().isEmpty()){
+            failed(reason);
+        }else {
+            // Process next available ad response
+            processNextAd();
+        }
+    }
+
+    @Override
     public void failed(ResultCode code) {
         printMediatedClasses();
+        fireNoAdTracker(noAdUrl, Clog.getString(R.string.no_ad_url));
         NativeAdRequest owner = this.owner.get();
         if (owner != null) {
             owner.getAdDispatcher().onAdFailed(code);
@@ -63,36 +83,41 @@ class NativeAdRequestManager extends RequestManager {
     }
 
     @Override
-    public void onReceiveServerResponse(ServerResponse response) {
+    public void onReceiveUTResponse(UTAdResponse response) {
+        super.onReceiveUTResponse(response);
         final NativeAdRequest owner = this.owner.get();
-        if (owner != null) {
-            boolean responseHasAds = (response != null) && response.containsAds();
-            boolean ownerHasAds = (getMediatedAds() != null) && !getMediatedAds().isEmpty();
-
-            // no ads in the response and no old ads means no fill
-            if (!responseHasAds && !ownerHasAds) {
-                Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
-
-                owner.getAdDispatcher().onAdFailed(ResultCode.UNABLE_TO_FILL);
-                return;
-            }
-
-            if (responseHasAds) {
-                // if non-mediated ad is overriding the list,
-                // this will be null and skip the loop for mediation
-                setMediatedAds(response.getMediatedAds());
-            }
-
-            // check the latest mediated ads, may have updates from new response
-            if ((getMediatedAds() != null) && !getMediatedAds().isEmpty()) {
-                MediatedAd mediatedAd = popMediatedAd();
-                if ((mediatedAd != null) && (response != null)) {
-                    mediatedAd.setExtras(response.getExtras());
-                }
-                // mediated
-                controller = MediatedNativeAdController.create(mediatedAd, NativeAdRequestManager.this);
+        if (owner != null && response != null) {
+            if(response.getAdList() != null && !response.getAdList().isEmpty()){
+                setAdList(response.getAdList());
+                processNextAd();
             } else {
-                final ANNativeAdResponse nativeAdResponse = (ANNativeAdResponse) response.getNativeAdResponse();
+                Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
+                failed(ResultCode.UNABLE_TO_FILL);
+            }
+        }
+    }
+
+    @Override
+    public void onReceiveAd(AdResponse ad) {
+        printMediatedClasses();
+        if (controller != null) {
+            // do not hold a reference of current mediated ad controller after ad is loaded
+            controller = null;
+        }
+        NativeAdRequest owner = this.owner.get();
+        if (owner != null) {
+            owner.getAdDispatcher().onAdLoaded(ad);
+        } else {
+            ad.destroy();
+        }
+    }
+
+    private void processNextAd() {
+        if (getAdList() != null && !getAdList().isEmpty()) {
+            BaseAdResponse baseAdResponse = popAd();
+            final NativeAdRequest owner = this.owner.get();
+            if (baseAdResponse instanceof RTBNativeAdResponse) {
+               final ANNativeAdResponse nativeAdResponse = ((RTBNativeAdResponse) baseAdResponse).getNativeAdResponse();
                 nativeAdResponse.openNativeBrowser(owner.getOpensNativeBrowser());
                 onReceiveAd(new AdResponse() {
                     @Override
@@ -116,27 +141,26 @@ class NativeAdRequestManager extends RequestManager {
                     }
 
                     @Override
+                    public BaseAdResponse getResponseData() {
+                        return null;
+                    }
+
+                    @Override
                     public void destroy() {
                         nativeAdResponse.destroy();
                     }
                 });
 
+            }else if (baseAdResponse.getContentSource().equalsIgnoreCase(UTConstants.CSM)) {
+                controller = MediatedNativeAdController.create((CSMSDKAdResponse) baseAdResponse, NativeAdRequestManager.this);
+            } else {
+                Clog.e(Clog.baseLogTag, "processNextAd failed:: invalid content source::"+baseAdResponse.getContentSource());
+                continueWaterfall(ResultCode.INVALID_REQUEST);
             }
+
         }
+
     }
 
-    @Override
-    public void onReceiveAd(AdResponse ad) {
-        printMediatedClasses();
-        if (controller != null) {
-            // do not hold a reference of current mediated ad controller after ad is loaded
-            controller = null;
-        }
-        NativeAdRequest owner = this.owner.get();
-        if (owner != null) {
-            owner.getAdDispatcher().onAdLoaded(ad);
-        } else {
-            ad.destroy();
-        }
-    }
+
 }

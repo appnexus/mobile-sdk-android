@@ -59,4 +59,13 @@ public class Lock {
             notified = true;
         }
     }
+
+    public static void explicitSleep(long time){
+            try {
+                Clog.w(TestUtil.testLogTag, "explicitSleep " + Thread.currentThread().getName());
+                Thread.sleep(time);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+    }
 }

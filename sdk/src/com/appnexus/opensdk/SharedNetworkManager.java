@@ -46,7 +46,7 @@ public class SharedNetworkManager {
     private ArrayList<UrlObject> urls = new ArrayList<UrlObject>();
     private Timer retryTimer;
     private static final int TOTAL_RETRY_TIMES = 3;
-    private static final int TOTAL_RETRY_WAIT_INTERVAL_MILLES = 1 * 10 * 1000;
+    private static final int TOTAL_RETRY_WAIT_INTERVAL_MILLISECONDS = 10 * 1000;
     private static final String permission = "android.permission.ACCESS_NETWORK_STATE";
     private boolean permitted;
 
@@ -116,7 +116,7 @@ public class SharedNetworkManager {
                         stopTimer();
                     }
                 }
-            }, TOTAL_RETRY_WAIT_INTERVAL_MILLES, TOTAL_RETRY_WAIT_INTERVAL_MILLES);
+            }, TOTAL_RETRY_WAIT_INTERVAL_MILLISECONDS, TOTAL_RETRY_WAIT_INTERVAL_MILLISECONDS);
 
         }
     }

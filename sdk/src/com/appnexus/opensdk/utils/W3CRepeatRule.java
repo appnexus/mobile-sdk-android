@@ -14,6 +14,7 @@ public class W3CRepeatRule {
     private int[] weeksInMonth;
     private int[] monthsInYear;
 
+    @SuppressWarnings("MethodNameSameAsClassName")
     private void W3CRepeatRule() {
 
     }

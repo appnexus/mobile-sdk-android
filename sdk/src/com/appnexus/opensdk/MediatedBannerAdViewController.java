@@ -18,6 +18,10 @@ package com.appnexus.opensdk;
 import android.app.Activity;
 import android.view.View;
 
+import com.appnexus.opensdk.ut.UTAdRequester;
+import com.appnexus.opensdk.ut.adresponse.CSMSDKAdResponse;
+
+
 import com.appnexus.opensdk.utils.Clog;
 
 /**
@@ -29,8 +33,8 @@ import com.appnexus.opensdk.utils.Clog;
 
 public class MediatedBannerAdViewController extends MediatedAdViewController {
     static MediatedBannerAdViewController create(
-            Activity activity, AdRequester requester,
-            MediatedAd mediatedAd, AdDispatcher listener) {
+            Activity activity, UTAdRequester requester,
+            CSMSDKAdResponse mediatedAd, AdDispatcher listener) {
         MediatedBannerAdViewController out = new MediatedBannerAdViewController(activity, requester, mediatedAd, listener);
         return out.hasFailed ? null : out;
     }
@@ -47,12 +51,13 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
     }
 
     private MediatedBannerAdViewController(
-            Activity activity, AdRequester requester, MediatedAd mediatedAd,
+            Activity activity, UTAdRequester requester, CSMSDKAdResponse mediatedAd,
             AdDispatcher listener) {
         super(requester, mediatedAd, listener, MediaType.BANNER);
 
-        if (!isValid(MediatedBannerAdView.class))
+        if (!isValid(MediatedBannerAdView.class)) {
             return;
+        }
 
         // if controller is valid, request an ad
         Clog.d(Clog.mediationLogTag, Clog.getString(R.string.mediated_request));

@@ -47,6 +47,8 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.appnexus.opensdk.AdView.BrowserStyle;
+import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
+import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
@@ -147,11 +149,12 @@ class AdWebView extends WebView implements Displayable {
         setWebViewClient(new AdWebViewClient());
     }
 
-    public void loadAd(ServerResponse ad) {
+    public void loadAd(BaseAdResponse ad) {
         if(ad==null){
+            fail();
             return;
         }
-        String html = ad.getContent();
+        String html = ad.getAdContent();
         // set creative size
         setCreativeHeight(ad.getHeight());
         setCreativeWidth(ad.getWidth());
@@ -161,19 +164,19 @@ class AdWebView extends WebView implements Displayable {
             return;
         }
 
-        Clog.v(Clog.baseLogTag, Clog.getString(R.string.webview_loading, html));
+        Clog.i(Clog.baseLogTag, Clog.getString(R.string.webview_loading, html));
 
         parseAdResponseExtras(ad.getExtras());
 
         html = preLoadContent(html);
         html = prependRawResources(html);
         html = prependViewPort(html);
-
         final float scale = adView.getContext().getResources()
                 .getDisplayMetrics().density;
+        //do not modify this logic as it affects the rendering of 1x1 interstitial
         int rheight,rwidth;
         if(ad.getHeight()==1 && ad.getWidth() == 1){
-            rwidth=ViewGroup.LayoutParams.MATCH_PARENT;
+            rwidth= ViewGroup.LayoutParams.MATCH_PARENT;
             rheight=ViewGroup.LayoutParams.MATCH_PARENT;
         }else{
             rheight = (int) (ad.getHeight() * scale + 0.5f);
@@ -190,7 +193,7 @@ class AdWebView extends WebView implements Displayable {
     private String preLoadContent(String html) {
         if (!StringUtil.isEmpty(html)) {
             // trim leading and trailing spaces
-            html.trim();
+            html = html.trim();
             // check to see if content is wrapped with <html> tag
             if (!html.startsWith("<html>")) {
                 StringBuilder bodyBuilder = new StringBuilder();
@@ -222,8 +225,7 @@ class AdWebView extends WebView implements Displayable {
 
     private String prependViewPort(String html){
         if (!StringUtil.isEmpty(html)) {
-            StringBuilder viewportSB = new StringBuilder("<head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0,user-scalable=no\"/>");
-            html = html.replaceFirst("<head>", viewportSB.toString());
+            html = html.replaceFirst("<head>", "<head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0,user-scalable=no\"/>");
         }
         return html;
     }
@@ -234,12 +236,12 @@ class AdWebView extends WebView implements Displayable {
             return;
         }
 
-        if (extras.containsKey(ServerResponse.EXTRAS_KEY_MRAID)) {
-            isMRAIDEnabled = (Boolean) extras.get(ServerResponse.EXTRAS_KEY_MRAID);
+        if (extras.containsKey(UTConstants.EXTRAS_KEY_MRAID)) {
+            isMRAIDEnabled = (Boolean) extras.get(UTConstants.EXTRAS_KEY_MRAID);
         }
 
-        if (extras.containsKey(ServerResponse.EXTRAS_KEY_ORIENTATION)
-                && extras.get(ServerResponse.EXTRAS_KEY_ORIENTATION).equals("h")) {
+        if (extras.containsKey(UTConstants.EXTRAS_KEY_ORIENTATION)
+                && extras.get(UTConstants.EXTRAS_KEY_ORIENTATION).equals("h")) {
             this.orientation = Configuration.ORIENTATION_LANDSCAPE;
         } else {
             this.orientation = Configuration.ORIENTATION_PORTRAIT;
@@ -752,7 +754,7 @@ class AdWebView extends WebView implements Displayable {
         return isOnscreen && isVisible;
     }
 
-    public void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscrean) {
+    public void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscreen) {
         DisplayMetrics metrics = new DisplayMetrics();
         ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE))
                 .getDefaultDisplay().getMetrics(metrics);
@@ -771,7 +773,7 @@ class AdWebView extends WebView implements Displayable {
         lp.gravity = Gravity.CENTER;
 
         if (adView != null) {
-            adView.resize(w, h, offset_x, offset_y, custom_close_position, allow_offscrean, implementation);
+            adView.resize(w, h, offset_x, offset_y, custom_close_position, allow_offscreen, implementation);
         }
 
         if (adView != null) {

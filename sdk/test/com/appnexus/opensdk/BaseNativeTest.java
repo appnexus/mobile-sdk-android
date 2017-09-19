@@ -16,8 +16,26 @@
 
 package com.appnexus.opensdk;
 
-import org.robolectric.Robolectric;
+import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
+import com.appnexus.opensdk.shadows.ShadowSettings;
+import com.appnexus.opensdk.shadows.ShadowWebSettings;
+import com.appnexus.opensdk.util.RoboelectricTestRunnerWithResources;
+import com.appnexus.opensdk.util.TestUtil;
+import com.appnexus.opensdk.utils.Clog;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
+import org.robolectric.shadows.ShadowWebView;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+
+@RunWith(RoboelectricTestRunnerWithResources.class)
+@Config(constants = BuildConfig.class, sdk = 21,
+        shadows = {ShadowAsyncTaskNoExecutor.class,
+                ShadowWebView.class, ShadowWebSettings.class, ShadowLog.class, ShadowSettings.class})
 public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListener {
     NativeAdRequest adRequest;
     NativeAdResponse response;
@@ -33,9 +51,6 @@ public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListe
         adFailed = false;
 
         adRequest = new NativeAdRequest(activity, "0");
-        // clear AAID async task
-        Robolectric.flushBackgroundThreadScheduler();
-        Robolectric.flushForegroundThreadScheduler();
         adRequest.setListener(this);
     }
 
@@ -47,16 +62,28 @@ public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListe
         }
     }
 
+    public void assertCallbacks(boolean success) {
+        assertEquals(success, adLoaded);
+        assertEquals(!success, adFailed);
+    }
+
     @Override
     public void onAdLoaded(NativeAdResponse response) {
         adLoaded = true;
         this.response = response;
+        Clog.w(TestUtil.testLogTag, "BaseNativeTest onAdLoaded");
     }
 
     @Override
     public void onAdFailed(ResultCode errorcode) {
         adFailed = true;
+        Clog.w(TestUtil.testLogTag, "BaseNativeTest onAdFailed");
 
+    }
+
+    @Test
+    public void testDummy() {
+        assertTrue(true);
     }
 
 }

@@ -22,11 +22,11 @@ import android.util.Pair;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import com.appnexus.opensdk.AdSize;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.MediaType;
-import com.appnexus.opensdk.RequestParameters;
+import com.appnexus.opensdk.ut.UTRequestParameters;
 import com.appnexus.opensdk.ResultCode;
-import com.appnexus.opensdk.instreamvideo.utils.ANConstants;
 import com.appnexus.opensdk.utils.Clog;
 
 import java.lang.ref.WeakReference;
@@ -36,7 +36,7 @@ import java.util.ArrayList;
 public class VideoAd implements VideoAdInterface {
 
 
-    private RequestParameters requestParameters;
+    private UTRequestParameters requestParameters;
     private VideoAdPlaybackListener videoPlaybackListener;
     private VideoAdLoadListener adLoadListener;
     private final VideoAdFetcher mVideoAdFetcher;
@@ -53,7 +53,7 @@ public class VideoAd implements VideoAdInterface {
 
     public VideoAd(Context context, String placementID) {
         weakContext = new WeakReference<Context>(context);
-        requestParameters = new RequestParameters(getContext());
+        requestParameters = new UTRequestParameters(getContext());
         requestParameters.setPlacementID(placementID);
         requestParameters.setMediaType(MediaType.INSTREAM_VIDEO);
         mVideoAdFetcher = new VideoAdFetcher(this);
@@ -61,11 +61,13 @@ public class VideoAd implements VideoAdInterface {
         mVideoAdFetcher.setPeriod(-1);
         dispatcher = new VideoAdViewDispatcher();
         videoAdView = new InstreamVideoView(getContext());
+        this.setAllowedSizes();
+
     }
 
     public VideoAd(Context context, String inventoryCode, int memberID) {
-        weakContext  = new WeakReference<Context>(context);
-        requestParameters = new RequestParameters(getContext());
+        weakContext = new WeakReference<Context>(context);
+        requestParameters = new UTRequestParameters(getContext());
         requestParameters.setInventoryCodeAndMemberID(memberID, inventoryCode);
         requestParameters.setMediaType(MediaType.INSTREAM_VIDEO);
         mVideoAdFetcher = new VideoAdFetcher(this);
@@ -73,6 +75,7 @@ public class VideoAd implements VideoAdInterface {
         mVideoAdFetcher.setPeriod(-1);
         dispatcher = new VideoAdViewDispatcher();
         videoAdView = new InstreamVideoView(getContext());
+        this.setAllowedSizes();
     }
 
 
@@ -88,7 +91,7 @@ public class VideoAd implements VideoAdInterface {
      * @return true if the device's native browser will be used; false otherwise.
      */
     public boolean getOpensNativeBrowser() {
-        Clog.d(ANConstants.videoLogTag, Clog.getString(
+        Clog.d(Clog.videoLogTag, Clog.getString(
                 R.string.set_placement_id, requestParameters.getOpensNativeBrowser()));
         return requestParameters.getOpensNativeBrowser();
     }
@@ -104,7 +107,7 @@ public class VideoAd implements VideoAdInterface {
      * @param opensNativeBrowser
      */
     public void setOpensNativeBrowser(boolean opensNativeBrowser) {
-        Clog.d(ANConstants.videoLogTag, Clog.getString(
+        Clog.d(Clog.videoLogTag, Clog.getString(
                 R.string.set_opens_native_browser, opensNativeBrowser));
         requestParameters.setOpensNativeBrowser(opensNativeBrowser);
     }
@@ -118,7 +121,7 @@ public class VideoAd implements VideoAdInterface {
      * @param placementID The placement ID to use.
      */
     public void setPlacementID(String placementID) {
-        Clog.d(ANConstants.videoLogTag, Clog.getString(
+        Clog.d(Clog.videoLogTag, Clog.getString(
                 R.string.set_placement_id, placementID));
         requestParameters.setPlacementID(placementID);
     }
@@ -129,7 +132,7 @@ public class VideoAd implements VideoAdInterface {
      * @return The Placement ID
      */
     public String getPlacementID() {
-        Clog.d(ANConstants.videoLogTag, Clog.getString(
+        Clog.d(Clog.videoLogTag, Clog.getString(
                 R.string.get_placement_id, requestParameters.getPlacementID()));
         return requestParameters.getPlacementID();
     }
@@ -167,14 +170,13 @@ public class VideoAd implements VideoAdInterface {
     }
 
 
-
     /**
      * Set user's gender for targeting
      *
      * @param gender User's gender
      */
     public void setGender(AdView.GENDER gender) {
-        Clog.d(ANConstants.videoLogTag, Clog.getString(
+        Clog.d(Clog.videoLogTag, Clog.getString(
                 R.string.set_gender, gender.toString()));
         requestParameters.setGender(gender);
     }
@@ -185,7 +187,7 @@ public class VideoAd implements VideoAdInterface {
      * @return User's gender
      */
     public AdView.GENDER getGender() {
-        Clog.d(ANConstants.videoLogTag, Clog.getString(
+        Clog.d(Clog.videoLogTag, Clog.getString(
                 R.string.get_gender, requestParameters.getGender().toString()));
         return requestParameters.getGender();
     }
@@ -279,7 +281,7 @@ public class VideoAd implements VideoAdInterface {
     }
 
 
-    RequestParameters getRequestParameters() {
+    UTRequestParameters getRequestParameters() {
         return requestParameters;
     }
 
@@ -299,7 +301,7 @@ public class VideoAd implements VideoAdInterface {
 
     public boolean loadAd() {
         if (isLoading) {
-            Clog.e(ANConstants.videoLogTag, "Still loading last Video ad , won't load a new ad");
+            Clog.e(Clog.videoLogTag, "Still loading last Video ad , won't load a new ad");
             return false;
         }
 
@@ -320,7 +322,7 @@ public class VideoAd implements VideoAdInterface {
      * Call this to remove the video ad view from the container.
      */
 
-    public void removeAd(){
+    public void removeAd() {
         reset();
     }
 
@@ -328,6 +330,17 @@ public class VideoAd implements VideoAdInterface {
         return dispatcher;
     }
 
+
+    protected void setAllowedSizes() {
+        Clog.d(Clog.videoLogTag,
+                Clog.getString(com.appnexus.opensdk.R.string.set_allowed_sizes));
+        AdSize oneByOneSize = new AdSize(1, 1);
+        ArrayList<AdSize> allowed_sizes = new ArrayList<AdSize>();
+        allowed_sizes.add(oneByOneSize);
+        requestParameters.setSizes(allowed_sizes);
+        requestParameters.setPrimarySize(oneByOneSize);
+        requestParameters.setAllowSmallerSizes(false);
+    }
 
     /**
      * Checks the queue to see if there is a valid video ad available.
@@ -346,26 +359,26 @@ public class VideoAd implements VideoAdInterface {
 
 
         @Override
-        public void onAdLoaded( ) {
-            isLoading=false;
-            validAdExists=true;
-            if(adLoadListener != null) {
+        public void onAdLoaded() {
+            isLoading = false;
+            validAdExists = true;
+            if (adLoadListener != null) {
                 adLoadListener.onAdLoaded(VideoAd.this);
             }
         }
 
         @Override
         public void onAdFailed(ResultCode errorCode) {
-            isLoading=false;
+            isLoading = false;
             validAdExists = false;
-            if(adLoadListener != null) {
+            if (adLoadListener != null) {
                 adLoadListener.onAdRequestFailed(VideoAd.this, errorCode);
             }
         }
 
         @Override
         public void onAdClicked() {
-            if(videoPlaybackListener != null) {
+            if (videoPlaybackListener != null) {
                 videoPlaybackListener.onAdClicked(VideoAd.this);
             }
 
@@ -374,15 +387,15 @@ public class VideoAd implements VideoAdInterface {
         @Override
         public void onVideoSkip() {
             reset();
-            validAdExists=false;
-            if(videoPlaybackListener != null) {
+            validAdExists = false;
+            if (videoPlaybackListener != null) {
                 videoPlaybackListener.onAdCompleted(VideoAd.this, VideoAdPlaybackListener.PlaybackCompletionState.SKIPPED);
             }
         }
 
         @Override
         public void onQuartile(Quartile quartile) {
-            if(videoPlaybackListener != null) {
+            if (videoPlaybackListener != null) {
                 videoPlaybackListener.onQuartile(VideoAd.this, quartile);
             }
         }
@@ -390,15 +403,15 @@ public class VideoAd implements VideoAdInterface {
         @Override
         public void onAdCompleted() {
             reset();
-            validAdExists=false;
-            if(videoPlaybackListener != null) {
+            validAdExists = false;
+            if (videoPlaybackListener != null) {
                 videoPlaybackListener.onAdCompleted(VideoAd.this, VideoAdPlaybackListener.PlaybackCompletionState.COMPLETED);
             }
         }
 
         @Override
-        public void isAudioMute(boolean isMute){
-            if(videoPlaybackListener != null){
+        public void isAudioMute(boolean isMute) {
+            if (videoPlaybackListener != null) {
                 videoPlaybackListener.onAdMuted(VideoAd.this, isMute);
             }
         }
@@ -406,8 +419,8 @@ public class VideoAd implements VideoAdInterface {
         @Override
         public void onPlaybackError() {
             reset();
-            validAdExists=false;
-            if(videoPlaybackListener != null) {
+            validAdExists = false;
+            if (videoPlaybackListener != null) {
                 videoPlaybackListener.onAdCompleted(VideoAd.this, VideoAdPlaybackListener.PlaybackCompletionState.ERROR);
             }
         }
@@ -522,14 +535,14 @@ public class VideoAd implements VideoAdInterface {
     public void playAd(FrameLayout layout) {
         if (videoPlaybackListener == null) {
             // error message
-            Clog.e(ANConstants.videoLogTag, "No VideoAdPlaybackListener set. A valid PlaybackListener should be set using setVideoPlaybackListener(videoPlaybackListener) before calling playAd()");
+            Clog.e(Clog.videoLogTag, "No VideoAdPlaybackListener set. A valid PlaybackListener should be set using setVideoPlaybackListener(videoPlaybackListener) before calling playAd()");
             return;
         }
         if (videoAdView == null) {
             // error message
-            Clog.e(ANConstants.videoLogTag, "Ad View is null");
+            Clog.e(Clog.videoLogTag, "Ad View is null");
             videoPlaybackListener.onAdCompleted(VideoAd.this, VideoAdPlaybackListener.PlaybackCompletionState.ERROR);
-        }else{
+        } else {
             videoAdView.playAd(layout);
         }
     }
@@ -539,24 +552,24 @@ public class VideoAd implements VideoAdInterface {
      *
      * @param layout The layout in which the Video Ad will be attached to. Pass a RelativeLayout.
      */
-    public void playAd(RelativeLayout layout){
+    public void playAd(RelativeLayout layout) {
         if (videoPlaybackListener == null) {
             // error message
-            Clog.e(ANConstants.videoLogTag, "No VideoAdPlaybackListener set. A valid PlaybackListener should be set using setVideoPlaybackListener(videoPlaybackListener) before calling playAd()");
+            Clog.e(Clog.videoLogTag, "No VideoAdPlaybackListener set. A valid PlaybackListener should be set using setVideoPlaybackListener(videoPlaybackListener) before calling playAd()");
             return;
         }
         if (videoAdView == null) {
             // error message
-            Clog.e(ANConstants.videoLogTag, "Ad View is null");
+            Clog.e(Clog.videoLogTag, "Ad View is null");
             videoPlaybackListener.onAdCompleted(VideoAd.this, VideoAdPlaybackListener.PlaybackCompletionState.ERROR);
-        }else{
+        } else {
             videoAdView.playAd(layout);
         }
     }
 
-    void reset(){
+    void reset() {
         validAdExists = false;
-        if(videoAdView!=null) {
+        if (videoAdView != null) {
             videoAdView.clearSelf();
         }
     }

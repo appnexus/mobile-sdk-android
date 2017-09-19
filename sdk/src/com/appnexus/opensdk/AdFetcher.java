@@ -1,5 +1,5 @@
 /*
- *    Copyright 2013 APPNEXUS INC
+ *    Copyright 2017 APPNEXUS INC
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Message;
 
+import com.appnexus.opensdk.ut.UTAdRequester;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
@@ -32,13 +33,14 @@ import java.util.concurrent.TimeUnit;
  * AdFetcher class that schedules requests based on auto refresh settings
  */
 class AdFetcher {
+
     private ScheduledExecutorService tasker;
     private int period = -1;
     private final RequestHandler handler;
     private long lastFetchTime = -1;
     private long timePausedAt = -1;
     private final Ad owner;
-    private RequestManager requestManager;
+    private UTAdRequester requestManager;
     private STATE state = STATE.STOPPED;
 
     enum STATE {
@@ -48,7 +50,7 @@ class AdFetcher {
     }
 
     // Fires requests whenever it receives a message
-    public AdFetcher(Ad owner) {
+    AdFetcher(Ad owner) {
         this.owner = owner;
         handler = new RequestHandler(this);
     }
@@ -217,5 +219,4 @@ class AdFetcher {
     STATE getState() {
         return this.state;
     }
-
 }

@@ -269,26 +269,36 @@ class MRAIDImplementation {
         boolean allowOrientationChange = true;
         AdActivity.OrientationEnum forceOrientation = AdActivity.OrientationEnum.none;
         for (Pair<String, String> bnvp : parameters) {
-            if (bnvp.first.equals("w"))
-                try {
-                    width = Integer.parseInt(bnvp.second);
-                } catch (NumberFormatException e) {
-                    // Do nothing
-                }
-            else if (bnvp.first.equals("h"))
-                try {
-                    height = Integer.parseInt(bnvp.second);
-                } catch (NumberFormatException e) {
-                    // Do nothing
-                }
-            else if (bnvp.first.equals("useCustomClose"))
-                useCustomClose = Boolean.parseBoolean(bnvp.second);
-            else if (bnvp.first.equals("url")) {
-                uri = Uri.decode(bnvp.second);
-            } else if (bnvp.first.equals("allow_orientation_change")) {
-                allowOrientationChange = Boolean.parseBoolean(bnvp.second);
-            } else if (bnvp.first.equals("force_orientation")) {
-                forceOrientation = parseForceOrientation(bnvp.second);
+            switch (bnvp.first) {
+                case "w":
+                    try {
+                        width = Integer.parseInt(bnvp.second);
+                    } catch (NumberFormatException e) {
+                        // Do nothing
+                    }
+                    break;
+                case "h":
+                    try {
+                        height = Integer.parseInt(bnvp.second);
+                    } catch (NumberFormatException e) {
+                        // Do nothing
+                    }
+                    break;
+                case "useCustomClose":
+                    useCustomClose = Boolean.parseBoolean(bnvp.second);
+                    break;
+                case "url":
+                    uri = Uri.decode(bnvp.second);
+                    break;
+                case "allow_orientation_change":
+                    allowOrientationChange = Boolean.parseBoolean(bnvp.second);
+                    break;
+                case "force_orientation":
+                    forceOrientation = parseForceOrientation(bnvp.second);
+                    break;
+                default :
+                    Clog.e(Clog.mraidLogTag,"expand Invalid parameter::"+bnvp.first);
+                    break;
             }
         }
 
@@ -649,21 +659,31 @@ class MRAIDImplementation {
         int offset_x = 0;
         int offset_y = 0;
         String custom_close_position = "top-right";
-        boolean allow_offscrean = true;
+        boolean allow_offscreen = true;
         for (Pair<String, String> bnvp : parameters) {
             try {
-                if (bnvp.first.equals("w")) {
-                    w = Integer.parseInt(bnvp.second);
-                } else if (bnvp.first.equals("h")) {
-                    h = Integer.parseInt(bnvp.second);
-                } else if (bnvp.first.equals("offset_x")) {
-                    offset_x = Integer.parseInt(bnvp.second);
-                } else if (bnvp.first.equals("offset_y")) {
-                    offset_y = Integer.parseInt(bnvp.second);
-                } else if (bnvp.first.equals("custom_close_position")) {
-                    custom_close_position = bnvp.second;
-                } else if (bnvp.first.equals("allow_offscreen")) {
-                    allow_offscrean = Boolean.parseBoolean(bnvp.second);
+                switch (bnvp.first) {
+                    case "w":
+                        w = Integer.parseInt(bnvp.second);
+                        break;
+                    case "h":
+                        h = Integer.parseInt(bnvp.second);
+                        break;
+                    case "offset_x":
+                        offset_x = Integer.parseInt(bnvp.second);
+                        break;
+                    case "offset_y":
+                        offset_y = Integer.parseInt(bnvp.second);
+                        break;
+                    case "custom_close_position":
+                        custom_close_position = bnvp.second;
+                        break;
+                    case "allow_offscreen":
+                        allow_offscreen = Boolean.parseBoolean(bnvp.second);
+                        break;
+                    default :
+                        Clog.e(Clog.mraidLogTag,"resize Invalid parameter::"+bnvp.first);
+                        break;
                 }
             } catch (NumberFormatException e) {
                 Clog.d(Clog.mraidLogTag, Clog.getString(R.string.number_format));
@@ -683,8 +703,8 @@ class MRAIDImplementation {
         } //Default case is used
 
 
-        Clog.d(Clog.mraidLogTag, Clog.getString(R.string.resize, w, h, offset_x, offset_y, custom_close_position, allow_offscrean));
-        this.owner.resize(w, h, offset_x, offset_y, cp_enum, allow_offscrean);
+        Clog.d(Clog.mraidLogTag, Clog.getString(R.string.resize, w, h, offset_x, offset_y, custom_close_position, allow_offscreen));
+        this.owner.resize(w, h, offset_x, offset_y, cp_enum, allow_offscreen);
 
         owner.fireAdClicked();
 

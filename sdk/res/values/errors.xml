@@ -18,6 +18,9 @@
 	<string formatted="false" name="http_url_malformed">E208: Ad Request url was malformed..</string>
 	<string formatted="false" name="permissions_internet">E102: The SDK needs permission INTERNET in the host app.</string>
 	<string formatted="false" name="unknown_exception">E204: Ad couldn\'t be fetched due to unknown exception, see above trace.</string>
+	<string formatted="false" name="http_get_url_malformed">HTTPGET: failed, url was malformed..</string>
+	<string formatted="false" name="http_get_io">HTTPGET: failed due to io error, probably http related.</string>
+	<string formatted="false" name="http_get_unknown_exception">HTTPGET: failed due to unknown exception, see above trace.</string>
 	<string formatted="false" name="no_response">Request received no response from the server.</string>
 	<string formatted="false" name="response_body">Response body: %s</string>
 	<string formatted="false" name="response_header">Header: %s Value: %s</string>
@@ -107,7 +110,7 @@
 	<string formatted="false" name="fire_cb_requester_null">firing result cb with null requester</string>
 	<string formatted="false" name="result_cb_bad_response">result cb returned a bad response</string>
 	<string formatted="false" name="result_cb_ignored">Ignored result cb received response</string>
-	<string formatted="false" name="fire_cb_result_null">firing result cb with null resultCB</string>
+	<string formatted="false" name="fire_responseurl_null">cannot fire response url as current ad or the responseurl is null</string>
 	<string formatted="false" name="cancel_request">Cancelling scheduled request</string>
 	<string formatted="false" name="resize">MRAID resize() called with w:%d, h:%d, offset_x:%d, offset_y:%d, cust_close_position:%s, allow_offscreen:%b</string>
 	<string formatted="false" name="set_orientation_properties">MRAID setOrientationProperties called with allow_orientation_change=%b, orientation=%d</string>

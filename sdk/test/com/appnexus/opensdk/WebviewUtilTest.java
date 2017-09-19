@@ -1,4 +1,5 @@
 /*
+/*
  *    Copyright 2016 APPNEXUS INC
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,19 +29,19 @@ import com.squareup.okhttp.mockwebserver.MockResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowWebView;
 
 import static junit.framework.Assert.assertEquals;
 
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class})
+                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class,ShadowLog.class})
 @RunWith(RoboelectricTestRunnerWithResources.class)
 public class WebviewUtilTest extends BaseViewAdTest {
 
-    RequestManager requestManager2;
+    AdViewRequestManager requestManager2;
 
     @Override
     public void setup() {
@@ -59,19 +60,19 @@ public class WebviewUtilTest extends BaseViewAdTest {
     //This verifies that the cookies in response are synced correctly to the device.
     @Test
     public void test1CookiesSync() {
-        server.enqueue(new MockResponse().setResponseCode(200).setHeader("Set-Cookie", TestResponses.UUID_COOKIE_1).setBody(TestResponses.banner()));
+        server.enqueue(new MockResponse().setResponseCode(200).setHeader("Set-Cookie", TestResponsesUT.UUID_COOKIE_1).setBody(TestResponsesUT.banner()));
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         String wvcookie = WebviewUtil.getCookie();
         //Asserts the Cookie stored in the device is the same as that of the one we sent back in the response.
-        assertEquals(getUUId2(wvcookie), getUUId2(TestResponses.UUID_COOKIE_1));
+        assertEquals(getUUId2(wvcookie), getUUId2(TestResponsesUT.UUID_COOKIE_1));
     }
 
     //This verifies the Cookie is reset properly.
     @Test
     public void test2CookiesReset() {
-        server.enqueue(new MockResponse().setResponseCode(200).setHeader("Set-Cookie", TestResponses.UUID_COOKIE_RESET).setBody(TestResponses.banner()));
+        server.enqueue(new MockResponse().setResponseCode(200).setHeader("Set-Cookie", TestResponsesUT.UUID_COOKIE_RESET).setBody(TestResponsesUT.banner()));
 
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
@@ -79,7 +80,7 @@ public class WebviewUtilTest extends BaseViewAdTest {
 
         String wvcookie = WebviewUtil.getCookie();
         System.out.println(wvcookie);
-        assertEquals(getUUId2(wvcookie), getUUId2(TestResponses.UUID_COOKIE_RESET));
+        assertEquals(getUUId2(wvcookie), getUUId2(TestResponsesUT.UUID_COOKIE_RESET));
     }
 
     private static String getUUId2(String wvcookie) {

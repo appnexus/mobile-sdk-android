@@ -19,6 +19,11 @@ package com.appnexus.opensdk;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
+import com.appnexus.opensdk.ut.UTAdRequest;
+import com.appnexus.opensdk.ut.UTAdRequester;
+import com.appnexus.opensdk.ut.UTAdResponse;
+import com.appnexus.opensdk.ut.UTRequestParameters;
+import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.util.RoboelectricTestRunnerWithResources;
 import com.appnexus.opensdk.utils.Settings;
 import com.squareup.okhttp.mockwebserver.MockResponse;
@@ -26,26 +31,26 @@ import com.squareup.okhttp.mockwebserver.MockResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowWebView;
-import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class})
+                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RoboelectricTestRunnerWithResources.class)
-public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdRequester {
+public class AdRequestToAdRequesterTest extends BaseRoboTest implements UTAdRequester {
     boolean requesterFailed, requesterReceivedServerResponse, requesterReceivedAd;
-    AdRequest adRequest;
-    ServerResponse response;
-    RequestParameters requestParameters;
+    UTAdRequest adRequest;
+    UTAdResponse response;
+    UTRequestParameters requestParameters;
 
     @Override
     public void setup() {
@@ -53,7 +58,7 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
         requesterFailed = false;
         requesterReceivedServerResponse = false;
         requesterReceivedAd = false;
-        requestParameters = new RequestParameters(activity);
+        requestParameters = new UTRequestParameters(activity);
         Settings.getSettings().ua = "";
     }
 
@@ -64,15 +69,14 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
     }
 
     public void assertServerResponseHasAds(boolean hasAds) {
-        if (response != null) {
-            assertEquals(hasAds, response.containsAds());
+        if (response != null && response.getAdList()!=null) {
+            assertEquals(hasAds, response.getAdList().size()>0);
         }
     }
 
     public void setBannerRequestParams() {
         requestParameters.setPlacementID("0");
-        requestParameters.setAdWidth(320);
-        requestParameters.setAdHeight(50);
+        requestParameters.setPrimarySize(new AdSize(320,50));
         requestParameters.setMediaType(MediaType.BANNER);
     }
 
@@ -80,14 +84,14 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
         requestParameters.setPlacementID("0");
         ArrayList<AdSize> allowedSizes = new ArrayList<AdSize>();
         allowedSizes.add(new AdSize(300, 250));
-        requestParameters.setAllowedSizes(allowedSizes);
+        requestParameters.setSizes(allowedSizes);
+        requestParameters.setPrimarySize(new AdSize(1,1));
         requestParameters.setMediaType(MediaType.INTERSTITIAL);
     }
 
     public void setNativeRequestParams() {
         requestParameters.setPlacementID("0");
-        requestParameters.setAdWidth(1);
-        requestParameters.setAdHeight(1);
+        requestParameters.setPrimarySize(new AdSize(1,1));
         requestParameters.setMediaType(MediaType.NATIVE);
     }
 
@@ -95,8 +99,8 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
     public void testRequestBannerSucceeded() {
         setBannerRequestParams();
         // adRequest initialization goes here because getOwner is called in the constructor
-        adRequest = new AdRequest(this);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponses.banner()));
+        adRequest = new UTAdRequest(this);
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
         adRequest.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
@@ -109,21 +113,21 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
     @Test
     public void testRequestBlank() {
         setBannerRequestParams();
-        adRequest = new AdRequest(this);
+        adRequest = new UTAdRequest(this);
         // blanks are handled by requester
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponses.blank()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
         adRequest.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
-        assertReceiveServerResponseSuccessful(true);
-        assertServerResponseHasAds(false);
+        assertReceiveServerResponseSuccessful(false);
+        assertNull(response.getAdList());
     }
 
     @Test
     public void testRequestStatusError() {
         setBannerRequestParams();
-        adRequest = new AdRequest(this);
-        server.enqueue(new MockResponse().setResponseCode(404).setBody(TestResponses.banner()));
+        adRequest = new UTAdRequest(this);
+        server.enqueue(new MockResponse().setResponseCode(404).setBody(TestResponsesUT.banner()));
         adRequest.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
@@ -134,8 +138,8 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
     @Test
     public void testRequestNativeSucceeded() {
         setNativeRequestParams();
-        adRequest = new AdRequest(this);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponses.anNative()));
+        adRequest = new UTAdRequest(this);
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
         adRequest.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
@@ -148,10 +152,10 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
     public void testRequestInterstitialSucceeded() {
         setInterstitialRequestParams();
         // adRequest initialization goes here because getOwner is called in the constructor
-        adRequest = new AdRequest(this);
+        adRequest = new UTAdRequest(this);
 
         // Server response for banner and interstitial is the same
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponses.banner()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
         adRequest.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
@@ -163,14 +167,23 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
     long time;
 
     @Override
-    public void failed(ResultCode code) {
-        requesterFailed = true;
+    public void continueWaterfall(ResultCode code) {
+
     }
 
     @Override
-    public void onReceiveServerResponse(ServerResponse response) {
-        requesterReceivedServerResponse = true;
+    public void onReceiveUTResponse(UTAdResponse response){
+        if(response!=null && response.getAdList() != null && !response.getAdList().isEmpty()) {
+            requesterReceivedServerResponse = true;
+        }else{
+            failed(ResultCode.UNABLE_TO_FILL);
+        }
         this.response = response;
+    }
+
+    @Override
+    public void failed(ResultCode code) {
+        requesterFailed = true;
     }
 
     @Override
@@ -199,12 +212,17 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements AdReques
     }
 
     @Override
-    public LinkedList<MediatedAd> getMediatedAds() {
+    public boolean isHttpsEnabled(){
+        return false;
+    }
+
+    @Override
+    public LinkedList<BaseAdResponse> getAdList() {
         return null;
     }
 
     @Override
-    public RequestParameters getRequestParams() {
+    public UTRequestParameters getRequestParams() {
         return requestParameters;
     }
 }

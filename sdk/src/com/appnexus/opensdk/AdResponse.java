@@ -16,9 +16,11 @@
 
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
+
 public interface AdResponse {
     /**
-     * @return MediaType of the ad respone
+     * @return MediaType of the ad response
      */
     public MediaType getMediaType();
 
@@ -40,6 +42,13 @@ public interface AdResponse {
      * @return null if media type is not native
      */
     public NativeAdResponse getNativeAdResponse();
+
+    /**
+     * For Banner & Interstitial ads to retrieve  RTB, CSM or SSM ad response
+     *
+     * @return null if media type is not Banner
+     */
+    public BaseAdResponse getResponseData();
 
     /**
      * Call this to destroy the ad response

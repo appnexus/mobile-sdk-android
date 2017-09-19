@@ -43,7 +43,7 @@ public class TestUtil {
     public static void setData(boolean state, Context context) {
         ConnectivityManager dataManager;
         dataManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        Method dataMtd = null;
+        Method dataMtd;
         try {
             dataMtd = ConnectivityManager.class.getDeclaredMethod("setMobileDataEnabled", boolean.class);
             dataMtd.setAccessible(true);

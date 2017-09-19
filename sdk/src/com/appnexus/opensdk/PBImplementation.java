@@ -126,6 +126,10 @@ class PBImplementation {
             @Override
             public void run() {
                 byte[] imageBytes = BitmapToByte(captureView(view));
+                if (null == imageBytes) {
+                    Clog.e(Clog.baseLogTag, "PBImplementation.captureImage(:::) -- imageBytes is NULL.");
+                    return;
+                }
                 Clog.d(Clog.baseLogTag, "PITBULL image size: "+imageBytes.length+" bytes");
                 sendBroadcast(context, auctionInfo, imageBytes);
             }

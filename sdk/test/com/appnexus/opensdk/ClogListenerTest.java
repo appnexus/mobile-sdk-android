@@ -263,15 +263,14 @@ public class ClogListenerTest {
 
         @Override
         public String toString() {
-            final StringBuilder sb = new StringBuilder("FilterClogListener{");
-            sb.append("level=").append(level);
-            sb.append(", didReceiveV=").append(didReceiveV);
-            sb.append(", didReceiveD=").append(didReceiveD);
-            sb.append(", didReceiveI=").append(didReceiveI);
-            sb.append(", didReceiveW=").append(didReceiveW);
-            sb.append(", didReceiveE=").append(didReceiveE);
-            sb.append('}');
-            return sb.toString();
+            String sb = "FilterClogListener{" + "level=" + level +
+                    ", didReceiveV=" + didReceiveV +
+                    ", didReceiveD=" + didReceiveD +
+                    ", didReceiveI=" + didReceiveI +
+                    ", didReceiveW=" + didReceiveW +
+                    ", didReceiveE=" + didReceiveE +
+                    '}';
+            return sb;
         }
     }
 }

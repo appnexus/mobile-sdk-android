@@ -27,16 +27,15 @@ import com.squareup.okhttp.mockwebserver.MockResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowWebView;
-import org.robolectric.shadows.httpclient.FakeHttp;
 
 import static junit.framework.Assert.assertTrue;
 
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class})
+                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RoboelectricTestRunnerWithResources.class)
 public class MRAIDTest extends BaseViewAdTest {
 
@@ -55,7 +54,7 @@ public class MRAIDTest extends BaseViewAdTest {
     }
 
     private void loadMraidBanner(String testName) {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponses.mraidBanner(testName)));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mraidBanner(testName)));
         requestManager = new AdViewRequestManager(bannerAdView);
         requestManager.execute();
         // let AdFetcher queue AdRequest

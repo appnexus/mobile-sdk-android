@@ -15,4 +15,5 @@ bin/
 tests/gradle**
 **.properties
 !gradle.properties
+!gradle-wrapper.properties
 */projectFilesBackup

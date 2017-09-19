@@ -20,14 +20,12 @@ import android.content.MutableContextWrapper;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
-import com.appnexus.opensdk.instreamvideo.utils.ANConstants;
-import com.appnexus.opensdk.utils.AdvertistingIDUtil;
+import com.appnexus.opensdk.utils.AdvertisingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
@@ -55,7 +53,7 @@ class InstreamVideoView extends FrameLayout {
 
     void setup(Context context) {
 
-        AdvertistingIDUtil.retrieveAndSetAAID(context);
+        AdvertisingIDUtil.retrieveAndSetAAID(context);
 
         // Store self.context in the settings for errors
         Clog.setErrorContext(this.getContext());
@@ -111,9 +109,9 @@ class InstreamVideoView extends FrameLayout {
     }
 
     boolean playAd(ViewGroup layout) {
-        Clog.d(ANConstants.videoLogTag, "PlayAd called");
+        Clog.d(Clog.videoLogTag, "PlayAd called");
         if (!(layout instanceof FrameLayout || layout instanceof RelativeLayout)) {
-            Clog.e(ANConstants.videoLogTag, "Invalid container - a RelativeLayout or FrameLayout is required");
+            Clog.e(Clog.videoLogTag, "Invalid container - a RelativeLayout or FrameLayout is required");
         }
         updateMutableContext(layout);
         setupLayout(layout);
@@ -135,7 +133,7 @@ class InstreamVideoView extends FrameLayout {
 
 
     boolean clearSelf() {
-        Clog.d(ANConstants.videoLogTag, "clearSelf");
+        Clog.d(Clog.videoLogTag, "clearSelf");
         removeAllViews();
         ViewGroup parentViewGroup = (ViewGroup) getParent();
         if (parentViewGroup != null) {

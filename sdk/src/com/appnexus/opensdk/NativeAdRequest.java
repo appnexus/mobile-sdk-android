@@ -19,39 +19,46 @@ package com.appnexus.opensdk;
 import android.content.Context;
 import android.graphics.Bitmap;
 
-import com.appnexus.opensdk.utils.AdvertistingIDUtil;
+import com.appnexus.opensdk.ut.UTRequestParameters;
+import com.appnexus.opensdk.utils.AdvertisingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ImageService;
+
+import java.util.ArrayList;
 
 /**
  * Define the attributes used for requesting a native ad.
  */
 public class NativeAdRequest implements Ad {
     private NativeAdRequestListener listener;
-    private final RequestParameters requestParameters;
+    private final UTRequestParameters requestParameters;
     private final AdFetcher mAdFetcher;
     private final NativeAdDispatcher dispatcher;
     private boolean loadImage;
     private boolean loadIcon;
 
     public NativeAdRequest(Context context, String placementID) {
-        AdvertistingIDUtil.retrieveAndSetAAID(context);
-        requestParameters = new RequestParameters(context);
+        AdvertisingIDUtil.retrieveAndSetAAID(context);
+        requestParameters = new UTRequestParameters(context);
         requestParameters.setPlacementID(placementID);
         requestParameters.setMediaType(MediaType.NATIVE);
+        this.setAllowedSizes();
         mAdFetcher = new AdFetcher(this);
         mAdFetcher.setPeriod(-1);
         dispatcher = new NativeAdDispatcher();
+        Clog.setErrorContext(context.getApplicationContext());
     }
 
     public NativeAdRequest(Context context, String inventoryCode, int memberID) {
-        AdvertistingIDUtil.retrieveAndSetAAID(context);
-        requestParameters = new RequestParameters(context);
+        AdvertisingIDUtil.retrieveAndSetAAID(context);
+        requestParameters = new UTRequestParameters(context);
         requestParameters.setInventoryCodeAndMemberID(memberID, inventoryCode);
         requestParameters.setMediaType(MediaType.NATIVE);
+        this.setAllowedSizes();
         mAdFetcher = new AdFetcher(this);
         mAdFetcher.setPeriod(-1);
         dispatcher = new NativeAdDispatcher();
+        Clog.setErrorContext(context.getApplicationContext());
     }
 
     /**
@@ -75,7 +82,7 @@ public class NativeAdRequest implements Ad {
      * enable the in-app browser instead (a lightweight browser
      * that runs within your app).  The default value is false.
      *
-     * @param opensNativeBrowser
+     * @param opensNativeBrowser  (boolean)
      */
     public void setOpensNativeBrowser(boolean opensNativeBrowser) {
         Clog.d(Clog.nativeLogTag, Clog.getString(
@@ -106,6 +113,17 @@ public class NativeAdRequest implements Ad {
         Clog.d(Clog.nativeLogTag, Clog.getString(
                 R.string.get_placement_id, requestParameters.getPlacementID()));
         return requestParameters.getPlacementID();
+    }
+
+    protected void setAllowedSizes() {
+        Clog.d(Clog.nativeLogTag,
+                Clog.getString(R.string.set_allowed_sizes));
+        AdSize oneByOneSize = new AdSize(1,1);
+        ArrayList<AdSize> allowed_sizes = new ArrayList<AdSize>();
+        allowed_sizes.add(oneByOneSize);
+        requestParameters.setSizes(allowed_sizes);
+        requestParameters.setPrimarySize(oneByOneSize);
+        requestParameters.setAllowSmallerSizes(false);
     }
 
     /**
@@ -252,7 +270,7 @@ public class NativeAdRequest implements Ad {
         return this.listener;
     }
 
-    RequestParameters getRequestParameters() {
+    UTRequestParameters getRequestParameters() {
         return requestParameters;
     }
 

@@ -16,11 +16,13 @@
 
 package com.appnexus.opensdk.testviews;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
 public class DummyView {
+    @SuppressLint("StaticFieldLeak")
     public static View dummyView;
 
     public static View getDummyView(Context context) {

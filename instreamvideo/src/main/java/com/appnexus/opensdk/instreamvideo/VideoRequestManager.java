@@ -19,20 +19,19 @@ import android.os.AsyncTask;
 import android.os.Build;
 
 import com.appnexus.opensdk.AdResponse;
-import com.appnexus.opensdk.MediatedAd;
-import com.appnexus.opensdk.RequestParameters;
 import com.appnexus.opensdk.ResultCode;
-import com.appnexus.opensdk.ServerResponse;
-import com.appnexus.opensdk.instreamvideo.adresponsedata.BaseAdResponse;
-import com.appnexus.opensdk.instreamvideo.adresponsedata.CSMAdResponse;
-import com.appnexus.opensdk.instreamvideo.adresponsedata.CSMVideoAdResponse;
-import com.appnexus.opensdk.instreamvideo.adresponsedata.RTBAdResponse;
-import com.appnexus.opensdk.instreamvideo.ut.UTAdRequest;
-import com.appnexus.opensdk.instreamvideo.ut.UTAdResponse;
-import com.appnexus.opensdk.instreamvideo.utils.ANConstants;
+import com.appnexus.opensdk.ut.UTAdRequest;
+import com.appnexus.opensdk.ut.UTAdRequester;
+import com.appnexus.opensdk.ut.UTAdResponse;
+import com.appnexus.opensdk.ut.UTConstants;
+import com.appnexus.opensdk.ut.adresponse.CSMVASTAdResponse;
+import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
+import com.appnexus.opensdk.ut.UTRequestParameters;
+import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
+import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 
 import java.lang.ref.WeakReference;
@@ -42,7 +41,7 @@ import java.util.LinkedList;
 
 class VideoRequestManager implements UTAdRequester {
     protected UTAdRequest utAdRequest;
-    private LinkedList<MediatedAd> mediatedAds;
+    //private LinkedList<MediatedAd> mediatedAds;
     private LinkedList<BaseAdResponse> adList;
     private final WeakReference<VideoAd> owner;
     private String noAdUrl;
@@ -74,7 +73,7 @@ class VideoRequestManager implements UTAdRequester {
     }
 
     @Override
-    public RequestParameters getRequestParams() {
+    public UTRequestParameters getRequestParams() {
         VideoAd owner = this.owner.get();
         if (owner != null) {
             return owner.getRequestParameters();
@@ -84,33 +83,25 @@ class VideoRequestManager implements UTAdRequester {
     }
 
     @Override
-    public void failed(ResultCode code) {
+    public boolean isHttpsEnabled() {
+        return Settings.getSettings().isHttpsEnabled();
     }
 
     @Override
-    public void onReceiveUTResponse(UTAdResponse response, ResultCode resultCode) {
-        if(resultCode == ResultCode.SUCCESS) {
-            final VideoAd owner = this.owner.get();
-            if (owner != null) {
-                boolean responseHasAds = (response != null) && response.containsAds();
-                boolean ownerHasAds = (getAdList() != null) && !getAdList().isEmpty();
-                // no ads in the response and no old ads means no fill
-                if (!responseHasAds && !ownerHasAds) {
-                    Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
-                    owner.getAdDispatcher().onAdFailed(ResultCode.UNABLE_TO_FILL);
-                    return;
-                }
+    public void failed(ResultCode code) {
+        handleResponseFailure(code, null);
+    }
 
-                if (responseHasAds) {
-                    // if non-mediated ad is overriding the list,
-                    // this will be null and skip the loop for mediation
-                    setAdList(response.getAdList());
-                    noAdUrl = response.getNoAdUrl();
-                }
-                processNextAd();
-            }
-        }else{
-            handleResponseFailure(resultCode, null);
+    @Override
+    public void onReceiveUTResponse(UTAdResponse response) {
+        final VideoAd owner = this.owner.get();
+        if (owner != null && response != null && response.getAdList() != null && !response.getAdList().isEmpty()) {
+            setAdList(response.getAdList());
+            noAdUrl = response.getNoAdUrl();
+            processNextAd();
+        } else {
+            Clog.w(Clog.httpRespLogTag, Clog.getString(com.appnexus.opensdk.R.string.response_no_ads));
+            handleResponseFailure(ResultCode.UNABLE_TO_FILL, null);
         }
     }
 
@@ -130,78 +121,76 @@ class VideoRequestManager implements UTAdRequester {
         VideoAd owner = this.owner.get();
         if (getAdList() != null && !getAdList().isEmpty()) {
             BaseAdResponse baseAdResponse = popAd();
-            if (baseAdResponse.getContentSource().equalsIgnoreCase(ANConstants.RTB)) {
-                handleRTBResponse(owner, (RTBAdResponse) baseAdResponse);
-            } else if (baseAdResponse.getContentSource().equalsIgnoreCase(ANConstants.CSM_VIDEO)) {
-                handleCSMVideoAdResponse(owner, (CSMVideoAdResponse) baseAdResponse);
+            if (baseAdResponse.getContentSource().equalsIgnoreCase(UTConstants.RTB)) {
+                handleRTBResponse(owner, (RTBVASTAdResponse) baseAdResponse);
+            } else if (baseAdResponse.getContentSource().equalsIgnoreCase(UTConstants.CSM_VIDEO)) {
+                handleCSMVASTAdResponse(owner, (CSMVASTAdResponse) baseAdResponse);
             }
         }
     }
+
     @Override
-    public void currentAdFailed(ResultCode reason) {
-        Clog.d(ANConstants.videoLogTag,"Waterfall currentAdFailed");
-        if(getAdList() == null || getAdList().isEmpty()){
+    public void continueWaterfall(ResultCode reason) {
+        Clog.d(Clog.videoLogTag, "Waterfall continueWaterfall");
+        if (getAdList() == null || getAdList().isEmpty()) {
             handleResponseFailure(reason, noAdUrl);
-        }else {
+        } else {
             // Process next available ad response
             processNextAd();
         }
     }
 
 
+    private void handleRTBResponse(VideoAd owner, RTBVASTAdResponse rtbAdResponse) {
 
-
-    private void handleRTBResponse(VideoAd owner, RTBAdResponse rtbAdResponse) {
-        if(rtbAdResponse.getAdContent() != null) {
-            if (ANConstants.AD_TYPE_VIDEO.equalsIgnoreCase(rtbAdResponse.getAdType())) {
+        if (rtbAdResponse.getAdContent() != null) {
+            if (UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(rtbAdResponse.getAdType())) {
                 // Vast ads
-                handleVASTResponse(owner, rtbAdResponse);
+                handleRTBVASTResponse(owner, rtbAdResponse);
 
             } else {
-                currentAdFailed(ResultCode.UNABLE_TO_FILL);
+                continueWaterfall(ResultCode.UNABLE_TO_FILL);
             }
-        }else{
-            currentAdFailed(ResultCode.UNABLE_TO_FILL);
+        } else {
+            continueWaterfall(ResultCode.UNABLE_TO_FILL);
         }
     }
 
-    private void handleVASTResponse(final VideoAd owner, final RTBAdResponse rtbAdResponse) {
+    private void handleRTBVASTResponse(final VideoAd owner, final RTBVASTAdResponse rtbAdResponse) {
 
         if (!StringUtil.isEmpty(rtbAdResponse.getAdContent())) {
             fireNotifyUrlForVideo(rtbAdResponse);
-
-            if(rtbAdResponse !=null && rtbAdResponse.getAdContent()!=null) {
+            if (rtbAdResponse != null && rtbAdResponse.getAdContent() != null) {
                 initiateVastAdView(owner, rtbAdResponse);
-            }else{
-                currentAdFailed(ResultCode.UNABLE_TO_FILL);
-            }
-        }
-    }
-
-    private void handleCSMVideoAdResponse(VideoAd owner, CSMVideoAdResponse csmVideoAdResponse) {
-        if(csmVideoAdResponse !=null && csmVideoAdResponse.getAdJSONContent() != null) {
-            if (ANConstants.AD_TYPE_VIDEO.equalsIgnoreCase(csmVideoAdResponse.getAdType())) {
-                // @NOTE no need to fire notify URL here it is taken care by ASTMediationManager.js
-                //fireNotifyUrlForVideo(csmVideoAdResponse);
-
-                initiateVastAdView(owner, csmVideoAdResponse);
             } else {
-                currentAdFailed(ResultCode.UNABLE_TO_FILL);
+                continueWaterfall(ResultCode.UNABLE_TO_FILL);
             }
-        }else{
-            currentAdFailed(ResultCode.UNABLE_TO_FILL);
+        }
+    }
+
+    private void handleCSMVASTAdResponse(VideoAd owner, CSMVASTAdResponse csmvastAdResponse) {
+        if (csmvastAdResponse != null && csmvastAdResponse.getAdJSONContent() != null) {
+            if (UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(csmvastAdResponse.getAdType())) {
+                // @NOTE no need to fire notify URL here it is taken care by ASTMediationManager.js
+
+                initiateVastAdView(owner, csmvastAdResponse);
+            } else {
+                continueWaterfall(ResultCode.UNABLE_TO_FILL);
+            }
+        } else {
+            continueWaterfall(ResultCode.UNABLE_TO_FILL);
         }
     }
 
 
-    private void fireNotifyUrlForVideo(BaseAdResponse adResponse) {
-        if(ANConstants.AD_TYPE_VIDEO.equalsIgnoreCase(adResponse.getAdType())){
+    private void fireNotifyUrlForVideo(RTBVASTAdResponse adResponse) {
+        if (UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(adResponse.getAdType())) {
             fireTracker(adResponse.getNotifyUrl());
         }
     }
 
     private void fireTracker(final String trackerUrl) {
-        if(trackerUrl == null) return;
+        if (trackerUrl == null) return;
 
         new HTTPGet() {
             @Override
@@ -219,19 +208,16 @@ class VideoRequestManager implements UTAdRequester {
     }
 
 
-    @Override
-    public void onReceiveServerResponse(final ServerResponse response) {
-    }
-
     private void initiateVastAdView(final VideoAd owner, final BaseAdResponse response) {
-        Clog.d(ANConstants.videoLogTag,"Creating WebView for::"+response.getContentSource());
-        VideoWebView adVideoView = new VideoWebView(owner.getContext(),owner,this);
+        Clog.d(Clog.videoLogTag, "Creating WebView for::" + response.getContentSource());
+        VideoWebView adVideoView = new VideoWebView(owner.getContext(), owner, this);
         owner.getVideoAdView().setVideoWebView(adVideoView);
         adVideoView.loadAd(response);
     }
 
     @Override
-    public void onReceiveAd(AdResponse ad) {}
+    public void onReceiveAd(AdResponse ad) {
+    }
 
     @Override
     public void markLatencyStart() {
@@ -263,41 +249,18 @@ class VideoRequestManager implements UTAdRequester {
     }
 
 
-    @Override
-    public LinkedList<MediatedAd> getMediatedAds() {
-        return mediatedAds;
-    }
-
-
     public LinkedList<BaseAdResponse> getAdList() {
         return adList;
-    }
-
-    protected void setMediatedAds(LinkedList<MediatedAd> mediatedAds) {
-        this.mediatedAds = mediatedAds;
     }
 
     protected void setAdList(LinkedList<BaseAdResponse> adList) {
         this.adList = adList;
     }
 
-    // returns the first mediated ad if available
-    protected MediatedAd popMediatedAd() {
-        if ((mediatedAds != null) && (mediatedAds.getFirst() != null)) {
-            mediatedClasses.add(mediatedAds.getFirst().getClassName());
-            return mediatedAds.removeFirst();
-        }
-        return null;
-    }
 
     // returns the first mediated ad if available
     protected BaseAdResponse popAd() {
         if ((adList != null) && (adList.getFirst() != null)) {
-            if (adList.getFirst().getContentSource() != null && adList.getFirst().getContentSource().equalsIgnoreCase("csm")){
-                CSMAdResponse csmAdResponse = (CSMAdResponse)adList.getFirst();
-                mediatedClasses.add(csmAdResponse.getClassName());
-            }
-
             return adList.removeFirst();
         }
         return null;

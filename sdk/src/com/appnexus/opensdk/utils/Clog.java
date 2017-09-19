@@ -32,52 +32,59 @@ public class Clog {
      */
     @Deprecated
     public static boolean clogged = false;
+    private static final int MAX_LOG_TAG_LENGTH = 22;
 
     private static void logIfLoggable(String LogTag, String message, int level, Throwable tr){
-        //Allow logging if baseLogTag would allow it, or if this log tag
-        //specifically allows it.
-        if(Log.isLoggable(LogTag, level) || Log.isLoggable(baseLogTag, level) || Settings.getSettings().debug_mode) {
-            if (tr != null) {
-                switch (level) {
-                    case Log.VERBOSE:
-                        Log.v(LogTag, message, tr);
-                        break;
-                    case Log.DEBUG:
-                        Log.d(LogTag, message, tr);
-                        break;
-                    case Log.INFO:
-                        Log.i(LogTag, message, tr);
-                        break;
-                    case Log.WARN:
-                        Log.w(LogTag, message, tr);
-                        break;
-                    case Log.ERROR:
-                        Log.e(LogTag, message, tr);
-                        break;
-                    default:
-                        return;
-                }
-            } else {
-                switch (level) {
-                    case Log.VERBOSE:
-                        Log.v(LogTag, message);
-                        break;
-                    case Log.DEBUG:
-                        Log.d(LogTag, message);
-                        break;
-                    case Log.INFO:
-                        Log.i(LogTag, message);
-                        break;
-                    case Log.WARN:
-                        Log.w(LogTag, message);
-                        break;
-                    case Log.ERROR:
-                        Log.e(LogTag, message);
-                        break;
-                    default:
-                        return;
+        try {
+            //Allow logging if baseLogTag would allow it, or if this log tag
+            //specifically allows it.
+            LogTag = truncateLogTag(LogTag);
+            if (Log.isLoggable(LogTag, level) || Log.isLoggable(baseLogTag, level) || Settings.getSettings().debug_mode) {
+                if (tr != null) {
+                    switch (level) {
+                        case Log.VERBOSE:
+                            Log.v(LogTag, message, tr);
+                            break;
+                        case Log.DEBUG:
+                            Log.d(LogTag, message, tr);
+                            break;
+                        case Log.INFO:
+                            Log.i(LogTag, message, tr);
+                            break;
+                        case Log.WARN:
+                            Log.w(LogTag, message, tr);
+                            break;
+                        case Log.ERROR:
+                            Log.e(LogTag, message, tr);
+                            break;
+                        default:
+                            return;
+                    }
+                } else {
+                    switch (level) {
+                        case Log.VERBOSE:
+                            Log.v(LogTag, message);
+                            break;
+                        case Log.DEBUG:
+                            Log.d(LogTag, message);
+                            break;
+                        case Log.INFO:
+                            Log.i(LogTag, message);
+                            break;
+                        case Log.WARN:
+                            Log.w(LogTag, message);
+                            break;
+                        case Log.ERROR:
+                            Log.e(LogTag, message);
+                            break;
+                        default:
+                            return;
+                    }
                 }
             }
+        }catch(Exception e){
+            //Added to avoid any exception while logging creating a crash of application.
+            Log.e(baseLogTag,"Exception while logging",e);
         }
     }
 
@@ -165,6 +172,8 @@ public class Clog {
     public static String mraidLogTag = baseLogTag + "-MRAID";
     public static String browserLogTag = baseLogTag + "-APPBROWSER";
     public static String nativeLogTag = baseLogTag + "-NATIVE";
+    public static String visibilityLogTag = baseLogTag + "-VISIBILITY";
+    public static final String videoLogTag = Clog.baseLogTag + "-INSTREAMVIDEO";
 
     public static void setErrorContext(Context c) {
         Clog.clog_context = new WeakReference<Context>(c);
@@ -335,5 +344,12 @@ public class Clog {
                     listener.onReceiveMessage(level, LogTag, message);
             }
         }
+    }
+
+    private static String truncateLogTag(String tag) {
+        if (tag.length() > MAX_LOG_TAG_LENGTH) {
+            return tag.substring(0, MAX_LOG_TAG_LENGTH);
+        }
+        return tag;
     }
 }
