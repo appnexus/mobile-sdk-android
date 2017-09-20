@@ -19,6 +19,8 @@ package com.appnexus.opensdk.ut;
 import android.annotation.TargetApi;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.text.TextUtils;
+
 import com.appnexus.opensdk.R;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.SharedNetworkManager;
@@ -86,6 +88,10 @@ public class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
                 conn.setRequestProperty("Content-Type", "application/json");
                 conn.setRequestProperty("Accept", "application/json");
                 conn.setRequestProperty("User-Agent", Settings.getSettings().ua);
+                String cookieString = WebviewUtil.getCookie();
+                if (!TextUtils.isEmpty(cookieString)) {
+                    conn.setRequestProperty("Cookie",cookieString);
+                }
                 conn.setRequestMethod("POST");
 
                 conn.setConnectTimeout(Settings.HTTP_CONNECTION_TIMEOUT);
