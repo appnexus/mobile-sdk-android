@@ -1,3 +1,7 @@
+## 4.0
++ MS-2964 migrate from /mob with /ut/v2 endpoint in SDK 
++ MS-2898 Request with size bigger than the available space should be possible
+
 ## 3.5
 + Update AdColony SDK to v3.1.2
 + MS-3018 setResizeAdToFitContainer fails when BannerAdView width/height is 0
