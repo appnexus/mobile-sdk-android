@@ -53,6 +53,7 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
 
     private final NativeAd nativeAd;
     private final AdMobNativeSettings.AdMobNativeType type;
+    private Handler nativeExpireHandler;
 
     AdMobNativeAdResponse(NativeAd ad, AdMobNativeSettings.AdMobNativeType type) {
         this.nativeAd = ad;
@@ -87,8 +88,8 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
                 }
             }
         };
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(runnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
+        nativeExpireHandler = new Handler(Looper.getMainLooper());
+        nativeExpireHandler.postDelayed(runnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
         loadAssets();
     }
 
@@ -269,8 +270,9 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
                 // no way to pass on click action to listener
                 this.listener = listener;
                 registered = true;
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.removeCallbacks(runnable);
+                if(nativeExpireHandler !=null) {
+                    nativeExpireHandler.removeCallbacks(runnable);
+                }
                 return true;
             }
         }
@@ -288,7 +290,6 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
             Clog.d(Clog.mediationLogTag, "This NativeAdResponse has expired.");
         }
         if (adView != null) {
-            adView.setNativeAd(null);
             adView = null;
         }
         destroy();
@@ -296,8 +297,9 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
 
     @Override
     public void destroy() {
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.removeCallbacks(runnable);
-        handler.post(runnable);
+        if(nativeExpireHandler!=null) {
+            nativeExpireHandler.removeCallbacks(runnable);
+            nativeExpireHandler.post(runnable);
+        }
     }
 }
