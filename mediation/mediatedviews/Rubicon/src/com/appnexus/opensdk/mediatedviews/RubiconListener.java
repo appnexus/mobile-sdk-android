@@ -74,6 +74,11 @@ public class RubiconListener implements RFMAdViewListener{
                     this.mediatedAdViewController.onAdCollapsed();
                 }
                 break;
+            case AD_CLICKED:
+                if(this.mediatedAdViewController != null){
+                    this.mediatedAdViewController.onAdClicked();
+                }
+                break;
         }
     }
 
