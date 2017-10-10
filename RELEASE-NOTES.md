@@ -1,3 +1,8 @@
+## 4.1
++ MS-3070 Upgraded AdMob and fixed Memory leak issue with ad expiry handler in admob mediation
++ Updated Rubicon to 6.3.2
++ Updated Facebook to 4.26.0
+
 ## 4.0
 + MS-2964 migrate from /mob to /ut/v2 endpoint in SDK 
 + MS-2898 Request with size bigger than the available space should be possible
