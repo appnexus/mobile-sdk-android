@@ -44,6 +44,8 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
     private Bitmap coverImage;
     private Bitmap icon;
     private String socialContext;
+    private String fullText;
+    private String sponsporedBy;
     private Rating rating;
     private HashMap<String, Object> nativeElements = new HashMap<String, Object>();
     private boolean expired = false;
@@ -237,6 +239,16 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
     @Override
     public Rating getAdStarRating() {
         return rating;
+    }
+
+    @Override
+    public String getFullText() {
+        return fullText;
+    }
+
+    @Override
+    public String getSponsoredBy() {
+        return sponsporedBy;
     }
 
     @Override
