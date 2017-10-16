@@ -34,6 +34,7 @@ public class MediatedNativeSuccessful implements MediatedNativeAd {
     public static String TITLE = "test title";
     public static String DESCRIPTION = "test description";
     public static String ImageUrl = "test image url";
+    public static String SponsoredBy = "test sponsored by";
     public static boolean didPass;
 
     @Override
@@ -101,6 +102,12 @@ public class MediatedNativeSuccessful implements MediatedNativeAd {
                 public String getSocialContext() {
                     return null;
                 }
+
+                @Override
+                public String getSponsoredBy() { return SponsoredBy; }
+
+                @Override
+                public String getFullText() { return null; }
 
                 @Override
                 public Rating getAdStarRating() {
