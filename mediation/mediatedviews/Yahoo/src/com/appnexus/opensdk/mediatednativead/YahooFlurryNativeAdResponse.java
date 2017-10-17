@@ -43,8 +43,8 @@ public class YahooFlurryNativeAdResponse implements NativeAdResponse {
     private boolean expired = false;
     private boolean registered = false;
     private NativeAdEventListener listener;
-    private String fullText;
-    private String sponsporedBy;
+    private String fullText = "";
+    private String sponsporedBy = "";
     private Runnable expireRunnable;
     private View registeredView;
     private List<View> registeredClickables;

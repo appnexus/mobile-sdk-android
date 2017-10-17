@@ -39,8 +39,8 @@ public class FBNativeAdResponse implements NativeAdResponse {
     private Bitmap icon;
     private NativeAd nativeAd;
     private String socialContext;
-    private String fullText;
-    private String sponsporedBy;
+    private String fullText = "";
+    private String sponsporedBy = "";
     private Rating rating;
     private HashMap<String, Object> nativeElements = new HashMap<String, Object>();
     private boolean expired = false;

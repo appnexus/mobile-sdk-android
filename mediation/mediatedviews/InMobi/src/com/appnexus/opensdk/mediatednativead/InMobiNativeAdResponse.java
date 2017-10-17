@@ -45,8 +45,8 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
     private Bitmap icon;
     private Bitmap coverImage;
     private String socialContext;
-    private String fullText;
-    private String sponsporedBy;
+    private String fullText = "";
+    private String sponsporedBy = "";
     private Rating rating;
     private String landingUrl;
     private HashMap<String, Object> nativeElements = new HashMap<String, Object>();
