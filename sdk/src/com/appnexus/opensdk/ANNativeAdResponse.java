@@ -56,6 +56,8 @@ public class ANNativeAdResponse implements NativeAdResponse {
     private boolean expired = false;
     private ArrayList<String> imp_trackers;
     private ArrayList<String> click_trackers;
+    private String fullText;
+    private String sponsoredBy;
 
     private static final String KEY_TITLE = "title";
     private static final String KEY_DESCRIPTION = "description";
@@ -75,6 +77,8 @@ public class ANNativeAdResponse implements NativeAdResponse {
     private static final String KEY_RATING_VALUE = "value";
     private static final String KEY_RATING_SCALE = "scale";
     private static final String KEY_CUSTOM = "custom";
+    private static final String KEY_SPONSORED_BY = "sponsored_by";
+
 
     private Runnable expireRunnable = new Runnable() {
         @Override
@@ -145,6 +149,11 @@ public class ANNativeAdResponse implements NativeAdResponse {
         response.callToAction = JsonUtil.getJSONString(metaData, KEY_CTA);
         response.clickUrl = JsonUtil.getJSONString(metaData, KEY_CLICK_URL);
         response.clickFallBackUrl = JsonUtil.getJSONString(metaData, KEY_CLICK_FALLBACK_URL);
+
+        response.sponsoredBy = JsonUtil.getJSONString(metaData, KEY_SPONSORED_BY);
+        response.fullText = JsonUtil.getJSONString(metaData, KEY_FULL_TEXT);
+
+
         JSONObject rating = JsonUtil.getJSONObject(metaData, KEY_RATING);
         response.rating = new Rating(
                 JsonUtil.getJSONDouble(rating, KEY_RATING_VALUE),
@@ -221,6 +230,12 @@ public class ANNativeAdResponse implements NativeAdResponse {
     public String getSocialContext() {
         return socialContext;
     }
+
+    @Override
+    public String getFullText() { return fullText; }
+
+    @Override
+    public String getSponsoredBy() { return sponsoredBy; }
 
     @Override
     public Rating getAdStarRating() {
