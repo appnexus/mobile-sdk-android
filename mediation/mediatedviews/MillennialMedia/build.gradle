@@ -1,5 +1,5 @@
 // Project Properties
-version = "6.3.1" // supported Millennial version
+version = "6.6.1" // supported Millennial version
 
 apply plugin: 'com.android.library'
 
