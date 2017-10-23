@@ -122,6 +122,17 @@ public interface NativeAdResponse {
      */
     public Rating getAdStarRating();
 
+
+    /**
+     * Retrieve full text from native ad response
+     */
+    public String getFullText();
+
+    /**
+     * Retrieve sponspored by text from native ad response
+     */
+    public String getSponsoredBy();
+
     /**
      * Determine if this Response has expired
      *

@@ -43,6 +43,8 @@ public class YahooFlurryNativeAdResponse implements NativeAdResponse {
     private boolean expired = false;
     private boolean registered = false;
     private NativeAdEventListener listener;
+    private String fullText = "";
+    private String sponsporedBy = "";
     private Runnable expireRunnable;
     private View registeredView;
     private List<View> registeredClickables;
@@ -203,6 +205,16 @@ public class YahooFlurryNativeAdResponse implements NativeAdResponse {
     @Override
     public Rating getAdStarRating() {
         return rating;
+    }
+
+    @Override
+    public String getFullText() {
+        return fullText;
+    }
+
+    @Override
+    public String getSponsoredBy() {
+        return sponsporedBy;
     }
 
     @Override
