@@ -409,6 +409,11 @@ public class NativeAdRequest implements Ad {
         }
 
         @Override
+        public boolean shouldInterceptAdClick(String url) {
+            return false;
+        }
+
+        @Override
         public void onAppEvent(String name, String data) {
 
         }

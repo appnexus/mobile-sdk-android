@@ -90,5 +90,11 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener {
         adClicked = true;
     }
 
+    @Override
+    public boolean shouldInterceptAdClick(AdView adview, String url) {
+        Clog.w(TestUtil.testLogTag, "BaseViewAdTest shouldInterceptAdClick");
+        return false;
+    }
+
 }
 

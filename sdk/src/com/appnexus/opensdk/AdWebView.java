@@ -470,6 +470,10 @@ class AdWebView extends WebView implements Displayable {
 
     // handles browser logic for shouldOverrideUrl
     void loadURLInCorrectBrowser(String url) {
+        if (adView.getAdDispatcher().shouldInterceptAdClick(url)) {
+            return;
+        }
+
         if (!adView.getOpensNativeBrowser()) {
 
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.opening_inapp));

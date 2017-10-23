@@ -331,6 +331,11 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
         }
 
         @Override
+        public boolean shouldInterceptAdClick(String url) {
+            return false;
+        }
+
+        @Override
         public void onAppEvent(String name, String data) {
             appEventOccurred = true;
             eventName = name;
