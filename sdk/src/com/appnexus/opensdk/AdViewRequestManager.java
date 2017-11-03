@@ -125,7 +125,7 @@ class AdViewRequestManager extends RequestManager {
         // If we're about to dispatch a creative to a banner
         // that has been resized by ad stretching, reset its size
         AdView owner = this.owner.get();
-        if (getAdList() != null && !getAdList().isEmpty()) {
+        if (owner != null && getAdList() != null && !getAdList().isEmpty()) {
             BaseAdResponse baseAdResponse = popAd();
             if (baseAdResponse.getContentSource().equalsIgnoreCase(UTConstants.RTB)) {
                 handleRTBResponse(owner, (RTBHTMLAdResponse) baseAdResponse);

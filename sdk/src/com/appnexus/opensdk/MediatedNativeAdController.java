@@ -184,7 +184,9 @@ public class MediatedNativeAdController {
         // don't call the listener here. the requester will call the listener
         // at the end of the waterfall
         UTAdRequester requester = this.requester.get();
-        requester.continueWaterfall(reason);
+        if(requester != null) {
+            requester.continueWaterfall(reason);
+        }
     }
 
 
