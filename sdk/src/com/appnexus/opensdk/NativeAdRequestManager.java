@@ -63,10 +63,10 @@ class NativeAdRequestManager extends RequestManager {
 
     @Override
     public void continueWaterfall(ResultCode reason) {
-        Clog.d(Clog.baseLogTag,"Waterfall continueWaterfall");
-        if(getAdList() == null || getAdList().isEmpty()){
+        Clog.d(Clog.baseLogTag, "Waterfall continueWaterfall");
+        if (getAdList() == null || getAdList().isEmpty()) {
             failed(reason);
-        }else {
+        } else {
             // Process next available ad response
             processNextAd();
         }
@@ -87,7 +87,7 @@ class NativeAdRequestManager extends RequestManager {
         super.onReceiveUTResponse(response);
         final NativeAdRequest owner = this.owner.get();
         if (owner != null && response != null) {
-            if(response.getAdList() != null && !response.getAdList().isEmpty()){
+            if (response.getAdList() != null && !response.getAdList().isEmpty()) {
                 setAdList(response.getAdList());
                 processNextAd();
             } else {
@@ -113,55 +113,53 @@ class NativeAdRequestManager extends RequestManager {
     }
 
     private void processNextAd() {
-        if (getAdList() != null && !getAdList().isEmpty()) {
-            BaseAdResponse baseAdResponse = popAd();
-            final NativeAdRequest owner = this.owner.get();
-            if (owner != null) {
-                if (baseAdResponse instanceof RTBNativeAdResponse) {
-                    final ANNativeAdResponse nativeAdResponse = ((RTBNativeAdResponse) baseAdResponse).getNativeAdResponse();
-                    nativeAdResponse.openNativeBrowser(owner.getOpensNativeBrowser());
-                    onReceiveAd(new AdResponse() {
-                        @Override
-                        public MediaType getMediaType() {
-                            return MediaType.NATIVE;
-                        }
-
-                        @Override
-                        public boolean isMediated() {
-                            return false;
-                        }
-
-                        @Override
-                        public Displayable getDisplayable() {
-                            return null;
-                        }
-
-                        @Override
-                        public NativeAdResponse getNativeAdResponse() {
-                            return nativeAdResponse;
-                        }
-
-                        @Override
-                        public BaseAdResponse getResponseData() {
-                            return null;
-                        }
-
-                        @Override
-                        public void destroy() {
-                            nativeAdResponse.destroy();
-                        }
-                    });
-
-                } else if (baseAdResponse.getContentSource().equalsIgnoreCase(UTConstants.CSM)) {
-                    controller = MediatedNativeAdController.create((CSMSDKAdResponse) baseAdResponse, NativeAdRequestManager.this);
-                } else {
-                    Clog.e(Clog.baseLogTag, "processNextAd failed:: invalid content source::" + baseAdResponse.getContentSource());
-                    continueWaterfall(ResultCode.INVALID_REQUEST);
-                }
-            }
+        final NativeAdRequest owner = this.owner.get();
+        if (owner == null || getAdList() == null || getAdList().isEmpty()) {
+            // NativeAdRequest has been garbage collected or AdList is Empty of null just return.
+            return;
         }
 
+        BaseAdResponse baseAdResponse = popAd();
+        if (baseAdResponse instanceof RTBNativeAdResponse) {
+            final ANNativeAdResponse nativeAdResponse = ((RTBNativeAdResponse) baseAdResponse).getNativeAdResponse();
+            nativeAdResponse.openNativeBrowser(owner.getOpensNativeBrowser());
+            onReceiveAd(new AdResponse() {
+                @Override
+                public MediaType getMediaType() {
+                    return MediaType.NATIVE;
+                }
+
+                @Override
+                public boolean isMediated() {
+                    return false;
+                }
+
+                @Override
+                public Displayable getDisplayable() {
+                    return null;
+                }
+
+                @Override
+                public NativeAdResponse getNativeAdResponse() {
+                    return nativeAdResponse;
+                }
+
+                @Override
+                public BaseAdResponse getResponseData() {
+                    return null;
+                }
+
+                @Override
+                public void destroy() {
+                    nativeAdResponse.destroy();
+                }
+            });
+
+        } else if (baseAdResponse.getContentSource().equalsIgnoreCase(UTConstants.CSM)) {
+            controller = MediatedNativeAdController.create((CSMSDKAdResponse) baseAdResponse, NativeAdRequestManager.this);
+        } else {
+            Clog.e(Clog.baseLogTag, "processNextAd failed:: invalid content source::" + baseAdResponse.getContentSource());
+            continueWaterfall(ResultCode.INVALID_REQUEST);
+        }
     }
-
-
 }
