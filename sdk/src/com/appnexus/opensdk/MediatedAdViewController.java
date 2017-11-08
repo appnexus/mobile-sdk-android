@@ -266,7 +266,9 @@ public abstract class MediatedAdViewController {
         hasFailed = true;
         finishController();
         UTAdRequester requester = this.caller_requester.get();
-        requester.continueWaterfall(reason);
+        if(requester != null) {
+            requester.continueWaterfall(reason);
+        }
     }
 
     /**
