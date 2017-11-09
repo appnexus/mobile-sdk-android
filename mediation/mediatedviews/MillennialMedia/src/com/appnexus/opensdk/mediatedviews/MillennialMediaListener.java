@@ -16,6 +16,9 @@
 
 package com.appnexus.opensdk.mediatedviews;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.appnexus.opensdk.MediatedAdViewController;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.utils.Clog;
@@ -30,6 +33,7 @@ class MillennialMediaListener implements InlineAd.InlineListener, InterstitialAd
 
     private final MediatedAdViewController mediatedAdViewController;
     private final String className;
+    private static final Handler handler = new Handler(Looper.getMainLooper());
 
     public MillennialMediaListener(MediatedAdViewController mediatedAdViewController, String className) {
         this.mediatedAdViewController = mediatedAdViewController;
@@ -49,57 +53,89 @@ class MillennialMediaListener implements InlineAd.InlineListener, InterstitialAd
         Clog.e(Clog.mediationLogTag, className + " - " + s);
     }
 
+    private static void postOnUiThread(Runnable runnable) {
+        handler.post(runnable);
+    }
+
     // InLine Listener
 
     @Override
     public void onRequestSucceeded(InlineAd inlineAd) {
         printToClog("requestSucceeded: " + inlineAd);
-        if (mediatedAdViewController != null)
-            mediatedAdViewController.onAdLoaded();
+        if (mediatedAdViewController != null) {
+            postOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mediatedAdViewController.onAdLoaded();
+                }
+            });
+        }
     }
 
     @Override
     public void onRequestFailed(InlineAd inlineAd, InlineAd.InlineErrorStatus inlineErrorStatus) {
         printToClog("requestFailed: " + inlineAd + " with error: " + inlineErrorStatus.getDescription());
+        final ResultCode resultCode = getResultCode(inlineErrorStatus.getErrorCode());
+        if (mediatedAdViewController != null){
+            postOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mediatedAdViewController.onAdFailed(resultCode);
+                }
+            });
+        }
 
-        if (mediatedAdViewController != null)
-            mediatedAdViewController.onAdFailed(getResultCode(inlineErrorStatus.getErrorCode()));
     }
 
     @Override
     public void onClicked(InlineAd inlineAd) {
         if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdClicked();
+            postOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mediatedAdViewController.onAdClicked();
+                }
+            });
         }
     }
 
     @Override
     public void onResize(InlineAd inlineAd, int i, int i1) {
-
+        printToClog("onResize: "+inlineAd);
     }
 
     @Override
     public void onResized(InlineAd inlineAd, int i, int i1, boolean b) {
-
+        printToClog("onResized: "+inlineAd);
     }
 
     @Override
     public void onExpanded(InlineAd inlineAd) {
         if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdExpanded();
+            postOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mediatedAdViewController.onAdExpanded();
+                }
+            });
         }
     }
 
     @Override
     public void onCollapsed(InlineAd inlineAd) {
         if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdCollapsed();
+            postOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mediatedAdViewController.onAdCollapsed();
+                }
+            });
         }
     }
 
     @Override
     public void onAdLeftApplication(InlineAd inlineAd) {
-
+        printToClog("onAdLeftApplication: "+inlineAd);
     }
 
     // Interstitial Ad Listener
@@ -107,54 +143,79 @@ class MillennialMediaListener implements InlineAd.InlineListener, InterstitialAd
     @Override
     public void onLoaded(InterstitialAd interstitialAd) {
         if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdLoaded();
+            postOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mediatedAdViewController.onAdLoaded();
+                }
+            });
         }
 
     }
 
     @Override
     public void onLoadFailed(InterstitialAd interstitialAd, InterstitialAd.InterstitialErrorStatus interstitialErrorStatus) {
+        final ResultCode resultCode = getResultCode(interstitialErrorStatus.getErrorCode());
         if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdFailed(getResultCode(interstitialErrorStatus.getErrorCode()));
+            postOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mediatedAdViewController.onAdFailed(resultCode);
+                }
+            });
         }
-
     }
 
     @Override
     public void onShown(InterstitialAd interstitialAd) {
         if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdExpanded();
+            postOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mediatedAdViewController.onAdExpanded();
+                }
+            });
         }
 
     }
 
     @Override
     public void onShowFailed(InterstitialAd interstitialAd, InterstitialAd.InterstitialErrorStatus interstitialErrorStatus) {
-
+        printToClog("onShowFailed: "+interstitialAd + "interstitialErrorStatus: "+interstitialErrorStatus );
     }
 
     @Override
     public void onClosed(InterstitialAd interstitialAd) {
         if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdCollapsed();
+            postOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mediatedAdViewController.onAdCollapsed();
+                }
+            });
         }
     }
 
     @Override
     public void onClicked(InterstitialAd interstitialAd) {
         if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdClicked();
+            postOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mediatedAdViewController.onAdClicked();
+                }
+            });
         }
     }
 
     @Override
     public void onAdLeftApplication(InterstitialAd interstitialAd) {
-
+        printToClog("onAdLeftApplication: "+interstitialAd);
     }
 
     @Override
     public void onExpired(InterstitialAd interstitialAd) {
-
+        printToClog("onExpired: "+interstitialAd);
     }
 
     private ResultCode getResultCode(int error) {
