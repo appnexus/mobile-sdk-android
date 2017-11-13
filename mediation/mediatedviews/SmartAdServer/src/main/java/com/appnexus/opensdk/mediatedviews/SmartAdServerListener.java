@@ -15,6 +15,9 @@
  */
 package com.appnexus.opensdk.mediatedviews;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.appnexus.opensdk.MediatedAdViewController;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.utils.Clog;
@@ -30,6 +33,7 @@ public class SmartAdServerListener implements SASAdView.AdResponseHandler {
 
     // For SMART there is no seperation of Load and Show so no API for detecting if AdReady this boolean is for the same.
     private boolean isAdLoaded = false;
+    private static final Handler handler = new Handler(Looper.getMainLooper());
 
 
     public SmartAdServerListener(MediatedAdViewController mediatedAdViewController, String className) {
@@ -37,53 +41,82 @@ public class SmartAdServerListener implements SASAdView.AdResponseHandler {
         this.className = className;
     }
 
+    private static void postOnUiThread(Runnable runnable) {
+        handler.post(runnable);
+    }
+
     @Override
     public void adLoadingCompleted(SASAdElement sasAdElement) {
         Clog.i(Clog.mediationLogTag, "SmartAdServer: Ad loading completed");
         if (mediatedAdViewController != null) {
             setAdLoaded(true);
-            mediatedAdViewController.onAdLoaded();
+            postOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mediatedAdViewController.onAdLoaded();
+                }
+            });
         }
     }
 
     @Override
     public void adLoadingFailed(Exception e) {
         Clog.i(Clog.mediationLogTag, "SmartAdServer: Ad loading failed: " + e.getMessage());
-        ResultCode code = ResultCode.INTERNAL_ERROR;
+        final ResultCode code;
         if (e instanceof SASNoAdToDeliverException) {
             // no ad to deliver
             code = ResultCode.UNABLE_TO_FILL;
         } else if (e instanceof SASAdTimeoutException) {
             // ad request timeout translates to  network error
-            code=ResultCode.NETWORK_ERROR;
+            code = ResultCode.NETWORK_ERROR;
+        } else {
+            code = ResultCode.INTERNAL_ERROR;
         }
         if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdFailed(code);
+            postOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mediatedAdViewController.onAdFailed(code);
+                }
+            });
         }
     }
 
 
-
-
-    public void onClicked(){
+    public void onClicked() {
         Clog.i(Clog.mediationLogTag, "SmartAdServer: Ad clicked");
         if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdClicked();
+            postOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mediatedAdViewController.onAdClicked();
+                }
+            });
         }
     }
 
-    public void onExpanded(){
+    public void onExpanded() {
         Clog.i(Clog.mediationLogTag, "SmartAdServer: Ad Expanded");
         if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdExpanded();
+            postOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mediatedAdViewController.onAdExpanded();
+                }
+            });
         }
     }
 
 
-    public void onCollapsed(){
+    public void onCollapsed() {
         Clog.i(Clog.mediationLogTag, "SmartAdServer: Ad Collapsed");
         if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdCollapsed();
+            postOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mediatedAdViewController.onAdCollapsed();
+                }
+            });
         }
     }
 
