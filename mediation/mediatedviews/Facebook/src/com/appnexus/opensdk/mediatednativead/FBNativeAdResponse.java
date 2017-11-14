@@ -47,6 +47,7 @@ public class FBNativeAdResponse implements NativeAdResponse {
     private boolean registered = false;
     private NativeAdEventListener listener;
     private Runnable runnable;
+    private Handler fbNativeExpireHandler;
 
     public FBNativeAdResponse(NativeAd ad) {
         this.nativeAd = ad;
@@ -73,8 +74,8 @@ public class FBNativeAdResponse implements NativeAdResponse {
                 }
             }
         };
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(runnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
+        fbNativeExpireHandler = new Handler(Looper.getMainLooper());
+        fbNativeExpireHandler.postDelayed(runnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
     }
 
     @Override
@@ -190,8 +191,9 @@ public class FBNativeAdResponse implements NativeAdResponse {
         if (nativeAd != null && !registered && !expired) {
             nativeAd.registerViewForInteraction(view);
             registered = true;
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.removeCallbacks(runnable);
+            if(fbNativeExpireHandler!=null) {
+                fbNativeExpireHandler.removeCallbacks(runnable);
+            }
         }
         this.listener = listener;
         return registered;
@@ -202,8 +204,9 @@ public class FBNativeAdResponse implements NativeAdResponse {
         if (nativeAd != null && !registered && !expired) {
             nativeAd.registerViewForInteraction(view, clickables);
             registered = true;
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.removeCallbacks(runnable);
+            if(fbNativeExpireHandler!=null) {
+                fbNativeExpireHandler.removeCallbacks(runnable);
+            }
         }
         this.listener = listener;
         return registered;
@@ -224,8 +227,9 @@ public class FBNativeAdResponse implements NativeAdResponse {
 
     @Override
     public void destroy() {
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.removeCallbacks(runnable);
-        handler.post(runnable);
+        if(fbNativeExpireHandler!=null) {
+            fbNativeExpireHandler.removeCallbacks(runnable);
+            fbNativeExpireHandler.post(runnable);
+        }
     }
 }

@@ -46,6 +46,7 @@ public class YahooFlurryNativeAdResponse implements NativeAdResponse {
     private String fullText = "";
     private String sponsporedBy = "";
     private Runnable expireRunnable;
+    private Handler yHNativeExpireHandler;
     private View registeredView;
     private List<View> registeredClickables;
 
@@ -138,8 +139,8 @@ public class YahooFlurryNativeAdResponse implements NativeAdResponse {
                 registeredClickables = null;
             }
         };
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(expireRunnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
+        yHNativeExpireHandler = new Handler(Looper.getMainLooper());
+        yHNativeExpireHandler.postDelayed(expireRunnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
     }
 
     @Override
@@ -229,8 +230,9 @@ public class YahooFlurryNativeAdResponse implements NativeAdResponse {
             adNative.setTrackingView(view);
             this.registeredView = view;
             // remove queued expiration steps on the SDK side if assets are being used.
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.removeCallbacks(expireRunnable);
+            if(yHNativeExpireHandler!=null) {
+                yHNativeExpireHandler.removeCallbacks(expireRunnable);
+            }
             registered = true;
         }
         return registered;
@@ -261,8 +263,10 @@ public class YahooFlurryNativeAdResponse implements NativeAdResponse {
 
     @Override
     public void destroy() {
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.removeCallbacks(expireRunnable);
+        if(yHNativeExpireHandler!=null) {
+            yHNativeExpireHandler.removeCallbacks(expireRunnable);
+            yHNativeExpireHandler.post(expireRunnable);
+        }
         expired = true;
     }
 }

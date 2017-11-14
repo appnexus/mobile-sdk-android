@@ -53,6 +53,7 @@ public class MoPubNativeAdResponse implements NativeAdResponse {
     private Runnable runnable;
     private View registeredView;
     private List<View> registeredClickables;
+    private Handler mopubNativeExpireHandler;
 
 
     public MoPubNativeAdResponse() {
@@ -77,8 +78,8 @@ public class MoPubNativeAdResponse implements NativeAdResponse {
                 registeredClickables = null;
             }
         };
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(runnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
+        mopubNativeExpireHandler = new Handler(Looper.getMainLooper());
+        mopubNativeExpireHandler.postDelayed(runnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
     }
 
     boolean setResources(NativeAd response) {
@@ -202,8 +203,9 @@ public class MoPubNativeAdResponse implements NativeAdResponse {
         if (mopubNativeAd != null && !registered && !expired) {
             mopubNativeAd.prepare(view);
             registeredView = view;
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.removeCallbacks(runnable);
+            if(mopubNativeExpireHandler!=null){
+                mopubNativeExpireHandler.removeCallbacks(runnable);
+            }
             registered = true;
         }
         this.listener = listener;
@@ -218,8 +220,9 @@ public class MoPubNativeAdResponse implements NativeAdResponse {
             for (View clickable : clickables) {
                 mopubNativeAd.prepare(clickable);
             }
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.removeCallbacks(runnable);
+            if(mopubNativeExpireHandler!=null) {
+                mopubNativeExpireHandler.removeCallbacks(runnable);
+            }
             registered = true;
         }
         this.listener = listener;
@@ -260,8 +263,9 @@ public class MoPubNativeAdResponse implements NativeAdResponse {
 
     @Override
     public void destroy() {
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.removeCallbacks(runnable);
-        handler.post(runnable);
+        if(mopubNativeExpireHandler!=null) {
+            mopubNativeExpireHandler.removeCallbacks(runnable);
+            mopubNativeExpireHandler.post(runnable);
+        }
     }
 }
