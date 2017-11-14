@@ -975,9 +975,9 @@ public abstract class AdView extends FrameLayout implements Ad {
                         // Banner OnAdLoaded and if View is attached to window Impression is counted.
                         if (getMediaType().equals(MediaType.BANNER)) {
                             if (isAdViewAttachedToWindow()) {
-                                    if (impressionTrackers != null && impressionTrackers.size() > 0) {
-                                        fireImpressionTracker();
-                                    }
+                                if (impressionTrackers != null && impressionTrackers.size() > 0) {
+                                    fireImpressionTracker();
+                                }
                             }
                         }
 
@@ -1055,7 +1055,7 @@ public abstract class AdView extends FrameLayout implements Ad {
         super.onAttachedToWindow();
         isAttachedToWindow = true;
         // OnAttaced to Window and Impresion tracker is non null then fire impression.
-        if (getMediaType().equals(MediaType.BANNER) &&  impressionTrackers != null && impressionTrackers.size() > 0) {
+        if (getMediaType().equals(MediaType.BANNER) && impressionTrackers != null && impressionTrackers.size() > 0) {
             fireImpressionTracker();
         }
 
@@ -1070,9 +1070,14 @@ public abstract class AdView extends FrameLayout implements Ad {
     void fireImpressionTracker() {
         synchronized (impressionTrackers) {
             // Just to be fail safe since we are making it to null below to mark it as beign used.
+            SharedNetworkManager nm = SharedNetworkManager.getInstance(getContext());
             if (impressionTrackers != null && impressionTrackers.size() > 0) {
                 for (String url : impressionTrackers) {
-                    fireImpressionTracker(url);
+                    if (nm.isConnected(getContext())) {
+                        fireImpressionTracker(url);
+                    } else {
+                        nm.addURL(url, getContext());
+                    }
                 }
                 // Making it to null so that there is no duplicate firing. We fire exactly only once.
                 impressionTrackers = null;

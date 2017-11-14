@@ -21,6 +21,7 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.HttpErrorCode;
@@ -69,6 +70,7 @@ public class SharedNetworkManager {
     }
 
     synchronized void addURL(String url, Context context) {
+        Clog.d(Clog.baseLogTag, "SharedNetworkManager adding URL for Network Retry");
         urls.add(new UrlObject(url));
         startTimer(context);
     }
@@ -96,6 +98,9 @@ public class SharedNetworkManager {
                                                         (!response.getSucceeded() && response.getErrorCode() == HttpErrorCode.CONNECTION_FAILURE)) {
                                                     urlObject.retryTimes += 1;
                                                     urls.add(urlObject);
+                                                }else{
+                                                    // Nothing more to do just print logs and exit.
+                                                    Clog.d(Clog.baseLogTag, "SharedNetworkManager Retry Successful");
                                                 }
 
                                             }
