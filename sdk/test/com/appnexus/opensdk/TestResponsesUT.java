@@ -21,11 +21,12 @@ import java.util.ArrayList;
 public class TestResponsesUT {
 
     public static final String RESPONSE_URL_PATH = "response_url?";
+    public static final String IMPRESSION_URL_PATH = "impression_url?";
     public static final String NO_AD_URL_PATH = "no_ad?";
     public static final String SSM_URL_PATH = "ssm?";
     public static final String REQUEST_URL = "http://mobile.devnxs.net/request_url?";
     public static String NO_AD_URL = "http://mobile.devnxs.net/no_ad_url?";
-    public static final String IMPRESSION_URL = "http://mobile.devnxs.net/impression_url?";
+    public static String IMPRESSION_URL = "";
     public static String RESPONSE_URL = "";
     public static final String NO_BID_TRUE = "true";
     public static final String NO_BID_FALSE = "false";
@@ -35,6 +36,7 @@ public class TestResponsesUT {
         RESPONSE_URL = url+RESPONSE_URL_PATH;
         NO_AD_URL = url+NO_AD_URL_PATH;
         SSM_URL= url+SSM_URL_PATH;
+        IMPRESSION_URL = url+IMPRESSION_URL_PATH;
     }
 
     public static final String DUMMY_BANNER_CONTENT = "<script type=\\\"text/javascript\\\">document.write('<div style=\\\"background-color:#EF8200;height:1000px;width:1000px;\\\"><p>%s</p></div>');</script>";
