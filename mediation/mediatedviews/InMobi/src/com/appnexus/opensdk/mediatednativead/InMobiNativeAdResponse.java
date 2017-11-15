@@ -57,6 +57,7 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
     private View registeredView;
     private List<View> registeredClickables;
     private View.OnClickListener clickListener;
+    private Handler inMobiNativeExpireHandler;
 
     public InMobiNativeAdResponse() {
         runnable = new Runnable() {
@@ -77,15 +78,15 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
                     InMobiNative.unbind(registeredView);
                     imNative = null;
                 }
-                if(nativeElements != null && !nativeElements.isEmpty()){
+                if (nativeElements != null && !nativeElements.isEmpty()) {
                     nativeElements.clear();
                 }
                 registeredView = null;
                 registeredClickables = null;
             }
         };
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(runnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
+        inMobiNativeExpireHandler = new Handler(Looper.getMainLooper());
+        inMobiNativeExpireHandler.postDelayed(runnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
 
     }
 
@@ -215,8 +216,9 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
             view.setOnClickListener(clickListener);
             registeredView = view;
             registered = true;
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.removeCallbacks(runnable);
+            if (inMobiNativeExpireHandler != null) {
+                inMobiNativeExpireHandler.removeCallbacks(runnable);
+            }
         }
         this.nativeAdEventlistener = listener;
         return registered;
@@ -232,8 +234,9 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
             registeredView = view;
             registeredClickables = clickables;
             registered = true;
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.removeCallbacks(runnable);
+            if (inMobiNativeExpireHandler != null) {
+                inMobiNativeExpireHandler.removeCallbacks(runnable);
+            }
         }
         this.nativeAdEventlistener = listener;
         return registered;
@@ -249,9 +252,10 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
 
     @Override
     public void destroy() {
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.removeCallbacks(runnable);
-        handler.post(runnable);
+        if (inMobiNativeExpireHandler != null) {
+            inMobiNativeExpireHandler.removeCallbacks(runnable);
+            inMobiNativeExpireHandler.post(runnable);
+        }
     }
 
     void onAdClicked() {

@@ -58,6 +58,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
     private ArrayList<String> click_trackers;
     private String fullText;
     private String sponsoredBy;
+    private Handler anNativeExpireHandler;
 
     private static final String KEY_TITLE = "title";
     private static final String KEY_DESCRIPTION = "description";
@@ -163,8 +164,8 @@ public class ANNativeAdResponse implements NativeAdResponse {
         response.click_trackers = JsonUtil.getStringArrayList(clickTrackerJson);
         JSONObject custom = JsonUtil.getJSONObject(metaData, KEY_CUSTOM);
         response.nativeElements = JsonUtil.getStringObjectHashMap(custom);
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(response.expireRunnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
+        response.anNativeExpireHandler = new Handler(Looper.getMainLooper());
+        response.anNativeExpireHandler.postDelayed(response.expireRunnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
         return response;
     }
 
@@ -264,8 +265,9 @@ public class ANNativeAdResponse implements NativeAdResponse {
             this.registeredView = view;
             setClickListener();
             view.setOnClickListener(clickListener);
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.removeCallbacks(expireRunnable);
+            if(anNativeExpireHandler!=null) {
+                anNativeExpireHandler.removeCallbacks(expireRunnable);
+            }
             return true;
         }
         return false;
@@ -299,9 +301,10 @@ public class ANNativeAdResponse implements NativeAdResponse {
 
     @Override
     public void destroy() {
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.removeCallbacks(expireRunnable);
-        handler.post(expireRunnable);
+        if(anNativeExpireHandler!=null) {
+            anNativeExpireHandler.removeCallbacks(expireRunnable);
+            anNativeExpireHandler.post(expireRunnable);
+        }
     }
 
     private boolean openNativeBrowser = false;
