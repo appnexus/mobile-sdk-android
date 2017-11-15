@@ -217,7 +217,7 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
             registeredView = view;
             registered = true;
             if (inMobiNativeExpireHandler != null) {
-                inMobiNativeExpireHandler.removeCallbacksAndMessages(runnable);
+                inMobiNativeExpireHandler.removeCallbacks(runnable);
             }
         }
         this.nativeAdEventlistener = listener;
@@ -235,7 +235,7 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
             registeredClickables = clickables;
             registered = true;
             if (inMobiNativeExpireHandler != null) {
-                inMobiNativeExpireHandler.removeCallbacksAndMessages(runnable);
+                inMobiNativeExpireHandler.removeCallbacks(runnable);
             }
         }
         this.nativeAdEventlistener = listener;
