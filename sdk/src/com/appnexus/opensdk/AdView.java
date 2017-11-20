@@ -64,6 +64,7 @@ public abstract class AdView extends FrameLayout implements Ad {
     private AdListener adListener;
     private AppEventListener appEventListener;
     private BrowserStyle browserStyle;
+    int creativeId;
 
     final Handler handler = new Handler(Looper.getMainLooper());
     protected Displayable lastDisplayable;
@@ -308,6 +309,10 @@ public abstract class AdView extends FrameLayout implements Ad {
      */
     public String getInventoryCode() {
         return requestParameters.getInvCode();
+    }
+
+    public int getCreativeId() {
+        return creativeId;
     }
 
     /**
@@ -969,6 +974,7 @@ public abstract class AdView extends FrameLayout implements Ad {
 
                         if (ad.getResponseData() != null && ad.getResponseData().getImpressionURLs().size() > 0) {
                             impressionTrackers = ad.getResponseData().getImpressionURLs();
+                            creativeId = ad.getResponseData().getCreativeId();
                         }
 
 
