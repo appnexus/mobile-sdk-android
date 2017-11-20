@@ -61,6 +61,7 @@ public class UTAdResponse {
     private static final String RESPONSE_VALUE_ANDROID = "android";
     private static final String RESPONSE_KEY_TYPE = "type";
     private static final String RESPONSE_KEY_AD_TYPE = "ad_type";
+    private static final String RESPONSE_KEY_CREATIVE_ID = "creative_id";
     private static final String RESPONSE_KEY_HANDLER = "handler";
     private static final String RESPONSE_KEY_TRACKERS = "trackers";
     private static final String RESPONSE_KEY_IMPRESSION_URLS = "impression_urls";
@@ -189,10 +190,11 @@ public class UTAdResponse {
 
     private void handleRTB(JSONObject adObject, String adType, String notifyUrl) throws Exception {
         JSONObject rtbObject = JsonUtil.getJSONObject(adObject, UTConstants.RTB);
+        int crId = JsonUtil.getJSONInt(adObject, RESPONSE_KEY_CREATIVE_ID);
         if (rtbObject != null) {
             if (rtbObject.has(UTConstants.AD_TYPE_BANNER)) {
                 Clog.i(Clog.httpRespLogTag, "it's an HTML Ad");
-                parseHtmlAdResponse(rtbObject, adType);
+                parseHtmlAdResponse(rtbObject, adType, crId);
             }else if (rtbObject.has(UTConstants.AD_TYPE_VIDEO)) {
                 Clog.i(Clog.httpRespLogTag, "it's a Video Ad");
                 parseVideoAdResponse(rtbObject, adType, notifyUrl);
@@ -200,7 +202,7 @@ public class UTAdResponse {
                 JSONObject nativeObject = JsonUtil.getJSONObject(rtbObject, UTConstants.AD_TYPE_NATIVE);
                 if(nativeObject != null) {
                     Clog.i(Clog.httpRespLogTag, "it's a NATIVE Ad");
-                    parseNativeAds(nativeObject);
+                    parseNativeAds(nativeObject, crId);
                 }else {
                     Clog.i(Clog.httpRespLogTag, "NATIVE Ad is empty");
                 }
@@ -211,7 +213,7 @@ public class UTAdResponse {
     }
 
 
-    private void parseHtmlAdResponse(JSONObject rtbObject, String adType) throws Exception {
+    private void parseHtmlAdResponse(JSONObject rtbObject, String adType, int creativeId) throws Exception {
         JSONObject bannerObject = JsonUtil.getJSONObject(rtbObject, UTConstants.AD_TYPE_BANNER);
         if (bannerObject != null) {
             int height = JsonUtil.getJSONInt(bannerObject, RESPONSE_KEY_HEIGHT);
@@ -224,6 +226,7 @@ public class UTAdResponse {
                 RTBHTMLAdResponse rtbAd = new RTBHTMLAdResponse(width, height, adType, getImpressionUrls(rtbObject));
                 rtbAd.setAdContent(content);
                 rtbAd.setContentSource(UTConstants.RTB);
+                rtbAd.setCreativeId(creativeId);
                 if (content.contains(UTConstants.MRAID_JS_FILENAME)) {
                     rtbAd.addToExtras(UTConstants.EXTRAS_KEY_MRAID, true);
                 }
@@ -256,13 +259,13 @@ public class UTAdResponse {
     }
 
     // returns true if response contains a native response, false if not
-    private void parseNativeAds(JSONObject response) {
+    private void parseNativeAds(JSONObject response, int creativeId) {
         JSONArray nativeAd = JsonUtil.getJSONArray(response, UTConstants.AD_TYPE_NATIVE);
         if (nativeAd != null) {
             // take the first ad
             JSONObject firstAd = JsonUtil.getJSONObjectFromArray(nativeAd, 0);
             if (firstAd != null) {
-                ANNativeAdResponse anNativeAdResponse = ANNativeAdResponse.create(firstAd);
+                ANNativeAdResponse anNativeAdResponse = ANNativeAdResponse.create(firstAd, creativeId);
                 if (anNativeAdResponse != null) {
                     RTBNativeAdResponse nativeRTB = new RTBNativeAdResponse(1, 1, UTConstants.RTB, anNativeAdResponse, null);
                     adList.add(nativeRTB);

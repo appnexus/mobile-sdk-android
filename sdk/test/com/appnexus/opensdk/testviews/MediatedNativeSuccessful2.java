@@ -138,6 +138,11 @@ public class MediatedNativeSuccessful2 implements MediatedNativeAd {
                 public void destroy() {
 
                 }
+
+                @Override
+                public int getCreativeId() {
+                    return 0;
+                }
             });
         }
     }

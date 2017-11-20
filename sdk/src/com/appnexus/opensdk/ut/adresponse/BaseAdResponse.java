@@ -27,6 +27,7 @@ public abstract class BaseAdResponse {
     private String contentSource;
     private String adContent;
     private ArrayList<String> impressionURLs = new ArrayList<String>();
+    private int creativeId;
 
     private HashMap<String, Object> extras = new HashMap<String, Object>();
 
@@ -99,4 +100,11 @@ public abstract class BaseAdResponse {
         this.adContent = adContent;
     }
 
+    public void setCreativeId(int creativeId) {
+        this.creativeId = creativeId;
+    }
+
+    public int getCreativeId() {
+        return creativeId;
+    }
 }

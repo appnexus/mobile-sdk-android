@@ -58,6 +58,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
     private ArrayList<String> click_trackers;
     private String fullText;
     private String sponsoredBy;
+    private int creativeId;
 
     private static final String KEY_TITLE = "title";
     private static final String KEY_DESCRIPTION = "description";
@@ -117,7 +118,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
      * @param metaData JsonObject that contains info of native ad
      * @return ANNativeResponse if no issue happened during processing
      */
-    public static ANNativeAdResponse create(JSONObject metaData) {
+    public static ANNativeAdResponse create(JSONObject metaData, int creativeId) {
         if (metaData == null) {
             return null;
         }
@@ -130,6 +131,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
         response.imp_trackers = imp_trackers;
         response.title = JsonUtil.getJSONString(metaData, KEY_TITLE);
         response.description = JsonUtil.getJSONString(metaData, KEY_DESCRIPTION);
+        response.creativeId = creativeId;
         JSONArray main_media = JsonUtil.getJSONArray(metaData, KEY_MAIN_MEDIA);
         if (main_media != null) {
             int l = main_media.length();
@@ -391,5 +393,10 @@ public class ANNativeAdResponse implements NativeAdResponse {
                     Clog.getString(R.string.opening_url_failed, url));
             return false;
         }
+    }
+
+    @Override
+    public int getCreativeId() {
+        return creativeId;
     }
 }

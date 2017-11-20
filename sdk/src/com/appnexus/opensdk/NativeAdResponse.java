@@ -140,6 +140,9 @@ public interface NativeAdResponse {
      */
     public boolean hasExpired();
 
+
+    public int getCreativeId();
+
     /**
      * Register view for tracking
      *
