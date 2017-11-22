@@ -1,3 +1,14 @@
+## 4.3
++ MS-3081 Fixed memory leak issue with Native SDK and Mediation Adapters
++ MS-3089 Fixed NullPointerException in continueWaterfall 
++ MS-3090 Fixed Millenial Media SDK crashes due to receiving callbacks in background thread
++ Update Facebook SDK to v4.26.1.
+
+## 4.2
++ MS-3079 Milennial Media SDK causing app crashes in Android
++ MS-2862 Support newly added standard fields on the native creative object
+
+
 ## 4.2
 + MS-3079 Milennial Media SDK causing app crashes in Android
 + MS-2862 Support newly added standard fields on the native creative object
