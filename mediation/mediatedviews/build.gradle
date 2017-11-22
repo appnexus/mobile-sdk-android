@@ -5,6 +5,11 @@
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
+        maven {
+            url 'https://maven.google.com'
+            // Alternative URL is 'https://dl.google.com/dl/android/maven2/'
+        }
     }
 
     dependencies {
@@ -15,6 +20,11 @@ buildscript {
 allprojects {
     repositories {
         mavenCentral()
+        jcenter()
+        maven {
+            url 'https://maven.google.com'
+            // Alternative URL is 'https://dl.google.com/dl/android/maven2/'
+        }
     }
 
     tasks.withType(JavaCompile) {
