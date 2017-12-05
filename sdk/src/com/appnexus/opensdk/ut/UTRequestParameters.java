@@ -60,6 +60,8 @@ public class UTRequestParameters {
     private String age;
     private AdView.GENDER gender = AdView.GENDER.UNKNOWN;
     private ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
+    private int videoAdMinDuration = 0;
+    private int videoAdMaxDuration = 0;
 
     private String ANSDK = "ansdk";
 
@@ -112,6 +114,9 @@ public class UTRequestParameters {
     private static final String SUPPLY_TYPE_CONTENT = "mobile_app";
     private static final String SOURCE = "source";
     private static final String VERSION = "version";
+    private static final String VIDEO = "video";
+    private static final String MINDURATION = "minduration";
+    private static final String MAXDURATION = "maxduration";
 
 
     private static final int ALLOWED_TYPE_BANNER = 1;
@@ -218,6 +223,19 @@ public class UTRequestParameters {
     public AdView.GENDER getGender() {
         return gender;
     }
+
+    public int getVideoAdMinDuration() {
+        return videoAdMinDuration;
+    }
+
+    public void setVideoAdMinDuration(int minDuration) { this.videoAdMinDuration = minDuration;}
+
+    public int getVideoAdMaxDuration() {
+        return videoAdMaxDuration;
+    }
+
+    public void setVideoAdMaxDuration(int maxDuration) { this.videoAdMaxDuration = maxDuration;}
+
 
     public void addCustomKeywords(String key, String value) {
         if (StringUtil.isEmpty(key) || (value == null)) {
@@ -390,6 +408,8 @@ public class UTRequestParameters {
                 allowedMediaAdTypes.put(ALLOWED_TYPE_NATIVE);
             } else if (this.getMediaType() == MediaType.INSTREAM_VIDEO) {
                 allowedMediaAdTypes.put(ALLOWED_TYPE_VIDEO);
+
+                tag.put(VIDEO , this.getVideoObject());
             }
 
             tag.put(TAG_ALLOWED_MEDIA_AD_TYPES, allowedMediaAdTypes);
@@ -404,6 +424,9 @@ public class UTRequestParameters {
                 tag.put(TAG_DISABLE_PSA, !this.getShouldServePSAs());
             }
             tag.put(TAG_ASSET_URL, TAG_ASSET_URL_VALUE);
+
+
+
         } catch (JSONException e) {
             Clog.e(Clog.baseLogTag, "Exception: " + e.getMessage());
         }
@@ -620,6 +643,23 @@ public class UTRequestParameters {
         } catch (JSONException e) {
         }
         return app;
+    }
+
+    private JSONObject getVideoObject() {
+
+        JSONObject videoDict = new JSONObject();
+        try {
+            if (this.videoAdMinDuration > 0) {
+                videoDict.put(MINDURATION, this.videoAdMinDuration);
+            }
+
+            if (this.videoAdMaxDuration > 0) {
+                videoDict.put(MAXDURATION, this.videoAdMaxDuration);
+            }
+        }catch (JSONException ex){
+
+        }
+        return videoDict;
     }
 
 

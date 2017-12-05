@@ -243,6 +243,19 @@ public class VideoAd implements VideoAdInterface {
     }
 
 
+    public int getVideoAdMinDuration() { return requestParameters.getVideoAdMinDuration(); }
+
+    public void setVideoAdMinDuration(int minDuration) {
+        requestParameters.setVideoAdMinDuration( minDuration );
+    }
+
+    public int getVideoAdMaxDuration() { return requestParameters.getVideoAdMaxDuration(); }
+
+    public void setVideoAdMaxDuration(int maxDuration) {
+        requestParameters.setVideoAdMaxDuration(maxDuration);
+    }
+
+
     /**
      * Register a listener for ad success/fail to load notification events
      *
