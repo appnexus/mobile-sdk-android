@@ -127,7 +127,8 @@
             {
                 window.webkit.messageHandlers.observe.postMessage(message);
             } else {
-                window.location = "video://"+message;
+                var jsonString = JSON.stringify(message);
+                window.location = "video://"+jsonString;
             }
         }
 

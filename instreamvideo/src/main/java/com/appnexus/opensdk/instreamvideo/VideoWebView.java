@@ -48,6 +48,8 @@ import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
 
+import org.json.JSONObject;
+
 
 class VideoWebView extends WebView {
 
@@ -186,29 +188,42 @@ class VideoWebView extends WebView {
 
 
     private void dispatchNativeCallback(String url) {
+
         url = url.replaceFirst("video://", "");
-        if (url.equals("adReady")) {
-            owner.getAdDispatcher().onAdLoaded();
-        } else if (url.equals("video-error") || url.equals("Timed-out")) {
-            handleVideoError();
-        } else if (url.equals("video-skip")) {
-            videoComplete();
-            owner.getAdDispatcher().onVideoSkip();
-        } else if (url.equals("video-first-quartile")) {
-            owner.getAdDispatcher().onQuartile(Quartile.QUARTILE_FIRST);
-        } else if (url.equals("video-mid")) {
-            owner.getAdDispatcher().onQuartile(Quartile.QUARTILE_MID);
-        } else if (url.equals("video-third-quartile")) {
-            owner.getAdDispatcher().onQuartile(Quartile.QUARTILE_THIRD);
-        } else if (url.equals("video-complete")) {
-            videoComplete();
-            owner.getAdDispatcher().onAdCompleted();
-        } else if (url.equals("audio-mute")) {
-            owner.getAdDispatcher().isAudioMute(true);
-        } else if (url.equals("audio-unmute")) {
-            owner.getAdDispatcher().isAudioMute(false);
-        } else {
-            Clog.e(Clog.videoLogTag, "Error: Unhandled event::" + url);
+
+        try {
+
+            JSONObject paramsObject = new JSONObject(url);
+
+            String eventName = paramsObject.getString("event");
+
+            if (eventName.equals("adReady")) {
+                owner.getAdDispatcher().onAdLoaded();
+            } else if (eventName.equals("video-error") || eventName.equals("Timed-out")) {
+                handleVideoError();
+            } else if (eventName.equals("video-skip")) {
+                videoComplete();
+                owner.getAdDispatcher().onVideoSkip();
+            } else if (eventName.equals("video-first-quartile")) {
+                owner.getAdDispatcher().onQuartile(Quartile.QUARTILE_FIRST);
+            } else if (eventName.equals("video-mid")) {
+                owner.getAdDispatcher().onQuartile(Quartile.QUARTILE_MID);
+            } else if (eventName.equals("video-third-quartile")) {
+                owner.getAdDispatcher().onQuartile(Quartile.QUARTILE_THIRD);
+            } else if (eventName.equals("video-complete")) {
+                videoComplete();
+                owner.getAdDispatcher().onAdCompleted();
+            } else if (eventName.equals("audio-mute")) {
+                owner.getAdDispatcher().isAudioMute(true);
+            } else if (eventName.equals("audio-unmute")) {
+                owner.getAdDispatcher().isAudioMute(false);
+            } else {
+                Clog.e(Clog.videoLogTag, "Error: Unhandled event::" + url);
+                return;
+            }
+
+        } catch (Exception ex) {
+            Clog.e(Clog.videoLogTag, "Exception: JsonError::" + url);
             return;
         }
     }
