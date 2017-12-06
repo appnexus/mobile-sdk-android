@@ -14,6 +14,7 @@ android {
         versionName version
         consumerProguardFiles 'proguard-project.txt'
     }
+
     lintOptions {
         abortOnError false
     }
@@ -28,6 +29,7 @@ dependencies {
     testCompile 'org.robolectric:robolectric:3.1.1'
     testCompile 'org.robolectric:shadows-httpclient:3.1.1'
     testCompile 'com.squareup.okhttp:mockwebserver:2.5.0'
+    testCompile project(':sdk')
 }
 
 

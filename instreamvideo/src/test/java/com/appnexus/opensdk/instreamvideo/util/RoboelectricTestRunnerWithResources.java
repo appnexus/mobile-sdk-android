@@ -26,11 +26,34 @@ public class RoboelectricTestRunnerWithResources extends RobolectricTestRunner {
     // Use this for running from Android Studio 2.2.3+ and command line
     protected AndroidManifest getAppManifest(Config config) {
         AndroidManifest appManifest = super.getAppManifest(config);
-        FsFile androidManifestFile = FileFsFile.from(appManifest.getAndroidManifestFile().getPath().replace("full", "aapt"));
-        FsFile resDirectory = FileFsFile.from(appManifest.getResDirectory().getPath());
-        FsFile assetsDirectory = FileFsFile.from(appManifest.getAssetsDirectory().getPath());
+        FsFile androidManifestFile = appManifest.getAndroidManifestFile();
+        FsFile resDirectory;
+        FsFile assetsDirectory;
+
+
+        String moduleRoot = getModuleRootPath(config);
+        androidManifestFile = FileFsFile.from(moduleRoot, appManifest.getAndroidManifestFile().getPath().replace("bundles", "manifests/aapt"));
+
+        if(appManifest.getResDirectory().getPath().contains("release")) {
+            resDirectory = FileFsFile.from(moduleRoot, appManifest.getResDirectory().getPath().replace("release", "default"));
+            assetsDirectory = FileFsFile.from(moduleRoot, appManifest.getAssetsDirectory().getPath().replace("release", "default"));
+        }else{
+            resDirectory = FileFsFile.from(moduleRoot, appManifest.getResDirectory().getPath());
+            assetsDirectory = FileFsFile.from(moduleRoot, appManifest.getAssetsDirectory().getPath());
+        }
+
+
+        System.out.print(androidManifestFile.getPath() + '\n');
+        System.out.print(resDirectory.getPath() + '\n');
+        System.out.print(assetsDirectory.getPath() + '\n');
+
 
         return new AndroidManifest(androidManifestFile, resDirectory, assetsDirectory);
 
+    }
+
+    private String getModuleRootPath(Config config) {
+        String moduleRoot = config.constants().getResource("").toString().replace("file:", "");
+        return moduleRoot.substring(0, moduleRoot.indexOf("/build"));
     }
 }
