@@ -408,8 +408,10 @@ public class UTRequestParameters {
                 allowedMediaAdTypes.put(ALLOWED_TYPE_NATIVE);
             } else if (this.getMediaType() == MediaType.INSTREAM_VIDEO) {
                 allowedMediaAdTypes.put(ALLOWED_TYPE_VIDEO);
-
-                tag.put(VIDEO , this.getVideoObject());
+                JSONObject videoObject = this.getVideoObject();
+                if(videoObject.length() > 0) {
+                    tag.put(VIDEO, videoObject);
+                }
             }
 
             tag.put(TAG_ALLOWED_MEDIA_AD_TYPES, allowedMediaAdTypes);
