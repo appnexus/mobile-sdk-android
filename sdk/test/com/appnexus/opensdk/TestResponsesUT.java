@@ -44,7 +44,7 @@ public class TestResponsesUT {
     private static final String MRAID_CONTENT = "<script type=\\\"text/javascript\\\" src=\\\"mraid.js\\\"></script><script type=\\\"text/javascript\\\">document.write('<div style=\\\"background-color:#EF8200;height:1000px;width:1000px;\\\"><p>%s</p></div>');</script>";
     private static final String NATIVE_MAIN_MEDIA = "[{\"url\":\"%s\",\"width\":%d,\"height\":%d,\"label\":\"default\"},{\"url\":\"%s\",\"width\":%d,\"height\":%d},{\"url\":\"%s\",\"width\":%d,\"height\":%d}]";
     private static final String NATIVE_RATING = "{\"value\":%.2f,\"scale\":%.2f}";
-
+    private static final String DUMMY_VIDEO_CONTENT = "<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?><VAST version=\\\"2.0\\\"><Ad id=\\\"65588716\\\"></Ad></VAST>";
     // template strings
     private static final String CLASSNAME = "com.appnexus.opensdk.testviews.%s";
 
@@ -65,6 +65,8 @@ public class TestResponsesUT {
     public static final String CSM_NATIVE = "{\"content_source\":\"csm\",\"ad_type\":\"native\",\"buyer_member_id\":958,\"creative_id\":44863492,\"media_type_id\":12,\"media_subtype_id\":65,\"client_initiated_ad_counting\":true,\"csm\": {\"timeout_ms\":500,\"handler\": [{\"type\": \"android\",\"class\": \"%s\",\"param\": \"%s\",\"id\": \"%s\"},{\"type\": \"ios\",\"class\": \"DummyIOSClass\",\"param\": \"#{PARAM}\",\"id\": \"210827375150_10154672419150151\"}],\"request_url\": \"%s\",\"response_url\": \"%s\"}}";
     public static final String NO_BID = "{\"version\":\"0.0.1\",\"tags\":[{\"tag_id\":123456789,\"auction_id\":\"3552547938089377051000000\",\"nobid\":true,\"ad_profile_id\":2707239}]}";
 
+    public static final String RTB_VIDEO = "{\"content_source\":\"rtb\",\"ad_type\":\"video\",\"buyer_member_id\":123,\"creative_id\":6332753,\"media_type_id\":4,\"media_subtype_id\":64,\"client_initiated_ad_counting\":true,\"rtb\":{\"video\":{\"content\":\"%s\",\"duration_ms\":100}}}";
+
     public static String blank() {
         return "";
     }
@@ -72,6 +74,10 @@ public class TestResponsesUT {
     public static String noResponse() {
         return "{\"version\":\"0.0.1\",\"tags\":[{\"tag_id\":123456,\"auction_id\":\"1234567890\",\"nobid\":true,\"ad_profile_id\":98765}]}";
 
+    }
+
+    public static String video() {
+        return singleRTBVideo(DUMMY_VIDEO_CONTENT);
     }
 
     public static String banner() {
@@ -318,6 +324,10 @@ public class TestResponsesUT {
 
     private static String singleRTBBanner(String content, int width, int height, String impressionURL){
         return (String.format(RTB_BANNER, content, width, height, impressionURL));
+    }
+
+    private static String singleRTBVideo(String content){
+        return (String.format(RTB_VIDEO, content));
     }
 
 

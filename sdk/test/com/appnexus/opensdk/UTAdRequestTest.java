@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RoboelectricTestRunnerWithResources.class)
@@ -164,6 +165,55 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         JSONObject postData = inspectPostData();
 
         inspectUserAge(ageToTest, postData);
+    }
+
+    @Test
+    public void testMaxDuration() throws Exception {
+        int maxDuration = 180;
+        utRequestParameters.setVideoAdMaxDuration(maxDuration);
+        utRequestParameters.setMediaType(MediaType.INSTREAM_VIDEO);
+        executionSteps();
+
+        JSONObject postData = inspectPostData();
+        JSONObject tag = getTagsData(postData);
+        inspectMaxDuration(maxDuration, tag);
+    }
+
+    @Test
+    public void testMinDuration() throws Exception {
+        int minDuration = 10;
+        utRequestParameters.setVideoAdMinDuration(minDuration);
+        utRequestParameters.setMediaType(MediaType.INSTREAM_VIDEO);
+        executionSteps();
+
+        JSONObject postData = inspectPostData();
+        JSONObject tag = getTagsData(postData);
+        inspectMinDuration(minDuration, tag);
+    }
+
+    @Test
+    public void testMinAndMinDuration() throws Exception {
+        int minDuration = 10;
+        int maxDuration = 180;
+        utRequestParameters.setVideoAdMinDuration(minDuration);
+        utRequestParameters.setVideoAdMaxDuration(maxDuration);
+        utRequestParameters.setMediaType(MediaType.INSTREAM_VIDEO);
+        executionSteps();
+
+        JSONObject postData = inspectPostData();
+        JSONObject tag = getTagsData(postData);
+        inspectMaxandMinDuration(minDuration, maxDuration, tag);
+    }
+
+    @Test
+    public void testNoDuration() throws Exception {
+
+        utRequestParameters.setMediaType(MediaType.INSTREAM_VIDEO);
+        executionSteps();
+
+        JSONObject postData = inspectPostData();
+        JSONObject tag = getTagsData(postData);
+        inspectNoDuration(tag);
     }
 
 
@@ -358,6 +408,60 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         assertNotNull(userObject.getString("age"));
         assertEquals(ageToTest, userObject.getString("age"));
         System.out.println("Age validity test passed!");
+    }
+
+    private void inspectMaxDuration (int maxDuration, JSONObject tagData) throws JSONException {
+
+        System.out.println("Checking max duration...");
+
+
+        JSONObject videoObject = tagData.getJSONObject("video");
+        assertNotNull(videoObject);
+        assertNotNull(videoObject.getInt("maxduration"));
+        assertEquals(maxDuration, videoObject.getInt("maxduration"));
+        System.out.println("max duration validity test passed!");
+
+    }
+
+    private void inspectMinDuration (int minDuration, JSONObject tagData) throws JSONException {
+
+        System.out.println("Checking min duration...");
+
+
+        JSONObject videoObject = tagData.getJSONObject("video");
+        assertNotNull(videoObject);
+        assertNotNull(videoObject.getInt("minduration"));
+        assertEquals(minDuration, videoObject.getInt("minduration"));
+        System.out.println("min duration validity test passed!");
+
+    }
+
+    private void inspectNoDuration (JSONObject tagData) throws JSONException {
+
+        System.out.println("Null video object check...");
+
+        assertTrue(tagData.isNull("video"));
+
+        System.out.println("Null video object test passed!");
+
+
+    }
+
+    private void inspectMaxandMinDuration (int minDuration, int maxDuration, JSONObject tagData) throws JSONException {
+
+        System.out.println("Checking max and min duration...");
+
+
+        JSONObject videoObject = tagData.getJSONObject("video");
+        assertNotNull(videoObject);
+        assertNotNull(videoObject.getInt("maxduration"));
+        assertEquals(maxDuration, videoObject.getInt("maxduration"));
+
+        assertNotNull(videoObject.getInt("minduration"));
+        assertEquals(minDuration, videoObject.getInt("minduration"));
+
+        System.out.println("min and min duration validity test passed!");
+
     }
 
     private JSONObject getTagsData(JSONObject postData) throws JSONException {

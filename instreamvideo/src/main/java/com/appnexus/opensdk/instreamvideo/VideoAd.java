@@ -242,6 +242,37 @@ public class VideoAd implements VideoAdInterface {
         requestParameters.clearCustomKeywords();
     }
 
+    /**
+     *
+     * use this to get the min duration set for the video tag
+     * @return min duration set in seconds
+     */
+
+    public int getAdMinDuration() { return requestParameters.getVideoAdMinDuration(); }
+
+    /**
+     * use this to set the min duration for the video tag
+     * @param minDuration the min duration value in seconds
+     */
+
+    public void setAdMinDuration(int minDuration) {
+        requestParameters.setVideoAdMinDuration( minDuration );
+    }
+
+    /**
+     * use this to get the max duration set for the video tag
+     * @return max duration value in seconds
+     */
+    public int getAdMaxDuration() { return requestParameters.getVideoAdMaxDuration(); }
+
+    /**
+     * use this to set the max duration for the video tag
+     * @param maxDuration the max duration value in seconds
+     */
+     public void setAdMaxDuration(int maxDuration) {
+        requestParameters.setVideoAdMaxDuration(maxDuration);
+    }
+
 
     /**
      * Register a listener for ad success/fail to load notification events
