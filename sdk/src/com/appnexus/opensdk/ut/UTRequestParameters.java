@@ -60,8 +60,8 @@ public class UTRequestParameters {
     private String age;
     private AdView.GENDER gender = AdView.GENDER.UNKNOWN;
     private ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
-    private int videoAdMinDuration = 0;
-    private int videoAdMaxDuration = 0;
+    private int videoAdMinDuration;
+    private int videoAdMaxDuration;
 
     private String ANSDK = "ansdk";
 
@@ -114,9 +114,9 @@ public class UTRequestParameters {
     private static final String SUPPLY_TYPE_CONTENT = "mobile_app";
     private static final String SOURCE = "source";
     private static final String VERSION = "version";
-    private static final String VIDEO = "video";
-    private static final String MINDURATION = "minduration";
-    private static final String MAXDURATION = "maxduration";
+    private static final String TAG_VIDEO = "video";
+    private static final String TAG_MINDURATION = "minduration";
+    private static final String TAG_MAXDURATION = "maxduration";
 
 
     private static final int ALLOWED_TYPE_BANNER = 1;
@@ -408,14 +408,16 @@ public class UTRequestParameters {
                 allowedMediaAdTypes.put(ALLOWED_TYPE_NATIVE);
             } else if (this.getMediaType() == MediaType.INSTREAM_VIDEO) {
                 allowedMediaAdTypes.put(ALLOWED_TYPE_VIDEO);
-                JSONObject videoObject = this.getVideoObject();
-                if(videoObject.length() > 0) {
-                    tag.put(VIDEO, videoObject);
-                }
             }
 
             tag.put(TAG_ALLOWED_MEDIA_AD_TYPES, allowedMediaAdTypes);
 
+            if(this.getMediaType() == MediaType.INSTREAM_VIDEO) {
+                JSONObject videoObject = this.getVideoObject();
+                if (videoObject.length() > 0) {
+                    tag.put(TAG_VIDEO, videoObject);
+                }
+            }
 
 
             tag.put(TAG_PREBID, false);
@@ -652,11 +654,11 @@ public class UTRequestParameters {
         JSONObject videoDict = new JSONObject();
         try {
             if (this.videoAdMinDuration > 0) {
-                videoDict.put(MINDURATION, this.videoAdMinDuration);
+                videoDict.put(TAG_MINDURATION, this.videoAdMinDuration);
             }
 
             if (this.videoAdMaxDuration > 0) {
-                videoDict.put(MAXDURATION, this.videoAdMaxDuration);
+                videoDict.put(TAG_MAXDURATION, this.videoAdMaxDuration);
             }
         }catch (JSONException ex){
 

@@ -243,15 +243,15 @@ public class VideoAd implements VideoAdInterface {
     }
 
 
-    public int getVideoAdMinDuration() { return requestParameters.getVideoAdMinDuration(); }
+    public int getAdMinDuration() { return requestParameters.getVideoAdMinDuration(); }
 
-    public void setVideoAdMinDuration(int minDuration) {
+    public void setAdMinDuration(int minDuration) {
         requestParameters.setVideoAdMinDuration( minDuration );
     }
 
-    public int getVideoAdMaxDuration() { return requestParameters.getVideoAdMaxDuration(); }
+    public int getAdMaxDuration() { return requestParameters.getVideoAdMaxDuration(); }
 
-    public void setVideoAdMaxDuration(int maxDuration) {
+    public void setAdMaxDuration(int maxDuration) {
         requestParameters.setVideoAdMaxDuration(maxDuration);
     }
 

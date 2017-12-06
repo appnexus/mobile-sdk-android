@@ -345,7 +345,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
     private void executionSteps(){
         utAdRequest = new UTAdRequest(this);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.video()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
         utAdRequest.execute();
         waitForTasks();
         clearAAIDAsyncTasks();
