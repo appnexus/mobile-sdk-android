@@ -38,7 +38,7 @@ public class RoboelectricTestRunnerWithResources extends RobolectricTestRunner {
             resDirectory = FileFsFile.from(moduleRoot, appManifest.getResDirectory().getPath().replace("release", "default"));
             assetsDirectory = FileFsFile.from(moduleRoot, appManifest.getAssetsDirectory().getPath().replace("release", "default"));
         }else{
-            resDirectory = FileFsFile.from(moduleRoot, appManifest.getResDirectory().getPath());
+            resDirectory = FileFsFile.from(moduleRoot, appManifest.getResDirectory().getPath().replace("bundles/debug/res", "res/merged/debug"));
             assetsDirectory = FileFsFile.from(moduleRoot, appManifest.getAssetsDirectory().getPath());
         }
 
