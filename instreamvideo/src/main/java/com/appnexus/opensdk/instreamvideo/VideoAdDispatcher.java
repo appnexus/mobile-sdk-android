@@ -36,6 +36,11 @@ interface VideoAdDispatcher {
     public void onAdFailed(ResultCode errorCode);
 
     /**
+     * called when the ad play is started
+     */
+    public void onAdPlaying();
+
+    /**
      * Called when the ad being clicked
      */
     public void onAdClicked();

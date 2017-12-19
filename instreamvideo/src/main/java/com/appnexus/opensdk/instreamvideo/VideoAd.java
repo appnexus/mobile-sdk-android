@@ -243,33 +243,40 @@ public class VideoAd implements VideoAdInterface {
     }
 
     /**
-     *
      * use this to get the min duration set for the video tag
+     *
      * @return min duration set in seconds
      */
 
-    public int getAdMinDuration() { return requestParameters.getVideoAdMinDuration(); }
+    public int getAdMinDuration() {
+        return requestParameters.getVideoAdMinDuration();
+    }
 
     /**
      * use this to set the min duration for the video tag
+     *
      * @param minDuration the min duration value in seconds
      */
 
     public void setAdMinDuration(int minDuration) {
-        requestParameters.setVideoAdMinDuration( minDuration );
+        requestParameters.setVideoAdMinDuration(minDuration);
     }
 
     /**
      * use this to get the max duration set for the video tag
+     *
      * @return max duration value in seconds
      */
-    public int getAdMaxDuration() { return requestParameters.getVideoAdMaxDuration(); }
+    public int getAdMaxDuration() {
+        return requestParameters.getVideoAdMaxDuration();
+    }
 
     /**
      * use this to set the max duration for the video tag
+     *
      * @param maxDuration the max duration value in seconds
      */
-     public void setAdMaxDuration(int maxDuration) {
+    public void setAdMaxDuration(int maxDuration) {
         requestParameters.setVideoAdMaxDuration(maxDuration);
     }
 
@@ -405,6 +412,14 @@ public class VideoAd implements VideoAdInterface {
             if (adLoadListener != null) {
                 adLoadListener.onAdRequestFailed(VideoAd.this, errorCode);
             }
+        }
+
+        @Override
+        public void onAdPlaying() {
+            if (videoPlaybackListener != null) {
+                videoPlaybackListener.onAdPlaying(VideoAd.this);
+            }
+
         }
 
         @Override
@@ -602,6 +617,53 @@ public class VideoAd implements VideoAdInterface {
         validAdExists = false;
         if (videoAdView != null) {
             videoAdView.clearSelf();
+        }
+    }
+
+    public String getCreativeURL() {
+        if (videoAdView != null) {
+            return videoAdView.getCreativeURL();
+        }
+
+        return "";
+    }
+
+    public String getVastURL() {
+        if (videoAdView != null) {
+            return videoAdView.getVastURL();
+        }
+
+        return "";
+    }
+
+    public int getVideoAdDuration() {
+        if (videoAdView != null) {
+            return videoAdView.getVideoAdDuration();
+        }
+
+        return 0;
+    }
+
+    public String getVastXML() {
+        if (videoAdView != null) {
+            return videoAdView.getVastXML();
+        }
+
+        return "";
+    }
+
+    /**
+     * Asynchronously calls the VideoAd and gets the current ad play elapsed time in milliseconds.
+     * \resultCallback\ will be invoked with the result.
+     * Works only on KITKAT and above.
+     *
+     * @param resultCallback A callback to be invoked when the execution is complete
+     *                       completes with the result of the execution (if any).
+     *                       May be null or empty string.
+     */
+    public void getAdPlayElapsedTime(ResultCallback<String> resultCallback) {
+        if (videoAdView != null) {
+            videoAdView.getAdPlayElapsedTime(resultCallback);
         }
     }
 }

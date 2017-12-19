@@ -16,6 +16,7 @@
 package com.appnexus.opensdk.instreamvideo;
 
 
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -30,6 +31,7 @@ import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
+import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.annotation.SuppressLint;
@@ -64,6 +66,11 @@ class VideoWebView extends WebView {
     private static final int TOTAL_RETRY_TIMES = 10;
     private static final int WAIT_INTERVAL_MILLES = 300;
     private static final String WEBVIEW_URL = "file:///android_asset/index.html";
+
+    private int adDuration = 0;
+    private String creativeUrl = "";
+    private String vastURLContent = "";
+    private String vastXMLContent = "";
 
     // Using handler posts the playAd() call to the end of queue and fixes initial rendering black issue on Lollipop and below simulators.
     // And during resume Ad, this handler is used to retry until the parent window comes in focus else fail gracefully. Its observed parent window gets focus approx 200ms after the resume of activity.
@@ -193,12 +200,32 @@ class VideoWebView extends WebView {
 
         try {
 
-            JSONObject paramsObject = new JSONObject(url);
+            JSONObject videoObject = new JSONObject(url);
 
-            String eventName = paramsObject.getString("event");
+            String eventName = videoObject.getString("event");
+            JSONObject paramsDictionary = videoObject.getJSONObject("params");
 
             if (eventName.equals("adReady")) {
+                if (paramsDictionary != null) {
+                    if (paramsDictionary.has("duration")) {
+                        this.adDuration = paramsDictionary.getInt("duration");
+                    }
+                    if (paramsDictionary.has("creativeUrl")) {
+                        this.creativeUrl = paramsDictionary.getString("creativeUrl");
+                    }
+                    if (paramsDictionary.has("vastCreativeURL")) {
+                        this.vastURLContent = paramsDictionary.getString("vastCreativeURL");
+                    }
+                    if (paramsDictionary.has("vastXML")) {
+                        this.vastXMLContent = paramsDictionary.getString("vastXML");
+                    }
+
+                }
                 owner.getAdDispatcher().onAdLoaded();
+
+            } else if (eventName.equals("videoStart")) {
+                owner.getAdDispatcher().onAdPlaying();
+
             } else if (eventName.equals("video-error") || eventName.equals("Timed-out")) {
                 handleVideoError();
             } else if (eventName.equals("video-skip")) {
@@ -237,7 +264,7 @@ class VideoWebView extends WebView {
             //@TODO there is possiblity of capturing more granular failure responses here but for that HTML should be first setup to send back granular Error codes.Currently lets keep all as UNABLE_TO_FILL
             manager.continueWaterfall(ResultCode.UNABLE_TO_FILL);
         }
-        if(!Settings.getSettings().debug_mode) {
+        if (!Settings.getSettings().debug_mode) {
             destroy();
         }
     }
@@ -360,31 +387,58 @@ class VideoWebView extends WebView {
 
 
     protected void injectJavaScript(String url) {
+        injectJavaScriptWithReturnValue(url, null);
+    }
+
+
+    /**
+     * This evaluatesJavascript and returns the value in resultCallback asynchronously
+     *
+     * @param javascript
+     * @return
+     */
+    protected void injectJavaScriptWithReturnValue(String javascript, final ResultCallback<String> resultCallback) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            evaluateJavascript(url, null);
+            // In KitKat+ you should use the evaluateJavascript method
+            Clog.d(Clog.videoLogTag, "evaluateJavascript::");
+            this.evaluateJavascript(javascript, new ValueCallback<String>() {
+                @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+                @Override
+                public void onReceiveValue(String s) {
+                    Clog.d(Clog.videoLogTag, "onResult::");
+                    if (resultCallback != null) {
+                        resultCallback.onResult(s);
+                    }
+                }
+            });
         } else {
-            loadUrl(url);
+            loadUrl(javascript);
+            if (resultCallback != null) {
+                resultCallback.onResult("");
+            }
         }
     }
+
 
     protected void playAd() {
 
         playAdHandler = new Handler();
 
         Runnable runnableCode = new Runnable() {
-            int retryTimes= 0;
+            int retryTimes = 0;
+
             @Override
             public void run() {
                 // Play the Ad if WindowFocus is true else retry after 300ms
                 if (hasWindowFocus()) {
                     adIsPlaying = true;
                     injectJavaScript("javascript:window.playAd()");
-                }else if (retryTimes < TOTAL_RETRY_TIMES) {
-                    Clog.i(Clog.videoLogTag,"Has no focus Retrying::"+retryTimes);
-                    retryTimes ++;
+                } else if (retryTimes < TOTAL_RETRY_TIMES) {
+                    Clog.i(Clog.videoLogTag, "Has no focus Retrying::" + retryTimes);
+                    retryTimes++;
                     playAdHandler.postDelayed(this, WAIT_INTERVAL_MILLES);
-                }else{
-                    Clog.e(Clog.videoLogTag,"Failed to play Video-Ad giving up");
+                } else {
+                    Clog.e(Clog.videoLogTag, "Failed to play Video-Ad giving up");
                     owner.getAdDispatcher().onPlaybackError();
                 }
             }
@@ -409,6 +463,10 @@ class VideoWebView extends WebView {
         }
     }
 
+    protected void getAdPlayElapsedTime(ResultCallback<String> resultCallback) {
+        injectJavaScriptWithReturnValue("javascript:window.getCurrentPlayHeadTime()", resultCallback);
+    }
+
 
     protected void loadAd(BaseAdResponse baseAdResponse) {
         if (baseAdResponse == null) {
@@ -417,6 +475,22 @@ class VideoWebView extends WebView {
         }
         this.baseAdResponse = baseAdResponse;
         this.loadUrl(WEBVIEW_URL);
+    }
+
+    protected int getVideoDuration() {
+        return this.adDuration;
+    }
+
+    protected String getCreativeUrl() {
+        return this.creativeUrl;
+    }
+
+    protected String getVastURL() {
+        return this.vastURLContent;
+    }
+
+    protected String getVastXML() {
+        return this.vastXMLContent;
     }
 
 

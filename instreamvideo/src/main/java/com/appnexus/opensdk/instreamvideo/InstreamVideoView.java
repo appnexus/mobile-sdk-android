@@ -171,4 +171,43 @@ class InstreamVideoView extends FrameLayout {
             ((MutableContextWrapper)this.videoWebView.getContext()).setBaseContext(layout.getContext());
         }
     }
+
+    public String getCreativeURL () {
+        if(this.videoWebView != null){
+            return this.videoWebView.getCreativeUrl();
+        }
+
+        return "";
+    }
+
+    public String getVastURL () {
+        if(this.videoWebView != null){
+            return this.videoWebView.getVastURL();
+        }
+
+        return "";
+    }
+
+    public int getVideoAdDuration () {
+        if(this.videoWebView != null){
+            return this.videoWebView.getVideoDuration();
+        }
+
+        return 0;
+    }
+
+    public String getVastXML () {
+        if(this.videoWebView != null){
+            return this.videoWebView.getVastXML();
+        }
+
+        return "";
+    }
+
+    public void getAdPlayElapsedTime(ResultCallback<String> resultCallback){
+        if(this.videoWebView != null){
+            this.videoWebView.getAdPlayElapsedTime(resultCallback);
+        }
+    }
+
 }

@@ -13,256 +13,143 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
 package com.appnexus.opensdk.instreamvideo;
 
-import android.net.Uri;
 
-/*import com.appnexus.opensdk.vastdata.AdModel;
-import com.appnexus.opensdk.vastdata.ClickTrackingModel;
-import com.appnexus.opensdk.vastdata.CreativeModel;
-import com.appnexus.opensdk.vastdata.LinearAdModel;
-import com.appnexus.opensdk.vastdata.MediaFileModel;
-import com.appnexus.opensdk.vastdata.TrackingModel;
-import com.appnexus.opensdk.vastdata.VideoClickModel;*/
-
-import java.util.ArrayList;
-
-/**
- * Used for mock responses
- */
 public class TestUTResponses {
 
-    // impbus response
-    private static final String UT_NO_BID_RESPONSE = "{\"version\":\"0.0.2\",\"tags\":[{\"auction_id\":9055535852024653375,\"nobid\":1,\"tag_id\":2140063,\"uuid\":null}]}";
-    private static final String UT_RTB_RESPONSE = "{\"version\":\"0.0.2\",\"tags\":[{\"uuid\":\"null\",\"auction_id\":\"5049928823070184480\",\"ut_url\":\"\",\"tag_id\":5778861,\"ads\":[{\"content_source\":\"rtb\",\"ad_type\":\"video\",\"buyer_member_id\":3535,\"creative_id\":37357778,\"media_type_id\":4,\"media_subtype_id\":64,\"notify_url\":\"\",\"rtb\":{\"video\":{\"player_width\":0,\"duration_ms\":142000,\"playback_methods\":[\"auto_play_sound_off\"],\"frameworks\":[],\"content\":\"%s\"}}}]}]}";
-    private static final String UT_SSM_RESPONSE = "{\"version\":\"0.0.2\",\"tags\":[{\"uuid\":\"null\",\"auction_id\":\"4005765276550092434\",\"ut_url\":\"\",\"tag_id\":2140061,\"no_ad_url\":\"\",\"ads\":[{\"content_source\":\"ssm\",\"ad_type\":\"video\",\"buyer_member_id\":229,\"creative_id\":10124375,\"media_type_id\":1,\"media_subtype_id\":1,\"notify_url\":\"\",\"ssm\":{\"video\":{},\"timeout_ms\":500,\"handler\":[{\"url\":\"http://rlissack.adnxs.net:8080/jtest/prebidhtml.html\"}],\"trackers\":[{\"impression_urls\":[\"http://other.tracker.com\",\"http://other.tracker.com\"]}],\"request_url\":\"http://other.tracker.com\",\"response_url\":\"http://other.tracker.com\"}}]}]}";
-    private static final String UT_SSM_HTML_RESPONSE = "{\"version\":\"0.0.2\",\"tags\":[{\"uuid\":\"null\",\"auction_id\":\"4005765276550092434\",\"ut_url\":\"%s\",\"tag_id\":2140061,\"no_ad_url\": \"\",\"ads\":[{\"content_source\":\"ssm\",\"ad_type\":\"banner\",\"buyer_member_id\":229,\"creative_id\":10124375,\"media_type_id\":1,\"media_subtype_id\":1,\"notify_url\":\"%s\",\"ssm\":{\"banner\":{\"width\":320,\"height\":854},\"timeout_ms\":500,\"handler\":[{\"url\":\"http://rlissack.adnxs.net:8080/jtest/prebidhtml.html\"}],\"trackers\":[{\"impression_urls\":[\"http://other.tracker.com\",\"http://other.tracker.com\"]}],\"request_url\":\"http://other.tracker.com\",\"response_url\":\"http://other.tracker.com\"}}]}]}";
-    private static final String UT_HTML_RESPONSE = "{\"version\":\"0.0.2\",\"tags\":[{\"uuid\":\"null\",\"auction_id\":\"5049928823070184480\",\"ut_url\":\"\",\"tag_id\":5778861,\"ads\":[{\"content_source\":\"rtb\",\"ad_type\":\"banner\",\"buyer_member_id\":229,\"creative_id\":10124375,\"media_type_id\":1,\"media_subtype_id\":1,\"notify_url\":\"\",\"rtb\":{\"banner\":{\"width\":320,\"height\":480,\"content\":\"%s\"}}}]}]}";
-    private static final String HTML_RESPONSE = "<html><body>hello!!</body></html>";
-    private static final String VAST_XML_RESPONSE = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><VAST version=\"2.0\"><Ad id=\"37357778\"><Wrapper><AdSystem version=\"2.0\">adnxs</AdSystem><VASTAdTagURI><![CDATA[http://oasc18.247realmedia.com]]></VASTAdTagURI><Error><![CDATA[http://nym1.ib.adnxs.com/vast_track?e=wqgASotCXAxZC0wYTMyODI1OGEwYzbYAwDgAwDoAwDwAwD4AwCABACSBAYvdXQvdjGY]]></Error><Impression id=\"adnxs\"><![CDATA[http://nym1.ib.adnxs.com/vast_track?e=wqT_3QKcBPBCE]]></Impression><Creatives><Creative id=\"9408\"><Linear><TrackingEvents><Tracking event=\"start\"><![CDATA[http://nym1.ib.adnxs.com/vast_track]]></Tracking><Tracking event=\"firstQuartile\"><![CDATA[http://nym1.ib.adnxs.com/vast_track?e=wqT_3QKcBPBCEwIAAAIA1gAFCNmV6rEFEKCo68Ck8LyKRhjwpr3Ju4qAuhEgASotCXsUrkfheoQ_EXsUrkfheoQ_GQAAAAAAAPA_IRESACkRCagwrdvgAjjPG0DPG0gCSmdfVF9aQVFBQUFBQUFBUEFfNEFFQTlRRUFBQUFBbUFLS2lNeUVEZy4umgIdIWxRYXNQZ2piLqgA8Hcyb1l6SUFRLtgCAOACpKsrgAMAiAMBkAMAmAMXoAMBqgMAsAMAuAMAwAOQHMgDANIDKAgAEiRhNjVjMTExYy1kMjI4LTQ2OTctODAxZC0wYTMyODI1OGEwYzbYAwDgAwDoAwDwAwD4AwCABACSBAYvdXQvdjGYBAA.&event=5&s=09b6f53d34cc1ac313608a19d6920de34f1140f8]]></Tracking><Tracking event=\"midpoint\"><![CDATA[http://nym1.ib.adnxs.com/vast_track?e=wqT_3QKcBPBCEwIAAAIA1gAFCNmV6rEFEKCo68Ck8LyKRhjwpr3Ju4qAuhEgASotCXsUrkfheoQ_EXsUrkfheoQ_GQAAAAAAAPA_IRESACkRCagwrdvgAjjPG0DPG0gCUNKR6BFY2oYzYABo5MMBeLTQAoABAYoBA1VTRJIBAQbwUpgBwAKgAeADqAEBsAEAuAEAwAEDyAEA0AEA2AEA4AEA8AEAigI6dWYoJ2EnLCA2NTI4ODcsIDE0NDY2NzcyMDkpO3VmKCdyJywgMzczNTc3NzgsMh4A8LSSAqUBIU5pZk8td2piMDU0RkVOS1I2QkVZQUNEYWhqTXdBRGdBUUFSSXp4dFFyZHZnBHMgDANIDKAgAEiRhNjVjMTExYy1kMjI4LTQ2OTctODAxZC0wYTMyODI1OGEwYzbYAwDgAwDoAwDwAwD4AwCABACSBAYvdXQvdjGYBAA.&event=6&s=09b6f53d34cc1ac313608a19d6920de34f1140f8]]></Tracking><Tracking event=\"thirdQuartile\"><![CDATA[http://nym1.ib.adnxs.com/vast_track?e=wqT_3QKcBPBCEwIAAAIA1gAFCNmV6rEFEKCo68Ck8LyKRhjwpr3Ju4qAuhEgASotCXsUrkfheoQ_EXsUrkfheoQ_GQAAAAAAAPA_IRESACkRCagwrdvgAjjPG0DPG0gCUNKR6BFY2oYzYABo5MMBeLTQAoABAYoBA1VTRJIBAQbwUpgBwAKgAeADqAEBsAEAuAEAwAEDyAEA0AEA2AEA4AEA8AEAigI6dWYoJ2EnLCA2NTI4ODcsIDE0NDY2NzcyMDkpO3VmKCdyJywgMzczNTc3NzgsMh4A8LSSAqUBIU5pZk8td2piMDU0RkVOS1I2QkVZQUNEYWhqTXdBRGdBUUFSSXp4dFFyZHZnQWxnQVlGaG9BSEFBZUFDQUFRQ0lBUUNRQVFHWUFRR2dBUUdvQVFPd0FRQzVBWHNVcmtmaGVvUV93UUY3Rks1SDRYcUVQOGtCX1p2clU1SmdfVF9aQVFBQUFBQUFBUEFfNEFFQTlRRUFBQUFBbUFLS2lNeUVEZy4umgIdIWxRYXNQZ2piLqgA8Hcyb1l6SUFRLtgCAOACpKsrgAMAiAMBkAMAmAMXoAMBqgMAsAMAuAMAwAOQHMgDANIDKAgAEiRhNjVjMTExYy1kMjI4LTQ2OTctODAxZC0wYTMyODI1OGEwYzbYAwDgAwDoAwDwAwD4AwCABACSBAYvdXQvdjGYBAA.&event=7&s=09b6f53d34cc1ac313608a19d6920de34f1140f8]]></Tracking><Tracking event=\"complete\"><![CDATA[http://nym1.ib.adnxs.com/vast_track?e=wqT_3QKcBPBCEwIAAAIA1gAFCNmV6rEFEKCo68Ck8LyKRhjwpr3Ju4qAuhEgASotCXsUrkfheoQ_EXsUrkfheoQ_GQAAAAAAAPA_IRESACkRCagwrdvgAjjPG0DPG0gCUNKR6BFY2oYzYABo5MM6SUFRLtgCAOACpKsrgAMAiAMBkAMAmAMXoAMBqgMAsAMAuAMAwAOQHMgDANIDKAgAEiRhNjVjMTExYy1kMjI4LTQ2OTctODAxZC0wYTMyODI1OGEwYzbYAwDgAwDoAwDwAwD4AwCABACSBAYvdXQvdjGYBAA.&event=8&s=09b6f53d34cc1ac313608a19d6920de34f1140f8]]></Tracking></TrackingEvents><VideoClicks><ClickTracking id=\"adnxs\"><![CDATA[http://nym1.ib.adnxs.com/click?exSuR-F6hD97FK5H4XqEPwAAAAAAAPA_exSuR-F6hD97FK5H4XqEPyDUGkiC8xRGcFMvuVMAdBHZijpWAAAAAK0tWADPDQAAzw0AA/]]></ClickTracking></VideoClicks></Linear></Creative></Creatives></Wrapper></Ad></VAST>";
-    private static final String VAST_XML = "<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?><VAST version=\\\"2.0\\\"><Ad id=\\\"37357778\\\"><Wrapper><AdSystem version=\\\"2.0\\\">adnxs</AdSystem><VASTAdTagURI><![CDATA[http://oasc18.247realmedia.com]]></VASTAdTagURI><Error><![CDATA[http://nym1.ib.adnxs.com/vast_track?e=wqgASotCXAxZC0wYTMyODI1OGEwYzbYAwDgAwDoAwDwAwD4AwCABACSBAYvdXQvdjGY]]></Error><Impression id=\\\"adnxs\\\"><![CDATA[http://nym1.ib.adnxs.com/vast_track?e=wqT_3QKcBPBCE]]></Impression><Creatives><Creative id=\\\"9408\\\"><Linear><TrackingEvents><Tracking event=\\\"start\\\"><![CDATA[http://nym1.ib.adnxs.com/vast_track]]></Tracking><Tracking event=\\\"firstQuartile\\\"><![CDATA[http://nym1.ib.adnxs.com/vast_track?e=wqT_3]]></Tracking><Tracking event=\\\"midpoint\\\"><![CDATA[http://nym1.ib.adnxs.com/vast_track?e=wqT_3QKcBPB]]></Tracking><Tracking event=\\\"thirdQuartile\\\"><![CDATA[http://nym1.ib.adnxs.com/vast_track?e=wq]]></Tracking><Tracking event=\\\"complete\\\"><![CDATA[http://nym1.ib.adnxs.com/vast_track?e=wqT_3QK]]></Tracking></TrackingEvents><VideoClicks><ClickTracking id=\\\"adnxs\\\"><![CDATA[http://nym1.ib.adnxs.com/click?exSuR-F6hD97FK5H4XqEPw]]></ClickTracking></VideoClicks></Linear></Creative></Creatives></Wrapper></Ad></VAST>";
-    private static final String VAST_INLINE_RESPONSE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><VAST xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"vast2.xsd\" version=\"2.0\"><Ad id=\"Customized\"><InLine><AdSystem>Open AdStream</AdSystem><AdTitle>Customized</AdTitle><Description>ad Description</Description><Impression><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ieg/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?]]></Impression><Creatives><Creative><Linear><Duration>00:01:01</Duration><TrackingEvents><Tracking event=\"start\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=start&XE]]></Tracking><Tracking event=\"midpoint\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=midpoint&XE]]></Tracking><Tracking event=\"firstQuartile\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=firstQuartile&XE]]></Tracking><Tracking event=\"thirdQuartile\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=thirdQuartile&XE]]></Tracking><Tracking event=\"complete\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=complete&XE]]></Tracking><Tracking event=\"mute\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=mute&XE]]></Tracking><Tracking event=\"pause\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=pause&XE]]></Tracking><Tracking event=\"fullscreen\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=fullscreen&XE]]></Tracking><Tracking event=\"rewind\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=rewind&XE]]></Tracking><Tracking event=\"unmute\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=unmute&XE]]></Tracking><Tracking event=\"expand\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=expand&XE]]></Tracking><Tracking event=\"collapse\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=collapse&XE]]></Tracking><Tracking event=\"acceptInvitation\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=acceptInvitation&XE]]></Tracking><Tracking event=\"close\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=close&XE]]></Tracking><Tracking event=\"resume\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=resume&XE]]></Tracking><Tracking event=\"creativeView\"><![CDATA[http://oasc18.247realmedia.com/t/video-demo.appnexus.com/outstream_1/L35/1298238887@x01/ld/L35/TJM_Imp/demo_outstream_1/creative_3_vast_x01/574e6d6d2b46574d4d3077414270354f?XE&oas_iactId=creativeView&XE]]></Tracking></TrackingEvents><VideoClicks><ClickThrough><![CDATA[http://oasc18.247realmedia.com/5c/video-demo.appnexus.com/outstream_1/L35/1298238887/x01/TJM_Imp/demo_outstream_1/creative_3_vast_x01.xml/574e6d6d2b46574d4d3077414270354f?]]></ClickThrough></VideoClicks><MediaFiles><MediaFile delivery=\"progressive\" bitrate=\"1049\" width=\"854\" height=\"480\" type=\"video/mp4\"><![CDATA[http://imagec18.247realmedia.com/0/TJM_Imp/demo_outstream_1/524D5F5641535431_creative_3_vast_x01.mp4/1446478842]]></MediaFile></MediaFiles></Linear></Creative></Creatives></InLine></Ad></VAST>";
+    public static String NO_AD_URL = "http://mobile.devnxs.net/no_ad_url?";
+    public static final String NO_BID_FALSE = "false";
+
+
+
+    private static final String DUMMY_VIDEO_CONTENT = "<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\n" +
+            "<VAST version=\\\"2.0\\\">\n" +
+            "    <Ad id=\\\"85346399\\\">\n" +
+            "        <InLine>\n" +
+            "            <AdSystem>adnxs</AdSystem>\n" +
+            "            <AdTitle>\n" +
+            "                <![CDATA[KungfuPandaWithAudio.mp4]]>\n" +
+            "            </AdTitle>\n" +
+            "            <Error>\n" +
+            "                <![CDATA[http://nym1-ib.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQm5cDFaAAAAABE-5Ol-nFN6bhm4cDFaAAAAACDfkNkoKAAwvgc4vgdAyOc9SIzyyQFQwsv8BVgBYgItLWgBcAF4AIABAIgBAJABwAKYAeADoAEAqAHfkNko&event_type=4&error_code=[ERRORCODE]]]>\n" +
+            "            </Error>\n" +
+            "            <Impression id=\\\"adnxs\\\">\n" +
+            "                <![CDATA[http://nym1-ib.adnxs.com/it?e=wqT_3QKPBmwPAwAAAwDWAAUBCLjhxdEFEL7Ip_fH85S9bhj_EQEwASotCXsUrkfheoQ_EREJBBkABQEI8D8hERIAKREJoDDCy_wFOL4HQL4HSAJQ35DZKFjLu05gAGiRQHi-uASAAQGKAQNVU0SSBQbwUJgBAaABAagBAbABALgBA8ABBMgBAtABANgBAOABAPABAIoCO3VmKCdhJywgMTc5Nzg2NSwgMTUxMzE4OTU2MCk7dWYoJ3InLCA4NTM0NjM5OTYeAPCckgL5ASEtem5KV0FpNDE3WUpFTi1RMlNnWUFDREx1MDR3QURnQVFBUkl2Z2RRd3N2OEJWZ0FZUF9fX184UGFBQndBWGdCZ0FFQmlBRUJrQUVCbUFFQm9BRUJxQUVEc0FFQXVRR1I3d3J3NFhxRVA4RUJrZThLOE9GNmhEX0pBUzZmM3llWTdld18yUUVBQUFBQUFBRHdQLUFCQVBVQgUPKEpnQ0FLQUNBTFVDBRAETDAJCPBMTUFDQWNnQ0FkQUNBZGdDQWVBQ0FPZ0NBUGdDQUlBREFaQURBSmdEQWFnRHVOZTJDYm9EQ1U1WlRUSTZNelU1TlEuLpoCLSFpQWxYcWc2_ADoeTd0T0lBUW9BRG9KVGxsTk1qb3pOVGsx2ALoB-ACx9MB6gI0aXR1bmVzLmFwcGxlLmNvbS91cy9hcHABBPCWbmV4dXMtc2RrLWFwcC9pZDczNjg2OTgzM4ADAYgDAZADAJgDF6ADAaoDAMADkBzIAwDYA_mjeuADAOgDAvgDAIAEAJIEBi91dC92MpgEAKIECjEwLjEuMTIuNjaoBACyBA4IABABGMACIOADMAA4ArgEAMAEAMgEANIECU5ZTTI6MzU5NdoEAggA4AQA8ATfkNkoggUJNxGGHIgFAZgFAKAFUcAY_wHABQDJBUWwGADwP9IFCQkJDEQAANgFAeAFAfAFAfoFBAgAEAA.&s=bc4092d95e0f3a01c7510f1047a61f57a3f64548&referrer=itunes.apple.com%2Fus%2Fapp%2Fappnexus-sdk-app%2Fid736869833]]>\n" +
+            "            </Impression>\n" +
+            "            <Creatives>\n" +
+            "                <Creative id=\\\"49362\\\" AdID=\\\"85346399\\\">\n" +
+            "                    <Linear>\n" +
+            "                        <Duration>00:02:25</Duration>\n" +
+            "                        <TrackingEvents>\n" +
+            "                            <Tracking event=\\\"start\\\">\n" +
+            "                                <![CDATA[http://nym1-ib.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQm5cDFaAAAAABE-5Ol-nFN6bhm4cDFaAAAAACDfkNkoKAAwvgc4vgdAyOc9SIzyyQFQwsv8BVgBYgItLWgBcAF4AIABAIgBAJABwAKYAeADoAEAqAHfkNko&event_type=2]]>\n" +
+            "                            </Tracking>\n" +
+            "                            <Tracking event=\\\"skip\\\">\n" +
+            "                                <![CDATA[http://nym1-ib.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQm5cDFaAAAAABE-5Ol-nFN6bhm4cDFaAAAAACDfkNkoKAAwvgc4vgdAyOc9SIzyyQFQwsv8BVgBYgItLWgBcAF4AIABAIgBAJABwAKYAeADoAEAqAHfkNko&event_type=3]]>\n" +
+            "                            </Tracking>\n" +
+            "                            <Tracking event=\\\"firstQuartile\\\">\n" +
+            "                                <![CDATA[http://nym1-ib.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQm5cDFaAAAAABE-5Ol-nFN6bhm4cDFaAAAAACDfkNkoKAAwvgc4vgdAyOc9SIzyyQFQwsv8BVgBYgItLWgBcAF4AIABAIgBAJABwAKYAeADoAEAqAHfkNko&event_type=5]]>\n" +
+            "                            </Tracking>\n" +
+            "                            <Tracking event=\\\"midpoint\\\">\n" +
+            "                                <![CDATA[http://nym1-ib.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQm5cDFaAAAAABE-5Ol-nFN6bhm4cDFaAAAAACDfkNkoKAAwvgc4vgdAyOc9SIzyyQFQwsv8BVgBYgItLWgBcAF4AIABAIgBAJABwAKYAeADoAEAqAHfkNko&event_type=6]]>\n" +
+            "                            </Tracking>\n" +
+            "                            <Tracking event=\\\"thirdQuartile\\\">\n" +
+            "                                <![CDATA[http://nym1-ib.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQm5cDFaAAAAABE-5Ol-nFN6bhm4cDFaAAAAACDfkNkoKAAwvgc4vgdAyOc9SIzyyQFQwsv8BVgBYgItLWgBcAF4AIABAIgBAJABwAKYAeADoAEAqAHfkNko&event_type=7]]>\n" +
+            "                            </Tracking>\n" +
+            "                            <Tracking event=\\\"complete\\\">\n" +
+            "                                <![CDATA[http://nym1-ib.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQm5cDFaAAAAABE-5Ol-nFN6bhm4cDFaAAAAACDfkNkoKAAwvgc4vgdAyOc9SIzyyQFQwsv8BVgBYgItLWgBcAF4AIABAIgBAJABwAKYAeADoAEAqAHfkNko&event_type=8]]>\n" +
+            "                            </Tracking>\n" +
+            "                        </TrackingEvents>\n" +
+            "                        <VideoClicks>\n" +
+            "                            <ClickThrough>\n" +
+            "                                <![CDATA[https://www.appnexus.com]]>\n" +
+            "                            </ClickThrough>\n" +
+            "                            <ClickTracking id=\\\"adnxs\\\">\n" +
+            "                                <![CDATA[http://nym1-ib.adnxs.com/click?exSuR-F6hD97FK5H4XqEPwAAAAAAAPA_exSuR-F6hD97FK5H4XqEPz7k6X6cU3pu__________-4cDFaAAAAAMIlvwC-AwAAvgMAAAIAAABfSBYFy50TAAAAAABVU0QAVVNEAAEAAQARIAAAAAABAwQCAAAAAAAAPyUuWQAAAAA./cnd=%21iAlXqgi417YJEN-Q2SgYy7tOIAQoADoJTllNMjozNTk1/bn=72766/referrer=itunes.apple.com%2Fus%2Fapp%2Fappnexus-sdk-app%2Fid736869833/]]>\n" +
+            "                            </ClickTracking>\n" +
+            "                        </VideoClicks>\n" +
+            "                        <MediaFiles>\n" +
+            "                            <MediaFile id=\\\"612525\\\" delivery=\\\"progressive\\\" type=\\\"video/x-flv\\\" width=\\\"768\\\" height=\\\"432\\\" scalable=\\\"true\\\" bitrate=\\\"500\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_768_432_500k.flv]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612526\\\" delivery=\\\"progressive\\\" type=\\\"video/mp4\\\" width=\\\"768\\\" height=\\\"432\\\" scalable=\\\"true\\\" bitrate=\\\"1700\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_768_432_1700k.mp4]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612527\\\" delivery=\\\"progressive\\\" type=\\\"video/mp4\\\" width=\\\"768\\\" height=\\\"432\\\" scalable=\\\"true\\\" bitrate=\\\"500\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_768_432_500k.mp4]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612528\\\" delivery=\\\"progressive\\\" type=\\\"video/webm\\\" width=\\\"1280\\\" height=\\\"720\\\" scalable=\\\"true\\\" bitrate=\\\"2000\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_1280_720_2000k.webm]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612529\\\" delivery=\\\"progressive\\\" type=\\\"video/x-flv\\\" width=\\\"768\\\" height=\\\"432\\\" scalable=\\\"true\\\" bitrate=\\\"1100\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_768_432_1100k.flv]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612530\\\" delivery=\\\"progressive\\\" type=\\\"video/webm\\\" width=\\\"1280\\\" height=\\\"720\\\" scalable=\\\"true\\\" bitrate=\\\"600\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_1280_720_600k.webm]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612531\\\" delivery=\\\"progressive\\\" type=\\\"video/webm\\\" width=\\\"768\\\" height=\\\"432\\\" scalable=\\\"true\\\" bitrate=\\\"500\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_768_432_500k.webm]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612532\\\" delivery=\\\"progressive\\\" type=\\\"video/mp4\\\" width=\\\"1280\\\" height=\\\"720\\\" scalable=\\\"true\\\" bitrate=\\\"500\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_1280_720_500k.mp4]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612533\\\" delivery=\\\"progressive\\\" type=\\\"video/mp4\\\" width=\\\"768\\\" height=\\\"432\\\" scalable=\\\"true\\\" bitrate=\\\"1100\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_768_432_1100k.mp4]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612534\\\" delivery=\\\"progressive\\\" type=\\\"video/webm\\\" width=\\\"768\\\" height=\\\"432\\\" scalable=\\\"true\\\" bitrate=\\\"1500\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_768_432_1500k.webm]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612535\\\" delivery=\\\"progressive\\\" type=\\\"video/mp4\\\" width=\\\"1280\\\" height=\\\"720\\\" scalable=\\\"true\\\" bitrate=\\\"1100\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_1280_720_1100k.mp4]]>\n" +
+            "                            </MediaFile>\n" +
+            "                        </MediaFiles>\n" +
+            "                    </Linear>\n" +
+            "                </Creative>\n" +
+            "            </Creatives>\n" +
+            "        </InLine>\n" +
+            "    </Ad>\n" +
+            "</VAST>";
+
+
+
+    // UT Response - Template String
+    public static final String RESPONSE = "{\"version\":\"0.0.1\",\"tags\":[{\"tag_id\":123456,\"auction_id\":\"123456789\",\"nobid\":\"%s\",\"no_ad_url\":\"%s\",\"timeout_ms\":10000,\"ad_profile_id\":98765,%s}]}";
+
+    public static final String ADS = "\"ads\":[%s]";
+
+
+    public static final String RTB_VIDEO = "{\"content_source\":\"rtb\",\"ad_type\":\"video\",\"buyer_member_id\":123,\"creative_id\":6332753,\"media_type_id\":4,\"media_subtype_id\":64,\"client_initiated_ad_counting\":true,\"rtb\":{\"video\":{\"content\":\"%s\",\"duration_ms\":100}}}";
 
     public static String blank() {
         return "";
     }
 
-    public static String noBid() {
-        return UT_NO_BID_RESPONSE;
+
+    public static String video() {
+        return templateVideoRTBAdsResponse(DUMMY_VIDEO_CONTENT);
     }
 
-    public static String video(){
-        return String.format(UT_RTB_RESPONSE, VAST_XML);
+
+    private static String templateVideoRTBAdsResponse(String content) {
+        String rtbVideo = singleRTBVideo(content);
+        String ads = String.format(ADS, rtbVideo);
+        return templateResponse(NO_BID_FALSE, NO_AD_URL, ads);
     }
 
-    public static String vastInline(){
-        return VAST_INLINE_RESPONSE;
+
+
+
+    private static String singleRTBVideo(String content){
+        return (String.format(RTB_VIDEO, content));
     }
 
-    public static String html(){
-        return UT_HTML_RESPONSE;
+
+    private static String templateResponse(String noBid, String noAdURL, String ads) {
+        System.out.println(String.format(RESPONSE, noBid, noAdURL, ads));
+        return String.format(RESPONSE, noBid, noAdURL, ads);
     }
 
-    public static String ssmHtml(){
-        return UT_SSM_HTML_RESPONSE;
-    }
 
-    public static String htmlResponse(){
-        return HTML_RESPONSE;
-    }
 
-    public static String ssmVideo(){
-        return UT_SSM_RESPONSE;
-    }
-
-    public static String vastXML(){
-        return VAST_XML_RESPONSE;
-    }
-
-/*    public static AdModel getVastAdModel() {
-        AdModel adModel = new AdModel();
-        // add a linear ad to the creatives list
-        ArrayList<CreativeModel> creatives = new ArrayList<CreativeModel>();
-        CreativeModel creativeModel = new CreativeModel();
-        LinearAdModel linearAdModel = new LinearAdModel();
-        linearAdModel.setSkipOffset("00:00:05"); // 5 seconds absolute skipOffset
-        linearAdModel.setDuration("00:00:30");
-        ArrayList<TrackingModel> trackingList = new ArrayList<TrackingModel>();
-        TrackingModel creativeView = new TrackingModel();
-        creativeView.setEvent(CREATIVE_VIEW);
-        creativeView.setURL(CREATIVE_VIEW_URL);
-        trackingList.add(creativeView);
-        TrackingModel start = new TrackingModel();
-        start.setEvent(START);
-        start.setURL(START_URL);
-        trackingList.add(start);
-        TrackingModel first = new TrackingModel();
-        first.setEvent(FIRST_QUARTILE);
-        first.setURL(FIRST_QUARTILE_URL);
-        trackingList.add(first);
-        TrackingModel mid = new TrackingModel();
-        mid.setEvent(MID_POINT);
-        mid.setURL(MID_POINT_URL);
-        trackingList.add(mid);
-        TrackingModel third = new TrackingModel();
-        third.setEvent(THIRD_QUARTILE);
-        third.setURL(THIRD_QUARTILE_URL);
-        trackingList.add(third);
-        TrackingModel complete = new TrackingModel();
-        complete.setEvent(COMPLETE);
-        complete.setURL(COMPLETE_URL);
-        trackingList.add(complete);
-        TrackingModel mute = new TrackingModel();
-        mute.setEvent(MUTE);
-        mute.setURL(MUTE_URL);
-        trackingList.add(mute);
-        TrackingModel unmute = new TrackingModel();
-        unmute.setEvent(UNMUTE);
-        unmute.setURL(UNMUTE_URL);
-        trackingList.add(unmute);
-        TrackingModel pause = new TrackingModel();
-        pause.setEvent(PAUSE);
-        pause.setURL(PAUSE_URL);
-        trackingList.add(pause);
-        TrackingModel resume = new TrackingModel();
-        resume.setEvent(RESUME);
-        resume.setURL(RESUME_URL);
-        trackingList.add(resume);
-        TrackingModel full = new TrackingModel();
-        full.setEvent(FULL_SCREEN);
-        full.setURL(FULL_SCREEN_URL);
-        trackingList.add(full);
-        TrackingModel rewind = new TrackingModel();
-        rewind.setEvent(REWIND);
-        rewind.setURL(REWIND_URL);
-        trackingList.add(rewind);
-        TrackingModel exit = new TrackingModel();
-        exit.setEvent(EXIT_FULL_SCRREEN);
-        exit.setURL(EXIT_FULL_SCRREEN_URL);
-        trackingList.add(exit);
-        TrackingModel expand = new TrackingModel();
-        expand.setEvent(EXPAND);
-        expand.setURL(EXPAND_URL);
-        trackingList.add(expand);
-        TrackingModel collapse = new TrackingModel();
-        collapse.setEvent(COLLAPSE);
-        collapse.setURL(COLLAPSE_URL);
-        trackingList.add(collapse);
-        TrackingModel accept = new TrackingModel();
-        accept.setEvent(ACCEPT_INVITATION);
-        accept.setURL(ACCEPT_INVITATION_URL);
-        trackingList.add(accept);
-        TrackingModel close = new TrackingModel();
-        close.setEvent(CLOSE_LINEAR);
-        close.setURL(CLOSE_LINEAR_URL);
-        trackingList.add(close);
-        TrackingModel skip = new TrackingModel();
-        skip.setEvent(SKIP);
-        skip.setURL(SKIP_URL);
-        trackingList.add(skip);
-        TrackingModel progress = new TrackingModel();
-        progress.setEvent(PROGRESS);
-        progress.setURL(PROGRESS_URL);
-        trackingList.add(progress);
-        linearAdModel.setTrackingEventArrayList(trackingList);
-        ArrayList<MediaFileModel> mediaFileList = new ArrayList<MediaFileModel>();
-        MediaFileModel mediaFileModel = new MediaFileModel();
-//        Uri videoUri = Uri.parse("android.resource://" + TestUTResponses.class.getPackage().getName() + "/" + R.raw.test_video);
-        Uri videoUri = Uri.parse("android.resource://" + TestUTResponses.class.getPackage().getName() + "/");
-        mediaFileModel.setUrl(videoUri.toString());
-        mediaFileModel.setBitrate("500");
-        mediaFileModel.setWidth("720");
-        mediaFileModel.setHeight("480");
-        mediaFileModel.setScalable("true");
-        mediaFileModel.setMaintainAspectRatio("true");
-        mediaFileModel.setDelivery("progressive");
-        mediaFileModel.setType("video/mp4");
-        mediaFileList.add(mediaFileModel);
-        linearAdModel.setMediaFilesArrayList(mediaFileList);
-        ArrayList<VideoClickModel> videoClicks = new ArrayList<VideoClickModel>();
-        VideoClickModel videoClickModel = new VideoClickModel();
-        videoClickModel.setClickThroughURL(CLICK_THROUGH_URL);
-        ArrayList<ClickTrackingModel> clickTrackingList = new ArrayList<ClickTrackingModel>();
-        ClickTrackingModel clickTrackingModel1 = new ClickTrackingModel();
-        clickTrackingModel1.setURL(CLICK_TRACKING_URL1);
-        ClickTrackingModel clickTrackingModel2 = new ClickTrackingModel();
-        clickTrackingModel2.setURL(CLICK_TRACKING_URL2);
-        clickTrackingList.add(clickTrackingModel1);
-        clickTrackingList.add(clickTrackingModel2);
-        videoClickModel.setClickTrackingArrayList(clickTrackingList);
-        videoClicks.add(videoClickModel);
-        linearAdModel.setVideoClicksArrayList(videoClicks);
-        creativeModel.setLinearAdModel(linearAdModel);
-        creatives.add(creativeModel);
-        adModel.setCreativesArrayList(creatives);
-        // set impression url
-        ArrayList<String> impressions = new ArrayList<String>();
-        impressions.add(IMPRESSION_URL_1);
-        impressions.add(IMPRESSION_URL_2);
-        adModel.setImpressionArrayList(impressions);
-        // Followings are optionals
-        // add adSystemn
-        adModel.setAdSystem("AppNexus");
-        // add AdTitle
-        adModel.setAdTitle("Test Video");
-        // add Description
-        adModel.setDescription("VAST 3.0");
-        // add Advertiser
-        adModel.setAdvertiser("AppNexus");
-        // add Pricing
-        adModel.setPricing("1.0");
-        // add Survey
-        adModel.setSurvey(SURVEY_URL);
-        // set Error
-        adModel.setError(ERROR_URL);
-        return adModel;
-    }*/
-
-    static String IMPRESSION_URL_1 = "http://impression1.com";
-    static String IMPRESSION_URL_2 = "http://impression2.com";
-    static String CLICK_TRACKING_URL1 = "http://click1.com";
-    static String CLICK_TRACKING_URL2 = "http://click2.com";
-    static String CLICK_THROUGH_URL = "http://www.appnexus.com";
-    static String SURVEY_URL = "http://survey.com";
-    static String ERROR_URL = "http://error.com";
-    // Tracking Events urls
-    static String CREATIVE_VIEW = "creativeView";
-    static String CREATIVE_VIEW_URL = "http://creativeview.com";
-    static String START = "start";
-    static String START_URL = "http://start.com";
-    static String FIRST_QUARTILE = "firstQuartile";
-    static String FIRST_QUARTILE_URL = "http://first.com";
-    static String MID_POINT = "midpoint";
-    static String MID_POINT_URL = "http://midpoint.com";
-    static String THIRD_QUARTILE = "thirdQuartile";
-    static String THIRD_QUARTILE_URL = "http://third.com";
-    static String COMPLETE = "complete";
-    static String COMPLETE_URL = "http://complete.com";
-    static String MUTE = "mute";
-    static String MUTE_URL = "http://mute.com";
-    static String UNMUTE = "unmute";
-    static String UNMUTE_URL = "http://unmute.com";
-    static String PAUSE = "pause";
-    static String PAUSE_URL = "http://pause.com";
-    static String RESUME = "resume";
-    static String RESUME_URL = "http://resume.com";
-    static String FULL_SCREEN = "fullscreen";
-    static String FULL_SCREEN_URL = "http://fullscreen.com";
-    static String REWIND = "rewind";
-    static String REWIND_URL = "http://rewind.com";
-    static String EXIT_FULL_SCRREEN = "exitFullscreen";
-    static String EXIT_FULL_SCRREEN_URL = "http://exitfullscreen.com";
-    static String EXPAND = "expand";
-    static String EXPAND_URL = "http://expand.com";
-    static String COLLAPSE = "collapse";
-    static String COLLAPSE_URL = "http://collapse.com";
-    static String ACCEPT_INVITATION = "acceptInvitationLinear";
-    static String ACCEPT_INVITATION_URL = "http://acceptinvitation.com";
-    static String CLOSE_LINEAR = "closeLinear";
-    static String CLOSE_LINEAR_URL = "http://closelinear.com";
-    static String SKIP = "skip";
-    static String SKIP_URL = "http://skip.com";
-    static String PROGRESS = "progress";
-    static String PROGRESS_URL = "http://progress.com";
 }

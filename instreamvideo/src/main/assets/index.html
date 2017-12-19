@@ -1,4 +1,5 @@
-<!--
+<!-- 
+/*
 *    Copyright 2017 APPNEXUS INC
 *
 *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,16 +13,18 @@
 *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 *    See the License for the specific language governing permissions and
 *    limitations under the License.
-* -->
+*/
+-->
+
 <!DOCTYPE html>
 <html lang="en-US" prefix="og: http://ogp.me/ns#">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-</head>
-<body style="margin: 0;padding: 0;">
-<script src="MobileVastPlayer.js"></script>
-<script src="AstMediationManager.js"></script>
-<script>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    </head>
+    <body style="margin: 0;padding: 0;">
+        <script src="MobileVastPlayer.js"></script>
+        <script src="ASTMediationManager.js"></script>
+        <script>
             var final_video_content = '<div id="video-content" style="width: 375px; height: 375px, background-color:#000000">';
             var ua = getMobileOperatingSystem();
             var options = {
@@ -32,7 +35,7 @@
                 "initialAudio": "on",
                 "initialPlayback": "click", //this needs to be click for the load & play option else the player will load the ad & play automatically
                 "showProgressBar": true,
-                "allowFullscreen":false, //true-show, false-hide the fullscreen control
+                "allowFullscreen":false, //show the fullscreen control
                 "forceAdInFullscreen": false,
                 "showBigPlayButton":false, //hide the play/pause big button
                 "showPlayToggle":false, //Hide the play/pause small button
@@ -54,14 +57,14 @@
                     "clickToPause": false
                 },
                 "data": {
-	                "skipOffset": "",
-	                "durationMsec": null,
-	                "skipOffsetMsec": null,
-	                "isVastVideoSkippable": false,
-	                "vastProgressEvent": {},
-	                "vastDurationMsec": null,
-	                "adIcons": null
-	            },
+                    "skipOffset": "",
+                    "durationMsec": null,
+                    "skipOffsetMsec": null,
+                    "isVastVideoSkippable": false,
+                    "vastProgressEvent": {},
+                    "vastDurationMsec": null,
+                    "adIcons": null
+                },
                 "vpaidEnvironmentVars": {
                     "rhythmone": true
                 },
@@ -75,41 +78,41 @@
                     "skipText": "Video can be skipped in %%TIME%% seconds",
                     "skipButtonText": "SKIP"
                 }
-
+                
             };
-
+        
             function createVastPlayerWithContent(vastContent){
                 try{
                     var targetId = "video-content";
                     window.document.write(final_video_content);
-
+                    
                     var targetElement = document.getElementById(targetId);
-
+                    
                     options.targetElementId = targetId;
                     setPlayerLayout(targetElement);
-
+                    
                     APNVideo_MobileVastPlayer.playVast(targetElement,options, vastContent, function(eventName){
                                                        console.log(eventName);
                                                        sendBackMessage(eventName);
-
+                                                       
                                                        });
                 }
                 catch(e){
                     console.log('Issue loading video into document :' + e.message);
                 }
-
+                
             }
-
+        
         function createVastPlayerWithURL(vastUrl){
             try{
-
+                
                 var targetId = "video-content";
                 window.document.write(final_video_content);
-
+                
                 var targetElement = document.getElementById(targetId);
-
+                
                 options.targetElementId = targetId;
-
+                
                 APNVideo_MobileVastPlayer.loadAndPlayVast(targetElement,options, vastUrl, function(eventName){
                                                           console.log(eventName);
                                                           sendBackMessage(eventName);
@@ -119,9 +122,9 @@
                 console.log('Issue loading video into document :' + e.message);
             }
             }
-
-
-
+        
+        
+        
         function sendBackMessage(message){
             if(ua == "iOS")
             {
@@ -131,32 +134,34 @@
                 window.location = "video://"+jsonString;
             }
         }
-
+        
             function setPlayerLayout(targetDiv){
+                var maxScreenSize = Math.max(screen.width, screen.height);
+                
                 if(targetDiv !== undefined){
                     targetDiv.style.position = "absolute";
                     targetDiv.style.left = 0;
-                    targetDiv.style.width = window.innerWidth;
-                    targetDiv.style.height = window.innerHeight;
+                    targetDiv.style.width = maxScreenSize;
+                    targetDiv.style.height = maxScreenSize;
                     targetDiv.style.top = 0;
                 }
             }
             function getMobileOperatingSystem() {
                 var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-
+            
                 // Windows Phone must come first because its UA also contains "Android"
                 if (/windows phone/i.test(userAgent)) {
                     return "Windows Phone";
                 }
-
+            
                 if (/android/i.test(userAgent)) {
                     return "Android";
                 }
-
+            
                 if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
                     return "iOS";
                 }
-
+            
             return "unknown";
         }
         function playAd(){
@@ -164,16 +169,22 @@
             resizePlayer();
             APNVideo_MobileVastPlayer.sendPlay(targetId);
         }
-
+        
         function resizePlayer(){
             var targetId = "video-content";
             var targetElement = document.getElementById(targetId);
             if(targetElement !== undefined){
                 setPlayerLayout(targetElement);
             }
-
+            
         }
-
+        
+        function getCurrentPlayHeadTime() {
+            var targetId = "video-content";
+            var playHeadTime = APNVideo_MobileVastPlayer.getCurrentPlayHeadTime(targetId);
+            return playHeadTime;
+        }
+        
         function processMediationAd(tag) {
             try {
                 console.log(" callSelectAd - invoked");
@@ -186,10 +197,14 @@
                 APNVideo_AstMediationManager.selectAd(adId, jsonObject, options, onSelectAdForASTResponse);
             } catch (e) {
                 console.log('Issue loading video into document :' + e.message);
-                sendBackMessage("video-error");
+                var nativeParams = {
+                    "event": "video-error",
+                    "params": {}
+                };
+                sendBackMessage(nativeParams);
             }
         }
-
+        
         function onSelectAdForASTResponse(adId, uuid, mediationManagerResponse) {
             console.log("AST Notification for: " + adId + " uuid=" + uuid);
             var content;
@@ -199,12 +214,15 @@
             if (content) {
                 createVastPlayerWithContent(content);
             } else {
-                sendBackMessage("video-error");
-                return;
+                var nativeParams = {
+                    "event": "video-error",
+                    "params": {}
+                };
+                sendBackMessage(nativeParams);
             }
         }
-
-
+        
+        
         function retrieveContent(mediationManagerResponse) {
             if (mediationManagerResponse && mediationManagerResponse.hasOwnProperty("ad")) {
                 var adObj = mediationManagerResponse.ad;
@@ -220,7 +238,8 @@
                 }
             }
         }
-
+        
             </script>
-</body>
+    </body>
 </html>
+

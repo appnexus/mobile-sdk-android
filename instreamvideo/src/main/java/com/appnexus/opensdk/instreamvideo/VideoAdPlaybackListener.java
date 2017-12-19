@@ -18,6 +18,12 @@ package com.appnexus.opensdk.instreamvideo;
 public interface VideoAdPlaybackListener {
 
     /**
+     * Called when the ad play starts.
+     * @param videoAd The {@link VideoAd} that loaded the ad.
+     */
+    public void onAdPlaying(VideoAd videoAd);
+
+    /**
      * Called when a Quartile tracker is fired. This is for the App to track. SDK has alrady tracked it.
      * @param videoAd The {@link VideoAd} that loaded the ad.
      * @param quartile Quartile describing the type of quartile event fired.

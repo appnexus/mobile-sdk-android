@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -32,6 +33,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.appnexus.opensdk.ResultCode;
+import com.appnexus.opensdk.instreamvideo.ResultCallback;
 import com.appnexus.opensdk.instreamvideo.Quartile;
 import com.appnexus.opensdk.instreamvideo.VideoAd;
 import com.appnexus.opensdk.instreamvideo.VideoAdLoadListener;
@@ -66,20 +68,20 @@ public class MainActivity extends Activity {
         videoPlayer.setVideoURI(Uri.parse(getString(R.string.content_url_1)));
 
         // Initialize VideoAd
-        videoAd =new VideoAd(this,"9924002");
+        videoAd = new VideoAd(this, "9924002");
 
         // Set the Ad-Load Listener
         videoAd.setAdLoadListener(new VideoAdLoadListener() {
             @Override
             public void onAdLoaded(VideoAd videoAd) {
                 Log.d(TAG, "onAdLoaded");
-                Toast.makeText(getApplicationContext(),"onAdLoaded",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "onAdLoaded", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onAdRequestFailed(VideoAd videoAd, ResultCode errorCode) {
-                Log.d(TAG, "onAdRequestFailed::"+errorCode);
-                Toast.makeText(getApplicationContext(),"onAdRequestFailed",Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "onAdRequestFailed::" + errorCode);
+                Toast.makeText(getApplicationContext(), "onAdRequestFailed", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -89,6 +91,11 @@ public class MainActivity extends Activity {
 
         // Set PlayBack Listener.
         videoAd.setVideoPlaybackListener(new VideoAdPlaybackListener() {
+
+            @Override
+            public void onAdPlaying(final VideoAd videoAd) {
+                Log.d(TAG, "onAdPlaying::");
+            }
 
             @Override
             public void onQuartile(VideoAd view, Quartile quartile) {
@@ -102,8 +109,8 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public void onAdMuted(VideoAd view, boolean isMute){
-                Log.d(TAG, "isAudioMute::"+isMute);
+            public void onAdMuted(VideoAd view, boolean isMute) {
+                Log.d(TAG, "isAudioMute::" + isMute);
             }
 
             @Override
@@ -113,8 +120,6 @@ public class MainActivity extends Activity {
         });
 
 
-
-
         playButon.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -122,6 +127,21 @@ public class MainActivity extends Activity {
                 if (videoAd.isReady()) {
                     // Play the VideoAd by passing the container.
                     videoAd.playAd(baseContainer);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d(TAG, "getAdPlayElapsedTime");
+                            videoAd.getAdPlayElapsedTime(new ResultCallback<String>() {
+                                @Override
+                                public void onResult(String result) {
+                                    Log.d(TAG, "getAdPlayElapsedTime::onResult::" + result);
+                                    if(!result.isEmpty() && Integer.parseInt(result) <=0){
+                                        videoPlayer.start();
+                                    }
+                                }
+                            });
+                        }
+                    }, 2000);
                 } else {
                     videoPlayer.start();
                 }
@@ -130,7 +150,6 @@ public class MainActivity extends Activity {
         });
 
     }
-
 
 
     // Pass the Activity LifeCycle Callback's to VideoAd. This is very important for autoresuming the Video Ad after interruption.
@@ -153,7 +172,6 @@ public class MainActivity extends Activity {
     }
 
 
-
     // Handling Configuration Change.
     // You just need to resize the container for resizing the video ad for configuration change event. The VideoAd resizes by itself to fit the container.
     @Override
@@ -163,7 +181,7 @@ public class MainActivity extends Activity {
         // Checks the orientation of the screen
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             goFullScreen();
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             goBacktoNormal();
         }
     }
