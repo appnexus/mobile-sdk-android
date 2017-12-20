@@ -1,3 +1,7 @@
+## 4.4
+### Updates
++ MS-3097 -- Instream Video new API's to provide info on the video creatives loaded & playing
+
 ## 4.3
 + MS-3081 Fixed memory leak issue with Native SDK and Mediation Adapters
 + MS-3089 Fixed NullPointerException in continueWaterfall 

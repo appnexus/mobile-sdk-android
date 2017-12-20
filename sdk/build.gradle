@@ -1,5 +1,5 @@
 // Project properties
-version = "4.3"
+version = "4.4"
 group='com.appnexus.opensdk'
 
 // Android build
@@ -9,7 +9,7 @@ android {
     compileSdkVersion 26
     buildToolsVersion '26.0.2'
     defaultConfig {
-        versionCode 41 // An integer value that represents the version of the code, relative to other versions. Increase for each release.
+        versionCode 42 // An integer value that represents the version of the code, relative to other versions. Increase for each release.
         versionName version
         consumerProguardFiles 'proguard-project.txt'
         minSdkVersion 9
