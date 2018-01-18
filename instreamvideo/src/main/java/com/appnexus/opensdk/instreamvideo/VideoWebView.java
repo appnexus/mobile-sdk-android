@@ -411,7 +411,7 @@ class VideoWebView extends WebView {
                         try {
                             returnValue = Integer.parseInt(s.toString());
                         } catch(NumberFormatException nfe) {
-                            System.out.println("Could not parse " + nfe);
+                            Clog.d(Clog.videoLogTag,"Could not parse int value" + nfe);
                         }
                         resultCallback.onResult(returnValue);
                     }
