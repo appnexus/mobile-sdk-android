@@ -397,7 +397,7 @@ class VideoWebView extends WebView {
      * @param javascript
      * @return
      */
-    protected void injectJavaScriptWithReturnValue(String javascript, final ResultCallback<String> resultCallback) {
+    protected void injectJavaScriptWithReturnValue(String javascript, final ResultCallback resultCallback) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // In KitKat+ you should use the evaluateJavascript method
             Clog.d(Clog.videoLogTag, "evaluateJavascript::");
@@ -407,14 +407,20 @@ class VideoWebView extends WebView {
                 public void onReceiveValue(String s) {
                     Clog.d(Clog.videoLogTag, "onResult::");
                     if (resultCallback != null) {
-                        resultCallback.onResult(s);
+                        int returnValue = 0;
+                        try {
+                            returnValue = Integer.parseInt(s.toString());
+                        } catch(NumberFormatException nfe) {
+                            System.out.println("Could not parse " + nfe);
+                        }
+                        resultCallback.onResult(returnValue);
                     }
                 }
             });
         } else {
             loadUrl(javascript);
             if (resultCallback != null) {
-                resultCallback.onResult("");
+                resultCallback.onResult(0);
             }
         }
     }
@@ -463,7 +469,7 @@ class VideoWebView extends WebView {
         }
     }
 
-    protected void getAdPlayElapsedTime(ResultCallback<String> resultCallback) {
+    protected void getAdPlayElapsedTime(ResultCallback resultCallback) {
         injectJavaScriptWithReturnValue("javascript:window.getCurrentPlayHeadTime()", resultCallback);
     }
 

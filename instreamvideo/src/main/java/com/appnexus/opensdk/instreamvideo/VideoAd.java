@@ -661,7 +661,7 @@ public class VideoAd implements VideoAdInterface {
      *                       completes with the result of the execution (if any).
      *                       May be null or empty string.
      */
-    public void getAdPlayElapsedTime(ResultCallback<String> resultCallback) {
+    public void getAdPlayElapsedTime(ResultCallback resultCallback) {
         if (videoAdView != null) {
             videoAdView.getAdPlayElapsedTime(resultCallback);
         }

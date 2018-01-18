@@ -18,10 +18,10 @@ package com.appnexus.opensdk.instreamvideo;
 /**
  * A callback interface used to provide values asynchronously.
  */
-public interface ResultCallback<T> {
+public interface ResultCallback {
     /**
      * Invoked when the result is available.
      * @param result The result.
      */
-    public void onResult(T result);
+    public void onResult(int result);
 }
