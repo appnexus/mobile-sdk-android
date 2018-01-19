@@ -204,7 +204,7 @@ class InstreamVideoView extends FrameLayout {
         return "";
     }
 
-    public void getAdPlayElapsedTime(ResultCallback<String> resultCallback){
+    public void getAdPlayElapsedTime(ResultCallback resultCallback){
         if(this.videoWebView != null){
             this.videoWebView.getAdPlayElapsedTime(resultCallback);
         }
