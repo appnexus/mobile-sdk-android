@@ -1,5 +1,5 @@
 // Project Properties
-version = "1.4" // Instream SDK version
+version = "1.5" // Instream SDK version
 
 apply plugin: 'com.android.library'
 

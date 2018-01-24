@@ -1,3 +1,8 @@
+## 4.5
+### Updates
++ MS-3087 -- Pre-Roll Placement Video Completion Tracker Not Firing Consistently
++ MS-3172 -- Typecasting issue in getAdPlayElapsedTime()
+
 ## 4.4
 ### Updates
 + MS-3097 -- Instream Video new API's to provide info on the video creatives loaded & playing
