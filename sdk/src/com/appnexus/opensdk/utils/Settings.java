@@ -79,12 +79,15 @@ public class Settings {
 
     public static final int MIN_PERCENTAGE_VIEWED = 50;
 
+    public static final int VIDEO_AUTOPLAY_PERCENTAGE = 50;
+
     private static String COOKIE_DOMAIN = "http://mediation.adnxs.com";
     public static final String AN_UUID = "uuid2";
     private static String BASE_URL = "http://mediation.adnxs.com/";
     private static String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
     private static String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
 
+    private static String VIDEO_HTML = "file:///android_res/raw/index.html";
 
     private static Settings settings_instance = null;
 
@@ -143,6 +146,12 @@ public class Settings {
     public static String getInstallBaseUrl() {
         return Settings.getSettings().useHttps ? INSTALL_BASE_URL.replace("http:", "https:") : INSTALL_BASE_URL;
     }
+
+
+    public static String getVideoHtmlPage() {
+        return Settings.getSettings().debug_mode ? VIDEO_HTML.replace("index.html", "index.html?ast_debug=true") : VIDEO_HTML;
+    }
+
 
     public static String getCookieDomain(){
         return COOKIE_DOMAIN;

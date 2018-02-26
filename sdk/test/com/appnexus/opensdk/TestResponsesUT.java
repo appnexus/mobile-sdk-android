@@ -23,9 +23,11 @@ public class TestResponsesUT {
     public static final String RESPONSE_URL_PATH = "response_url?";
     public static final String IMPRESSION_URL_PATH = "impression_url?";
     public static final String NO_AD_URL_PATH = "no_ad?";
+    public static final String NOTIFY_URL_PATH = "vast_track/v2?info&notifyURL";
     public static final String SSM_URL_PATH = "ssm?";
     public static final String REQUEST_URL = "http://mobile.devnxs.net/request_url?";
     public static String NO_AD_URL = "http://mobile.devnxs.net/no_ad_url?";
+    public static String NOTIFY_URL = "http://mobile.devnxs.net/vast_track/v2?info&notifyURL";
     public static String IMPRESSION_URL = "";
     public static String RESPONSE_URL = "";
     public static final String NO_BID_TRUE = "true";
@@ -35,6 +37,7 @@ public class TestResponsesUT {
     public static void setTestURL(String url){
         RESPONSE_URL = url+RESPONSE_URL_PATH;
         NO_AD_URL = url+NO_AD_URL_PATH;
+        NOTIFY_URL = url + NOTIFY_URL_PATH;
         SSM_URL= url+SSM_URL_PATH;
         IMPRESSION_URL = url+IMPRESSION_URL_PATH;
     }
@@ -44,7 +47,6 @@ public class TestResponsesUT {
     private static final String MRAID_CONTENT = "<script type=\\\"text/javascript\\\" src=\\\"mraid.js\\\"></script><script type=\\\"text/javascript\\\">document.write('<div style=\\\"background-color:#EF8200;height:1000px;width:1000px;\\\"><p>%s</p></div>');</script>";
     private static final String NATIVE_MAIN_MEDIA = "[{\"url\":\"%s\",\"width\":%d,\"height\":%d,\"label\":\"default\"},{\"url\":\"%s\",\"width\":%d,\"height\":%d},{\"url\":\"%s\",\"width\":%d,\"height\":%d}]";
     private static final String NATIVE_RATING = "{\"value\":%.2f,\"scale\":%.2f}";
-    private static final String DUMMY_VIDEO_CONTENT = "<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?><VAST version=\\\"2.0\\\"><Ad id=\\\"65588716\\\"></Ad></VAST>";
     // template strings
     private static final String CLASSNAME = "com.appnexus.opensdk.testviews.%s";
 
@@ -65,7 +67,7 @@ public class TestResponsesUT {
     public static final String CSM_NATIVE = "{\"content_source\":\"csm\",\"ad_type\":\"native\",\"buyer_member_id\":958,\"creative_id\":44863492,\"media_type_id\":12,\"media_subtype_id\":65,\"client_initiated_ad_counting\":true,\"csm\": {\"timeout_ms\":500,\"handler\": [{\"type\": \"android\",\"class\": \"%s\",\"param\": \"%s\",\"id\": \"%s\"},{\"type\": \"ios\",\"class\": \"DummyIOSClass\",\"param\": \"#{PARAM}\",\"id\": \"210827375150_10154672419150151\"}],\"request_url\": \"%s\",\"response_url\": \"%s\"}}";
     public static final String NO_BID = "{\"version\":\"0.0.1\",\"tags\":[{\"tag_id\":123456789,\"auction_id\":\"3552547938089377051000000\",\"nobid\":true,\"ad_profile_id\":2707239}]}";
 
-    public static final String RTB_VIDEO = "{\"content_source\":\"rtb\",\"ad_type\":\"video\",\"buyer_member_id\":123,\"creative_id\":6332753,\"media_type_id\":4,\"media_subtype_id\":64,\"client_initiated_ad_counting\":true,\"rtb\":{\"video\":{\"content\":\"%s\",\"duration_ms\":100}}}";
+    public static final String RTB_VIDEO = "{\"content_source\":\"rtb\",\"ad_type\":\"video\",\"notify_url\":\"%s\",\"buyer_member_id\":123,\"creative_id\":6332753,\"media_type_id\":4,\"media_subtype_id\":64,\"client_initiated_ad_counting\":true,\"rtb\":{\"video\":{\"content\":\"%s\",\"duration_ms\":100}}}";
 
     public static String blank() {
         return "";
@@ -76,10 +78,10 @@ public class TestResponsesUT {
 
     }
 
-    public static String video() {
-        return singleRTBVideo(DUMMY_VIDEO_CONTENT);
-    }
 
+    /**
+     *Returns a RTB HTML Banner UT Response
+     */
     public static String banner() {
         String bannerContent = String.format(DUMMY_BANNER_CONTENT, "Test Banner Content");
         return templateBannerRTBAdsResponse(bannerContent, 320, 50, IMPRESSION_URL);
@@ -327,7 +329,7 @@ public class TestResponsesUT {
     }
 
     private static String singleRTBVideo(String content){
-        return (String.format(RTB_VIDEO, content));
+        return (String.format(RTB_VIDEO,NOTIFY_URL, content));
     }
 
 
@@ -394,6 +396,109 @@ public class TestResponsesUT {
 
     private static String templateNativeRating(float value, float scale) {
         return String.format(NATIVE_RATING, value, scale);
+    }
+
+
+
+    private static final String DUMMY_VIDEO_CONTENT = "<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\n" +
+            "<VAST version=\\\"2.0\\\">\n" +
+            "    <Ad id=\\\"85346399\\\">\n" +
+            "        <InLine>\n" +
+            "            <AdSystem>adnxs</AdSystem>\n" +
+            "            <AdTitle>\n" +
+            "                <![CDATA[KungfuPandaWithAudio.mp4]]>\n" +
+            "            </AdTitle>\n" +
+            "            <Error>\n" +
+            "                <![CDATA[http://nym1-ib.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQm5cDFaAAAAABE-5Ol-nFN6bhm4cDFaAAAAACDfkNkoKAAwvgc4vgdAyOc9SIzyyQFQwsv8BVgBYgItLWgBcAF4AIABAIgBAJABwAKYAeADoAEAqAHfkNko&event_type=4&error_code=[ERRORCODE]]]>\n" +
+            "            </Error>\n" +
+            "            <Impression id=\\\"adnxs\\\">\n" +
+            "                <![CDATA[http://nym1-ib.adnxs.com/it?e=wqT_3QKPBmwPAwAAAwDWAAUBCLjhxdEFEL7Ip_fH85S9bhj_EQEwASotCXsUrkfheoQ_EREJBBkABQEI8D8hERIAKREJoDDCy_wFOL4HQL4HSAJQ35DZKFjLu05gAGiRQHi-uASAAQGKAQNVU0SSBQbwUJgBAaABAagBAbABALgBA8ABBMgBAtABANgBAOABAPABAIoCO3VmKCdhJywgMTc5Nzg2NSwgMTUxMzE4OTU2MCk7dWYoJ3InLCA4NTM0NjM5OTYeAPCckgL5ASEtem5KV0FpNDE3WUpFTi1RMlNnWUFDREx1MDR3QURnQVFBUkl2Z2RRd3N2OEJWZ0FZUF9fX184UGFBQndBWGdCZ0FFQmlBRUJrQUVCbUFFQm9BRUJxQUVEc0FFQXVRR1I3d3J3NFhxRVA4RUJrZThLOE9GNmhEX0pBUzZmM3llWTdld18yUUVBQUFBQUFBRHdQLUFCQVBVQgUPKEpnQ0FLQUNBTFVDBRAETDAJCPBMTUFDQWNnQ0FkQUNBZGdDQWVBQ0FPZ0NBUGdDQUlBREFaQURBSmdEQWFnRHVOZTJDYm9EQ1U1WlRUSTZNelU1TlEuLpoCLSFpQWxYcWc2_ADoeTd0T0lBUW9BRG9KVGxsTk1qb3pOVGsx2ALoB-ACx9MB6gI0aXR1bmVzLmFwcGxlLmNvbS91cy9hcHABBPCWbmV4dXMtc2RrLWFwcC9pZDczNjg2OTgzM4ADAYgDAZADAJgDF6ADAaoDAMADkBzIAwDYA_mjeuADAOgDAvgDAIAEAJIEBi91dC92MpgEAKIECjEwLjEuMTIuNjaoBACyBA4IABABGMACIOADMAA4ArgEAMAEAMgEANIECU5ZTTI6MzU5NdoEAggA4AQA8ATfkNkoggUJNxGGHIgFAZgFAKAFUcAY_wHABQDJBUWwGADwP9IFCQkJDEQAANgFAeAFAfAFAfoFBAgAEAA.&s=bc4092d95e0f3a01c7510f1047a61f57a3f64548&referrer=itunes.apple.com%2Fus%2Fapp%2Fappnexus-sdk-app%2Fid736869833]]>\n" +
+            "            </Impression>\n" +
+            "            <Creatives>\n" +
+            "                <Creative id=\\\"49362\\\" AdID=\\\"85346399\\\">\n" +
+            "                    <Linear>\n" +
+            "                        <Duration>00:02:25</Duration>\n" +
+            "                        <TrackingEvents>\n" +
+            "                            <Tracking event=\\\"start\\\">\n" +
+            "                                <![CDATA[http://nym1-ib.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQm5cDFaAAAAABE-5Ol-nFN6bhm4cDFaAAAAACDfkNkoKAAwvgc4vgdAyOc9SIzyyQFQwsv8BVgBYgItLWgBcAF4AIABAIgBAJABwAKYAeADoAEAqAHfkNko&event_type=2]]>\n" +
+            "                            </Tracking>\n" +
+            "                            <Tracking event=\\\"skip\\\">\n" +
+            "                                <![CDATA[http://nym1-ib.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQm5cDFaAAAAABE-5Ol-nFN6bhm4cDFaAAAAACDfkNkoKAAwvgc4vgdAyOc9SIzyyQFQwsv8BVgBYgItLWgBcAF4AIABAIgBAJABwAKYAeADoAEAqAHfkNko&event_type=3]]>\n" +
+            "                            </Tracking>\n" +
+            "                            <Tracking event=\\\"firstQuartile\\\">\n" +
+            "                                <![CDATA[http://nym1-ib.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQm5cDFaAAAAABE-5Ol-nFN6bhm4cDFaAAAAACDfkNkoKAAwvgc4vgdAyOc9SIzyyQFQwsv8BVgBYgItLWgBcAF4AIABAIgBAJABwAKYAeADoAEAqAHfkNko&event_type=5]]>\n" +
+            "                            </Tracking>\n" +
+            "                            <Tracking event=\\\"midpoint\\\">\n" +
+            "                                <![CDATA[http://nym1-ib.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQm5cDFaAAAAABE-5Ol-nFN6bhm4cDFaAAAAACDfkNkoKAAwvgc4vgdAyOc9SIzyyQFQwsv8BVgBYgItLWgBcAF4AIABAIgBAJABwAKYAeADoAEAqAHfkNko&event_type=6]]>\n" +
+            "                            </Tracking>\n" +
+            "                            <Tracking event=\\\"thirdQuartile\\\">\n" +
+            "                                <![CDATA[http://nym1-ib.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQm5cDFaAAAAABE-5Ol-nFN6bhm4cDFaAAAAACDfkNkoKAAwvgc4vgdAyOc9SIzyyQFQwsv8BVgBYgItLWgBcAF4AIABAIgBAJABwAKYAeADoAEAqAHfkNko&event_type=7]]>\n" +
+            "                            </Tracking>\n" +
+            "                            <Tracking event=\\\"complete\\\">\n" +
+            "                                <![CDATA[http://nym1-ib.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQm5cDFaAAAAABE-5Ol-nFN6bhm4cDFaAAAAACDfkNkoKAAwvgc4vgdAyOc9SIzyyQFQwsv8BVgBYgItLWgBcAF4AIABAIgBAJABwAKYAeADoAEAqAHfkNko&event_type=8]]>\n" +
+            "                            </Tracking>\n" +
+            "                        </TrackingEvents>\n" +
+            "                        <VideoClicks>\n" +
+            "                            <ClickThrough>\n" +
+            "                                <![CDATA[https://www.appnexus.com]]>\n" +
+            "                            </ClickThrough>\n" +
+            "                            <ClickTracking id=\\\"adnxs\\\">\n" +
+            "                                <![CDATA[http://nym1-ib.adnxs.com/click?exSuR-F6hD97FK5H4XqEPwAAAAAAAPA_exSuR-F6hD97FK5H4XqEPz7k6X6cU3pu__________-4cDFaAAAAAMIlvwC-AwAAvgMAAAIAAABfSBYFy50TAAAAAABVU0QAVVNEAAEAAQARIAAAAAABAwQCAAAAAAAAPyUuWQAAAAA./cnd=%21iAlXqgi417YJEN-Q2SgYy7tOIAQoADoJTllNMjozNTk1/bn=72766/referrer=itunes.apple.com%2Fus%2Fapp%2Fappnexus-sdk-app%2Fid736869833/]]>\n" +
+            "                            </ClickTracking>\n" +
+            "                        </VideoClicks>\n" +
+            "                        <MediaFiles>\n" +
+            "                            <MediaFile id=\\\"612525\\\" delivery=\\\"progressive\\\" type=\\\"video/x-flv\\\" width=\\\"768\\\" height=\\\"432\\\" scalable=\\\"true\\\" bitrate=\\\"500\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_768_432_500k.flv]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612526\\\" delivery=\\\"progressive\\\" type=\\\"video/mp4\\\" width=\\\"768\\\" height=\\\"432\\\" scalable=\\\"true\\\" bitrate=\\\"1700\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_768_432_1700k.mp4]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612527\\\" delivery=\\\"progressive\\\" type=\\\"video/mp4\\\" width=\\\"768\\\" height=\\\"432\\\" scalable=\\\"true\\\" bitrate=\\\"500\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_768_432_500k.mp4]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612528\\\" delivery=\\\"progressive\\\" type=\\\"video/webm\\\" width=\\\"1280\\\" height=\\\"720\\\" scalable=\\\"true\\\" bitrate=\\\"2000\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_1280_720_2000k.webm]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612529\\\" delivery=\\\"progressive\\\" type=\\\"video/x-flv\\\" width=\\\"768\\\" height=\\\"432\\\" scalable=\\\"true\\\" bitrate=\\\"1100\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_768_432_1100k.flv]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612530\\\" delivery=\\\"progressive\\\" type=\\\"video/webm\\\" width=\\\"1280\\\" height=\\\"720\\\" scalable=\\\"true\\\" bitrate=\\\"600\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_1280_720_600k.webm]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612531\\\" delivery=\\\"progressive\\\" type=\\\"video/webm\\\" width=\\\"768\\\" height=\\\"432\\\" scalable=\\\"true\\\" bitrate=\\\"500\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_768_432_500k.webm]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612532\\\" delivery=\\\"progressive\\\" type=\\\"video/mp4\\\" width=\\\"1280\\\" height=\\\"720\\\" scalable=\\\"true\\\" bitrate=\\\"500\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_1280_720_500k.mp4]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612533\\\" delivery=\\\"progressive\\\" type=\\\"video/mp4\\\" width=\\\"768\\\" height=\\\"432\\\" scalable=\\\"true\\\" bitrate=\\\"1100\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_768_432_1100k.mp4]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612534\\\" delivery=\\\"progressive\\\" type=\\\"video/webm\\\" width=\\\"768\\\" height=\\\"432\\\" scalable=\\\"true\\\" bitrate=\\\"1500\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_768_432_1500k.webm]]>\n" +
+            "                            </MediaFile>\n" +
+            "                            <MediaFile id=\\\"612535\\\" delivery=\\\"progressive\\\" type=\\\"video/mp4\\\" width=\\\"1280\\\" height=\\\"720\\\" scalable=\\\"true\\\" bitrate=\\\"1100\\\" maintainAspectRatio=\\\"true\\\">\n" +
+            "                                <![CDATA[http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_1280_720_1100k.mp4]]>\n" +
+            "                            </MediaFile>\n" +
+            "                        </MediaFiles>\n" +
+            "                    </Linear>\n" +
+            "                </Creative>\n" +
+            "            </Creatives>\n" +
+            "        </InLine>\n" +
+            "    </Ad>\n" +
+            "</VAST>";
+
+
+
+    public static String rtbVASTVideo() {
+        return templateVideoRTBAdsResponse(DUMMY_VIDEO_CONTENT);
+    }
+
+
+    private static String templateVideoRTBAdsResponse(String content) {
+        String rtbVideo = singleRTBVideo(content);
+        String ads = String.format(ADS, rtbVideo);
+        return templateResponse(NO_BID_FALSE, NO_AD_URL, ads);
     }
 
 

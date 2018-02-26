@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.webkit.GeolocationPermissions;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ViewUtil;
 
@@ -112,11 +113,11 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
 
         root.removeView(frame);
 
-        if (customViewCallback != null){
+        if (customViewCallback != null) {
             // Try catch added to handle crash in 4.0.3 devices
             try {
                 customViewCallback.onCustomViewHidden();
-            }catch (NullPointerException e) {
+            } catch (NullPointerException e) {
                 Clog.e(Clog.baseLogTag, "Exception calling customViewCallback  onCustomViewHidden: " + e.getMessage());
             }
         }
@@ -124,6 +125,9 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     }
 
     private void addCloseButton(FrameLayout layout) {
+        if ((adView != null) && adView.getAdType() == AdType.VIDEO) {
+            return;
+        }
         final ImageButton close = new ImageButton(context);
         close.setImageDrawable(context.getResources().getDrawable(
                 android.R.drawable.ic_menu_close_clear_cancel));

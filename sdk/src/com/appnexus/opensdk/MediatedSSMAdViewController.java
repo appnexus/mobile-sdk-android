@@ -21,7 +21,6 @@ import android.os.Message;
 
 import com.appnexus.opensdk.ut.UTAdRequester;
 import com.appnexus.opensdk.ut.UTConstants;
-import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.adresponse.SSMHTMLAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
@@ -74,14 +73,14 @@ public class MediatedSSMAdViewController {
             @Override
             protected void onPostExecute(HTTPResponse response) {
                 markLatencyStop();
-                if(response != null && response.getSucceeded()) {
+                if (response != null && response.getSucceeded()) {
                     ssmHtmlAdResponse.setAdContent(response.getResponseBody());
-                    if(!StringUtil.isEmpty(ssmHtmlAdResponse.getAdContent())){
-                        onAdLoaded();
-                    }else{
+                    if (!StringUtil.isEmpty(ssmHtmlAdResponse.getAdContent())) {
+                        handleSSMServerResponse();
+                    } else {
                         onAdFailed(ResultCode.UNABLE_TO_FILL);
                     }
-                }else {
+                } else {
                     onAdFailed(ResultCode.UNABLE_TO_FILL);
                 }
 
@@ -102,58 +101,25 @@ public class MediatedSSMAdViewController {
         hasFailed = true;
         fireResponseURL(ssmHtmlAdResponse, reason);
         UTAdRequester requester = this.caller_requester.get();
-        if(requester != null) {
+        if (requester != null) {
             requester.continueWaterfall(reason);
         }
     }
 
 
-    private void onAdLoaded() {
+    private void handleSSMServerResponse() {
         if (hasSucceeded || hasFailed) return;
-        final AdWebView output = new AdWebView(owner);
-        output.loadAd(ssmHtmlAdResponse);
         cancelTimeout();
         hasSucceeded = true;
         fireResponseURL(ssmHtmlAdResponse, ResultCode.SUCCESS);
         UTAdRequester requester = this.caller_requester.get();
         if (requester != null) {
-            requester.onReceiveAd(new AdResponse() {
-                @Override
-                public MediaType getMediaType() {
-                    return owner.getMediaType();
-                }
-
-                @Override
-                public boolean isMediated() {
-                    return false;
-                }
-
-                @Override
-                public Displayable getDisplayable() {
-                    return output;
-                }
-
-                @Override
-                public NativeAdResponse getNativeAdResponse() {
-                    return null;
-                }
-
-                @Override
-                public BaseAdResponse getResponseData() {
-                    return ssmHtmlAdResponse;
-                }
-
-                @Override
-                public void destroy() {
-                    output.destroy();
-                }
-            });
-        } else {
-            output.destroy();
+            final AdWebView output = new AdWebView(owner,requester);
+            output.loadAd(ssmHtmlAdResponse);
         }
     }
 
-    private void fireResponseURL(SSMHTMLAdResponse ssmHtmlAdResponse, ResultCode result){
+    private void fireResponseURL(SSMHTMLAdResponse ssmHtmlAdResponse, ResultCode result) {
         if ((ssmHtmlAdResponse == null) || (ssmHtmlAdResponse.getResponseURL() == null) || StringUtil.isEmpty(ssmHtmlAdResponse.getResponseURL())) {
             Clog.w(Clog.mediationLogTag, Clog.getString(R.string.fire_responseurl_null));
             return;

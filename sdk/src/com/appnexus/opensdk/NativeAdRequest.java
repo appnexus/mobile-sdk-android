@@ -412,6 +412,11 @@ public class NativeAdRequest implements Ad {
         public void onAppEvent(String name, String data) {
 
         }
+
+        @Override
+        public void toggleAutoRefresh() {
+
+        }
     }
 
     @Override

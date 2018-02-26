@@ -47,6 +47,8 @@ public class UTAdResponse {
     private static final String RESPONSE_KEY_CONTENT = "content";
     private static final String RESPONSE_KEY_WIDTH = "width";
     private static final String RESPONSE_KEY_HEIGHT = "height";
+    private static final String RESPONSE_KEY_PLAYER_WIDTH = "player_width";
+    private static final String RESPONSE_KEY_PLAYER_HEIGHT = "player_height";
     private static final String RESPONSE_KEY_NO_BID = "nobid";
 
 
@@ -245,11 +247,14 @@ public class UTAdResponse {
         JSONObject videoObject = JsonUtil.getJSONObject(rtbObject, UTConstants.AD_TYPE_VIDEO);
         if (videoObject != null) {
             String vastResponse = JsonUtil.getJSONString(videoObject, RESPONSE_KEY_CONTENT);
+            int height = JsonUtil.getJSONInt(videoObject, RESPONSE_KEY_PLAYER_HEIGHT);
+            int width = JsonUtil.getJSONInt(videoObject, RESPONSE_KEY_PLAYER_WIDTH);
             //String vastResponse = JsonUtil.getJSONString(videoObject,RESPONSE_KEY_ASSET_URL);
             if (!StringUtil.isEmpty(vastResponse)) {
-                RTBVASTAdResponse rtbAd = new RTBVASTAdResponse(-1, -1, adType, notifyUrl, getImpressionUrls(rtbObject));
+                RTBVASTAdResponse rtbAd = new RTBVASTAdResponse(width, height, adType, notifyUrl, getImpressionUrls(rtbObject));
                 rtbAd.setAdContent(vastResponse);
                 rtbAd.setContentSource(UTConstants.RTB);
+                rtbAd.addToExtras(UTConstants.EXTRAS_KEY_MRAID, true);
                 adList.add(rtbAd);
             }
         }

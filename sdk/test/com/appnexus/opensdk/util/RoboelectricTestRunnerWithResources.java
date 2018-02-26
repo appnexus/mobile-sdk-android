@@ -23,6 +23,9 @@ import org.robolectric.res.FsFile;
  */
 public class RoboelectricTestRunnerWithResources extends RobolectricTestRunner {
 
+    //@FIXME - Only permanant solution for this is to use Android studio 3.0 and do
+    // includeAndroidResources = true
+    // We can wait till Roboelectic 3.8 release to do this http://robolectric.org/blog/2017/11/13/resources-for-real/
     public RoboelectricTestRunnerWithResources(Class<?> klass) throws InitializationError {
         super(klass);
     }
@@ -36,24 +39,39 @@ public class RoboelectricTestRunnerWithResources extends RobolectricTestRunner {
         FsFile assetsDirectory;
 
 
-            String moduleRoot = getModuleRootPath(config);
-            androidManifestFile = FileFsFile.from(moduleRoot, appManifest.getAndroidManifestFile().getPath().replace("bundles", "manifests/aapt"));
-
-            if(appManifest.getResDirectory().getPath().contains("release")) {
-                resDirectory = FileFsFile.from(moduleRoot, appManifest.getResDirectory().getPath().replace("release", "default"));
-                assetsDirectory = FileFsFile.from(moduleRoot, appManifest.getAssetsDirectory().getPath().replace("release", "default"));
-            }else{
-                resDirectory = FileFsFile.from(moduleRoot, appManifest.getResDirectory().getPath());
-                assetsDirectory = FileFsFile.from(moduleRoot, appManifest.getAssetsDirectory().getPath());
-            }
+        System.out.print("Before::androidManifestFile" + androidManifestFile.getPath() + '\n');
+        System.out.print("Before::getResDirectory" + appManifest.getResDirectory().getPath() + '\n');
+        System.out.print("Before::getAssetsDirectory" + appManifest.getAssetsDirectory().getPath() + '\n');
 
 
-            System.out.print(androidManifestFile.getPath() + '\n');
-            System.out.print(resDirectory.getPath() + '\n');
-            System.out.print(assetsDirectory.getPath() + '\n');
+        String moduleRoot = getModuleRootPath(config);
+
+        /**************** Works for Command Line and Jenkins - START *********************************/
+            resDirectory = FileFsFile.from(appManifest.getResDirectory().getPath());
+            assetsDirectory = FileFsFile.from(appManifest.getAssetsDirectory().getPath());
+        /**************** Works for Command Line and Jenkins - END *********************************/
 
 
-            return new AndroidManifest(androidManifestFile, resDirectory, assetsDirectory);
+
+
+        /**************** Works with Android Studio Never check in this - START *********************************/
+/*        if(appManifest.getResDirectory().getPath().contains("release")) {
+            resDirectory = FileFsFile.from(appManifest.getResDirectory().getPath().replace("release", "default"));
+            assetsDirectory = FileFsFile.from(appManifest.getAssetsDirectory().getPath().replace("release", "default"));
+        }else{
+            resDirectory = FileFsFile.from(appManifest.getResDirectory().getPath().replace("/debug", "/androidTest/debug"));
+            assetsDirectory = FileFsFile.from(appManifest.getAssetsDirectory().getPath());
+
+        }*/
+        /**************** Works with Android Studio Never check in this - END *********************************/
+
+
+        System.out.print("After::androidManifestFile" + androidManifestFile.getPath() + '\n');
+        System.out.print("After::getResDirectory" + resDirectory.getPath() + '\n');
+        System.out.print("After::getAssetsDirectory" + assetsDirectory.getPath() + '\n');
+
+
+        return new AndroidManifest(androidManifestFile, resDirectory, assetsDirectory);
 
     }
 

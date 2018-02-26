@@ -226,7 +226,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
         boolean hidden;
 
         public MockAdWebView(AdView owner) {
-            super(new MockBannerAdView(owner.getContext()));
+            super(new MockBannerAdView(owner.getContext()),null);
             this.setLayoutParams(new ViewGroup.LayoutParams(0, 0));
         }
 
@@ -335,6 +335,11 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
             appEventOccurred = true;
             eventName = name;
             eventData = data;
+        }
+
+        @Override
+        public void toggleAutoRefresh() {
+            //@FIXME
         }
     }
 }

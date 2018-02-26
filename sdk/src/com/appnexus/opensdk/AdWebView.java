@@ -27,6 +27,7 @@ import android.content.MutableContextWrapper;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
@@ -47,6 +48,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.appnexus.opensdk.AdView.BrowserStyle;
+import com.appnexus.opensdk.ut.UTAdRequester;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.utils.Clog;
@@ -63,6 +65,9 @@ import java.util.HashMap;
 class AdWebView extends WebView implements Displayable {
     private boolean failed = false;
     AdView adView;
+    private VideoImplementation videoImplementation = null;
+    private UTAdRequester caller_requester;
+    private boolean isVideoAd = false;
 
     // MRAID variables
     private boolean isMRAIDEnabled;
@@ -75,27 +80,31 @@ class AdWebView extends WebView implements Displayable {
     private int creativeHeight;
     // for viewable event
     private boolean isOnscreen = false;
+    private boolean isVideoOnScreen = false;
     private boolean isVisible = false;
     private Handler handler = new Handler();
     private boolean viewableCheckPaused = false;
     private int orientation;
     private ProgressDialog progressDialog;
     protected String initialMraidStateString;
-    private boolean MRAIDUseCustomClose=false;
+    private boolean MRAIDUseCustomClose = false;
+    protected BaseAdResponse adResponseData;
 
     // touch detection
     private boolean userInteracted = false;
 
     private int checkPositionTimeInterval = 1000;
 
-    public AdWebView(AdView adView) {
+    public AdWebView(AdView adView, UTAdRequester requester) {
         super(new MutableContextWrapper(adView.getContext()));
         this.adView = adView;
+        this.caller_requester = requester;
         this.initialMraidStateString = MRAIDImplementation.MRAID_INIT_STATE_STRINGS[
                 MRAIDImplementation.MRAID_INIT_STATE.STARTING_DEFAULT.ordinal()];
         setupSettings();
         setup();
     }
+
 
     @SuppressWarnings("deprecation")
     @SuppressLint("SetJavaScriptEnabled")
@@ -150,7 +159,7 @@ class AdWebView extends WebView implements Displayable {
     }
 
     public void loadAd(BaseAdResponse ad) {
-        if(ad==null){
+        if (ad == null) {
             fail();
             return;
         }
@@ -167,26 +176,36 @@ class AdWebView extends WebView implements Displayable {
         Clog.i(Clog.baseLogTag, Clog.getString(R.string.webview_loading, html));
 
         parseAdResponseExtras(ad.getExtras());
+        adResponseData = ad;
+        isVideoAd = (UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(adResponseData.getAdType()));
 
-        html = preLoadContent(html);
-        html = prependRawResources(html);
-        html = prependViewPort(html);
+
         final float scale = adView.getContext().getResources()
                 .getDisplayMetrics().density;
         //do not modify this logic as it affects the rendering of 1x1 interstitial
-        int rheight,rwidth;
-        if(ad.getHeight()==1 && ad.getWidth() == 1){
-            rwidth= ViewGroup.LayoutParams.MATCH_PARENT;
-            rheight=ViewGroup.LayoutParams.MATCH_PARENT;
-        }else{
+        int rheight, rwidth;
+        if (ad.getHeight() == 1 && ad.getWidth() == 1) {
+            rwidth = ViewGroup.LayoutParams.MATCH_PARENT;
+            rheight = ViewGroup.LayoutParams.MATCH_PARENT;
+        } else {
             rheight = (int) (ad.getHeight() * scale + 0.5f);
             rwidth = (int) (ad.getWidth() * scale + 0.5f);
         }
+
         AdView.LayoutParams resize = new AdView.LayoutParams(rwidth, rheight,
                 Gravity.CENTER);
         this.setLayoutParams(resize);
 
-        this.loadDataWithBaseURL(Settings.getBaseUrl(), html, "text/html", "UTF-8", null);
+        if (isVideoAd) {
+            videoImplementation = new VideoImplementation(this);
+            videoImplementation.setVASTXML(html);
+            this.loadUrl(Settings.getVideoHtmlPage());
+        } else {
+            html = preLoadContent(html);
+            html = prependRawResources(html);
+            html = prependViewPort(html);
+            this.loadDataWithBaseURL(Settings.getBaseUrl(), html, "text/html", "UTF-8", null);
+        }
     }
 
     // The webview about to load the ad, and the html ad content
@@ -223,7 +242,7 @@ class AdWebView extends WebView implements Displayable {
         return html;
     }
 
-    private String prependViewPort(String html){
+    private String prependViewPort(String html) {
         if (!StringUtil.isEmpty(html)) {
             html = html.replaceFirst("<head>", "<head><meta name=\"viewport\" content=\"width=device-width,initial-scale=1.0,user-scalable=no\"/>");
         }
@@ -232,7 +251,7 @@ class AdWebView extends WebView implements Displayable {
 
 
     private void parseAdResponseExtras(HashMap extras) {
-        if(extras.isEmpty()) {
+        if (extras.isEmpty()) {
             return;
         }
 
@@ -248,11 +267,11 @@ class AdWebView extends WebView implements Displayable {
         }
     }
 
-    protected void loadUrlWithMRAID(final String url){
+    protected void loadUrlWithMRAID(final String url) {
         new HTTPGet() {
             @Override
             protected void onPostExecute(HTTPResponse response) {
-                if(response.getSucceeded()){
+                if (response.getSucceeded()) {
                     String html = preLoadContent(response.getResponseBody());
                     html = prependRawResources(html);
                     html = prependViewPort(html);
@@ -309,7 +328,7 @@ class AdWebView extends WebView implements Displayable {
                     String host = Uri.parse(url).getHost();
                     if ((host != null) && host.equals("enable")) {
                         fireMRAIDEnabled();
-                    }else if((host != null) && host.equals("open")){
+                    } else if ((host != null) && host.equals("open")) {
                         implementation.dispatch_mraid_call(url, userInteracted);
                     }
                 }
@@ -319,6 +338,9 @@ class AdWebView extends WebView implements Displayable {
                 return true;
             } else if (url.startsWith("appnexuspb://")) {
                 PBImplementation.handleUrl(AdWebView.this, url);
+                return true;
+            } else if (url.startsWith("video://") && isVideoAd && videoImplementation != null) {
+                videoImplementation.dispatchNativeCallback(url);
                 return true;
             }
 
@@ -332,7 +354,7 @@ class AdWebView extends WebView implements Displayable {
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
 
-            String  javascript  = "javascript:window.mraid.util.pageFinished()";
+            String javascript = "javascript:window.mraid.util.pageFinished()";
 
             if (!firstPageFinished) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -351,6 +373,15 @@ class AdWebView extends WebView implements Displayable {
                     implementation.webViewFinishedLoading(AdWebView.this, initialMraidStateString);
                     startCheckViewable();
                 }
+
+                // Send Back onAdLoaded. For Video Ads it will be sent after we have adReady from player
+                if (isVideoAd && videoImplementation != null) {
+                    videoImplementation.webViewFinishedLoading();
+                } else if (!implementation.isMRAIDTwoPartExpanded) {
+                    Clog.i(Clog.baseLogTag, "AdWebView.onPageFinished -- !isMRAIDTwoPartExpanded seding back success");
+                    AdWebView.this.success();
+                }
+
                 firstPageFinished = true;
             }
         }
@@ -513,7 +544,7 @@ class AdWebView extends WebView implements Displayable {
                     out.loadUrl(url);
                     openInAppBrowser(out);
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 // Catches PackageManager$NameNotFoundException for webview
                 Clog.e(Clog.baseLogTag, "Exception initializing the redirect webview: " + e.getMessage());
             }
@@ -526,8 +557,54 @@ class AdWebView extends WebView implements Displayable {
 
     }
 
-    private void fail() {
+    protected void fail() {
         failed = true;
+        if (caller_requester != null) {
+            //Don't send fail back here, continueWaterfall will internally call fail.
+            //is we send fail here then SSM waterfall case will not be handled.
+            caller_requester.continueWaterfall(ResultCode.INTERNAL_ERROR);
+        }
+    }
+
+    protected void success() {
+        if (caller_requester != null) {
+            caller_requester.onReceiveAd(getAdResponse());
+        }
+    }
+
+    private AdResponse getAdResponse() {
+        return new AdResponse() {
+            @Override
+            public MediaType getMediaType() {
+                return adView.getMediaType();
+            }
+
+            @Override
+            public boolean isMediated() {
+                // Only SSM / RTBHTML and BannerVideo use AdWebView for rendering
+                return (UTConstants.SSM.equalsIgnoreCase(adResponseData.getContentSource())) ? true : false;
+            }
+
+            @Override
+            public Displayable getDisplayable() {
+                return AdWebView.this;
+            }
+
+            @Override
+            public NativeAdResponse getNativeAdResponse() {
+                return null;
+            }
+
+            @Override
+            public BaseAdResponse getResponseData() {
+                return AdWebView.this.adResponseData;
+            }
+
+            @Override
+            public void destroy() {
+                AdWebView.this.destroy();
+            }
+        };
     }
 
     // For interstitial ads
@@ -556,14 +633,14 @@ class AdWebView extends WebView implements Displayable {
             super.destroy();
         }
         // Fatal exception in android v4.x in TextToSpeech
-        catch (IllegalArgumentException e){
-            Clog.e(Clog.baseLogTag, Clog.getString(R.string.apn_webview_failed_to_destroy),e);
+        catch (IllegalArgumentException e) {
+            Clog.e(Clog.baseLogTag, Clog.getString(R.string.apn_webview_failed_to_destroy), e);
         }
         this.removeAllViews();
         stopCheckViewable();
     }
 
-    private void setCreativeWidth(int w){
+    private void setCreativeWidth(int w) {
         this.creativeWidth = w;
     }
 
@@ -572,7 +649,7 @@ class AdWebView extends WebView implements Displayable {
         return this.creativeWidth;
     }
 
-    private void setCreativeHeight(int h){
+    private void setCreativeHeight(int h) {
         this.creativeHeight = h;
     }
 
@@ -697,8 +774,8 @@ class AdWebView extends WebView implements Displayable {
     }
 
     protected void lockOrientationFromExpand(Activity containerActivity,
-                                           boolean allowOrientationChange,
-                                           AdActivity.OrientationEnum forceOrientation) {
+                                             boolean allowOrientationChange,
+                                             AdActivity.OrientationEnum forceOrientation) {
         if (forceOrientation != AdActivity.OrientationEnum.none) {
             AdActivity.lockToMRAIDOrientation(containerActivity, forceOrientation);
         }
@@ -748,10 +825,28 @@ class AdWebView extends WebView implements Displayable {
             int orientation = this.getContext().getResources().getConfiguration().orientation;
             implementation.onOrientationChanged(orientation);
         }
+
+        if (isVideoAd && videoImplementation != null) {
+            // holds the visible part of a view
+            Rect clippedArea = new Rect();
+            if (this.getGlobalVisibleRect(clippedArea)) {
+                final int visibleViewArea = clippedArea.height() * clippedArea.width();
+                final int totalArea = this.getHeight() * this.getWidth();
+                this.isVideoOnScreen = 100 * visibleViewArea >= Settings.VIDEO_AUTOPLAY_PERCENTAGE * totalArea;
+            }else{
+                this.isVideoOnScreen = false;
+            }
+            videoImplementation.fireViewableChangeEvent();
+        }
     }
 
     boolean isViewable() {
         return isOnscreen && isVisible;
+    }
+
+
+    boolean isVideoViewable() {
+        return isVideoOnScreen && isVisible;
     }
 
     public void resize(int w, int h, int offset_x, int offset_y, MRAIDImplementation.CUSTOM_CLOSE_POSITION custom_close_position, boolean allow_offscreen) {
@@ -827,7 +922,7 @@ class AdWebView extends WebView implements Displayable {
                     isOpeningAppStore = checkForApp(url);
 
                     if (isOpeningAppStore) {
-                        if(progressDialog != null && progressDialog.isShowing()) {
+                        if (progressDialog != null && progressDialog.isShowing()) {
                             progressDialog.dismiss();
                         }
                     }
@@ -840,7 +935,7 @@ class AdWebView extends WebView implements Displayable {
                     Clog.v(Clog.browserLogTag, "Opening URL: " + url);
                     ViewUtil.removeChildFromParent(RedirectWebView.this);
 
-                    if(progressDialog != null && progressDialog.isShowing()) {
+                    if (progressDialog != null && progressDialog.isShowing()) {
                         progressDialog.dismiss();
                     }
 
@@ -860,14 +955,14 @@ class AdWebView extends WebView implements Displayable {
 
     private void triggerBrowserLaunchEvent() {
         if (adView != null && adView instanceof InterstitialAdView) {
-            ((InterstitialAdView)adView).browserLaunched();
+            ((InterstitialAdView) adView).browserLaunched();
         }
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if(progressDialog != null && progressDialog.isShowing()) {
+        if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
     }
@@ -876,14 +971,13 @@ class AdWebView extends WebView implements Displayable {
     // Helper method for getting Context if it is of type MutableContextWrapper.
     protected Context getContextFromMutableContext() {
         if (this.getContext() instanceof MutableContextWrapper) {
-           return  ((MutableContextWrapper) this.getContext()).getBaseContext();
+            return ((MutableContextWrapper) this.getContext()).getBaseContext();
         }
         return this.getContext();
     }
 
-    protected void injectJavaScript(String url){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-        {
+    protected void injectJavaScript(String url) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             try {
                 evaluateJavascript(url, null);
             } catch (Exception exception) {
@@ -904,17 +998,17 @@ class AdWebView extends WebView implements Displayable {
 
 }
 
-class MRAIDTwoPartExpandWebView extends AdWebView{
+class MRAIDTwoPartExpandWebView extends AdWebView {
     MRAIDImplementation firstPartImplementation;
 
     //The mraidimplementation parameter is NOT here to be reused by this webview.
     //this webview will make its own mraidimplementation
     //and only access the first one when it closes, below
-    MRAIDTwoPartExpandWebView(AdView adView, MRAIDImplementation firstPartImplementation){
-        super(adView);
+    MRAIDTwoPartExpandWebView(AdView adView, MRAIDImplementation firstPartImplementation) {
+        super(adView, null);
         this.initialMraidStateString = MRAIDImplementation.MRAID_INIT_STATE_STRINGS[
                 MRAIDImplementation.MRAID_INIT_STATE.STARTING_EXPANDED.ordinal()];
-        this.firstPartImplementation=firstPartImplementation;
+        this.firstPartImplementation = firstPartImplementation;
     }
 
     @Override

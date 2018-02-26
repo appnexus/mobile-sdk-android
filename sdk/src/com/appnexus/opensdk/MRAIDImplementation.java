@@ -68,7 +68,7 @@ class MRAIDImplementation {
     boolean isViewable;
     private int[] position = new int[4];
     private int lastRotation;
-    private boolean isMRAIDTwoPartExpanded = false;
+    protected boolean isMRAIDTwoPartExpanded = false;
 
     public MRAIDImplementation(AdWebView owner) {
         this.owner = owner;

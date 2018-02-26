@@ -30,6 +30,7 @@
     <string name="html5_geo_permission_prompt_title">%s would like to access your location</string>
     <string name="fire_tracker_succesfully_message">Tracker fired successfully</string>
     <string name="no_ad_url">No Ad Url</string>
+    <string name="notify_url">Notify URL</string>
     <string name="allow">Allow</string>
     <string name="deny">Deny</string>
     <string name="loading">Loading</string>

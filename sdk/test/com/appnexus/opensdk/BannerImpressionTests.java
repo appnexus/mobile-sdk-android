@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
+import com.appnexus.opensdk.shadows.ShadowCustomWebView;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.util.Lock;
@@ -35,7 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
-import org.robolectric.internal.ShadowExtractor;
+import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowConnectivityManager;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowNetworkInfo;
@@ -54,7 +55,7 @@ import static junit.framework.Assert.assertTrue;
 
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class, ShadowConnectivityManager.class})
+                ShadowCustomWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class, ShadowConnectivityManager.class})
 @RunWith(RoboelectricTestRunnerWithResources.class)
 public class BannerImpressionTests extends BaseViewAdTest {
 
@@ -67,7 +68,7 @@ public class BannerImpressionTests extends BaseViewAdTest {
         connectivityManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
         // Not using Shadows.shadowOf(connectivityManager) because of Robolectric bug when using API23+
         // See: https://github.com/robolectric/robolectric/issues/1862
-        shadowConnectivityManager = (ShadowConnectivityManager) ShadowExtractor.extract(connectivityManager);
+        shadowConnectivityManager = (ShadowConnectivityManager) Shadow.extract(connectivityManager);
     }
 
 

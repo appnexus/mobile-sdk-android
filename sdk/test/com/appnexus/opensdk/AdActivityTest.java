@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.webkit.WebView;
 
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
+import com.appnexus.opensdk.shadows.ShadowCustomWebView;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.util.RoboelectricTestRunnerWithResources;
@@ -27,12 +28,11 @@ import com.appnexus.opensdk.util.RoboelectricTestRunnerWithResources;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowWebView;
-import org.robolectric.util.ActivityController;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -68,9 +68,7 @@ public class AdActivityTest extends BaseRoboTest {
     private void createActivity(String activityType) {
         Intent intent = new Intent(RuntimeEnvironment.application, AdActivity.class);
         intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, activityType);
-
-        activityController = Robolectric.buildActivity(AdActivity.class)
-                .withIntent(intent)
+        activityController = Robolectric.buildActivity(AdActivity.class,intent)
                 .create().start().resume()
                 .visible();
         adActivity = activityController.get();

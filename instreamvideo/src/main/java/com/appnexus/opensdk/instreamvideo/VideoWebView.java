@@ -41,6 +41,7 @@ import android.widget.FrameLayout;
 
 import com.appnexus.opensdk.AdActivity;
 import com.appnexus.opensdk.BrowserAdActivity;
+import com.appnexus.opensdk.MediaType;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.adresponse.CSMVASTAdResponse;
@@ -65,7 +66,6 @@ class VideoWebView extends WebView {
     private VideoRequestManager manager;
     private static final int TOTAL_RETRY_TIMES = 10;
     private static final int WAIT_INTERVAL_MILLES = 300;
-    private static final String WEBVIEW_URL = "file:///android_asset/index.html";
 
     private int adDuration = 0;
     private String creativeUrl = "";
@@ -455,8 +455,8 @@ class VideoWebView extends WebView {
     }
 
     protected void createVastPlayerWithContent() {
-        String inject = String.format("javascript:window.createVastPlayerWithContent('%s')",
-                baseAdResponse.getAdContent());
+        String inject = String.format("javascript:window.createVastPlayerWithContent('%s','%s')",
+                baseAdResponse.getAdContent(), MediaType.INSTREAM_VIDEO);
         this.injectJavaScript(inject);
     }
 
@@ -480,7 +480,7 @@ class VideoWebView extends WebView {
             return;
         }
         this.baseAdResponse = baseAdResponse;
-        this.loadUrl(WEBVIEW_URL);
+        this.loadUrl(Settings.getVideoHtmlPage());
     }
 
     protected int getVideoDuration() {

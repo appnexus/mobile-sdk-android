@@ -16,9 +16,7 @@
 
 package com.appnexus.opensdk.instreamvideo;
 
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.RelativeLayout;
+import android.widget.FrameLayout;
 
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.instreamvideo.shadows.ShadowAsyncTaskNoExecutor;
@@ -37,8 +35,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowFrameLayout;
 import org.robolectric.shadows.ShadowLog;
-import org.robolectric.shadows.ShadowWebView;
 
 import static junit.framework.Assert.assertTrue;
 
@@ -46,7 +44,7 @@ import static junit.framework.Assert.assertTrue;
  * This tests if the API's in VideoAd are functioning as expected.
  */
 @Config(constants = com.appnexus.opensdk.instreamvideo.BuildConfig.class, sdk = 21,
-        shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class, ShadowCustomWebView.class, ShadowSettings.class, ShadowLog.class})
+        shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class, ShadowCustomWebView.class, ShadowFrameLayout.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RobolectricTestRunner.class)
 public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, VideoAdPlaybackListener {
 
@@ -58,6 +56,7 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
         super.setup();
         videoAd = new VideoAd(activity,"12345");
         videoAd.setAdLoadListener(this);
+        videoAd.setVideoPlaybackListener(this);
     }
 
     @Override
@@ -91,7 +90,7 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
         Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
         assertAdLoaded(true);
         Clog.w(TestUtil.testLogTag, "VideoAdTest videoAd.getCreativeURL()" +videoAd.getCreativeURL());
-        assertTrue(videoAd.getCreativeURL().equalsIgnoreCase("http://vcdn.adnxs.com/p/creative-video/05/64/6d/99/05646d99.webm"));
+        assertTrue(videoAd.getCreativeURL().equalsIgnoreCase("http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_768_432_500k.mp4"));
     }
 
 
@@ -110,7 +109,7 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
         Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
         assertAdLoaded(true);
         Clog.w(TestUtil.testLogTag, "VideoAdTest videoAd.getCreativeURL()" +videoAd.getCreativeURL());
-        assertTrue(videoAd.getVideoAdDuration() == 96000);
+        assertTrue(videoAd.getVideoAdDuration() == 145000);
     }
 
     @Test
@@ -164,7 +163,9 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
         Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
         assertAdLoaded(true);
 
-        RelativeLayout baseContainer = (RelativeLayout) activity.getWindow().getDecorView().getRootView();
+        //@FIXME This test is not possible this case can only be tested in Integration Tests. We need to delete this note and test once we add integration tests
+        // Leaving it here just to make sure that we donot ovelook it.
+       /* RelativeLayout baseContainer = (RelativeLayout) activity.getWindow().getDecorView().getRootView();
 
         videoAd.playAd(baseContainer);
 
@@ -177,9 +178,10 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
         Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
         Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
 
-        assertPlayAd(true);
+        assertPlayAd(true);*/
 
     }
+
 
 
 

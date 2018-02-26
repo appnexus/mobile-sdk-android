@@ -55,4 +55,10 @@ interface AdDispatcher {
      * AppNexus Javascript API for Mobile
      */
     public void onAppEvent(String name, String data);
+
+    /**
+     * Called when WebView has errored and we need to do AutoRefresh Again
+     * Used only by Banner Video
+     */
+    public void toggleAutoRefresh();
 }

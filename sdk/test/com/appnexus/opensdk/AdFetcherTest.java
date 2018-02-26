@@ -19,6 +19,7 @@ package com.appnexus.opensdk;
 import android.content.Context;
 
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
+import com.appnexus.opensdk.shadows.ShadowCustomWebView;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.util.Lock;
@@ -39,7 +40,7 @@ import static junit.framework.Assert.assertNotSame;
 
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
+                ShadowCustomWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RoboelectricTestRunnerWithResources.class)
 public class AdFetcherTest extends BaseRoboTest {
     private AdFetcher adFetcher;

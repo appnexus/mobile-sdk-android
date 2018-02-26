@@ -4,6 +4,7 @@ import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.ut.UTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMSDKAdResponse;
+import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.SSMHTMLAdResponse;
 import com.appnexus.opensdk.util.RoboelectricTestRunnerWithResources;
 
@@ -12,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import static junit.framework.Assert.assertEquals;
@@ -88,6 +90,32 @@ public class UTAdResponseTest extends BaseRoboTest{
             BaseAdResponse baseAdResponse = (BaseAdResponse) list.removeFirst();
             assertEquals("rtb",baseAdResponse.getContentSource());
 
+        }
+    }
+
+
+    /**
+     * Tests rtb banner Video response
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testBannerVideoResponse() throws Exception {
+
+        String bannerString = TestResponsesUT.rtbVASTVideo();
+        utAdResponse = new UTAdResponse(bannerString,null,MediaType.BANNER,"v");
+
+        assertNotNull(utAdResponse);
+        LinkedList<BaseAdResponse> list = utAdResponse.getAdList();
+        assertNotNull(utAdResponse.getAdList());
+        while(!list.isEmpty()){
+            RTBVASTAdResponse vastAdResponse = (RTBVASTAdResponse) list.removeFirst();
+            assertEquals("rtb",vastAdResponse.getContentSource());
+            assertEquals("video",vastAdResponse.getAdType());
+            assertTrue(vastAdResponse.getAdContent().contains("<VAST version=\"2.0\">"));
+            HashMap<String, Object> extras = vastAdResponse.getExtras();
+            assertTrue(extras.containsKey("MRAID"));
+            assertTrue(extras.containsValue(true));
         }
     }
 

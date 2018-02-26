@@ -112,7 +112,7 @@ public abstract class RequestManager implements UTAdRequester{
         mediatedClasses.clear();
     }
 
-    protected void fireNoAdTracker(final String trackerUrl, final String trackerType) {
+    protected void fireTracker(final String trackerUrl, final String trackerType) {
         if((trackerUrl == null) || trackerUrl == "") return;
 
         new HTTPGet() {

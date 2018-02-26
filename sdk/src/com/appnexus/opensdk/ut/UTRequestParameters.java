@@ -401,6 +401,7 @@ public class UTRequestParameters {
             JSONArray allowedMediaAdTypes = new JSONArray();
             if (this.getMediaType() == MediaType.BANNER) {
                 allowedMediaAdTypes.put(ALLOWED_TYPE_BANNER);
+                allowedMediaAdTypes.put(ALLOWED_TYPE_VIDEO);
             } else if (this.getMediaType() == MediaType.INTERSTITIAL) {
                 allowedMediaAdTypes.put(ALLOWED_TYPE_BANNER);
                 allowedMediaAdTypes.put(ALLOWED_TYPE_INTERSTITIAL);
@@ -428,9 +429,6 @@ public class UTRequestParameters {
                 tag.put(TAG_DISABLE_PSA, !this.getShouldServePSAs());
             }
             tag.put(TAG_ASSET_URL, TAG_ASSET_URL_VALUE);
-
-
-
         } catch (JSONException e) {
             Clog.e(Clog.baseLogTag, "Exception: " + e.getMessage());
         }

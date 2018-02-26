@@ -39,6 +39,7 @@ import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
+import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.UTRequestParameters;
 import com.appnexus.opensdk.ut.adresponse.RTBHTMLAdResponse;
 import com.appnexus.opensdk.utils.AdvertisingIDUtil;
@@ -61,6 +62,7 @@ public abstract class AdView extends FrameLayout implements Ad {
     boolean mraid_changing_size_or_visibility = false;
     int creativeWidth;
     int creativeHeight;
+    private AdType adType;
     private AdListener adListener;
     private AppEventListener appEventListener;
     private BrowserStyle browserStyle;
@@ -99,7 +101,7 @@ public abstract class AdView extends FrameLayout implements Ad {
     void setup(Context context, AttributeSet attrs) {
         dispatcher = new AdViewDispatcher(handler);
         requestParameters = new UTRequestParameters(context);
-
+        adType = AdType.UNKNOWN;
         AdvertisingIDUtil.retrieveAndSetAAID(context);
 
         // Store self.context in the settings for errors
@@ -224,7 +226,7 @@ public abstract class AdView extends FrameLayout implements Ad {
     protected void loadAdFromHtml(String html, int width, int height) {
         // load an ad directly from html
         loadedOffscreen = true;
-        AdWebView output = new AdWebView(this);
+        AdWebView output = new AdWebView(this,null);
         RTBHTMLAdResponse response = new RTBHTMLAdResponse(width, height, getMediaType().toString(), null);
         response.setAdContent(html);
         output.loadAd(response);
@@ -914,6 +916,22 @@ public abstract class AdView extends FrameLayout implements Ad {
         return creativeHeight;
     }
 
+
+    void setAdType(AdType type) {
+        adType = type;
+    }
+
+    /**
+     * Retrieve the AdType being served on the AdView
+     * AdType can be Banner/Video
+     *
+     * @return AdType of the Creative
+     */
+
+    public AdType getAdType() {
+        return adType;
+    }
+
     /**
      * Sets whether or not to load landing pages in the background before displaying them.
      * This feature is on by default, but only works with the in-app browser (which is also enabled by default).
@@ -979,6 +997,15 @@ public abstract class AdView extends FrameLayout implements Ad {
                                     fireImpressionTracker();
                                 }
                             }
+                        }
+
+                        if(ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_VIDEO)) {
+                            setAdType(AdType.VIDEO);
+                            if (mAdFetcher.getState() == AdFetcher.STATE.AUTO_REFRESH) {
+                                mAdFetcher.stop();
+                            }
+                        }else if(ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER)){
+                            setAdType(AdType.BANNER);
                         }
 
                         if (adListener != null)
@@ -1047,6 +1074,13 @@ public abstract class AdView extends FrameLayout implements Ad {
                     }
                 }
             });
+        }
+
+        @Override
+        public void toggleAutoRefresh() {
+            if (getMediaType().equals(MediaType.BANNER) && mAdFetcher.getState() == AdFetcher.STATE.STOPPED){
+                    mAdFetcher.start();
+            }
         }
     }
 

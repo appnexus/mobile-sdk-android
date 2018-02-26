@@ -75,7 +75,7 @@ class NativeAdRequestManager extends RequestManager {
     @Override
     public void failed(ResultCode code) {
         printMediatedClasses();
-        fireNoAdTracker(noAdUrl, Clog.getString(R.string.no_ad_url));
+        fireTracker(noAdUrl, Clog.getString(R.string.no_ad_url));
         NativeAdRequest owner = this.owner.get();
         if (owner != null) {
             owner.getAdDispatcher().onAdFailed(code);
