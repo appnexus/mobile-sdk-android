@@ -36,8 +36,8 @@ public class CSMVASTAdResponse extends BaseAdResponse {
     private String uuid;
     private JSONObject adJSONContent;
 
-    public CSMVASTAdResponse(int width, int height, String adType, ArrayList<String> impressionURLs) {
-        super(width, height, adType, impressionURLs);
+    public CSMVASTAdResponse(int width, int height, String adType, ArrayList<String> impressionURLs  , String creativeId) {
+        super(width, height, adType, impressionURLs , creativeId);
         int random=new Random().nextInt(65536) + 1;
         this.uuid= String.valueOf(random);
     }

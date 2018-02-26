@@ -59,7 +59,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
     private String fullText;
     private String sponsoredBy;
     private Handler anNativeExpireHandler;
-
+    private String creativeId = "";
     private static final String KEY_TITLE = "title";
     private static final String KEY_DESCRIPTION = "description";
     private static final String KEY_CONTEXT = "context";
@@ -246,6 +246,16 @@ public class ANNativeAdResponse implements NativeAdResponse {
     @Override
     public boolean hasExpired() {
         return expired;
+    }
+
+    @Override
+    public String getCreativeId() {
+        return creativeId;
+    }
+
+    @Override
+    public void setCreativeId(String creativeId) {
+        this.creativeId  = creativeId;
     }
 
     @Override

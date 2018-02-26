@@ -47,6 +47,8 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
     private String socialContext;
     private String fullText = "";
     private String sponsporedBy = "";
+    private String creativeId = "";
+
     private Rating rating;
     private String landingUrl;
     private HashMap<String, Object> nativeElements = new HashMap<String, Object>();
@@ -158,6 +160,18 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
     public void setImage(Bitmap bitmap) {
         this.coverImage = bitmap;
     }
+
+
+    @Override
+    public String getCreativeId() {
+        return this.creativeId;
+    }
+
+    @Override
+    public void setCreativeId(String creativeId) {
+        this.creativeId = creativeId;
+    }
+
 
     @Override
     public String getIconUrl() {

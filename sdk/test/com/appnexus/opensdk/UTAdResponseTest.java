@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNotSame;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
@@ -89,7 +90,7 @@ public class UTAdResponseTest extends BaseRoboTest{
         while(!list.isEmpty()){
             BaseAdResponse baseAdResponse = (BaseAdResponse) list.removeFirst();
             assertEquals("rtb",baseAdResponse.getContentSource());
-
+            assertEquals("6332753",baseAdResponse.getCreativeId());
         }
     }
 
@@ -136,9 +137,11 @@ public class UTAdResponseTest extends BaseRoboTest{
         System.out.println("Printing first");
         CSMSDKAdResponse baseCSMSDKAdResponse = (CSMSDKAdResponse) list.getFirst();
         assertEquals("csm", baseCSMSDKAdResponse.getContentSource());
+        assertEquals("44863345",baseCSMSDKAdResponse.getCreativeId());
         System.out.println("Printing second");
         BaseAdResponse baseAdResponse = (BaseAdResponse) list.getLast();
         assertEquals("rtb",baseAdResponse.getContentSource());
+        assertEquals("6332753",baseAdResponse.getCreativeId());
 
     }
 
@@ -159,6 +162,7 @@ public class UTAdResponseTest extends BaseRoboTest{
         CSMSDKAdResponse baseCSMSDKAdResponse = (CSMSDKAdResponse) list.getFirst();
         assertEquals("csm", baseCSMSDKAdResponse.getContentSource());
         assertNull(baseCSMSDKAdResponse.getAdContent());
+        assertEquals("44863345", baseCSMSDKAdResponse.getCreativeId());
 
 
     }
@@ -180,6 +184,7 @@ public class UTAdResponseTest extends BaseRoboTest{
         SSMHTMLAdResponse baseSSMHTMLAdResponse = (SSMHTMLAdResponse) list.getFirst();
         assertEquals("ssm", baseSSMHTMLAdResponse.getContentSource());
         assertEquals((TestResponsesUT.SSM_URL), baseSSMHTMLAdResponse.getAdUrl());
+        assertEquals("44863345",baseSSMHTMLAdResponse.getCreativeId());
     }
 
     /**

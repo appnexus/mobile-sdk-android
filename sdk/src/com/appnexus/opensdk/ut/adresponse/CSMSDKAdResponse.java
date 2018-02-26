@@ -26,8 +26,8 @@ public class CSMSDKAdResponse extends BaseAdResponse {
     private String param;
     private String responseUrl;
 
-    public CSMSDKAdResponse(int width, int height, String adType, String responseUrl, ArrayList<String> impressionURLs) {
-        super(width, height, adType, impressionURLs);
+    public CSMSDKAdResponse(int width, int height, String adType, String responseUrl, ArrayList<String> impressionURLs , String creativeId) {
+        super(width, height, adType, impressionURLs , creativeId);
         this.responseUrl = responseUrl;
     }
 

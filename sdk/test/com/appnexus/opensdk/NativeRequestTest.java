@@ -16,11 +16,13 @@
 
 package com.appnexus.opensdk;
 
+
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.util.Lock;
 import com.appnexus.opensdk.util.RoboelectricTestRunnerWithResources;
+
 import com.appnexus.opensdk.utils.Settings;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 
@@ -31,6 +33,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowWebView;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 @Config(constants = BuildConfig.class, sdk = 21,
@@ -86,6 +89,24 @@ public class NativeRequestTest extends BaseNativeTest {
         Robolectric.flushForegroundThreadScheduler();
         assertAdFailed(false);
     }
+
+
+
+    @Test
+    public void testCreativeId() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertEquals("47772560",response.getCreativeId());
+        assertAdLoaded(true);
+    }
+
 
     @Override
     public void tearDown() {

@@ -74,6 +74,16 @@ public class MediatedNativeSuccessful implements MediatedNativeAd {
                 }
 
                 @Override
+                public String getCreativeId() {
+                    return null;
+                }
+
+                @Override
+                public void setCreativeId(String creativeId) {
+
+                }
+
+                @Override
                 public String getIconUrl() {
                     return null;
                 }

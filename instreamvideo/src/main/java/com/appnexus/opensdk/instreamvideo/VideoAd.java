@@ -644,6 +644,19 @@ public class VideoAd implements VideoAdInterface {
         return 0;
     }
 
+    /**
+     * Retrieve the Creative Id  of the creative .
+     *
+     * @return the creativeId
+     */
+
+    public String getCreativeId() {
+        if (videoAdView != null) {
+            return videoAdView.getCreativeId();
+        }
+        return "";
+    }
+
     public String getVastXML() {
         if (videoAdView != null) {
             return videoAdView.getVastXML();

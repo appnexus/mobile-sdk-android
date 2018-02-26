@@ -24,8 +24,8 @@ public class RTBNativeAdResponse extends BaseAdResponse {
 
     private ANNativeAdResponse nativeAdResponse;
 
-    public RTBNativeAdResponse(int width, int height, String adType, ANNativeAdResponse nativeAdResponse, ArrayList<String> impressionURLs) {
-        super(width, height, adType, impressionURLs);
+    public RTBNativeAdResponse(int width, int height, String adType, ANNativeAdResponse nativeAdResponse, ArrayList<String> impressionURLs, String creativeId) {
+        super(width, height, adType, impressionURLs, creativeId);
         this.nativeAdResponse = nativeAdResponse;
     }
 

@@ -74,6 +74,23 @@ public interface NativeAdResponse {
      */
     public void setImage(Bitmap bitmap);
 
+
+    /**
+     * Retrieve the creative Id
+     *
+     * @return empty string "" if not present
+     *
+     */
+    public String getCreativeId();
+
+    /**
+     * Set the creative Id
+     *
+     * @param creativeId set "" if not present
+     */
+    public void setCreativeId(String creativeId);
+
+
     /**
      * The URL of the Icon image resource can be used to manage image resources manually
      *

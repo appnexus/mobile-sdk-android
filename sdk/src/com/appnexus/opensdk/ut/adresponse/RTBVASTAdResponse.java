@@ -24,8 +24,8 @@ public class RTBVASTAdResponse extends BaseAdResponse {
     private String notifyUrl;
 
 
-    public RTBVASTAdResponse(int width, int height, String adType, String notifyUrl, ArrayList<String> impressionURLs) {
-        super(width, height, adType, impressionURLs);
+    public RTBVASTAdResponse(int width, int height, String adType, String notifyUrl, ArrayList<String> impressionURLs, String creativeId) {
+        super(width, height, adType, impressionURLs, creativeId);
         this.notifyUrl = notifyUrl;
     }
 

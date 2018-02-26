@@ -63,6 +63,7 @@ public abstract class AdView extends FrameLayout implements Ad {
     int creativeWidth;
     int creativeHeight;
     private AdType adType;
+    String creativeId = "";
     private AdListener adListener;
     private AppEventListener appEventListener;
     private BrowserStyle browserStyle;
@@ -227,7 +228,7 @@ public abstract class AdView extends FrameLayout implements Ad {
         // load an ad directly from html
         loadedOffscreen = true;
         AdWebView output = new AdWebView(this,null);
-        RTBHTMLAdResponse response = new RTBHTMLAdResponse(width, height, getMediaType().toString(), null);
+        RTBHTMLAdResponse response = new RTBHTMLAdResponse(width, height, getMediaType().toString(), null,getCreativeId());
         response.setAdContent(html);
         output.loadAd(response);
         display(output);
@@ -901,6 +902,20 @@ public abstract class AdView extends FrameLayout implements Ad {
         return creativeWidth;
     }
 
+
+    /**
+     * Retrieve the Creative Id  of the creative .
+     *
+     * @return the creativeId
+     */
+
+    public String getCreativeId() {
+        return creativeId;
+    }
+    void setCreativeId(String creativeId) {
+        this.creativeId = creativeId;
+    }
+
     void setCreativeHeight(int h) {
         creativeHeight = h;
     }
@@ -975,6 +990,7 @@ public abstract class AdView extends FrameLayout implements Ad {
                     public void run() {
                         setCreativeWidth(ad.getDisplayable().getCreativeWidth());
                         setCreativeHeight(ad.getDisplayable().getCreativeHeight());
+                        setCreativeId(ad.getResponseData().getCreativeId());
                         if (ad.isMediated()) {
                             try {
                                 displayMediated((MediatedDisplayable) ad.getDisplayable());

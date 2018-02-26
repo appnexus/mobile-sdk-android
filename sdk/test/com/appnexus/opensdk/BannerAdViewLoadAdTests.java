@@ -91,4 +91,25 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
     }
 
 
+    @Test
+    public void testgetCreativeIdBanner() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        executeBannerRequest();
+        assertEquals("6332753",bannerAdView.getCreativeId());
+    }
+
+    @Test
+    public void testgetCreativeIdVideoCreativeId() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.rtbVASTVideo())); // First queue a regular HTML banner response
+        executeBannerRequest();
+        assertEquals("6332753",bannerAdView.getCreativeId());
+    }
+
+    @Test
+    public void testgetCreativeIdUnKnownCreativeId() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blankBanner())); // First queue a regular HTML banner response
+        executeBannerRequest();
+        assertEquals("",bannerAdView.getCreativeId());
+
+    }
 }

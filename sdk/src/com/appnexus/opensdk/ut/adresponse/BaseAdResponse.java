@@ -23,6 +23,9 @@ import java.util.HashMap;
 public abstract class BaseAdResponse {
     private int width;
     private int height;
+
+    private String creativeId = "";
+
     private String adType;
     private String contentSource;
     private String adContent;
@@ -30,13 +33,21 @@ public abstract class BaseAdResponse {
 
     private HashMap<String, Object> extras = new HashMap<String, Object>();
 
-    public BaseAdResponse(int width, int height, String adType, ArrayList<String> impressionURLs) {
+    public BaseAdResponse(int width, int height, String adType, ArrayList<String> impressionURLs , String creativeId) {
         this.width = width;
         this.height = height;
         this.adType = adType;
+        this.creativeId = creativeId;
         this.impressionURLs = impressionURLs;
     }
 
+    public String getCreativeId() {
+        return creativeId;
+    }
+
+    public void setCreativeId(String creativeId) {
+        this.creativeId = creativeId;
+    }
 
     public int getWidth() {
         return width;

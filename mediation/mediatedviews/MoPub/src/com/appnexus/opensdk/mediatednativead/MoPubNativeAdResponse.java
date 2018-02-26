@@ -44,6 +44,8 @@ public class MoPubNativeAdResponse implements NativeAdResponse {
     private String socialContext;
     private String fullText = "";
     private String sponsporedBy = "";
+    private String creativeId = "";
+
     private Rating rating;
     private HashMap<String, Object> nativeElements = new HashMap<String, Object>();
     private boolean expired = false;
@@ -145,6 +147,17 @@ public class MoPubNativeAdResponse implements NativeAdResponse {
     @Override
     public void setImage(Bitmap bitmap) {
         this.coverImage = bitmap;
+    }
+
+
+    @Override
+    public String getCreativeId() {
+        return this.creativeId;
+    }
+
+    @Override
+    public void setCreativeId(String creativeId) {
+        this.creativeId = creativeId;
     }
 
     @Override

@@ -341,6 +341,7 @@ public class NativeAdRequest implements Ad {
                 onAdFailed(ResultCode.INTERNAL_ERROR);
             } else {
                 final NativeAdResponse response = ad.getNativeAdResponse();
+                response.setCreativeId(ad.getResponseData().getCreativeId());
                 if (!loadImage && !loadIcon) {
                     if (listener != null) {
                         listener.onAdLoaded(response);

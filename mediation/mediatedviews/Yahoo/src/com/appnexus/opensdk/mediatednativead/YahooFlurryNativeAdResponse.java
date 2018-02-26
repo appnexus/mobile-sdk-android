@@ -46,6 +46,8 @@ public class YahooFlurryNativeAdResponse implements NativeAdResponse {
     private String fullText = "";
     private String sponsporedBy = "";
     private Runnable expireRunnable;
+    private String creativeId = "";
+
     private Handler yHNativeExpireHandler;
     private View registeredView;
     private List<View> registeredClickables;
@@ -171,6 +173,16 @@ public class YahooFlurryNativeAdResponse implements NativeAdResponse {
     @Override
     public void setImage(Bitmap bitmap) {
         this.coverImage = bitmap;
+    }
+
+    @Override
+    public String getCreativeId() {
+        return this.creativeId;
+    }
+
+    @Override
+    public void setCreativeId(String creativeId) {
+        this.creativeId = creativeId;
     }
 
     @Override

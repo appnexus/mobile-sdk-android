@@ -196,6 +196,15 @@ class InstreamVideoView extends FrameLayout {
         return 0;
     }
 
+
+
+    public String getCreativeId () {
+        if(this.videoWebView != null){
+            return this.videoWebView.getCreativeId();
+        }
+        return "";
+    }
+
     public String getVastXML () {
         if(this.videoWebView != null){
             return this.videoWebView.getVastXML();

@@ -48,7 +48,7 @@ public class FBNativeAdResponse implements NativeAdResponse {
     private NativeAdEventListener listener;
     private Runnable runnable;
     private Handler fbNativeExpireHandler;
-
+    private String creativeId = "";
     public FBNativeAdResponse(NativeAd ad) {
         this.nativeAd = ad;
         runnable = new Runnable() {
@@ -106,6 +106,16 @@ public class FBNativeAdResponse implements NativeAdResponse {
     @Override
     public void setImage(Bitmap bitmap) {
         this.coverImage = bitmap;
+    }
+
+    @Override
+    public String getCreativeId() {
+        return this.creativeId;
+    }
+
+    @Override
+    public void setCreativeId(String creativeId) {
+        this.creativeId = creativeId;
     }
 
     @Override

@@ -40,7 +40,7 @@ public class MediatedNativeAdController {
 
 
     public static MediatedNativeAdController create(CSMSDKAdResponse currentAd, UTAdRequester requester){
-           return new MediatedNativeAdController(currentAd, requester);
+        return new MediatedNativeAdController(currentAd, requester);
     }
 
     private MediatedNativeAdController(CSMSDKAdResponse currentAd, UTAdRequester requester) {
@@ -153,7 +153,7 @@ public class MediatedNativeAdController {
 
                 @Override
                 public BaseAdResponse getResponseData() {
-                    return null;
+                    return currentAd;
                 }
             });
         } else {

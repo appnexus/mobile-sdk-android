@@ -68,6 +68,7 @@ class VideoWebView extends WebView {
     private static final int WAIT_INTERVAL_MILLES = 300;
 
     private int adDuration = 0;
+    private String creativeId = "";
     private String creativeUrl = "";
     private String vastURLContent = "";
     private String vastXMLContent = "";
@@ -480,6 +481,7 @@ class VideoWebView extends WebView {
             return;
         }
         this.baseAdResponse = baseAdResponse;
+        this.creativeId = baseAdResponse.getCreativeId();
         this.loadUrl(Settings.getVideoHtmlPage());
     }
 
@@ -497,6 +499,10 @@ class VideoWebView extends WebView {
 
     protected String getVastXML() {
         return this.vastXMLContent;
+    }
+
+    protected String getCreativeId() {
+        return this.creativeId;
     }
 
 

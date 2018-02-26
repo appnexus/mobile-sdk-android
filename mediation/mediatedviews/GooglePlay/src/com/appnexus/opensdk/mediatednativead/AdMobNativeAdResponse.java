@@ -45,6 +45,8 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
     private Bitmap icon;
     private String socialContext;
     private String fullText = "";
+    private String creativeId = "";
+
     private String sponsporedBy = "";
     private Rating rating;
     private HashMap<String, Object> nativeElements = new HashMap<String, Object>();
@@ -204,6 +206,17 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
     @Override
     public void setImage(Bitmap bitmap) {
         this.coverImage = bitmap;
+    }
+
+
+    @Override
+    public String getCreativeId() {
+        return this.creativeId;
+    }
+
+    @Override
+    public void setCreativeId(String creativeId) {
+        this.creativeId = creativeId;
     }
 
     @Override

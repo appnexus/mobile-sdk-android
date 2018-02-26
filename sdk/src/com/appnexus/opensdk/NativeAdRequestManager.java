@@ -119,9 +119,10 @@ class NativeAdRequestManager extends RequestManager {
             return;
         }
 
-        BaseAdResponse baseAdResponse = popAd();
+        final BaseAdResponse baseAdResponse = popAd();
         if (baseAdResponse instanceof RTBNativeAdResponse) {
             final ANNativeAdResponse nativeAdResponse = ((RTBNativeAdResponse) baseAdResponse).getNativeAdResponse();
+
             nativeAdResponse.openNativeBrowser(owner.getOpensNativeBrowser());
             onReceiveAd(new AdResponse() {
                 @Override
@@ -146,7 +147,7 @@ class NativeAdRequestManager extends RequestManager {
 
                 @Override
                 public BaseAdResponse getResponseData() {
-                    return null;
+                    return baseAdResponse;
                 }
 
                 @Override

@@ -24,8 +24,8 @@ public class SSMHTMLAdResponse extends BaseAdResponse {
     private int ssmTimeout;
     private String responseURL;
 
-    public SSMHTMLAdResponse(int width, int height, String adType, String responseURL, ArrayList<String> impressionURLs) {
-        super(width, height, adType, impressionURLs);
+    public SSMHTMLAdResponse(int width, int height, String adType, String responseURL, ArrayList<String> impressionURLs, String creativeId) {
+        super(width, height, adType, impressionURLs, creativeId);
         this.responseURL = responseURL;
     }
 

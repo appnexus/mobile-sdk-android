@@ -49,8 +49,6 @@ public class BannerAdViewTest extends BaseRoboTest {
     }
 
 
-
-
     /******************* AdSize Tests START********************************************************/
     @Test
     public void testSetAdSize(){
@@ -71,7 +69,6 @@ public class BannerAdViewTest extends BaseRoboTest {
         setAdSize();
         assertSetAdSize();
     }
-
 
 
     @Test
@@ -112,7 +109,9 @@ public class BannerAdViewTest extends BaseRoboTest {
         setMazSize();
         assertSetMaxSize();
 
+
     }
+
 
 
     private void setAdSize(){
@@ -131,6 +130,8 @@ public class BannerAdViewTest extends BaseRoboTest {
     private void setMazSize(){
         bannerAdView.setMaxSize(1080,720);
     }
+
+
 
     private void assertSetAdSize(){
         assertTrue(bannerAdView.getAdWidth() == 720);

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 
 public class RTBHTMLAdResponse extends BaseAdResponse {
-    public RTBHTMLAdResponse(int width, int height, String adType, ArrayList<String> impressionURLs) {
-        super(width, height, adType, impressionURLs);
+    public RTBHTMLAdResponse(int width, int height, String adType, ArrayList<String> impressionURLs, String creativeId) {
+        super(width, height, adType, impressionURLs, creativeId);
     }
 }
