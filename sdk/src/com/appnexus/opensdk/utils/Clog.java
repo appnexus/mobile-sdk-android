@@ -185,7 +185,7 @@ public class Clog {
         Context error_context = clog_context.get();
 
         if (error_context == null)
-            return null;
+            return "";
         return error_context.getString(id);
     }
 
@@ -193,7 +193,7 @@ public class Clog {
         Context error_context = clog_context.get();
 
         if (error_context == null)
-            return null;
+            return "";
         return error_context.getString(id, l);
     }
 
@@ -201,7 +201,7 @@ public class Clog {
         Context error_context = clog_context.get();
 
         if (error_context == null)
-            return null;
+            return "";
         return error_context.getString(id, s);
     }
 
@@ -209,7 +209,7 @@ public class Clog {
         Context error_context = clog_context.get();
 
         if (error_context == null)
-            return null;
+            return "";
         return error_context.getString(id, s, i);
     }
 
@@ -217,7 +217,7 @@ public class Clog {
         Context error_context = clog_context.get();
 
         if (error_context == null)
-            return null;
+            return "";
         return error_context.getString(id, a, b, c, d);
     }
 
@@ -225,7 +225,7 @@ public class Clog {
         Context error_context = clog_context.get();
 
         if (error_context == null)
-            return null;
+            return "";
         return error_context.getString(id, b);
     }
 
@@ -233,7 +233,7 @@ public class Clog {
         Context error_context = clog_context.get();
 
         if (error_context == null)
-            return null;
+            return "";
         return error_context.getString(id, s, ss);
     }
 
@@ -241,7 +241,7 @@ public class Clog {
         Context error_context = clog_context.get();
 
         if (error_context == null)
-            return null;
+            return "";
         return error_context.getString(id, i, s, ss);
     }
 
@@ -249,7 +249,7 @@ public class Clog {
         Context error_context = clog_context.get();
 
         if (error_context == null)
-            return null;
+            return "";
         return error_context.getString(id, s, i, ss);
     }
 
@@ -257,7 +257,7 @@ public class Clog {
         Context error_context = clog_context.get();
 
         if (error_context == null)
-            return null;
+            return "";
         return error_context.getString(id, i, s);
     }
 
@@ -265,7 +265,7 @@ public class Clog {
         Context error_context = clog_context.get();
 
         if (error_context == null)
-            return null;
+            return "";
         return error_context.getString(id, w, h, offset_x, offset_y, custom_close_position, allow_offscreen);
     }
 
@@ -273,7 +273,7 @@ public class Clog {
         Context error_context = clog_context.get();
 
         if (error_context == null)
-            return null;
+            return "";
         return error_context.getString(id, b, i);
     }
 
@@ -281,7 +281,7 @@ public class Clog {
         Context error_context = clog_context.get();
 
         if (error_context == null)
-            return null;
+            return "";
         return error_context.getString(id, i, j);
     }
 

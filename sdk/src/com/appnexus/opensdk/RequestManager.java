@@ -120,7 +120,11 @@ public abstract class RequestManager implements UTAdRequester{
             protected void onPostExecute(HTTPResponse response) {
                 if (response != null && response.getSucceeded()) {
                     //noinspection ConstantConditions
-                    Clog.i(Clog.baseLogTag, trackerType.concat( Clog.getString(R.string.fire_tracker_succesfully_message)));
+                    try {
+                        Clog.i(Clog.baseLogTag, trackerType.concat(Clog.getString(R.string.fire_tracker_succesfully_message)));
+                    }catch (Exception e){
+                        // We are just printing logs here and it was crashing the app no need to recover from here just make sure we donot crash app.
+                    }
                 }
             }
 
