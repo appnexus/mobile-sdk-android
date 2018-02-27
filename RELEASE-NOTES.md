@@ -1,3 +1,8 @@
+## 4.6
++ MS-3024 -- MultiFormat Banner + Video.
++ MS-3096 -- getCreativeId() new API for BannerAdView, InterstitialAdView, VideoAd and NativeAdResponse
++ MS-3179 -- Fixed NullPointerException in RequestManager
+
 ## 4.5
 ### Updates
 + MS-3087 -- Pre-Roll Placement Video Completion Tracker Not Firing Consistently
