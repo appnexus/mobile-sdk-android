@@ -39,6 +39,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
+import android.graphics.Rect;
 
 import com.appnexus.opensdk.utils.*;
 
@@ -48,10 +49,11 @@ import java.util.ArrayList;
 
 @SuppressLint("InlinedApi")
 class MRAIDImplementation {
-    protected static enum MRAID_INIT_STATE{
+    protected static enum MRAID_INIT_STATE {
         STARTING_DEFAULT,
         STARTING_EXPANDED
     }
+
     protected final static String[] MRAID_INIT_STATE_STRINGS = {"default", "expanded"};
 
     protected final AdWebView owner;
@@ -66,6 +68,7 @@ class MRAIDImplementation {
     private Activity fullscreenActivity;
     private ViewGroup defaultContainer;
     boolean isViewable;
+    private String exposureVal = "";
     private int[] position = new int[4];
     private int lastRotation;
     protected boolean isMRAIDTwoPartExpanded = false;
@@ -78,7 +81,7 @@ class MRAIDImplementation {
         // Fire the ready event only once
         if (!readyFired) {
             String adType = owner.adView.isBanner() ? "inline" : "interstitial";
-            isMRAIDTwoPartExpanded=
+            isMRAIDTwoPartExpanded =
                     startingState.equals(
                             MRAID_INIT_STATE_STRINGS[MRAID_INIT_STATE.STARTING_EXPANDED.ordinal()]);
             owner.isFullScreen = isMRAIDTwoPartExpanded;
@@ -86,7 +89,7 @@ class MRAIDImplementation {
             view.injectJavaScript("javascript:window.mraid.util.setPlacementType('"
                     + adType + "')");
 
-            if(!isMRAIDTwoPartExpanded) {
+            if (!isMRAIDTwoPartExpanded) {
                 setSupportsValues(view);
                 setScreenSize();
                 setMaxSize();
@@ -94,7 +97,7 @@ class MRAIDImplementation {
             }
 
             owner.checkPosition(); //set CURRENT position, in addition to default
-            view.injectJavaScript("javascript:window.mraid.util.stateChangeEvent('"+startingState+"')");
+            view.injectJavaScript("javascript:window.mraid.util.stateChangeEvent('" + startingState + "')");
             view.injectJavaScript("javascript:window.mraid.util.readyEvent();");
 
             // Store width and height for close()
@@ -180,9 +183,14 @@ class MRAIDImplementation {
     void onViewableChange(boolean viewable) {
         if (!readyFired) return;
         isViewable = viewable;
-
         owner.injectJavaScript("javascript:window.mraid.util.setIsViewable(" + viewable + ")");
     }
+
+    void onExposureChange() {
+        if (!readyFired) return;
+        owner.injectJavaScript(String.format("javascript:window.mraid.util.exposureChangeEvent(%s)", exposureVal));
+    }
+
 
     // parameters are view properties in pixels
     void setCurrentPosition(int left, int top, int width, int height) {
@@ -245,7 +253,7 @@ class MRAIDImplementation {
         } else if (owner.adView.isInterstitial()) {
             owner.adView.getAdDispatcher().onAdCollapsed();
             Activity containerActivity = ((Activity) this.owner.getContextFromMutableContext());
-            if ( containerActivity != null && !containerActivity.isFinishing()) {
+            if (containerActivity != null && !containerActivity.isFinishing()) {
                 containerActivity.finish();
             }
         } else {
@@ -296,8 +304,8 @@ class MRAIDImplementation {
                 case "force_orientation":
                     forceOrientation = parseForceOrientation(bnvp.second);
                     break;
-                default :
-                    Clog.e(Clog.mraidLogTag,"expand Invalid parameter::"+bnvp.first);
+                default:
+                    Clog.e(Clog.mraidLogTag, "expand Invalid parameter::" + bnvp.first);
                     break;
             }
         }
@@ -681,8 +689,8 @@ class MRAIDImplementation {
                     case "allow_offscreen":
                         allow_offscreen = Boolean.parseBoolean(bnvp.second);
                         break;
-                    default :
-                        Clog.e(Clog.mraidLogTag,"resize Invalid parameter::"+bnvp.first);
+                    default:
+                        Clog.e(Clog.mraidLogTag, "resize Invalid parameter::" + bnvp.first);
                         break;
                 }
             } catch (NumberFormatException e) {
@@ -749,6 +757,24 @@ class MRAIDImplementation {
         boolean isCurrentlyViewable = owner.isViewable();
         if (isViewable != isCurrentlyViewable) {
             this.onViewableChange(isCurrentlyViewable);
+        }
+    }
+
+    //@NOTE  occlusionRectangles - Not Supported.
+    void fireExposureChangeEvent(double exposedPercentage, Rect visibleRect) {
+        String newExposureVal = "";
+        if (visibleRect != null) {
+            Activity a = (Activity) owner.getContextFromMutableContext();
+            int[] size = {visibleRect.left, visibleRect.top, visibleRect.width(), visibleRect.height()};
+            ViewUtil.convertFromPixelsToDP(a, size);
+            newExposureVal = String.format("{\"exposedPercentage\":%.1f,\"visibleRectangle\":{\"x\":%d,\"y\":%d,\"width\":%d,\"height\":%d},\"occlusionRectangles\":null}", exposedPercentage, size[0], size[1], size[2], size[3]);
+        } else {
+            newExposureVal = String.format("{\"exposedPercentage\":%.1f,\"visibleRectangle\":null,\"occlusionRectangles\":null}", exposedPercentage);
+        }
+
+        if(!exposureVal.equals(newExposureVal)){
+            exposureVal = newExposureVal;
+            this.onExposureChange();
         }
     }
 

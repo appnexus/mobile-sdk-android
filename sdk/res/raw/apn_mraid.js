@@ -24,6 +24,7 @@
     listeners['stateChange'] = [];
     listeners['viewableChange'] = [];
     listeners['sizeChange'] = [];
+    listeners['exposureChange'] = [];
     var state = 'loading'; //Can be loading, default, expanded, hidden, or resized
     var placement_type = 'inline';
     var is_viewable = false;
@@ -460,6 +461,13 @@
             mraid.util.fireEvent('sizeChange', width, height);
         }
     }
+
+
+
+    mraid.util.exposureChangeEvent = function(exposureObject) {
+        mraid.util.fireEvent('exposureChange', exposureObject.exposedPercentage,exposureObject.visibleRectangle,exposureObject.occlusionRectangles);
+    };
+
 
     mraid.util.validateResizeProperties = function(properties, callingFunctionName) {
         if (typeof properties === "undefined") {

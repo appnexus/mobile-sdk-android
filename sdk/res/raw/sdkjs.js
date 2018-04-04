@@ -284,11 +284,11 @@
     }
 
     sdkjs.mraidEventHandler = function (eventName) {
-        // mraid events have at most two parameters in the callback
+        // mraid events have at most three parameters(exposureChange has 3) in the callback
         // pass undefined if not present; anjam should handle
-        this.call = function (p0, p1) {
+        this.call = function (p0, p1, p2) {
             sdkjs.fireMessage(CALL_MRAID, "event=" + eventName + "&p0=" +
-                p0 + "&p1=" + p1);
+                p0 + "&p1=" + p1+ "&p2=" + p2);
         };
     }
 
@@ -298,6 +298,8 @@
         "stateChange");
     sdkjs.mraidViewableChangeEventHandler = new sdkjs.mraidEventHandler(
         "viewableChange");
+    sdkjs.mraidExposureChangeEventHandler = new sdkjs.mraidEventHandler(
+        "exposureChange");
     sdkjs.mraidSizeChangeEventHandler = new sdkjs.mraidEventHandler(
         "sizeChange");
 
@@ -309,6 +311,8 @@
             .call);
         mraid.addEventListener("viewableChange",
             sdkjs.mraidViewableChangeEventHandler.call);
+        mraid.addEventListener("exposureChange",
+            sdkjs.mraidExposureChangeEventHandler.call);
         mraid.addEventListener("sizeChange", sdkjs.mraidSizeChangeEventHandler
             .call);
     }

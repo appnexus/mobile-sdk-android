@@ -38,6 +38,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.SslErrorHandler;
@@ -62,7 +63,9 @@ import com.appnexus.opensdk.utils.WebviewUtil;
 import java.util.HashMap;
 
 @SuppressLint("ViewConstructor")
-class AdWebView extends WebView implements Displayable {
+class AdWebView extends WebView implements Displayable,
+        ViewTreeObserver.OnGlobalLayoutListener,
+        ViewTreeObserver.OnScrollChangedListener {
     private boolean failed = false;
     AdView adView;
     private VideoImplementation videoImplementation = null;
@@ -302,6 +305,12 @@ class AdWebView extends WebView implements Displayable {
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        checkPosition();
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int ow, int oh) {
+        super.onSizeChanged(w, h, ow, oh);
         checkPosition();
     }
 
@@ -808,10 +817,19 @@ class AdWebView extends WebView implements Displayable {
         int viewLocation[] = new int[2];
         this.getLocationOnScreen(viewLocation);
 
+        // holds the visible area of a AdWebView in global (root) coordinates
+        Rect globalClippedArea = new Rect();
+        boolean visible = this.getGlobalVisibleRect(globalClippedArea);
+
         int left = viewLocation[0];
         int right = viewLocation[0] + this.getWidth();
         int top = viewLocation[1];
         int bottom = viewLocation[1] + this.getHeight();
+
+        final double visibleViewArea = globalClippedArea.height() * globalClippedArea.width();
+        final double totalArea = this.getHeight() * this.getWidth();
+        final double exposedPercentage = (visibleViewArea / totalArea) * 100;
+
 
         int[] screenSize = ViewUtil.getScreenSizeAsPixels((Activity) this.getContextFromMutableContext());
 
@@ -824,16 +842,23 @@ class AdWebView extends WebView implements Displayable {
             implementation.setCurrentPosition(left, top, this.getWidth(), this.getHeight());
             int orientation = this.getContext().getResources().getConfiguration().orientation;
             implementation.onOrientationChanged(orientation);
+
+            // exposureChange event logic
+            if (visible) {
+                // If at-least part of view is visible, then send exposure percentage and getLocalVisibleRect
+                Rect localClippedArea = new Rect();
+                this.getLocalVisibleRect(localClippedArea);
+                implementation.fireExposureChangeEvent(exposedPercentage, localClippedArea);
+            } else {
+                // No part of the view is visible then we need to send exposed percentage as 0.0 and visible rectangle as null
+                implementation.fireExposureChangeEvent(0.0, null);
+            }
         }
 
         if (isVideoAd && videoImplementation != null) {
-            // holds the visible part of a view
-            Rect clippedArea = new Rect();
-            if (this.getGlobalVisibleRect(clippedArea)) {
-                final int visibleViewArea = clippedArea.height() * clippedArea.width();
-                final int totalArea = this.getHeight() * this.getWidth();
-                this.isVideoOnScreen = 100 * visibleViewArea >= Settings.VIDEO_AUTOPLAY_PERCENTAGE * totalArea;
-            }else{
+            if (visible) {
+                this.isVideoOnScreen = exposedPercentage >= Settings.VIDEO_AUTOPLAY_PERCENTAGE;
+            } else {
                 this.isVideoOnScreen = false;
             }
             videoImplementation.fireViewableChangeEvent();
@@ -965,6 +990,46 @@ class AdWebView extends WebView implements Displayable {
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
+        removeViewTreeObserver();
+    }
+
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        addViewTreeObserver();
+    }
+
+    private void addViewTreeObserver() {
+        if (getViewTreeObserver().isAlive()) {
+            getViewTreeObserver().addOnScrollChangedListener(this);
+            getViewTreeObserver().addOnGlobalLayoutListener(this);
+        }
+    }
+
+    private void removeViewTreeObserver() {
+        if (getViewTreeObserver().isAlive()) {
+            getViewTreeObserver().removeOnScrollChangedListener(this);
+            getViewTreeObserver().removeGlobalOnLayoutListener(this);
+        }
+    }
+
+
+    /**
+     * ViewTreeObserver GlobalLayout Listener
+     */
+    @Override
+    public void onGlobalLayout() {
+        //checkPosition();
+    }
+
+
+    /**
+     * ViewTreeObserver Scroll Listener
+     */
+    @Override
+    public void onScrollChanged() {
+        //checkPosition();
     }
 
 
