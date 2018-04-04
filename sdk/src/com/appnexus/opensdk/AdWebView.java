@@ -60,6 +60,7 @@ import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
 
+import java.util.Date;
 import java.util.HashMap;
 
 @SuppressLint("ViewConstructor")
@@ -93,10 +94,13 @@ class AdWebView extends WebView implements Displayable,
     private boolean MRAIDUseCustomClose = false;
     protected BaseAdResponse adResponseData;
 
+
     // touch detection
     private boolean userInteracted = false;
 
     private int checkPositionTimeInterval = 1000;
+    private int MIN_MS_BETWEEN_CHECKPOSITION = 200;
+    private Date timeOfLastCheckPosition = new Date();
 
     public AdWebView(AdView adView, UTAdRequester requester) {
         super(new MutableContextWrapper(adView.getContext()));
@@ -305,12 +309,6 @@ class AdWebView extends WebView implements Displayable,
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        checkPosition();
-    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int ow, int oh) {
-        super.onSizeChanged(w, h, ow, oh);
         checkPosition();
     }
 
@@ -810,6 +808,9 @@ class AdWebView extends WebView implements Displayable,
     }
 
     protected void checkPosition() {
+        if (tooManyCheckPositionRequests()) {
+            return;
+        }
         if (!(this.getContextFromMutableContext() instanceof Activity)) return;
 
         // check whether newly drawn view is onscreen or not,
@@ -863,7 +864,20 @@ class AdWebView extends WebView implements Displayable,
             }
             videoImplementation.fireViewableChangeEvent();
         }
+        timeOfLastCheckPosition = new Date();
     }
+
+    private boolean tooManyCheckPositionRequests() {
+        Date now = new Date();
+        long deltaT = now.getTime() - timeOfLastCheckPosition.getTime();
+        if (deltaT >= MIN_MS_BETWEEN_CHECKPOSITION) {
+            //we have reached a min wait now its ok to execute checkPosition
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 
     boolean isViewable() {
         return isOnscreen && isVisible;
@@ -990,27 +1004,23 @@ class AdWebView extends WebView implements Displayable,
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
-        removeViewTreeObserver();
     }
 
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        addViewTreeObserver();
+        setupViewTreeObserver();
     }
 
-    private void addViewTreeObserver() {
-        if (getViewTreeObserver().isAlive()) {
-            getViewTreeObserver().addOnScrollChangedListener(this);
-            getViewTreeObserver().addOnGlobalLayoutListener(this);
-        }
-    }
+    private void setupViewTreeObserver() {
+        ViewTreeObserver treeObserver = getViewTreeObserver();
+        if (treeObserver.isAlive()) {
+            treeObserver.removeOnScrollChangedListener(this);
+            treeObserver.removeGlobalOnLayoutListener(this);
 
-    private void removeViewTreeObserver() {
-        if (getViewTreeObserver().isAlive()) {
-            getViewTreeObserver().removeOnScrollChangedListener(this);
-            getViewTreeObserver().removeGlobalOnLayoutListener(this);
+            treeObserver.addOnScrollChangedListener(this);
+            treeObserver.addOnGlobalLayoutListener(this);
         }
     }
 
@@ -1020,7 +1030,7 @@ class AdWebView extends WebView implements Displayable,
      */
     @Override
     public void onGlobalLayout() {
-        //checkPosition();
+        checkPosition();
     }
 
 
@@ -1029,7 +1039,7 @@ class AdWebView extends WebView implements Displayable,
      */
     @Override
     public void onScrollChanged() {
-        //checkPosition();
+        checkPosition();
     }
 
 
@@ -1057,6 +1067,7 @@ class AdWebView extends WebView implements Displayable,
 
     public void setCheckPositionTimeInterval(int interval) {
         checkPositionTimeInterval = interval;
+        MIN_MS_BETWEEN_CHECKPOSITION = interval;
         stopCheckViewable();
         startCheckViewable();
     }
