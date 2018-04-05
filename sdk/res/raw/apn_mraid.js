@@ -465,6 +465,7 @@
 
 
     mraid.util.exposureChangeEvent = function(exposureObject) {
+        if (state === 'loading') return;
         mraid.util.fireEvent('exposureChange', exposureObject.exposedPercentage,exposureObject.visibleRectangle,exposureObject.occlusionRectangles);
     };
 
