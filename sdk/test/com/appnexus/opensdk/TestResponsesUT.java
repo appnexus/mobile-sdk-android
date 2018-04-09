@@ -78,7 +78,6 @@ public class TestResponsesUT {
 
     }
 
-
     /**
      *Returns a RTB HTML Banner UT Response
      */

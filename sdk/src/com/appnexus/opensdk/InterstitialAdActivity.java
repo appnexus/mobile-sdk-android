@@ -46,6 +46,7 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
         this.adActivity = adActivity;
     }
 
+
     @Override
     public void create() {
         layout = new FrameLayout(adActivity);
@@ -61,8 +62,24 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
                 InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY,
                 Settings.DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
 
+
         new CloseButtonHandler(this).sendEmptyMessageDelayed(CLOSE_BUTTON_MESSAGE_ID, closeButtonDelay);
+
+        int dismissAdDelay = adActivity.getIntent().getIntExtra(
+                InterstitialAdView.INTENT_KEY_AUTODISMISS_DELAY,
+                -1);
+
+        if (adView != null && dismissAdDelay > -1) {
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    dismissInterstitial();
+                }
+            }, dismissAdDelay * 1000);
+        }
     }
+
 
     @Override
     public void backPressed() {
@@ -91,9 +108,10 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
         addCloseButton();
     }
 
+
     @Override
     public void browserLaunched() {
-        if(adView != null && adView.shouldDismissOnClick()){
+        if (adView != null && adView.shouldDismissOnClick()) {
             dismissInterstitial();
         }
     }
@@ -129,12 +147,12 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
         webView = (AdWebView) iAQE.getView();
 
         // Update the context
-        if(webView.getContext() instanceof MutableContextWrapper) {
+        if (webView.getContext() instanceof MutableContextWrapper) {
             ((MutableContextWrapper) webView.getContext()).setBaseContext(adActivity);
         }
         // lock orientation to ad request orientation
         //@TODO need to change this check condition to reflect MRAID spec
-        if(!(webView.getCreativeWidth()==1 && webView.getCreativeHeight()==1)) {
+        if (!(webView.getCreativeWidth() == 1 && webView.getCreativeHeight() == 1)) {
             AdActivity.lockToConfigOrientation(adActivity, webView.getOrientation());
         }
 
@@ -155,7 +173,6 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
                 dismissInterstitial();
             }
         });
-
         layout.addView(closeButton);
     }
 

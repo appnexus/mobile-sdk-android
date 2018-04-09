@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
@@ -55,6 +56,7 @@ public class InterstitialAdView extends AdView {
     //Intent Keys
     static final String INTENT_KEY_TIME = "TIME";
     static final String INTENT_KEY_CLOSE_BUTTON_DELAY = "CLOSE_BUTTON_DELAY";
+    static final String INTENT_KEY_AUTODISMISS_DELAY = "AUTODISMISS_DELAY";
 
     //To let the activity show the button.
     private AdActivity.AdActivityImplementation adImplementation = null;
@@ -124,14 +126,14 @@ public class InterstitialAdView extends AdView {
         containerWidth = dm.widthPixels;
         int h_adjust = 0;
 
-        try{
+        try {
             Activity a = (Activity) context;
             Rect r = new Rect();
             a.getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
             h_adjust += a.getWindow().findViewById(Window.ID_ANDROID_CONTENT)
                     .getTop();
             containerHeight -= h_adjust;
-        }catch(ClassCastException cce){
+        } catch (ClassCastException cce) {
 
         }
 
@@ -141,9 +143,9 @@ public class InterstitialAdView extends AdView {
 
 
         ArrayList<AdSize> allowedSizes = new ArrayList<AdSize>();
-        allowedSizes.add(new AdSize(1,1));
+        allowedSizes.add(new AdSize(1, 1));
 
-        AdSize containerSize = new AdSize(containerWidth,containerHeight);
+        AdSize containerSize = new AdSize(containerWidth, containerHeight);
         allowedSizes.add(containerSize);
 
         if (new AdSize(300, 250).fitsIn(containerWidth, containerHeight))
@@ -182,13 +184,13 @@ public class InterstitialAdView extends AdView {
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.xml_set_opens_native_browser));
                 this.setOpensNativeBrowser(a.getBoolean(attr, false));
-            }else if (attr == R.styleable.InterstitialAdView_show_loading_indicator) {
+            } else if (attr == R.styleable.InterstitialAdView_show_loading_indicator) {
                 Clog.d(Clog.xmlLogTag,
                         Clog.getString(R.string.show_loading_indicator_xml));
                 setShowLoadingIndicator(a.getBoolean(attr, true));
-            }else if (attr == R.styleable.InterstitialAdView_load_landing_page_in_background) {
+            } else if (attr == R.styleable.InterstitialAdView_load_landing_page_in_background) {
                 setLoadsInBackground(a.getBoolean(attr, true));
-                Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_load_landing_page_in_background, doesLoadingInBackground ));
+                Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_load_landing_page_in_background, doesLoadingInBackground));
             }
         }
         a.recycle();
@@ -226,7 +228,7 @@ public class InterstitialAdView extends AdView {
     @Override
     protected void display(Displayable d) {
         // safety check: this should never evaluate to true
-        if (!checkDisplayable(d)){
+        if (!checkDisplayable(d)) {
             return;
         }
 
@@ -235,11 +237,11 @@ public class InterstitialAdView extends AdView {
         }
 
         //Prevent responses from reaching this InterstitialAdView if it has been destroyed already
-        if(!destroyed && !paused) {
+        if (!destroyed && !paused) {
             lastDisplayable = d;
             adQueue.add(new DisplayableInterstitialAdQueueEntry(d, System.currentTimeMillis(), false, null));
-        }else{
-            if(d!=null){
+        } else {
+            if (d != null) {
                 d.destroy();
             }
         }
@@ -248,7 +250,7 @@ public class InterstitialAdView extends AdView {
     @Override
     protected void displayMediated(MediatedDisplayable d) {
         // safety check: this should never evaluate to true
-        if (!checkDisplayable(d)){
+        if (!checkDisplayable(d)) {
             return;
         }
 
@@ -257,17 +259,17 @@ public class InterstitialAdView extends AdView {
         }
 
         //Prevent responses from reaching this InterstitialAdView if it has been destroyed already
-        if(!destroyed && !paused) {
+        if (!destroyed && !paused) {
             lastDisplayable = d;
             adQueue.add(new DisplayableInterstitialAdQueueEntry(d, System.currentTimeMillis(), true, d.getMAVC()));
-        }else{
-            if(d!=null){
+        } else {
+            if (d != null) {
                 d.destroy();
             }
         }
     }
 
-    private boolean checkDisplayable(Displayable d){
+    private boolean checkDisplayable(Displayable d) {
         // safety check: this should never evaluate to true
         if ((d == null) || d.failed()) {
             // The displayable has failed to be parsed or turned into a View.
@@ -360,11 +362,26 @@ public class InterstitialAdView extends AdView {
      * exceed the timeout.
      */
     public int show() {
+        return showWithAutoDismissDelay(-1);
+    }
+
+    /**
+     * Pops interstitial ads from the queue until it finds one that
+     * has not exceeded the 60 second timeout, and displays it in a
+     * new activity.  All ads in the queue which have exceeded the
+     * timeout are removed. If autodismissDelay is greater then -1
+     * then Ad will auto close after the said delay
+     *
+     * @param autoDismissDelay The time in seconds after which the
+     *                         the Interstitial Ad will auto close.
+     * @return The number of remaining ads in the queue that do not
+     * exceed the timeout.
+     */
+    public int showWithAutoDismissDelay(int autoDismissDelay) {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.show_int));
         // Make sure there is an ad to show
         long now = System.currentTimeMillis();
         boolean validAdExists = removeStaleAds(now);
-
 
 
         //If the head of the queue is interstitial mediation, show that instead of our adactivity
@@ -373,7 +390,7 @@ public class InterstitialAdView extends AdView {
             if (top.getMediatedAdViewController() != null) {
 
                 // Firing Impression trackers for Mediated Interstitial case.
-                if(impressionTrackers != null && impressionTrackers.size() > 0){
+                if (impressionTrackers != null && impressionTrackers.size() > 0) {
                     //fire the impression tracker url
                     fireImpressionTracker();
                 }
@@ -385,7 +402,6 @@ public class InterstitialAdView extends AdView {
                 return adQueue.size();
             }
         }
-
         // otherwise, launch our adActivity, unless this view has already been destroyed
         if (validAdExists && !destroyed) {
             Class<?> activity_clz = AdActivity.getActivityClass();
@@ -394,11 +410,12 @@ public class InterstitialAdView extends AdView {
                     AdActivity.ACTIVITY_TYPE_INTERSTITIAL);
             i.putExtra(InterstitialAdView.INTENT_KEY_TIME, now);
             i.putExtra(InterstitialAdView.INTENT_KEY_CLOSE_BUTTON_DELAY, closeButtonDelay);
+            i.putExtra(InterstitialAdView.INTENT_KEY_AUTODISMISS_DELAY, autoDismissDelay);
 
             INTERSTITIALADVIEW_TO_USE = this;
 
             // Firing Impression trackers for Appnexus Interstitial Ads RTB/SSM.
-            if(impressionTrackers != null && impressionTrackers.size() > 0){
+            if (impressionTrackers != null && impressionTrackers.size() > 0) {
                 //fire the impression tracker url
                 fireImpressionTracker();
             }
@@ -407,7 +424,7 @@ public class InterstitialAdView extends AdView {
                 getContext().startActivity(i);
             } catch (ActivityNotFoundException e) {
                 INTERSTITIALADVIEW_TO_USE = null;
-                Clog.e(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing,activity_clz.getName()));
+                Clog.e(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing, activity_clz.getName()));
             }
 
             return adQueue.size() - 1; // Return the number of ads remaining, less the one we're about to show
@@ -443,12 +460,12 @@ public class InterstitialAdView extends AdView {
         Clog.d(Clog.publicFunctionsLogTag,
                 Clog.getString(R.string.set_allowed_sizes));
         //append a 1x1 to this allowedSizes list
-        AdSize oneByOne = new AdSize(1,1);
-        if(!allowed_sizes.contains(oneByOne))
+        AdSize oneByOne = new AdSize(1, 1);
+        if (!allowed_sizes.contains(oneByOne))
             allowed_sizes.add(oneByOne);
         //append container size for Interstitial
-        AdSize containerSize = new AdSize(containerWidth,containerHeight);
-        if(!allowed_sizes.contains(containerSize))
+        AdSize containerSize = new AdSize(containerWidth, containerHeight);
+        if (!allowed_sizes.contains(containerSize))
             allowed_sizes.add(containerSize);
 
         requestParameters.setPrimarySize(containerSize);
@@ -524,7 +541,7 @@ public class InterstitialAdView extends AdView {
      * @return -1
      */
     @Override
-    public int getCreativeWidth(){
+    public int getCreativeWidth() {
         return -1;
     }
 
@@ -535,7 +552,7 @@ public class InterstitialAdView extends AdView {
      */
 
     @Override
-    public int getCreativeHeight(){
+    public int getCreativeHeight() {
         // override creative Height for interstitial ad
         return -1;
     }
@@ -550,44 +567,48 @@ public class InterstitialAdView extends AdView {
     //Instead, here, they serve as a way to prevent mediated
     //views from being launched by an already-destroyed
     //parent activity.
-    protected boolean destroyed=false;
-    protected boolean paused=false;
+    protected boolean destroyed = false;
+    protected boolean paused = false;
+
     @Override
     public void activityOnDestroy() {
-        destroyed=true;
+        destroyed = true;
     }
 
     @Override
     public void activityOnPause() {
-        paused=true;
+        paused = true;
 
     }
 
     @Override
     public void activityOnResume() {
-        paused=false;
+        paused = false;
     }
 
 }
 
-interface InterstitialAdQueueEntry{
+interface InterstitialAdQueueEntry {
     abstract long getTime();
+
     abstract boolean isMediated();
+
     abstract MediatedAdViewController getMediatedAdViewController();
+
     abstract View getView();
 }
 
-class DisplayableInterstitialAdQueueEntry implements InterstitialAdQueueEntry{
+class DisplayableInterstitialAdQueueEntry implements InterstitialAdQueueEntry {
     private long time;
     private Displayable d;
     private boolean isMediated;
     private MediatedAdViewController mAVC;
 
-    DisplayableInterstitialAdQueueEntry(Displayable d, Long t, boolean isMediated, MediatedAdViewController mAVC){
-        this.time=t;
-        this.d=d;
-        this.isMediated=isMediated;
-        this.mAVC=mAVC;
+    DisplayableInterstitialAdQueueEntry(Displayable d, Long t, boolean isMediated, MediatedAdViewController mAVC) {
+        this.time = t;
+        this.d = d;
+        this.isMediated = isMediated;
+        this.mAVC = mAVC;
     }
 
     @Override
@@ -595,17 +616,17 @@ class DisplayableInterstitialAdQueueEntry implements InterstitialAdQueueEntry{
         return time;
     }
 
-    public boolean isMediated(){
+    public boolean isMediated() {
         return isMediated;
     }
 
-    public MediatedAdViewController getMediatedAdViewController(){
+    public MediatedAdViewController getMediatedAdViewController() {
         return mAVC;
     }
 
     @Override
     public View getView() {
-        if(d==null) return null;
+        if (d == null) return null;
         return d.getView();
     }
 }

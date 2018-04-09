@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.robolectric.shadows.ShadowWebView;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -27,8 +26,13 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener {
     InterstitialAdView interstitialAdView;
     AdViewRequestManager requestManager;
 
-
     boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked;
+    boolean isAutoDismissDelay;
+
+    public void setAutoDismissDelay(boolean autoDismissDelay) {
+        isAutoDismissDelay = autoDismissDelay;
+    }
+
 
     @Override
     public void setup() {
@@ -65,6 +69,13 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener {
     public void onAdLoaded(AdView adView) {
         Clog.w(TestUtil.testLogTag, "BaseViewAdTest onAdLoaded");
         adLoaded = true;
+        if (adView.getMediaType() == MediaType.INTERSTITIAL){
+            if (isAutoDismissDelay)
+                interstitialAdView.showWithAutoDismissDelay(5);
+            else {
+                interstitialAdView.show();
+            }
+       }
     }
 
     @Override

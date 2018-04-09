@@ -23,11 +23,13 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.WindowManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
+
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
@@ -50,10 +52,15 @@ public class AdActivity extends Activity {
 
     interface AdActivityImplementation {
         void create();
+
         void backPressed();
+
         void destroy();
+
         void interacted();
+
         void browserLaunched();
+
         WebView getWebView();
     }
 
@@ -159,27 +166,23 @@ public class AdActivity extends Activity {
     }
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    private static void setOrientation(Activity a, int orientation)
-    {
-        boolean  isKindleFireHD  = false;  // Fix an accelerometer bug with kindle fire HDs
+    private static void setOrientation(Activity a, int orientation) {
+        boolean isKindleFireHD = false;  // Fix an accelerometer bug with kindle fire HDs
 
-        String  device   = Settings.getSettings() .deviceModel .toUpperCase(Locale.US);
-        String  make     = Settings.getSettings() .deviceMake  .toUpperCase(Locale.US);
+        String device = Settings.getSettings().deviceModel.toUpperCase(Locale.US);
+        String make = Settings.getSettings().deviceMake.toUpperCase(Locale.US);
 
-        if (        make.equals("AMAZON")
-                && (device.equals("KFTT") || device.equals("KFJWI") || device.equals("KFJWA")) )
-        {
+        if (make.equals("AMAZON")
+                && (device.equals("KFTT") || device.equals("KFJWI") || device.equals("KFJWA"))) {
             isKindleFireHD = true;
         }
 
-        if( (a != null) && !a.isFinishing() )
-        {
-            Display  d         = ((WindowManager) a.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-            int      rotation  = d.getRotation();
+        if ((a != null) && !a.isFinishing()) {
+            Display d = ((WindowManager) a.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+            int rotation = d.getRotation();
 
 
-            if (orientation == Configuration.ORIENTATION_PORTRAIT)
-            {
+            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                 if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
                     a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
@@ -190,10 +193,7 @@ public class AdActivity extends Activity {
                         a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                     }
                 }
-            }
-
-            else if (orientation == Configuration.ORIENTATION_LANDSCAPE)
-            {
+            } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
                     a.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
