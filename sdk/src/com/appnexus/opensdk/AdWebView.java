@@ -38,6 +38,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.SslErrorHandler;
@@ -59,10 +60,13 @@ import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
 
+import java.util.Date;
 import java.util.HashMap;
 
 @SuppressLint("ViewConstructor")
-class AdWebView extends WebView implements Displayable {
+class AdWebView extends WebView implements Displayable,
+        ViewTreeObserver.OnGlobalLayoutListener,
+        ViewTreeObserver.OnScrollChangedListener {
     private boolean failed = false;
     AdView adView;
     private VideoImplementation videoImplementation = null;
@@ -90,10 +94,13 @@ class AdWebView extends WebView implements Displayable {
     private boolean MRAIDUseCustomClose = false;
     protected BaseAdResponse adResponseData;
 
+
     // touch detection
     private boolean userInteracted = false;
 
     private int checkPositionTimeInterval = 1000;
+    private int MIN_MS_BETWEEN_CHECKPOSITION = 200;
+    private Date timeOfLastCheckPosition = new Date();
 
     public AdWebView(AdView adView, UTAdRequester requester) {
         super(new MutableContextWrapper(adView.getContext()));
@@ -801,6 +808,9 @@ class AdWebView extends WebView implements Displayable {
     }
 
     protected void checkPosition() {
+        if (tooManyCheckPositionRequests()) {
+            return;
+        }
         if (!(this.getContextFromMutableContext() instanceof Activity)) return;
 
         // check whether newly drawn view is onscreen or not,
@@ -808,10 +818,19 @@ class AdWebView extends WebView implements Displayable {
         int viewLocation[] = new int[2];
         this.getLocationOnScreen(viewLocation);
 
+        // holds the visible area of a AdWebView in global (root) coordinates
+        Rect globalClippedArea = new Rect();
+        boolean visible = this.getGlobalVisibleRect(globalClippedArea);
+
         int left = viewLocation[0];
         int right = viewLocation[0] + this.getWidth();
         int top = viewLocation[1];
         int bottom = viewLocation[1] + this.getHeight();
+
+        final double visibleViewArea = globalClippedArea.height() * globalClippedArea.width();
+        final double totalArea = this.getHeight() * this.getWidth();
+        final double exposedPercentage = (visibleViewArea / totalArea) * 100;
+
 
         int[] screenSize = ViewUtil.getScreenSizeAsPixels((Activity) this.getContextFromMutableContext());
 
@@ -824,21 +843,41 @@ class AdWebView extends WebView implements Displayable {
             implementation.setCurrentPosition(left, top, this.getWidth(), this.getHeight());
             int orientation = this.getContext().getResources().getConfiguration().orientation;
             implementation.onOrientationChanged(orientation);
+
+            // exposureChange event logic
+            if (visible) {
+                // If at-least part of view is visible, then send exposure percentage and getLocalVisibleRect
+                Rect localClippedArea = new Rect();
+                this.getLocalVisibleRect(localClippedArea);
+                implementation.fireExposureChangeEvent(exposedPercentage, localClippedArea);
+            } else {
+                // No part of the view is visible then we need to send exposed percentage as 0.0 and visible rectangle as null
+                implementation.fireExposureChangeEvent(0.0, null);
+            }
         }
 
         if (isVideoAd && videoImplementation != null) {
-            // holds the visible part of a view
-            Rect clippedArea = new Rect();
-            if (this.getGlobalVisibleRect(clippedArea)) {
-                final int visibleViewArea = clippedArea.height() * clippedArea.width();
-                final int totalArea = this.getHeight() * this.getWidth();
-                this.isVideoOnScreen = 100 * visibleViewArea >= Settings.VIDEO_AUTOPLAY_PERCENTAGE * totalArea;
-            }else{
+            if (visible) {
+                this.isVideoOnScreen = exposedPercentage >= Settings.VIDEO_AUTOPLAY_PERCENTAGE;
+            } else {
                 this.isVideoOnScreen = false;
             }
             videoImplementation.fireViewableChangeEvent();
         }
+        timeOfLastCheckPosition = new Date();
     }
+
+    private boolean tooManyCheckPositionRequests() {
+        Date now = new Date();
+        long deltaT = now.getTime() - timeOfLastCheckPosition.getTime();
+        if (deltaT >= MIN_MS_BETWEEN_CHECKPOSITION) {
+            //we have reached a min wait now its ok to execute checkPosition
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 
     boolean isViewable() {
         return isOnscreen && isVisible;
@@ -968,6 +1007,42 @@ class AdWebView extends WebView implements Displayable {
     }
 
 
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        setupViewTreeObserver();
+    }
+
+    private void setupViewTreeObserver() {
+        ViewTreeObserver treeObserver = getViewTreeObserver();
+        if (treeObserver.isAlive()) {
+            treeObserver.removeOnScrollChangedListener(this);
+            treeObserver.removeGlobalOnLayoutListener(this);
+
+            treeObserver.addOnScrollChangedListener(this);
+            treeObserver.addOnGlobalLayoutListener(this);
+        }
+    }
+
+
+    /**
+     * ViewTreeObserver GlobalLayout Listener
+     */
+    @Override
+    public void onGlobalLayout() {
+        checkPosition();
+    }
+
+
+    /**
+     * ViewTreeObserver Scroll Listener
+     */
+    @Override
+    public void onScrollChanged() {
+        checkPosition();
+    }
+
+
     // Helper method for getting Context if it is of type MutableContextWrapper.
     protected Context getContextFromMutableContext() {
         if (this.getContext() instanceof MutableContextWrapper) {
@@ -992,6 +1067,7 @@ class AdWebView extends WebView implements Displayable {
 
     public void setCheckPositionTimeInterval(int interval) {
         checkPositionTimeInterval = interval;
+        MIN_MS_BETWEEN_CHECKPOSITION = interval;
         stopCheckViewable();
         startCheckViewable();
     }
