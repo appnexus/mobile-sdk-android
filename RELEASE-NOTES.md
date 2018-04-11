@@ -1,3 +1,7 @@
+## 4.7
++ MS-2113 -- Support autocollapse of interstitials
++ MS-3178 -- Implement exposureChange event
+
 ## 4.6
 + MS-3024 -- MultiFormat Banner + Video.
 + MS-3096 -- getCreativeId() new API for BannerAdView, InterstitialAdView, VideoAd and NativeAdResponse

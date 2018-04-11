@@ -57,6 +57,8 @@ public class InterstitialAdViewLoadAdTest extends BaseViewAdTest {
 
     @Test
     public void testANInterstitialWithoutAutoDismissAdDelay() {
+
+        setInterstitialShowonLoad(true);
         setAutoDismissDelay(false);
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
         assertTrue(interstitialAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOWN initially
@@ -64,6 +66,7 @@ public class InterstitialAdViewLoadAdTest extends BaseViewAdTest {
 
         //Checking if onAdLoaded is called or not
         assertTrue(adLoaded);
+
 
         //Creating shadow of the required activity
         ShadowActivity shadowActivity = shadowOf(activity);
@@ -81,6 +84,7 @@ public class InterstitialAdViewLoadAdTest extends BaseViewAdTest {
     @Test
     public void testANInterstitialWithAutoDismissAdDelay() throws InterruptedException {
 
+        setInterstitialShowonLoad(true);
         setAutoDismissDelay(true);
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
         assertTrue(interstitialAdView.getAdType() == AdType.UNKNOWN); // First 2tests if ad_type is UNKNOW initially

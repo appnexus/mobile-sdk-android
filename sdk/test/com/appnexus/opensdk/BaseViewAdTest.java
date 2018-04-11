@@ -27,10 +27,14 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener {
     AdViewRequestManager requestManager;
 
     boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked;
-    boolean isAutoDismissDelay;
+    boolean isAutoDismissDelay,enableInterstitialShowonLoad;
 
     public void setAutoDismissDelay(boolean autoDismissDelay) {
         isAutoDismissDelay = autoDismissDelay;
+    }
+
+    public void setInterstitialShowonLoad(boolean interstitialShowonLoad) {
+        enableInterstitialShowonLoad = interstitialShowonLoad;
     }
 
 
@@ -70,13 +74,16 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener {
         Clog.w(TestUtil.testLogTag, "BaseViewAdTest onAdLoaded");
         adLoaded = true;
         if (adView.getMediaType() == MediaType.INTERSTITIAL){
-            if (isAutoDismissDelay)
-                interstitialAdView.showWithAutoDismissDelay(5);
-            else {
-                interstitialAdView.show();
+                if(enableInterstitialShowonLoad) {
+                    if (isAutoDismissDelay) {
+                        interstitialAdView.showWithAutoDismissDelay(5);
+                    }
+                    else {
+                        interstitialAdView.show();
+                    }
+                }
             }
        }
-    }
 
     @Override
     public void onAdRequestFailed(AdView adView, ResultCode resultCode) {
