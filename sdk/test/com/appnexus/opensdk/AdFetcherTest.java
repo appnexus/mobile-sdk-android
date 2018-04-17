@@ -23,7 +23,7 @@ import com.appnexus.opensdk.shadows.ShadowCustomWebView;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.util.Lock;
-import com.appnexus.opensdk.util.RoboelectricTestRunnerWithResources;
+import org.robolectric.RobolectricTestRunner;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.Test;
@@ -32,8 +32,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.robolectric.shadows.ShadowLog;
-import org.robolectric.shadows.ShadowWebView;
-import org.robolectric.util.Scheduler;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotSame;
@@ -41,7 +39,7 @@ import static junit.framework.Assert.assertNotSame;
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
                 ShadowCustomWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
-@RunWith(RoboelectricTestRunnerWithResources.class)
+@RunWith(RobolectricTestRunner.class)
 public class AdFetcherTest extends BaseRoboTest {
     private AdFetcher adFetcher;
 

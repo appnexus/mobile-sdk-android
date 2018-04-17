@@ -23,21 +23,19 @@ import com.appnexus.opensdk.shadows.ShadowCustomWebView;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.util.Lock;
-import com.appnexus.opensdk.util.RoboelectricTestRunnerWithResources;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.robolectric.shadows.ShadowWebView;
 
 import java.util.concurrent.TimeUnit;
 
 import static com.appnexus.opensdk.ResultCode.SUCCESS;
-
 import static com.appnexus.opensdk.ResultCode.UNABLE_TO_FILL;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -55,7 +53,7 @@ import static junit.framework.Assert.fail;
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
                 ShadowCustomWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
-@RunWith(RoboelectricTestRunnerWithResources.class)
+@RunWith(RobolectricTestRunner.class)
 public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
     boolean requestQueued = false;
     private static final boolean ASSERT_AD_LOAD_SUCESS = true;

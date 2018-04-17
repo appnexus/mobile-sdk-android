@@ -1,12 +1,12 @@
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "19.1.0"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
         minSdkVersion 8
-	    targetSdkVersion 19
+	    targetSdkVersion 27
 	    versionCode 1
 	    versionName "1.0"
     }
@@ -26,7 +26,7 @@ android {
 }
 
 dependencies {
-    compile project(':sdk')
-    compile 'com.android.support:appcompat-v7:20.+'
-    compile 'com.google.android.gms:play-services:6.1.11'
+    api project(':sdk')
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    api 'com.google.android.gms:play-services:6.1.11'
 }

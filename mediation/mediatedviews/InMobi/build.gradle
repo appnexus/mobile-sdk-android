@@ -1,15 +1,15 @@
 // Project Properties
-version = "6.1.0" // supported InMobi version
+version = "6.1.1" // supported InMobi version
 
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName version
         consumerProguardFiles 'proguard-project.txt'
@@ -34,8 +34,8 @@ repositories {
 }
 
 dependencies {
-    compile project(':sdk')
-    compile "com.inmobi.monetization:inmobi-ads:${project.version}"
+    api project(':sdk')
+    api "com.inmobi.monetization:inmobi-ads:${project.version}"
 }
 
 

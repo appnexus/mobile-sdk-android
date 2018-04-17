@@ -8,7 +8,6 @@ import com.appnexus.opensdk.ut.UTAdRequester;
 import com.appnexus.opensdk.ut.UTAdResponse;
 import com.appnexus.opensdk.ut.UTRequestParameters;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
-import com.appnexus.opensdk.util.RoboelectricTestRunnerWithResources;
 import com.appnexus.opensdk.utils.Settings;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
@@ -19,6 +18,7 @@ import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
@@ -29,10 +29,9 @@ import java.util.LinkedList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
-@RunWith(RoboelectricTestRunnerWithResources.class)
+@RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21, shadows = {ShadowSettings.class, ShadowLog.class})
 public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 

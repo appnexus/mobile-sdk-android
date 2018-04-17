@@ -18,7 +18,6 @@ package com.appnexus.opensdk;
 
 import android.util.Log;
 
-import com.appnexus.opensdk.util.RoboelectricTestRunnerWithResources;
 import com.appnexus.opensdk.util.TestUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ClogListener;
@@ -36,7 +35,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 @Config(constants = BuildConfig.class, sdk = 21)
-@RunWith(RoboelectricTestRunnerWithResources.class)
+@RunWith(RobolectricTestRunner.class)
 public class ClogListenerTest {
 
     boolean didReceiveMessage;

@@ -23,7 +23,6 @@ import android.view.ViewGroup;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
-import com.appnexus.opensdk.util.RoboelectricTestRunnerWithResources;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +38,7 @@ import static junit.framework.Assert.assertTrue;
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
                 ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
-@RunWith(RoboelectricTestRunnerWithResources.class)
+@RunWith(RobolectricTestRunner.class)
 public class MRAIDImplementationTest extends BaseViewAdTest {
     MRAIDImplementation implementation;
     MockAdWebView mockAdWebView;

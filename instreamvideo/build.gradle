@@ -4,12 +4,12 @@ version = "1.6" // Instream SDK version
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 4 // An integer value that represents the version of the code, relative to other versions. Increase for each release.
         versionName version
         consumerProguardFiles 'proguard-project.txt'
@@ -18,17 +18,21 @@ android {
     lintOptions {
         abortOnError false
     }
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':sdk')
-    testCompile 'com.android.support:design:26.1.0'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.assertj:assertj-core:1.7.0'
-    testCompile 'org.robolectric:robolectric:3.5.1'
-    testCompile 'org.robolectric:shadows-httpclient:3.5.1'
-    testCompile 'com.squareup.okhttp:mockwebserver:2.5.0'
+    api project(':sdk')
+    testImplementation 'com.android.support:design:27.1.1'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.assertj:assertj-core:1.7.0'
+    testImplementation 'org.robolectric:robolectric:3.8'
+    testImplementation 'org.robolectric:shadows-httpclient:3.5.1'
+    testImplementation 'com.squareup.okhttp:mockwebserver:2.5.0'
 
 }
 

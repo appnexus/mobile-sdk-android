@@ -4,12 +4,12 @@ version = "6.4.2" // supported Yahoo version
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName version
         consumerProguardFiles 'proguard-project.txt'
@@ -30,9 +30,9 @@ android {
 }
 
 dependencies {
-    compile "com.flurry.android:analytics:${project.version}"
-    compile "com.flurry.android:ads:${project.version}"
-    compile project(':sdk')
+    api "com.flurry.android:analytics:${project.version}"
+    api "com.flurry.android:ads:${project.version}"
+    api project(':sdk')
 }
 
 repositories {

@@ -16,7 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import com.appnexus.opensdk.util.RoboelectricTestRunnerWithResources;
 import com.appnexus.opensdk.utils.Settings;
 
 import org.junit.After;
@@ -24,13 +23,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
 
 @Config(constants = BuildConfig.class, sdk = 21)
-@RunWith(RoboelectricTestRunnerWithResources.class)
+@RunWith(RobolectricTestRunner.class)
 public class DefaultSettingsTest {
 
     @Before

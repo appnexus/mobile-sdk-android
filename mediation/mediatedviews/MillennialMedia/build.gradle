@@ -4,12 +4,12 @@ version = "6.6.1" // supported Millennial version
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName version
         consumerProguardFiles 'proguard-project.txt'
@@ -42,16 +42,8 @@ repositories {
 }
 
 dependencies {
-    compile project(':sdk')
-    compile ("com.millennialmedia:android:$version@aar")
-    // MM crashes the app if the right google play services package is not present in the app
-    // To reduce pain in the the MM building from source integration, adding the dependencies here
-    compile("com.google.android.gms:play-services-base:$project.pom_google_play_services_version") {
-        transitive = false
-    }
-    compile("com.google.android.gms:play-services-ads:$project.pom_google_play_services_version") {
-        transitive = false
-    }
+    api project(':sdk')
+    api ("com.millennialmedia:android:$version@aar")
 }
 
 

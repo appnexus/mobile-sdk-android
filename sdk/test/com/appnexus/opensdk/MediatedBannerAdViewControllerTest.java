@@ -29,7 +29,6 @@ import com.appnexus.opensdk.testviews.MediatedBannerNoRequest;
 import com.appnexus.opensdk.testviews.MediatedBannerSuccessful;
 import com.appnexus.opensdk.testviews.MediatedBannerSuccessful2;
 import com.appnexus.opensdk.util.Lock;
-import com.appnexus.opensdk.util.RoboelectricTestRunnerWithResources;
 import com.appnexus.opensdk.utils.Settings;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
@@ -37,9 +36,9 @@ import com.squareup.okhttp.mockwebserver.RecordedRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.robolectric.shadows.ShadowWebView;
 
 import static com.appnexus.opensdk.ResultCode.INTERNAL_ERROR;
 import static com.appnexus.opensdk.ResultCode.MEDIATED_SDK_UNAVAILABLE;
@@ -63,7 +62,7 @@ import static junit.framework.Assert.fail;
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
                 ShadowCustomWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
-@RunWith(RoboelectricTestRunnerWithResources.class)
+@RunWith(RobolectricTestRunner.class)
 public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
     boolean requestQueued = false;
     private static final boolean ASSERT_AD_LOAD_SUCESS = true;
