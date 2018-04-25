@@ -174,4 +174,5 @@ public class SDKSettings {
     public static boolean isHttpsEnabled() {
         return Settings.getSettings().useHttps;
     }
+
 }

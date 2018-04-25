@@ -330,6 +330,24 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
     }
 
 
+    /**
+     * Test gdpr_consent in /ut request body
+     * @throws Exception
+     */
+    @Test
+    public void testGDPRSettings() throws Exception {
+        executionSteps();
+        JSONObject postDataBeforeGDPRValueSet = inspectPostData();
+        assertFalse(postDataBeforeGDPRValueSet.has("gdpr_consent"));
+
+        ANGDPRSettings.setConsentRequired(activity,true);
+        ANGDPRSettings.setConsentString(activity,"fooBar");
+        executionSteps();
+        JSONObject postDataWithGDPRValueSet = inspectPostData();
+        assertEquals(true, postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getBoolean("consent_required"));
+        assertEquals("fooBar", postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getString("consent_string"));
+    }
+
 
     @Override
     public void tearDown() {

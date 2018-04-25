@@ -25,8 +25,10 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Pair;
 
+import com.appnexus.opensdk.ANGDPRSettings;
 import com.appnexus.opensdk.AdSize;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.MediaType;
@@ -53,7 +55,7 @@ public class UTRequestParameters {
     private String invCode;
     private boolean opensNativeBrowser = false;
     private AdSize primarySize;
-    private ArrayList<AdSize> adSizes = new ArrayList<AdSize>();;
+    private ArrayList<AdSize> adSizes = new ArrayList<AdSize>();
     private boolean allowSmallerSizes = false;
     private boolean shouldServePSAs = false;
     private float reserve = 0.00f;
@@ -117,6 +119,9 @@ public class UTRequestParameters {
     private static final String TAG_VIDEO = "video";
     private static final String TAG_MINDURATION = "minduration";
     private static final String TAG_MAXDURATION = "maxduration";
+    private static final String GDPR_CONSENT = "gdpr_consent";
+    private static final String GDPR_CONSENT_STRING = "consent_string";
+    private static final String GDPR_CONSENT_REQUIRED = "consent_required";
 
 
     private static final int ALLOWED_TYPE_BANNER = 1;
@@ -228,13 +233,17 @@ public class UTRequestParameters {
         return videoAdMinDuration;
     }
 
-    public void setVideoAdMinDuration(int minDuration) { this.videoAdMinDuration = minDuration;}
+    public void setVideoAdMinDuration(int minDuration) {
+        this.videoAdMinDuration = minDuration;
+    }
 
     public int getVideoAdMaxDuration() {
         return videoAdMaxDuration;
     }
 
-    public void setVideoAdMaxDuration(int maxDuration) { this.videoAdMaxDuration = maxDuration;}
+    public void setVideoAdMaxDuration(int maxDuration) {
+        this.videoAdMaxDuration = maxDuration;
+    }
 
 
     public void addCustomKeywords(String key, String value) {
@@ -351,6 +360,13 @@ public class UTRequestParameters {
             if (keywordsArray != null && keywordsArray.length() > 0) {
                 postData.put(KEYWORDS, keywordsArray);
             }
+
+            // add GDPR Consent
+            JSONObject gdprConsent = getGDPRConsentObject();
+            if (gdprConsent != null && gdprConsent.length() > 0) {
+                postData.put(GDPR_CONSENT, gdprConsent);
+            }
+
         } catch (JSONException e) {
             Clog.e(Clog.httpReqLogTag, "JSONException: " + e.getMessage());
         }
@@ -383,7 +399,6 @@ public class UTRequestParameters {
             tag.put(TAG_PRIMARY_SIZE, primesize);
 
 
-
             ArrayList<AdSize> sizesArray = this.getSizes();
             JSONArray sizes = new JSONArray();
             if (sizesArray != null && sizesArray.size() > 0) {
@@ -413,7 +428,7 @@ public class UTRequestParameters {
 
             tag.put(TAG_ALLOWED_MEDIA_AD_TYPES, allowedMediaAdTypes);
 
-            if(this.getMediaType() == MediaType.INSTREAM_VIDEO) {
+            if (this.getMediaType() == MediaType.INSTREAM_VIDEO) {
                 JSONObject videoObject = this.getVideoObject();
                 if (videoObject.length() > 0) {
                     tag.put(TAG_VIDEO, videoObject);
@@ -658,7 +673,7 @@ public class UTRequestParameters {
             if (this.videoAdMaxDuration > 0) {
                 videoDict.put(TAG_MAXDURATION, this.videoAdMaxDuration);
             }
-        }catch (JSONException ex){
+        } catch (JSONException ex) {
 
         }
         return videoDict;
@@ -676,6 +691,24 @@ public class UTRequestParameters {
         }
         return sdk;
     }
+
+    private JSONObject getGDPRConsentObject() {
+        JSONObject gdprConsent = new JSONObject();
+        try {
+            Context context = this.getContext();
+            if (context != null) {
+                Boolean consentRequired = ANGDPRSettings.getConsentRequired(context);
+                // Only populate GDPR Consent object if Consent Required true/false. Otherwise treat it as unknown, impbus knows how to handle it.
+                if (consentRequired != null) {
+                    gdprConsent.put(GDPR_CONSENT_REQUIRED, consentRequired);
+                    gdprConsent.put(GDPR_CONSENT_STRING, ANGDPRSettings.getConsentString(context));
+                }
+            }
+        } catch (JSONException e) {
+        }
+        return gdprConsent;
+    }
+
 
     private JSONArray getCustomKeywordsArray() {
         JSONArray keywords = new JSONArray();

@@ -94,14 +94,6 @@ public final class ResponseUrl {
                 // create the responseurl request
                 StringBuilder sb = new StringBuilder(url);
                 sb.append("&reason=").append(resultCode.ordinal());
-                // append the hashes of the device ID from settings
-                if (!StringUtil.isEmpty(Settings.getSettings().aaid)) {
-                    sb.append("&aaid=").append(Uri.encode(Settings.getSettings().aaid));
-                } else {
-                    sb.append("&md5udid=").append(Uri.encode(Settings.getSettings().hidmd5));
-                    sb.append("&sha1udid=").append(Uri.encode(Settings.getSettings().hidsha1));
-                }
-
                 if (latency > 0) {
                     sb.append("&latency=").append(Uri.encode(String.valueOf(latency)));
                 }
