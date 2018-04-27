@@ -309,6 +309,11 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
         return registerView(view, listener);
     }
 
+    NativeAdEventListener getListener() {
+        return listener;
+    }
+
+
     @Override
     public void unregisterViews() {
         if (expired) {

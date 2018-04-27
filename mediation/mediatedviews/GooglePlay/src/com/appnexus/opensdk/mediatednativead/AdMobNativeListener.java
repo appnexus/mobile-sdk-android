@@ -16,14 +16,19 @@
 package com.appnexus.opensdk.mediatednativead;
 
 import com.appnexus.opensdk.MediatedNativeAdController;
+import com.appnexus.opensdk.NativeAdEventListener;
 import com.appnexus.opensdk.ResultCode;
+import com.appnexus.opensdk.utils.Clog;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.formats.NativeAppInstallAd;
 import com.google.android.gms.ads.formats.NativeContentAd;
 
+import java.lang.ref.WeakReference;
+
 public class AdMobNativeListener extends AdListener implements NativeAppInstallAd.OnAppInstallAdLoadedListener, NativeContentAd.OnContentAdLoadedListener {
     MediatedNativeAdController mBC;
+    private WeakReference<AdMobNativeAdResponse> weakReferenceAdMobNativeAdResponse;
 
     public AdMobNativeListener(MediatedNativeAdController mBC) {
         this.mBC = mBC;
@@ -56,7 +61,9 @@ public class AdMobNativeListener extends AdListener implements NativeAppInstallA
     @Override
     public void onAppInstallAdLoaded(NativeAppInstallAd nativeAppInstallAd) {
         if (mBC != null) {
-            mBC.onAdLoaded(new AdMobNativeAdResponse(nativeAppInstallAd, AdMobNativeSettings.AdMobNativeType.APP_INSTALL));
+            AdMobNativeAdResponse response = new AdMobNativeAdResponse(nativeAppInstallAd, AdMobNativeSettings.AdMobNativeType.APP_INSTALL);
+            weakReferenceAdMobNativeAdResponse = new WeakReference<AdMobNativeAdResponse>(response);
+            mBC.onAdLoaded(response);
         }
 
     }
@@ -64,7 +71,28 @@ public class AdMobNativeListener extends AdListener implements NativeAppInstallA
     @Override
     public void onContentAdLoaded(NativeContentAd nativeContentAd) {
         if (mBC != null) {
-            mBC.onAdLoaded(new AdMobNativeAdResponse(nativeContentAd, AdMobNativeSettings.AdMobNativeType.CONTENT_AD));
+            AdMobNativeAdResponse response = new AdMobNativeAdResponse(nativeContentAd, AdMobNativeSettings.AdMobNativeType.CONTENT_AD);
+            weakReferenceAdMobNativeAdResponse = new WeakReference<AdMobNativeAdResponse>(response);
+            mBC.onAdLoaded(response);
         }
     }
+
+    @Override
+    public void onAdClicked() {
+        Clog.e(Clog.mediationLogTag, "AdMob - onAdClicked");
+        AdMobNativeAdResponse response = this.weakReferenceAdMobNativeAdResponse.get();
+        if (response != null) {
+            NativeAdEventListener listener = response.getListener();
+            if (listener != null) {
+                listener.onAdWasClicked();
+            }
+        }
+    }
+
+    @Override
+    public void onAdImpression() {
+        Clog.e(Clog.mediationLogTag, "AdMob - onAdImpression");
+    }
+
+
 }
