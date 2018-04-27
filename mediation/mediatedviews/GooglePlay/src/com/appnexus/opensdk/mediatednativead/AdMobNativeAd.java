@@ -54,6 +54,7 @@ public class AdMobNativeAd implements MediatedNativeAd {
                 if (AdMobNativeSettings.enableContentAd) {
                     builder.forContentAd(adMobNativeListener);
                 }
+                builder.withAdListener(adMobNativeListener);
                 builder.build().loadAd(GooglePlayServicesBanner.buildRequest(tp));
             } else {
                 Clog.w(Clog.mediationLogTag, "Unable to get AdMob Native ad since both AdMobNativeSettings.setEnableContentAd() and AdMobNativeSettings.setEnableAppInstallAd() were not called.");
