@@ -1,3 +1,7 @@
+## 4.8
+ MS-3221 - GDPR support for SDK
+ MS-3188 - Android Interstitial Crash.
+
 ## 4.7
 + MS-2113 -- Support autocollapse of interstitials
 + MS-3178 -- Implement exposureChange event
