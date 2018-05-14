@@ -16,9 +16,7 @@
 
 package com.appnexus.opensdk.mediatednativead;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -47,10 +45,11 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
     private String socialContext;
     private String fullText = "";
     private String sponsporedBy = "";
+    private String[] impressionTrackers;
     private String creativeId = "";
 
     private Rating rating;
-    private String landingUrl;
+    private String landingUrl; // This is not exposed as of now. Click is done through reportAdClickAndOpenLandingPage since AppNexus SDK autohandles click.
     private HashMap<String, Object> nativeElements = new HashMap<String, Object>();
     private boolean expired = false;
     private boolean registered = false;
@@ -77,10 +76,9 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
                 nativeAdEventlistener = null;
                 expired = true;
                 if (imNative != null) {
-                    InMobiNative.unbind(registeredView);
                     imNative = null;
                 }
-                if (nativeElements != null && !nativeElements.isEmpty()) {
+                if(nativeElements != null && !nativeElements.isEmpty()){
                     nativeElements.clear();
                 }
                 registeredView = null;
@@ -96,10 +94,18 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
         this.imNative = imNative;
         try {
             nativeElements.put(InMobiSettings.NATIVE_ELEMENT_OBJECT, imNative);
-            JSONObject response = new JSONObject((String) imNative.getAdContent());
-            title = JsonUtil.getJSONString(response, InMobiSettings.KEY_TITLE);
-            callToAction = JsonUtil.getJSONString(response, InMobiSettings.KEY_CALL_TO_ACTION);
-            description = JsonUtil.getJSONString(response, InMobiSettings.KEY_DESCRIPTION);
+
+            // Directly referenced from getters
+            title = imNative.getAdTitle();
+            description = imNative.getAdDescription();
+            callToAction = imNative.getAdCtaText();
+            landingUrl = imNative.getAdLandingPageUrl();
+
+
+            // Extracted out of getCustomAdContent
+            JSONObject response = imNative.getCustomAdContent();
+            int length = JsonUtil.getJSONString(response, InMobiSettings.IMPRESSION_TRACKERS).length();
+            impressionTrackers = JsonUtil.getJSONString(response, InMobiSettings.IMPRESSION_TRACKERS).substring(2,length-2).split("\",\"");
             JSONObject iconObject = JsonUtil.getJSONObject(response, InMobiSettings.KEY_ICON);
             iconUrl = JsonUtil.getJSONString(iconObject, InMobiSettings.KEY_URL);
             JSONObject imageObject = JsonUtil.getJSONObject(response, InMobiSettings.KEY_IMAGE);
@@ -107,19 +113,12 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
             if (JsonUtil.getJSONDouble(response, InMobiSettings.KEY_RATING) >= 0) {
                 rating = new Rating(JsonUtil.getJSONDouble(response, InMobiSettings.KEY_RATING), 5);
             }
-            landingUrl = JsonUtil.getJSONString(response, InMobiSettings.KEY_LANDING_URL);
+
+
             clickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    imNative.reportAdClick(null); // no additional params passed in for click tracking
-                    onAdClicked();
-                    if (v != null && landingUrl != null && !landingUrl.isEmpty()) {
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW,
-                                Uri.parse(landingUrl));
-                        browserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        onAdWillLeaveApplication();
-                        v.getContext().startActivity(browserIntent);
-                    }
+                    imNative.reportAdClickAndOpenLandingPage(); // no additional params passed in for click tracking
                 }
             };
             return true;
@@ -172,7 +171,6 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
         this.creativeId = creativeId;
     }
 
-
     @Override
     public String getIconUrl() {
         return iconUrl;
@@ -218,15 +216,19 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
         return sponsporedBy;
     }
 
+
     @Override
     public boolean hasExpired() {
         return expired;
     }
 
+    NativeAdEventListener getListener() {
+        return nativeAdEventlistener;
+    }
+
     @Override
     public boolean registerView(View view, NativeAdEventListener listener) {
         if (imNative != null && !registered && !expired) {
-            InMobiNative.bind(view, imNative);
             view.setOnClickListener(clickListener);
             registeredView = view;
             registered = true;
@@ -241,7 +243,6 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
     @Override
     public boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
         if (imNative != null && !registered && !expired) {
-            InMobiNative.bind(view, imNative);
             for (View clickable : clickables) {
                 clickable.setOnClickListener(clickListener);
             }
@@ -269,18 +270,6 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
         if (inMobiNativeExpireHandler != null) {
             inMobiNativeExpireHandler.removeCallbacks(runnable);
             inMobiNativeExpireHandler.post(runnable);
-        }
-    }
-
-    void onAdClicked() {
-        if (nativeAdEventlistener != null) {
-            nativeAdEventlistener.onAdWasClicked();
-        }
-    }
-
-    void onAdWillLeaveApplication() {
-        if (nativeAdEventlistener != null) {
-            nativeAdEventlistener.onAdWillLeaveApplication();
         }
     }
 

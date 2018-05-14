@@ -17,13 +17,17 @@
 package com.appnexus.opensdk.mediatednativead;
 
 import com.appnexus.opensdk.MediatedNativeAdController;
+import com.appnexus.opensdk.NativeAdEventListener;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.utils.Clog;
 import com.inmobi.ads.InMobiAdRequestStatus;
 import com.inmobi.ads.InMobiNative;
 
+import java.lang.ref.WeakReference;
+
 public class InMobiNativeAdListener implements InMobiNative.NativeAdListener {
     private final MediatedNativeAdController controller;
+    private WeakReference<InMobiNativeAdResponse> weakReferenceInMobiNativeAdResponse;
 
     public InMobiNativeAdListener(MediatedNativeAdController controller) {
         this.controller = controller;
@@ -35,6 +39,7 @@ public class InMobiNativeAdListener implements InMobiNative.NativeAdListener {
             if (controller != null) {
                 InMobiNativeAdResponse response = new InMobiNativeAdResponse();
                 if (response.setResources(inMobiNative)) {
+                    weakReferenceInMobiNativeAdResponse = new WeakReference<InMobiNativeAdResponse>(response);
                     controller.onAdLoaded(response);
                 } else {
                     controller.onAdFailed(ResultCode.UNABLE_TO_FILL);
@@ -46,24 +51,68 @@ public class InMobiNativeAdListener implements InMobiNative.NativeAdListener {
 
     @Override
     public void onAdLoadFailed(InMobiNative inMobiNative, InMobiAdRequestStatus inMobiAdRequestStatus) {
-        Clog.d(Clog.mediationLogTag, "InMobi: " + inMobiAdRequestStatus.toString());
+        Clog.e(Clog.mediationLogTag, "InMobiNative: " + inMobiAdRequestStatus.toString());
         if (controller != null) {
             controller.onAdFailed(InMobiSettings.getResultCode(inMobiAdRequestStatus));
         }
     }
 
     @Override
-    public void onAdDismissed(InMobiNative inMobiNative) {
-
+    public void onAdFullScreenDismissed(InMobiNative inMobiNative) {
+        Clog.d(Clog.mediationLogTag, "InMobiNative - onAdFullScreenDismissed");
     }
 
     @Override
-    public void onAdDisplayed(InMobiNative inMobiNative) {
-
+    public void onAdFullScreenWillDisplay(InMobiNative inMobiNative) {
+        Clog.d(Clog.mediationLogTag, "InMobiNative - onAdFullScreenWillDisplay");
     }
 
     @Override
-    public void onUserLeftApplication(InMobiNative inMobiNative) {
+    public void onAdFullScreenDisplayed(InMobiNative inMobiNative) {
+        Clog.d(Clog.mediationLogTag, "InMobiNative - onAdFullScreenDisplayed");
+    }
 
+    @Override
+    public void onUserWillLeaveApplication(InMobiNative inMobiNative) {
+        Clog.d(Clog.mediationLogTag, "InMobiNative - onUserWillLeaveApplication");
+        InMobiNativeAdResponse response = this.weakReferenceInMobiNativeAdResponse.get();
+        if (response != null) {
+            NativeAdEventListener listener = response.getListener();
+            if (listener != null) {
+                listener.onAdWillLeaveApplication();
+            }
+        }
+    }
+
+    @Override
+    public void onAdImpressed(InMobiNative inMobiNative) {
+        Clog.d(Clog.mediationLogTag, "InMobiNative - onAdImpressed");
+    }
+
+    @Override
+    public void onAdClicked(InMobiNative inMobiNative) {
+        Clog.d(Clog.mediationLogTag, "InMobiNative - onAdClicked");
+        InMobiNativeAdResponse response = this.weakReferenceInMobiNativeAdResponse.get();
+        if (response != null) {
+            NativeAdEventListener listener = response.getListener();
+            if (listener != null) {
+                listener.onAdWasClicked();
+            }
+        }
+    }
+
+    @Override
+    public void onMediaPlaybackComplete(InMobiNative inMobiNative) {
+        Clog.d(Clog.mediationLogTag, "InMobiNative - onMediaPlaybackComplete");
+    }
+
+    @Override
+    public void onAdStatusChanged(InMobiNative inMobiNative) {
+        Clog.d(Clog.mediationLogTag, "InMobiNative - onAdStatusChanged");
+    }
+
+    @Override
+    public void onUserSkippedMedia(InMobiNative inMobiNative) {
+        Clog.d(Clog.mediationLogTag, "InMobiNative - onUserSkippedMedia");
     }
 }

@@ -24,6 +24,7 @@ public class InMobiSettings {
     static String KEY_DESCRIPTION = "description";
     public static String INMOBI_APP_ID = "";
     public static String NATIVE_ELEMENT_OBJECT = "element";
+    public static String IMPRESSION_TRACKERS = "impressionTrackers";
 
     public static void setInMobiAppId(String key, Context context) {
         INMOBI_APP_ID = key;
@@ -135,14 +136,23 @@ public class InMobiSettings {
                 InMobiSdk.setAge(age);
                 if (age < 18) {
                     InMobiSdk.setAgeGroup(InMobiSdk.AgeGroup.BELOW_18);
-                } else if (age <= 20) {
-                    InMobiSdk.setAgeGroup(InMobiSdk.AgeGroup.BETWEEN_18_AND_20);
                 } else if (age <= 24) {
-                    InMobiSdk.setAgeGroup(InMobiSdk.AgeGroup.BETWEEN_21_AND_24);
+                    InMobiSdk.setAgeGroup(InMobiSdk.AgeGroup.BETWEEN_18_AND_24);
+                } else if (age <= 29) {
+                    InMobiSdk.setAgeGroup(InMobiSdk.AgeGroup.BETWEEN_25_AND_29);
                 } else if (age <= 34) {
-                    InMobiSdk.setAgeGroup(InMobiSdk.AgeGroup.BETWEEN_25_AND_34);
-                } else if (age <= 54) {
-                    InMobiSdk.setAgeGroup(InMobiSdk.AgeGroup.BETWEEN_35_AND_54);
+                    InMobiSdk.setAgeGroup(InMobiSdk.AgeGroup.BETWEEN_30_AND_34);
+                } else if (age <= 44) {
+                    InMobiSdk.setAgeGroup(InMobiSdk.AgeGroup.BETWEEN_35_AND_44);
+                }
+                else if (age <= 54) {
+                    InMobiSdk.setAgeGroup(InMobiSdk.AgeGroup.BETWEEN_45_AND_54);
+                }
+                else if (age <= 64) {
+                    InMobiSdk.setAgeGroup(InMobiSdk.AgeGroup.BETWEEN_55_AND_65);
+                }
+                else{
+                    InMobiSdk.setAgeGroup(InMobiSdk.AgeGroup.ABOVE_65);
                 }
             }
         }

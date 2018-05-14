@@ -1,5 +1,5 @@
 // Project Properties
-version = "6.1.1" // supported InMobi version
+version = "7.1.0" // supported InMobi version
 
 apply plugin: 'com.android.library'
 
@@ -36,6 +36,7 @@ repositories {
 dependencies {
     api project(':sdk')
     api "com.inmobi.monetization:inmobi-ads:${project.version}"
+    api 'com.squareup.picasso:picasso:2.5.2'
 }
 
 

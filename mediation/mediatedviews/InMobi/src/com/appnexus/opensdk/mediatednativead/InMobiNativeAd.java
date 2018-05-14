@@ -53,7 +53,7 @@ public class InMobiNativeAd implements MediatedNativeAd {
             try {
                 long placementID = Long.parseLong(uid);
                 InMobiNativeAdListener nativeAdListener = new InMobiNativeAdListener(mBC);
-                InMobiNative nativeAd = new InMobiNative(placementID, nativeAdListener);
+                InMobiNative nativeAd = new InMobiNative(context,placementID, nativeAdListener);
                 InMobiSettings.setTargetingParams(tp);
                 nativeAd.load();
             } catch (NumberFormatException e) {
