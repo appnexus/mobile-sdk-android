@@ -690,6 +690,31 @@ public abstract class AdView extends FrameLayout implements Ad {
         requestParameters.setOpensNativeBrowser(opensNativeBrowser);
     }
 
+
+    /**
+     * Returns the InAppBrowserType that is used for this AdView.
+     *
+     * @return
+     */
+    public InAppBrowserType getInAppBrowserType() {
+        return requestParameters.getInAppBrowserType();
+    }
+
+
+    /**
+     * If you set InAppBrowserType.CUSTOM then onHandleClick will be called instead of onAdClicked
+     * App is responsible for showing the click landing page.
+     *
+     *
+     * @param type InAppBrowserType.APPNEXUS which is default or
+     *             InAppBrowserType.CUSTOM
+     */
+    public void setInAppBrowserType(InAppBrowserType type) {
+        requestParameters.setInAppBrowserType(type);
+    }
+
+
+
     BrowserStyle getBrowserStyle() {
         return browserStyle;
     }
@@ -770,6 +795,26 @@ public abstract class AdView extends FrameLayout implements Ad {
      */
     public void setAge(String age) {
         requestParameters.setAge(age);
+    }
+
+
+
+    /**
+     * Retrieve the externalUID that was previously set.
+     *
+     * @return externalUID.
+     */
+    public String getExternalUID() {
+        return requestParameters.getExternalUId();
+    }
+
+    /**
+     * Set the current user's externalUID
+     *
+     * @param externalUID .
+     */
+    public void setExternalUID(String externalUID) {
+        requestParameters.setExternalUId(externalUID);
     }
 
     /**
@@ -1097,6 +1142,17 @@ public abstract class AdView extends FrameLayout implements Ad {
             if (getMediaType().equals(MediaType.BANNER) && mAdFetcher.getState() == AdFetcher.STATE.STOPPED){
                     mAdFetcher.start();
             }
+        }
+
+        @Override
+        public void onHandleClick(final String clickURL) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (adListener != null)
+                        adListener.onHandleClick(AdView.this,clickURL);
+                }
+            });
         }
     }
 

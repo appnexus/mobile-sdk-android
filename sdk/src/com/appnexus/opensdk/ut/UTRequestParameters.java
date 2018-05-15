@@ -25,12 +25,12 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
-import android.text.TextUtils;
 import android.util.Pair;
 
 import com.appnexus.opensdk.ANGDPRSettings;
 import com.appnexus.opensdk.AdSize;
 import com.appnexus.opensdk.AdView;
+import com.appnexus.opensdk.InAppBrowserType;
 import com.appnexus.opensdk.MediaType;
 import com.appnexus.opensdk.R;
 import com.appnexus.opensdk.SDKSettings;
@@ -54,12 +54,17 @@ public class UTRequestParameters {
     private int memberID;
     private String invCode;
     private boolean opensNativeBrowser = false;
+
+    private InAppBrowserType inAppBrowserType = InAppBrowserType.APPNEXUS;
+
     private AdSize primarySize;
     private ArrayList<AdSize> adSizes = new ArrayList<AdSize>();
     private boolean allowSmallerSizes = false;
     private boolean shouldServePSAs = false;
     private float reserve = 0.00f;
     private String age;
+
+    private String externalUId;
     private AdView.GENDER gender = AdView.GENDER.UNKNOWN;
     private ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
     private int videoAdMinDuration;
@@ -87,6 +92,7 @@ public class UTRequestParameters {
     private static final String USER_AGE = "age";
     private static final String USER_GENDER = "gender";
     private static final String USER_LANGUAGE = "language";
+    private static final String USER_EXTERNAL_UID ="external_uid";
     private static final String DEVICE = "device";
     private static final String DEVICE_USERAGENT = "useragent";
     private static final String DEVICE_GEO = "geo";
@@ -122,6 +128,7 @@ public class UTRequestParameters {
     private static final String GDPR_CONSENT = "gdpr_consent";
     private static final String GDPR_CONSENT_STRING = "consent_string";
     private static final String GDPR_CONSENT_REQUIRED = "consent_required";
+
 
 
     private static final int ALLOWED_TYPE_BANNER = 1;
@@ -197,6 +204,15 @@ public class UTRequestParameters {
         return opensNativeBrowser;
     }
 
+
+    public InAppBrowserType getInAppBrowserType() {
+        return inAppBrowserType;
+    }
+
+    public void setInAppBrowserType(InAppBrowserType inAppBrowserType) {
+        this.inAppBrowserType = inAppBrowserType;
+    }
+
     public void setMediaType(MediaType mediaType) {
         this.mediaType = mediaType;
     }
@@ -219,6 +235,14 @@ public class UTRequestParameters {
 
     public String getAge() {
         return age;
+    }
+
+    public String getExternalUId() {
+        return externalUId;
+    }
+
+    public void setExternalUId(String externalUId) {
+        this.externalUId = externalUId;
     }
 
     public void setGender(AdView.GENDER gender) {
@@ -477,6 +501,10 @@ public class UTRequestParameters {
             user.put(USER_GENDER, g);
             if (!StringUtil.isEmpty(Settings.getSettings().language)) {
                 user.put(USER_LANGUAGE, Settings.getSettings().language);
+            }
+
+            if (!StringUtil.isEmpty(this.getExternalUId())) {
+                user.put(USER_EXTERNAL_UID, this.getExternalUId());
             }
         } catch (JSONException e) {
         }

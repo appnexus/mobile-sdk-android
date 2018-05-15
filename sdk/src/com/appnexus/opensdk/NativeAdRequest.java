@@ -418,6 +418,11 @@ public class NativeAdRequest implements Ad {
         public void toggleAutoRefresh() {
 
         }
+
+        @Override
+        public void onHandleClick(String clickURL) {
+
+        }
     }
 
     @Override

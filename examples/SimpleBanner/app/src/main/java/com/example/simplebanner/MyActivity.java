@@ -17,8 +17,8 @@
 package com.example.simplebanner;
 
 import android.app.Activity;
-import android.location.Location;
-import android.location.LocationManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.RelativeLayout;
@@ -26,16 +26,18 @@ import android.widget.RelativeLayout;
 import com.appnexus.opensdk.AdListener;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.BannerAdView;
+import com.appnexus.opensdk.InAppBrowserType;
 import com.appnexus.opensdk.ResultCode;
-import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.utils.Clog;
 
 public class MyActivity extends Activity {
 
+    private Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
+        context = this;
 
         final BannerAdView bav = new BannerAdView(this);
 
@@ -45,14 +47,21 @@ public class MyActivity extends Activity {
         // Turning this on so we always get an ad during testing.
         bav.setShouldServePSAs(true);
 
-        // By default ad clicks open in an in-app WebView.
-        bav.setOpensNativeBrowser(true);
+        // Set opens native Browser to false. which is also the SDK default value.
+        // This will open In-Appbrowser for click
+        bav.setOpensNativeBrowser(false);
+
+        // Set the InAppBrowserType to custom if you want to show custom WebView/Landing pages for click through.
+        // setting this will call onHandleClick with the click url.
+        bav.setInAppBrowserType(InAppBrowserType.CUSTOM);
 
         // Get a 300x50 ad.
         bav.setAdSize(300, 250);
 
         // Resizes the container size to fit the banner ad
         bav.setResizeAdToFitContainer(true);
+
+        bav.setExternalUID("YOUR_EXTERNAL_UID");
 
         // Set up a listener on this ad view that logs events.
         AdListener adListener = new AdListener() {
@@ -83,6 +92,15 @@ public class MyActivity extends Activity {
             @Override
             public void onAdClicked(AdView bav) {
                 Clog.v("SIMPLEBANNER", "Ad clicked; opening browser");
+            }
+
+            @Override
+            public void onHandleClick(AdView adView, String clickURL) {
+                Clog.v("SIMPLEBANNER", "onHandleClick; opening Custom Browser");
+                Intent intent = new Intent(adView.getContext(), CustomLandingPage.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("URL", clickURL);
+                context.startActivity(intent);
             }
         };
 

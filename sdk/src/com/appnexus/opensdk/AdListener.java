@@ -69,4 +69,12 @@ public interface AdListener {
      * @param adView The {@link AdView} that loaded the ad.
      */
     public void onAdClicked(AdView adView);
+
+    /**
+     * Called instead of onAdClicked, when InAppBrowserType.CUSTOM
+     * App is responsible for showing the clickURL in it's own custom browser.
+     *
+     * @param adView The {@link AdView} that loaded the ad.
+     */
+    public void onHandleClick(AdView adView,String clickURL);
 }

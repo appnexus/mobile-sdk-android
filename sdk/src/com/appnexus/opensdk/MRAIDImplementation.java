@@ -439,7 +439,7 @@ class MRAIDImplementation {
 
         if (!StringUtil.isEmpty(uri)) {
             this.owner.loadURLInCorrectBrowser(uri);
-            this.owner.fireAdClicked();
+            //this.owner.fireAdClicked();
         }
     }
 
