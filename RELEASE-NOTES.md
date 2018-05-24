@@ -1,6 +1,10 @@
+## 4.8.1
++ MS-3262,MS-3272 - WebView loadUrl NPE fix.
++ Update InMobi SDK to v7.1.0
+
 ## 4.8
- MS-3221 - GDPR support for SDK
- MS-3188 - Android Interstitial Crash.
++ MS-3221 - GDPR support for SDK
++ MS-3188 - Android Interstitial Crash.
 
 ## 4.7
 + MS-2113 -- Support autocollapse of interstitials

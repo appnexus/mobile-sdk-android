@@ -1052,16 +1052,16 @@ class AdWebView extends WebView implements Displayable,
     }
 
     protected void injectJavaScript(String url) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            try {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 evaluateJavascript(url, null);
-            } catch (Exception exception) {
-                Clog.e(Clog.baseLogTag, "AdWebView.injectJavaScript -- Caught EXCEPTION...", exception);
-                Clog.e(Clog.baseLogTag, "AdWebView.injectJavaScript -- ...Recovering with loadUrl.");
+            } else {
                 loadUrl(url);
             }
-        } else {
-            loadUrl(url);
+        } catch (Exception exception) {
+            // We can't do anything much here if there is an exception ignoring.
+            // This is to avoid crash of users app gracefully.
+            Clog.e(Clog.baseLogTag, "AdWebView.injectJavaScript -- Caught EXCEPTION...", exception);
         }
     }
 
