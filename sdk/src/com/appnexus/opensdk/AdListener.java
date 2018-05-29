@@ -69,4 +69,14 @@ public interface AdListener {
      * @param adView The {@link AdView} that loaded the ad.
      */
     public void onAdClicked(AdView adView);
+
+    /**
+     * Called when an ad is clicked. Return true if the click is handled
+     * outside the SDK.
+     *
+     * @param url The url to be loaded.
+     * @param adView The {@link AdView} that loaded the ad.
+     */
+    public boolean shouldInterceptAdClick(AdView adView, String url);
+
 }

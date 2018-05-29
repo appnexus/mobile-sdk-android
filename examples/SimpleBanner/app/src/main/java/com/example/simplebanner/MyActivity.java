@@ -54,6 +54,8 @@ public class MyActivity extends Activity {
         // Resizes the container size to fit the banner ad
         bav.setResizeAdToFitContainer(true);
 
+        bav.setOpensNativeBrowser(false);
+
         // Set up a listener on this ad view that logs events.
         AdListener adListener = new AdListener() {
             @Override
@@ -83,6 +85,12 @@ public class MyActivity extends Activity {
             @Override
             public void onAdClicked(AdView bav) {
                 Clog.v("SIMPLEBANNER", "Ad clicked; opening browser");
+            }
+
+            @Override
+            public boolean shouldInterceptAdClick(AdView adview, String url) {
+                Clog.v("SIMPLEBANNER", "Ad clicked, handle url");
+                return false;
             }
         };
 

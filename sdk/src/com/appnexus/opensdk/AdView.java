@@ -1081,6 +1081,14 @@ public abstract class AdView extends FrameLayout implements Ad {
         }
 
         @Override
+        public boolean shouldInterceptAdClick(final String url) {
+            if (adListener != null) {
+                return adListener.shouldInterceptAdClick(AdView.this, url);
+            }
+            return false;
+        }
+
+        @Override
         public void onAppEvent(final String name, final String data) {
             handler.post(new Runnable() {
                 @Override

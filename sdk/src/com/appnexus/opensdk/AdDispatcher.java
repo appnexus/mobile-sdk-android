@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 interface AdDispatcher {
+
     /**
      * Called when an ad is ready to be used, indicates a successful ad
      * request
@@ -49,6 +50,15 @@ interface AdDispatcher {
      * SDK of an ad being clicked
      */
     public void onAdClicked();
+
+    /**
+     * Called when the third-party mediation network has alerted the
+     * SDK of an ad being clicked. Return true if the click is handled
+     * outside the SDK.
+     *
+     * @param url The url to be loaded.
+     */
+    public boolean shouldInterceptAdClick(String url);
 
     /**
      * Called when the ad has sent the app an event via the
