@@ -57,6 +57,13 @@ public interface MediatedNativeAd {
      * </p>
      *
      * @param context The activity from which this method was called.
+     * @param parameter An optional opaque string passed from the
+     *                  Ad Network Manager, this can be used to
+     *                  defined SDK-specific parameters such as
+     *                  additional targeting information.  The
+     *                  encoding of the contents of this string
+     *                  are entirely up to the implementation of
+     *                  the third-party SDK adaptor.
      * @param uid     The network ID for this ad call.  This ID is
      *                opaque to the AppNexus SDK and its contents and
      *                their encoding are up to the implementation of
@@ -65,5 +72,5 @@ public interface MediatedNativeAd {
      * @param tp      Targeting parameters passed from SDK to adapter.
      */
 
-    public void requestNativeAd(Context context, String uid, MediatedNativeAdController mBC, TargetingParameters tp);
+    public void requestNativeAd(Context context, String parameter, String uid, MediatedNativeAdController mBC, TargetingParameters tp);
 }

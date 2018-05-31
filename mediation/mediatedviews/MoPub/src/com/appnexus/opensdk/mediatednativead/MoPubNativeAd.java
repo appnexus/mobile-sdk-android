@@ -51,7 +51,7 @@ public class MoPubNativeAd implements MediatedNativeAd {
      * @return AppNexus NativeAdResponse that wraps a MoPub native ad.
      */
     @Override
-    public void requestNativeAd(Context context, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
+    public void requestNativeAd(Context context, String parameterString, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
 
         RequestParameters requestParameters = null;
         if (tp != null) {

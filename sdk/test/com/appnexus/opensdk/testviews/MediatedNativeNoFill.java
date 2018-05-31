@@ -26,7 +26,7 @@ import com.appnexus.opensdk.util.Lock;
 
 public class MediatedNativeNoFill implements MediatedNativeAd{
     @Override
-    public void requestNativeAd(Context context, String uid, MediatedNativeAdController mNC, TargetingParameters tp) {
+    public void requestNativeAd(Context context, String parameterString, String uid, MediatedNativeAdController mNC, TargetingParameters tp) {
         Lock.explicitSleep(2); // This is for generating latency and total latency in the response url
         if (mNC != null) {
             mNC.onAdFailed(ResultCode.UNABLE_TO_FILL);

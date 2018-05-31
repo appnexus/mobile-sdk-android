@@ -43,7 +43,7 @@ public class InMobiNativeAd implements MediatedNativeAd {
      * @return native ad response from InMobi
      */
     @Override
-    public void requestNativeAd(Context context, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
+    public void requestNativeAd(Context context, String parameterString, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
         if (mBC != null) {
             if (StringUtil.isEmpty(InMobiSettings.INMOBI_APP_ID)) {
                 Clog.e(Clog.mediationLogTag, "InMobi mediation failed. Call InMobiSettings.setInMobiAppId(String key, Context context) to set the app id.");

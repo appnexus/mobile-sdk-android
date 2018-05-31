@@ -36,11 +36,15 @@ public class MediatedNativeSuccessful implements MediatedNativeAd {
     public static String ImageUrl = "test image url";
     public static String SponsoredBy = "test sponsored by";
     public static boolean didPass;
+    public static String params;
+    public static String uid;
 
     @Override
-    public void requestNativeAd(Context context, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
+    public void requestNativeAd(Context context, String parameterString, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
         if (mBC != null) {
             didPass = true;
+            params = parameterString;
+            this.uid = uid;
             Lock.explicitSleep(2); // This is for generating latency and total latency in the response url
             mBC.onAdLoaded(new NativeAdResponse() {
                 @Override
