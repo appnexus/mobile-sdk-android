@@ -30,10 +30,17 @@ public interface AdListener {
     public void onAdLoaded(AdView adView);
 
     /**
+     * Called when an ad has successfully been loaded from the server.
+     *
+     * @param nativeAdResponse The {@link NativeAdResponse} that loaded the ad.
+     */
+    public void onAdLoaded(NativeAdResponse nativeAdResponse);
+
+    /**
      * Called when an ad request has failed.  Ad requests can fail
      * because no ad is available, or because of networking errors.
      *
-     * @param adView The {@link com.appnexus.opensdk.AdView} that loaded the ad.
+     * @param adView    The {@link com.appnexus.opensdk.AdView} that loaded the ad.
      * @param errorCode the error code describing the failure.
      */
     public void onAdRequestFailed(AdView adView, ResultCode errorCode);

@@ -181,6 +181,7 @@ class AdFetcher {
             // If the owner is not ready for a new ad, do nothing with
             // this message
             AdFetcher fetcher = mFetcher.get();
+            Clog.e("ADFETCHER", fetcher + ", " + fetcher.owner.isReadyToStart());
             if (fetcher == null
                     || !fetcher.owner.isReadyToStart())
                 return;
@@ -196,19 +197,13 @@ class AdFetcher {
             fetcher.lastFetchTime = System.currentTimeMillis();
 
             // Spawn an AdRequest
-            switch (fetcher.owner.getMediaType()) {
-                case BANNER:
-                    fetcher.requestManager = new AdViewRequestManager((BannerAdView) fetcher.owner);
-                    break;
-                case INTERSTITIAL:
-                    fetcher.requestManager = new AdViewRequestManager((InterstitialAdView) fetcher.owner);
-                    break;
-                case NATIVE:
-                    fetcher.requestManager = new NativeAdRequestManager((NativeAdRequest) fetcher.owner);
-                    break;
+            MediaType mediaType = fetcher.owner.getMediaType();
+            if (mediaType.equals(MediaType.NATIVE) || mediaType.equals(MediaType.INTERSTITIAL) || mediaType.equals(MediaType.BANNER)) {
+                fetcher.requestManager = new AdViewRequestManager(fetcher.owner);
+                fetcher.requestManager.execute();
+            }else{
+                fetcher.owner.getAdDispatcher().onAdFailed(ResultCode.INVALID_REQUEST);
             }
-
-            fetcher.requestManager.execute();
         }
     }
 

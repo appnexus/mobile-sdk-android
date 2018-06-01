@@ -205,7 +205,7 @@ public class UTAdResponse {
                 JSONObject nativeObject = JsonUtil.getJSONObject(rtbObject, UTConstants.AD_TYPE_NATIVE);
                 if(nativeObject != null) {
                     Clog.i(Clog.httpRespLogTag, "it's a NATIVE Ad");
-                    parseNativeAds(nativeObject,  creativeId);
+                    parseNativeAds(nativeObject, creativeId, adType);
                 }else {
                     Clog.i(Clog.httpRespLogTag, "NATIVE Ad is empty");
                 }
@@ -264,7 +264,7 @@ public class UTAdResponse {
     }
 
     // returns true if response contains a native response, false if not
-    private void parseNativeAds(JSONObject response ,  String creativeId) {
+    private void parseNativeAds(JSONObject response, String creativeId, String adType) {
         JSONArray nativeAd = JsonUtil.getJSONArray(response, UTConstants.AD_TYPE_NATIVE);
         if (nativeAd != null) {
             // take the first ad
@@ -272,7 +272,8 @@ public class UTAdResponse {
             if (firstAd != null) {
                 ANNativeAdResponse anNativeAdResponse = ANNativeAdResponse.create(firstAd);
                 if (anNativeAdResponse != null) {
-                    RTBNativeAdResponse nativeRTB = new RTBNativeAdResponse(1, 1, UTConstants.RTB, anNativeAdResponse, null,creativeId);
+                    RTBNativeAdResponse nativeRTB = new RTBNativeAdResponse(1, 1, adType, anNativeAdResponse, null,creativeId);
+                    nativeRTB.setContentSource(UTConstants.RTB);
                     adList.add(nativeRTB);
                 }
             }

@@ -2,8 +2,10 @@ package com.appnexus.opensdk;
 
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.ut.UTAdResponse;
+import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMSDKAdResponse;
+import com.appnexus.opensdk.ut.adresponse.RTBNativeAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.SSMHTMLAdResponse;
 
@@ -22,8 +24,8 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, shadows = {ShadowSettings.class,ShadowLog.class})
-public class UTAdResponseTest extends BaseRoboTest{
+@Config(constants = BuildConfig.class, sdk = 21, shadows = {ShadowSettings.class, ShadowLog.class})
+public class UTAdResponseTest extends BaseRoboTest {
 
     UTAdResponse utAdResponse;
 
@@ -32,7 +34,6 @@ public class UTAdResponseTest extends BaseRoboTest{
         super.setup();
 
     }
-
 
 
     /**
@@ -44,11 +45,11 @@ public class UTAdResponseTest extends BaseRoboTest{
     public void testNOResponse() throws Exception {
 
         String bannerString = TestResponsesUT.noResponse();
-        utAdResponse = new UTAdResponse(bannerString,null,MediaType.BANNER, "v");
+        utAdResponse = new UTAdResponse(bannerString, null, MediaType.BANNER, "v");
 
         assertNotNull(utAdResponse);
         LinkedList<BaseAdResponse> list = utAdResponse.getAdList();
-        assertEquals(MediaType.BANNER,utAdResponse.getMediaType());
+        assertEquals(MediaType.BANNER, utAdResponse.getMediaType());
         assertNull(utAdResponse.getNoAdUrl());
         assertNull(list);
     }
@@ -62,11 +63,11 @@ public class UTAdResponseTest extends BaseRoboTest{
     public void testRTBNOAdResponse() throws Exception {
 
         String bannerString = TestResponsesUT.blankBanner();
-        utAdResponse = new UTAdResponse(bannerString,null,MediaType.BANNER, "v");
+        utAdResponse = new UTAdResponse(bannerString, null, MediaType.BANNER, "v");
 
         assertNotNull(utAdResponse);
         LinkedList<BaseAdResponse> list = utAdResponse.getAdList();
-        assertEquals(MediaType.BANNER,utAdResponse.getMediaType());
+        assertEquals(MediaType.BANNER, utAdResponse.getMediaType());
         assertNotNull(utAdResponse.getNoAdUrl());
         assertTrue(list.isEmpty());
     }
@@ -80,15 +81,15 @@ public class UTAdResponseTest extends BaseRoboTest{
     public void testBannerResponse() throws Exception {
 
         String bannerString = TestResponsesUT.banner();
-        utAdResponse = new UTAdResponse(bannerString,null,MediaType.BANNER,"v");
+        utAdResponse = new UTAdResponse(bannerString, null, MediaType.BANNER, "v");
 
         assertNotNull(utAdResponse);
         LinkedList<BaseAdResponse> list = utAdResponse.getAdList();
         assertNotNull(utAdResponse.getAdList());
-        while(!list.isEmpty()){
+        while (!list.isEmpty()) {
             BaseAdResponse baseAdResponse = (BaseAdResponse) list.removeFirst();
-            assertEquals("rtb",baseAdResponse.getContentSource());
-            assertEquals("6332753",baseAdResponse.getCreativeId());
+            assertEquals("rtb", baseAdResponse.getContentSource());
+            assertEquals("6332753", baseAdResponse.getCreativeId());
         }
     }
 
@@ -102,19 +103,46 @@ public class UTAdResponseTest extends BaseRoboTest{
     public void testBannerVideoResponse() throws Exception {
 
         String bannerString = TestResponsesUT.rtbVASTVideo();
-        utAdResponse = new UTAdResponse(bannerString,null,MediaType.BANNER,"v");
+        utAdResponse = new UTAdResponse(bannerString, null, MediaType.BANNER, "v");
 
         assertNotNull(utAdResponse);
         LinkedList<BaseAdResponse> list = utAdResponse.getAdList();
         assertNotNull(utAdResponse.getAdList());
-        while(!list.isEmpty()){
+        while (!list.isEmpty()) {
             RTBVASTAdResponse vastAdResponse = (RTBVASTAdResponse) list.removeFirst();
-            assertEquals("rtb",vastAdResponse.getContentSource());
-            assertEquals("video",vastAdResponse.getAdType());
+            assertEquals("rtb", vastAdResponse.getContentSource());
+            assertEquals("video", vastAdResponse.getAdType());
             assertTrue(vastAdResponse.getAdContent().contains("<VAST version=\"2.0\">"));
             HashMap<String, Object> extras = vastAdResponse.getExtras();
             assertTrue(extras.containsKey("MRAID"));
             assertTrue(extras.containsValue(true));
+        }
+    }
+
+
+    /**
+     * Tests rtb banner Native response
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testBannerNativeResponse() throws Exception {
+
+        String bannerString = TestResponsesUT.anNative();
+        utAdResponse = new UTAdResponse(bannerString, null, MediaType.BANNER, "v");
+
+        assertNotNull(utAdResponse);
+        LinkedList<BaseAdResponse> list = utAdResponse.getAdList();
+        assertNotNull(utAdResponse.getAdList());
+        while (!list.isEmpty()) {
+            RTBNativeAdResponse nativeAdResponse = (RTBNativeAdResponse) list.removeFirst();
+            assertEquals(UTConstants.RTB, nativeAdResponse.getContentSource());
+            assertEquals(UTConstants.AD_TYPE_NATIVE, nativeAdResponse.getAdType());
+            assertTrue(nativeAdResponse.getNativeAdResponse().getIconUrl().contains("http://path_to_icon.com"));
+            assertTrue(nativeAdResponse.getNativeAdResponse().getImageUrl().contains("http://path_to_main.com"));
+            assertEquals(false, nativeAdResponse.getNativeAdResponse().isOpenNativeBrowser());
+            assertEquals(true, nativeAdResponse.getNativeAdResponse().getLoadsInBackground());
+            assertEquals("47772560", nativeAdResponse.getCreativeId());
         }
     }
 
@@ -127,7 +155,7 @@ public class UTAdResponseTest extends BaseRoboTest{
     public void testBannerCSMResponse() throws Exception {
         String bannerCSMString = TestResponsesUT.noFillCSM_RTBBanner();
 
-        utAdResponse = new UTAdResponse(bannerCSMString,null,MediaType.BANNER, "v");
+        utAdResponse = new UTAdResponse(bannerCSMString, null, MediaType.BANNER, "v");
 
         assertNotNull(utAdResponse);
         LinkedList<BaseAdResponse> list = utAdResponse.getAdList();
@@ -135,11 +163,11 @@ public class UTAdResponseTest extends BaseRoboTest{
         System.out.println("Printing first");
         CSMSDKAdResponse baseCSMSDKAdResponse = (CSMSDKAdResponse) list.getFirst();
         assertEquals("csm", baseCSMSDKAdResponse.getContentSource());
-        assertEquals("44863345",baseCSMSDKAdResponse.getCreativeId());
+        assertEquals("44863345", baseCSMSDKAdResponse.getCreativeId());
         System.out.println("Printing second");
         BaseAdResponse baseAdResponse = (BaseAdResponse) list.getLast();
-        assertEquals("rtb",baseAdResponse.getContentSource());
-        assertEquals("6332753",baseAdResponse.getCreativeId());
+        assertEquals("rtb", baseAdResponse.getContentSource());
+        assertEquals("6332753", baseAdResponse.getCreativeId());
 
     }
 
@@ -151,7 +179,7 @@ public class UTAdResponseTest extends BaseRoboTest{
     @Test
     public void testNoBannerCSMResponse() throws Exception {
         String bannerCSMString = TestResponsesUT.mediatedNoFillBanner();
-        utAdResponse = new UTAdResponse(bannerCSMString,null,MediaType.BANNER, "v");
+        utAdResponse = new UTAdResponse(bannerCSMString, null, MediaType.BANNER, "v");
 
         assertNotNull(utAdResponse);
         LinkedList<BaseAdResponse> list = utAdResponse.getAdList();
@@ -173,7 +201,7 @@ public class UTAdResponseTest extends BaseRoboTest{
     @Test
     public void testBannerSSMResponse() throws Exception {
         String bannerSSMString = TestResponsesUT.mediatedSSMBanner();
-        utAdResponse = new UTAdResponse(bannerSSMString,null,MediaType.BANNER, "v");
+        utAdResponse = new UTAdResponse(bannerSSMString, null, MediaType.BANNER, "v");
 
         assertNotNull(utAdResponse);
         LinkedList<BaseAdResponse> list = utAdResponse.getAdList();
@@ -182,7 +210,7 @@ public class UTAdResponseTest extends BaseRoboTest{
         SSMHTMLAdResponse baseSSMHTMLAdResponse = (SSMHTMLAdResponse) list.getFirst();
         assertEquals("ssm", baseSSMHTMLAdResponse.getContentSource());
         assertEquals((TestResponsesUT.SSM_URL), baseSSMHTMLAdResponse.getAdUrl());
-        assertEquals("44863345",baseSSMHTMLAdResponse.getCreativeId());
+        assertEquals("44863345", baseSSMHTMLAdResponse.getCreativeId());
     }
 
     /**
@@ -193,12 +221,11 @@ public class UTAdResponseTest extends BaseRoboTest{
     @Test
     public void testBannerSSMNoURLResponse() throws Exception {
         String bannerSSMString = TestResponsesUT.mediatedNoSSMBanner();
-        utAdResponse = new UTAdResponse(bannerSSMString,null,MediaType.BANNER, "v");
+        utAdResponse = new UTAdResponse(bannerSSMString, null, MediaType.BANNER, "v");
 
         assertNotNull(utAdResponse);
         @SuppressWarnings("UnusedAssignment") LinkedList<BaseAdResponse> list = utAdResponse.getAdList();
     }
-
 
 
     @Override

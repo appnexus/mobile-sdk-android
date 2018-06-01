@@ -22,6 +22,8 @@ import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -78,6 +80,35 @@ public class AdListenerTest extends BaseViewAdTest {
     public void testInterstitialAdFailed() {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
         requestManager = new AdViewRequestManager(interstitialAdView);
+        requestManager.execute();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertCallbacks(false);
+    }
+
+    //Banner-Native test
+    @Test
+    public void testBannerNativeAdLoaded() {
+        bannerAdView.setAutoRefreshInterval(30000);
+        bannerAdView.setOpensNativeBrowser(true);
+        bannerAdView.setLoadsInBackground(false);
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeWithoutImages()));
+        Assert.assertEquals(AdType.UNKNOWN, bannerAdView.getAdType());
+        requestManager = new AdViewRequestManager(bannerAdView);
+        requestManager.execute();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        Assert.assertEquals(30000, bannerAdView.getAutoRefreshInterval());
+        Assert.assertEquals(AdType.NATIVE, bannerAdView.getAdType());
+        assertCallbacks(true);
+        assertOpensInNativeBrowser();
+        assertLoadsInBackground();
+    }
+
+    @Test
+    public void testBannerNativeAdFailed() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        requestManager = new AdViewRequestManager(bannerAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();

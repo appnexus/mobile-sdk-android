@@ -28,13 +28,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ImageService {
-    HashMap<ImageReceiver, String> imageUrls = new HashMap<ImageReceiver, String>();
+    HashMap<String, String> imageUrlMap = new HashMap<>();
     ImageServiceListener imageServiceListener;
-    static final int TIMEOUT = 10000;
 
-    public void registerImageReceiver(ImageReceiver imageReceiver, String url) {
-        if (!StringUtil.isEmpty(url) && imageReceiver != null) {
-            imageUrls.put(imageReceiver, url);
+    static final int TIMEOUT = 10000;
+    private ImageReceiver imageReceiver;
+
+    public void registerImageReceiver(ImageReceiver imageReceiver, HashMap<String, String> imageUrlMap) {
+        if (imageReceiver != null && imageUrlMap != null && !imageUrlMap.isEmpty()) {
+            this.imageReceiver = imageReceiver;
+            this.imageUrlMap = imageUrlMap;
         }
     }
 
@@ -42,11 +45,11 @@ public class ImageService {
         this.imageServiceListener = imageServiceListener;
     }
 
-    public void finishDownload(ImageReceiver imageReceiver) {
-        if (imageUrls != null) {
-            if (imageUrls.containsKey(imageReceiver)) {
-                imageUrls.remove(imageReceiver);
-                if (imageUrls.size() == 0) {
+    public void finishDownload(String key) {
+        if (imageUrlMap != null) {
+            if (imageUrlMap.containsKey(key)) {
+                imageUrlMap.remove(key);
+                if (imageUrlMap.size() == 0) {
                     imageServiceListener.onAllImageDownloadsFinish();
                     Clog.d(Clog.baseLogTag, "Images downloading finished.");
                     finish();
@@ -56,7 +59,7 @@ public class ImageService {
     }
 
     private void finish() {
-        imageUrls = null;
+        imageUrlMap = null;
         imageServiceListener = null;
     }
 
@@ -66,10 +69,10 @@ public class ImageService {
             finish();
             return;
         }
-        if (imageUrls != null && !imageUrls.isEmpty()) {
-            for(Map.Entry pairs : imageUrls.entrySet()) {
-                ImageDownloader downloader = new ImageDownloader((ImageReceiver) pairs.getKey(), (String) pairs.getValue(), this);
-                Clog.d(Clog.baseLogTag, "Downloading image from url: " + pairs.getValue());
+        if (imageUrlMap != null && !imageUrlMap.isEmpty()) {
+            for (Map.Entry pairs : imageUrlMap.entrySet()) {
+                ImageDownloader downloader = new ImageDownloader(imageReceiver, (String) pairs.getKey(), (String) pairs.getValue(), this);
+                Clog.d(Clog.baseLogTag, "Downloading " + pairs.getKey() + " from url: " + pairs.getValue());
                 downloader.execute();
             }
         } else {
@@ -79,14 +82,16 @@ public class ImageService {
     }
 
     class ImageDownloader extends AsyncTask<Void, Void, Bitmap> {
+        private final String key;
         WeakReference<ImageService> caller;
         WeakReference<ImageReceiver> imageReceiver;
         String url;
 
-        ImageDownloader(ImageReceiver imageReceiver, String url, ImageService caller) {
+        ImageDownloader(ImageReceiver imageReceiver, String key, String url, ImageService caller) {
             this.caller = new WeakReference<ImageService>(caller);
             this.imageReceiver = new WeakReference<ImageReceiver>(imageReceiver);
             this.url = url;
+            this.key = key;
         }
 
         @Override
@@ -98,7 +103,7 @@ public class ImageService {
 
         @Override
         protected Bitmap doInBackground(Void... params) {
-            if (isCancelled()) {
+            if (isCancelled() || StringUtil.isEmpty(url)) {
                 return null;
             }
             try {
@@ -120,24 +125,25 @@ public class ImageService {
             ImageService service = caller.get();
             if (receiver != null) {
                 if (image == null) {
-                    receiver.onFail();
+                    receiver.onFail(url);
                 } else {
-                    receiver.onReceiveImage(image);
+                    receiver.onReceiveImage(key, image);
                 }
             }
             if (service != null) {
-                service.finishDownload(receiver);
+                service.finishDownload(key);
             }
         }
     }
 
     public interface ImageReceiver {
-        public void onReceiveImage(Bitmap image);
-        public void onFail();
+        void onReceiveImage(String key, Bitmap image);
+
+        void onFail(String url);
     }
 
     public interface ImageServiceListener {
-        public void onAllImageDownloadsFinish();
+        void onAllImageDownloadsFinish();
     }
 
 }

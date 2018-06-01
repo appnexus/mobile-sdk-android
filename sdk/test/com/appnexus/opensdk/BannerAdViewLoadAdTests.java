@@ -22,6 +22,8 @@ import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -66,9 +68,40 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
     }
 
     @Test
+    public void testgetAdTypeBannerNative() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative())); // First queue a regular HTML banner response
+        assertTrue(bannerAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOWN initially
+        executeBannerRequest();
+        assertTrue(bannerAdView.getAdType() == AdType.NATIVE); // If a Native Ad is served then NATIVE
+    }
+
+    @Test
+    public void testBannerNativeSwitchingAdTypes() {
+        bannerAdView.setAutoRefreshInterval(15000);
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+        Assert.assertEquals(AdType.UNKNOWN, bannerAdView.getAdType());
+        requestManager = new AdViewRequestManager(bannerAdView);
+        requestManager.execute();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        Assert.assertEquals(15000, bannerAdView.getAutoRefreshInterval());
+        Assert.assertEquals(AdType.BANNER, bannerAdView.getAdType());
+        assertCallbacks(true);
+        assertBannerAdResponse(true);
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeWithoutImages()));
+        requestManager.execute();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        Assert.assertEquals(15000, bannerAdView.getAutoRefreshInterval());
+        Assert.assertEquals(AdType.NATIVE, bannerAdView.getAdType());
+        assertCallbacks(true);
+        assertBannerAdResponse(false);
+    }
+
+    @Test
     public void testgetAdTypeUnKnown() {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blankBanner())); // First queue a regular HTML banner response
-        assertTrue(bannerAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOW initially
+        assertTrue(bannerAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOWN initially
         executeBannerRequest();
         assertTrue(bannerAdView.getAdType() == AdType.UNKNOWN); // If a HTML banner is served then BANNER
     }
@@ -91,21 +124,28 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
     public void testgetCreativeIdBanner() {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
         executeBannerRequest();
-        assertEquals("6332753",bannerAdView.getCreativeId());
+        assertEquals("6332753", bannerAdView.getCreativeId());
     }
 
     @Test
     public void testgetCreativeIdVideoCreativeId() {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.rtbVASTVideo())); // First queue a regular HTML banner response
         executeBannerRequest();
-        assertEquals("6332753",bannerAdView.getCreativeId());
+        assertEquals("6332753", bannerAdView.getCreativeId());
+    }
+
+    @Test
+    public void testgetCreativeIdBannerNativeCreativeId() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative())); // First queue a banner Native response
+        executeBannerRequest();
+        assertEquals("47772560", bannerAdView.getCreativeId());
     }
 
     @Test
     public void testgetCreativeIdUnKnownCreativeId() {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blankBanner())); // First queue a regular HTML banner response
         executeBannerRequest();
-        assertEquals("",bannerAdView.getCreativeId());
+        assertEquals("", bannerAdView.getCreativeId());
 
     }
 }

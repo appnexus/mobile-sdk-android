@@ -54,6 +54,7 @@ public class UTRequestParameters {
     private int memberID;
     private String invCode;
     private boolean opensNativeBrowser = false;
+    private boolean doesLoadingInBackground = true;
     private AdSize primarySize;
     private ArrayList<AdSize> adSizes = new ArrayList<AdSize>();
     private boolean allowSmallerSizes = false;
@@ -245,6 +246,14 @@ public class UTRequestParameters {
         this.videoAdMaxDuration = maxDuration;
     }
 
+    public boolean getLoadsInBackground() {
+        return doesLoadingInBackground;
+    }
+
+    public void setLoadsInBackground(boolean doesLoadingInBackground) {
+        this.doesLoadingInBackground = doesLoadingInBackground;
+    }
+
 
     public void addCustomKeywords(String key, String value) {
         if (StringUtil.isEmpty(key) || (value == null)) {
@@ -417,6 +426,7 @@ public class UTRequestParameters {
             if (this.getMediaType() == MediaType.BANNER) {
                 allowedMediaAdTypes.put(ALLOWED_TYPE_BANNER);
                 allowedMediaAdTypes.put(ALLOWED_TYPE_VIDEO);
+                allowedMediaAdTypes.put(ALLOWED_TYPE_NATIVE);
             } else if (this.getMediaType() == MediaType.INTERSTITIAL) {
                 allowedMediaAdTypes.put(ALLOWED_TYPE_BANNER);
                 allowedMediaAdTypes.put(ALLOWED_TYPE_INTERSTITIAL);

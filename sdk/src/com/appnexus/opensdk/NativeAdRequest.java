@@ -25,6 +25,7 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ImageService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Define the attributes used for requesting a native ad.
@@ -102,6 +103,28 @@ public class NativeAdRequest implements Ad {
         Clog.d(Clog.nativeLogTag, Clog.getString(
                 R.string.set_placement_id, placementID));
         requestParameters.setPlacementID(placementID);
+    }
+
+    /**
+     * Sets whether or not to load landing pages in the background before displaying them.
+     * This feature is on by default, but only works with the in-app browser (which is also enabled by default).
+     * Disabling this feature may cause redirects, such as to the app store, to first open a blank web page.
+     *
+     * @param doesLoadingInBackground Whether or not to load landing pages in background.
+     */
+    public void setLoadsInBackground(boolean doesLoadingInBackground) {
+        requestParameters.setLoadsInBackground(doesLoadingInBackground);
+    }
+
+    /**
+     * Gets whether or not this AdView will load landing pages in the background before displaying them.
+     * This feature is on by default, but only works with the in-app browser (which is also enabled by default).
+     * Disabling this feature may cause redirects, such as to the app store, to first open a blank web page.
+     *
+     * @return Whether or not redirects and landing pages are loaded/processed in the background before being displayed.
+     */
+    public boolean getLoadsInBackground() {
+        return requestParameters.getLoadsInBackground();
     }
 
     /**
@@ -270,7 +293,8 @@ public class NativeAdRequest implements Ad {
         return this.listener;
     }
 
-    UTRequestParameters getRequestParameters() {
+    @Override
+    public UTRequestParameters getRequestParameters() {
         return requestParameters;
     }
 
@@ -331,15 +355,12 @@ public class NativeAdRequest implements Ad {
             isLoading = false;
         }
 
-        void onAdLoaded(final NativeAdResponse response) {
-
-        }
-
         @Override
         public void onAdLoaded(final AdResponse ad) {
             if (!ad.getMediaType().equals(MediaType.NATIVE)) {
                 onAdFailed(ResultCode.INTERNAL_ERROR);
             } else {
+                final String IMAGE_URL = "image", ICON_URL = "icon";
                 final NativeAdResponse response = ad.getNativeAdResponse();
                 response.setCreativeId(ad.getResponseData().getCreativeId());
                 if (!loadImage && !loadIcon) {
@@ -353,34 +374,26 @@ public class NativeAdRequest implements Ad {
                 }
                 imageService = new ImageService();
                 this.response = response;
-                if (loadImage) {
-                    ImageService.ImageReceiver imageReceiver = new ImageService.ImageReceiver() {
-                        @Override
-                        public void onReceiveImage(Bitmap image) {
+                ImageService.ImageReceiver imageReceiver = new ImageService.ImageReceiver() {
+                    @Override
+                    public void onReceiveImage(String key, Bitmap image) {
+                        if (key.equals(IMAGE_URL))
                             response.setImage(image);
-                        }
-
-                        @Override
-                        public void onFail() {
-                            Clog.e(Clog.httpRespLogTag, "Image downloading failed for url " + response.getImageUrl());
-                        }
-                    };
-                    imageService.registerImageReceiver(imageReceiver, response.getImageUrl());
-                }
-                if (loadIcon) {
-                    ImageService.ImageReceiver iconReceiver = new ImageService.ImageReceiver() {
-                        @Override
-                        public void onReceiveImage(Bitmap image) {
+                        else if (key.equals(ICON_URL))
                             response.setIcon(image);
-                        }
+                    }
 
-                        @Override
-                        public void onFail() {
-                            Clog.e(Clog.httpRespLogTag, "Image downloading failed for url " + response.getIconUrl());
-                        }
-                    };
-                    imageService.registerImageReceiver(iconReceiver, response.getIconUrl());
-                }
+                    @Override
+                    public void onFail(String url) {
+                        Clog.e(Clog.httpRespLogTag, "Image downloading failed for url " + url);
+                    }
+                };
+                HashMap<String, String> imageUrlMap = new HashMap<>();
+                if (loadImage)
+                    imageUrlMap.put(IMAGE_URL, response.getImageUrl());
+                if (loadIcon)
+                    imageUrlMap.put(ICON_URL, response.getIconUrl());
+                imageService.registerImageReceiver(imageReceiver, imageUrlMap);
                 imageService.registerNotification(this);
                 imageService.execute();
             }

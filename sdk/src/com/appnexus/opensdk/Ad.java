@@ -16,6 +16,8 @@
 
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.ut.UTRequestParameters;
+
 /**
  * Define the basics for an ad, package only
  */
@@ -47,4 +49,11 @@ interface Ad {
      * @return ad dispatcher
      */
     public AdDispatcher getAdDispatcher();
+
+    /**
+     * Provide the request parameters of this ad
+     *
+     * @return {@link UTRequestParameters}
+     */
+    public UTRequestParameters getRequestParameters();
 }

@@ -509,9 +509,16 @@ public class BannerAdView extends AdView {
     }
 
     void start() {
-        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.start));
-        mAdFetcher.start();
-        loadAdHasBeenCalled = true;
+        Clog.d("BannerAdView", getAdType().name());
+        /*
+         * To check if it does not triggers AUTO_REFRESH
+         * for video Ads (rendered using BannerAdView)
+         */
+        if (getAdType() != AdType.VIDEO) {
+            Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.start));
+            mAdFetcher.start();
+            loadAdHasBeenCalled = true;
+        }
     }
 
     void stop() {
@@ -603,7 +610,7 @@ public class BannerAdView extends AdView {
                 setTransitionDuration((long) a.getInt(attr, 1000));
             } else if (attr == R.styleable.BannerAdView_load_landing_page_in_background) {
                 setLoadsInBackground(a.getBoolean(attr, true));
-                Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_load_landing_page_in_background, doesLoadingInBackground));
+                Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_load_landing_page_in_background, getLoadsInBackground()));
             }
         }
 

@@ -99,7 +99,7 @@ public class VideoImplementationTest extends BaseViewAdTest {
 
     private void executeBannerRequest(){
         bannerAdView.setAutoRefreshInterval(30);
-        bannerAdView.loadAdOffscreen();
+        bannerAdView.loadAd();
 
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();

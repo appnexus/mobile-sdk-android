@@ -16,20 +16,26 @@
 
 package com.appnexus.opensdk;
 
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.MutableContextWrapper;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Pair;
 import android.view.View;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.JsonUtil;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
 
 import org.json.JSONArray;
@@ -111,6 +117,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
     private View.OnClickListener clickListener;
     private VisibilityDetector visibilityDetector;
     private ArrayList<ImpressionTracker> impressionTrackers;
+    private ProgressDialog progressDialog;
 
     /**
      * Process the metadata of native response from ad server
@@ -317,10 +324,26 @@ public class ANNativeAdResponse implements NativeAdResponse {
         }
     }
 
+
+
     private boolean openNativeBrowser = false;
+
+    public boolean isOpenNativeBrowser() {
+        return openNativeBrowser;
+    }
 
     void openNativeBrowser(boolean openNativeBrowser) {
         this.openNativeBrowser = openNativeBrowser;
+    }
+
+    private boolean doesLoadingInBackground = true;
+
+    public boolean getLoadsInBackground() {
+        return doesLoadingInBackground;
+    }
+
+    void setLoadsInBackground(boolean doesLoadingInBackground) {
+        this.doesLoadingInBackground = doesLoadingInBackground;
     }
 
     void setClickListener() {
@@ -346,6 +369,43 @@ public class ANNativeAdResponse implements NativeAdResponse {
         };
     }
 
+    private class RedirectWebView extends WebView {
+
+        @SuppressLint("SetJavaScriptEnabled")
+        public RedirectWebView(final Context context) {
+            super(new MutableContextWrapper(context));
+
+            WebviewUtil.setWebViewSettings(this);
+            this.setWebViewClient(new WebViewClient() {
+
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    Clog.v(Clog.browserLogTag, "Opening URL: " + url);
+                    ViewUtil.removeChildFromParent(RedirectWebView.this);
+                    if (progressDialog != null && progressDialog.isShowing()) {
+                        progressDialog.dismiss();
+                    }
+
+                    startBrowserActivity(context);
+                }
+            });
+        }
+    }
+
+    private void startBrowserActivity(Context context) {
+        Class<?> activity_clz = AdActivity.getActivityClass();
+        try {
+            Intent intent = new Intent(context, activity_clz);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Clog.w(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing, activity_clz.getName()));
+            BrowserAdActivity.BROWSER_QUEUE.remove();
+        }
+    }
+
+
     boolean handleClick(String clickUrl, Context context) {
         if (clickUrl == null || clickUrl.isEmpty()) {
             return false;
@@ -367,29 +427,41 @@ public class ANNativeAdResponse implements NativeAdResponse {
             }
             return false;
         } else {
-            // launch Browser Activity
-            Class<?> activity_clz = AdActivity.getActivityClass();
             try {
-                WebView out = new WebView(new MutableContextWrapper(context));
-                WebviewUtil.setWebViewSettings(out);
-                out.loadUrl(clickUrl);
-                BrowserAdActivity.BROWSER_QUEUE.add(out);
+                if (getLoadsInBackground()) {
+                    final WebView out = new RedirectWebView(new MutableContextWrapper(context));
+                    WebviewUtil.setWebViewSettings(out);
+                    out.loadUrl(clickUrl);
+                    BrowserAdActivity.BROWSER_QUEUE.add(out);
+                    // Otherwise, create an invisible 1x1 webview to load the landing
+                    // page and detect if we're redirecting to a market url
+                    //Show a dialog box
+                    progressDialog = new ProgressDialog(context);
+                    progressDialog.setCancelable(true);
+                    progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialogInterface) {
+                            out.stopLoading();
+                        }
+                    });
+                    progressDialog.setMessage(context.getResources().getString(R.string.loading));
+                    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    progressDialog.show();
+                } else {
+                    WebView out = new WebView(new MutableContextWrapper(context));
+                    WebviewUtil.setWebViewSettings(out);
+                    out.loadUrl(clickUrl);
+                    BrowserAdActivity.BROWSER_QUEUE.add(out);
+                    startBrowserActivity(context);
+                }
 
-                Intent intent = new Intent(context, activity_clz);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
-                context.startActivity(intent);
+
                 return true;
-            } catch (ActivityNotFoundException e) {
-                Clog.w(Clog.baseLogTag, Clog.getString(R.string.adactivity_missing, activity_clz.getName()));
-                BrowserAdActivity.BROWSER_QUEUE.remove();
-            } catch (Exception e){
+            } catch (Exception e) {
                 // Catches PackageManager$NameNotFoundException for webview
                 Clog.e(Clog.baseLogTag, "Exception initializing the redirect webview: " + e.getMessage());
                 return false;
             }
-
-            return false;
         }
     }
 

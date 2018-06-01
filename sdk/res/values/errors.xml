@@ -147,5 +147,5 @@
 	<string formatted="false" name="set_ad_sizes_null">setAdSizes() called with null adSizes</string>
 	<string formatted="false" name="set_ad_sizes_no_elements">setAdSizes() called with empty adSizes</string>
 	<string formatted="false" name="apn_webview_failed_to_destroy">Webview destroy failed</string>
-
+<string formatted="false" name="request_manager_owner_error">Request Manager can\'t proceed as it has two initialized owners</string>
 </resources>

@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.MutableContextWrapper;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -46,10 +47,13 @@ import com.appnexus.opensdk.utils.AdvertisingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
+import com.appnexus.opensdk.utils.ImageService;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.ViewUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * The parent class of {@link InterstitialAdView} and {@link
@@ -73,7 +77,6 @@ public abstract class AdView extends FrameLayout implements Ad {
     private AdViewDispatcher dispatcher;
     boolean loadedOffscreen = false;
     boolean isMRAIDExpanded = false;
-    boolean doesLoadingInBackground = true;
 
     private boolean shouldResizeParent = false;
     private boolean showLoadingIndicator = true;
@@ -180,6 +183,11 @@ public abstract class AdView extends FrameLayout implements Ad {
         return requestParameters.isReadyForRequest();
     }
 
+    @Override
+    public UTRequestParameters getRequestParameters() {
+        return requestParameters;
+    }
+
     /**
      * Loads a new ad, if the ad space is visible.  You should
      * have called setPlacementID before invoking this method.
@@ -190,7 +198,7 @@ public abstract class AdView extends FrameLayout implements Ad {
     public boolean loadAd() {
         if (!isReadyToStart())
             return false;
-        if (this.getWindowVisibility() == VISIBLE && mAdFetcher != null) {
+        if (mAdFetcher != null) {
             // Reload Ad Fetcher to get new ad at user's request
             mAdFetcher.stop();
             mAdFetcher.clearDurations();
@@ -200,6 +208,10 @@ public abstract class AdView extends FrameLayout implements Ad {
         return false;
     }
 
+    /**
+     * @deprecated use {@link #loadAd()} instead.
+     */
+    @Deprecated
     public void loadAdOffscreen() {
         if (!isReadyToStart())
             return;
@@ -227,8 +239,8 @@ public abstract class AdView extends FrameLayout implements Ad {
     protected void loadAdFromHtml(String html, int width, int height) {
         // load an ad directly from html
         loadedOffscreen = true;
-        AdWebView output = new AdWebView(this,null);
-        RTBHTMLAdResponse response = new RTBHTMLAdResponse(width, height, getMediaType().toString(), null,getCreativeId());
+        AdWebView output = new AdWebView(this, null);
+        RTBHTMLAdResponse response = new RTBHTMLAdResponse(width, height, getMediaType().toString(), null, getCreativeId());
         response.setAdContent(html);
         output.loadAd(response);
         display(output);
@@ -237,9 +249,9 @@ public abstract class AdView extends FrameLayout implements Ad {
     protected abstract void loadVariablesFromXML(Context context,
                                                  AttributeSet attrs);
 
-	/*
+    /*
      * End Construction
-	 */
+     */
 
     protected abstract void display(Displayable d);
 
@@ -912,6 +924,7 @@ public abstract class AdView extends FrameLayout implements Ad {
     public String getCreativeId() {
         return creativeId;
     }
+
     void setCreativeId(String creativeId) {
         this.creativeId = creativeId;
     }
@@ -955,7 +968,7 @@ public abstract class AdView extends FrameLayout implements Ad {
      * @param doesLoadingInBackground Whether or not to load landing pages in background.
      */
     public void setLoadsInBackground(boolean doesLoadingInBackground) {
-        this.doesLoadingInBackground = doesLoadingInBackground;
+        requestParameters.setLoadsInBackground(doesLoadingInBackground);
     }
 
     /**
@@ -966,7 +979,7 @@ public abstract class AdView extends FrameLayout implements Ad {
      * @return Whether or not redirects and landing pages are loaded/processed in the background before being displayed.
      */
     public boolean getLoadsInBackground() {
-        return this.doesLoadingInBackground;
+        return requestParameters.getLoadsInBackground();
     }
 
 
@@ -974,9 +987,23 @@ public abstract class AdView extends FrameLayout implements Ad {
      * Private class to bridge events from mediation to the user
      * AdListener class.
      */
-    private class AdViewDispatcher implements AdDispatcher {
+    private class AdViewDispatcher implements ImageService.ImageServiceListener, AdDispatcher {
 
         Handler handler;
+        ImageService imageService;
+        NativeAdResponse response;
+
+
+        @Override
+        public void onAllImageDownloadsFinish() {
+            if (adListener != null) {
+                adListener.onAdLoaded(response);
+            } else {
+                response.destroy();
+            }
+            imageService = null;
+            response = null;
+        }
 
         public AdViewDispatcher(Handler h) {
             handler = h;
@@ -985,54 +1012,13 @@ public abstract class AdView extends FrameLayout implements Ad {
         @Override
         public void onAdLoaded(final AdResponse ad) {
             if (ad.getMediaType().equals(MediaType.BANNER) || ad.getMediaType().equals(MediaType.INTERSTITIAL)) {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        setCreativeWidth(ad.getDisplayable().getCreativeWidth());
-                        setCreativeHeight(ad.getDisplayable().getCreativeHeight());
-                        setCreativeId(ad.getResponseData().getCreativeId());
-                        if (ad.isMediated()) {
-                            try {
-                                displayMediated((MediatedDisplayable) ad.getDisplayable());
-                            } catch (ClassCastException cce) {
-                                Clog.e(Clog.baseLogTag, "The SDK shouldn't fail downcasts to MediatedDisplayable in AdView");
-                            }
-                        } else {
-                            display(ad.getDisplayable());
-                        }
-
-                        if (ad.getResponseData() != null && ad.getResponseData().getImpressionURLs().size() > 0) {
-                            impressionTrackers = ad.getResponseData().getImpressionURLs();
-                        }
-
-
-                        // Banner OnAdLoaded and if View is attached to window Impression is counted.
-                        if (getMediaType().equals(MediaType.BANNER)) {
-                            if (isAdViewAttachedToWindow()) {
-                                if (impressionTrackers != null && impressionTrackers.size() > 0) {
-                                    fireImpressionTracker();
-                                }
-                            }
-                        }
-
-                        if(ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_VIDEO)) {
-                            setAdType(AdType.VIDEO);
-                            if (mAdFetcher.getState() == AdFetcher.STATE.AUTO_REFRESH) {
-                                mAdFetcher.stop();
-                            }
-                        }else if(ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER)){
-                            setAdType(AdType.BANNER);
-                        }
-
-                        if (adListener != null)
-                            adListener.onAdLoaded(AdView.this);
-                    }
-                });
+                handleBannerOrInterstitialAd(ad);
+            } else if (ad.getMediaType().equals(MediaType.NATIVE)) {
+                handleNativeAd(ad);
             } else {
                 Clog.e(Clog.baseLogTag, "UNKNOWN media type::" + ad.getMediaType());
                 onAdFailed(ResultCode.INTERNAL_ERROR);
             }
-
         }
 
         @Override
@@ -1094,10 +1080,91 @@ public abstract class AdView extends FrameLayout implements Ad {
 
         @Override
         public void toggleAutoRefresh() {
-            if (getMediaType().equals(MediaType.BANNER) && mAdFetcher.getState() == AdFetcher.STATE.STOPPED){
-                    mAdFetcher.start();
+            if (getMediaType().equals(MediaType.BANNER) && mAdFetcher.getState() == AdFetcher.STATE.STOPPED) {
+                mAdFetcher.start();
             }
         }
+
+        private void handleNativeAd(AdResponse ad) {
+            final String IMAGE_URL = "image", ICON_URL = "icon";
+            setAdType(AdType.NATIVE);
+            setCreativeId(ad.getResponseData().getCreativeId());
+            final NativeAdResponse response = ad.getNativeAdResponse();
+            response.setCreativeId(ad.getResponseData().getCreativeId());
+            if(StringUtil.isEmpty(response.getIconUrl()) && StringUtil.isEmpty(response.getImageUrl())) {
+                adListener.onAdLoaded(response);
+            }else {
+                imageService = new ImageService();
+                this.response = response;
+                ImageService.ImageReceiver imageReceiver = new ImageService.ImageReceiver() {
+                    @Override
+                    public void onReceiveImage(String key, Bitmap image) {
+                        if (key.equals(IMAGE_URL))
+                            response.setImage(image);
+                        else if (key.equals(ICON_URL))
+                            response.setIcon(image);
+                    }
+
+                    @Override
+                    public void onFail(String url) {
+                        Clog.e(Clog.httpRespLogTag, "Image downloading failed for url " + response.getImageUrl());
+                    }
+                };
+                HashMap<String, String> imageUrlMap = new HashMap<>();
+                imageUrlMap.put(IMAGE_URL, response.getImageUrl());
+                imageUrlMap.put(ICON_URL, response.getIconUrl());
+                imageService.registerImageReceiver(imageReceiver, imageUrlMap);
+                imageService.registerNotification(this);
+                imageService.execute();
+            }
+        }
+
+        private void handleBannerOrInterstitialAd(final AdResponse ad) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    setCreativeWidth(ad.getDisplayable().getCreativeWidth());
+                    setCreativeHeight(ad.getDisplayable().getCreativeHeight());
+                    setCreativeId(ad.getResponseData().getCreativeId());
+                    if (ad.isMediated()) {
+                        try {
+                            displayMediated((MediatedDisplayable) ad.getDisplayable());
+                        } catch (ClassCastException cce) {
+                            Clog.e(Clog.baseLogTag, "The SDK shouldn't fail downcasts to MediatedDisplayable in AdView");
+                        }
+                    } else {
+                        display(ad.getDisplayable());
+                    }
+
+                    if (ad.getResponseData() != null && ad.getResponseData().getImpressionURLs().size() > 0) {
+                        impressionTrackers = ad.getResponseData().getImpressionURLs();
+                    }
+
+
+                    // Banner OnAdLoaded and if View is attached to window Impression is counted.
+                    if (getMediaType().equals(MediaType.BANNER)) {
+                        if (isAdViewAttachedToWindow()) {
+                            if (impressionTrackers != null && impressionTrackers.size() > 0) {
+                                fireImpressionTracker();
+                            }
+                        }
+                    }
+
+                    if (ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_VIDEO)) {
+                        setAdType(AdType.VIDEO);
+                        if (mAdFetcher.getState() == AdFetcher.STATE.AUTO_REFRESH) {
+                            mAdFetcher.stop();
+                        }
+                    } else if (ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER)) {
+                        setAdType(AdType.BANNER);
+                    }
+
+                    if (adListener != null)
+                        adListener.onAdLoaded(AdView.this);
+                }
+            });
+        }
+
     }
 
     @Override
@@ -1186,5 +1253,4 @@ public abstract class AdView extends FrameLayout implements Ad {
     abstract public void activityOnResume();
 
     abstract void interacted();
-
 }

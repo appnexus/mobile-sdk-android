@@ -27,7 +27,9 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener {
     AdViewRequestManager requestManager;
 
     boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked;
-    boolean isAutoDismissDelay,enableInterstitialShowonLoad;
+    boolean isAutoDismissDelay, enableInterstitialShowonLoad;
+    private NativeAdResponse nativeAdResponse;
+    private boolean isBannerLoaded;
 
     public void setAutoDismissDelay(boolean autoDismissDelay) {
         isAutoDismissDelay = autoDismissDelay;
@@ -64,6 +66,18 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener {
         assertEquals(!success, adFailed);
     }
 
+    public void assertOpensInNativeBrowser() {
+        assertEquals(bannerAdView.getOpensNativeBrowser(), ((ANNativeAdResponse) nativeAdResponse).isOpenNativeBrowser());
+    }
+
+    public void assertLoadsInBackground() {
+        assertEquals(bannerAdView.getLoadsInBackground(), ((ANNativeAdResponse) nativeAdResponse).getLoadsInBackground());
+    }
+
+    public void assertBannerAdResponse(boolean isBannerLoaded) {
+        assertEquals(isBannerLoaded, this.isBannerLoaded);
+    }
+
     @Test
     public void testDummy() {
         assertTrue(true);
@@ -73,17 +87,27 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener {
     public void onAdLoaded(AdView adView) {
         Clog.w(TestUtil.testLogTag, "BaseViewAdTest onAdLoaded");
         adLoaded = true;
-        if (adView.getMediaType() == MediaType.INTERSTITIAL){
-                if(enableInterstitialShowonLoad) {
-                    if (isAutoDismissDelay) {
-                        interstitialAdView.showWithAutoDismissDelay(5);
-                    }
-                    else {
-                        interstitialAdView.show();
-                    }
+        if (adView.getMediaType() == MediaType.BANNER) {
+            isBannerLoaded = true;
+        }
+        if (adView.getMediaType() == MediaType.INTERSTITIAL) {
+            if (enableInterstitialShowonLoad) {
+                if (isAutoDismissDelay) {
+                    interstitialAdView.showWithAutoDismissDelay(5);
+                } else {
+                    interstitialAdView.show();
                 }
             }
-       }
+        }
+    }
+
+    @Override
+    public void onAdLoaded(NativeAdResponse nativeAdResponse) {
+        Clog.w(TestUtil.testLogTag, "BaseViewAdTest onAdLoaded(NativeAdResponse nativeAdResponse)");
+        adLoaded = true;
+        this.nativeAdResponse = nativeAdResponse;
+        isBannerLoaded = false;
+    }
 
     @Override
     public void onAdRequestFailed(AdView adView, ResultCode resultCode) {

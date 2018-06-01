@@ -102,6 +102,12 @@ public class AdViewRequestManagerTest extends BaseViewAdTest {
     }
 
     @Override
+    public void onAdLoaded(NativeAdResponse nativeAdResponse) {
+        super.onAdLoaded(nativeAdResponse);
+        Lock.unpause();
+    }
+
+    @Override
     public void onAdRequestFailed(AdView adView, ResultCode resultCode) {
         super.onAdRequestFailed(adView, resultCode);
         Lock.unpause();

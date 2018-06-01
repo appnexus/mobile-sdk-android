@@ -26,6 +26,8 @@ public class TestResponsesUT {
     public static final String NOTIFY_URL_PATH = "vast_track/v2?info&notifyURL";
     public static final String SSM_URL_PATH = "ssm?";
     public static final String REQUEST_URL = "http://mobile.devnxs.net/request_url?";
+    private static final String ICON_URL = "http://vcdn.adnxs.com/p/creative-image/2f/3d/a4/8d/2f3da48d-f786-4361-ab03-e9c0c6e941e4.png";
+    private static final String IMAGE_URL = "http://vcdn.adnxs.com/p/creative-image/d0/4a/de/2d/d04ade2d-52dd-4b84-9aa9-6eaef24f0eda.png";
     public static String NO_AD_URL = "http://mobile.devnxs.net/no_ad_url?";
     public static String NOTIFY_URL = "http://mobile.devnxs.net/vast_track/v2?info&notifyURL";
     public static String IMPRESSION_URL = "";
@@ -34,12 +36,13 @@ public class TestResponsesUT {
     public static final String NO_BID_FALSE = "false";
     public static String SSM_URL = "http://nym1-mobile.adnxs.com/ssm";
     public static final String SSM_NO_URL = "";
-    public static void setTestURL(String url){
-        RESPONSE_URL = url+RESPONSE_URL_PATH;
-        NO_AD_URL = url+NO_AD_URL_PATH;
+
+    public static void setTestURL(String url) {
+        RESPONSE_URL = url + RESPONSE_URL_PATH;
+        NO_AD_URL = url + NO_AD_URL_PATH;
         NOTIFY_URL = url + NOTIFY_URL_PATH;
-        SSM_URL= url+SSM_URL_PATH;
-        IMPRESSION_URL = url+IMPRESSION_URL_PATH;
+        SSM_URL = url + SSM_URL_PATH;
+        IMPRESSION_URL = url + IMPRESSION_URL_PATH;
     }
 
     public static final String DUMMY_BANNER_CONTENT = "<script type=\\\"text/javascript\\\">document.write('<div style=\\\"background-color:#EF8200;height:1000px;width:1000px;\\\"><p>%s</p></div>');</script>";
@@ -79,7 +82,7 @@ public class TestResponsesUT {
     }
 
     /**
-     *Returns a RTB HTML Banner UT Response
+     * Returns a RTB HTML Banner UT Response
      */
     public static String banner() {
         String bannerContent = String.format(DUMMY_BANNER_CONTENT, "Test Banner Content");
@@ -166,17 +169,17 @@ public class TestResponsesUT {
         return templateSingleCSMAdResponseNative(createClassName("DummyClass"), RESPONSE_URL);
     }
 
-    public static String mediatedSSMBanner(){
+    public static String mediatedSSMBanner() {
         return templateSingleSSMAdResponse();
     }
 
-    public static String mediatedNoSSMBanner(){
+    public static String mediatedNoSSMBanner() {
         return templateNoURLSSMResponse();
     }
 
-    public static String noFillCSM_RTBBanner(){
+    public static String noFillCSM_RTBBanner() {
         //Create a CSM - Ad
-        String csmAd = templateSingleCSMAdResponseBannerInterstitial(createClassName("MediatedBannerNoFillView"),320,50,IMPRESSION_URL,REQUEST_URL,RESPONSE_URL,"","","android");
+        String csmAd = templateSingleCSMAdResponseBannerInterstitial(createClassName("MediatedBannerNoFillView"), 320, 50, IMPRESSION_URL, REQUEST_URL, RESPONSE_URL, "", "", "android");
 
         // Create a RTB Banner Ad
         String bannerContent = String.format(DUMMY_BANNER_CONTENT, "Test Banner Content");
@@ -190,9 +193,9 @@ public class TestResponsesUT {
         return templateMediatedWaterFallResponses(adsArray.toArray(new String[adsArray.size()]));
     }
 
-    public static String noFillCSM_RTBInterstitial(){
+    public static String noFillCSM_RTBInterstitial() {
         //Create a CSM - Ad
-        String csmAd = templateSingleCSMAdResponseBannerInterstitial(createClassName("MediatedInterstitialNoFillView"),320,480,IMPRESSION_URL,REQUEST_URL,RESPONSE_URL,"","","android");
+        String csmAd = templateSingleCSMAdResponseBannerInterstitial(createClassName("MediatedInterstitialNoFillView"), 320, 480, IMPRESSION_URL, REQUEST_URL, RESPONSE_URL, "", "", "android");
 
         // Create a RTB Banner Ad
         String bannerConetent = String.format(DUMMY_BANNER_CONTENT, "Test Banner Content");
@@ -207,17 +210,17 @@ public class TestResponsesUT {
     }
 
 
-    public static String noFillCSM_RTBNative(){
+    public static String noFillCSM_RTBNative() {
         //Create a CSM - Ad
-        String csmAd = templateSingleCSMAdResponseNative(createClassName("MediatedNativeNoFill"),"","",REQUEST_URL,RESPONSE_URL);
+        String csmAd = templateSingleCSMAdResponseNative(createClassName("MediatedNativeNoFill"), "", "", REQUEST_URL, RESPONSE_URL);
 
         // Create a RTB Banner Ad
         String nativeResponse = templateNativeResponse("native", "test title", "test description", "full text", "newsfeed",
                 "http://path_to_icon.com", templateNativeMainMedia("http://path_to_main.com", 300, 200, "http://path_to_main2.com", 50, 50, "http://path_to_main3.com", 250, 250),
-                "install", "\"http://ib.adnxs.com/click...\"", "\"http://ib.adnxs.com/it...\"", templateNativeRating(4f, 5f), "http://www.appnexus.com", "http://www.google.com", "test sponsored by","{\"key\":\"value\"}"
+                "install", "\"http://ib.adnxs.com/click...\"", "\"http://ib.adnxs.com/it...\"", templateNativeRating(4f, 5f), "http://www.appnexus.com", "http://www.google.com", "test sponsored by", "{\"key\":\"value\"}"
         );
-        System.out.println(nativeResponse+"\n");
-        String nativeRTB= String.format(RTB_NATIVE,nativeResponse);
+        System.out.println(nativeResponse + "\n");
+        String nativeRTB = String.format(RTB_NATIVE, nativeResponse);
 
         ArrayList<String> adsArray = new ArrayList<String>(2);
         adsArray.add(csmAd);
@@ -245,7 +248,7 @@ public class TestResponsesUT {
         ArrayList<String> adsArray = new ArrayList<String>(classNames.length);
 
         for (int i = 0; i < classNames.length; i++) {
-            String singleCSMAd = templateSingleCSMAdResponseBannerInterstitial(createClassName(classNames[i]),320,50,IMPRESSION_URL,REQUEST_URL,responseURLS[i],"","","android");
+            String singleCSMAd = templateSingleCSMAdResponseBannerInterstitial(createClassName(classNames[i]), 320, 50, IMPRESSION_URL, REQUEST_URL, responseURLS[i], "", "", "android");
             adsArray.add(singleCSMAd);
         }
 
@@ -259,7 +262,7 @@ public class TestResponsesUT {
         ArrayList<String> adsArray = new ArrayList<String>(count);
 
         for (int i = 0; i < count; i++) {
-            String ssmAdTag = String.format(SSM_BANNER, DUMMY_BANNER_CONTENT, SSM_URL, IMPRESSION_URL,REQUEST_URL,RESPONSE_URL);
+            String ssmAdTag = String.format(SSM_BANNER, DUMMY_BANNER_CONTENT, SSM_URL, IMPRESSION_URL, REQUEST_URL, RESPONSE_URL);
             adsArray.add(ssmAdTag);
         }
 
@@ -276,7 +279,7 @@ public class TestResponsesUT {
         ArrayList<String> adsArray = new ArrayList<String>(classNames.length);
 
         for (int i = 0; i < classNames.length; i++) {
-            String singleCSMAd = templateSingleCSMAdResponseNative(createClassName(classNames[i]),"","",REQUEST_URL,responseURLS[i]);
+            String singleCSMAd = templateSingleCSMAdResponseNative(createClassName(classNames[i]), "", "", REQUEST_URL, responseURLS[i]);
             adsArray.add(singleCSMAd);
         }
 
@@ -294,22 +297,47 @@ public class TestResponsesUT {
     }
 
 
-
     public static String callbacks(int testNumber) {
-        return templateSingleCSMAdResponseBannerInterstitial(createClassName("MediatedBannerCallbacksTestView"),RESPONSE_URL,String.valueOf(testNumber));
+        return templateSingleCSMAdResponseBannerInterstitial(createClassName("MediatedBannerCallbacksTestView"), RESPONSE_URL, String.valueOf(testNumber));
     }
 
 
     public static String anNative() {
         String nativeResponse = templateNativeResponse("native", "test title", "test description", "full text", "newsfeed",
                 "http://path_to_icon.com", templateNativeMainMedia("http://path_to_main.com", 300, 200, "http://path_to_main2.com", 50, 50, "http://path_to_main3.com", 250, 250),
-                "install", "\"http://ib.adnxs.com/click...\"", "\"http://ib.adnxs.com/it...\"", templateNativeRating(4f, 5f), "http://www.appnexus.com", "http://www.google.com", "test sponsored by","{\"key\":\"value\"}"
+                "install", "\"http://ib.adnxs.com/click...\"", "\"http://ib.adnxs.com/it...\"", templateNativeRating(4f, 5f), "http://www.appnexus.com", "http://www.google.com", "test sponsored by", "{\"key\":\"value\"}"
         );
-        System.out.println(nativeResponse+"\n");
-        String nativeRTB= String.format(RTB_NATIVE,nativeResponse);
-        System.out.println(nativeRTB+"\n");
+        System.out.println(nativeResponse + "\n");
+        String nativeRTB = String.format(RTB_NATIVE, nativeResponse);
+        System.out.println(nativeRTB + "\n");
         String ads = String.format(ADS, nativeRTB);
-        System.out.println(ads+"\n");
+        System.out.println(ads + "\n");
+        return templateResponse(NO_BID_FALSE, NO_AD_URL, ads);
+    }
+
+    public static String anNativeWithoutImages() {
+        String nativeResponse = templateNativeResponse("native", "test title", "test description", "full text", "newsfeed",
+                "", templateNativeMainMedia("", 300, 200, "http://path_to_main2.com", 50, 50, "http://path_to_main3.com", 250, 250),
+                "install", "\"http://ib.adnxs.com/click...\"", "\"http://ib.adnxs.com/it...\"", templateNativeRating(4f, 5f), "http://www.appnexus.com", "http://www.google.com", "test sponsored by", "{\"key\":\"value\"}"
+        );
+        System.out.println(nativeResponse + "\n");
+        String nativeRTB = String.format(RTB_NATIVE, nativeResponse);
+        System.out.println(nativeRTB + "\n");
+        String ads = String.format(ADS, nativeRTB);
+        System.out.println(ads + "\n");
+        return templateResponse(NO_BID_FALSE, NO_AD_URL, ads);
+    }
+
+    public static String nativeResponseWithImageAndIconUrl() {
+        String nativeResponse = templateNativeResponse("native", "test title", "test description", "full text", "newsfeed",
+                ICON_URL, templateNativeMainMedia(IMAGE_URL, 300, 200, "http://path_to_main2.com", 50, 50, "http://path_to_main3.com", 250, 250),
+                "install", "\"http://ib.adnxs.com/click...\"", "\"http://ib.adnxs.com/it...\"", templateNativeRating(4f, 5f), "http://www.appnexus.com", "http://www.google.com", "test sponsored by", "{\"key\":\"value\"}"
+        );
+        System.out.println(nativeResponse + "\n");
+        String nativeRTB = String.format(RTB_NATIVE, nativeResponse);
+        System.out.println(nativeRTB + "\n");
+        String ads = String.format(ADS, nativeRTB);
+        System.out.println(ads + "\n");
         return templateResponse(NO_BID_FALSE, NO_AD_URL, ads);
     }
 
@@ -323,12 +351,12 @@ public class TestResponsesUT {
     }
 
 
-    private static String singleRTBBanner(String content, int width, int height, String impressionURL){
+    private static String singleRTBBanner(String content, int width, int height, String impressionURL) {
         return (String.format(RTB_BANNER, content, width, height, impressionURL));
     }
 
-    private static String singleRTBVideo(String content){
-        return (String.format(RTB_VIDEO,NOTIFY_URL, content));
+    private static String singleRTBVideo(String content) {
+        return (String.format(RTB_VIDEO, NOTIFY_URL, content));
     }
 
 
@@ -338,39 +366,39 @@ public class TestResponsesUT {
     }
 
     private static String templateSingleCSMAdResponseBannerInterstitial(String className, String response_url) {
-        String csmBanner = templateSingleCSMAdResponseBannerInterstitial(className,320,50,IMPRESSION_URL,REQUEST_URL,response_url,"","","android");
+        String csmBanner = templateSingleCSMAdResponseBannerInterstitial(className, 320, 50, IMPRESSION_URL, REQUEST_URL, response_url, "", "", "android");
         return templateMediatedAdResponse(csmBanner);
     }
 
     public static String templateSingleCSMAdResponseBannerInterstitial(String className, String response_url, String id) {
-        String csmBanner = templateSingleCSMAdResponseBannerInterstitial(className,320,50,IMPRESSION_URL,REQUEST_URL,response_url,"",id,"android");
+        String csmBanner = templateSingleCSMAdResponseBannerInterstitial(className, 320, 50, IMPRESSION_URL, REQUEST_URL, response_url, "", id, "android");
         return templateMediatedAdResponse(csmBanner);
     }
 
     private static String templateSingleCSMAdResponseNative(String className, String response_url) {
-        String csmNative = templateSingleCSMAdResponseNative(className,"abc","1234",REQUEST_URL,response_url);
+        String csmNative = templateSingleCSMAdResponseNative(className, "abc", "1234", REQUEST_URL, response_url);
         return templateMediatedAdResponse(csmNative);
     }
 
     private static String templateSingleSSMAdResponse() {
-        String ssmAdTag = String.format(SSM_BANNER, DUMMY_BANNER_CONTENT, SSM_URL, IMPRESSION_URL,REQUEST_URL,RESPONSE_URL);
+        String ssmAdTag = String.format(SSM_BANNER, DUMMY_BANNER_CONTENT, SSM_URL, IMPRESSION_URL, REQUEST_URL, RESPONSE_URL);
         String ads = String.format(ADS, ssmAdTag);
         return String.format(RESPONSE, NO_BID_FALSE, NO_AD_URL, ads);
     }
 
     private static String templateNoURLSSMResponse() {
-        String ssmAdTag = String.format(SSM_BANNER, DUMMY_BANNER_CONTENT, SSM_NO_URL, IMPRESSION_URL,REQUEST_URL,RESPONSE_URL);
+        String ssmAdTag = String.format(SSM_BANNER, DUMMY_BANNER_CONTENT, SSM_NO_URL, IMPRESSION_URL, REQUEST_URL, RESPONSE_URL);
         String ads = String.format(ADS, ssmAdTag);
         return String.format(RESPONSE, NO_BID_FALSE, NO_AD_URL, ads);
     }
 
 
-    private static String templateSingleCSMAdResponseBannerInterstitial(String className, int width, int height, String impressionURL, String request_url, String response_url, String params, String id, String type){
-        return String.format(CSM_BANNER, DUMMY_BANNER_CONTENT, params,height, width,id,type, className, impressionURL, request_url, response_url);
+    private static String templateSingleCSMAdResponseBannerInterstitial(String className, int width, int height, String impressionURL, String request_url, String response_url, String params, String id, String type) {
+        return String.format(CSM_BANNER, DUMMY_BANNER_CONTENT, params, height, width, id, type, className, impressionURL, request_url, response_url);
     }
 
-    private static String templateSingleCSMAdResponseNative(String className, String params, String id, String request_url, String response_url){
-        return String.format(CSM_NATIVE, className, params,id,request_url, response_url);
+    private static String templateSingleCSMAdResponseNative(String className, String params, String id, String request_url, String response_url) {
+        return String.format(CSM_NATIVE, className, params, id, request_url, response_url);
     }
 
 
@@ -381,9 +409,9 @@ public class TestResponsesUT {
 
 
     private static String templateNativeResponse(String type, String title, String description, String full_text, String context,
-                                                String icon, String main_media, String cta, String click_trackers,
-                                                String imp_trackers, String rating, String click_url,
-                                                String click_fallback_url, String sponsored_by, String custom) {
+                                                 String icon, String main_media, String cta, String click_trackers,
+                                                 String imp_trackers, String rating, String click_url,
+                                                 String click_fallback_url, String sponsored_by, String custom) {
         return String.format(AN_NATIVE_RESPONSE, type, title, description, full_text, context, icon, main_media, cta, click_trackers, imp_trackers, rating, click_url, click_fallback_url, sponsored_by, custom);
 
 
@@ -396,7 +424,6 @@ public class TestResponsesUT {
     private static String templateNativeRating(float value, float scale) {
         return String.format(NATIVE_RATING, value, scale);
     }
-
 
 
     private static final String DUMMY_VIDEO_CONTENT = "<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\n" +
@@ -486,7 +513,6 @@ public class TestResponsesUT {
             "        </InLine>\n" +
             "    </Ad>\n" +
             "</VAST>";
-
 
 
     public static String rtbVASTVideo() {

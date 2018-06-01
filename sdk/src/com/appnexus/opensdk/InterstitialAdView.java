@@ -190,7 +190,7 @@ public class InterstitialAdView extends AdView {
                 setShowLoadingIndicator(a.getBoolean(attr, true));
             } else if (attr == R.styleable.InterstitialAdView_load_landing_page_in_background) {
                 setLoadsInBackground(a.getBoolean(attr, true));
-                Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_load_landing_page_in_background, doesLoadingInBackground));
+                Clog.d(Clog.xmlLogTag, Clog.getString(R.string.xml_load_landing_page_in_background, getLoadsInBackground()));
             }
         }
         a.recycle();

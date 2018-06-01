@@ -111,6 +111,21 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements UTAdRequ
     }
 
     @Test
+    public void testRequestBannerNativeSucceeded() {
+        setBannerRequestParams();
+        // adRequest initialization goes here because getOwner is called in the constructor
+        adRequest = new UTAdRequest(this);
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        adRequest.execute();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+
+        assertReceiveServerResponseSuccessful(true);
+        assertServerResponseHasAds(true);
+        assertEquals(MediaType.BANNER, response.getMediaType());
+    }
+
+    @Test
     public void testRequestBlank() {
         setBannerRequestParams();
         adRequest = new UTAdRequest(this);

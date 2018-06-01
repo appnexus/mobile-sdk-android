@@ -22,11 +22,10 @@ import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.UTRequestParameters;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMSDKAdResponse;
+import com.appnexus.opensdk.ut.adresponse.RTBNativeAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.SSMHTMLAdResponse;
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.HTTPGet;
-import com.appnexus.opensdk.utils.HTTPResponse;
 
 import java.lang.ref.WeakReference;
 
@@ -34,11 +33,12 @@ class AdViewRequestManager extends RequestManager {
 
     private MediatedAdViewController controller;
     private MediatedSSMAdViewController ssmAdViewController;
-    private final WeakReference<AdView> owner;
+    private MediatedNativeAdController mediatedNativeAdController;
+    private final WeakReference<Ad> owner;
 
-    public AdViewRequestManager(AdView owner) {
+    public AdViewRequestManager(Ad owner) {
         super();
-        this.owner = new WeakReference<AdView>(owner);
+        this.owner = new WeakReference<Ad>(owner);
     }
 
     @Override
@@ -53,26 +53,33 @@ class AdViewRequestManager extends RequestManager {
             controller = null;
         }
 
+        if (mediatedNativeAdController != null) {
+            mediatedNativeAdController.cancel(true);
+            mediatedNativeAdController = null;
+        }
+
         if (ssmAdViewController != null) {
             ssmAdViewController = null;
         }
-        owner.clear();
+        if (owner != null) {
+            owner.clear();
+        }
     }
 
     @Override
     public UTRequestParameters getRequestParams() {
-        AdView owner = this.owner.get();
+        Ad owner = this.owner.get();
         if (owner != null) {
-            return owner.requestParameters;
-        } else {
-            return null;
+            return owner.getRequestParameters();
         }
+        return null;
     }
 
     @Override
     public void failed(ResultCode code) {
         printMediatedClasses();
-        AdView owner = this.owner.get();
+        Clog.e("AdViewRequestManager", code.name());
+        Ad owner = this.owner.get();
         fireTracker(noAdUrl, Clog.getString(R.string.no_ad_url));
         if (owner != null) {
             owner.getAdDispatcher().onAdFailed(code);
@@ -97,11 +104,15 @@ class AdViewRequestManager extends RequestManager {
             // do not hold a reference of current mediated ad controller after ad is loaded
             controller = null;
         }
+        if (mediatedNativeAdController != null) {
+            // do not hold a reference of current mediated ad controller after ad is loaded
+            mediatedNativeAdController = null;
+        }
         if (ssmAdViewController != null) {
             // do not hold a reference of current ssm mediated ad controller after ad is loaded
             ssmAdViewController = null;
         }
-        AdView owner = this.owner.get();
+        Ad owner = this.owner.get();
         if (owner != null) {
             owner.getAdDispatcher().onAdLoaded(ad);
         } else {
@@ -112,8 +123,9 @@ class AdViewRequestManager extends RequestManager {
     @Override
     public void onReceiveUTResponse(UTAdResponse response) {
         super.onReceiveUTResponse(response);
-        final AdView owner = this.owner.get();
-        if (owner != null && response != null && response.getAdList() != null && !response.getAdList().isEmpty()) {
+        Clog.e("AdViewRequestManager", "onReceiveUTResponse");
+        final Ad owner = this.owner.get();
+        if ((owner != null) && doesAdListExists(response)) {
             setAdList(response.getAdList());
             processNextAd();
         } else {
@@ -122,18 +134,23 @@ class AdViewRequestManager extends RequestManager {
         }
     }
 
+    private boolean doesAdListExists(UTAdResponse response) {
+        return ((response != null) && (response.getAdList() != null) && (!response.getAdList().isEmpty()));
+    }
+
     private void processNextAd() {
         // If we're about to dispatch a creative to a banner
         // that has been resized by ad stretching, reset its size
-        AdView owner = this.owner.get();
-        if (owner != null && getAdList() != null && !getAdList().isEmpty()) {
-            BaseAdResponse baseAdResponse = popAd();
-            if (baseAdResponse.getContentSource().equalsIgnoreCase(UTConstants.RTB)) {
+        Ad owner = null;
+        owner = this.owner.get();
+        if ((owner != null) && getAdList() != null && !getAdList().isEmpty()) {
+            final BaseAdResponse baseAdResponse = popAd();
+            if (UTConstants.RTB.equalsIgnoreCase(baseAdResponse.getContentSource())) {
                 handleRTBResponse(owner, baseAdResponse);
-            } else if (baseAdResponse.getContentSource().equalsIgnoreCase(UTConstants.CSM)) {
+            } else if (UTConstants.CSM.equalsIgnoreCase(baseAdResponse.getContentSource())) {
                 handleCSMResponse(owner, (CSMSDKAdResponse) baseAdResponse);
-            } else if (baseAdResponse.getContentSource().equalsIgnoreCase(UTConstants.SSM)) {
-                handleSSMResponse(owner, (SSMHTMLAdResponse) baseAdResponse);
+            } else if (UTConstants.SSM.equalsIgnoreCase(baseAdResponse.getContentSource())) {
+                handleSSMResponse((AdView) owner, (SSMHTMLAdResponse) baseAdResponse);
             } else {
                 Clog.e(Clog.baseLogTag, "processNextAd failed:: invalid content source:: " + baseAdResponse.getContentSource());
                 continueWaterfall(ResultCode.INTERNAL_ERROR);
@@ -141,48 +158,102 @@ class AdViewRequestManager extends RequestManager {
         }
     }
 
+    private void handleNativeResponse(Ad owner, final BaseAdResponse baseAdResponse) {
+        final ANNativeAdResponse nativeAdResponse = ((RTBNativeAdResponse) baseAdResponse).getNativeAdResponse();
 
-    private void handleRTBResponse(AdView owner, BaseAdResponse rtbAdResponse) {
-        if (rtbAdResponse.getAdContent() != null) {
-            if (UTConstants.AD_TYPE_BANNER.equalsIgnoreCase(rtbAdResponse.getAdType()) ||
-                    UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(rtbAdResponse.getAdType())) {
-
-
-                // Fire Notify URL - Currently only for Video Ad's
-                if (UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(rtbAdResponse.getAdType())) {
-                    fireTracker(((RTBVASTAdResponse)rtbAdResponse).getNotifyUrl(), Clog.getString(R.string.notify_url));
-                }
-
-                // Standard ads or Video Ads
-                initiateWebview(owner, rtbAdResponse);
-            } else {
-                Clog.e(Clog.baseLogTag, "handleRTBResponse failed:: invalid adType::" + rtbAdResponse.getAdType());
-                continueWaterfall(ResultCode.INTERNAL_ERROR);
+        if (owner != null) {
+            nativeAdResponse.openNativeBrowser(owner.getRequestParameters().getOpensNativeBrowser());
+            nativeAdResponse.setLoadsInBackground(owner.getRequestParameters().getLoadsInBackground());
+        }
+        onReceiveAd(new AdResponse() {
+            @Override
+            public MediaType getMediaType() {
+                return MediaType.NATIVE;
             }
+
+            @Override
+            public boolean isMediated() {
+                return false;
+            }
+
+            @Override
+            public Displayable getDisplayable() {
+                return null;
+            }
+
+            @Override
+            public NativeAdResponse getNativeAdResponse() {
+                return nativeAdResponse;
+            }
+
+            @Override
+            public BaseAdResponse getResponseData() {
+                return baseAdResponse;
+            }
+
+            @Override
+            public void destroy() {
+                nativeAdResponse.destroy();
+            }
+        });
+    }
+
+
+    private void handleRTBResponse(Ad ownerAd, BaseAdResponse rtbAdResponse) {
+
+        if (rtbAdResponse instanceof RTBNativeAdResponse) {
+            handleNativeResponse(ownerAd, rtbAdResponse);
         } else {
-            continueWaterfall(ResultCode.UNABLE_TO_FILL);
+            AdView owner = (AdView) ownerAd;
+            if (rtbAdResponse.getAdContent() != null) {
+
+                if (UTConstants.AD_TYPE_BANNER.equalsIgnoreCase(rtbAdResponse.getAdType()) ||
+                        UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(rtbAdResponse.getAdType())) {
+
+
+                    // Fire Notify URL - Currently only for Video Ad's
+                    if (UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(rtbAdResponse.getAdType())) {
+                        fireTracker(((RTBVASTAdResponse) rtbAdResponse).getNotifyUrl(), Clog.getString(R.string.notify_url));
+                    }
+
+                    // Standard ads or Video Ads
+                    initiateWebview(owner, rtbAdResponse);
+                } else {
+                    Clog.e(Clog.baseLogTag, "handleRTBResponse failed:: invalid adType::" + rtbAdResponse.getAdType());
+                    continueWaterfall(ResultCode.INTERNAL_ERROR);
+                }
+            } else {
+                continueWaterfall(ResultCode.UNABLE_TO_FILL);
+            }
         }
     }
 
 
-    private void handleCSMResponse(AdView owner, CSMSDKAdResponse csmSdkAdResponse) {
+    private void handleCSMResponse(Ad ownerAd, CSMSDKAdResponse csmSdkAdResponse) {
         Clog.i(Clog.baseLogTag, "Mediation type is CSM, passing it to MediatedAdViewController.");
-        if (owner.getMediaType().equals(MediaType.INTERSTITIAL)) {
-            controller = MediatedInterstitialAdViewController.create(
-                    (Activity) owner.getContext(),
-                    AdViewRequestManager.this,
-                    csmSdkAdResponse,
-                    owner.getAdDispatcher());
-        } else if (owner.getMediaType().equals(MediaType.BANNER)) {
-            controller = MediatedBannerAdViewController.create(
-                    (Activity) owner.getContext(),
-                    AdViewRequestManager.this,
-                    csmSdkAdResponse,
-                    owner.getAdDispatcher());
+        if (csmSdkAdResponse.getAdType().equals(UTConstants.AD_TYPE_NATIVE)) {
+            mediatedNativeAdController = MediatedNativeAdController.create(csmSdkAdResponse,
+                    AdViewRequestManager.this);
 
         } else {
-            Clog.e(Clog.baseLogTag, "MediaType type can not be identified.");
-            continueWaterfall(ResultCode.INVALID_REQUEST);
+            AdView owner = (AdView) ownerAd;
+            if (owner.getMediaType().equals(MediaType.BANNER)) {
+                controller = MediatedBannerAdViewController.create(
+                        (Activity) owner.getContext(),
+                        AdViewRequestManager.this,
+                        csmSdkAdResponse,
+                        owner.getAdDispatcher());
+
+            } else if (owner.getMediaType().equals(MediaType.INTERSTITIAL)) {
+                controller = MediatedInterstitialAdViewController.create(
+                        (Activity) owner.getContext(),
+                        AdViewRequestManager.this,
+                        csmSdkAdResponse,
+                        owner.getAdDispatcher());
+            } else {
+                Clog.e(Clog.baseLogTag, "MediaType type can not be identified.");
+                continueWaterfall(ResultCode.INVALID_REQUEST);
+            }
         }
     }
 
