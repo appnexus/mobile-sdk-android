@@ -32,6 +32,8 @@ import org.robolectric.shadows.ShadowWebView;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -52,6 +54,23 @@ public class NativeAdToRequestParametersTest extends BaseRoboTest {
 
     }
 
+    // Tests the value of ExternalUid
+    @Test
+    public void testSetExternalUId(){
+        setExternalUId();
+        assertSetExternalUId();
+
+    }
+
+    private void setExternalUId(){
+        nativeAdRequest.setExternalUid("AppNexus");
+    }
+
+    private void assertSetExternalUId(){
+        assertNotNull(nativeAdRequest.getExternalUid());
+        assertEquals(nativeAdRequest.getExternalUid(), "AppNexus");
+
+    }
     // Primary size is always 1 x1.
     // Size Array = (1x1 size).
     // Allow smaller size should be false.

@@ -771,6 +771,7 @@ public abstract class AdView extends FrameLayout implements Ad {
         return requestParameters.getAge();
     }
 
+
     /**
      * Set the current user's age.  This should be set if the
      * user's age or age range is known, as it can help make
@@ -783,6 +784,24 @@ public abstract class AdView extends FrameLayout implements Ad {
     public void setAge(String age) {
         requestParameters.setAge(age);
     }
+
+    /**
+     * Set the current user's externalUID
+     *
+     * @param externalUID .
+     */
+    public void setExternalUid(String externalUid) {
+        requestParameters.setExternalUid(externalUid);
+    }
+    /**
+     * Retrieve the externalUID that was previously set.
+     *
+     * @return externalUID.
+     */
+    public String getExternalUid() {
+        return requestParameters.getExternalUid();
+    }
+
 
     /**
      * Get whether or not the banner or interstitial should show the loading indicator

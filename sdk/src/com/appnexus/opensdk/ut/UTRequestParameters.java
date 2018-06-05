@@ -26,6 +26,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 
 import com.appnexus.opensdk.ANGDPRSettings;
@@ -51,6 +52,7 @@ public class UTRequestParameters {
 
     private MediaType mediaType;
     private String placementID;
+    private String externalUid;
     private int memberID;
     private String invCode;
     private boolean opensNativeBrowser = false;
@@ -87,6 +89,7 @@ public class UTRequestParameters {
     private static final String USER = "user";
     private static final String USER_AGE = "age";
     private static final String USER_GENDER = "gender";
+    private static final String USER_EXTERNALUID = "external_uid";
     private static final String USER_LANGUAGE = "language";
     private static final String DEVICE = "device";
     private static final String DEVICE_USERAGENT = "useragent";
@@ -230,6 +233,10 @@ public class UTRequestParameters {
         return gender;
     }
 
+    public String getExternalUid() { return externalUid; }
+
+    public void setExternalUid(String externalUid) { this.externalUid = externalUid; }
+
     public int getVideoAdMinDuration() {
         return videoAdMinDuration;
     }
@@ -315,7 +322,7 @@ public class UTRequestParameters {
      */
 
     public TargetingParameters getTargetingParameters() {
-        return new TargetingParameters(age, gender, customKeywords, SDKSettings.getLocation());
+        return new TargetingParameters(age, gender, customKeywords, SDKSettings.getLocation(),externalUid);
     }
 
     // Package only for testing purpose
@@ -488,6 +495,12 @@ public class UTRequestParameters {
             if (!StringUtil.isEmpty(Settings.getSettings().language)) {
                 user.put(USER_LANGUAGE, Settings.getSettings().language);
             }
+
+            if (!StringUtil.isEmpty(this.getExternalUid())) {
+                user.put(USER_EXTERNALUID, this.getExternalUid());
+            }
+
+
         } catch (JSONException e) {
         }
         return user;
@@ -752,4 +765,6 @@ public class UTRequestParameters {
         }
         return false;
     }
+
+
 }

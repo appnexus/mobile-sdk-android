@@ -38,6 +38,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowFrameLayout;
 import org.robolectric.shadows.ShadowLog;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -182,7 +184,23 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
 
     }
 
+     // Tests the value of ExternalUid
+    @Test
+    public void testSetExternalUId(){
+        setExternalUId();
+        assertSetExternalUId();
 
+    }
+
+    private void setExternalUId(){
+        videoAd.setExternalUid("AppNexus");
+    }
+
+    private void assertSetExternalUId(){
+        assertNotNull(videoAd.getExternalUid());
+        assertEquals(videoAd.getExternalUid(), "AppNexus");
+
+    }
 
 
     @Override

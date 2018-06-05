@@ -49,6 +49,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
     UTAdResponse response;
     boolean requesterReceivedServerResponse = false;
     public static final int PLACEMENT_ID = 123456;
+    public static final String EXTERNAL_UID = "b865df7e-097f-4167-8a5c-44d778e75ee6";
 
     @Override
     public void setup() {
@@ -277,15 +278,15 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
         inspectSizes(allowedSizes, tag);
     }
-
     /**
-     * Tests the value of allowed ad types
+     * Tests the value of allowed ad types ,ExternalUid
      *
      * @throws Exception
      */
     @Test
     public void testAdTypes() throws Exception {
         utRequestParameters.setPlacementID(String.valueOf(PLACEMENT_ID));
+        utRequestParameters.setExternalUid(EXTERNAL_UID);
         utRequestParameters.setMediaType(MediaType.BANNER);
         executionSteps();
         Robolectric.flushForegroundThreadScheduler();
@@ -295,6 +296,10 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         JSONObject tag = getTagsData(postData);
         assertTrue(tag.has("id"));
         assertEquals(PLACEMENT_ID, tag.getInt("id"));
+
+        JSONObject users = getUserData(postData);
+        assertTrue(users.has("external_uid"));
+        assertEquals(EXTERNAL_UID, users.getString("external_uid"));
 
         assertTrue(tag.has("allowed_media_types"));
         JSONArray allowedAdTypes = tag.getJSONArray("allowed_media_types");
@@ -489,7 +494,11 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         assertEquals(1, tags.length());
         return (JSONObject) tags.get(0);
     }
-
+    private JSONObject getUserData(JSONObject postData) throws JSONException {
+        JSONObject user = postData.getJSONObject("user");
+        assertNotNull(user);
+        return user;
+    }
     @NonNull
     private JSONObject inspectPostData() throws InterruptedException, JSONException {
         System.out.println("Testing POST data...");

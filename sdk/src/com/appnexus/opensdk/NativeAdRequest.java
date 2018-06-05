@@ -137,6 +137,22 @@ public class NativeAdRequest implements Ad {
                 R.string.get_placement_id, requestParameters.getPlacementID()));
         return requestParameters.getPlacementID();
     }
+    /**
+     * Retrieve the externalUID that was previously set.
+     *
+     * @return externalUID.
+     */
+    public String getExternalUid() { return requestParameters.getExternalUid(); }
+
+    /**
+     * Set the current user's externalUID
+     *
+     * @param externalUid .
+     */
+    public void setExternalUid(String externalUid) {
+        requestParameters.setExternalUid(externalUid);
+    }
+
 
     protected void setAllowedSizes() {
         Clog.d(Clog.nativeLogTag,

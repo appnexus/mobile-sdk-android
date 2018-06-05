@@ -211,6 +211,24 @@ public class VideoAd implements VideoAdInterface {
     }
 
     /**
+     * Set the current user's externalUID
+     *
+     * @param externalUid .
+     */
+    public void setExternalUid(String externalUid) {
+        requestParameters.setExternalUid(externalUid);
+    }
+    
+    /**
+     * Retrieve the externalUID that was previously set.
+     *
+     * @return externalUID.
+     */
+    public String getExternalUid() {
+        return requestParameters.getExternalUid();
+    }
+
+    /**
      * Add a custom keyword to the request URL for the ad.  This
      * is used to set custom targeting parameters within the
      * AppNexus platform.  You will be given the keys and values

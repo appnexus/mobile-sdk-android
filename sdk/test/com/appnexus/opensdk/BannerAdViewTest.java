@@ -29,6 +29,8 @@ import org.robolectric.shadows.ShadowWebView;
 
 import java.util.ArrayList;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 
@@ -112,7 +114,17 @@ public class BannerAdViewTest extends BaseRoboTest {
 
     }
 
+    // Tests the value of ExternalUid
+    @Test
+    public void testSetExternalUId(){
+        setExternalUId();
+        assertSetExternalUId();
 
+    }
+
+    private void setExternalUId(){
+        bannerAdView.setExternalUid("AppNexus");
+    }
 
     private void setAdSize(){
         bannerAdView.setAdSize(720,90);
@@ -169,6 +181,11 @@ public class BannerAdViewTest extends BaseRoboTest {
         assertTrue(bannerAdView.getMaxHeight() == 720);
     }
 
+    private void assertSetExternalUId(){
+        assertNotNull(bannerAdView.getExternalUid());
+        assertEquals(bannerAdView.getExternalUid(), "AppNexus");
+
+    }
 
     /******************* AdSize Tests END********************************************************/
 }

@@ -28,6 +28,7 @@ import java.util.ArrayList;
  */
 public class TargetingParameters {
     private String age = null;
+    private String externalUid = null;
     private ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
     private AdView.GENDER gender = AdView.GENDER.UNKNOWN;
     private Location location = null;
@@ -35,12 +36,23 @@ public class TargetingParameters {
     TargetingParameters() {
         
     }
-    public TargetingParameters(String age, AdView.GENDER gender, ArrayList<Pair<String, String>> customKeywords, Location location){
+    public TargetingParameters(String age, AdView.GENDER gender, ArrayList<Pair<String, String>> customKeywords, Location location ,String externalUid){
         this.age = age;
         this.gender = gender;
         this.customKeywords = customKeywords;
         this.location = location;
+        this.externalUid = externalUid;
     }
+
+    /**
+     * Retrieve the externalUID that was previously set.
+     *
+     * @return externalUID.
+     */
+    public String getExternalUid() {
+        return externalUid;
+    }
+
 
     /**
      * The current user's age, passed by to the ad request.  Note this string
