@@ -42,7 +42,7 @@ public class AdMobNativeAd implements MediatedNativeAd {
      * @param tp      Targeting parameters that were set in AppNexus API.
      */
     @Override
-    public void requestNativeAd(Context context, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
+    public void requestNativeAd(Context context, String parameterString, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
         if (mBC != null) {
             if (AdMobNativeSettings.enableAppInstallAd || AdMobNativeSettings.enableContentAd) {
                 AdMobNativeListener adMobNativeListener = new AdMobNativeListener(mBC);

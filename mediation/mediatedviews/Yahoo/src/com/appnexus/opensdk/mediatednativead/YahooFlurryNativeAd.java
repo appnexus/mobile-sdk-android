@@ -43,7 +43,7 @@ public class YahooFlurryNativeAd implements MediatedNativeAd, FlurryAdNativeList
     private WeakReference<YahooFlurryNativeAdResponse> response;
 
     @Override
-    public void requestNativeAd(Context context, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
+    public void requestNativeAd(Context context, String parameterString, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
         if (mBC != null) {
             this.controller = new WeakReference<MediatedNativeAdController>(mBC);
             mFlurryAdNative = new FlurryAdNative(context, uid);

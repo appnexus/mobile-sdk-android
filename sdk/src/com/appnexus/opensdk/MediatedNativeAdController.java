@@ -63,6 +63,7 @@ public class MediatedNativeAdController {
                 if (requester.getRequestParams() != null) {
                     ad.requestNativeAd(
                             requester.getRequestParams().getContext(),
+                            currentAd.getParam(),
                             currentAd.getId(), this,
                             requester.getRequestParams().getTargetingParameters());
                 } else {

@@ -38,7 +38,7 @@ public class MediatedNativeSuccessful2 implements MediatedNativeAd {
     public static boolean didPass;
 
     @Override
-    public void requestNativeAd(Context context, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
+    public void requestNativeAd(Context context, String parameterString, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
         if (mBC != null) {
             didPass = true;
             Lock.explicitSleep(2); // This is for generating latency and total latency in the response url
