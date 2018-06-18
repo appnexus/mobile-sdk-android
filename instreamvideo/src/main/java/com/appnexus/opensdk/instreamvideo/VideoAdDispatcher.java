@@ -15,6 +15,7 @@
  */
 package com.appnexus.opensdk.instreamvideo;
 
+import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.ResultCode;
 
 /**
@@ -26,7 +27,7 @@ interface VideoAdDispatcher {
     /**
      * Called when an ad is ready to be used, indicates a successful ad request
      */
-    public void onAdLoaded( );
+    public void onAdLoaded();
 
     /**
      * Called when the Ad Request has ended in a failure
@@ -42,6 +43,9 @@ interface VideoAdDispatcher {
 
     /**
      * Called when the ad being clicked
+     * and the ClickThroughAction is set as either ANClickThroughAction.OPEN_DEVICE_BROWSER
+     * or ANClickThroughAction.OPEN_SDK_BROWSER
+     * {@link ANClickThroughAction}
      */
     public void onAdClicked();
 
@@ -52,6 +56,7 @@ interface VideoAdDispatcher {
 
     /**
      * Called when Quartile events are fired in the
+     *
      * @param quartile Quartile object
      */
     public void onQuartile(Quartile quartile);
@@ -70,4 +75,11 @@ interface VideoAdDispatcher {
      * Called when there is an error in playback
      */
     public void onPlaybackError();
+
+    /**
+     * Called when the ad being clicked
+     * and the ClickThroughAction is set as ANClickThroughAction.RETURN_URL
+     * {@link ANClickThroughAction}
+     */
+    public void onAdClicked(String clickUrl);
 }

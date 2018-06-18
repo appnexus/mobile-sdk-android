@@ -1,5 +1,5 @@
 /*
- *    Copyright 2014 APPNEXUS INC
+ *    Copyright 2013 APPNEXUS INC
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,11 +16,8 @@
 
 package com.appnexus.opensdk;
 
-/**
- * Define the events that an ad may fire.
- */
-public interface NativeAdEventListener {
-    public void onAdWasClicked();
-    public void onAdWillLeaveApplication();
-    public void onAdWasClicked(String clickUrl,String fallbackURL);
+public enum ANClickThroughAction {
+    RETURN_URL,
+    OPEN_SDK_BROWSER,
+    OPEN_DEVICE_BROWSER
 }

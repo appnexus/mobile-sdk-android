@@ -39,6 +39,7 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
 
+import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.AdActivity;
 import com.appnexus.opensdk.BrowserAdActivity;
 import com.appnexus.opensdk.MediaType;
@@ -158,9 +159,7 @@ class VideoWebView extends WebView {
                 return true;
             }
 
-
-            loadURLInCorrectBrowser(url);
-            fireAdClicked();
+            handleClickUrl(url);
 
             return true;
         }
@@ -191,6 +190,15 @@ class VideoWebView extends WebView {
         public void onReceivedError(WebView view, int errorCode,
                                     String description, String failingURL) {
             Clog.d(Clog.videoLogTag, "error" + errorCode + description + failingURL);
+        }
+    }
+
+    private void handleClickUrl(String url) {
+        if (owner.getClickThroughAction() == ANClickThroughAction.RETURN_URL) {
+            fireAdClickedWithReturnUrl(url);
+        } else {
+            loadURLInCorrectBrowser(url);
+            fireAdClicked();
         }
     }
 
@@ -283,7 +291,7 @@ class VideoWebView extends WebView {
 
     // handles browser logic for shouldOverrideUrl
     void loadURLInCorrectBrowser(String url) {
-        if (!owner.getOpensNativeBrowser()) {
+        if (owner.getClickThroughAction() == ANClickThroughAction.OPEN_SDK_BROWSER) {
 
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.opening_inapp));
 
@@ -330,12 +338,18 @@ class VideoWebView extends WebView {
                 // Catches PackageManager$NameNotFoundException for webview
                 Clog.e(Clog.baseLogTag, "Exception initializing the redirect webview: " + e.getMessage());
             }
-        } else {
+        } else if (owner.getClickThroughAction() == ANClickThroughAction.OPEN_DEVICE_BROWSER) {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(R.string.opening_native));
             openNativeIntent(url);
         }
 
+    }
+
+    void fireAdClickedWithReturnUrl(String clickUrl) {
+        if (owner != null) {
+            owner.getAdDispatcher().onAdClicked(clickUrl);
+        }
     }
 
     // returns success or failure
@@ -411,8 +425,8 @@ class VideoWebView extends WebView {
                         int returnValue = 0;
                         try {
                             returnValue = Integer.parseInt(s.toString());
-                        } catch(NumberFormatException nfe) {
-                            Clog.d(Clog.videoLogTag,"Could not parse int value" + nfe);
+                        } catch (NumberFormatException nfe) {
+                            Clog.d(Clog.videoLogTag, "Could not parse int value" + nfe);
                         }
                         resultCallback.onResult(returnValue);
                     }

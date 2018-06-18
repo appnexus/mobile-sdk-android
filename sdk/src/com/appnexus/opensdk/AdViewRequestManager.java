@@ -162,8 +162,8 @@ class AdViewRequestManager extends RequestManager {
         final ANNativeAdResponse nativeAdResponse = ((RTBNativeAdResponse) baseAdResponse).getNativeAdResponse();
 
         if (owner != null) {
-            nativeAdResponse.openNativeBrowser(owner.getRequestParameters().getOpensNativeBrowser());
             nativeAdResponse.setLoadsInBackground(owner.getRequestParameters().getLoadsInBackground());
+            nativeAdResponse.setClickThroughAction(owner.getRequestParameters().getClickThroughAction());
         }
         onReceiveAd(new AdResponse() {
             @Override

@@ -61,4 +61,6 @@ interface AdDispatcher {
      * Used only by Banner Video
      */
     public void toggleAutoRefresh();
+
+    public void onAdClicked(String clickUrl);
 }

@@ -258,4 +258,9 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
     public void onAdClicked(VideoAd videoAd) {
 
     }
+
+    @Override
+    public void onAdClicked(VideoAd videoAd, String clickUrl) {
+
+    }
 }

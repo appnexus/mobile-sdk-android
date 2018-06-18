@@ -20,9 +20,6 @@ import android.arch.core.BuildConfig;
 import android.content.Context;
 
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
-import com.appnexus.opensdk.shadows.ShadowCustomWebView;
-import com.appnexus.opensdk.shadows.ShadowSettings;
-import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.util.Lock;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 
@@ -31,14 +28,12 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotSame;
 
 @Config(constants = BuildConfig.class, sdk = 21,
-        shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowCustomWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
+        shadows = {ShadowAsyncTaskNoExecutor.class})
 @RunWith(RobolectricTestRunner.class)
 public class AdFetcherTest extends BaseRoboTest {
     private AdFetcher adFetcher;

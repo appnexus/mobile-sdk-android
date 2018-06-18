@@ -438,8 +438,7 @@ class MRAIDImplementation {
         }
 
         if (!StringUtil.isEmpty(uri)) {
-            this.owner.loadURLInCorrectBrowser(uri);
-            this.owner.fireAdClicked();
+            this.owner.handleClickUrl(uri);
         }
     }
 
@@ -772,7 +771,7 @@ class MRAIDImplementation {
             newExposureVal = String.format("{\"exposedPercentage\":%.1f,\"visibleRectangle\":null,\"occlusionRectangles\":null}", exposedPercentage);
         }
 
-        if(!exposureVal.equals(newExposureVal)){
+        if (!exposureVal.equals(newExposureVal)) {
             exposureVal = newExposureVal;
             this.onExposureChange();
         }

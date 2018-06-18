@@ -15,6 +15,8 @@
  */
 package com.appnexus.opensdk.instreamvideo;
 
+import com.appnexus.opensdk.ANClickThroughAction;
+
 public interface VideoAdPlaybackListener {
 
     /**
@@ -45,7 +47,11 @@ public interface VideoAdPlaybackListener {
     public void onAdMuted(VideoAd ad, boolean isMuted);
 
     /**
-     * Called when an ad is clicked.  The current activity will be
+     * Called when the ad being clicked
+     * and the ClickThroughAction is set as either ANClickThroughAction.OPEN_DEVICE_BROWSER
+     * or ANClickThroughAction.OPEN_SDK_BROWSER.
+     * {@link ANClickThroughAction}
+     * The current activity will be
      * paused as the user switches to the activity launched from the
      * ad interaction.  For example, the user may click a link that
      * opens a web browser.
@@ -53,6 +59,16 @@ public interface VideoAdPlaybackListener {
      * @param videoAd The {@link VideoAd} that loaded the ad.
      */
     public void onAdClicked(VideoAd videoAd);
+
+    /**
+     * Called when the ad being clicked
+     * and the ClickThroughAction is set as ANClickThroughAction.RETURN_URL
+     * {@link ANClickThroughAction}
+     *
+     * @param videoAd The {@link VideoAd} that loaded the ad,
+     * @param clickUrl The click url corresponding to the ad.
+     */
+    public void onAdClicked(VideoAd videoAd, String clickUrl);
 
 
     /**

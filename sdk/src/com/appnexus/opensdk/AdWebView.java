@@ -351,8 +351,7 @@ class AdWebView extends WebView implements Displayable,
                 return true;
             }
 
-            loadURLInCorrectBrowser(url);
-            fireAdClicked();
+            handleClickUrl(url);
 
             return true;
         }
@@ -452,6 +451,22 @@ class AdWebView extends WebView implements Displayable,
         }
     }
 
+    void fireAdClickedWithReturnUrl(String clickUrl) {
+        if (adView != null) {
+            adView.getAdDispatcher().onAdClicked(clickUrl);
+            adView.interacted();
+        }
+    }
+
+    void handleClickUrl(String url) {
+        if (adView.getClickThroughAction() == ANClickThroughAction.RETURN_URL) {
+            fireAdClickedWithReturnUrl(url);
+        } else {
+            loadURLInCorrectBrowser(url);
+            fireAdClicked();
+        }
+    }
+
     // returns success or failure
     private boolean openNativeIntent(String url) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -508,7 +523,7 @@ class AdWebView extends WebView implements Displayable,
 
     // handles browser logic for shouldOverrideUrl
     void loadURLInCorrectBrowser(String url) {
-        if (!adView.getOpensNativeBrowser()) {
+        if (adView.getClickThroughAction() == ANClickThroughAction.OPEN_SDK_BROWSER) {
 
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.opening_inapp));
 
@@ -555,7 +570,7 @@ class AdWebView extends WebView implements Displayable,
                 // Catches PackageManager$NameNotFoundException for webview
                 Clog.e(Clog.baseLogTag, "Exception initializing the redirect webview: " + e.getMessage());
             }
-        } else {
+        } else if (adView.getClickThroughAction() == ANClickThroughAction.OPEN_DEVICE_BROWSER) {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(R.string.opening_native));
             openNativeIntent(url);
@@ -563,6 +578,7 @@ class AdWebView extends WebView implements Displayable,
         }
 
     }
+
 
     protected void fail() {
         failed = true;

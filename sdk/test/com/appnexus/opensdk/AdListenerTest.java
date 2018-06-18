@@ -90,8 +90,9 @@ public class AdListenerTest extends BaseViewAdTest {
     @Test
     public void testBannerNativeAdLoaded() {
         bannerAdView.setAutoRefreshInterval(30000);
-        bannerAdView.setOpensNativeBrowser(true);
         bannerAdView.setLoadsInBackground(false);
+        bannerAdView.setOpensNativeBrowser(false);
+        bannerAdView.setClickThroughAction(ANClickThroughAction.RETURN_URL);
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeWithoutImages()));
         Assert.assertEquals(AdType.UNKNOWN, bannerAdView.getAdType());
         requestManager = new AdViewRequestManager(bannerAdView);
@@ -103,6 +104,34 @@ public class AdListenerTest extends BaseViewAdTest {
         assertCallbacks(true);
         assertOpensInNativeBrowser();
         assertLoadsInBackground();
+        assertClickThroughAction();
+        assertClickThroughAction(ANClickThroughAction.RETURN_URL);
+    }
+
+    @Test
+    public void testClickThroughDependencyOnOpensNativeFalse() {
+        bannerAdView.setClickThroughAction(ANClickThroughAction.RETURN_URL);
+        bannerAdView.setOpensNativeBrowser(false);
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeWithoutImages()));
+        requestManager = new AdViewRequestManager(bannerAdView);
+        requestManager.execute();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertClickThroughAction();
+        assertClickThroughAction(ANClickThroughAction.OPEN_SDK_BROWSER);
+    }
+
+    @Test
+    public void testClickThroughDependencyOnOpensNativeTrue() {
+        bannerAdView.setClickThroughAction(ANClickThroughAction.RETURN_URL);
+        bannerAdView.setOpensNativeBrowser(true);
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeWithoutImages()));
+        requestManager = new AdViewRequestManager(bannerAdView);
+        requestManager.execute();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertClickThroughAction();
+        assertClickThroughAction(ANClickThroughAction.OPEN_DEVICE_BROWSER);
     }
 
     @Test

@@ -67,7 +67,11 @@ public interface AdListener {
     public void onAdCollapsed(AdView adView);
 
     /**
-     * Called when an ad is clicked.  The current activity will be
+     * Called when the ad being clicked
+     * and the ClickThroughAction is set as either ANClickThroughAction.OPEN_DEVICE_BROWSER
+     * or ANClickThroughAction.OPEN_SDK_BROWSER.
+     * {@link ANClickThroughAction}
+     * The current activity will be
      * paused as the user switches to the activity launched from the
      * ad interaction.  For example, the user may click a link that
      * opens a web browser, or touch a click-to-call link which
@@ -76,4 +80,14 @@ public interface AdListener {
      * @param adView The {@link AdView} that loaded the ad.
      */
     public void onAdClicked(AdView adView);
+
+    /**
+     * Called when an ad is clicked
+     * and the ANClickThroughAction is set to ANClickThroughAction.RETURN_URL.
+     * {@link ANClickThroughAction}
+     *
+     *  @param adView The {@link AdView} that loaded the ad.
+     */
+    public void onAdClicked(AdView adView, String clickUrl);
+
 }

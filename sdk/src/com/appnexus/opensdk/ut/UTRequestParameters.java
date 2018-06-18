@@ -25,10 +25,9 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
-import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 
+import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.ANGDPRSettings;
 import com.appnexus.opensdk.AdSize;
 import com.appnexus.opensdk.AdView;
@@ -55,7 +54,6 @@ public class UTRequestParameters {
     private String externalUid;
     private int memberID;
     private String invCode;
-    private boolean opensNativeBrowser = false;
     private boolean doesLoadingInBackground = true;
     private AdSize primarySize;
     private ArrayList<AdSize> adSizes = new ArrayList<AdSize>();
@@ -67,6 +65,7 @@ public class UTRequestParameters {
     private ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
     private int videoAdMinDuration;
     private int videoAdMaxDuration;
+    private ANClickThroughAction clickThroughAction = ANClickThroughAction.OPEN_SDK_BROWSER;
 
     private String ANSDK = "ansdk";
 
@@ -193,12 +192,29 @@ public class UTRequestParameters {
         return adSizes;
     }
 
+    /**
+     * @deprecated Use setClickThroughAction instead
+     * Refer {@link ANClickThroughAction}
+     */
     public void setOpensNativeBrowser(boolean opensNativeBrowser) {
-        this.opensNativeBrowser = opensNativeBrowser;
+        setClickThroughAction(opensNativeBrowser ? ANClickThroughAction.OPEN_DEVICE_BROWSER : ANClickThroughAction.OPEN_SDK_BROWSER);
     }
 
+    /**
+     * @deprecated Use getClickThroughAction instead
+     * Refer {@link ANClickThroughAction}
+     */
     public boolean getOpensNativeBrowser() {
-        return opensNativeBrowser;
+        return (getClickThroughAction() == ANClickThroughAction.OPEN_DEVICE_BROWSER);
+    }
+
+
+    public ANClickThroughAction getClickThroughAction() {
+        return clickThroughAction;
+    }
+
+    public void setClickThroughAction(ANClickThroughAction clickThroughAction) {
+        this.clickThroughAction = clickThroughAction;
     }
 
     public void setMediaType(MediaType mediaType) {
@@ -233,9 +249,13 @@ public class UTRequestParameters {
         return gender;
     }
 
-    public String getExternalUid() { return externalUid; }
+    public String getExternalUid() {
+        return externalUid;
+    }
 
-    public void setExternalUid(String externalUid) { this.externalUid = externalUid; }
+    public void setExternalUid(String externalUid) {
+        this.externalUid = externalUid;
+    }
 
     public int getVideoAdMinDuration() {
         return videoAdMinDuration;
@@ -322,7 +342,7 @@ public class UTRequestParameters {
      */
 
     public TargetingParameters getTargetingParameters() {
-        return new TargetingParameters(age, gender, customKeywords, SDKSettings.getLocation(),externalUid);
+        return new TargetingParameters(age, gender, customKeywords, SDKSettings.getLocation(), externalUid);
     }
 
     // Package only for testing purpose

@@ -68,6 +68,8 @@ public class NativeAdRequest implements Ad {
      * browser when the user clicks an ad.
      *
      * @return true if the device's native browser will be used; false otherwise.
+     * @deprecated Use getClickThroughAction instead
+     * Refer {@link ANClickThroughAction}
      */
     public boolean getOpensNativeBrowser() {
         Clog.d(Clog.nativeLogTag, Clog.getString(
@@ -83,7 +85,9 @@ public class NativeAdRequest implements Ad {
      * enable the in-app browser instead (a lightweight browser
      * that runs within your app).  The default value is false.
      *
-     * @param opensNativeBrowser  (boolean)
+     * @param opensNativeBrowser (boolean)
+     * @deprecated Use setClickThroughAction instead
+     * Refer {@link ANClickThroughAction}
      */
     public void setOpensNativeBrowser(boolean opensNativeBrowser) {
         Clog.d(Clog.nativeLogTag, Clog.getString(
@@ -125,6 +129,32 @@ public class NativeAdRequest implements Ad {
      */
     public boolean getLoadsInBackground() {
         return requestParameters.getLoadsInBackground();
+    }
+
+    /**
+     * Returns the ANClickThroughAction that is used for this NativeAdRequest.
+     *
+     * @return {@link ANClickThroughAction}
+     */
+    public ANClickThroughAction getClickThroughAction() {
+        return requestParameters.getClickThroughAction();
+    }
+
+
+    /**
+     * Determines what action to take when the user clicks on an ad.
+     * If set to ANClickThroughAction.OPEN_DEVICE_BROWSER/ANClickThroughAction.OPEN_SDK_BROWSER then,
+     * NativeAdEventListener.onAdWasClicked() will be triggered and corresponding browser will load the click url.
+     * If set to ANClickThroughAction.RETURN_URL then,
+     * NativeAdEventListener.onAdWasClicked(String clickUrl,String fallbackURL) will be triggered with clickUrl and clickFallbackURL as its argument.
+     * It is ASSUMED that the App will handle it appropriately.
+     *
+     * @param clickThroughAction ANClickThroughAction.OPEN_SDK_BROWSER which is default or
+     *             ANClickThroughAction.OPEN_DEVICE_BROWSER or
+     *             ANClickThroughAction.RETURN_URL
+     */
+    public void setClickThroughAction(ANClickThroughAction clickThroughAction) {
+        requestParameters.setClickThroughAction(clickThroughAction);
     }
 
     /**
@@ -445,6 +475,11 @@ public class NativeAdRequest implements Ad {
 
         @Override
         public void toggleAutoRefresh() {
+
+        }
+
+        @Override
+        public void onAdClicked(String clickUrl) {
 
         }
     }

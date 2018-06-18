@@ -678,6 +678,8 @@ public abstract class AdView extends FrameLayout implements Ad {
      * browser when the user clicks an ad.
      *
      * @return true if the device's native browser will be used; false otherwise.
+     * @deprecated Use getClickThroughAction instead
+     * Refer {@link ANClickThroughAction}
      */
     public boolean getOpensNativeBrowser() {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
@@ -695,11 +697,39 @@ public abstract class AdView extends FrameLayout implements Ad {
      *
      * @param opensNativeBrowser Whether or not the device's native browser should be used for
      *                           landing pages.
+     * @deprecated Use setClickThroughAction instead
+     * Refer {@link ANClickThroughAction}
      */
     public void setOpensNativeBrowser(boolean opensNativeBrowser) {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
                 R.string.set_opens_native_browser, opensNativeBrowser));
         requestParameters.setOpensNativeBrowser(opensNativeBrowser);
+    }
+
+    /**
+     * Returns the ANClickThroughAction that is used for this AdView.
+     *
+     * @return {@link ANClickThroughAction}
+     */
+    public ANClickThroughAction getClickThroughAction() {
+        return requestParameters.getClickThroughAction();
+    }
+
+
+    /**
+     * Determines what action to take when the user clicks on an ad.
+     * If set to ANClickThroughAction.OPEN_DEVICE_BROWSER/ANClickThroughAction.OPEN_SDK_BROWSER then,
+     * AdListener.onAdClicked(AdView adView) will be triggered and corresponding browser will load the click url.
+     * If set to ANClickThroughAction.RETURN_URL then,
+     * AdListener.onAdClicked(AdView adView, String clickUrl) will be triggered with clickUrl as its argument.
+     * It is ASSUMED that the App will handle it appropriately.
+     *
+     * @param clickThroughAction ANClickThroughAction.OPEN_SDK_BROWSER which is default or
+     *             ANClickThroughAction.OPEN_DEVICE_BROWSER or
+     *             ANClickThroughAction.RETURN_URL
+     */
+    public void setClickThroughAction(ANClickThroughAction clickThroughAction) {
+        requestParameters.setClickThroughAction(clickThroughAction);
     }
 
     BrowserStyle getBrowserStyle() {
@@ -788,11 +818,12 @@ public abstract class AdView extends FrameLayout implements Ad {
     /**
      * Set the current user's externalUID
      *
-     * @param externalUID .
+     * @param externalUid .
      */
     public void setExternalUid(String externalUid) {
         requestParameters.setExternalUid(externalUid);
     }
+
     /**
      * Retrieve the externalUID that was previously set.
      *
@@ -1079,8 +1110,10 @@ public abstract class AdView extends FrameLayout implements Ad {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (adListener != null)
+                    if (adListener != null) {
+                        Clog.d("ADVIEW", "onAdClicked");
                         adListener.onAdClicked(AdView.this);
+                    }
                 }
             });
         }
@@ -1104,15 +1137,29 @@ public abstract class AdView extends FrameLayout implements Ad {
             }
         }
 
+        @Override
+        public void onAdClicked(final String clickUrl) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (adListener != null) {
+                        Clog.e("ADVIEW", "onAdClicked clickUrl");
+                        adListener.onAdClicked(AdView.this, clickUrl);
+
+                    }
+                }
+            });
+        }
+
         private void handleNativeAd(AdResponse ad) {
             final String IMAGE_URL = "image", ICON_URL = "icon";
             setAdType(AdType.NATIVE);
             setCreativeId(ad.getResponseData().getCreativeId());
             final NativeAdResponse response = ad.getNativeAdResponse();
             response.setCreativeId(ad.getResponseData().getCreativeId());
-            if(StringUtil.isEmpty(response.getIconUrl()) && StringUtil.isEmpty(response.getImageUrl())) {
+            if (StringUtil.isEmpty(response.getIconUrl()) && StringUtil.isEmpty(response.getImageUrl())) {
                 adListener.onAdLoaded(response);
-            }else {
+            } else {
                 imageService = new ImageService();
                 this.response = response;
                 ImageService.ImageReceiver imageReceiver = new ImageService.ImageReceiver() {

@@ -45,9 +45,9 @@ import static junit.framework.Assert.assertTrue;
         shadows = {ShadowAsyncTaskNoExecutor.class,
                 ShadowCustomWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RobolectricTestRunner.class)
-public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventListener{
+public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventListener {
 
-    boolean adWasClicked ,  adWillLeaveApplication;
+    boolean adWasClicked, adWillLeaveApplication;
     View nativeAdView;
 
     public void assertAdLoaded(Boolean loaded) {
@@ -88,7 +88,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
         nativeAdView = DummyView.getDummyView(activity);
         attachToWindow(nativeAdView);
 
-        NativeAdSDK.registerTracking(response, nativeAdView,this);
+        NativeAdSDK.registerTracking(response, nativeAdView, this);
 
         //@TODO can do perform Click and Test but issue with roboelectric https://github.com/robolectric/robolectric/issues/2372
         //Shadows.shadowOf(nativeAdView).checkedPerformClick();
@@ -100,7 +100,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
     }
 
 
-    private void attachToWindow(View nativeAdView){
+    private void attachToWindow(View nativeAdView) {
         // Create a container (a parent view that holds all the
         // views for native ads)
 
@@ -113,7 +113,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
         container.addView(nativeAdView);
 
 
-        final ViewGroup viewGroup = ((ViewGroup)activity.getWindow().getDecorView().getRootView());
+        final ViewGroup viewGroup = ((ViewGroup) activity.getWindow().getDecorView().getRootView());
         viewGroup.addView(container);
         nativeAdView.setVisibility(View.VISIBLE);
     }
@@ -134,5 +134,10 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
     @Override
     public void onAdWillLeaveApplication() {
         adWillLeaveApplication = true;
+    }
+
+    @Override
+    public void onAdWasClicked(String clickUrl, String fallbackURL) {
+        adWasClicked = true;
     }
 }

@@ -24,6 +24,7 @@ import android.widget.RelativeLayout;
 
 import com.appnexus.opensdk.AdSize;
 import com.appnexus.opensdk.AdView;
+import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.MediaType;
 import com.appnexus.opensdk.ut.UTRequestParameters;
 import com.appnexus.opensdk.ResultCode;
@@ -89,6 +90,8 @@ public class VideoAd implements VideoAdInterface {
      * browser when the user clicks an ad.
      *
      * @return true if the device's native browser will be used; false otherwise.
+     * @deprecated Use getClickThroughAction instead
+     * Refer {@link ANClickThroughAction}
      */
     public boolean getOpensNativeBrowser() {
         Clog.d(Clog.videoLogTag, Clog.getString(
@@ -105,6 +108,8 @@ public class VideoAd implements VideoAdInterface {
      * that runs within your app).  The default value is false.
      *
      * @param opensNativeBrowser
+     * @deprecated Use setClickThroughAction instead
+     * Refer {@link ANClickThroughAction}
      */
     public void setOpensNativeBrowser(boolean opensNativeBrowser) {
         Clog.d(Clog.videoLogTag, Clog.getString(
@@ -218,7 +223,7 @@ public class VideoAd implements VideoAdInterface {
     public void setExternalUid(String externalUid) {
         requestParameters.setExternalUid(externalUid);
     }
-    
+
     /**
      * Retrieve the externalUID that was previously set.
      *
@@ -409,6 +414,32 @@ public class VideoAd implements VideoAdInterface {
     }
 
     /**
+     * Returns the ANClickThroughAction that is used for this VideoAd.
+     *
+     * @return {@link ANClickThroughAction}
+     */
+    public ANClickThroughAction getClickThroughAction() {
+        return requestParameters.getClickThroughAction();
+    }
+
+
+    /**
+     * Determines what action to take when the user clicks on an ad.
+     * If set to ANClickThroughAction.OPEN_DEVICE_BROWSER/ANClickThroughAction.OPEN_SDK_BROWSER then,
+     * VideoAdPlaybackListener.onAdClicked(VideoAd videoAd) will be triggered and corresponding browser will load the click url.
+     * If set to ANClickThroughAction.RETURN_URL then,
+     * VideoAdPlaybackListener.onAdClicked(VideoAd videoAd, String clickUrl) will be triggered with clickUrl as its argument.
+     * It is ASSUMED that the App will handle it appropriately.
+     *
+     * @param clickThroughAction ANClickThroughAction.OPEN_SDK_BROWSER which is default or
+     *             ANClickThroughAction.OPEN_DEVICE_BROWSER or
+     *             ANClickThroughAction.RETURN_URL
+     */
+    public void setClickThroughAction(ANClickThroughAction clickThroughAction) {
+        requestParameters.setClickThroughAction(clickThroughAction);
+    }
+
+    /**
      * Internal class to post process VideoAd events
      */
     class VideoAdViewDispatcher implements VideoAdDispatcher {
@@ -486,6 +517,13 @@ public class VideoAd implements VideoAdInterface {
             validAdExists = false;
             if (videoPlaybackListener != null) {
                 videoPlaybackListener.onAdCompleted(VideoAd.this, VideoAdPlaybackListener.PlaybackCompletionState.ERROR);
+            }
+        }
+
+        @Override
+        public void onAdClicked(String clickUrl) {
+            if (videoPlaybackListener != null) {
+                videoPlaybackListener.onAdClicked(VideoAd.this, clickUrl);
             }
         }
     }

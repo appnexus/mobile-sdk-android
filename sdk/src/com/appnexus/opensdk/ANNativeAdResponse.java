@@ -27,7 +27,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Pair;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -44,7 +43,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 public class ANNativeAdResponse implements NativeAdResponse {
     private String title;
@@ -118,6 +116,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
     private VisibilityDetector visibilityDetector;
     private ArrayList<ImpressionTracker> impressionTrackers;
     private ProgressDialog progressDialog;
+    private ANClickThroughAction clickThroughAction = ANClickThroughAction.OPEN_SDK_BROWSER;
 
     /**
      * Process the metadata of native response from ad server
@@ -151,7 +150,8 @@ public class ANNativeAdResponse implements NativeAdResponse {
                     }
                 }
             }
-        };
+        }
+        ;
         response.iconUrl = JsonUtil.getJSONString(metaData, KEY_ICON);
         response.socialContext = JsonUtil.getJSONString(metaData, KEY_CONTEXT);
         response.callToAction = JsonUtil.getJSONString(metaData, KEY_CTA);
@@ -240,10 +240,14 @@ public class ANNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public String getFullText() { return fullText; }
+    public String getFullText() {
+        return fullText;
+    }
 
     @Override
-    public String getSponsoredBy() { return sponsoredBy; }
+    public String getSponsoredBy() {
+        return sponsoredBy;
+    }
 
     @Override
     public Rating getAdStarRating() {
@@ -262,7 +266,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
 
     @Override
     public void setCreativeId(String creativeId) {
-        this.creativeId  = creativeId;
+        this.creativeId = creativeId;
     }
 
     @Override
@@ -282,7 +286,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
             this.registeredView = view;
             setClickListener();
             view.setOnClickListener(clickListener);
-            if(anNativeExpireHandler!=null) {
+            if (anNativeExpireHandler != null) {
                 anNativeExpireHandler.removeCallbacks(expireRunnable);
             }
             return true;
@@ -318,22 +322,26 @@ public class ANNativeAdResponse implements NativeAdResponse {
 
     @Override
     public void destroy() {
-        if(anNativeExpireHandler!=null) {
+        if (anNativeExpireHandler != null) {
             anNativeExpireHandler.removeCallbacks(expireRunnable);
             anNativeExpireHandler.post(expireRunnable);
         }
     }
 
-
-
-    private boolean openNativeBrowser = false;
-
+    /**
+     * @deprecated Use getClickThroughAction instead
+     * Refer {@link ANClickThroughAction}
+     */
     public boolean isOpenNativeBrowser() {
-        return openNativeBrowser;
+        return (getClickThroughAction() == ANClickThroughAction.OPEN_DEVICE_BROWSER);
     }
 
+    /**
+     * @deprecated Use setClickThroughAction instead
+     * Refer {@link ANClickThroughAction}
+     */
     void openNativeBrowser(boolean openNativeBrowser) {
-        this.openNativeBrowser = openNativeBrowser;
+        setClickThroughAction(openNativeBrowser ? ANClickThroughAction.OPEN_DEVICE_BROWSER : ANClickThroughAction.OPEN_SDK_BROWSER);
     }
 
     private boolean doesLoadingInBackground = true;
@@ -346,6 +354,14 @@ public class ANNativeAdResponse implements NativeAdResponse {
         this.doesLoadingInBackground = doesLoadingInBackground;
     }
 
+    public ANClickThroughAction getClickThroughAction() {
+        return clickThroughAction;
+    }
+
+    public void setClickThroughAction(ANClickThroughAction clickThroughAction) {
+        this.clickThroughAction = clickThroughAction;
+    }
+
     void setClickListener() {
         clickListener = new View.OnClickListener() {
             @Override
@@ -356,15 +372,21 @@ public class ANNativeAdResponse implements NativeAdResponse {
                         new ClickTracker(url).execute();
                     }
                 }
-                if (listener != null) {
-                    listener.onAdWasClicked();
-                }
-                if (!handleClick(clickUrl, v.getContext())) {
-                    if (!handleClick(clickFallBackUrl, v.getContext())) {
-                        Clog.d(Clog.nativeLogTag, "Unable to handle click.");
+                if (getClickThroughAction() == ANClickThroughAction.RETURN_URL) {
+                    if (listener != null) {
+                        listener.onAdWasClicked(clickUrl,clickFallBackUrl);
                     }
-                }
+                } else {
+                    if (listener != null) {
+                        listener.onAdWasClicked();
+                    }
+                    if (!handleClick(clickUrl, v.getContext())) {
+                        if (!handleClick(clickFallBackUrl, v.getContext())) {
+                            Clog.d(Clog.nativeLogTag, "Unable to handle click.");
+                        }
+                    }
 
+                }
             }
         };
     }
@@ -417,7 +439,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
             return openNativeIntent(clickUrl, context);
         }
         // open browser
-        if (openNativeBrowser) {
+        if (getClickThroughAction() == ANClickThroughAction.OPEN_DEVICE_BROWSER) {
             // if set to use native browser, open intent
             if (openNativeIntent(clickUrl, context)) {
                 if (listener != null) {

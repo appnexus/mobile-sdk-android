@@ -80,14 +80,44 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
 
 
     @Test
-    public void testMRAIDOpenSuccess() {
+    public void testMRAIDOpenSuccessSDKBrowser() {
         String uri = "http://www.appnexus.com";
         String mraidCall = String.format("mraid://open?uri=%s", uri);
+        //Default ANClickThroughAction is ANClickThroughAction.OPEN_SDK_BROWSER
         implementation.dispatch_mraid_call(mraidCall, true);
         assertEquals(mockAdWebView.testString, uri);
 
         MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
+        assertEquals(ANClickThroughAction.OPEN_SDK_BROWSER, mockAdWebView.adView.getClickThroughAction());
         assertTrue(mockAdDispatcher.adClicked);
+        assertFalse(mockAdDispatcher.adClickedWithUrl);
+    }
+
+    @Test
+    public void testMRAIDOpenSuccessDeviceBrowser() {
+        String uri = "http://www.appnexus.com";
+        String mraidCall = String.format("mraid://open?uri=%s", uri);
+        mockAdWebView.adView.setClickThroughAction(ANClickThroughAction.OPEN_DEVICE_BROWSER);
+        implementation.dispatch_mraid_call(mraidCall, true);
+        assertEquals(mockAdWebView.testString, uri);
+
+        MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
+        assertEquals(ANClickThroughAction.OPEN_DEVICE_BROWSER, mockAdWebView.adView.getClickThroughAction());
+        assertTrue(mockAdDispatcher.adClicked);
+        assertFalse(mockAdDispatcher.adClickedWithUrl);
+    }
+
+    @Test
+    public void testMRAIDOpenSuccessReturnUrl() {
+        String uri = "http://www.appnexus.com";
+        String mraidCall = String.format("mraid://open?uri=%s", uri);
+        mockAdWebView.adView.setClickThroughAction(ANClickThroughAction.RETURN_URL);
+        implementation.dispatch_mraid_call(mraidCall, true);
+        assertEquals(mockAdWebView.testString, uri);
+        MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
+        assertEquals(ANClickThroughAction.RETURN_URL, mockAdWebView.adView.getClickThroughAction());
+        assertFalse(mockAdDispatcher.adClicked);
+        assertTrue(mockAdDispatcher.adClickedWithUrl);
     }
 
     @Test
@@ -99,6 +129,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
 
         MockAdDispatcher mockAdDispatcher = (MockAdDispatcher) mockAdWebView.adView.getAdDispatcher();
         assertFalse(mockAdDispatcher.adClicked);
+        assertFalse(mockAdDispatcher.adClickedWithUrl);
     }
 
     @Test
@@ -225,7 +256,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
         boolean hidden;
 
         public MockAdWebView(AdView owner) {
-            super(new MockBannerAdView(owner.getContext()),null);
+            super(new MockBannerAdView(owner.getContext()), null);
             this.setLayoutParams(new ViewGroup.LayoutParams(0, 0));
         }
 
@@ -269,6 +300,16 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
         }
 
         @Override
+        void handleClickUrl(String url) {
+            testString = url;
+            if (adView.getClickThroughAction() == ANClickThroughAction.RETURN_URL)
+                fireAdClickedWithReturnUrl(null);
+            else {
+                fireAdClicked();
+            }
+        }
+
+        @Override
         protected void loadURLInCorrectBrowser(String url) {
             testString = url;
         }
@@ -300,7 +341,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
     }
 
     static class MockAdDispatcher implements AdDispatcher {
-        boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked, appEventOccurred;
+        boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked, appEventOccurred, adClickedWithUrl;
 
         String eventName, eventData;
 
@@ -339,6 +380,11 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
         @Override
         public void toggleAutoRefresh() {
             //@FIXME
+        }
+
+        @Override
+        public void onAdClicked(String clickUrl) {
+            adClickedWithUrl = true;
         }
     }
 }

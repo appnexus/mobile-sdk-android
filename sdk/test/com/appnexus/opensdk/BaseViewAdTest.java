@@ -1,9 +1,5 @@
 package com.appnexus.opensdk;
 
-import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
-import com.appnexus.opensdk.shadows.ShadowCustomWebView;
-import com.appnexus.opensdk.shadows.ShadowSettings;
-import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.util.TestUtil;
 import com.appnexus.opensdk.utils.Clog;
 
@@ -11,14 +7,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
-@Config(constants = BuildConfig.class, sdk = 21,
-        shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowCustomWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
+@Config(constants = BuildConfig.class, sdk = 21)
 @RunWith(RobolectricTestRunner.class)
 public class BaseViewAdTest extends BaseRoboTest implements AdListener {
 
@@ -26,7 +19,7 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener {
     InterstitialAdView interstitialAdView;
     AdViewRequestManager requestManager;
 
-    boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked;
+    boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked, adClickedWithUrl;
     boolean isAutoDismissDelay, enableInterstitialShowonLoad;
     private NativeAdResponse nativeAdResponse;
     private boolean isBannerLoaded;
@@ -58,6 +51,7 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener {
         adExpanded = false;
         adCollapsed = false;
         adClicked = false;
+        adClickedWithUrl = false;
 
     }
 
@@ -68,6 +62,15 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener {
 
     public void assertOpensInNativeBrowser() {
         assertEquals(bannerAdView.getOpensNativeBrowser(), ((ANNativeAdResponse) nativeAdResponse).isOpenNativeBrowser());
+    }
+
+    public void assertClickThroughAction() {
+        System.out.println("BANNER CLICKTHROUGH: " + bannerAdView.getClickThroughAction() + ", NATIVEADRESPONSE CLICKTHROUGH: " + ((ANNativeAdResponse) nativeAdResponse).getClickThroughAction());
+        assertEquals(bannerAdView.getClickThroughAction(), ((ANNativeAdResponse) nativeAdResponse).getClickThroughAction());
+    }
+
+    public void assertClickThroughAction(ANClickThroughAction clickThroughAction) {
+        assertEquals(clickThroughAction, ((ANNativeAdResponse) nativeAdResponse).getClickThroughAction());
     }
 
     public void assertLoadsInBackground() {
@@ -131,6 +134,12 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener {
     public void onAdClicked(AdView adView) {
         Clog.w(TestUtil.testLogTag, "BaseViewAdTest onAdClicked");
         adClicked = true;
+    }
+
+    @Override
+    public void onAdClicked(AdView adView, String clickUrl) {
+        Clog.w(TestUtil.testLogTag, "BaseViewAdTest onAdClickedWithUrl");
+        adClickedWithUrl = true;
     }
 
 }
