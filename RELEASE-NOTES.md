@@ -1,3 +1,9 @@
+## 4.9
++ MS-3083 -- Native for Banner Ad View
++ MS-3115 -- Function to set external user id in the SDK for user syncing
++ MS-3279 -- Expose click-through URL for banner, native, interstitial & video
++ Update Facebook SDK to v4.28.2.
+
 ## 4.8.1
 + MS-3262,MS-3272 - WebView loadUrl NPE fix.
 + Update InMobi SDK to v7.1.0
