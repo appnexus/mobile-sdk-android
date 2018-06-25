@@ -23,11 +23,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.widget.RelativeLayout;
 
+import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.AdListener;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.BannerAdView;
+import com.appnexus.opensdk.NativeAdResponse;
 import com.appnexus.opensdk.ResultCode;
-import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.utils.Clog;
 
 public class MyActivity extends Activity {
@@ -46,7 +47,7 @@ public class MyActivity extends Activity {
         bav.setShouldServePSAs(true);
 
         // By default ad clicks open in an in-app WebView.
-        bav.setOpensNativeBrowser(true);
+        bav.setClickThroughAction(ANClickThroughAction.OPEN_SDK_BROWSER);
 
         // Get a 300x50 ad.
         bav.setAdSize(300, 250);
@@ -71,6 +72,11 @@ public class MyActivity extends Activity {
             }
 
             @Override
+            public void onAdLoaded(NativeAdResponse nativeAdResponse) {
+                Clog.v("SIMPLEBANNER", "Ad onAdLoaded NativeAdResponse");
+            }
+
+            @Override
             public void onAdExpanded(AdView bav) {
                 Clog.v("SIMPLEBANNER", "Ad expanded");
             }
@@ -83,6 +89,11 @@ public class MyActivity extends Activity {
             @Override
             public void onAdClicked(AdView bav) {
                 Clog.v("SIMPLEBANNER", "Ad clicked; opening browser");
+            }
+
+            @Override
+            public void onAdClicked(AdView adView, String clickUrl) {
+                Clog.v("SIMPLEBANNER", "onAdClicked with click URL");
             }
         };
 

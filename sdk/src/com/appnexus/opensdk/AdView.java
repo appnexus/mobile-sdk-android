@@ -203,6 +203,9 @@ public abstract class AdView extends FrameLayout implements Ad {
             mAdFetcher.stop();
             mAdFetcher.clearDurations();
             mAdFetcher.start();
+            if(this.getWindowVisibility() != VISIBLE){
+                loadedOffscreen = true;
+            }
             return true;
         }
         return false;
@@ -213,15 +216,7 @@ public abstract class AdView extends FrameLayout implements Ad {
      */
     @Deprecated
     public void loadAdOffscreen() {
-        if (!isReadyToStart())
-            return;
-        if (mAdFetcher != null) {
-            // Reload Ad Fetcher to get new ad at user's request
-            mAdFetcher.stop();
-            mAdFetcher.clearDurations();
-            mAdFetcher.start();
-            loadedOffscreen = true;
-        }
+        loadAd();
     }
 
     /**
