@@ -41,7 +41,7 @@ import static junit.framework.Assert.assertNull;
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
-        ShadowWebView.class, ShadowWebSettings.class, ShadowLog.class, ShadowSettings.class})
+        ShadowWebView.class})
 public class AdActivityTest extends BaseRoboTest {
 
     AdActivity adActivity;

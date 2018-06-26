@@ -18,8 +18,6 @@ package com.appnexus.opensdk;
 
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowCustomClickThroughWebView;
-import com.appnexus.opensdk.shadows.ShadowSettings;
-import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.Test;
@@ -27,14 +25,14 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
+import org.robolectric.shadows.ShadowLooper;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowCustomClickThroughWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
+                ShadowCustomClickThroughWebView.class})
 @RunWith(RobolectricTestRunner.class)
 public class TestANClickThroughAction extends BaseViewAdTest {
     @Override
@@ -52,9 +50,9 @@ public class TestANClickThroughAction extends BaseViewAdTest {
         bannerAdView.setClickThroughAction(ANClickThroughAction.RETURN_URL);
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
         executeBannerRequest();
-        waitForTasks();
-        Robolectric.flushBackgroundThreadScheduler();
-        Robolectric.flushForegroundThreadScheduler();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        waitUntilExecuted();
 
         assertTrue(adClickedWithUrl);
         assertFalse(adClicked);
@@ -66,9 +64,7 @@ public class TestANClickThroughAction extends BaseViewAdTest {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
         executeBannerRequest();
 
-        waitForTasks();
-        Robolectric.flushBackgroundThreadScheduler();
-        Robolectric.flushForegroundThreadScheduler();
+        waitUntilExecuted();
 
         assertTrue(adClicked);
         assertFalse(adClickedWithUrl);
@@ -80,9 +76,7 @@ public class TestANClickThroughAction extends BaseViewAdTest {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
         executeBannerRequest();
 
-        waitForTasks();
-        Robolectric.flushBackgroundThreadScheduler();
-        Robolectric.flushForegroundThreadScheduler();
+        waitUntilExecuted();
 
         assertTrue(adClicked);
         assertFalse(adClickedWithUrl);
@@ -91,12 +85,10 @@ public class TestANClickThroughAction extends BaseViewAdTest {
     @Test
     public void testInterstitialANClickThroughActionReturnURL() {
         interstitialAdView.setClickThroughAction(ANClickThroughAction.RETURN_URL);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.noFillCSM_RTBInterstitial()));
         executeInterstitialRequest();
 
-        waitForTasks();
-        Robolectric.flushBackgroundThreadScheduler();
-        Robolectric.flushForegroundThreadScheduler();
+        waitUntilExecuted();
 
         assertTrue(adClickedWithUrl);
         assertFalse(adClicked);
@@ -105,8 +97,15 @@ public class TestANClickThroughAction extends BaseViewAdTest {
     @Test
     public void testInterstitialANClickThroughActionSDKBrowser() {
         interstitialAdView.setClickThroughAction(ANClickThroughAction.OPEN_SDK_BROWSER);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.noFillCSM_RTBInterstitial()));
+
         executeInterstitialRequest();
+
+        waitUntilExecuted();
+
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
 
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
@@ -119,19 +118,16 @@ public class TestANClickThroughAction extends BaseViewAdTest {
     @Test
     public void testInterstitialANClickThroughActionDeviceBrowser() {
         interstitialAdView.setClickThroughAction(ANClickThroughAction.OPEN_DEVICE_BROWSER);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.noFillCSM_RTBInterstitial()));
         executeInterstitialRequest();
 
-        waitForTasks();
-        Robolectric.flushBackgroundThreadScheduler();
-        Robolectric.flushForegroundThreadScheduler();
+        waitUntilExecuted();
 
         assertTrue(adClicked);
         assertFalse(adClickedWithUrl);
     }
 
     private void executeBannerRequest() {
-        bannerAdView.setAutoRefreshInterval(15);
         bannerAdView.loadAd();
 
         waitForTasks();
@@ -153,5 +149,9 @@ public class TestANClickThroughAction extends BaseViewAdTest {
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
+    }
+
+    private void waitUntilExecuted() {
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }
 }

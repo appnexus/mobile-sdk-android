@@ -52,7 +52,7 @@ import static junit.framework.Assert.fail;
 
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowCustomWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
+                ShadowCustomWebView.class})
 @RunWith(RobolectricTestRunner.class)
 public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
     boolean requestQueued = false;

@@ -52,7 +52,7 @@ public class ShadowCustomClickThroughWebView extends ShadowWebView {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                getWebViewClient().shouldOverrideUrlLoading(webView, "www.appnexus.com");
+                performAdClick();
             }
         }, 500);
     }
@@ -81,4 +81,7 @@ public class ShadowCustomClickThroughWebView extends ShadowWebView {
         }
     }
 
+    private void performAdClick() {
+        getWebViewClient().shouldOverrideUrlLoading(webView, "www.appnexus.com");
+    }
 }

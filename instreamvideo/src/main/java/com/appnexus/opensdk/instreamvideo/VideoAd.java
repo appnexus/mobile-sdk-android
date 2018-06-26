@@ -432,8 +432,8 @@ public class VideoAd implements VideoAdInterface {
      * It is ASSUMED that the App will handle it appropriately.
      *
      * @param clickThroughAction ANClickThroughAction.OPEN_SDK_BROWSER which is default or
-     *             ANClickThroughAction.OPEN_DEVICE_BROWSER or
-     *             ANClickThroughAction.RETURN_URL
+     *                           ANClickThroughAction.OPEN_DEVICE_BROWSER or
+     *                           ANClickThroughAction.RETURN_URL
      */
     public void setClickThroughAction(ANClickThroughAction clickThroughAction) {
         requestParameters.setClickThroughAction(clickThroughAction);
