@@ -16,8 +16,6 @@
 
 package com.appnexus.opensdk.shadows;
 
-import android.os.Handler;
-import android.webkit.ValueCallback;
 import android.webkit.WebView;
 
 import com.appnexus.opensdk.util.TestUtil;
@@ -28,13 +26,38 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowWebView;
 
 @Implements(value = WebView.class, callThroughByDefault = true)
-public class ShadowCustomWebView extends ShadowWebView {
+public class ShadowOMIDBannerHTMLWebView extends ShadowWebView {
 
     private WebView webView;
+    public static String omidInitString = "";
+    public static String omidImpressionString = "";
+    public static String omidStartSession = "";
 
 
     /*
-    * This makes it possible for onAdLoaded on Banner to be called
+    * OMID events call loadURL so its possible to store the values here and assert them against expected values.
+     */
+    @Override
+    public void loadUrl(String url) {
+        super.loadUrl(url);
+        webView = new WebView(RuntimeEnvironment.application);
+        Clog.d(TestUtil.testLogTag, "ShadowOMIDBannerHTMLWebView loadUrl::"+url);
+        if(url.contains("omidBridge.init")){
+            omidInitString = url;
+        }
+
+        if(url.contains("omidBridge.startSession")){
+            omidStartSession = url;
+        }
+
+        if(url.contains("publishImpressionEvent")){
+            omidImpressionString = url;
+        }
+    }
+
+
+    /*
+     * This makes it possible for onAdLoaded on Banner to be called
      */
     @Override
     public void loadDataWithBaseURL(String baseUrl, String data, String mimeType, String encoding, String historyUrl) {
@@ -42,7 +65,7 @@ public class ShadowCustomWebView extends ShadowWebView {
         if(webView == null) {
             webView = new WebView(RuntimeEnvironment.application);
         }
-        Clog.d(TestUtil.testLogTag, "ShadowCustomWebView loadDataWithBaseURL");
+        Clog.d(TestUtil.testLogTag, "ShadowOMIDBannerHTMLWebView loadDataWithBaseURL");
         this.getWebViewClient().onPageFinished(webView,baseUrl);
     }
 

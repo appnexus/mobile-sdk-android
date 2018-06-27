@@ -17,7 +17,6 @@
 package com.appnexus.opensdk.shadows;
 
 import android.os.Handler;
-import android.webkit.ValueCallback;
 import android.webkit.WebView;
 
 import com.appnexus.opensdk.util.TestUtil;
@@ -31,16 +30,6 @@ import org.robolectric.shadows.ShadowWebView;
 public class ShadowCustomClickThroughWebView extends ShadowWebView {
 
     private WebView webView;
-    public static boolean simulateVideoError = false;
-    public static boolean simulateDelayedVideoError = false;
-
-    @Override
-    public void loadUrl(String url) {
-        super.loadUrl(url);
-        webView = new WebView(RuntimeEnvironment.application);
-        Clog.d(TestUtil.testLogTag, "ShadowCustomClickThroughWebView loadUrl");
-        this.getWebViewClient().onPageFinished(webView, url);
-    }
 
     @Override
     public void loadDataWithBaseURL(String baseUrl, String data, String mimeType, String encoding, String historyUrl) {
@@ -55,30 +44,6 @@ public class ShadowCustomClickThroughWebView extends ShadowWebView {
                 performAdClick();
             }
         }, 500);
-    }
-
-    @Override
-    public void evaluateJavascript(String script, ValueCallback<String> callback) {
-        super.evaluateJavascript(script, callback);
-        Clog.d(TestUtil.testLogTag, "ShadowCustomClickThroughWebView evaluateJavascript: " + script);
-        if (script.contains("createVastPlayerWithContent")) {
-            Clog.d(TestUtil.testLogTag, "evaluateJavascript createVastPlayerWithContent");
-            if (!simulateVideoError) {
-                this.getWebViewClient().shouldOverrideUrlLoading(webView, "video://{\"event\":\"adReady\",\"params\":{\"creativeUrl\":\"http://vcdn.adnxs.com/p/creative-video/05/64/6d/99/05646d99.webm\",\"duration\":96000}}");
-            } else {
-                this.getWebViewClient().shouldOverrideUrlLoading(webView, "video://{\"event\":\"video-error\",\"params\":{}}");
-            }
-
-            if (simulateDelayedVideoError) {
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        getWebViewClient().shouldOverrideUrlLoading(webView, "video://{\"event\":\"video-error\",\"params\":{}}");
-                    }
-                }, 1000);
-            }
-        }
     }
 
     private void performAdClick() {

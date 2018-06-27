@@ -51,6 +51,7 @@ import com.appnexus.opensdk.utils.ImageService;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.ViewUtil;
+import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -107,6 +108,7 @@ public abstract class AdView extends FrameLayout implements Ad {
         requestParameters = new UTRequestParameters(context);
         adType = AdType.UNKNOWN;
         AdvertisingIDUtil.retrieveAndSetAAID(context);
+        ANOmidViewabilty.getInstance().activateOmidAndCreatePartner(context.getApplicationContext());
 
         // Store self.context in the settings for errors
         Clog.setErrorContext(this.getContext());
@@ -1259,6 +1261,9 @@ public abstract class AdView extends FrameLayout implements Ad {
                 }
                 // Making it to null so that there is no duplicate firing. We fire exactly only once.
                 impressionTrackers = null;
+            }
+            if(lastDisplayable !=null){
+                lastDisplayable.onAdImpression();
             }
         }
     }

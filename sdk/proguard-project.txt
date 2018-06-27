@@ -27,6 +27,10 @@
 -keepclassmembers class **.R$* {public static <fields>;}
 -keep class **.R$*
 
+# Proguard steps for OMID OpenMeasurment SDK
+-keep public class com.iab.omid.library.appnexus.** {public *;}
+-keep public interface com.iab.omid.library.appnexus.** {*;}
+
 # Uncomment for Google Play Services library
 #-keep class * extends java.util.ListResourceBundle {
 #    protected Object[][] getContents();

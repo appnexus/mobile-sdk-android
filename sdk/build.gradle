@@ -36,6 +36,7 @@ android {
 }
 
 dependencies {
+    api fileTree(include: '*.jar', dir: 'libs')
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.assertj:assertj-core:1.7.0'
     testImplementation 'org.robolectric:robolectric:3.5.1'

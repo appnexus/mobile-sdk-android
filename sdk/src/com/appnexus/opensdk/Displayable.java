@@ -34,5 +34,7 @@ interface Displayable {
     public void onResume();
 
     public void onDestroy();
+
+    public void onAdImpression();
 }
 

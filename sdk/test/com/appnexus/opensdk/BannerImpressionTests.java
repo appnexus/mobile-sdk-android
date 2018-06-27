@@ -107,10 +107,13 @@ public class BannerImpressionTests extends BaseViewAdTest {
 
         goOnline();
 
-        // Once back online if we flush the foreground and background threads the timer will be immediately executed.
-        waitForTasks();
-        Robolectric.flushBackgroundThreadScheduler();
-        Robolectric.flushForegroundThreadScheduler();
+
+        // We need to wait for 10 Seconds here for the NetWork Retry timer to get fired and to test.
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         assertImpressionURL(2);
     }
@@ -150,7 +153,7 @@ public class BannerImpressionTests extends BaseViewAdTest {
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
-        waitForTasks();
+       // waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         assertTrue(server.getRequestCount() == 1);
@@ -158,7 +161,17 @@ public class BannerImpressionTests extends BaseViewAdTest {
 
 
     private void executeBannerRequest() {
-        bannerAdView.loadAdOffscreen();
+
+
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+
+
+        requestManager = new AdViewRequestManager(bannerAdView);
+        requestManager.execute();
+
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
 
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();

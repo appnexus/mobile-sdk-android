@@ -59,6 +59,7 @@ import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
+import com.appnexus.opensdk.viewability.ANOmidBannerHTMLAdSession;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -76,6 +77,7 @@ class AdWebView extends WebView implements Displayable,
     // MRAID variables
     private boolean isMRAIDEnabled;
     private MRAIDImplementation implementation;
+    private ANOmidBannerHTMLAdSession omidAdSession;
     private int default_width;
     private int default_height;
     boolean isFullScreen = false;
@@ -161,6 +163,7 @@ class AdWebView extends WebView implements Displayable,
     @SuppressLint("SetJavaScriptEnabled")
     protected void setup() {
         implementation = new MRAIDImplementation(this);
+        omidAdSession = new ANOmidBannerHTMLAdSession();
         setWebChromeClient(new VideoEnabledWebChromeClient(this));
         setWebViewClient(new AdWebViewClient());
     }
@@ -211,6 +214,7 @@ class AdWebView extends WebView implements Displayable,
             html = preLoadContent(html);
             html = prependRawResources(html);
             html = prependViewPort(html);
+            html = omidAdSession.prependOMIDJSToHTML(html);
             this.loadDataWithBaseURL(Settings.getBaseUrl(), html, "text/html", "UTF-8", null);
         }
     }
@@ -386,6 +390,10 @@ class AdWebView extends WebView implements Displayable,
                 } else if (!implementation.isMRAIDTwoPartExpanded) {
                     Clog.i(Clog.baseLogTag, "AdWebView.onPageFinished -- !isMRAIDTwoPartExpanded seding back success");
                     AdWebView.this.success();
+                }
+
+                if(!isVideoAd) {
+                    omidAdSession.initAdSession(view);
                 }
 
                 firstPageFinished = true;
@@ -650,6 +658,9 @@ class AdWebView extends WebView implements Displayable,
 
     @Override
     public void destroy() {
+        if(!isVideoAd){
+            omidAdSession.stopAdSession();
+        }
         // in case `this` was not removed when destroy was called
         ViewUtil.removeChildFromParent(this);
         try {
@@ -684,6 +695,13 @@ class AdWebView extends WebView implements Displayable,
     @Override
     public void onDestroy() {
         destroy();
+    }
+
+    @Override
+    public void onAdImpression() {
+        if(!isVideoAd){
+            omidAdSession.fireImpression();
+        }
     }
 
 

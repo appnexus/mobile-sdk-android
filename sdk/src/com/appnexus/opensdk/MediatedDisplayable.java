@@ -78,6 +78,11 @@ class MediatedDisplayable implements Displayable {
         this.destroy();
     }
 
+    @Override
+    public void onAdImpression() {
+
+    }
+
     void setView(View view) {
         this.view = view;
     }
