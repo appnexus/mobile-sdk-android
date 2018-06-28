@@ -1,3 +1,7 @@
+## 4.10
++ MS-3234: Open Measurement SDK Support for HTML Banner Ad's
++ MS-3354: Fix for duplicate adLoad when loaded offScreen
+
 ## 4.9
 + MS-3083 -- Native for Banner Ad View
 + MS-3115 -- Function to set external user id in the SDK for user syncing
