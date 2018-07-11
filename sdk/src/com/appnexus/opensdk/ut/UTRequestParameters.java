@@ -65,6 +65,9 @@ public class UTRequestParameters {
     private ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
     private int videoAdMinDuration;
     private int videoAdMaxDuration;
+
+
+    private int forceCreativeId = 0;
     private ANClickThroughAction clickThroughAction = ANClickThroughAction.OPEN_SDK_BROWSER;
 
     private String ANSDK = "ansdk";
@@ -125,7 +128,7 @@ public class UTRequestParameters {
     private static final String GDPR_CONSENT = "gdpr_consent";
     private static final String GDPR_CONSENT_STRING = "consent_string";
     private static final String GDPR_CONSENT_REQUIRED = "consent_required";
-
+    private static final String FORCE_CREATIVE_ID = "force_creative_id";
 
     private static final int ALLOWED_TYPE_BANNER = 1;
     private static final int ALLOWED_TYPE_INTERSTITIAL = 3;
@@ -434,6 +437,9 @@ public class UTRequestParameters {
             primesize.put(SIZE_HEIGHT, this.primarySize.height());
             tag.put(TAG_PRIMARY_SIZE, primesize);
 
+            if (this.forceCreativeId>0) {
+                tag.put(FORCE_CREATIVE_ID, this.forceCreativeId);
+            }
 
             ArrayList<AdSize> sizesArray = this.getSizes();
             JSONArray sizes = new JSONArray();
@@ -786,5 +792,7 @@ public class UTRequestParameters {
         return false;
     }
 
-
+    void setForceCreativeId(int forceCreativeId) {
+        this.forceCreativeId = forceCreativeId;
+    }
 }
