@@ -413,30 +413,34 @@ class VideoWebView extends WebView {
      * @return
      */
     protected void injectJavaScriptWithReturnValue(String javascript, final ResultCallback resultCallback) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            // In KitKat+ you should use the evaluateJavascript method
-            Clog.d(Clog.videoLogTag, "evaluateJavascript::");
-            this.evaluateJavascript(javascript, new ValueCallback<String>() {
-                @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-                @Override
-                public void onReceiveValue(String s) {
-                    Clog.d(Clog.videoLogTag, "onResult::");
-                    if (resultCallback != null) {
-                        int returnValue = 0;
-                        try {
-                            returnValue = Integer.parseInt(s.toString());
-                        } catch (NumberFormatException nfe) {
-                            Clog.d(Clog.videoLogTag, "Could not parse int value" + nfe);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                // In KitKat+ you should use the evaluateJavascript method
+                Clog.d(Clog.videoLogTag, "evaluateJavascript::");
+                this.evaluateJavascript(javascript, new ValueCallback<String>() {
+                    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+                    @Override
+                    public void onReceiveValue(String s) {
+                        Clog.d(Clog.videoLogTag, "onResult::");
+                        if (resultCallback != null) {
+                            int returnValue = 0;
+                            try {
+                                returnValue = Integer.parseInt(s.toString());
+                            } catch (NumberFormatException nfe) {
+                                Clog.d(Clog.videoLogTag, "Could not parse int value" + nfe);
+                            }
+                            resultCallback.onResult(returnValue);
                         }
-                        resultCallback.onResult(returnValue);
                     }
+                });
+            } else {
+                loadUrl(javascript);
+                if (resultCallback != null) {
+                    resultCallback.onResult(0);
                 }
-            });
-        } else {
-            loadUrl(javascript);
-            if (resultCallback != null) {
-                resultCallback.onResult(0);
             }
+        } catch (Exception e) {
+            Clog.e(Clog.baseLogTag, "VideoWebView.injectJavaScript -- Caught EXCEPTION...", e);
         }
     }
 

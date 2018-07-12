@@ -367,18 +367,7 @@ class AdWebView extends WebView implements Displayable,
             String javascript = "javascript:window.mraid.util.pageFinished()";
 
             if (!firstPageFinished) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    try {
-                        view.evaluateJavascript(javascript, null);
-                    } catch (Exception exception) {
-                        Clog.e(Clog.baseLogTag, "AdWebView.onPageFinished -- Caught EXCEPTION...", exception);
-                        Clog.e(Clog.baseLogTag, "AdWebView.onPageFinished -- ...Recovering with view.loadUrl.");
-                        view.loadUrl(javascript);
-                    }
-
-                } else {
-                    view.loadUrl(javascript);
-                }
+                injectJavaScript(javascript);
                 if (isMRAIDEnabled) {
                     implementation.webViewFinishedLoading(AdWebView.this, initialMraidStateString);
                     startCheckViewable();

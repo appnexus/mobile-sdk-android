@@ -21,7 +21,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.webkit.CookieSyncManager;
@@ -264,16 +263,21 @@ class ANJAMImplementation {
         }
         String url = String.format("javascript:window.sdkjs.client.result(\"%s\")", params.toString());
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            try {
+        injectJavaScript(url, webView);
+    }
+
+    private static void injectJavaScript(String url, WebView webView) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 webView.evaluateJavascript(url, null);
-            } catch (Exception exception) {
-                Clog.e(Clog.baseLogTag, "ANJAMImplementation.loadResult -- Caught EXCEPTION...", exception);
-                Clog.e(Clog.baseLogTag, "ANJAMImplementation.loadResult -- ...Recovering with webView.loadUrl.");
+            } else {
                 webView.loadUrl(url);
             }
-        } else {
-            webView.loadUrl(url);
+        } catch (Exception exception) {
+            // We can't do anything much here if there is an exception ignoring.
+            // This is to avoid crash of users app gracefully.
+            Clog.e(Clog.baseLogTag, "ANJAMImplementation.loadResult -- Caught EXCEPTION...", exception);
+            Clog.e(Clog.baseLogTag, "ANJAMImplementation.loadResult -- ...Recovering with webView.loadUrl.");
         }
     }
 }
