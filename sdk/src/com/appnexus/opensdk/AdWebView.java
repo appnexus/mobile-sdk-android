@@ -1034,12 +1034,20 @@ class AdWebView extends WebView implements Displayable,
 
     @Override
     protected void onDetachedFromWindow() {
+        removeViewTreeObserverListeners();
         super.onDetachedFromWindow();
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
     }
 
+    private void removeViewTreeObserverListeners() {
+        ViewTreeObserver treeObserver = getViewTreeObserver();
+        if (treeObserver.isAlive()) {
+            treeObserver.removeOnScrollChangedListener(this);
+            treeObserver.removeGlobalOnLayoutListener(this);
+        }
+    }
 
     @Override
     protected void onAttachedToWindow() {
