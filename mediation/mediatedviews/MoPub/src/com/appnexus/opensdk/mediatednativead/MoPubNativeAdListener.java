@@ -16,7 +16,6 @@
 
 package com.appnexus.opensdk.mediatednativead;
 
-import android.util.Log;
 import android.view.View;
 
 import com.appnexus.opensdk.MediatedNativeAdController;
@@ -41,6 +40,7 @@ public class MoPubNativeAdListener implements MoPubNative.MoPubNativeNetworkList
     @Override
     public void onNativeLoad(NativeAd nativeResponse) {
         MoPubNativeAdResponse response = new MoPubNativeAdResponse();
+        nativeResponse.setMoPubNativeEventListener(this);
         if (response.setResources(nativeResponse)) {
             this.response = new WeakReference<MoPubNativeAdResponse>(response);
             controller.onAdLoaded(response);
@@ -99,7 +99,9 @@ public class MoPubNativeAdListener implements MoPubNative.MoPubNativeNetworkList
 
     @Override
     public void onImpression(View view) {
-
+        if(controller!=null) {
+            controller.onAdImpression();
+        }
     }
 
     @Override

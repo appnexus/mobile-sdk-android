@@ -92,6 +92,9 @@ public class AdMobNativeListener extends AdListener implements NativeAppInstallA
     @Override
     public void onAdImpression() {
         Clog.e(Clog.mediationLogTag, "AdMob - onAdImpression");
+        if(mBC!=null) {
+            mBC.onAdImpression();
+        }
     }
 
 

@@ -15,6 +15,8 @@
  */
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.utils.Clog;
+
 import java.util.ArrayList;
 
 
@@ -67,7 +69,7 @@ public class TestResponsesUT {
     public static final String CSM_BANNER = "{\"content_source\":\"csm\",\"ad_type\":\"banner\",\"buyer_member_id\":123,\"creative_id\":44863345,\"media_type_id\":1,\"media_subtype_id\":1,\"client_initiated_ad_counting\":false,\"csm\":{\"banner\":{\"content\":\"%s\",\"width\":10,\"height\":10},\"timeout_ms\":500,\"handler\":[{\"param\":\"%s\",\"height\":\"%d\",\"width\":\"%d\",\"id\":\"%s\",\"type\":\"%s\",\"class\":\"%s\"},{\"param\":\"#{PARAM}\",\"height\":\"50\",\"width\":\"320\",\"id\":\"163441140754789_163441480754755\",\"type\":\"ios\",\"class\":\"DummyIOSClass\"}],\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}],\"request_url\":\"%s\",\"response_url\":\"%s\"}}";
     public static final String SSM_BANNER = "{\"content_source\":\"ssm\",\"ad_type\":\"banner\",\"buyer_member_id\":123,\"creative_id\":44863345,\"media_type_id\":1,\"media_subtype_id\":1,\"client_initiated_ad_counting\":false,\"ssm\":{\"banner\":{\"content\":\"%s\",\"width\":10,\"height\":10},\"timeout_ms\":500,\"handler\":[{\"url\":\"%s\"}],\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}],\"request_url\":\"%s\",\"response_url\":\"%s\"}}";
     public static final String RTB_NATIVE = "{\"content_source\":\"rtb\",\"ad_type\":\"native\",\"buyer_member_id\":958,\"creative_id\":47772560,\"media_type_id\":12,\"media_subtype_id\":65,\"client_initiated_ad_counting\":true,\"rtb\":{\"native\":{\"status\":\"ok\",\"version\":1,\"ads\":[],\"mediated\":[],\"native\":%s}}}";
-    public static final String CSM_NATIVE = "{\"content_source\":\"csm\",\"ad_type\":\"native\",\"buyer_member_id\":958,\"creative_id\":44863492,\"media_type_id\":12,\"media_subtype_id\":65,\"client_initiated_ad_counting\":true,\"csm\": {\"timeout_ms\":500,\"handler\": [{\"type\": \"android\",\"class\": \"%s\",\"param\": \"%s\",\"id\": \"%s\"},{\"type\": \"ios\",\"class\": \"DummyIOSClass\",\"param\": \"#{PARAM}\",\"id\": \"210827375150_10154672419150151\"}],\"request_url\": \"%s\",\"response_url\": \"%s\"}}";
+    public static final String CSM_NATIVE = "{\"content_source\":\"csm\",\"ad_type\":\"native\",\"buyer_member_id\":958,\"creative_id\":44863492,\"media_type_id\":12,\"media_subtype_id\":65,\"client_initiated_ad_counting\":true,\"csm\": {\"timeout_ms\":500,\"handler\": [{\"type\": \"android\",\"class\": \"%s\",\"param\": \"%s\",\"id\": \"%s\"},{\"type\": \"ios\",\"class\": \"DummyIOSClass\",\"param\": \"#{PARAM}\",\"id\": \"210827375150_10154672419150151\"}],\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}],\"request_url\": \"%s\",\"response_url\": \"%s\"}}";
     public static final String NO_BID = "{\"version\":\"0.0.1\",\"tags\":[{\"tag_id\":123456789,\"auction_id\":\"3552547938089377051000000\",\"nobid\":true,\"ad_profile_id\":2707239}]}";
 
     public static final String RTB_VIDEO = "{\"content_source\":\"rtb\",\"ad_type\":\"video\",\"notify_url\":\"%s\",\"buyer_member_id\":123,\"creative_id\":6332753,\"media_type_id\":4,\"media_subtype_id\":64,\"client_initiated_ad_counting\":true,\"rtb\":{\"video\":{\"content\":\"%s\",\"duration_ms\":100}}}";
@@ -212,7 +214,7 @@ public class TestResponsesUT {
 
     public static String noFillCSM_RTBNative() {
         //Create a CSM - Ad
-        String csmAd = templateSingleCSMAdResponseNative(createClassName("MediatedNativeNoFill"), "", "", REQUEST_URL, RESPONSE_URL);
+        String csmAd = templateSingleCSMAdResponseNative(createClassName("MediatedNativeNoFill"), "", "", IMPRESSION_URL,REQUEST_URL, RESPONSE_URL);
 
         // Create a RTB Banner Ad
         String nativeResponse = templateNativeResponse("native", "test title", "test description", "full text", "newsfeed",
@@ -279,7 +281,7 @@ public class TestResponsesUT {
         ArrayList<String> adsArray = new ArrayList<String>(classNames.length);
 
         for (int i = 0; i < classNames.length; i++) {
-            String singleCSMAd = templateSingleCSMAdResponseNative(createClassName(classNames[i]), "", "", REQUEST_URL, responseURLS[i]);
+            String singleCSMAd = templateSingleCSMAdResponseNative(createClassName(classNames[i]), "", "", IMPRESSION_URL,REQUEST_URL, responseURLS[i]);
             adsArray.add(singleCSMAd);
         }
 
@@ -376,7 +378,7 @@ public class TestResponsesUT {
     }
 
     private static String templateSingleCSMAdResponseNative(String className, String response_url) {
-        String csmNative = templateSingleCSMAdResponseNative(className, "abc", "1234", REQUEST_URL, response_url);
+        String csmNative = templateSingleCSMAdResponseNative(className, "abc", "1234", IMPRESSION_URL,REQUEST_URL, response_url);
         return templateMediatedAdResponse(csmNative);
     }
 
@@ -397,8 +399,9 @@ public class TestResponsesUT {
         return String.format(CSM_BANNER, DUMMY_BANNER_CONTENT, params, height, width, id, type, className, impressionURL, request_url, response_url);
     }
 
-    private static String templateSingleCSMAdResponseNative(String className, String params, String id, String request_url, String response_url) {
-        return String.format(CSM_NATIVE, className, params, id, request_url, response_url);
+    private static String templateSingleCSMAdResponseNative(String className, String params, String id, String impression_url, String request_url, String response_url) {
+        Clog.d("Native Ad",String.format(CSM_NATIVE, className, params, id, impression_url,request_url, response_url));
+        return String.format(CSM_NATIVE, className, params, id,impression_url, request_url, response_url);
     }
 
 

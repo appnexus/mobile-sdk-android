@@ -95,6 +95,10 @@ public class YahooFlurryNativeAd implements MediatedNativeAd, FlurryAdNativeList
 
     @Override
     public void onImpressionLogged(FlurryAdNative flurryAdNative) {
+        MediatedNativeAdController controller = this.controller.get();
+        if (controller != null) {
+            controller.onAdImpression();
+        }
 
     }
 

@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 
@@ -23,13 +24,17 @@ import com.appnexus.opensdk.ut.UTAdRequester;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMSDKAdResponse;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.HTTPGet;
+import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 public class MediatedNativeAdController {
     WeakReference<UTAdRequester> requester;
+    WeakReference<Context> contextWeakReference;
     CSMSDKAdResponse currentAd;
 
     boolean hasSucceeded = false;
@@ -39,7 +44,7 @@ public class MediatedNativeAdController {
     ResultCode errorCode;
 
 
-    public static MediatedNativeAdController create(CSMSDKAdResponse currentAd, UTAdRequester requester){
+    public static MediatedNativeAdController create(CSMSDKAdResponse currentAd, UTAdRequester requester) {
         return new MediatedNativeAdController(currentAd, requester);
     }
 
@@ -53,6 +58,7 @@ public class MediatedNativeAdController {
 
             this.requester = new WeakReference<UTAdRequester>(requester);
             this.currentAd = currentAd;
+            this.contextWeakReference = new WeakReference<Context>(requester.getRequestParams().getContext());
 
             startTimeout();
             markLatencyStart();
@@ -85,7 +91,7 @@ public class MediatedNativeAdController {
             } catch (IllegalAccessException e) {
                 // exception in Class.newInstance
                 handleInstantiationFailure(e, currentAd.getClassName());
-            }catch (Exception e) {
+            } catch (Exception e) {
                 Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
                 errorCode = ResultCode.INTERNAL_ERROR;
             } catch (Error e) {
@@ -116,7 +122,6 @@ public class MediatedNativeAdController {
      * only be called once per <code>requestAd</code> call (see the
      * implementations of <code>requestAd</code> for native ad
      * in {@link MediatedNativeAd}.
-     *
      */
     public void onAdLoaded(final NativeAdResponse response) {
         if (hasSucceeded || hasFailed) return;
@@ -172,7 +177,7 @@ public class MediatedNativeAdController {
      * in {@link MediatedNativeAd}.
      *
      * @param reason The reason why the ad call from the third-party
-     * SDK failed.
+     *               SDK failed.
      */
     public void onAdFailed(ResultCode reason) {
         if (hasSucceeded || hasFailed) return;
@@ -185,13 +190,21 @@ public class MediatedNativeAdController {
         // don't call the listener here. the requester will call the listener
         // at the end of the waterfall
         UTAdRequester requester = this.requester.get();
-        if(requester != null) {
+        if (requester != null) {
             requester.continueWaterfall(reason);
         }
     }
 
+    /**
+     * Call this method to inform the AppNexus SDK that an impression has been recorded on the Mediated Native Ad.
+     * This is essential for AppNexus SDK to fire impression tracker correctly.
+     */
+    public void onAdImpression() {
+        fireImpressionTracker();
+    }
 
-    private void fireResponseURL(final String responseURL, final ResultCode result){
+
+    private void fireResponseURL(final String responseURL, final ResultCode result) {
         final UTAdRequester requester = this.requester.get();
         if ((responseURL == null) || StringUtil.isEmpty(responseURL)) {
             Clog.w(Clog.mediationLogTag, Clog.getString(R.string.fire_responseurl_null));
@@ -241,6 +254,7 @@ public class MediatedNativeAdController {
             }
         }
     }
+
     // if the mediated network fails to call us within the timeout period, fail
     private final Handler timeoutHandler = new TimeoutHandler(this);
 
@@ -269,6 +283,7 @@ public class MediatedNativeAdController {
 
     /**
      * The latency of the call to the mediated SDK.
+     *
      * @return the mediated SDK latency, -1 if `latencyStart`
      * or `latencyStop` not set.
      */
@@ -282,6 +297,7 @@ public class MediatedNativeAdController {
 
     /**
      * The running total latency of the ad call.
+     *
      * @return the running total latency, -1 if `latencyStop` not set.
      */
     private long getTotalLatencyParam(UTAdRequester requester) {
@@ -301,5 +317,50 @@ public class MediatedNativeAdController {
             finishController();
         }*/
     }
-}
 
+
+    void fireImpressionTracker() {
+        ArrayList<String> impressionTrackers = currentAd.getImpressionURLs();
+        // Just to be fail safe since we are making it to null below to mark it as beign used.
+        if (impressionTrackers != null) {
+            synchronized (impressionTrackers) {
+                Context context = this.contextWeakReference.get();
+                // If not connected to network and impression trackerlist size is non zero queue them to be fired in future.
+                if (context != null && !SharedNetworkManager.getInstance(context).isConnected(context) && impressionTrackers.size() > 0) {
+                    SharedNetworkManager nm = SharedNetworkManager.getInstance(context);
+                    for (String url : impressionTrackers) {
+                        nm.addURL(url, context);
+                    }
+                }
+                // else for all other cases when impression trackerlist size in non zero fire the trackers
+                else if (impressionTrackers.size() > 0) {
+                    for (String url : impressionTrackers) {
+                        fireTracker(url);
+                    }
+                }
+                // Reset impression URL once we have either fired them all or added thme to SharedNewtorkManager Queue.
+                currentAd.setImpressionURLs(null);
+            }
+        }
+    }
+
+
+    void fireTracker(final String trackerUrl) {
+
+        new HTTPGet() {
+            @Override
+            protected void onPostExecute(HTTPResponse response) {
+                if (response != null && response.getSucceeded()) {
+                    Clog.d(Clog.baseLogTag, "Mediated Native Impression Tracked successfully");
+                }
+            }
+
+            @Override
+            protected String getUrl() {
+                return trackerUrl;
+            }
+        }.execute();
+
+    }
+
+}

@@ -87,6 +87,9 @@ public class InMobiNativeAdListener implements InMobiNative.NativeAdListener {
     @Override
     public void onAdImpressed(InMobiNative inMobiNative) {
         Clog.d(Clog.mediationLogTag, "InMobiNative - onAdImpressed");
+        if(controller!=null) {
+            controller.onAdImpression();
+        }
     }
 
     @Override

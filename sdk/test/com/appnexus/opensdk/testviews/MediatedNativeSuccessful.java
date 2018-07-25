@@ -153,6 +153,9 @@ public class MediatedNativeSuccessful implements MediatedNativeAd {
 
                 }
             });
+
+            // Simulate Ad Impression
+            mBC.onAdImpression();
         }
     }
 }

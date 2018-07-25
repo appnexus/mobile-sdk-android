@@ -19,8 +19,6 @@ package com.appnexus.opensdk;
 import android.net.UrlQuerySanitizer;
 
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
-import com.appnexus.opensdk.shadows.ShadowSettings;
-import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.testviews.MediatedNativeSuccessful;
 import com.appnexus.opensdk.testviews.MediatedNativeSuccessful2;
 import com.appnexus.opensdk.util.Lock;
@@ -33,7 +31,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowWebView;
 
 import static com.appnexus.opensdk.ResultCode.INTERNAL_ERROR;
@@ -130,6 +127,33 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
             e.printStackTrace();
         }
     }
+
+
+
+    //Helper Methods
+
+    private void assertImpressionURL(int positionInQueue) {
+
+        // Wait for Impression URL to Fire succesfully
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+
+        RecordedRequest request = null;
+        try {
+            for (int i = 1; i <= positionInQueue; i++) {
+                request = server.takeRequest();
+                if (i == positionInQueue) {
+                    String impression_url = request.getRequestLine();
+                    System.out.print("impression_url::" + impression_url + "\n");
+                    assertTrue(impression_url.startsWith("GET /impression_url? HTTP/1.1"));
+                }
+            }
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void executeUTRequest() {
         Robolectric.getBackgroundThreadScheduler().reset();
@@ -342,6 +366,21 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
         assertCallbacks(true);
 
         assertTrue(MediatedNativeSuccessful2.didPass);
+    }
+
+
+
+    // Verify that the Impression trackers are fired as expected.
+    @Test
+    public void testImpressionLogging() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedSuccessfulNative()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));// For response URL
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));// For Impression URL
+        runBasicMediationTest(SUCCESS, ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
+        assertTrue(MediatedNativeSuccessful.params.equalsIgnoreCase("abc"));
+        assertTrue(MediatedNativeSuccessful.uid.equalsIgnoreCase("1234"));
+
+        assertImpressionURL(1);
     }
 
     @Override
