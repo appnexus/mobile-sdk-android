@@ -65,6 +65,16 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
         assertTrue(bannerAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOWN initially
         executeBannerRequest();
         assertTrue(bannerAdView.getAdType() == AdType.NATIVE); // If a Native Ad is served then NATIVE
+
+        assertTrue(nativeAdResponse.getCreativeId().equalsIgnoreCase("47772560"));
+        assertTrue(nativeAdResponse.getIconUrl().equalsIgnoreCase("http://path_to_icon.com"));
+        assertTrue(nativeAdResponse.getIcon() == null);
+        assertTrue(nativeAdResponse.getImage() == null);
+        assertTrue(nativeAdResponse.getImageUrl().equalsIgnoreCase("http://path_to_main.com"));
+        assertTrue(nativeAdResponse.getFullText().equalsIgnoreCase("full text"));
+        assertTrue(nativeAdResponse.getTitle().equalsIgnoreCase("test title"));
+        assertTrue(nativeAdResponse.getDescription().equalsIgnoreCase("test description"));
+
     }
 
     @Test

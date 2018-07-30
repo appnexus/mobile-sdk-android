@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.MutableContextWrapper;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -47,14 +46,11 @@ import com.appnexus.opensdk.utils.AdvertisingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
-import com.appnexus.opensdk.utils.ImageService;
 import com.appnexus.opensdk.utils.Settings;
-import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * The parent class of {@link InterstitialAdView} and {@link
@@ -1034,23 +1030,9 @@ public abstract class AdView extends FrameLayout implements Ad {
      * Private class to bridge events from mediation to the user
      * AdListener class.
      */
-    private class AdViewDispatcher implements ImageService.ImageServiceListener, AdDispatcher {
+    private class AdViewDispatcher implements AdDispatcher {
 
         Handler handler;
-        ImageService imageService;
-        NativeAdResponse response;
-
-
-        @Override
-        public void onAllImageDownloadsFinish() {
-            if (adListener != null) {
-                adListener.onAdLoaded(response);
-            } else {
-                response.destroy();
-            }
-            imageService = null;
-            response = null;
-        }
 
         public AdViewDispatcher(Handler h) {
             handler = h;
@@ -1149,37 +1131,13 @@ public abstract class AdView extends FrameLayout implements Ad {
         }
 
         private void handleNativeAd(AdResponse ad) {
-            final String IMAGE_URL = "image", ICON_URL = "icon";
             setAdType(AdType.NATIVE);
+
             setCreativeId(ad.getResponseData().getCreativeId());
             final NativeAdResponse response = ad.getNativeAdResponse();
             response.setCreativeId(ad.getResponseData().getCreativeId());
-            if (StringUtil.isEmpty(response.getIconUrl()) && StringUtil.isEmpty(response.getImageUrl())) {
-                adListener.onAdLoaded(response);
-            } else {
-                imageService = new ImageService();
-                this.response = response;
-                ImageService.ImageReceiver imageReceiver = new ImageService.ImageReceiver() {
-                    @Override
-                    public void onReceiveImage(String key, Bitmap image) {
-                        if (key.equals(IMAGE_URL))
-                            response.setImage(image);
-                        else if (key.equals(ICON_URL))
-                            response.setIcon(image);
-                    }
 
-                    @Override
-                    public void onFail(String url) {
-                        Clog.e(Clog.httpRespLogTag, "Image downloading failed for url " + response.getImageUrl());
-                    }
-                };
-                HashMap<String, String> imageUrlMap = new HashMap<>();
-                imageUrlMap.put(IMAGE_URL, response.getImageUrl());
-                imageUrlMap.put(ICON_URL, response.getIconUrl());
-                imageService.registerImageReceiver(imageReceiver, imageUrlMap);
-                imageService.registerNotification(this);
-                imageService.execute();
-            }
+            adListener.onAdLoaded(response);
         }
 
         private void handleBannerOrInterstitialAd(final AdResponse ad) {

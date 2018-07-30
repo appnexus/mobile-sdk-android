@@ -21,7 +21,7 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener {
 
     boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked, adClickedWithUrl;
     boolean isAutoDismissDelay, enableInterstitialShowonLoad;
-    private NativeAdResponse nativeAdResponse;
+    NativeAdResponse nativeAdResponse;
     private boolean isBannerLoaded;
 
     public void setAutoDismissDelay(boolean autoDismissDelay) {
