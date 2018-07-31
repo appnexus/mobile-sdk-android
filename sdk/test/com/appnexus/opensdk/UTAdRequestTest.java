@@ -304,10 +304,8 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         assertTrue(tag.has("allowed_media_types"));
         JSONArray allowedAdTypes = tag.getJSONArray("allowed_media_types");
         assertNotNull(allowedAdTypes);
-        assertEquals(3, allowedAdTypes.length());
+        assertEquals(1, allowedAdTypes.length());
         assertEquals(1, allowedAdTypes.getInt(0));
-        assertEquals(4, allowedAdTypes.getInt(1));
-        assertEquals(12, allowedAdTypes.getInt(2));
     }
 
     /**

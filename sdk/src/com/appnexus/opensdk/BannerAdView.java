@@ -804,6 +804,51 @@ public class BannerAdView extends AdView {
     }
 
 
+    /**
+     * Sets whether or not Video Ads(AppNexus Media Type:4) can serve on this Ad object.
+     * This overrides the value set in console.
+     *
+     * @param enabled whether to enable Video Ads or not. default is false
+     */
+    public void setAllowVideoDemand(boolean enabled) {
+        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
+                R.string.set_allow_video, enabled));
+        requestParameters.setBannerVideoEnabled(enabled);
+    }
+
+    /**
+     * Sets whether or not Native Ads(AppNexus Media Type:12) can serve on this Ad object.
+     * This overrides the value set in console.
+     *
+     * @param enabled whether to enable Native Ads or not. default is false
+     */
+    public void setAllowNativeDemand(boolean enabled) {
+        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
+                R.string.set_allow_native, enabled));
+        requestParameters.setBannerNativeEnabled(enabled);
+    }
+
+
+    /**
+     * Check whether Video Ad is enabled on this ad view
+     *
+     * @return If true, Video Ad can be loaded on the ad view.
+     */
+    public boolean getAllowVideoDemand(){
+        return requestParameters.isBannerVideoEnabled();
+    }
+
+
+    /**
+     * Check whether Native Ad is enabled on this ad view
+     *
+     * @return If true, Native Ad can be loaded on the ad view.
+     */
+    public boolean getAllowNativeDemand(){
+        return requestParameters.isBannerNativeEnabled();
+    }
+
+
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);

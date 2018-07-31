@@ -59,6 +59,8 @@ public class UTRequestParameters {
     private ArrayList<AdSize> adSizes = new ArrayList<AdSize>();
     private boolean allowSmallerSizes = false;
     private boolean shouldServePSAs = false;
+    private boolean isBannerVideoEnabled = false;
+    private boolean isBannerNativeEnabled = false;
     private float reserve = 0.00f;
     private String age;
     private AdView.GENDER gender = AdView.GENDER.UNKNOWN;
@@ -321,6 +323,24 @@ public class UTRequestParameters {
         return shouldServePSAs;
     }
 
+
+    public boolean isBannerVideoEnabled() {
+        return isBannerVideoEnabled;
+    }
+
+    public void setBannerVideoEnabled(boolean bannerVideoEnabled) {
+        isBannerVideoEnabled = bannerVideoEnabled;
+    }
+
+    public boolean isBannerNativeEnabled() {
+        return isBannerNativeEnabled;
+    }
+
+    public void setBannerNativeEnabled(boolean bannerNativeEnabled) {
+        isBannerNativeEnabled = bannerNativeEnabled;
+    }
+
+
     /**
      * Check if required parameters are set for a certain media type
      *
@@ -458,8 +478,12 @@ public class UTRequestParameters {
             JSONArray allowedMediaAdTypes = new JSONArray();
             if (this.getMediaType() == MediaType.BANNER) {
                 allowedMediaAdTypes.put(ALLOWED_TYPE_BANNER);
-                allowedMediaAdTypes.put(ALLOWED_TYPE_VIDEO);
-                allowedMediaAdTypes.put(ALLOWED_TYPE_NATIVE);
+                if(isBannerVideoEnabled) {
+                    allowedMediaAdTypes.put(ALLOWED_TYPE_VIDEO);
+                }
+                if(isBannerNativeEnabled) {
+                    allowedMediaAdTypes.put(ALLOWED_TYPE_NATIVE);
+                }
             } else if (this.getMediaType() == MediaType.INTERSTITIAL) {
                 allowedMediaAdTypes.put(ALLOWED_TYPE_BANNER);
                 allowedMediaAdTypes.put(ALLOWED_TYPE_INTERSTITIAL);

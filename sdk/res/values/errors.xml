@@ -68,6 +68,8 @@
 	<string formatted="false" name="init">The Mobile Advertising SDK is initializing</string>
 	<string formatted="false" name="get_should_resume">getShouldReloadOnResume() returned %b</string>
 	<string formatted="false" name="set_should_resume">setShouldReloadOnResume() to %b</string>
+	<string formatted="false" name="set_allow_video">setAllowVideo() to %b</string>
+	<string formatted="false" name="set_allow_native">setAllowNative() to %b</string>
 	<string formatted="false" name="webview_loading">WebView loading body: %s</string>
 	<string formatted="false" name="load_ad_int">loadAd() called for interstitial.</string>
 	<string formatted="false" name="set_ad_listener">setAdListener() called on AdView.</string>

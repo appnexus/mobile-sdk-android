@@ -31,6 +31,7 @@ import org.robolectric.shadows.ShadowWebView;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 
@@ -51,6 +52,9 @@ public class BannerAdToRequestParametersTest extends BaseRoboTest {
         super.setup();
         bannerAdView = new BannerAdView(activity);
         requestParameters = bannerAdView.requestParameters;
+
+        // This would later be over-ridden by test specific values
+        bannerAdView.setAdSize(320,50);
 
     }
 
@@ -106,6 +110,54 @@ public class BannerAdToRequestParametersTest extends BaseRoboTest {
         setMaxSize();
         setAdSizesArray();
         assertSetAdSizesArray();
+    }
+
+    // Test setAllowVideo
+    @Test
+    public void testSetAllowVideo(){
+        assertEquals(false,bannerAdView.getAllowVideoDemand());
+        String bannerPostData = getRequestParametersPostData();
+        assertTrue(bannerPostData.contains("\"allowed_media_types\":[1]"));
+
+
+        bannerAdView.setAllowVideoDemand(true);
+        assertEquals(true,bannerAdView.getAllowVideoDemand());
+        String bannerVideoPostData = getRequestParametersPostData();
+        assertTrue(bannerVideoPostData.contains("\"allowed_media_types\":[1,4]"));
+    }
+
+
+    // Test setAllowNative
+    @Test
+    public void testSetAllowNative(){
+        assertEquals(false,bannerAdView.getAllowNativeDemand());
+        String bannerPostData = getRequestParametersPostData();
+        assertTrue(bannerPostData.contains("\"allowed_media_types\":[1]"));
+
+
+        bannerAdView.setAllowNativeDemand(true);
+        assertEquals(true,bannerAdView.getAllowNativeDemand());
+        String bannerNativePostData = getRequestParametersPostData();
+        assertTrue(bannerNativePostData.contains("\"allowed_media_types\":[1,12]"));
+    }
+
+
+
+    // Test setAllowNative and setAllowVideo
+    @Test
+    public void testSetAllowVideoAndNative(){
+        assertEquals(false,bannerAdView.getAllowNativeDemand());
+        assertEquals(false,bannerAdView.getAllowVideoDemand());
+        String bannerPostData = getRequestParametersPostData();
+        assertTrue(bannerPostData.contains("\"allowed_media_types\":[1]"));
+
+
+        bannerAdView.setAllowNativeDemand(true);
+        bannerAdView.setAllowVideoDemand(true);
+        assertEquals(true,bannerAdView.getAllowNativeDemand());
+        assertEquals(true,bannerAdView.getAllowVideoDemand());
+        String bannerNativePostData = getRequestParametersPostData();
+        assertTrue(bannerNativePostData.contains("\"allowed_media_types\":[1,4,12]"));
     }
 
 
