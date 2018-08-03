@@ -1,5 +1,5 @@
 // Project Properties
-version = "1.8" // Instream SDK version
+version = "1.9" // Instream SDK version
 
 apply plugin: 'com.android.library'
 
@@ -10,7 +10,7 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 27
-        versionCode 6 // An integer value that represents the version of the code, relative to other versions. Increase for each release.
+        versionCode 7 // An integer value that represents the version of the code, relative to other versions. Increase for each release.
         versionName version
         consumerProguardFiles 'proguard-project.txt'
     }

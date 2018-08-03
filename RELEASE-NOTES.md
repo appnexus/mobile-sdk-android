@@ -1,3 +1,10 @@
+## 4.11
++ MS-3199: Added impression count api for Mediated Native creatives
++ MS-3444: Added api to restrict allowed media types for Banner Ad
++ MS-3292: Fixed NullPointerException in BannerAdView, observed with v4.8.1
++ MS-3411: Fixed memory-leak with AdWebView
++ MS-3427: Changed the default values for shouldLoadIcon and shouldLoadImage to false
+
 ## 4.10
 + MS-3234: Open Measurement SDK Support for HTML Banner Ad's
 + MS-3354: Fix for duplicate adLoad when loaded offScreen
