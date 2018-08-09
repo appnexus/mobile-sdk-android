@@ -78,6 +78,11 @@ public class AdMobMediationInterstitial implements CustomEventInterstitial, AdLi
     }
 
     @Override
+    public void onAdLoaded(NativeAdResponse nativeAdResponse) {
+
+    }
+
+    @Override
     public void onAdRequestFailed(AdView adView, ResultCode resultCode) {
         Clog.d(Clog.mediationLogTag, "ANInterstitial failed to load: " + resultCode);
         if (listener != null) listener.onFailedToReceiveAd();
@@ -99,6 +104,11 @@ public class AdMobMediationInterstitial implements CustomEventInterstitial, AdLi
     public void onAdClicked(AdView adView) {
         Clog.d(Clog.mediationLogTag, "ANInterstitial was clicked");
         if (listener != null) listener.onLeaveApplication();
+    }
+
+    @Override
+    public void onAdClicked(AdView adView, String clickUrl) {
+
     }
 
 }

@@ -85,6 +85,11 @@ public class MoPubMediationBanner extends CustomEventBanner implements AdListene
     }
 
     @Override
+    public void onAdLoaded(NativeAdResponse nativeAdResponse) {
+
+    }
+
+    @Override
     public void onAdRequestFailed(AdView adView, ResultCode resultCode) {
         Clog.d(Clog.mediationLogTag, "ANBanner failed to load: " + resultCode);
         if (listener != null) listener.onBannerFailed(MoPubErrorCode.UNSPECIFIED);
@@ -106,5 +111,10 @@ public class MoPubMediationBanner extends CustomEventBanner implements AdListene
     public void onAdClicked(AdView adView) {
         Clog.d(Clog.mediationLogTag, "ANBanner was clicked");
         if (listener != null) listener.onBannerClicked();
+    }
+
+    @Override
+    public void onAdClicked(AdView adView, String clickUrl) {
+
     }
 }
