@@ -181,7 +181,7 @@ class AdFetcher {
             // If the owner is not ready for a new ad, do nothing with
             // this message
             AdFetcher fetcher = mFetcher.get();
-            Clog.e("ADFETCHER", fetcher + ", " + fetcher.owner.isReadyToStart());
+
             if (fetcher == null
                     || !fetcher.owner.isReadyToStart())
                 return;
