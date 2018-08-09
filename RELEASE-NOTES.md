@@ -1,3 +1,7 @@
+## 4.11.1
++ MS-3470: Fixed NullPointerException in OM Banner HTML Ad Session
++ MS-3457: Fixed NullPointerException in AdFetcher observed in v4.10
+
 ## 4.11
 + MS-3199: Added impression count api for Mediated Native creatives
 + MS-3444: Added api to restrict allowed media types for Banner Ad
