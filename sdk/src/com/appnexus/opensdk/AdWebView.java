@@ -382,7 +382,7 @@ class AdWebView extends WebView implements Displayable,
                 }
 
                 if(!isVideoAd) {
-                    omidAdSession.initAdSession(view);
+                    omidAdSession.initAdSession(AdWebView.this);
                 }
 
                 firstPageFinished = true;

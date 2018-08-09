@@ -17,6 +17,7 @@ package com.appnexus.opensdk.viewability;
 
 import android.webkit.WebView;
 
+import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.iab.omid.library.appnexus.ScriptInjector;
 import com.iab.omid.library.appnexus.adsession.AdEvents;
@@ -61,6 +62,8 @@ public class ANOmidBannerHTMLAdSession {
             omidAdSession.start();
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
+        } catch (NullPointerException exception){
+            Clog.e(Clog.baseLogTag, "OMID Ad Session - Exception", exception);
         }
     }
 
