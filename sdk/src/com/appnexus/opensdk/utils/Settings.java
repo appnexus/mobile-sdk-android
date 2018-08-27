@@ -90,6 +90,7 @@ public class Settings {
     private static String VIDEO_HTML = "file:///android_res/raw/index.html";
 
     private static Settings settings_instance = null;
+    public boolean locationEnabledForCreative = true;
 
     public static Settings getSettings() {
         if (settings_instance == null) {

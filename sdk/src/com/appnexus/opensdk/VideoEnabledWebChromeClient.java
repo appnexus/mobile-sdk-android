@@ -150,34 +150,38 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     //HTML5 Location Callbacks
     @Override
     public void onGeolocationPermissionsShowPrompt(final String origin, final GeolocationPermissions.Callback callback) {
-        Context dialogContext = (adWebView != null) ? ViewUtil.getTopContext(adWebView) : context;
-        AlertDialog.Builder adb = new AlertDialog.Builder(dialogContext);
+        if (SDKSettings.isLocationEnabledForCreative()) {
+            Context dialogContext = (adWebView != null) ? ViewUtil.getTopContext(adWebView) : context;
+            AlertDialog.Builder adb = new AlertDialog.Builder(dialogContext);
 
-        String title = String.format(this.context.getResources().getString(R.string.html5_geo_permission_prompt_title), origin);
+            String title = String.format(this.context.getResources().getString(R.string.html5_geo_permission_prompt_title), origin);
 
-        adb.setTitle(title);
-        adb.setMessage(R.string.html5_geo_permission_prompt);
+            adb.setTitle(title);
+            adb.setMessage(R.string.html5_geo_permission_prompt);
 
-        adb.setPositiveButton(R.string.allow, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                callback.invoke(origin, true, true);
+            adb.setPositiveButton(R.string.allow, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    callback.invoke(origin, true, true);
+                }
+            });
+
+            adb.setNegativeButton(R.string.deny, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    callback.invoke(origin, false, false);
+                }
+            });
+
+            adb.create().show();
+
+            // We're presenting a modal dialog view, so this is equivalent to an expand
+            // suppress if already expanded in MRAID
+            if ((adView != null) && !adView.isInterstitial() && !adView.isMRAIDExpanded()) {
+                this.adView.getAdDispatcher().onAdExpanded();
             }
-        });
-
-        adb.setNegativeButton(R.string.deny, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                callback.invoke(origin, false, false);
-            }
-        });
-
-        adb.create().show();
-
-        // We're presenting a modal dialog view, so this is equivalent to an expand
-        // suppress if already expanded in MRAID
-        if ((adView != null) && !adView.isInterstitial() && !adView.isMRAIDExpanded()) {
-            this.adView.getAdDispatcher().onAdExpanded();
+        } else {
+            callback.invoke(origin, false, false);
         }
     }
 

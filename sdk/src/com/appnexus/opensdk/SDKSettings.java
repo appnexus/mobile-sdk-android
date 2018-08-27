@@ -175,4 +175,22 @@ public class SDKSettings {
         return Settings.getSettings().useHttps;
     }
 
+    /**
+     * Sets whether or not location (latitude, longitude)
+     * permission alert will be shown to the user when called by the Creative.
+     *
+     * @param enable whether to enable location permission alert or not. default is true
+     */
+    public static void setLocationEnabledForCreative(boolean enable){
+        Settings.getSettings().locationEnabledForCreative = enable;
+    }
+
+    /**
+     * Returns false if the locationEnabledForCreative is set to false
+     * or true otherwise
+     */
+    public static boolean isLocationEnabledForCreative(){
+        return Settings.getSettings().locationEnabledForCreative;
+    }
+
 }
