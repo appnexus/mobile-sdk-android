@@ -1,3 +1,7 @@
+## 4.11.2
++ MS-3401: Added an API for enabling/disabling the location access to the creative.
++ MS-3406: Updated the Mobile Vast Player.
+
 ## 4.11.1
 + MS-3470: Fixed NullPointerException in OM Banner HTML Ad Session
 + MS-3457: Fixed NullPointerException in AdFetcher observed in v4.10
