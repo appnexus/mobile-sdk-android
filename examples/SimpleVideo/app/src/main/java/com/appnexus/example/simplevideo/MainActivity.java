@@ -117,6 +117,11 @@ public class MainActivity extends Activity {
             public void onAdClicked(VideoAd adView) {
                 Log.d(TAG, "onAdClicked");
             }
+
+            @Override
+            public void onAdClicked(VideoAd videoAd, String clickUrl) {
+                Log.d(TAG, "onAdClicked");
+            }
         });
 
 
@@ -127,15 +132,17 @@ public class MainActivity extends Activity {
                 if (videoAd.isReady()) {
                     // Play the VideoAd by passing the container.
                     videoAd.playAd(baseContainer);
+
+                    // Continue to main content video if the ad doesnot start in 2 seconds.
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             Log.d(TAG, "getAdPlayElapsedTime");
-                            videoAd.getAdPlayElapsedTime(new ResultCallback<String>() {
+                            videoAd.getAdPlayElapsedTime(new ResultCallback() {
                                 @Override
-                                public void onResult(String result) {
+                                public void onResult(int result) {
                                     Log.d(TAG, "getAdPlayElapsedTime::onResult::" + result);
-                                    if(!result.isEmpty() && Integer.parseInt(result) <=0){
+                                    if( result <=0){
                                         videoPlayer.start();
                                     }
                                 }
