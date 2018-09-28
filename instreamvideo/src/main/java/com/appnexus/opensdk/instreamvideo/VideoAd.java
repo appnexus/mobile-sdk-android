@@ -26,6 +26,7 @@ import com.appnexus.opensdk.AdSize;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.MediaType;
+import com.appnexus.opensdk.ut.UTAdResponse;
 import com.appnexus.opensdk.ut.UTRequestParameters;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.utils.Clog;
@@ -79,6 +80,15 @@ public class VideoAd implements VideoAdInterface {
         this.setAllowedSizes();
     }
 
+
+    public VideoAd(Context context) {
+        weakContext = new WeakReference<Context>(context);
+        requestParameters = new UTRequestParameters(getContext());
+        mVideoAdFetcher = new VideoAdFetcher(this);
+        dispatcher = new VideoAdViewDispatcher();
+        videoAdView = new InstreamVideoView(getContext());
+        this.setAllowedSizes();
+    }
 
     Context getContext() {
         return weakContext.get();
@@ -377,6 +387,19 @@ public class VideoAd implements VideoAdInterface {
             return true;
         }
         return false;
+    }
+
+    public boolean loadVASTXML(String vastxml){
+        // load an ad directly from vastxml
+        videoAdView.clearSelf();
+
+        String response_template = "{\"version\":\"0.0.1\",\"tags\":[{\"tag_id\":1,\"auction_id\":\"1\",\"nobid\":false,\"no_ad_url\":\"\",\"timeout_ms\":10000,\"ad_profile_id\":27079,\"ads\":[{\"content_source\":\"rtb\",\"ad_type\":\"video\",\"notify_url\":\"\",\"usersync_url\":\"\",\"buyer_member_id\":958,\"creative_id\":1,\"media_type_id\":4,\"media_subtype_id\":64,\"client_initiated_ad_counting\":true,\"rtb\":{\"video\":{\"duration_ms\":145000,\"playback_methods\":[\"unknown\"],\"frameworks\":[],\"content\":\"%s\"}}}]}]}";
+        String urResponse = String.format(response_template, vastxml);
+        UTAdResponse response = new UTAdResponse(urResponse, null, getMediaType(), "v");
+        VideoRequestManager requestManager = new VideoRequestManager(this);
+        requestManager.onReceiveUTResponse(response);
+        return true;
+
     }
 
     /**

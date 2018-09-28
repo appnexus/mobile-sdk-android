@@ -20,7 +20,6 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -33,7 +32,6 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.appnexus.opensdk.ResultCode;
-import com.appnexus.opensdk.instreamvideo.ResultCallback;
 import com.appnexus.opensdk.instreamvideo.Quartile;
 import com.appnexus.opensdk.instreamvideo.VideoAd;
 import com.appnexus.opensdk.instreamvideo.VideoAdLoadListener;
@@ -61,14 +59,30 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        infoText = (TextView) findViewById(R.id.infotTextView);
-        playButon = (ImageButton) findViewById(R.id.play_button);
-        videoPlayer = (VideoView) findViewById(R.id.video_player);
-        baseContainer = (RelativeLayout) findViewById(R.id.container_layout);
-        videoPlayer.setVideoURI(Uri.parse(getString(R.string.content_url_1)));
 
+        initContent();
+
+        loadAd();
+
+        playButon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (videoAd.isReady()) {
+                    // Play the VideoAd by passing the container.
+                    videoAd.playAd(baseContainer);
+                } else {
+                    videoPlayer.start();
+                }
+                playButon.setVisibility(View.GONE);
+            }
+        });
+    }
+
+
+
+    private void loadAd() {
         // Initialize VideoAd
-        videoAd = new VideoAd(this, "9924002");
+        videoAd = new VideoAd(this);
 
         // Set the Ad-Load Listener
         videoAd.setAdLoadListener(new VideoAdLoadListener() {
@@ -85,9 +99,13 @@ public class MainActivity extends Activity {
             }
         });
 
-        //Load the Ad.
-        videoAd.loadAd();
 
+        // Load the vast document into the videoAd object.
+        videoAd.loadVASTXML("<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?><VAST version=\\\"2.0\\\"><Ad id=\\\"116465495\\\"><Wrapper><AdSystem version=\\\"2.0\\\">Innovid Ads</AdSystem><VASTAdTagURI><![CDATA[http://rtr.innovid.com/r1.5554946ab01d97.36996823;cb=%25%CACHEBUSTER%25%25]]></VASTAdTagURI><Error><![CDATA[http://nym1-mobile.adnxs.com/vast_track/v2?info=YgAAAAMArgAFAQm_qqpbAAAAABGc0Fo202oTJhm_qqpbAAAAACDXvsQ3KAAwvgc4vgdAyOc9SNfg6QFQz-nVBlgBYgItLWgBcAF4AIABAIgBAJABwAKYATKgAQCoAde-xDc.&s=b7abf2cde62e99338b26e510c215d26d8f14d1cc&event_type=4&error_code=[ERRORCODE]]]></Error><Impression id=\\\"adnxs\\\"><![CDATA[http://nym1-mobile.adnxs.com/it?e=wqT_3QKNB6CNAwAAAwDWAAUBCL_Vqt0FEJyh67Kz2tqJJhi-5bHbqtOX4AYqNgkAAAECCPA_EQEHEAAA8D8ZCQkIAAAhCQkI8D8pEQkAMQkJqAAAMM_p1QY4vgdAvgdIAlDXvsQ3WMu7TmAAaJFAeKHRBIABAYoBA1VTRJIFBvDsmAEBoAEBqAEBsAEAuAEDwAEDyAEC0AEA2AEA4AEA8AEAigI8dWYoJ2EnLCAxNzk3ODY1LCAxNTM3OTExNDg3KTt1ZigncicsIDExNjQ2NTQ5NSwgMTUzNzkxMTQ4Nyk7kgLxASE1ekZFSEFpcDV1QUxFTmUteERjWUFDREx1MDR3QURnQVFBUkl2Z2RRei1uVkJsZ0FZS1lDYUFCd0FIZ0FnQUVBaUFFQWtBRUJtQUVCb0FFQnFBRURzQUVBdVFFcGk0aURBQUR3UDhFQktZdUlnd0FBOERfSkFWSE9SQVBheFFCQTJRRUFBQUFBBSgYLUFCQVBVQgUQKEpnQ0FLQUNBTFVDBRAETDAJCPBKTUFDQU1nQ0FPQUNBT2dDQVBnQ0FJQURBWkFEQUpnREFhZ0RxZWJnQzdvRENVNVpUVEk2TXpnek5PQURPUS4umgJJIUlRMWRpd2lwLvQALHk3dE9JQVFvQURFQQkBVER3UHpvSlRsbE5Nam96T0RNMFFEbEoJHPQAAUFBOEQ4LtgC6AfgAsfTAeoCPXBsYXkuZ29vZ2xlLmNvbS9zdG9yZS9hcHBzL2RldGFpbHM_aWQ9Y29tLmFwcG5leHVzLm9wZW5zZGthcHCAAwGIAwGQAwCYAxegAwGqAwDAA5AcyAMA0gMoCAoSJDYzMWI2ODk2LTE4YzQtNGViOS1hODM0LTY3NWRiYTg2NDg4YtgD_OBZ4AMA6AMC-AMAgAQAkgQGL3V0L3YymAQAogQLMTAuMS4xMi4xMDKoBMBRsgQRCAAQARjAAiAyKAEoAjAAOAK4BADABADIBADSBA05NTgjTllNMjozODM02gQCCADgBADwBNe-xDeCBRdjVsgAIIgFAZgFAKAF_xEBFAHABQDJBUn_FPA_0gUJCQkMnAAA2AUB4AUB8AUB-gUECAAQAJAGAZgGALgGAMEGAAAAAAAAAADIBgA.&s=324bbd95521d33c4a7aed45c4d04589661264be6&referrer=play.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.appnexus.opensdkapp]]></Impression><Creatives><Creative id=\\\"4486926\\\" AdID=\\\"116465495\\\"><Linear><TrackingEvents><Tracking event=\\\"start\\\"><![CDATA[http://nym1-mobile.adnxs.com/vast_track/v2?info=YgAAAAMArgAFAQm_qqpbAAAAABGc0Fo202oTJhm_qqpbAAAAACDXvsQ3KAAwvgc4vgdAyOc9SNfg6QFQz-nVBlgBYgItLWgBcAF4AIABAIgBAJABwAKYATKgAQCoAde-xDc.&s=b7abf2cde62e99338b26e510c215d26d8f14d1cc&event_type=2]]></Tracking><Tracking event=\\\"skip\\\"><![CDATA[http://nym1-mobile.adnxs.com/vast_track/v2?info=YgAAAAMArgAFAQm_qqpbAAAAABGc0Fo202oTJhm_qqpbAAAAACDXvsQ3KAAwvgc4vgdAyOc9SNfg6QFQz-nVBlgBYgItLWgBcAF4AIABAIgBAJABwAKYATKgAQCoAde-xDc.&s=b7abf2cde62e99338b26e510c215d26d8f14d1cc&event_type=3]]></Tracking><Tracking event=\\\"firstQuartile\\\"><![CDATA[http://nym1-mobile.adnxs.com/vast_track/v2?info=YgAAAAMArgAFAQm_qqpbAAAAABGc0Fo202oTJhm_qqpbAAAAACDXvsQ3KAAwvgc4vgdAyOc9SNfg6QFQz-nVBlgBYgItLWgBcAF4AIABAIgBAJABwAKYATKgAQCoAde-xDc.&s=b7abf2cde62e99338b26e510c215d26d8f14d1cc&event_type=5]]></Tracking><Tracking event=\\\"midpoint\\\"><![CDATA[http://nym1-mobile.adnxs.com/vast_track/v2?info=YgAAAAMArgAFAQm_qqpbAAAAABGc0Fo202oTJhm_qqpbAAAAACDXvsQ3KAAwvgc4vgdAyOc9SNfg6QFQz-nVBlgBYgItLWgBcAF4AIABAIgBAJABwAKYATKgAQCoAde-xDc.&s=b7abf2cde62e99338b26e510c215d26d8f14d1cc&event_type=6]]></Tracking><Tracking event=\\\"thirdQuartile\\\"><![CDATA[http://nym1-mobile.adnxs.com/vast_track/v2?info=YgAAAAMArgAFAQm_qqpbAAAAABGc0Fo202oTJhm_qqpbAAAAACDXvsQ3KAAwvgc4vgdAyOc9SNfg6QFQz-nVBlgBYgItLWgBcAF4AIABAIgBAJABwAKYATKgAQCoAde-xDc.&s=b7abf2cde62e99338b26e510c215d26d8f14d1cc&event_type=7]]></Tracking><Tracking event=\\\"complete\\\"><![CDATA[http://nym1-mobile.adnxs.com/vast_track/v2?info=YgAAAAMArgAFAQm_qqpbAAAAABGc0Fo202oTJhm_qqpbAAAAACDXvsQ3KAAwvgc4vgdAyOc9SNfg6QFQz-nVBlgBYgItLWgBcAF4AIABAIgBAJABwAKYATKgAQCoAde-xDc.&s=b7abf2cde62e99338b26e510c215d26d8f14d1cc&event_type=8]]></Tracking></TrackingEvents><VideoClicks><ClickTracking id=\\\"adnxs\\\"><![CDATA[http://nym1-mobile.adnxs.com/click?AAAAAAAA8D8AAAAAAADwPwAAAAAAAAAAAAAAAAAA8D8AAAAAAADwP5zQWjbTahMmvnJsq5pewAa_qqpbAAAAAM901QC-AwAAvgMAAAIAAABXH_EGy50TAAAAAABVU0QAVVNEAAEAAQARIAAAAAABAwMCAAAAAAAAOhfVnQAAAAA./cnd=%21IQ1diwip5uALENe-xDcYy7tOIAQoADEAAAAAAADwPzoJTllNMjozODM0QDlJAAAAAAAA8D8./cca=OTU4I05ZTTI6MzgzNA==/bn=75937/referrer=play.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.appnexus.opensdkapp/]]></ClickTracking></VideoClicks></Linear></Creative></Creatives></Wrapper></Ad></VAST>");
+
+
+        // if App desires to handle click url by itself. Setting this will result in onAdClicked(VideoAd videoAd, String clickUrl) getting called when user click learn-more.
+        //videoAd.setClickThroughAction(ANClickThroughAction.RETURN_URL);
 
         // Set PlayBack Listener.
         videoAd.setVideoPlaybackListener(new VideoAdPlaybackListener() {
@@ -117,37 +135,22 @@ public class MainActivity extends Activity {
             public void onAdClicked(VideoAd adView) {
                 Log.d(TAG, "onAdClicked");
             }
-        });
-
-
-        playButon.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            public void onClick(View v) {
-                if (videoAd.isReady()) {
-                    // Play the VideoAd by passing the container.
-                    videoAd.playAd(baseContainer);
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.d(TAG, "getAdPlayElapsedTime");
-                            videoAd.getAdPlayElapsedTime(new ResultCallback<String>() {
-                                @Override
-                                public void onResult(String result) {
-                                    Log.d(TAG, "getAdPlayElapsedTime::onResult::" + result);
-                                    if(!result.isEmpty() && Integer.parseInt(result) <=0){
-                                        videoPlayer.start();
-                                    }
-                                }
-                            });
-                        }
-                    }, 2000);
-                } else {
-                    videoPlayer.start();
-                }
-                playButon.setVisibility(View.GONE);
+            public void onAdClicked(VideoAd videoAd, String clickUrl) {
+                Log.d(TAG, "onAdClicked");
             }
         });
+    }
+
+
+    // This initializes the Actual Content Video.
+    private void initContent() {
+        infoText = findViewById(R.id.infotTextView);
+        playButon =  findViewById(R.id.play_button);
+        videoPlayer = findViewById(R.id.video_player);
+        baseContainer = findViewById(R.id.container_layout);
+        videoPlayer.setVideoURI(Uri.parse(getString(R.string.content_url_1)));
 
     }
 
@@ -156,20 +159,28 @@ public class MainActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        videoAd.activityOnResume();
+        if(videoAd!=null) {
+            videoAd.activityOnResume();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        videoAd.activityOnPause();
+        if(videoAd!=null) {
+            videoAd.activityOnPause();
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        videoAd.activityOnDestroy();
+        if(videoAd!=null) {
+            videoAd.activityOnDestroy();
+        }
     }
+
+
 
 
     // Handling Configuration Change.
