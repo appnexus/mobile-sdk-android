@@ -1,5 +1,5 @@
 // Project Properties
-version = "6.6.1" // supported Millennial version
+version = "6.10.0" // supported Millennial version
 apply plugin: 'com.android.library'
 
 android {
@@ -21,16 +21,15 @@ android {
 
 dependencies {
     api project(':sdk')
-    api "com.smartadserver.displaysdk:android:$version@aar"
+    api "com.smartadserver.android:displaylibrary:$version@aar"
 }
 
 
 repositories {
     mavenCentral()
 
-    maven {
-        url 'http://cdn.adnxs.com/anx-sdk/maven'
-    }
+    maven { url 'https://packagecloud.io/smartadserver/android/maven2' }
+
 }
 
 

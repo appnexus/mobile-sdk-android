@@ -113,6 +113,10 @@ public class SmartAdServerInterstitialAdView implements MediatedInterstitialAdVi
                         if (parent instanceof ViewGroup) {
                             ((ViewGroup) parent).removeView(interstitialContainer);
                         }
+                        if (wasOpened) {
+                            smartAdListener.onCollapsed();
+                            wasOpened = false;
+                        }
                         break;
                     case SASAdView.StateChangeEvent.VIEW_EXPANDED:
                         Clog.i(Clog.mediationLogTag, "SmartAdServer: MRAID state : EXPANDED");
