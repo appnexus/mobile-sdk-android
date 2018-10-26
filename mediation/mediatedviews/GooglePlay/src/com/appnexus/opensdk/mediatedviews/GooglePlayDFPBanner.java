@@ -28,6 +28,7 @@ import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.JsonUtil;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
@@ -47,6 +48,7 @@ import org.json.JSONObject;
  * SDK.
  */
 public class GooglePlayDFPBanner implements MediatedBannerAdView {
+    private static final String SECOND_PRICE_KEY = "anhb";
     private PublisherAdView adView;
     private Application.ActivityLifecycleCallbacks activityListener;
     private GooglePlayAdListener adListener;
@@ -65,9 +67,14 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
     @Override
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String adUnitID,
                           int width, int height, TargetingParameters targetingParameters) {
+
         adListener = new GooglePlayAdListener(mBC, super.getClass().getSimpleName());
         adListener.printToClog(String.format(" - requesting an ad: [%s, %s, %dx%d]",
                 parameter, adUnitID, width, height));
+
+        Clog.e(GooglePlayDFPBanner.class.getName()+" AdRequest", String.format(" - requesting an ad: [%s, %s, %dx%d]",
+                parameter, adUnitID, width, height));
+        Clog.e(GooglePlayDFPBanner.class.getName()+" Param", parameter);
 
         DFBBannerSSParameters ssparm = new DFBBannerSSParameters(parameter);
         AdSize adSize = ssparm.isSmartBanner ? AdSize.SMART_BANNER : new AdSize(width, height);
@@ -76,6 +83,7 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
         adView.setAdUnitId(adUnitID);
         adView.setAdSizes(adSize);
         adView.setAdListener(adListener);
+        adView.setAppEventListener(adListener);
 
         adView.loadAd(buildRequest(ssparm, targetingParameters));
 
@@ -132,6 +140,19 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
 
         Bundle bundle = new Bundle();
 
+        if (!StringUtil.isEmpty(ssparm.secondPrice)) {
+            try {
+                double secondPriceCents = Double.parseDouble(ssparm.secondPrice) * 100;
+                if (secondPriceCents >= 0) {
+                    String secondPriceString = "anhb_" + Math.round(secondPriceCents);
+                    builder.addCustomTargeting(SECOND_PRICE_KEY, secondPriceString);
+                    adListener.printToClog("second price " + secondPriceString);
+                }
+            } catch (NumberFormatException e) {
+                adListener.printToClogError("While parsing secondPrice value: " + e.getMessage());
+            }
+        }
+
         if (targetingParameters.getAge() != null) {
             bundle.putString("Age", targetingParameters.getAge());
         }
@@ -157,11 +178,13 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
      * Class to extract optional server side parameters from passed in json string.
      * Supports
      * {
+     * "second_price" : "0.50"
      * "swipeable" : false,
      * "smartbanner" : true
      * }
      * Or
      * {
+     * "second_price" : "0.50"
      * "swipeable" : 1,
      * "smartbanner" : 0
      * }
@@ -173,11 +196,13 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
             if (!StringUtil.isEmpty(parameter)) {
                 final String SWIPEABLE = "swipeable";
                 final String SMARTBANNER = "smartbanner";
+                final String SECONDPRICE = "second_price";
 
                 try {
                     JSONObject req = new JSONObject(parameter);
                     isSmartBanner = getBoolean(req, SMARTBANNER);
                     isSwipeable = getBoolean(req, SWIPEABLE);
+                    secondPrice = JsonUtil.getJSONString(req, SECONDPRICE);
                 } catch (JSONException e) {
                 }
             }
@@ -205,5 +230,6 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
         public boolean isSwipeable = false;
         public String test_device;
         public boolean isSmartBanner = false;
+        public String secondPrice;
     }
 }

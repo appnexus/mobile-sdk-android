@@ -16,10 +16,8 @@
 
 package com.appnexus.opensdk.mediatedviews;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
@@ -27,7 +25,6 @@ import android.view.View;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
-import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;

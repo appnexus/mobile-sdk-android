@@ -22,10 +22,12 @@ import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.utils.Clog;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.doubleclick.AppEventListener;
 
-public class GooglePlayAdListener extends AdListener {
+public class GooglePlayAdListener extends AdListener implements AppEventListener {
     MediatedAdViewController mediatedAdViewController;
     String className;
+    private boolean secondPriceIsHigher = false;
 
     public GooglePlayAdListener(MediatedAdViewController mediatedAdViewController, String className) {
         this.mediatedAdViewController = mediatedAdViewController;
@@ -96,8 +98,13 @@ public class GooglePlayAdListener extends AdListener {
         super.onAdLoaded();
         printToClog("onAdLoaded");
         if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdLoaded();
+            if (secondPriceIsHigher) {
+                mediatedAdViewController.onAdFailed(ResultCode.UNABLE_TO_FILL);
+            } else {
+                mediatedAdViewController.onAdLoaded();
+            }
         }
+
     }
 
     void printToClog(String s) {
@@ -106,5 +113,13 @@ public class GooglePlayAdListener extends AdListener {
 
     void printToClogError(String s) {
         Clog.e(Clog.mediationLogTag, className + " - " + s);
+    }
+
+    @Override
+    public void onAppEvent(String key, String value) {
+        printToClog(String.format("onAppEvent triggered with key: %s and value: %s", key, value));
+        if (key.equals("nobid") && value.equals("true")) {
+            secondPriceIsHigher = true;
+        }
     }
 }
