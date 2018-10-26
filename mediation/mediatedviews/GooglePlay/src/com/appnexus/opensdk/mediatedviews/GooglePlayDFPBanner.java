@@ -139,7 +139,13 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
             builder.setLocation(targetingParameters.getLocation());
         }
         for (Pair<String, String> p : targetingParameters.getCustomKeywords()) {
-            bundle.putString(p.first, p.second);
+            if (p.first.equals("content_url")) {
+                if (!StringUtil.isEmpty(p.second)) {
+                    builder.setContentUrl(p.second);
+                }
+            } else {
+                bundle.putString(p.first, p.second);
+            }
         }
 
         builder.addNetworkExtras(new AdMobExtras(bundle));

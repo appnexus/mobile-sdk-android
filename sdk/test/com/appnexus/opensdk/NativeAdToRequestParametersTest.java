@@ -82,6 +82,16 @@ public class NativeAdToRequestParametersTest extends BaseRoboTest {
         assertTrue(postData.contains("\"allow_smaller_sizes\":false,"));
     }
 
+    // Testing the content_url in the post data.
+    @Test
+    public void testContentUrl(){
+        nativeAdRequest.addCustomKeywords("content_url", "www.appnexus.com");
+
+        String postData = getRequestParametersPostData();
+        assertTrue(postData.contains("\"key\":\"content_url\",\"value\":[\"www.appnexus.com\"]"));
+        nativeAdRequest.getRequestParameters().getCustomKeywords().contains("content_url");
+    }
+
     /**
      * getPostData method is private in UTRequestParameters using reflection to access it.
      * There might be better way of doing this but this works.!!

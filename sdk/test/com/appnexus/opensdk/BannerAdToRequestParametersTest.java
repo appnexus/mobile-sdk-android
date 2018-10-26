@@ -172,6 +172,16 @@ public class BannerAdToRequestParametersTest extends BaseRoboTest {
         assertSetMaxSize();
     }
 
+    // Testing the content_url in the post data.
+    @Test
+    public void testContentUrl(){
+        bannerAdView.addCustomKeywords("content_url", "www.appnexus.com");
+
+        String postData = getRequestParametersPostData();
+        assertTrue(postData.contains("\"key\":\"content_url\",\"value\":[\"www.appnexus.com\"]"));
+        bannerAdView.getRequestParameters().getCustomKeywords().contains("content_url");
+    }
+
 
     private void setAdSize(){
         bannerAdView.setAdSize(720,90);

@@ -28,6 +28,7 @@ import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.StringUtil;
 import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -134,7 +135,13 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
             }
 
             for (Pair<String, String> p : targetingParameters.getCustomKeywords()) {
-                bundle.putString(p.first, p.second);
+                if (p.first.equals("content_url")) {
+                    if (!StringUtil.isEmpty(p.second)) {
+                        builder.setContentUrl(p.second);
+                    }
+                } else {
+                    bundle.putString(p.first, p.second);
+                }
             }
 
             builder.addNetworkExtrasBundle(AdMobAdapter.class, bundle);

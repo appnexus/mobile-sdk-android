@@ -79,6 +79,16 @@ public class InterstitialAdToRequestParametersTest extends BaseRoboTest {
         assertTrue(postData.contains("\"allow_smaller_sizes\":false,"));
     }
 
+    // Testing the content_url in the post data.
+    @Test
+    public void testContentUrl(){
+        interstitialAdView.addCustomKeywords("content_url", "www.appnexus.com");
+
+        String postData = getRequestParametersPostData();
+        assertTrue(postData.contains("\"key\":\"content_url\",\"value\":[\"www.appnexus.com\"]"));
+        interstitialAdView.getRequestParameters().getCustomKeywords().contains("content_url");
+    }
+
 
 
     // https://github.com/robolectric/robolectric/blob/master/shadows/framework/src/main/java/org/robolectric/shadows/ShadowDisplay.java

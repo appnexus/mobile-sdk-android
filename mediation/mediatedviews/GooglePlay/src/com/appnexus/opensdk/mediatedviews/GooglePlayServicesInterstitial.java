@@ -22,6 +22,7 @@ import android.util.Pair;
 import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
+import com.appnexus.opensdk.utils.StringUtil;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.mediation.admob.AdMobExtras;
@@ -102,7 +103,13 @@ public class GooglePlayServicesInterstitial implements MediatedInterstitialAdVie
             builder.setLocation(targetingParameters.getLocation());
         }
         for (Pair<String, String> p : targetingParameters.getCustomKeywords()) {
-            bundle.putString(p.first, p.second);
+            if (p.first.equals("content_url")) {
+                if (!StringUtil.isEmpty(p.second)) {
+                    builder.setContentUrl(p.second);
+                }
+            } else {
+                bundle.putString(p.first, p.second);
+            }
         }
 
         builder.addNetworkExtras(new AdMobExtras(bundle));
