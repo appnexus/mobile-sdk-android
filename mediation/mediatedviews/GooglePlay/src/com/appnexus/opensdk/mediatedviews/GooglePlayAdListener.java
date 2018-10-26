@@ -37,8 +37,7 @@ public class GooglePlayAdListener extends AdListener {
         super.onAdClosed();
         printToClog("onAdClosed");
         // interstitials get this callback when the ad is closed, so ignore that
-        if ((mediatedAdViewController != null)
-                && (mediatedAdViewController instanceof MediatedBannerAdViewController)) {
+        if (mediatedAdViewController != null) {
             mediatedAdViewController.onAdCollapsed();
         }
     }
