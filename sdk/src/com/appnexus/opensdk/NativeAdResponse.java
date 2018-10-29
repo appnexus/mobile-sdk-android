@@ -205,5 +205,37 @@ public interface NativeAdResponse {
         public double getScale() { return this.scale; }
     }
 
+    public class ImageSize {
+        private final int width;
+        private final int height;
 
+        public ImageSize(int width, int height) {
+            this.width = width;
+            this.height = height;
+        }
+
+        public int getWidth() { return this.width; }
+
+        public int getHeight() { return this.height; }
+    }
+    /**
+     * Retrieve rating from the native ad response.
+     */
+    public ImageSize getImageSize();
+
+
+    /**
+     * Retrieve the Additional description
+     *
+     * @return empty string "" if not present
+     *
+     */
+
+    public String getAdditionalDescription();
+
+    /**
+     * Set the Additional description of the ad
+     *
+     * @param additionalDescription set "" if not present
+     */
 }

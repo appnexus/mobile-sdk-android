@@ -48,7 +48,7 @@ public class TestResponsesUT {
     }
 
     public static final String DUMMY_BANNER_CONTENT = "<script type=\\\"text/javascript\\\">document.write('<div style=\\\"background-color:#EF8200;height:1000px;width:1000px;\\\"><p>%s</p></div>');</script>";
-    private static final String AN_NATIVE_RESPONSE = "[{\"type\":\"%s\",\"title\":\"%s\",\"description\":\"%s\",\"full_text\":\"%s\",\"context\":\"%s\",\"icon_img_url\":\"%s\",\"main_media\":%s,\"cta\":\"%s\",\"click_trackers\":[%s],\"impression_trackers\":[%s],\"rating\":%s,\"click_url\":\"%s\",\"click_fallback_url\":\"%s\",\"sponsored_by\":\"%s\",\"custom\":%s}]";
+    private static final String AN_NATIVE_RESPONSE = "[{\"type\":\"%s\",\"title\":\"%s\",\"description\":\"%s\", \"desc2\":\"%s\",\"full_text\":\"%s\",\"context\":\"%s\",\"icon_img_url\":\"%s\",\"main_media\":%s,\"cta\":\"%s\",\"click_trackers\":[%s],\"impression_trackers\":[%s],\"rating\":%s,\"click_url\":\"%s\",\"click_fallback_url\":\"%s\",\"sponsored_by\":\"%s\",\"custom\":%s}]";
     private static final String MRAID_CONTENT = "<script type=\\\"text/javascript\\\" src=\\\"mraid.js\\\"></script><script type=\\\"text/javascript\\\">document.write('<div style=\\\"background-color:#EF8200;height:1000px;width:1000px;\\\"><p>%s</p></div>');</script>";
     private static final String NATIVE_MAIN_MEDIA = "[{\"url\":\"%s\",\"width\":%d,\"height\":%d,\"label\":\"default\"},{\"url\":\"%s\",\"width\":%d,\"height\":%d},{\"url\":\"%s\",\"width\":%d,\"height\":%d}]";
     private static final String NATIVE_RATING = "{\"value\":%.2f,\"scale\":%.2f}";
@@ -217,7 +217,7 @@ public class TestResponsesUT {
         String csmAd = templateSingleCSMAdResponseNative(createClassName("MediatedNativeNoFill"), "", "", IMPRESSION_URL,REQUEST_URL, RESPONSE_URL);
 
         // Create a RTB Banner Ad
-        String nativeResponse = templateNativeResponse("native", "test title", "test description", "full text", "newsfeed",
+        String nativeResponse = templateNativeResponse("native", "test title", "test description", "additional test description","full text", "newsfeed",
                 "http://path_to_icon.com", templateNativeMainMedia("http://path_to_main.com", 300, 200, "http://path_to_main2.com", 50, 50, "http://path_to_main3.com", 250, 250),
                 "install", "\"http://ib.adnxs.com/click...\"", "\"http://ib.adnxs.com/it...\"", templateNativeRating(4f, 5f), "http://www.appnexus.com", "http://www.google.com", "test sponsored by", "{\"key\":\"value\"}"
         );
@@ -305,7 +305,7 @@ public class TestResponsesUT {
 
 
     public static String anNative() {
-        String nativeResponse = templateNativeResponse("native", "test title", "test description", "full text", "newsfeed",
+        String nativeResponse = templateNativeResponse("native", "test title", "test description", "additional test description", "full text", "newsfeed",
                 "http://path_to_icon.com", templateNativeMainMedia("http://path_to_main.com", 300, 200, "http://path_to_main2.com", 50, 50, "http://path_to_main3.com", 250, 250),
                 "install", "\"http://ib.adnxs.com/click...\"", "\"http://ib.adnxs.com/it...\"", templateNativeRating(4f, 5f), "http://www.appnexus.com", "http://www.google.com", "test sponsored by", "{\"key\":\"value\"}"
         );
@@ -318,7 +318,7 @@ public class TestResponsesUT {
     }
 
     public static String anNativeWithoutImages() {
-        String nativeResponse = templateNativeResponse("native", "test title", "test description", "full text", "newsfeed",
+        String nativeResponse = templateNativeResponse("native", "test title", "test description", "additional test description", "full text", "newsfeed",
                 "", templateNativeMainMedia("", 300, 200, "http://path_to_main2.com", 50, 50, "http://path_to_main3.com", 250, 250),
                 "install", "\"http://ib.adnxs.com/click...\"", "\"http://ib.adnxs.com/it...\"", templateNativeRating(4f, 5f), "http://www.appnexus.com", "http://www.google.com", "test sponsored by", "{\"key\":\"value\"}"
         );
@@ -331,7 +331,7 @@ public class TestResponsesUT {
     }
 
     public static String nativeResponseWithImageAndIconUrl() {
-        String nativeResponse = templateNativeResponse("native", "test title", "test description", "full text", "newsfeed",
+        String nativeResponse = templateNativeResponse("native", "test title", "test description", "additional test description", "full text", "newsfeed",
                 ICON_URL, templateNativeMainMedia(IMAGE_URL, 300, 200, "http://path_to_main2.com", 50, 50, "http://path_to_main3.com", 250, 250),
                 "install", "\"http://ib.adnxs.com/click...\"", "\"http://ib.adnxs.com/it...\"", templateNativeRating(4f, 5f), "http://www.appnexus.com", "http://www.google.com", "test sponsored by", "{\"key\":\"value\"}"
         );
@@ -411,11 +411,11 @@ public class TestResponsesUT {
     }
 
 
-    private static String templateNativeResponse(String type, String title, String description, String full_text, String context,
+    private static String templateNativeResponse(String type, String title, String description, String additionalDescription, String full_text, String context,
                                                  String icon, String main_media, String cta, String click_trackers,
                                                  String imp_trackers, String rating, String click_url,
                                                  String click_fallback_url, String sponsored_by, String custom) {
-        return String.format(AN_NATIVE_RESPONSE, type, title, description, full_text, context, icon, main_media, cta, click_trackers, imp_trackers, rating, click_url, click_fallback_url, sponsored_by, custom);
+        return String.format(AN_NATIVE_RESPONSE, type, title, description, additionalDescription, full_text, context, icon, main_media, cta, click_trackers, imp_trackers, rating, click_url, click_fallback_url, sponsored_by, custom);
 
 
     }

@@ -273,4 +273,14 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
         }
     }
 
+    @Override
+    public ImageSize getImageSize() {
+        return null;
+    }
+
+    @Override
+    public String getAdditionalDescription() {
+        return "";
+    }
+
 }

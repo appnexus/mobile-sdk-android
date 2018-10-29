@@ -33,6 +33,7 @@ import java.util.List;
 public class MediatedNativeSuccessful2 implements MediatedNativeAd {
     public static String TITLE = "test title2";
     public static String DESCRIPTION = "test description2";
+    public static String ADDITIONAL_DESCRIPTION = "";
     public static String ImageUrl = "test image url2";
     public static String SponsoredBy = "test sponsored by";
     public static boolean didPass;
@@ -147,6 +148,16 @@ public class MediatedNativeSuccessful2 implements MediatedNativeAd {
                 @Override
                 public void destroy() {
 
+                }
+
+                @Override
+                public ImageSize getImageSize() {
+                    return null;
+                }
+
+                @Override
+                public String getAdditionalDescription() {
+                    return ADDITIONAL_DESCRIPTION;
                 }
             });
         }

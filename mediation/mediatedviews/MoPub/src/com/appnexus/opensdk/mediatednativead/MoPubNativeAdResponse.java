@@ -281,4 +281,14 @@ public class MoPubNativeAdResponse implements NativeAdResponse {
             mopubNativeExpireHandler.post(runnable);
         }
     }
+
+    @Override
+    public ImageSize getImageSize() {
+        return null;
+    }
+
+    @Override
+    public String getAdditionalDescription() {
+        return "";
+    }
 }

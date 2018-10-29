@@ -332,4 +332,14 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
             nativeExpireHandler.post(runnable);
         }
     }
+
+    @Override
+    public ImageSize getImageSize() {
+        return null;
+    }
+
+    @Override
+    public String getAdditionalDescription() {
+        return "";
+    }
 }

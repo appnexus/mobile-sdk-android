@@ -281,4 +281,14 @@ public class YahooFlurryNativeAdResponse implements NativeAdResponse {
         }
         expired = true;
     }
+
+    @Override
+    public ImageSize getImageSize() {
+        return null;
+    }
+
+    @Override
+    public String getAdditionalDescription() {
+        return "";
+    }
 }

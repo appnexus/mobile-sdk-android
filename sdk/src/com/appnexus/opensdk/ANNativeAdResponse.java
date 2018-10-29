@@ -50,18 +50,20 @@ public class ANNativeAdResponse implements NativeAdResponse {
     private String imageUrl;
     private String iconUrl;
     private Bitmap image;
+    private ImageSize imageSize;
     private Bitmap icon;
+    private Rating rating;
     private String clickUrl;
     private String clickFallBackUrl;
     private String callToAction;
     private String socialContext;
-    private Rating rating;
     private HashMap<String, Object> nativeElements;
     private boolean expired = false;
     private ArrayList<String> imp_trackers;
     private ArrayList<String> click_trackers;
     private String fullText;
     private String sponsoredBy;
+    private String additionalDescription;
     private Handler anNativeExpireHandler;
     private String creativeId = "";
     private static final String KEY_TITLE = "title";
@@ -71,6 +73,8 @@ public class ANNativeAdResponse implements NativeAdResponse {
     private static final String KEY_IMAGE_LABEL = "label";
     private static final String VALUE_DEFAULT_IMAGE = "default";
     private static final String KEY_IMAGE_URL = "url";
+    private static final String KEY_IMAGE_WIDTH = "width";
+    private static final String KEY_IMAGE_HEIGHT = "height";
     private static final String KEY_FULL_TEXT = "full_text";
     private static final String KEY_ICON = "icon_img_url";
     private static final String KEY_CTA = "cta";
@@ -83,7 +87,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
     private static final String KEY_RATING_SCALE = "scale";
     private static final String KEY_CUSTOM = "custom";
     private static final String KEY_SPONSORED_BY = "sponsored_by";
-
+    private static final String KEY_ADDITIONAL_DESCRIPTION = "desc2";
 
     private Runnable expireRunnable = new Runnable() {
         @Override
@@ -146,6 +150,10 @@ public class ANNativeAdResponse implements NativeAdResponse {
                     String label = JsonUtil.getJSONString(media, KEY_IMAGE_LABEL);
                     if (label != null && label.equals(VALUE_DEFAULT_IMAGE)) {
                         response.imageUrl = JsonUtil.getJSONString(media, KEY_IMAGE_URL);
+                        response.imageSize = new ImageSize(
+                                JsonUtil.getJSONInt(media, KEY_IMAGE_WIDTH),
+                                JsonUtil.getJSONInt(media, KEY_IMAGE_HEIGHT)
+                        );
                         break;
                     }
                 }
@@ -160,6 +168,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
 
         response.sponsoredBy = JsonUtil.getJSONString(metaData, KEY_SPONSORED_BY);
         response.fullText = JsonUtil.getJSONString(metaData, KEY_FULL_TEXT);
+        response.additionalDescription = JsonUtil.getJSONString(metaData, KEY_ADDITIONAL_DESCRIPTION);
 
 
         JSONObject rating = JsonUtil.getJSONObject(metaData, KEY_RATING);
@@ -207,6 +216,16 @@ public class ANNativeAdResponse implements NativeAdResponse {
     @Override
     public void setImage(Bitmap bitmap) {
         this.image = bitmap;
+    }
+
+    @Override
+    public ImageSize getImageSize() {
+        return  this.imageSize;
+    }
+
+    @Override
+    public String getAdditionalDescription() {
+        return this.additionalDescription;
     }
 
     @Override

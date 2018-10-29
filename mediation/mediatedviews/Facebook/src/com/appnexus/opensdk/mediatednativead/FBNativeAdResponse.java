@@ -242,4 +242,14 @@ public class FBNativeAdResponse implements NativeAdResponse {
             fbNativeExpireHandler.post(runnable);
         }
     }
+
+    @Override
+    public ImageSize getImageSize() {
+        return  null;
+    }
+
+    @Override
+    public String getAdditionalDescription() {
+        return "";
+    }
 }

@@ -74,6 +74,9 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
         assertTrue(nativeAdResponse.getFullText().equalsIgnoreCase("full text"));
         assertTrue(nativeAdResponse.getTitle().equalsIgnoreCase("test title"));
         assertTrue(nativeAdResponse.getDescription().equalsIgnoreCase("test description"));
+        assertTrue(nativeAdResponse.getAdditionalDescription().equalsIgnoreCase("additional test description"));
+        assertTrue(nativeAdResponse.getImageSize().getHeight() == 200);
+        assertTrue(nativeAdResponse.getImageSize().getWidth() == 300);
 
     }
 

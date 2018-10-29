@@ -180,6 +180,8 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
         if(ResultCode.SUCCESS == errorCode){
             assertEquals(MediatedNativeSuccessful.TITLE,response.getTitle());
             assertEquals(MediatedNativeSuccessful.DESCRIPTION,response.getDescription());
+            assertEquals(MediatedNativeSuccessful.ADDITIONAL_DESCRIPTION,response.getAdditionalDescription());
+            assertEquals(null, response.getImageSize());
             assertEquals(MediatedNativeSuccessful.ImageUrl,response.getImageUrl());
         }
     }
@@ -304,6 +306,8 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
         assertTrue(MediatedNativeSuccessful2.didPass);
         assertEquals(MediatedNativeSuccessful2.TITLE,response.getTitle());
         assertEquals(MediatedNativeSuccessful2.DESCRIPTION,response.getDescription());
+        assertEquals(MediatedNativeSuccessful2.ADDITIONAL_DESCRIPTION,response.getAdditionalDescription());
+        assertEquals(null, response.getImageSize());
         assertEquals(MediatedNativeSuccessful2.ImageUrl,response.getImageUrl());
 
     }
