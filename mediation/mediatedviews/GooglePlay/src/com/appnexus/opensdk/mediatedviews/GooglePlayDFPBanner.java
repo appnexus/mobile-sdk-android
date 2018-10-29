@@ -72,10 +72,6 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
         adListener.printToClog(String.format(" - requesting an ad: [%s, %s, %dx%d]",
                 parameter, adUnitID, width, height));
 
-        Clog.e(GooglePlayDFPBanner.class.getName()+" AdRequest", String.format(" - requesting an ad: [%s, %s, %dx%d]",
-                parameter, adUnitID, width, height));
-        Clog.e(GooglePlayDFPBanner.class.getName()+" Param", parameter);
-
         DFBBannerSSParameters ssparm = new DFBBannerSSParameters(parameter);
         AdSize adSize = ssparm.isSmartBanner ? AdSize.SMART_BANNER : new AdSize(width, height);
 
