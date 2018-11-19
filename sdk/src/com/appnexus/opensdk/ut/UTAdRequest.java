@@ -141,7 +141,10 @@ public class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
                 Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.permissions_internet));
             } catch (IllegalArgumentException ie) {
                 Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unknown));
-            } catch (Exception e) {
+            }  catch (OutOfMemoryError e) {
+                e.printStackTrace();
+                Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_ooo));
+            }  catch (Exception e) {
                 e.printStackTrace();
                 Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.unknown_exception));
             }

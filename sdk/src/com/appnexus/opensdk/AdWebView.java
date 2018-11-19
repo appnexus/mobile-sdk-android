@@ -169,53 +169,60 @@ class AdWebView extends WebView implements Displayable,
     }
 
     public void loadAd(BaseAdResponse ad) {
-        if (ad == null) {
+        try {
+            if (ad == null) {
+                fail();
+                return;
+            }
+            String html = ad.getAdContent();
+            // set creative size
+            setCreativeHeight(ad.getHeight());
+            setCreativeWidth(ad.getWidth());
+            // Safety Check: content is verified in AdResponse, so this should never be empty
+            if (StringUtil.isEmpty(html)) {
+                fail();
+                return;
+            }
+
+            Clog.i(Clog.baseLogTag, Clog.getString(R.string.webview_loading, html));
+
+            parseAdResponseExtras(ad.getExtras());
+            adResponseData = ad;
+            isVideoAd = (UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(adResponseData.getAdType()));
+
+
+            final float scale = adView.getContext().getResources()
+                    .getDisplayMetrics().density;
+            //do not modify this logic as it affects the rendering of 1x1 interstitial
+            int rheight, rwidth;
+            if (ad.getHeight() == 1 && ad.getWidth() == 1) {
+                rwidth = ViewGroup.LayoutParams.MATCH_PARENT;
+                rheight = ViewGroup.LayoutParams.MATCH_PARENT;
+            } else {
+                rheight = (int) (ad.getHeight() * scale + 0.5f);
+                rwidth = (int) (ad.getWidth() * scale + 0.5f);
+            }
+
+            AdView.LayoutParams resize = new AdView.LayoutParams(rwidth, rheight,
+                    Gravity.CENTER);
+            this.setLayoutParams(resize);
+
+            if (isVideoAd) {
+                videoImplementation = new VideoImplementation(this);
+                videoImplementation.setVASTXML(html);
+                this.loadUrl(Settings.getVideoHtmlPage());
+            } else {
+                html = preLoadContent(html);
+                html = prependRawResources(html);
+                html = prependViewPort(html);
+                html = omidAdSession.prependOMIDJSToHTML(html);
+                this.loadDataWithBaseURL(Settings.getBaseUrl(), html, "text/html", "UTF-8", null);
+            }
+        }catch (OutOfMemoryError exception){
+            // System is running low in memory and cannot process loadAd just return a failure.
+            // This prevents app crash because of ads.
+            Clog.e(Clog.baseLogTag, "AdWebView.loadAd -- Caught OutOfMemoryError", exception);
             fail();
-            return;
-        }
-        String html = ad.getAdContent();
-        // set creative size
-        setCreativeHeight(ad.getHeight());
-        setCreativeWidth(ad.getWidth());
-        // Safety Check: content is verified in AdResponse, so this should never be empty
-        if (StringUtil.isEmpty(html)) {
-            fail();
-            return;
-        }
-
-        Clog.i(Clog.baseLogTag, Clog.getString(R.string.webview_loading, html));
-
-        parseAdResponseExtras(ad.getExtras());
-        adResponseData = ad;
-        isVideoAd = (UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(adResponseData.getAdType()));
-
-
-        final float scale = adView.getContext().getResources()
-                .getDisplayMetrics().density;
-        //do not modify this logic as it affects the rendering of 1x1 interstitial
-        int rheight, rwidth;
-        if (ad.getHeight() == 1 && ad.getWidth() == 1) {
-            rwidth = ViewGroup.LayoutParams.MATCH_PARENT;
-            rheight = ViewGroup.LayoutParams.MATCH_PARENT;
-        } else {
-            rheight = (int) (ad.getHeight() * scale + 0.5f);
-            rwidth = (int) (ad.getWidth() * scale + 0.5f);
-        }
-
-        AdView.LayoutParams resize = new AdView.LayoutParams(rwidth, rheight,
-                Gravity.CENTER);
-        this.setLayoutParams(resize);
-
-        if (isVideoAd) {
-            videoImplementation = new VideoImplementation(this);
-            videoImplementation.setVASTXML(html);
-            this.loadUrl(Settings.getVideoHtmlPage());
-        } else {
-            html = preLoadContent(html);
-            html = prependRawResources(html);
-            html = prependViewPort(html);
-            html = omidAdSession.prependOMIDJSToHTML(html);
-            this.loadDataWithBaseURL(Settings.getBaseUrl(), html, "text/html", "UTF-8", null);
         }
     }
 
