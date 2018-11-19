@@ -17,6 +17,8 @@
 package com.appnexus.opensdk;
 
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 
 import org.json.JSONObject;
 
@@ -34,6 +36,7 @@ class VideoImplementation {
     }
 
     void webViewFinishedLoading() {
+        setOMIDPartner();
         createVastPlayerWithContent();
     }
 
@@ -55,6 +58,7 @@ class VideoImplementation {
                 handleVideoError();
             } else if (eventName.equals("video-complete")) {
                 videoComplete = true;
+                stopOMIDAdSession();
             } else {
                 Clog.e(Clog.videoLogTag, "Error: Unhandled event::" + url);
                 return;
@@ -68,6 +72,7 @@ class VideoImplementation {
     private void handleVideoError() {
         if (adReady && !videoComplete) {
             //AdReady has been fired but video errored before Playback completion
+            stopOMIDAdSession();
             adWebView.adView.getAdDispatcher().toggleAutoRefresh();
         } else {
             // AdReady has not been fired yet continue to do waterfall
@@ -75,6 +80,16 @@ class VideoImplementation {
         }
     }
 
+    void stopOMIDAdSession(){
+        adWebView.omidAdSession.stopAdSession();
+    }
+
+
+    protected void setOMIDPartner() {
+        String inject = String.format("javascript:window.setOMIDPartner('{\"name\":\"%s\",\"version\":\"%s\"}')",
+                ANOmidViewabilty.OMID_PARTNER_NAME, Settings.getSettings().sdkVersion);
+        adWebView.injectJavaScript(inject);
+    }
 
     protected void createVastPlayerWithContent() {
         String inject = String.format("javascript:window.createVastPlayerWithContent('%s','%s')",

@@ -20,281 +20,314 @@
 <html lang="en-US" prefix="og: http://ogp.me/ns#">
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 </head>
 
 <body style="margin: 0;padding: 0;">
-<script src="mobilevastplayer.js"></script>
-<script src="astmediationmanager.js"></script>
-<script src="apn_mraid.js"></script>
-<script src="anjam.js"></script>
-<script src="sdkjs.js"></script>
-<script>
-        var final_video_content = '<div id="video-content" style="width: 375px; height: 375px, background-color:#000000">';
-        var ua = getMobileOperatingSystem();
-        var options = {
-            "autoInitialSize": true,   // this option enables to player to auto determine the size at run time.
-            "delayExpandUntilVPAIDImpression": false,
-            "delayExpandUntilVPAIDInit": true,
-            "initialPlayback": "click", //this needs to be click for the load & play option else the player will load the ad & play automatically
-            "showProgressBar": true,  // This needs to be true for the progress time to show at bottom (0:05/0:15)
-            "forceAdInFullscreen": false,
-            "showBigPlayButton": false, //hide the play/pause big button
-            "showPlayToggle": false, //Hide the play/pause small button
-            "preloadInlineAudioForIos": true, //this is set to toggle the audio play... if false then there will be no audio until the user clicks on the volume button for IOS player... Not required for HTML player
-            "fixedSizePlayer": true,
-            "terminateUnresponsiveVPAIDCreative": false,
-            "vpaidTimeout": 20000,
-            "waterfallTimeout": 15000,
-            "waterfallSteps": -1,
-            "fitInContainer": false,
-            "mobileSDK": true,
-            "shouldResizeVideoToFillMobileWebview": true,
-            "enableNativeInline": true, //this option is required if we are using HTML 5 player
-            "controlBarPosition": "below", //important to set the control bar below else it will float
-            "learnMore": {
-                "enabled": true,
-                "clickToPause": false
-            },
-            "data": {
-                "skipOffset": "",
-                "durationMsec": null,
-                "skipOffsetMsec": null,
-                "isVastVideoSkippable": false,
-                "vastProgressEvent": {},
-                "vastDurationMsec": null,
-                "adIcons": null
-            },
-            "vpaidEnvironmentVars": {
-                "rhythmone": true
-            },
-            "playerSkin": {
-                "dividerColor": "black",
-            }
-        };
+  <script src="mobilevastplayer.js"></script>
+  <script src="astmediationmanager.js"></script>
+  <script src="apn_mraid.js"></script>
+  <script src="anjam.js"></script>
+  <script src="sdkjs.js"></script>
+  <script src="omsdk.js"></script>
+  <script>
+    var final_video_content = '<div id="video-content" style="width: 375px; height: 375px, background-color:#000000">';
+    var ua = getMobileOperatingSystem();
+    var options = {
+      "autoInitialSize": true, // this option enables to player to auto determine the size at run time.
+      "delayExpandUntilVPAIDImpression": false,
+      "delayExpandUntilVPAIDInit": true,
+      "initialPlayback": "click", //this needs to be click for the load & play option else the player will load the ad & play automatically
+      "showProgressBar": true, // This needs to be true for the progress time to show at bottom (0:05/0:15)
+      "forceAdInFullscreen": false,
+      "showBigPlayButton": false, //hide the play/pause big button
+      "showPlayToggle": false, //Hide the play/pause small button
+      "preloadInlineAudioForIos": true, //this is set to toggle the audio play... if false then there will be no audio until the user clicks on the volume button for IOS player... Not required for HTML player
+      "fixedSizePlayer": true,
+      "terminateUnresponsiveVPAIDCreative": false,
+      "vpaidTimeout": 20000,
+      "waterfallTimeout": 15000,
+      "waterfallSteps": -1,
+      "fitInContainer": false,
+      "mobileSDK": true,
+      "shouldResizeVideoToFillMobileWebview": true,
+      "enableNativeInline": true, //this option is required if we are using HTML 5 player
+      "controlBarPosition": "below", //important to set the control bar below else it will float
+      "learnMore": {
+        "enabled": true,
+        "clickToPause": false
+      },
+      "data": {
+        "skipOffset": "",
+        "durationMsec": null,
+        "skipOffsetMsec": null,
+        "isVastVideoSkippable": false,
+        "vastProgressEvent": {},
+        "vastDurationMsec": null,
+        "adIcons": null
+      },
+      "vpaidEnvironmentVars": {
+        "rhythmone": true
+      },
+      "playerSkin": {
+        "dividerColor": "black",
+      }
+    };
 
-        var instreamOptions = {
-            "aspectRatio": "16:9", // Aspect ratio we expect the video to be played in
-            "initialAudio": "on", // Setting this option to true turns on initial Audio
-            "allowFullscreen": false, //show the fullscreen control
-            "disableCollapse": false, // This option is used in outstream. To do freeze on last frame. Always false for instream case.
-            "skippable": {            // This option enables SKIP and configures it.
-                "videoThreshold": 15,
-                "videoOffset": 5,
-                "skipLocation": "top-right",
-                "skipText": "Video can be skipped in %%TIME%% seconds",
-                "skipButtonText": "SKIP"
-            }
-        };
+    var instreamOptions = {
+      "aspectRatio": "16:9", // Aspect ratio we expect the video to be played in
+      "initialAudio": "on", // Setting this option to true turns on initial Audio
+      "allowFullscreen": false, //show the fullscreen control
+      "disableCollapse": false, // This option is used in outstream. To do freeze on last frame. Always false for instream case.
+      "skippable": { // This option enables SKIP and configures it.
+        "videoThreshold": 15,
+        "videoOffset": 5,
+        "skipLocation": "top-right",
+        "skipText": "Video can be skipped in %%TIME%% seconds",
+        "skipButtonText": "SKIP"
+      }
+    };
 
-        var outStreamOptions = {
-            "aspectRatio": "auto",    // Aspect ratio we expect the video to be played in
-            "initialAudio": "off",    // Setting this option to false turns off initial Audio
-            "allowFullscreen": true,  // This option shows/hides the fill screen button
-            "skippable": {            // This option disables SKIP
-                "enabled": false
-            },
-            "disableCollapse": {
-                "enabled": true,  // this option is used for freeze on last frame
-                "replay": true    // This shows the replay button
-            }
-        };
+    var outStreamOptions = {
+      "aspectRatio": "auto", // Aspect ratio we expect the video to be played in
+      "initialAudio": "off", // Setting this option to false turns off initial Audio
+      "allowFullscreen": true, // This option shows/hides the fill screen button
+      "skippable": { // This option disables SKIP
+        "enabled": false
+      },
+      "disableCollapse": {
+        "enabled": true, // this option is used for freeze on last frame
+        "replay": true // This shows the replay button
+      }
+    };
 
-        function createVastPlayerWithContent(vastContent, entryPointType) {
-            try {
-                //vastContent = "<VAST version=\"2.0\">\r\n<Ad id=\"84618178\">\r\n<InLine>\r\n<AdSystem>adnxs</AdSystem>\r\n<AdTitle>\r\n<![CDATA[ 20Sec_720x1280px.mp4 ]]>\r\n</AdTitle>\r\n<Error>\r\n<![CDATA[\r\nhttp://nym1-mobile.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQl-s3haAAAAABE\u2026WgBcAF4AIABAIgBBJABwAKYAeADoAEAqAHC16wo&event_type=4&error_code=[ERRORCODE]\r\n]]>\r\n</Error>\r\n<Impression id=\"adnxs\">\r\n<![CDATA[\r\nhttp://nym1-mobile.adnxs.com/it?e=wqT_3QL2Buh2AwAAAwDWAAUBCP7m4tMFELfA0ICMr\u2026er=play.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.appnexus.opensdkapp\r\n]]>\r\n</Impression>\r\n<Creatives>\r\n<Creative id=\"47954\" AdID=\"84618178\">\r\n<Linear>\r\n<Duration>00:00:20</Duration>\r\n<TrackingEvents>\r\n<Tracking event=\"start\">\r\n<![CDATA[\r\nhttp://nym1-mobile.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQl-s3haAAAAABE\u20269SIzyyQFQusv8BVgBYgItLWgBcAF4AIABAIgBBJABwAKYAeADoAEAqAHC16wo&event_type=2\r\n]]>\r\n</Tracking>\r\n<Tracking event=\"skip\">\r\n<![CDATA[\r\nhttp://nym1-mobile.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQl-s3haAAAAABE\u20269SIzyyQFQusv8BVgBYgItLWgBcAF4AIABAIgBBJABwAKYAeADoAEAqAHC16wo&event_type=3\r\n]]>\r\n</Tracking>\r\n<Tracking event=\"firstQuartile\">\r\n<![CDATA[\r\nhttp://nym1-mobile.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQl-s3haAAAAABE\u20269SIzyyQFQusv8BVgBYgItLWgBcAF4AIABAIgBBJABwAKYAeADoAEAqAHC16wo&event_type=5\r\n]]>\r\n</Tracking>\r\n<Tracking event=\"midpoint\">\r\n<![CDATA[\r\nhttp://nym1-mobile.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQl-s3haAAAAABE\u20269SIzyyQFQusv8BVgBYgItLWgBcAF4AIABAIgBBJABwAKYAeADoAEAqAHC16wo&event_type=6\r\n]]>\r\n</Tracking>\r\n<Tracking event=\"thirdQuartile\">\r\n<![CDATA[\r\nhttp://nym1-mobile.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQl-s3haAAAAABE\u20269SIzyyQFQusv8BVgBYgItLWgBcAF4AIABAIgBBJABwAKYAeADoAEAqAHC16wo&event_type=7\r\n]]>\r\n</Tracking>\r\n<Tracking event=\"complete\">\r\n<![CDATA[\r\nhttp://nym1-mobile.adnxs.com/vast_track/v2?info=YwAAAAMArgAFAQl-s3haAAAAABE\u20269SIzyyQFQusv8BVgBYgItLWgBcAF4AIABAIgBBJABwAKYAeADoAEAqAHC16wo&event_type=8\r\n]]>\r\n</Tracking>\r\n</TrackingEvents>\r\n<VideoClicks>\r\n<ClickThrough>\r\n<![CDATA[ https://www.appnexus.com ]]>\r\n</ClickThrough>\r\n<ClickTracking id=\"adnxs\">\r\n<![CDATA[\r\nhttp://nym1-mobile.adnxs.com/click?exSuR-F6hD97FK5H4XqEPwAAAAAAAPA_exSuR-F6\u2026r=play.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.appnexus.opensdkapp/\r\n]]>\r\n</ClickTracking>\r\n</VideoClicks>\r\n<MediaFiles>\r\n<MediaFile id=\"596854\" delivery=\"progressive\" type=\"video/mp4\" width=\"720\" height=\"1280\" scalable=\"true\" bitrate=\"2000\" maintainAspectRatio=\"true\">\r\n<![CDATA[\r\nhttp://mobile.devnxs.net/video/ad/RW20seconds_720x1280px.mp4\r\n]]>\r\n</MediaFile>\r\n</MediaFiles>\r\n</Linear>\r\n</Creative>\r\n</Creatives>\r\n</InLine>\r\n</Ad>\r\n</VAST>";
-                var targetId = "video-content";
-                window.document.write(final_video_content);
-                var targetElement = document.getElementById(targetId);
-                options.targetElementId = targetId;
-                setInitialLayoutParams(targetElement);
+
+    // Default Partner. This will later be overriden by call from native layer to setOMIDPartner.
+    var partner = {
+      "name": "appnexus.com-omandroid",
+      "version": "Default-version"
+    };
+
+    function setOMIDPartner(OMIDPartner) {
+       var OMIDPartnerObject = JSON.parse(OMIDPartner);
+       partner.name = OMIDPartnerObject.name;
+       partner.version = OMIDPartnerObject.version;
+    }
+
+    function getOMIDPartner() {
+      return partner;
+    }
+
+    // Default OMIDVideoEvent object. This will later be re-constructed in createVastPlayerWithContent.
+    var OMIDVideoEvent = {
+      "isSkippable": true,
+      "isAutoPlay": true,
+      "position": "In-Banner"
+    };
+
+    var OMIDVideoEvents = function() {
+      return OMIDVideoEvent;
+    }
+
+
+    function createVastPlayerWithContent(vastContent, entryPointType) {
+      try {
+        var targetId = "video-content";
+        window.document.write(final_video_content);
+        var targetElement = document.getElementById(targetId);
+        options.targetElementId = targetId;
+        setInitialLayoutParams(targetElement);
                 console.log('Debug - createVastPlayerWithContent');
 
-                if (entryPointType == "BANNER") {
-                    options = combineObjectsAndSubobjects(options, outStreamOptions);
-                } else if (entryPointType == "INSTREAM_VIDEO") {
-                    options = combineObjectsAndSubobjects(options, instreamOptions);
-                }
-
-                APNVideo_MobileVastPlayer.playVast(targetElement, options, vastContent, function(eventName) {
-                    console.log(eventName);
-                    sendBackMessage(eventName);
-
-                });
-            } catch (e) {
-                console.log('Issue loading video into document :' + e.message);
-            }
-
+        if (entryPointType == "BANNER") {
+          options = combineObjectsAndSubobjects(options, outStreamOptions);
+          OMIDVideoEvent.position = "In-Banner";
+          OMIDVideoEvent.isSkippable = outStreamOptions.skippable;
+        } else if (entryPointType == "INSTREAM_VIDEO") {
+          options = combineObjectsAndSubobjects(options, instreamOptions);
+          OMIDVideoEvent.position = "In-Video";
+          OMIDVideoEvent.isSkippable = true;
         }
 
-        function sendBackMessage(message) {
-            if (ua == "iOS") {
-                window.webkit.messageHandlers.observe.postMessage(message);
-            } else {
-                var jsonString = JSON.stringify(message);
-                window.location = "video://" + jsonString;
-            }
+        OMIDVideoEvent.isAutoPlay = true;
+
+          APNVideo_MobileVastPlayer.playVast(targetElement, options, vastContent, function(eventName) {
+            console.log(eventName);
+            sendBackMessage(eventName);
+          });
+      } catch (e) {
+        console.log('Issue loading video into document :' + e.message);
+      }
+
+    }
+
+    function sendBackMessage(message) {
+      if (ua == "iOS") {
+        window.webkit.messageHandlers.observe.postMessage(message);
+      } else {
+        var jsonString = JSON.stringify(message);
+        window.location = "video://" + jsonString;
+      }
+    }
+
+
+    // Used only during first time Layout initialization. i.e during createVastPlayerWithContent
+    // This makes it possible to create the Div in the largest size possible
+    // And a better video will be selected.
+    function setInitialLayoutParams(targetDiv) {
+      if (targetDiv !== undefined) {
+        targetDiv.style.position = "absolute";
+        targetDiv.style.left = 0;
+        targetDiv.style.width = screen.width * window.devicePixelRatio;
+        targetDiv.style.height = screen.height * window.devicePixelRatio;
+        targetDiv.style.top = 0;
+      }
+    }
+
+
+    // Use this when calling playAd or any other time after the initial call
+    // This will make sure that the Container div doesnot have scroll to the right or down
+    function setPlayerLayout(targetDiv) {
+
+      if (targetDiv !== undefined) {
+        targetDiv.style.position = "absolute";
+        targetDiv.style.left = 0;
+        targetDiv.style.width = window.innerWidth;
+        targetDiv.style.height = window.innerHeight;
+        if (targetDiv.style.width == "0px" || targetDiv.style.height == "0px") {
+          var maxScreenSize = Math.max(screen.width, screen.height);
+          targetDiv.style.width = maxScreenSize;
+          targetDiv.style.height = maxScreenSize;
         }
+        targetDiv.style.top = 0;
+      }
+    }
+
+    function getMobileOperatingSystem() {
+      var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+      // Windows Phone must come first because its UA also contains "Android"
+      if (/windows phone/i.test(userAgent)) {
+        return "Windows Phone";
+      }
+
+      if (/android/i.test(userAgent)) {
+        return "Android";
+      }
+
+      if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+        return "iOS";
+      }
+
+      return "unknown";
+    }
 
 
-        // Used only during first time Layout initialization. i.e during createVastPlayerWithContent
-        // This makes it possible to create the Div in the largest size possible
-        // And a better video will be selected.
-        function setInitialLayoutParams(targetDiv) {
-            if (targetDiv !== undefined) {
-                targetDiv.style.position = "absolute";
-                targetDiv.style.left = 0;
-                targetDiv.style.width = screen.width * window.devicePixelRatio;
-                targetDiv.style.height = screen.height * window.devicePixelRatio;
-                targetDiv.style.top = 0;
+    function viewabilityUpdate(isViewable) {
+      if (isViewable == "true") {
+        playAd();
+      } else {
+        pauseAd();
+      }
+    }
+
+
+    function pauseAd() {
+      console.log("::sendPause");
+      var targetId = "video-content";
+      resizePlayer();
+      APNVideo_MobileVastPlayer.sendPause(targetId);
+    }
+
+    function playAd() {
+      console.log("::sendPlay");
+      var targetId = "video-content";
+      resizePlayer();
+      APNVideo_MobileVastPlayer.sendPlay(targetId);
+    }
+
+
+    function resizePlayer() {
+      var targetId = "video-content";
+      var targetElement = document.getElementById(targetId);
+      if (targetElement !== undefined) {
+        setPlayerLayout(targetElement);
+      }
+    }
+
+    function getCurrentPlayHeadTime() {
+      var targetId = "video-content";
+      var playHeadTime = APNVideo_MobileVastPlayer.getCurrentPlayHeadTime(targetId);
+      return playHeadTime;
+    }
+
+    function processMediationAd(tag) {
+      try {
+        console.log(" callSelectAd - invoked");
+        var uri_dec = decodeURIComponent(tag);
+        var adId = Math.floor((Math.random() * 1000000) + 1);
+        var options = {
+          "enableWaterfall": false
+        };
+        var jsonObject = JSON.parse(uri_dec);
+        APNVideo_AstMediationManager.selectAd(adId, jsonObject, options, onSelectAdForASTResponse);
+      } catch (e) {
+        console.log('Issue loading video into document :' + e.message);
+        var nativeParams = {
+          "event": "video-error",
+          "params": {}
+        };
+        sendBackMessage(nativeParams);
+      }
+    }
+
+    function onSelectAdForASTResponse(adId, uuid, mediationManagerResponse) {
+      console.log("AST Notification for: " + adId + " uuid=" + uuid);
+      var content;
+      if (mediationManagerResponse) {
+        content = retrieveContent(mediationManagerResponse);
+      }
+      if (content) {
+        createVastPlayerWithContent(content);
+      } else {
+        var nativeParams = {
+          "event": "video-error",
+          "params": {}
+        };
+        sendBackMessage(nativeParams);
+      }
+    }
+
+
+    function retrieveContent(mediationManagerResponse) {
+      if (mediationManagerResponse && mediationManagerResponse.hasOwnProperty("ad")) {
+        var adObj = mediationManagerResponse.ad;
+        if (adObj) {
+          var csource = adObj.content_source;
+          var atype = adObj.ad_type;
+          if (csource && atype) {
+            var cs = adObj[csource][atype].content;
+            if (cs && cs.length > 0) {
+              return cs;
             }
+          }
         }
+      }
+    }
 
-
-        // Use this when calling playAd or any other time after the initial call
-        // This will make sure that the Container div doesnot have scroll to the right or down
-        function setPlayerLayout(targetDiv) {
-
-            if (targetDiv !== undefined) {
-                targetDiv.style.position = "absolute";
-                targetDiv.style.left = 0;
-                targetDiv.style.width = window.innerWidth;
-                targetDiv.style.height = window.innerHeight;
-                if(targetDiv.style.width == "0px" || targetDiv.style.height == "0px"){
-                    var maxScreenSize = Math.max(screen.width, screen.height);
-                    targetDiv.style.width = maxScreenSize;
-                    targetDiv.style.height = maxScreenSize;
-                }
-                targetDiv.style.top = 0;
-            }
+    function combineObjectsAndSubobjects(target, source) {
+      for (var key in source) {
+        if (source.hasOwnProperty(key)) {
+          if (typeof target[key] === "object") {
+            target[key] = combineObjectsAndSubobjects(target[key], source[key]);
+          } else {
+            target[key] = source[key];
+          }
         }
-
-        function getMobileOperatingSystem() {
-            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-
-            // Windows Phone must come first because its UA also contains "Android"
-            if (/windows phone/i.test(userAgent)) {
-                return "Windows Phone";
-            }
-
-            if (/android/i.test(userAgent)) {
-                return "Android";
-            }
-
-            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-                return "iOS";
-            }
-
-            return "unknown";
-        }
-
-
-        function viewabilityUpdate(isViewable) {
-            if (isViewable == "true") {
-                playAd();
-            } else {
-                pauseAd();
-            }
-        }
-
-
-        function pauseAd() {
-            console.log("::sendPause");
-            var targetId = "video-content";
-            resizePlayer();
-            APNVideo_MobileVastPlayer.sendPause(targetId);
-        }
-
-        function playAd() {
-            console.log("::sendPlay");
-            var targetId = "video-content";
-            resizePlayer();
-            APNVideo_MobileVastPlayer.sendPlay(targetId);
-        }
-
-
-        function resizePlayer() {
-            var targetId = "video-content";
-            var targetElement = document.getElementById(targetId);
-            if (targetElement !== undefined) {
-                setPlayerLayout(targetElement);
-            }
-        }
-
-        function getCurrentPlayHeadTime() {
-            var targetId = "video-content";
-            var playHeadTime = APNVideo_MobileVastPlayer.getCurrentPlayHeadTime(targetId);
-            return playHeadTime;
-        }
-
-        function processMediationAd(tag) {
-            try {
-                console.log(" callSelectAd - invoked");
-                var uri_dec = decodeURIComponent(tag);
-                var adId = Math.floor((Math.random() * 1000000) + 1);
-                var options = {
-                    "enableWaterfall": false
-                };
-                var jsonObject = JSON.parse(uri_dec);
-                APNVideo_AstMediationManager.selectAd(adId, jsonObject, options, onSelectAdForASTResponse);
-            } catch (e) {
-                console.log('Issue loading video into document :' + e.message);
-                var nativeParams = {
-                    "event": "video-error",
-                    "params": {}
-                };
-                sendBackMessage(nativeParams);
-            }
-        }
-
-        function onSelectAdForASTResponse(adId, uuid, mediationManagerResponse) {
-            console.log("AST Notification for: " + adId + " uuid=" + uuid);
-            var content;
-            if (mediationManagerResponse) {
-                content = retrieveContent(mediationManagerResponse);
-            }
-            if (content) {
-                createVastPlayerWithContent(content);
-            } else {
-                var nativeParams = {
-                    "event": "video-error",
-                    "params": {}
-                };
-                sendBackMessage(nativeParams);
-            }
-        }
-
-
-        function retrieveContent(mediationManagerResponse) {
-            if (mediationManagerResponse && mediationManagerResponse.hasOwnProperty("ad")) {
-                var adObj = mediationManagerResponse.ad;
-                if (adObj) {
-                    var csource = adObj.content_source;
-                    var atype = adObj.ad_type;
-                    if (csource && atype) {
-                        var cs = adObj[csource][atype].content;
-                        if (cs && cs.length > 0) {
-                            return cs;
-                        }
-                    }
-                }
-            }
-        }
-
-        function combineObjectsAndSubobjects(target, source) {
-            for (var key in source) {
-                if (source.hasOwnProperty(key)) {
-                    if (typeof target[key] === "object") {
-                        target[key] = combineObjectsAndSubobjects(target[key], source[key]);
-                    } else {
-                        target[key] = source[key];
-                    }
-                }
-            }
-            return target;
-        }
-
-    </script>
+      }
+      return target;
+    }
+  </script>
 </body>
 
 </html>

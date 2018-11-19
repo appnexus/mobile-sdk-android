@@ -133,6 +133,7 @@ class InstreamVideoView extends FrameLayout {
 
 
     boolean clearSelf() {
+        onDestroy();
         Clog.d(Clog.videoLogTag, "clearSelf");
         removeAllViews();
         ViewGroup parentViewGroup = (ViewGroup) getParent();
@@ -144,6 +145,9 @@ class InstreamVideoView extends FrameLayout {
 
 
     public void onDestroy() {
+        if (videoWebView != null) {
+            videoWebView.destroy();
+        }
     }
 
     public void onPause() {

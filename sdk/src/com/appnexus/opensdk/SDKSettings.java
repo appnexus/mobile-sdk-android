@@ -73,6 +73,23 @@ public class SDKSettings {
     }
 
     /**
+     * Set true to allow Open-Measurement for viewability and verification measurement for ads served
+     *
+     * @param enabled to enable OMSDK. default is true
+     */
+    public static void setOMEnabled(boolean enabled) {
+        Settings.getSettings().omEnabled = enabled;
+    }
+    /**
+     * Return true if the ad server calls allow to include Open-Measurement for viewability and verificatio information
+     * or false otherwise.
+     */
+    public static boolean getOMEnabled() {
+        return Settings.getSettings().omEnabled;
+    }
+
+
+    /**
      * Retrieve the current location reported to the ad server.
      * If the value is null either location has not yet been retrieved
      * or location reporting has been disabled via

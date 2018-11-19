@@ -51,6 +51,8 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
+import com.appnexus.opensdk.viewability.ANOmidAdSession;
+import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 
 import org.json.JSONObject;
 
@@ -73,6 +75,7 @@ class VideoWebView extends WebView {
     private String creativeUrl = "";
     private String vastURLContent = "";
     private String vastXMLContent = "";
+    private ANOmidAdSession omidAdSession;
 
     // Using handler posts the playAd() call to the end of queue and fixes initial rendering black issue on Lollipop and below simulators.
     // And during resume Ad, this handler is used to retry until the parent window comes in focus else fail gracefully. Its observed parent window gets focus approx 200ms after the resume of activity.
@@ -138,6 +141,7 @@ class VideoWebView extends WebView {
     protected void setup() {
         setWebChromeClient(new VideoChromeClient(owner));
         setWebViewClient(new AdWebViewClient());
+        omidAdSession = new ANOmidAdSession();
 
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         setLayoutParams(params);
@@ -170,6 +174,7 @@ class VideoWebView extends WebView {
             Clog.d(Clog.videoLogTag, "onPageFinished");
             if (!firstPageLoadComplete) {
                 firstPageLoadComplete = true;
+                setOMIDPartner();
                 if (baseAdResponse.getContentSource().equalsIgnoreCase(UTConstants.CSM_VIDEO)) {
                     processMediationAd();
                 } else {
@@ -215,6 +220,7 @@ class VideoWebView extends WebView {
             JSONObject paramsDictionary = videoObject.getJSONObject("params");
 
             if (eventName.equals("adReady")) {
+                omidAdSession.initAdSession(VideoWebView.this,true);
                 if (paramsDictionary != null) {
                     if (paramsDictionary.has("duration")) {
                         this.adDuration = paramsDictionary.getInt("duration");
@@ -267,6 +273,7 @@ class VideoWebView extends WebView {
     private void handleVideoError() {
         if (adIsPlaying) {
             //Ad has failed during ad playback due to various reasons.
+            stopOMIDAdSession();
             owner.getAdDispatcher().onPlaybackError();
         } else {
             //Calling VideoRequestManager here and continue Waterfall. Or fire no_ad_url.
@@ -285,7 +292,12 @@ class VideoWebView extends WebView {
     }
 
     void videoComplete() {
+        stopOMIDAdSession();
         adIsPlaying = false;
+    }
+
+    void stopOMIDAdSession(){
+        omidAdSession.stopAdSession();
     }
 
 
@@ -473,11 +485,18 @@ class VideoWebView extends WebView {
         playAdHandler.post(runnableCode);
     }
 
+    protected void setOMIDPartner() {
+        String inject = String.format("javascript:window.setOMIDPartner('{\"name\":\"%s\",\"version\":\"%s\"}')",
+                ANOmidViewabilty.OMID_PARTNER_NAME, Settings.getSettings().sdkVersion);
+        this.injectJavaScript(inject);
+    }
+
     protected void createVastPlayerWithContent() {
         String inject = String.format("javascript:window.createVastPlayerWithContent('%s','%s')",
                 baseAdResponse.getAdContent(), MediaType.INSTREAM_VIDEO);
         this.injectJavaScript(inject);
     }
+
 
     private void processMediationAd() {
         String tag = ((CSMVASTAdResponse) baseAdResponse).getCSMVASTAdResponse();
@@ -590,6 +609,18 @@ class VideoWebView extends WebView {
     @Override
     public void onResume() {
         super.onResume();
+    }
+
+    @Override
+    public void destroy() {
+        stopOMIDAdSession();
+        try {
+            super.destroy();
+        }
+        // Fatal exception in android v4.x in TextToSpeech
+        catch (IllegalArgumentException e) {
+            Clog.e(Clog.baseLogTag, Clog.getString(com.appnexus.opensdk.R.string.apn_webview_failed_to_destroy), e);
+        }
     }
 
     void resumeVideo() {

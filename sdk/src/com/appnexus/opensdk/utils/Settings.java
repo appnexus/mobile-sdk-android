@@ -52,6 +52,8 @@ public class Settings {
     public final String dev_timezone = TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT);
     public final String language = Locale.getDefault().getLanguage();
 
+    public boolean omEnabled = true;
+
     public boolean locationEnabled = true;
     public Location location = null;
     public int locationDecimalDigits = -1;

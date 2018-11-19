@@ -16,22 +16,26 @@
 package com.appnexus.opensdk.viewability;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import com.appnexus.opensdk.R;
+import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.HTTPGet;
-import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.iab.omid.library.appnexus.Omid;
 import com.iab.omid.library.appnexus.adsession.Partner;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 
 public class ANOmidViewabilty {
 
     private static ANOmidViewabilty omid_instance = null;
-    private static final String OMID_JS_SERVICE_URL = "https://acdn.adnxs.com/mobile/omsdk/v1/omsdk.js";
-    private static final String OMID_PARTNER_NAME = "Appnexus";
+    public static final String OMID_PARTNER_NAME = "appnexus.com-omandroid";
     private static String OMID_JS_SERVICE_CONTENT = "";
 
     private static Partner appnexusPartner = null;
@@ -51,7 +55,10 @@ public class ANOmidViewabilty {
 
     public void activateOmidAndCreatePartner(Context applicationContext) {
         // Activate OMID if it is already not
-        try {
+        if (!SDKSettings.getOMEnabled())
+            return;
+
+            try {
             if (!Omid.isActive()) {
                 Omid.activateWithOmidApiVersion(Omid.getVersion(), applicationContext);
             }
@@ -70,31 +77,31 @@ public class ANOmidViewabilty {
         }
 
         if (StringUtil.isEmpty(OMID_JS_SERVICE_CONTENT)) {
-            fetchOmidJS();
+            try {
+                fetchOmidJS(applicationContext);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
     }
 
-
-    private void fetchOmidJS() {
-        new HTTPGet() {
-            @Override
-            protected HTTPResponse doInBackground(Void... params) {
-                return super.doInBackground(params);
+    private void fetchOmidJS(Context applicationContext) throws IOException {
+        final Resources resources =  applicationContext.getResources();
+        InputStream inputStream = resources.openRawResource(R.raw.omsdk);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        StringBuilder omSDKStringBuild = new StringBuilder();
+        try {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                omSDKStringBuild.append(line);
             }
-
-            @Override
-            protected void onPostExecute(HTTPResponse response) {
-                if (response != null && response.getSucceeded()) {
-                    OMID_JS_SERVICE_CONTENT = response.getResponseBody();
-                }
-            }
-
-            @Override
-            protected String getUrl() {
-                return OMID_JS_SERVICE_URL;
-            }
-        }.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            reader.close();
+        }
+        OMID_JS_SERVICE_CONTENT =  omSDKStringBuild.toString();
     }
 
 
@@ -105,7 +112,6 @@ public class ANOmidViewabilty {
     public String getOmidJsServiceContent() {
         return OMID_JS_SERVICE_CONTENT;
     }
-
 
 
 }

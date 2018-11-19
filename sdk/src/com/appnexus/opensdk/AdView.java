@@ -42,6 +42,7 @@ import android.widget.ImageButton;
 import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.UTRequestParameters;
 import com.appnexus.opensdk.ut.adresponse.RTBHTMLAdResponse;
+import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.utils.AdvertisingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
@@ -235,6 +236,19 @@ public abstract class AdView extends FrameLayout implements Ad {
         AdWebView output = new AdWebView(this, null);
         RTBHTMLAdResponse response = new RTBHTMLAdResponse(width, height, getMediaType().toString(), null, getCreativeId());
         response.setAdContent(html);
+        output.loadAd(response);
+        display(output);
+    }
+
+
+    protected void loadAdFromVAST(String VASTXML,int width,int height) {
+        // load an ad directly from VASTXML
+        loadedOffscreen = true;
+        AdWebView output = new AdWebView(this, null);
+        RTBVASTAdResponse response = new RTBVASTAdResponse(width,height,AdType.VIDEO.toString(), null,null,"1");
+        response.setAdContent(VASTXML);
+        response.setContentSource(UTConstants.RTB);
+        response.addToExtras(UTConstants.EXTRAS_KEY_MRAID, true);
         output.loadAd(response);
         display(output);
     }

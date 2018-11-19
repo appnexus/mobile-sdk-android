@@ -23,12 +23,16 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.appnexus.opensdk.AdSize;
+import com.appnexus.opensdk.AdType;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.MediaType;
+import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.UTRequestParameters;
 import com.appnexus.opensdk.ResultCode;
+import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -63,6 +67,7 @@ public class VideoAd implements VideoAdInterface {
         dispatcher = new VideoAdViewDispatcher();
         videoAdView = new InstreamVideoView(getContext());
         this.setAllowedSizes();
+        ANOmidViewabilty.getInstance().activateOmidAndCreatePartner(context.getApplicationContext());
 
     }
 
@@ -77,6 +82,7 @@ public class VideoAd implements VideoAdInterface {
         dispatcher = new VideoAdViewDispatcher();
         videoAdView = new InstreamVideoView(getContext());
         this.setAllowedSizes();
+        ANOmidViewabilty.getInstance().activateOmidAndCreatePartner(context.getApplicationContext());
     }
 
 
@@ -377,6 +383,19 @@ public class VideoAd implements VideoAdInterface {
             return true;
         }
         return false;
+    }
+
+
+
+    protected void loadAdFromVAST(String VASTXML,int width,int height) {
+        // load an ad directly from VASTXML
+        VideoWebView output = new VideoWebView(this.getContext(),this, null);
+        RTBVASTAdResponse response = new RTBVASTAdResponse(width,height, AdType.VIDEO.toString(), null,null,"1");
+        response.setAdContent(VASTXML);
+        response.setContentSource(UTConstants.RTB);
+        response.addToExtras(UTConstants.EXTRAS_KEY_MRAID, true);
+        getVideoAdView().setVideoWebView(output);
+        output.loadAd(response);
     }
 
     /**

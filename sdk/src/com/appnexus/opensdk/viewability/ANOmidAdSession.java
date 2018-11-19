@@ -17,6 +17,7 @@ package com.appnexus.opensdk.viewability;
 
 import android.webkit.WebView;
 
+import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.iab.omid.library.appnexus.ScriptInjector;
@@ -26,11 +27,14 @@ import com.iab.omid.library.appnexus.adsession.AdSessionConfiguration;
 import com.iab.omid.library.appnexus.adsession.AdSessionContext;
 import com.iab.omid.library.appnexus.adsession.Owner;
 
-public class ANOmidBannerHTMLAdSession {
+public class ANOmidAdSession {
 
     private AdSession omidAdSession;
 
     public String prependOMIDJSToHTML(String html) {
+        if (!SDKSettings.getOMEnabled())
+            return html;
+
         try {
             String htmlString = html;
             if(!StringUtil.isEmpty(ANOmidViewabilty.getInstance().getOmidJsServiceContent())) {
@@ -45,16 +49,19 @@ public class ANOmidBannerHTMLAdSession {
         }
     }
 
-    public  void initAdSession(WebView webView) {
+    public  void initAdSession(WebView webView, boolean isVideoAd) {
+        if (!SDKSettings.getOMEnabled())
+            return;
+
         try {
             String customReferenceData = "";
             AdSessionContext adSessionContext = AdSessionContext.createHtmlAdSessionContext(ANOmidViewabilty.getInstance().getAppnexusPartner(), webView,
                     customReferenceData);
 
-            Owner owner = Owner.NATIVE;
+            Owner owner = isVideoAd?Owner.JAVASCRIPT:Owner.NATIVE;
 
             AdSessionConfiguration adSessionConfiguration =
-                    AdSessionConfiguration.createAdSessionConfiguration(owner, null, false);
+                    AdSessionConfiguration.createAdSessionConfiguration(owner, isVideoAd?owner:null, false);
 
 
             omidAdSession = AdSession.createAdSession(adSessionConfiguration, adSessionContext);
@@ -68,6 +75,9 @@ public class ANOmidBannerHTMLAdSession {
     }
 
     public void fireImpression(){
+        if (!SDKSettings.getOMEnabled())
+            return;
+
         if(omidAdSession !=null) {
             try {
                 AdEvents adEvents = AdEvents.createAdEvents(omidAdSession);
@@ -79,6 +89,9 @@ public class ANOmidBannerHTMLAdSession {
     }
 
     public  void stopAdSession() {
+        if (!SDKSettings.getOMEnabled())
+            return;
+
         if (omidAdSession != null) {
             omidAdSession.finish();
             omidAdSession = null;
