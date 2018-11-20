@@ -18,6 +18,7 @@
 	<string formatted="false" name="http_url_malformed">E208: Ad Request url was malformed..</string>
 	<string formatted="false" name="permissions_internet">E102: The SDK needs permission INTERNET in the host app.</string>
 	<string formatted="false" name="unknown_exception">E204: Ad couldn\'t be fetched due to unknown exception, see above trace.</string>
+	<string formatted="false" name="http_ooo">Ad couldn\'t be fetched due to OutofMemory, see above trace.</string>
 	<string formatted="false" name="http_get_url_malformed">HTTPGET: failed, url was malformed..</string>
 	<string formatted="false" name="http_get_io">HTTPGET: failed due to io error, probably http related.</string>
 	<string formatted="false" name="http_get_unknown_exception">HTTPGET: failed due to unknown exception, see above trace.</string>
