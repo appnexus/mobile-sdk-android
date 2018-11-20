@@ -37,11 +37,13 @@ public class ShadowCustomWebView extends ShadowWebView {
     @Override
     public void loadUrl(String url) {
         super.loadUrl(url);
-        webView = new WebView(RuntimeEnvironment.application);
-        Clog.w(TestUtil.testLogTag, "ShadowCustomWebView loadUrl");
+        if (url.contains("file:///android_res/raw/index.html")) {
+            webView = new WebView(RuntimeEnvironment.application);
+            Clog.w(TestUtil.testLogTag, "ShadowCustomWebView loadUrl");
 
-        // Just send back adReady notification from here since this is unit tests webview is not loading complete.
-        this.getWebViewClient().shouldOverrideUrlLoading(webView,String.format("video://%s",AD_READY_CONSTANT));
+            // Just send back adReady notification from here since this is unit tests webview is not loading complete.
+            this.getWebViewClient().shouldOverrideUrlLoading(webView, String.format("video://%s", AD_READY_CONSTANT));
+        }
 
     }
 

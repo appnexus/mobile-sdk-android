@@ -33,14 +33,16 @@ public class ShadowCustomVideoWebView extends ShadowWebView {
 
     private WebView webView;
     public static boolean simulateVideoError = false;
-    public static boolean simulateDelayedVideoError =false;
+    public static boolean simulateDelayedVideoError = false;
 
     @Override
     public void loadUrl(String url) {
         super.loadUrl(url);
-        webView = new WebView(RuntimeEnvironment.application);
-        Clog.d(TestUtil.testLogTag, "ShadowCustomWebView loadUrl");
-        this.getWebViewClient().onPageFinished(webView,url);
+        if (url.contains("file:///android_res/raw/index.html")) {
+            webView = new WebView(RuntimeEnvironment.application);
+            Clog.d(TestUtil.testLogTag, "ShadowCustomWebView loadUrl");
+            this.getWebViewClient().onPageFinished(webView, url);
+        }
     }
 
 
@@ -48,15 +50,15 @@ public class ShadowCustomVideoWebView extends ShadowWebView {
     public void evaluateJavascript(String script, ValueCallback<String> callback) {
         super.evaluateJavascript(script, callback);
         Clog.d(TestUtil.testLogTag, "ShadowCustomWebView evaluateJavascript");
-        if(script.contains("createVastPlayerWithContent")) {
+        if (script.contains("createVastPlayerWithContent")) {
             Clog.d(TestUtil.testLogTag, "evaluateJavascript createVastPlayerWithContent");
-            if(!simulateVideoError) {
+            if (!simulateVideoError) {
                 this.getWebViewClient().shouldOverrideUrlLoading(webView, "video://{\"event\":\"adReady\",\"params\":{\"creativeUrl\":\"http://vcdn.adnxs.com/p/creative-video/05/64/6d/99/05646d99.webm\",\"duration\":96000}}");
-            }else{
+            } else {
                 this.getWebViewClient().shouldOverrideUrlLoading(webView, "video://{\"event\":\"video-error\",\"params\":{}}");
             }
 
-            if(simulateDelayedVideoError){
+            if (simulateDelayedVideoError) {
 
                 new Handler().postDelayed(new Runnable() {
                     @Override
