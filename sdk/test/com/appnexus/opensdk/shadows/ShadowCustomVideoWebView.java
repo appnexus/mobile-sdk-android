@@ -38,7 +38,7 @@ public class ShadowCustomVideoWebView extends ShadowWebView {
     @Override
     public void loadUrl(String url) {
         super.loadUrl(url);
-        if (url.contains("file:///android_res/raw/index.html")) {
+        if (url.contains("file:///android_asset/apn_vastvideo.html")) {
             webView = new WebView(RuntimeEnvironment.application);
             Clog.d(TestUtil.testLogTag, "ShadowCustomWebView loadUrl");
             this.getWebViewClient().onPageFinished(webView, url);

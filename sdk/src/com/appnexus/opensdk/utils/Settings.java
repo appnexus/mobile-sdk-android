@@ -89,7 +89,7 @@ public class Settings {
     private static String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
     private static String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
 
-    private static String VIDEO_HTML = "file:///android_res/raw/index.html";
+    private static String VIDEO_HTML = "file:///android_asset/apn_vastvideo.html";
 
     private static Settings settings_instance = null;
     public boolean locationEnabledForCreative = true;
@@ -152,7 +152,7 @@ public class Settings {
 
 
     public static String getVideoHtmlPage() {
-        return Settings.getSettings().debug_mode ? VIDEO_HTML.replace("index.html", "index.html?ast_debug=true") : VIDEO_HTML;
+        return Settings.getSettings().debug_mode ? VIDEO_HTML.replace("apn_vastvideo.html", "apn_vastvideo.html?ast_debug=true") : VIDEO_HTML;
     }
 
 
