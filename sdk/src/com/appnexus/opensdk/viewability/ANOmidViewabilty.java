@@ -16,7 +16,7 @@
 package com.appnexus.opensdk.viewability;
 
 import android.content.Context;
-import android.content.res.Resources;
+import android.content.res.AssetManager;
 
 import com.appnexus.opensdk.R;
 import com.appnexus.opensdk.SDKSettings;
@@ -87,8 +87,8 @@ public class ANOmidViewabilty {
     }
 
     private void fetchOmidJS(Context applicationContext) throws IOException {
-        final Resources resources =  applicationContext.getResources();
-        InputStream inputStream = resources.openRawResource(R.raw.omsdk);
+        final AssetManager assetManager =  applicationContext.getAssets();
+        InputStream inputStream = assetManager.open("apn_omsdk.js");
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         StringBuilder omSDKStringBuild = new StringBuilder();
         try {
