@@ -75,7 +75,7 @@ public class AdViewRequestManagerTest extends BaseViewAdTest {
         assertCallbacks(true);
         assertTrue(bannerAdView.mAdFetcher.getState() == AdFetcher.STATE.STOPPED);
 
-        request = server.takeRequest(); // Discard the first request since its a HTTP Post for /ut/v2 ad request call
+        request = server.takeRequest(); // Discard the first request since its a HTTP Post for /ut/v3 ad request call
         request = server.takeRequest();
         assertNotifyURL(request);
     }

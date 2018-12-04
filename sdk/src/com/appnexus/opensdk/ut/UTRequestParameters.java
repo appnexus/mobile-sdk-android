@@ -88,6 +88,8 @@ public class UTRequestParameters {
     private static final String TAG_PREBID = "prebid";
     private static final String TAG_RESERVE = "reserve";
     private static final String TAG_ASSET_URL = "require_asset_url";
+    private static final String TAG_NATIVE = "native";
+    private static final String TAG_RENDERER_ID = "renderer_id";
     private static final boolean TAG_ASSET_URL_VALUE = false;
     private static final String TAG_CODE = "code";
     private static final String USER = "user";
@@ -139,6 +141,7 @@ public class UTRequestParameters {
     private static final String os = "android";
 
     private Context context;
+    private int rendererId = 0;
 
     public UTRequestParameters(Context context) {
         this.context = context;
@@ -511,6 +514,14 @@ public class UTRequestParameters {
                 tag.put(TAG_DISABLE_PSA, !this.getShouldServePSAs());
             }
             tag.put(TAG_ASSET_URL, TAG_ASSET_URL_VALUE);
+
+            if (this.getMediaType() == MediaType.NATIVE || (this.getMediaType() == MediaType.BANNER && isBannerNativeEnabled())) {
+                JSONObject nativeObject = getNativeRendererObject();
+                if (nativeObject != null) {
+                    tag.put(TAG_NATIVE, nativeObject);
+                }
+            }
+
         } catch (JSONException e) {
             Clog.e(Clog.baseLogTag, "Exception: " + e.getMessage());
         }
@@ -518,6 +529,19 @@ public class UTRequestParameters {
             tags.put(tag);
         }
         return tags;
+    }
+
+    private JSONObject getNativeRendererObject() {
+        if (getRendererId() != 0) {
+            try {
+                JSONObject nativeObject = new JSONObject();
+                nativeObject.put(TAG_RENDERER_ID, this.getRendererId());
+                return nativeObject;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
 
@@ -818,5 +842,13 @@ public class UTRequestParameters {
 
     void setForceCreativeId(int forceCreativeId) {
         this.forceCreativeId = forceCreativeId;
+    }
+
+    public void setRendererId(int rendererId) {
+        this.rendererId = rendererId;
+    }
+
+    public int getRendererId() {
+        return rendererId;
     }
 }

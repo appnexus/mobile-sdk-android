@@ -42,11 +42,14 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
     private String callToAction;
     private Bitmap icon;
     private Bitmap coverImage;
-    private String socialContext;
-    private String fullText = "";
     private String sponsporedBy = "";
     private String[] impressionTrackers;
     private String creativeId = "";
+    private ImageSize mainImageSize = new ImageSize(-1, -1);
+    private ImageSize iconSize = new ImageSize(-1, -1);
+    private String additionalDescription = "";
+    private String vastXML = "";
+    private String privacyLink = "";
 
     private Rating rating;
     private String landingUrl; // This is not exposed as of now. Click is done through reportAdClickAndOpenLandingPage since AppNexus SDK autohandles click.
@@ -93,7 +96,7 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
     boolean setResources(final InMobiNative imNative) {
         this.imNative = imNative;
         try {
-            nativeElements.put(InMobiSettings.NATIVE_ELEMENT_OBJECT, imNative);
+            nativeElements.put(NATIVE_ELEMENT_OBJECT, imNative);
 
             // Directly referenced from getters
             title = imNative.getAdTitle();
@@ -197,18 +200,8 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public String getSocialContext() {
-        return socialContext;
-    }
-
-    @Override
     public Rating getAdStarRating() {
         return rating;
-    }
-
-    @Override
-    public String getFullText() {
-        return fullText;
     }
 
     @Override
@@ -275,12 +268,26 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
 
     @Override
     public ImageSize getImageSize() {
-        return null;
+        return mainImageSize;
     }
 
     @Override
     public String getAdditionalDescription() {
-        return "";
+        return additionalDescription;
     }
 
+    @Override
+    public ImageSize getIconSize() {
+        return iconSize;
+    }
+
+    @Override
+    public String getVastXml() {
+        return vastXML;
+    }
+
+    @Override
+    public String getPrivacyLink() {
+        return privacyLink;
+    }
 }

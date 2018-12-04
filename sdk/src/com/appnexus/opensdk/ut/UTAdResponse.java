@@ -241,7 +241,7 @@ public class UTAdResponse {
     }
 
     /**
-     * Parse UT-V2 VAST response
+     * Parse UT-V3 VAST response
      * @param rtbObject (JSONObject)
      * @param adType    (String)
      * @throws Exception
@@ -266,17 +266,12 @@ public class UTAdResponse {
 
     // returns true if response contains a native response, false if not
     private void parseNativeAds(JSONObject response, String creativeId, String adType) {
-        JSONArray nativeAd = JsonUtil.getJSONArray(response, UTConstants.AD_TYPE_NATIVE);
-        if (nativeAd != null) {
-            // take the first ad
-            JSONObject firstAd = JsonUtil.getJSONObjectFromArray(nativeAd, 0);
-            if (firstAd != null) {
-                ANNativeAdResponse anNativeAdResponse = ANNativeAdResponse.create(firstAd);
-                if (anNativeAdResponse != null) {
-                    RTBNativeAdResponse nativeRTB = new RTBNativeAdResponse(1, 1, adType, anNativeAdResponse, null, creativeId);
-                    nativeRTB.setContentSource(UTConstants.RTB);
-                    adList.add(nativeRTB);
-                }
+        if (response != null) {
+            ANNativeAdResponse anNativeAdResponse = ANNativeAdResponse.create(response);
+            if (anNativeAdResponse != null) {
+                RTBNativeAdResponse nativeRTB = new RTBNativeAdResponse(1, 1, adType, anNativeAdResponse, null, creativeId);
+                nativeRTB.setContentSource(UTConstants.RTB);
+                adList.add(nativeRTB);
             }
         }
     }

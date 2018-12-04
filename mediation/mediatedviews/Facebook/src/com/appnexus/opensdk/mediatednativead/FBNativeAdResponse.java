@@ -26,6 +26,8 @@ import com.appnexus.opensdk.NativeAdResponse;
 import com.appnexus.opensdk.utils.Settings;
 import com.facebook.ads.NativeAd;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,8 +40,6 @@ public class FBNativeAdResponse implements NativeAdResponse {
     private Bitmap coverImage;
     private Bitmap icon;
     private NativeAd nativeAd;
-    private String socialContext;
-    private String fullText = "";
     private String sponsporedBy = "";
     private Rating rating;
     private HashMap<String, Object> nativeElements = new HashMap<String, Object>();
@@ -49,6 +49,12 @@ public class FBNativeAdResponse implements NativeAdResponse {
     private Runnable runnable;
     private Handler fbNativeExpireHandler;
     private String creativeId = "";
+    private ImageSize mainImageSize = new ImageSize(-1, -1);
+    private ImageSize iconSize = new ImageSize(-1, -1);
+    private String additionalDescription = "";
+    private String vastXML = "";
+    private String privacyLink = "";
+
     public FBNativeAdResponse(NativeAd ad) {
         this.nativeAd = ad;
         runnable = new Runnable() {
@@ -144,18 +150,8 @@ public class FBNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public String getSocialContext() {
-        return socialContext;
-    }
-
-    @Override
     public Rating getAdStarRating() {
         return rating;
-    }
-
-    @Override
-    public String getFullText() {
-        return fullText;
     }
 
     @Override
@@ -167,7 +163,7 @@ public class FBNativeAdResponse implements NativeAdResponse {
         if (nativeAd != null && nativeAd.isAdLoaded()) {
             title = nativeAd.getAdTitle();
             description = nativeAd.getAdBody();
-            nativeElements.put(FacebookNativeSettings.NATIVE_ELEMENT_OBJECT, nativeAd);
+            nativeElements.put(NATIVE_ELEMENT_OBJECT, nativeAd);
             if(nativeAd.getAdChoicesIcon() != null) {
                 nativeElements.put(FacebookNativeSettings.KEY_ADCHOICES_ICON, nativeAd.getAdChoicesIcon());
             }
@@ -181,7 +177,6 @@ public class FBNativeAdResponse implements NativeAdResponse {
                 imageUrl = nativeAd.getAdCoverImage().getUrl();
             }
             callToAction = nativeAd.getAdCallToAction();
-            socialContext = nativeAd.getAdSocialContext();
             if (nativeAd.getAdStarRating() != null) {
                 rating = new Rating(nativeAd.getAdStarRating().getValue(),
                         nativeAd.getAdStarRating().getScale());
@@ -245,11 +240,26 @@ public class FBNativeAdResponse implements NativeAdResponse {
 
     @Override
     public ImageSize getImageSize() {
-        return  null;
+        return mainImageSize;
     }
 
     @Override
     public String getAdditionalDescription() {
-        return "";
+        return additionalDescription;
+    }
+
+    @Override
+    public ImageSize getIconSize() {
+        return iconSize;
+    }
+
+    @Override
+    public String getVastXml() {
+        return vastXML;
+    }
+
+    @Override
+    public String getPrivacyLink() {
+        return privacyLink;
     }
 }

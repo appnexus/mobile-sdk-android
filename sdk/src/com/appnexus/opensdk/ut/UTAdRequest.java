@@ -80,7 +80,7 @@ public class UTAdRequest extends AsyncTask<Void, Integer, UTAdResponse> {
         if (requester != null) {
             try {
 
-                String baseUrl = requester.isHttpsEnabled()?UTConstants.REQUEST_BASE_URL_UT_V2.replace("http:", "https:") : UTConstants.REQUEST_BASE_URL_UT_V2;
+                String baseUrl = requester.isHttpsEnabled()?UTConstants.REQUEST_BASE_URL_UT.replace("http:", "https:") : UTConstants.REQUEST_BASE_URL_UT;
                 URL url = new URL(baseUrl);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setDoOutput(true);

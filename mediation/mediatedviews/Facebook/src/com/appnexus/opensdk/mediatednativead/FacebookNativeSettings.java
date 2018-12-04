@@ -21,6 +21,5 @@ public class FacebookNativeSettings {
     // key to retrieve AdChoices related objects
     public static final String KEY_ADCHOICES_ICON = "AdChoicesIcon";
     public static final String KEY_ADCHOICES_LINKURL = "AdChoicesLinkUrl";
-    public static final String NATIVE_ELEMENT_OBJECT = "element";
 
 }

@@ -19,10 +19,15 @@ package com.appnexus.opensdk;
 import android.graphics.Bitmap;
 import android.view.View;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.List;
 
 public interface NativeAdResponse {
+
+    String NATIVE_ELEMENT_OBJECT = "ELEMENT";
+
     public enum Network{
         FACEBOOK,
         MOPUB,
@@ -128,22 +133,10 @@ public interface NativeAdResponse {
     public HashMap<String, Object> getNativeElements();
 
     /**
-     * Retrieve the social context of the native ad response.
-     *
-     * @return empty string "" if not present
-     */
-    public String getSocialContext();
-
-    /**
      * Retrieve rating from the native ad response.
      */
     public Rating getAdStarRating();
 
-
-    /**
-     * Retrieve full text from native ad response
-     */
-    public String getFullText();
 
     /**
      * Retrieve sponspored by text from native ad response
@@ -219,7 +212,9 @@ public interface NativeAdResponse {
         public int getHeight() { return this.height; }
     }
     /**
-     * Retrieve rating from the native ad response.
+     * Retrieve Image Size from the native ad response.
+     *
+     * @return ImageSize with width and height set to -1, if not present
      */
     public ImageSize getImageSize();
 
@@ -230,12 +225,27 @@ public interface NativeAdResponse {
      * @return empty string "" if not present
      *
      */
-
     public String getAdditionalDescription();
 
     /**
-     * Set the Additional description of the ad
+     * Retrieve Icon Image Size from the native ad response.
      *
-     * @param additionalDescription set "" if not present
+     * @return ImageSize with width and height set to -1, if not present
      */
+    public ImageSize getIconSize();
+
+    /**
+     * Retrieve Video VAST content from the native ad response.
+     *
+     * @return empty string "" if not present
+     */
+    public String getVastXml();
+
+    /**
+     * Retrieve Privacy Link from the native ad response.
+     *
+     * @return empty string "" if not present
+     */
+    public String getPrivacyLink();
+
 }

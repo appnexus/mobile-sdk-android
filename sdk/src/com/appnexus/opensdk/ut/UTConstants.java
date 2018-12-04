@@ -29,6 +29,6 @@ public class UTConstants {
     public static final String MRAID_JS_FILENAME = "mraid.js";
     public static final String EXTRAS_KEY_MRAID = "MRAID";
     public static final String EXTRAS_KEY_ORIENTATION = "ORIENTATION";
-    public static String REQUEST_BASE_URL_UT_V2 = "http://mediation.adnxs.com/ut/v2";
+    public static String REQUEST_BASE_URL_UT = "http://mediation.adnxs.com/ut/v3";
 
 }

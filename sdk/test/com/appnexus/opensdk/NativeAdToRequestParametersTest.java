@@ -62,6 +62,13 @@ public class NativeAdToRequestParametersTest extends BaseRoboTest {
 
     }
 
+    // Tests the value of RendererId
+    @Test
+    public void testSetRendererId(){
+        setRendererId();
+        assertSetRendererId();
+    }
+
     private void setExternalUId(){
         nativeAdRequest.setExternalUid("AppNexus");
     }
@@ -69,6 +76,15 @@ public class NativeAdToRequestParametersTest extends BaseRoboTest {
     private void assertSetExternalUId(){
         assertNotNull(nativeAdRequest.getExternalUid());
         assertEquals(nativeAdRequest.getExternalUid(), "AppNexus");
+
+    }
+
+    private void setRendererId(){
+        nativeAdRequest.setRendererId(127);
+    }
+
+    private void assertSetRendererId(){
+        assertEquals(nativeAdRequest.getRendererId(), 127);
 
     }
     // Primary size is always 1 x1.

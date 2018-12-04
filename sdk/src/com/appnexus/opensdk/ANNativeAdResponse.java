@@ -50,44 +50,41 @@ public class ANNativeAdResponse implements NativeAdResponse {
     private String imageUrl;
     private String iconUrl;
     private Bitmap image;
-    private ImageSize imageSize;
+    private ImageSize imageSize = new ImageSize(-1, -1);
+    private ImageSize iconSize = new ImageSize(-1, -1);
     private Bitmap icon;
     private Rating rating;
     private String clickUrl;
     private String clickFallBackUrl;
     private String callToAction;
-    private String socialContext;
     private HashMap<String, Object> nativeElements;
     private boolean expired = false;
     private ArrayList<String> imp_trackers;
     private ArrayList<String> click_trackers;
-    private String fullText;
     private String sponsoredBy;
     private String additionalDescription;
     private Handler anNativeExpireHandler;
     private String creativeId = "";
+    private String videoVastXML = "";
+    private String privacyLink = "";
     private static final String KEY_TITLE = "title";
-    private static final String KEY_DESCRIPTION = "description";
-    private static final String KEY_CONTEXT = "context";
-    private static final String KEY_MAIN_MEDIA = "main_media";
-    private static final String KEY_IMAGE_LABEL = "label";
-    private static final String VALUE_DEFAULT_IMAGE = "default";
-    private static final String KEY_IMAGE_URL = "url";
+    private static final String KEY_DESCRIPTION = "desc";
+    private static final String KEY_MAIN_MEDIA = "main_img";
+    private static final String KEY_URL = "url";
     private static final String KEY_IMAGE_WIDTH = "width";
     private static final String KEY_IMAGE_HEIGHT = "height";
-    private static final String KEY_FULL_TEXT = "full_text";
-    private static final String KEY_ICON = "icon_img_url";
-    private static final String KEY_CTA = "cta";
+    private static final String KEY_ICON = "icon";
+    private static final String KEY_CTA = "ctatext";
     private static final String KEY_CLICK_TRACK = "click_trackers";
     private static final String KEY_IMP_TRACK = "impression_trackers";
-    private static final String KEY_CLICK_URL = "click_url";
-    private static final String KEY_CLICK_FALLBACK_URL = "click_fallback_url";
+    private static final String KEY_CLICK_FALLBACK_URL = "fallback_url";
     private static final String KEY_RATING = "rating";
-    private static final String KEY_RATING_VALUE = "value";
-    private static final String KEY_RATING_SCALE = "scale";
-    private static final String KEY_CUSTOM = "custom";
-    private static final String KEY_SPONSORED_BY = "sponsored_by";
+    private static final String KEY_SPONSORED_BY = "sponsored";
     private static final String KEY_ADDITIONAL_DESCRIPTION = "desc2";
+    private static final String KEY_LINK = "link";
+    private static final String KEY_VIDEO = "video";
+    private static final String KEY_VIDEO_CONTENT = "content";
+    private static final String KEY_PRIVACY_LINK = "privacy_link";
 
     private Runnable expireRunnable = new Runnable() {
         @Override
@@ -141,47 +138,49 @@ public class ANNativeAdResponse implements NativeAdResponse {
         response.imp_trackers = imp_trackers;
         response.title = JsonUtil.getJSONString(metaData, KEY_TITLE);
         response.description = JsonUtil.getJSONString(metaData, KEY_DESCRIPTION);
-        JSONArray main_media = JsonUtil.getJSONArray(metaData, KEY_MAIN_MEDIA);
-        if (main_media != null) {
-            int l = main_media.length();
-            for (int i = 0; i < l; i++) {
-                JSONObject media = JsonUtil.getJSONObjectFromArray(main_media, i);
-                if (media != null) {
-                    String label = JsonUtil.getJSONString(media, KEY_IMAGE_LABEL);
-                    if (label != null && label.equals(VALUE_DEFAULT_IMAGE)) {
-                        response.imageUrl = JsonUtil.getJSONString(media, KEY_IMAGE_URL);
-                        response.imageSize = new ImageSize(
-                                JsonUtil.getJSONInt(media, KEY_IMAGE_WIDTH),
-                                JsonUtil.getJSONInt(media, KEY_IMAGE_HEIGHT)
-                        );
-                        break;
-                    }
-                }
-            }
+        JSONObject media = JsonUtil.getJSONObject(metaData, KEY_MAIN_MEDIA);
+        if (media != null) {
+            response.imageUrl = JsonUtil.getJSONString(media, KEY_URL);
+            response.imageSize = new ImageSize(
+                    JsonUtil.getJSONInt(media, KEY_IMAGE_WIDTH),
+                    JsonUtil.getJSONInt(media, KEY_IMAGE_HEIGHT)
+            );
         }
-        ;
-        response.iconUrl = JsonUtil.getJSONString(metaData, KEY_ICON);
-        response.socialContext = JsonUtil.getJSONString(metaData, KEY_CONTEXT);
+        JSONObject icon = JsonUtil.getJSONObject(metaData, KEY_ICON);
+        if (icon != null) {
+            response.iconUrl = JsonUtil.getJSONString(icon, KEY_URL);
+            response.iconSize = new ImageSize(JsonUtil.getJSONInt(icon, KEY_IMAGE_WIDTH),
+                    JsonUtil.getJSONInt(icon, KEY_IMAGE_HEIGHT));
+        }
         response.callToAction = JsonUtil.getJSONString(metaData, KEY_CTA);
-        response.clickUrl = JsonUtil.getJSONString(metaData, KEY_CLICK_URL);
-        response.clickFallBackUrl = JsonUtil.getJSONString(metaData, KEY_CLICK_FALLBACK_URL);
+        JSONObject link = JsonUtil.getJSONObject(metaData, KEY_LINK);
+        response.clickUrl = JsonUtil.getJSONString(link, KEY_URL);
+        response.clickFallBackUrl = JsonUtil.getJSONString(link, KEY_CLICK_FALLBACK_URL);
 
         response.sponsoredBy = JsonUtil.getJSONString(metaData, KEY_SPONSORED_BY);
-        response.fullText = JsonUtil.getJSONString(metaData, KEY_FULL_TEXT);
         response.additionalDescription = JsonUtil.getJSONString(metaData, KEY_ADDITIONAL_DESCRIPTION);
 
 
-        JSONObject rating = JsonUtil.getJSONObject(metaData, KEY_RATING);
         response.rating = new Rating(
-                JsonUtil.getJSONDouble(rating, KEY_RATING_VALUE),
-                JsonUtil.getJSONDouble(rating, KEY_RATING_SCALE)
-        );
-        JSONArray clickTrackerJson = JsonUtil.getJSONArray(metaData, KEY_CLICK_TRACK);
+                JsonUtil.getJSONDouble(metaData, KEY_RATING),
+                -1);
+        JSONArray clickTrackerJson = JsonUtil.getJSONArray(link, KEY_CLICK_TRACK);
         response.click_trackers = JsonUtil.getStringArrayList(clickTrackerJson);
-        JSONObject custom = JsonUtil.getJSONObject(metaData, KEY_CUSTOM);
-        response.nativeElements = JsonUtil.getStringObjectHashMap(custom);
+        JSONObject video = JsonUtil.getJSONObject(metaData, KEY_VIDEO);
+        response.videoVastXML = JsonUtil.getJSONString(video, KEY_VIDEO_CONTENT);
+        response.privacyLink = JsonUtil.getJSONString(metaData, KEY_PRIVACY_LINK);
         response.anNativeExpireHandler = new Handler(Looper.getMainLooper());
         response.anNativeExpireHandler.postDelayed(response.expireRunnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
+
+        JSONObject nativeObject = metaData;
+        nativeObject.remove("impression_trackers");
+        nativeObject.remove("link");
+        nativeObject.remove("javascript_trackers");
+        if(response.nativeElements == null){
+            response.nativeElements = new HashMap<>();
+        }
+        response.nativeElements.put(NATIVE_ELEMENT_OBJECT, nativeObject);
+
         return response;
     }
 
@@ -220,7 +219,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
 
     @Override
     public ImageSize getImageSize() {
-        return  this.imageSize;
+        return this.imageSize;
     }
 
     @Override
@@ -251,16 +250,6 @@ public class ANNativeAdResponse implements NativeAdResponse {
     @Override
     public HashMap<String, Object> getNativeElements() {
         return nativeElements;
-    }
-
-    @Override
-    public String getSocialContext() {
-        return socialContext;
-    }
-
-    @Override
-    public String getFullText() {
-        return fullText;
     }
 
     @Override
@@ -393,7 +382,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
                 }
                 if (getClickThroughAction() == ANClickThroughAction.RETURN_URL) {
                     if (listener != null) {
-                        listener.onAdWasClicked(clickUrl,clickFallBackUrl);
+                        listener.onAdWasClicked(clickUrl, clickFallBackUrl);
                     }
                 } else {
                     if (listener != null) {
@@ -408,6 +397,21 @@ public class ANNativeAdResponse implements NativeAdResponse {
                 }
             }
         };
+    }
+
+    @Override
+    public String getPrivacyLink() {
+        return privacyLink;
+    }
+
+    @Override
+    public ImageSize getIconSize() {
+        return iconSize;
+    }
+
+    @Override
+    public String getVastXml() {
+        return videoVastXML;
     }
 
     private class RedirectWebView extends WebView {

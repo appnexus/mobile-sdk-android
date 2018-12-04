@@ -17,7 +17,7 @@
 package com.appnexus.opensdk;
 
 /**
- * AdType Enum directly maps to ad_type in UT V2 Response
+ * AdType Enum directly maps to ad_type in UT V3 Response
  */
 public enum AdType {
 

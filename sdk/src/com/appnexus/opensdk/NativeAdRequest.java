@@ -339,6 +339,24 @@ public class NativeAdRequest implements Ad {
         return this.listener;
     }
 
+    /**
+     * Get the RendererId of the request
+     *
+     * @return Default int value 0, which indicates that renderer_id is not sent in the UT Request.
+     */
+    public int getRendererId() {
+        return requestParameters.getRendererId();
+    }
+
+    /**
+     * Set the rendererId associated with placement.
+     *
+     * @param rendererId the Native Assembly renderer_id that is associated with this placement.
+     */
+    public void setRendererId(int rendererId) {
+        requestParameters.setRendererId(rendererId);
+    }
+
     @Override
     public UTRequestParameters getRequestParameters() {
         return requestParameters;

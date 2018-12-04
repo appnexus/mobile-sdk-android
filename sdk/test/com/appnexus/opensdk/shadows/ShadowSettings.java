@@ -24,7 +24,7 @@ public class ShadowSettings {
 
     private static String COOKIE_DOMAIN = "http://mediation.adnxs.com";
     private static String BASE_URL = "http://mediation.adnxs.com/";
-    private static String REQUEST_BASE_URL = "http://mediation.adnxs.com/ut/v2";
+    private static String REQUEST_BASE_URL = "http://mediation.adnxs.com/ut/v3";
     private static String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
     public boolean test_mode = true;
 

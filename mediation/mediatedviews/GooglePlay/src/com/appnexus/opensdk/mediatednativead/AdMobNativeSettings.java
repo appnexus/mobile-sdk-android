@@ -26,7 +26,6 @@ public class AdMobNativeSettings {
     public static String NATIVE_ELEMENT_PRICE_KEY = "PRICE";
     public static String NATIVE_ELEMENT_ADVERTISER_KEY = "ADVERTISER";
     public static String NATIVE_ELEMENT_TYPE_KEY = "TYPE";
-    public static String NATIVE_ELEMENT_OBJECT = "ELEMENT";
 
     static boolean enableContentAd = false;
     static boolean enableAppInstallAd = false;

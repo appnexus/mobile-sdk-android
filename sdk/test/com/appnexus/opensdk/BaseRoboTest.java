@@ -40,8 +40,8 @@ public class BaseRoboTest {
         try {
             server.start();
             HttpUrl url= server.url("/");
-            UTConstants.REQUEST_BASE_URL_UT_V2 = url.toString();
-            System.out.println(UTConstants.REQUEST_BASE_URL_UT_V2);
+            UTConstants.REQUEST_BASE_URL_UT = url.toString();
+            System.out.println(UTConstants.REQUEST_BASE_URL_UT);
             ShadowSettings.setTestURL(url.toString());
             TestResponsesUT.setTestURL(url.toString());
         } catch (IOException e) {

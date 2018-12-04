@@ -39,6 +39,8 @@ public class MediatedNativeSuccessful implements MediatedNativeAd {
     public static boolean didPass;
     public static String params;
     public static String uid;
+    private NativeAdResponse.ImageSize mainImageSize = new NativeAdResponse.ImageSize(-1, -1);
+    private NativeAdResponse.ImageSize iconSize = new NativeAdResponse.ImageSize(-1, -1);
 
     @Override
     public void requestNativeAd(Context context, String parameterString, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
@@ -114,15 +116,7 @@ public class MediatedNativeSuccessful implements MediatedNativeAd {
                 }
 
                 @Override
-                public String getSocialContext() {
-                    return null;
-                }
-
-                @Override
                 public String getSponsoredBy() { return SponsoredBy; }
-
-                @Override
-                public String getFullText() { return null; }
 
                 @Override
                 public Rating getAdStarRating() {
@@ -156,12 +150,27 @@ public class MediatedNativeSuccessful implements MediatedNativeAd {
 
                 @Override
                 public ImageSize getImageSize() {
-                    return null;
+                    return mainImageSize;
                 }
 
                 @Override
                 public String getAdditionalDescription() {
                     return ADDITIONAL_DESCRIPTION;
+                }
+
+                @Override
+                public ImageSize getIconSize() {
+                    return iconSize;
+                }
+
+                @Override
+                public String getVastXml() {
+                    return null;
+                }
+
+                @Override
+                public String getPrivacyLink() {
+                    return null;
                 }
             });
 

@@ -181,7 +181,10 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
             assertEquals(MediatedNativeSuccessful.TITLE,response.getTitle());
             assertEquals(MediatedNativeSuccessful.DESCRIPTION,response.getDescription());
             assertEquals(MediatedNativeSuccessful.ADDITIONAL_DESCRIPTION,response.getAdditionalDescription());
-            assertEquals(null, response.getImageSize());
+            assertTrue(response.getImageSize().getHeight() == -1);
+            assertTrue(response.getImageSize().getWidth() == -1);
+            assertTrue(response.getIconSize().getHeight() == -1);
+            assertTrue(response.getIconSize().getWidth() == -1);
             assertEquals(MediatedNativeSuccessful.ImageUrl,response.getImageUrl());
         }
     }
@@ -307,7 +310,10 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
         assertEquals(MediatedNativeSuccessful2.TITLE,response.getTitle());
         assertEquals(MediatedNativeSuccessful2.DESCRIPTION,response.getDescription());
         assertEquals(MediatedNativeSuccessful2.ADDITIONAL_DESCRIPTION,response.getAdditionalDescription());
-        assertEquals(null, response.getImageSize());
+        assertTrue(response.getImageSize().getHeight() == -1);
+        assertTrue(response.getImageSize().getWidth() == -1);
+        assertTrue(response.getIconSize().getHeight() == -1);
+        assertTrue(response.getIconSize().getWidth() == -1);
         assertEquals(MediatedNativeSuccessful2.ImageUrl,response.getImageUrl());
 
     }

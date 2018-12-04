@@ -61,7 +61,7 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
 
     @Test
     public void testgetAdTypeBannerNative() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative())); // First queue a regular HTML banner response
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeVideo())); // First queue a regular HTML banner response
         assertTrue(bannerAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOWN initially
         executeBannerRequest();
         assertTrue(bannerAdView.getAdType() == AdType.NATIVE); // If a Native Ad is served then NATIVE
@@ -71,12 +71,15 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
         assertTrue(nativeAdResponse.getIcon() == null);
         assertTrue(nativeAdResponse.getImage() == null);
         assertTrue(nativeAdResponse.getImageUrl().equalsIgnoreCase("http://path_to_main.com"));
-        assertTrue(nativeAdResponse.getFullText().equalsIgnoreCase("full text"));
         assertTrue(nativeAdResponse.getTitle().equalsIgnoreCase("test title"));
         assertTrue(nativeAdResponse.getDescription().equalsIgnoreCase("test description"));
         assertTrue(nativeAdResponse.getAdditionalDescription().equalsIgnoreCase("additional test description"));
         assertTrue(nativeAdResponse.getImageSize().getHeight() == 200);
         assertTrue(nativeAdResponse.getImageSize().getWidth() == 300);
+        assertTrue(nativeAdResponse.getIconSize().getHeight() == 150);
+        assertTrue(nativeAdResponse.getIconSize().getWidth() == 100);
+        assertEquals("<VAST>content</VAST>",nativeAdResponse.getVastXml());
+        assertEquals("http://ib.adnxs.com/privacy...",nativeAdResponse.getPrivacyLink());
 
     }
 
@@ -94,11 +97,13 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
         assertCallbacks(true);
         assertBannerAdResponse(true);
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeWithoutImages()));
+        bannerAdView.setAllowNativeDemand(true, 127);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         Assert.assertEquals(15000, bannerAdView.getAutoRefreshInterval());
         Assert.assertEquals(AdType.NATIVE, bannerAdView.getAdType());
+        Assert.assertEquals(127, bannerAdView.getRendererId());
         assertCallbacks(true);
         assertBannerAdResponse(false);
     }
@@ -146,5 +151,13 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
         executeBannerRequest();
         assertEquals("", bannerAdView.getCreativeId());
 
+    }
+
+    @Test
+    public void testgetRendererIdBannerNative() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative())); // First queue a banner Native response
+        bannerAdView.setAllowNativeDemand(true, 127);
+        executeBannerRequest();
+        assertEquals(127, bannerAdView.getRendererId());
     }
 }

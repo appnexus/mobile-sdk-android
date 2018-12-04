@@ -23,7 +23,6 @@ public class InMobiSettings {
     static String KEY_LANDING_URL = "landingURL";
     static String KEY_DESCRIPTION = "description";
     public static String INMOBI_APP_ID = "";
-    public static String NATIVE_ELEMENT_OBJECT = "element";
     public static String IMPRESSION_TRACKERS = "impressionTrackers";
 
     public static void setInMobiAppId(String key, Context context) {

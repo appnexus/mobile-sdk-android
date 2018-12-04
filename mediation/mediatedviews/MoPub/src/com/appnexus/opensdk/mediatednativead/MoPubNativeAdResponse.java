@@ -29,6 +29,8 @@ import com.mopub.nativeads.BaseNativeAd;
 import com.mopub.nativeads.NativeAd;
 import com.mopub.nativeads.StaticNativeAd;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,10 +43,13 @@ public class MoPubNativeAdResponse implements NativeAdResponse {
     private String callToAction;
     private Bitmap icon;
     private Bitmap coverImage;
-    private String socialContext;
-    private String fullText = "";
     private String sponsporedBy = "";
     private String creativeId = "";
+    private ImageSize mainImageSize = new ImageSize(-1, -1);
+    private ImageSize iconSize = new ImageSize(-1, -1);
+    private String additionalDescription = "";
+    private String vastXML = "";
+    private String privacyLink = "";
 
     private Rating rating;
     private HashMap<String, Object> nativeElements = new HashMap<String, Object>();
@@ -107,7 +112,7 @@ public class MoPubNativeAdResponse implements NativeAdResponse {
                     nativeElements.put(entry.getKey(), entry.getValue());
                 }
             }
-            nativeElements.put(MoPubNativeSettings.NATIVE_ELEMENT_OBJECT, response);
+            nativeElements.put(NATIVE_ELEMENT_OBJECT, response);
             if (staticNativeAd.getPrivacyInformationIconImageUrl() != null) {
                 nativeElements.put(MoPubNativeSettings.KEY_PRIVACYINFO_ICONURL, staticNativeAd.getPrivacyInformationIconImageUrl());
             }
@@ -186,18 +191,8 @@ public class MoPubNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public String getSocialContext() {
-        return socialContext;
-    }
-
-    @Override
     public Rating getAdStarRating() {
         return rating;
-    }
-
-    @Override
-    public String getFullText() {
-        return fullText;
     }
 
     @Override
@@ -284,11 +279,26 @@ public class MoPubNativeAdResponse implements NativeAdResponse {
 
     @Override
     public ImageSize getImageSize() {
-        return null;
+        return mainImageSize;
     }
 
     @Override
     public String getAdditionalDescription() {
-        return "";
+        return additionalDescription;
+    }
+
+    @Override
+    public ImageSize getIconSize() {
+        return iconSize;
+    }
+
+    @Override
+    public String getVastXml() {
+        return vastXML;
+    }
+
+    @Override
+    public String getPrivacyLink() {
+        return privacyLink;
     }
 }

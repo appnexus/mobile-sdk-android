@@ -21,6 +21,5 @@ public class MoPubNativeSettings {
 
     public static final String KEY_PRIVACYINFO_ICONURL = "privacyIcon";
     public static final String KEY_PRIVACYINFO_LINKURL = "privacyLinkUrl";
-    public static final String NATIVE_ELEMENT_OBJECT = "element";
 
 }

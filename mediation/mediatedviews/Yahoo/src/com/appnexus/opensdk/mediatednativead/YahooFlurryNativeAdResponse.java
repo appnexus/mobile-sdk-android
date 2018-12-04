@@ -28,6 +28,8 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.flurry.android.ads.FlurryAdNative;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -43,10 +45,14 @@ public class YahooFlurryNativeAdResponse implements NativeAdResponse {
     private boolean expired = false;
     private boolean registered = false;
     private NativeAdEventListener listener;
-    private String fullText = "";
     private String sponsporedBy = "";
     private Runnable expireRunnable;
     private String creativeId = "";
+    private ImageSize mainImageSize = new ImageSize(-1, -1);
+    private ImageSize iconSize = new ImageSize(-1, -1);
+    private String additionalDescription = "";
+    private String vastXML = "";
+    private String privacyLink = "";
 
     private Handler yHNativeExpireHandler;
     private View registeredView;
@@ -65,7 +71,7 @@ public class YahooFlurryNativeAdResponse implements NativeAdResponse {
         if (adNative != null) {
             YahooFlurryNativeAdResponse response = new YahooFlurryNativeAdResponse();
             response.adNative = adNative;
-            response.nativeElements.put(YahooFlurrySettings.NATIVE_ELEMENT_OBJECT, adNative);
+            response.nativeElements.put(NATIVE_ELEMENT_OBJECT, adNative);
             if (adNative.getAsset(HEADLINE) != null) {
                 response.title = adNative.getAsset(HEADLINE).getValue();
             }
@@ -211,18 +217,8 @@ public class YahooFlurryNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public String getSocialContext() {
-        return null;
-    }
-
-    @Override
     public Rating getAdStarRating() {
         return rating;
-    }
-
-    @Override
-    public String getFullText() {
-        return fullText;
     }
 
     @Override
@@ -284,11 +280,26 @@ public class YahooFlurryNativeAdResponse implements NativeAdResponse {
 
     @Override
     public ImageSize getImageSize() {
-        return null;
+        return mainImageSize;
     }
 
     @Override
     public String getAdditionalDescription() {
-        return "";
+        return additionalDescription;
+    }
+
+    @Override
+    public ImageSize getIconSize() {
+        return iconSize;
+    }
+
+    @Override
+    public String getVastXml() {
+        return vastXML;
+    }
+
+    @Override
+    public String getPrivacyLink() {
+        return privacyLink;
     }
 }

@@ -135,13 +135,12 @@ public class BannerAdToRequestParametersTest extends BaseRoboTest {
         assertTrue(bannerPostData.contains("\"allowed_media_types\":[1]"));
 
 
-        bannerAdView.setAllowNativeDemand(true);
+        bannerAdView.setAllowNativeDemand(true, 127);
         assertEquals(true,bannerAdView.getAllowNativeDemand());
         String bannerNativePostData = getRequestParametersPostData();
         assertTrue(bannerNativePostData.contains("\"allowed_media_types\":[1,12]"));
+        assertTrue(bannerNativePostData.contains("\"native\":{\"renderer_id\":127}}]"));
     }
-
-
 
     // Test setAllowNative and setAllowVideo
     @Test
@@ -152,12 +151,13 @@ public class BannerAdToRequestParametersTest extends BaseRoboTest {
         assertTrue(bannerPostData.contains("\"allowed_media_types\":[1]"));
 
 
-        bannerAdView.setAllowNativeDemand(true);
+        bannerAdView.setAllowNativeDemand(true, 127);
         bannerAdView.setAllowVideoDemand(true);
         assertEquals(true,bannerAdView.getAllowNativeDemand());
         assertEquals(true,bannerAdView.getAllowVideoDemand());
         String bannerNativePostData = getRequestParametersPostData();
         assertTrue(bannerNativePostData.contains("\"allowed_media_types\":[1,4,12]"));
+        assertTrue(bannerNativePostData.contains("\"native\":{\"renderer_id\":127}}]"));
     }
 
 
@@ -246,4 +246,3 @@ public class BannerAdToRequestParametersTest extends BaseRoboTest {
         return postData;
     }
 }
-

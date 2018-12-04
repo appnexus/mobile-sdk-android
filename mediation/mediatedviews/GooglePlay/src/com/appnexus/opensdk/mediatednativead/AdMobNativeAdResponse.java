@@ -32,6 +32,8 @@ import com.google.android.gms.ads.formats.NativeAppInstallAdView;
 import com.google.android.gms.ads.formats.NativeContentAd;
 import com.google.android.gms.ads.formats.NativeContentAdView;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -43,9 +45,12 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
     private String callToAction;
     private Bitmap coverImage;
     private Bitmap icon;
-    private String socialContext;
-    private String fullText = "";
     private String creativeId = "";
+    private ImageSize mainImageSize = new ImageSize(-1, -1);
+    private ImageSize iconSize = new ImageSize(-1, -1);
+    private String additionalDescription = "";
+    private String vastXML = "";
+    private String privacyLink = "";
 
     private String sponsporedBy = "";
     private Rating rating;
@@ -99,7 +104,7 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
 
     private void loadAssets() {
         nativeElements.put(AdMobNativeSettings.NATIVE_ELEMENT_TYPE_KEY, type);
-        nativeElements.put(AdMobNativeSettings.NATIVE_ELEMENT_OBJECT, nativeAd);
+        nativeElements.put(NATIVE_ELEMENT_OBJECT, nativeAd);
         switch (type) {
             case APP_INSTALL:
                 NativeAppInstallAd appInstallAd = (NativeAppInstallAd) nativeAd;
@@ -245,18 +250,8 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public String getSocialContext() {
-        return socialContext;
-    }
-
-    @Override
     public Rating getAdStarRating() {
         return rating;
-    }
-
-    @Override
-    public String getFullText() {
-        return fullText;
     }
 
     @Override
@@ -335,11 +330,26 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
 
     @Override
     public ImageSize getImageSize() {
-        return null;
+        return mainImageSize;
     }
 
     @Override
     public String getAdditionalDescription() {
-        return "";
+        return additionalDescription;
+    }
+
+    @Override
+    public ImageSize getIconSize() {
+        return iconSize;
+    }
+
+    @Override
+    public String getVastXml() {
+        return vastXML;
+    }
+
+    @Override
+    public String getPrivacyLink() {
+        return privacyLink;
     }
 }
