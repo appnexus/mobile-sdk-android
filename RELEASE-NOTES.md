@@ -1,3 +1,14 @@
+## 5.0
+### New Features
++ Universal Tags version 3, including support for Native ad objects
++ Support for Native Video
++ Open Measurement SDK support for video ads (MS-3388)
+### Mediation partner upgrades
++ Remove support for Rubicon SDK (MS-3682)
+### Bug Fixes
++ Catch "Out of Memory" exceptions (MS-3192, MS-3582)
++ Resolve problems with Interstitial display caused by use of Flavors (MS-3668)
+
 ## 4.12
 ###  New Features and Bug Fixes
 + MS-3606: Updated Smart Adapter to v6.10
