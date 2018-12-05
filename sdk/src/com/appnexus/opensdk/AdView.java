@@ -1161,7 +1161,7 @@ public abstract class AdView extends FrameLayout implements Ad {
                     setCreativeWidth(ad.getDisplayable().getCreativeWidth());
                     setCreativeHeight(ad.getDisplayable().getCreativeHeight());
                     setCreativeId(ad.getResponseData().getCreativeId());
-                    if (ad.isMediated()) {
+                    if (ad.isMediated() && ad.getResponseData().getContentSource() == UTConstants.CSM) {
                         try {
                             displayMediated((MediatedDisplayable) ad.getDisplayable());
                         } catch (ClassCastException cce) {
