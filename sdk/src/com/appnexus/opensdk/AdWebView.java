@@ -42,6 +42,7 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.SslErrorHandler;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -61,6 +62,7 @@ import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
 import com.appnexus.opensdk.viewability.ANOmidAdSession;
 
+import java.io.InputStream;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -429,6 +431,21 @@ class AdWebView extends WebView implements Displayable,
                         break;
                 }
             }
+        }
+
+
+        @Override
+        public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+            try {
+                // This intercepts resource loading requests from a webview and injects local apn_mraid js file.
+                if (url.contains("mraid.js") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+                    InputStream data = getResources().openRawResource(R.raw.apn_mraid);
+                    return new WebResourceResponse("text/javascript", "UTF-8", data);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            return super.shouldInterceptRequest(view, url);
         }
 
         @Override
