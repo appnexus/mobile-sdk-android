@@ -22,7 +22,7 @@ android {
 dependencies {
     api project(':sdk')
     api "com.smartadserver.android:smart-display-sdk:$version@aar"
-    api 'com.squareup.okhttp3:okhttp:+'
+    api 'com.squareup.okhttp3:okhttp:3.12.1'
 }
 
 
