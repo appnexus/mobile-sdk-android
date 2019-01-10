@@ -16,28 +16,17 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Rect;
-import android.os.Build;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
-import android.view.ViewTreeObserver;
-import android.widget.FrameLayout;
 
 import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.StringUtil;
-import com.smartadserver.android.library.SASInterstitialView;
+import com.smartadserver.android.library.exception.SASAdTimeoutException;
+import com.smartadserver.android.library.exception.SASNoAdToDeliverException;
 import com.smartadserver.android.library.model.SASAdElement;
-import com.smartadserver.android.library.ui.SASAdView;
-import com.smartadserver.android.library.util.SASUtil;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.smartadserver.android.library.model.SASAdPlacement;
+import com.smartadserver.android.library.ui.SASInterstitialManager;
 
 /**
  * This class is the SmartAdServer interstitial adapter. It provides the functionality needed to allow
@@ -47,181 +36,155 @@ import org.json.JSONObject;
  * by the developer.
  */
 
-public class SmartAdServerInterstitialAdView implements MediatedInterstitialAdView {
+public class SmartAdServerInterstitialAdView extends SmartAdServerBaseAdapter implements MediatedInterstitialAdView {
 
+    // Tag for logging purposes
+    private static final String TAG = SmartAdServerInterstitialAdView.class.getSimpleName();
 
-    public static final String SITE_ID = "site_id";
-    public static final String PAGE_ID = "page_id";
-    public static final String FORMAT_ID = "format_id";
-
-
-    SASInterstitialView sasInterstitialView;
-
-    // Container view for offscreen interstitial loading (as SASInterstitialView is displayed immediately after successful loading)
-    FrameLayout interstitialContainer;
-
-    SmartAdServerListener smartAdListener = null;
-
+    // the Smart interstitial manager
+    private SASInterstitialManager interstitialManager;
 
     @Override
-    public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid, TargetingParameters tp) {
+    public void requestAd(final MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid, TargetingParameters tp) {
 
-        String site_id = "";
-        String page_id = "";
-        String format_id = "";
-        try {
-            if (!StringUtil.isEmpty(uid)) {
-                JSONObject idObject = new JSONObject(uid);
-                site_id = idObject.getString(SITE_ID);
-                page_id = idObject.getString(PAGE_ID);
-                format_id = idObject.getString(FORMAT_ID);
-            } else {
-                mIC.onAdFailed(ResultCode.INVALID_REQUEST);
-                return;
-            }
-        } catch (JSONException e) {
-            mIC.onAdFailed(ResultCode.INVALID_REQUEST);
+        // Configure (if needed) the SDK and retrieve the Ad placement
+        SASAdPlacement adPlacement = configureSDKAndGetAdPlacement(activity, uid, tp);
+
+        if (adPlacement == null) {
+            mIC.onAdFailed(ResultCode.INTERNAL_ERROR);
             return;
         }
 
-        smartAdListener = new SmartAdServerListener(mIC, this.getClass().getSimpleName());
+        // Instantiate SASInterstitialManager instance
+        interstitialManager = new SASInterstitialManager(activity, adPlacement);
 
-        // instantiate SASInterstitialView that will perform the Smart ad call
-        sasInterstitialView = new SASInterstitialView(activity) {
-            /**
-             * Overriden to notify the ad was clicked
-             */
+        // Set the Interstitial Listener
+        interstitialManager.setInterstitialListener(new SASInterstitialManager.InterstitialListener() {
             @Override
-            public void open(String url) {
-                super.open(url);
-                if (isAdWasOpened()) {
-                    smartAdListener.onClicked();
-                }
-            }
-        };
-
-        // add state change listener to detect when ad is closed or loaded and expanded (=ready to be displayed)
-        sasInterstitialView.addStateChangeListener(new SASAdView.OnStateChangeListener() {
-            boolean wasOpened = false;
-            public void onStateChanged(
-                    SASAdView.StateChangeEvent stateChangeEvent) {
-                switch (stateChangeEvent.getType()) {
-                    case SASAdView.StateChangeEvent.VIEW_HIDDEN:
-                        Clog.i(Clog.mediationLogTag, "SmartAdServer: MRAID state : HIDDEN");
-                        // ad was closed
-                        ViewParent parent = interstitialContainer.getParent();
-                        if (parent instanceof ViewGroup) {
-                            ((ViewGroup) parent).removeView(interstitialContainer);
-                        }
-                        if (wasOpened) {
-                            smartAdListener.onCollapsed();
-                            wasOpened = false;
-                        }
-                        break;
-                    case SASAdView.StateChangeEvent.VIEW_EXPANDED:
-                        Clog.i(Clog.mediationLogTag, "SmartAdServer: MRAID state : EXPANDED");
-                        // ad was expanded
-                        smartAdListener.onExpanded();
-                        wasOpened = true;
-                        break;
-                    case SASAdView.StateChangeEvent.VIEW_DEFAULT:
-                        // ad was collapsed
-                        Clog.i(Clog.mediationLogTag, "SmartAdServer: MRAID state : DEFAULT");
-                        if (wasOpened) {
-                            smartAdListener.onCollapsed();
-                            wasOpened = false;
-                        }
-                        break;
-                }
-            }
-        });
-
-
-        // create the (offscreen) FrameLayout that the SASInterstitialView will expand into
-        if (interstitialContainer == null) {
-            interstitialContainer = new FrameLayout(activity);
-            interstitialContainer.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        }
-
-        sasInterstitialView.setExpandParentContainer(interstitialContainer);
-
-        // detect layout changes to update padding
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            sasInterstitialView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                @Override
-                public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                    // on layout change, add a globalLayoutListener to apply padding once layout is done (and not to early)
-                    sasInterstitialView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            public void onInterstitialAdLoaded(SASInterstitialManager sasInterstitialManager, SASAdElement sasAdElement) {
+                Clog.i(TAG, "SmartAdServer: Interstitial loading completed");
+                if (mIC != null) {
+                    handler.post(new Runnable() {
                         @Override
-                        public void onGlobalLayout() {
-                            sasInterstitialView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                            Rect r = new Rect();
-                            ViewParent parentView = interstitialContainer.getParent();
-                            if (parentView instanceof View) {
-                                ((View) parentView).getWindowVisibleDisplayFrame(r);
-                                int topPadding = r.top;
-                                // handle navigation bar overlay by adding padding
-                                int leftPadding = r.left;
-                                int bottomPadding = Math.max(0, ((View) parentView).getHeight() - r.bottom);
-                                int rightPadding = Math.max(0, ((View) parentView).getWidth() - r.right);
-                                interstitialContainer.setPadding(leftPadding, topPadding, rightPadding, bottomPadding);
-                            }
+                        public void run() {
+                            mIC.onAdLoaded();
+                        }
+                    });
+
+                }
+            }
+
+            @Override
+            public void onInterstitialAdFailedToLoad(SASInterstitialManager sasInterstitialManager, Exception e) {
+                Clog.e(TAG, "SmartAdServer: Interstitial Loading failed: " + e.getMessage());
+                final ResultCode code;
+                if (e instanceof SASNoAdToDeliverException) {
+                    // no ad to deliver
+                    code = ResultCode.UNABLE_TO_FILL;
+                } else if (e instanceof SASAdTimeoutException) {
+                    // ad request timeout translates to network error
+                    code = ResultCode.NETWORK_ERROR;
+                } else {
+                    code = ResultCode.INTERNAL_ERROR;
+                }
+
+                if (mIC != null) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mIC.onAdFailed(code);
                         }
                     });
                 }
-            });
-        }
-
-        if (tp != null) {
-            if (tp.getLocation() != null) {
-                sasInterstitialView.setLocation(tp.getLocation());
             }
-        }
-        // Now request ad for this SASInterstitialView
-        sasInterstitialView.loadAd(Integer.parseInt(site_id), page_id, Integer.parseInt(format_id), true,
-                "", smartAdListener);
 
+            @Override
+            public void onInterstitialAdShown(SASInterstitialManager sasInterstitialManager) {
+                Clog.i(TAG, "SmartAdServer: Interstitial shown");
+                if (mIC != null) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mIC.onAdExpanded();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onInterstitialAdFailedToShow(SASInterstitialManager sasInterstitialManager, Exception e) {
+                Clog.i(TAG, "SmartAdServer: Interstitial failed to show: " + e.getMessage());
+                // No equivalent of Failed to show for AppNexus.
+            }
+
+            @Override
+            public void onInterstitialAdClicked(SASInterstitialManager sasInterstitialManager) {
+                Clog.i(TAG, "SmartAdServer: Interstitial clicked");
+                if (mIC != null) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mIC.onAdClicked();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onInterstitialAdDismissed(SASInterstitialManager sasInterstitialManager) {
+                Clog.i(TAG, "SmartAdServer: Interstitial dismissed");
+                if (mIC != null) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mIC.onAdCollapsed();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onInterstitialAdVideoEvent(SASInterstitialManager sasInterstitialManager, int i) {
+                Clog.i(TAG, "SmartAdServer: Interstitial AdVideoEvent: " + i);
+                // No equivalent
+            }
+        });
+
+        // Load interstitial
+        interstitialManager.loadAd();
 
     }
 
     @Override
     public void show() {
-        // find the rootView where to add the interstitialContainer
-        View rootContentView = null;
-        Context context = sasInterstitialView.getContext();
-        if (context instanceof Activity) {
-            // try to find root view via Activity if available
-            rootContentView = ((Activity)context).getWindow().getDecorView();
-        }
-
-        // now actually add the interstitialContainer including appropriate padding fir status/navigation bars
-        if (rootContentView instanceof ViewGroup) {
-            ((ViewGroup)rootContentView).addView(interstitialContainer);
+        if (isReady()) {
+            // Show only if ready
+            interstitialManager.show();
         }
     }
 
     @Override
     public boolean isReady() {
-        return smartAdListener.isAdLoaded();
+        return interstitialManager.isShowable();
     }
 
     @Override
     public void destroy() {
-        if (sasInterstitialView != null) {
-            sasInterstitialView.setExpandParentContainer(null);
-            sasInterstitialView.onDestroy();
-            sasInterstitialView = null;
+        if (interstitialManager != null) {
+            interstitialManager.onDestroy();
+            interstitialManager = null;
         }
     }
 
+
     @Override
     public void onPause() {
-
+        //not supported by the SASInterstitialManager class
     }
 
     @Override
     public void onResume() {
-
+        //not supported by the SASInterstitialManager class
     }
 
     @Override

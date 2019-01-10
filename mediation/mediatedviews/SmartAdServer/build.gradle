@@ -1,5 +1,5 @@
 // Project Properties
-version = "6.10.0" // supported Millennial version
+version = "7.0.2" // supported Millennial version
 apply plugin: 'com.android.library'
 
 android {
@@ -21,7 +21,8 @@ android {
 
 dependencies {
     api project(':sdk')
-    api "com.smartadserver.android:displaylibrary:$version@aar"
+    api "com.smartadserver.android:smart-display-sdk:$version@aar"
+    api 'com.squareup.okhttp3:okhttp:+'
 }
 
 

@@ -16,22 +16,21 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
-import android.view.Gravity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.StringUtil;
-import com.smartadserver.android.library.SASBannerView;
-import com.smartadserver.android.library.ui.SASAdView;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.appnexus.opensdk.utils.ViewUtil;
+import com.smartadserver.android.library.exception.SASAdTimeoutException;
+import com.smartadserver.android.library.exception.SASNoAdToDeliverException;
+import com.smartadserver.android.library.model.SASAdElement;
+import com.smartadserver.android.library.model.SASAdPlacement;
+import com.smartadserver.android.library.ui.SASBannerView;
 
 /**
  * This class is the SmartAdServer Banner adapter. It provides the functionality needed to allow
@@ -41,117 +40,155 @@ import org.json.JSONObject;
  * by the developer.
  */
 
-public class SmartAdServerBannerAdView implements MediatedBannerAdView {
+public class SmartAdServerBannerAdView extends SmartAdServerBaseAdapter implements MediatedBannerAdView {
 
-    SASBannerView sasBannerView;
-    SmartAdServerListener sasBannerListener = null;
-    public static final String SITE_ID = "site_id";
-    public static final String PAGE_ID = "page_id";
-    public static final String FORMAT_ID = "format_id";
+    // Tag for logging purposes
+    private static final String TAG = SmartAdServerBannerAdView.class.getSimpleName();
 
+    // the Smart banner view
+    private SASBannerView bannerView;
 
     @Override
-    public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
-        String site_id = "";
-        String page_id = "";
-        String format_id = "";
-        try {
-            if (!StringUtil.isEmpty(uid)) {
-                JSONObject idObject = new JSONObject(uid);
-                site_id = idObject.getString(SITE_ID);
-                page_id = idObject.getString(PAGE_ID);
-                format_id = idObject.getString(FORMAT_ID);
-            } else {
-                mBC.onAdFailed(ResultCode.INVALID_REQUEST);
-                return null;
-            }
-        } catch (JSONException e) {
-            mBC.onAdFailed(ResultCode.INVALID_REQUEST);
+    public View requestAd(final MediatedBannerAdViewController mBC, final Activity activity, String parameter, String uid, final int width, final int height, TargetingParameters tp) {
+
+        // Configure (if needed) the SDK and retrieve the Ad placement
+        SASAdPlacement adPlacement = configureSDKAndGetAdPlacement(activity, uid, tp);
+
+        if (adPlacement == null) {
+            mBC.onAdFailed(ResultCode.INTERNAL_ERROR);
             return null;
         }
-        // Handler class to be notified of ad loading outcome
-        sasBannerListener = new SmartAdServerListener(mBC, this.getClass().getSimpleName());
 
-        // instantiate SASBannerView that will perform the Smart ad call
-        sasBannerView = new SASBannerView(activity) {
+        // Instantiate the Smart Banner view
+        bannerView = new SASBannerView(activity){
             /**
-             * Overriden to notify the ad was clicked
+             * Overriden to force banner size to received admob size if not expanded
+             * @param params
              */
             @Override
-            public void open(String url) {
-                super.open(url);
-                if (isAdWasOpened()) {
-                    sasBannerListener.onClicked();
+            public void setLayoutParams(ViewGroup.LayoutParams params) {
+                if (!bannerView.isExpanded()) {
+                    params.width = ViewUtil.getValueInPixel(activity.getApplicationContext(),width);
+                    params.height = ViewUtil.getValueInPixel(activity.getApplicationContext(),height);
                 }
+                super.setLayoutParams(params);
             }
         };
 
-        // add state change listener to detect when ad is closed
-        sasBannerView.addStateChangeListener(new SASAdView.OnStateChangeListener() {
-            boolean wasOpened = false;
-            public void onStateChanged(
-                    SASAdView.StateChangeEvent stateChangeEvent) {
-                switch (stateChangeEvent.getType()) {
-                    case SASAdView.StateChangeEvent.VIEW_EXPANDED:
-                        Clog.i(Clog.mediationLogTag, "SmartAdServer: MRAID state : EXPANDED");
-                        // ad was expanded
-                        sasBannerListener.onExpanded();
-                        wasOpened = true;
-                        break;
-                    case SASAdView.StateChangeEvent.VIEW_DEFAULT:
-                        Clog.i(Clog.mediationLogTag, "SmartAdServer: MRAID state : DEFAULT");
-                        // ad was collapsed
-                        if (wasOpened) {
-                            sasBannerListener.onCollapsed();
-                            wasOpened = false;
+        // Set the banner listener
+        bannerView.setBannerListener(new SASBannerView.BannerListener() {
+            @Override
+            public void onBannerAdLoaded(SASBannerView sasBannerView, SASAdElement sasAdElement) {
+                Clog.i(TAG, "SmartAdServer: Banner loaded");
+                if (mBC != null) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mBC.onAdLoaded();
                         }
-                        break;
+                    });
                 }
+            }
+
+            @Override
+            public void onBannerAdFailedToLoad(SASBannerView sasBannerView, Exception e) {
+                Clog.e(TAG, "SmartAdServer: Banner failed to load: " + e.getMessage());
+                final ResultCode code;
+                if (e instanceof SASNoAdToDeliverException) {
+                    // no ad to deliver
+                    code = ResultCode.UNABLE_TO_FILL;
+                } else if (e instanceof SASAdTimeoutException) {
+                    // ad request timeout translates to  network error
+                    code = ResultCode.NETWORK_ERROR;
+                } else {
+                    code = ResultCode.INTERNAL_ERROR;
+                }
+                if (mBC != null) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mBC.onAdFailed(code);
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onBannerAdClicked(SASBannerView sasBannerView) {
+                Clog.i(TAG, "SmartAdServer: Banner clicked");
+                if (mBC != null) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mBC.onAdClicked();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onBannerAdExpanded(SASBannerView sasBannerView) {
+                Clog.i(TAG, "SmartAdServer: Banner expanded");
+                if (mBC != null) {
+                    mBC.onAdExpanded();
+                }
+            }
+
+            @Override
+            public void onBannerAdCollapsed(SASBannerView sasBannerView) {
+                Clog.i(TAG, "SmartAdServer: Banner collapsed");
+                if (mBC != null) {
+                    mBC.onAdCollapsed();
+                }
+            }
+
+            @Override
+            public void onBannerAdResized(SASBannerView sasBannerView) {
+                Clog.i(TAG, "SmartAdServer: Banner resized");
+                // No equivalent
+            }
+
+            @Override
+            public void onBannerAdClosed(SASBannerView sasBannerView) {
+                Clog.i(TAG, "SmartAdServer: Banner closed");
+                if (mBC != null) {
+                    mBC.onAdCollapsed();
+                }
+            }
+
+            @Override
+            public void onBannerAdVideoEvent(SASBannerView sasBannerView, int i) {
+                Clog.i(TAG, "SmartAdServer: Banner video event: " + i);
+                // No equivalent
             }
         });
 
+        // Load the banner
+        bannerView.loadAd(adPlacement);
 
-
-        sasBannerView.setMinimumWidth(width);
-        sasBannerView.setMinimumHeight(height);
-        sasBannerView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, toPixelUnits(activity,height), Gravity.CENTER));
-        if (tp != null) {
-            if (tp.getLocation() != null) {
-                sasBannerView.setLocation(tp.getLocation());
-            }
-        }
-        // Load banner ad with appropriate parameters (siteID,pageID,formatID,master,targeting,adResponseHandler)
-        sasBannerView.loadAd(Integer.parseInt(site_id), page_id, Integer.parseInt(format_id), true, "", sasBannerListener);
-
-        return sasBannerView;
+        return bannerView;
     }
 
     @Override
     public void destroy() {
-        if (sasBannerView != null) {
-            sasBannerView.onDestroy();
-            sasBannerView = null;
+        if (bannerView != null) {
+            bannerView.onDestroy();
+            bannerView = null;
         }
     }
 
     @Override
     public void onPause() {
-        //SASBannerView lacks a pause public api
+        //not supported by the SASBannerView class
     }
 
     @Override
     public void onResume() {
-        //SASBannerView lacks a resume public api
+        //not supported by the SASBannerView class
     }
 
     @Override
     public void onDestroy() {
         destroy();
-    }
-
-
-    private int toPixelUnits(Activity activity, int dipUnit) {
-        float density = activity.getResources().getDisplayMetrics().density;
-        return Math.round(dipUnit * density);
     }
 }
