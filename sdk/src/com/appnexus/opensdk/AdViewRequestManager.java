@@ -34,6 +34,7 @@ class AdViewRequestManager extends RequestManager {
     private MediatedAdViewController controller;
     private MediatedSSMAdViewController ssmAdViewController;
     private MediatedNativeAdController mediatedNativeAdController;
+    private AdWebView adWebview;
     private final WeakReference<Ad> owner;
 
     public AdViewRequestManager(Ad owner) {
@@ -263,16 +264,16 @@ class AdViewRequestManager extends RequestManager {
     }
 
     private void initiateWebview(final AdView owner, final BaseAdResponse response) {
-        final AdWebView output = new AdWebView(owner, AdViewRequestManager.this);
-        output.loadAd(response);
+        adWebview = new AdWebView(owner, AdViewRequestManager.this);
+        adWebview.loadAd(response);
 
         if (owner.getMediaType().equals(MediaType.BANNER)) {
             BannerAdView bav = (BannerAdView) owner;
             if (bav.getExpandsToFitScreenWidth()) {
-                bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), output);
+                bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), adWebview);
             }
             if (bav.getResizeAdToFitContainer()) {
-                bav.resizeWebViewToFitContainer(response.getWidth(), response.getHeight(), output);
+                bav.resizeWebViewToFitContainer(response.getWidth(), response.getHeight(), adWebview);
             }
         }
     }
