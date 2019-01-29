@@ -26,13 +26,8 @@ import com.appnexus.opensdk.NativeAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.google.android.gms.ads.formats.NativeAd;
-import com.google.android.gms.ads.formats.NativeAdView;
-import com.google.android.gms.ads.formats.NativeAppInstallAd;
-import com.google.android.gms.ads.formats.NativeAppInstallAdView;
-import com.google.android.gms.ads.formats.NativeContentAd;
-import com.google.android.gms.ads.formats.NativeContentAdView;
-
-import org.json.JSONObject;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 
 import java.util.HashMap;
 import java.util.List;
@@ -60,13 +55,11 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
     private NativeAdEventListener listener;
     private Runnable runnable;
 
-    private final NativeAd nativeAd;
-    private final AdMobNativeSettings.AdMobNativeType type;
+    private final UnifiedNativeAd nativeAd;
     private Handler nativeExpireHandler;
 
-    AdMobNativeAdResponse(NativeAd ad, AdMobNativeSettings.AdMobNativeType type) {
+    AdMobNativeAdResponse(final UnifiedNativeAd ad) {
         this.nativeAd = ad;
-        this.type = type;
         runnable = new Runnable() {
             @Override
             public void run() {
@@ -81,19 +74,7 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
                 listener = null;
                 expired = true;
                 if (AdMobNativeAdResponse.this.nativeAd != null) {
-                    try {
-                        switch (AdMobNativeAdResponse.this.type) {
-                            case APP_INSTALL:
-                                NativeAppInstallAd appInstallAd = (NativeAppInstallAd) AdMobNativeAdResponse.this.nativeAd;
-                                appInstallAd.destroy();
-                                break;
-                            case CONTENT_AD:
-                                NativeContentAd contentAd = (NativeContentAd) AdMobNativeAdResponse.this.nativeAd;
-                                contentAd.destroy();
-                                break;
-                        }
-                    } catch (ClassCastException e) {
-                    }
+                    nativeAd.destroy();
                 }
             }
         };
@@ -103,83 +84,48 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
     }
 
     private void loadAssets() {
-        nativeElements.put(AdMobNativeSettings.NATIVE_ELEMENT_TYPE_KEY, type);
         nativeElements.put(NATIVE_ELEMENT_OBJECT, nativeAd);
-        switch (type) {
-            case APP_INSTALL:
-                NativeAppInstallAd appInstallAd = (NativeAppInstallAd) nativeAd;
-                if (appInstallAd.getHeadline() != null) {
-                    title = appInstallAd.getHeadline().toString();
+        if (nativeAd.getHeadline() != null) {
+            title = nativeAd.getHeadline().toString();
+        }
+        if (nativeAd.getBody() != null) {
+            description = nativeAd.getBody().toString();
+        }
+        if (nativeAd.getCallToAction() != null) {
+            callToAction = nativeAd.getCallToAction().toString();
+        }
+        if (nativeAd.getIcon() != null) {
+            NativeAd.Image iconImage = nativeAd.getIcon();
+            if (iconImage.getUri() != null) {
+                iconUrl = iconImage.getUri().toString();
+            }
+        }
+        if(nativeAd.getImages() !=null) {
+            List<NativeAd.Image> images = nativeAd.getImages();
+            if (images != null && images.size() > 0) {
+                NativeAd.Image image = images.get(0);
+                if (image.getUri() != null) {
+                    imageUrl = image.getUri().toString();
                 }
-                if (appInstallAd.getBody() != null) {
-                    description = appInstallAd.getBody().toString();
-                }
-                if (appInstallAd.getCallToAction() != null) {
-                    callToAction = appInstallAd.getCallToAction().toString();
-                }
-                if (appInstallAd.getIcon() != null) {
-                    NativeAd.Image iconImage = appInstallAd.getIcon();
-                    if (iconImage.getUri() != null) {
-                        iconUrl = iconImage.getUri().toString();
-                    }
-                }
-                List<NativeAd.Image> images = appInstallAd.getImages();
-                if (images != null && images.size() > 0) {
-                    NativeAd.Image image = images.get(0);
-                    if (image.getUri() != null) {
-                        imageUrl = image.getUri().toString();
-                    }
-                }
-                if (appInstallAd.getStarRating() > 0) {
-                    rating = new Rating(appInstallAd.getStarRating(), 5.0);
-                }
-                if (appInstallAd.getStore() != null) {
-                    nativeElements.put(AdMobNativeSettings.NATIVE_ELEMENT_STORE_KEY, appInstallAd.getStore().toString());
-                }
-                if (appInstallAd.getPrice() != null) {
-                    nativeElements.put(AdMobNativeSettings.NATIVE_ELEMENT_PRICE_KEY, appInstallAd.getPrice());
-                }
-                Bundle bundle = appInstallAd.getExtras();
-                if (bundle != null && bundle.size() > 0) {
-                    for (String key : bundle.keySet()) {
-                        nativeElements.put(key, bundle.get(key));
-                    }
-                }
-                break;
-            case CONTENT_AD:
-                NativeContentAd contentAd = (NativeContentAd) nativeAd;
-                if (contentAd.getHeadline() != null) {
-                    title = contentAd.getHeadline().toString();
-                }
-                if (contentAd.getBody() != null) {
-                    description = contentAd.getBody().toString();
-                }
-                if (contentAd.getCallToAction() != null) {
-                    callToAction = contentAd.getCallToAction().toString();
-                }
-                if (contentAd.getLogo() != null) {
-                    NativeAd.Image iconImage = contentAd.getLogo();
-                    if (iconImage.getUri() != null) {
-                        iconUrl = iconImage.getUri().toString();
-                    }
-                }
-                List<NativeAd.Image> contentAdImages = contentAd.getImages();
-                if (contentAdImages != null && contentAdImages.size() > 0) {
-                    NativeAd.Image image = contentAdImages.get(0);
-                    if (image.getUri() != null) {
-                        imageUrl = image.getUri().toString();
-                    }
-                }
-                if (contentAd.getAdvertiser() != null) {
-                    nativeElements.put(AdMobNativeSettings.NATIVE_ELEMENT_ADVERTISER_KEY, contentAd.getAdvertiser().toString());
-                }
-                Bundle bundle1 = contentAd.getExtras();
-                if (bundle1 != null && bundle1.size() > 0) {
-                    for (String key : bundle1.keySet()) {
-                        nativeElements.put(key, bundle1.get(key));
-                    }
-                }
-                break;
+            }
+        }
+        if (nativeAd.getStarRating() != null && nativeAd.getStarRating() > 0) {
+            rating = new Rating(nativeAd.getStarRating(), 5.0);
+        }
+        if (nativeAd.getStore() != null) {
+            nativeElements.put(AdMobNativeSettings.NATIVE_ELEMENT_STORE_KEY, nativeAd.getStore().toString());
+        }
+        if (nativeAd.getPrice() != null) {
+            nativeElements.put(AdMobNativeSettings.NATIVE_ELEMENT_PRICE_KEY, nativeAd.getPrice());
+        }
+        if (nativeAd.getAdvertiser() != null) {
+            nativeElements.put(AdMobNativeSettings.NATIVE_ELEMENT_ADVERTISER_KEY, nativeAd.getAdvertiser().toString());
+        }
+        Bundle bundle = nativeAd.getExtras();
+        if (bundle != null && bundle.size() > 0) {
+            for (String key : bundle.keySet()) {
+                nativeElements.put(key, bundle.get(key));
+            }
         }
     }
 
@@ -264,26 +210,15 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
         return expired;
     }
 
-    private NativeAdView adView = null;
+    private UnifiedNativeAdView adView = null;
 
     @Override
     public boolean registerView(View view, NativeAdEventListener listener) {
         if (view != null && !registered && !expired) {
-            switch (type) {
-                case APP_INSTALL:
-                    try {
-                        adView = (NativeAppInstallAdView) view;
-                    } catch (ClassCastException e) {
-                        Clog.w(Clog.mediationLogTag, "The view registered for AdMob AppInstallNativeAd has to be a subclass of com.google.android.gms.ads.formats.NativeAppInstallAdView");
-                    }
-                    break;
-                case CONTENT_AD:
-                    try {
-                        adView = (NativeContentAdView) view;
-                    } catch (ClassCastException e) {
-                        Clog.w(Clog.mediationLogTag, "The view registered for AdMob ContentAd has to be a subclass of com.google.android.gms.ads.formats.NativeContentAdView");
-                    }
-                    break;
+            try {
+                adView = (UnifiedNativeAdView) view;
+            } catch (ClassCastException e) {
+                Clog.w(Clog.mediationLogTag, "The view registered for AdMob UnifiedNativeAd has to be a subclass of com.google.android.gms.ads.formats.UnifiedNativeAdView");
             }
             if (adView != null) {
                 adView.setNativeAd(nativeAd);
