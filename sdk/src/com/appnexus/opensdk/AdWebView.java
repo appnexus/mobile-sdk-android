@@ -105,6 +105,7 @@ class AdWebView extends WebView implements Displayable,
     private int checkPositionTimeInterval = 1000;
     private int MIN_MS_BETWEEN_CHECKPOSITION = 200;
     private Date timeOfLastCheckPosition = new Date();
+    private VideoEnabledWebChromeClient mWebChromeClient;
 
     public AdWebView(AdView adView, UTAdRequester requester) {
         super(new MutableContextWrapper(adView.getContext()));
@@ -166,7 +167,7 @@ class AdWebView extends WebView implements Displayable,
     protected void setup() {
         implementation = new MRAIDImplementation(this);
         omidAdSession = new ANOmidAdSession();
-        setWebChromeClient(new VideoEnabledWebChromeClient(this));
+        setWebChromeClient(mWebChromeClient = new VideoEnabledWebChromeClient(this));
         setWebViewClient(new AdWebViewClient());
     }
 
@@ -676,6 +677,9 @@ class AdWebView extends WebView implements Displayable,
 
     @Override
     public void destroy() {
+        if(mWebChromeClient != null){
+            mWebChromeClient.onHideCustomView();
+        }
         omidAdSession.stopAdSession();
         // in case `this` was not removed when destroy was called
         ViewUtil.removeChildFromParent(this);
