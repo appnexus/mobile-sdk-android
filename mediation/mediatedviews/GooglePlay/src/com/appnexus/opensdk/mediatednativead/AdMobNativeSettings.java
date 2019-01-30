@@ -15,34 +15,34 @@
  */
 package com.appnexus.opensdk.mediatednativead;
 
+import com.google.android.gms.ads.VideoOptions;
+
 public class AdMobNativeSettings {
-
-    public enum AdMobNativeType {
-        APP_INSTALL,
-        CONTENT_AD
-    }
-
     public static String NATIVE_ELEMENT_STORE_KEY = "STORE";
     public static String NATIVE_ELEMENT_PRICE_KEY = "PRICE";
     public static String NATIVE_ELEMENT_ADVERTISER_KEY = "ADVERTISER";
-    public static String NATIVE_ELEMENT_TYPE_KEY = "TYPE";
 
-    static boolean enableContentAd = false;
-    static boolean enableAppInstallAd = false;
+    static VideoOptions videoOptions = null;
+    static boolean enableMediaView = false;
+
 
     /**
-     * Pass true to enable the adapter to load native app install add
-     * @param enableAppInstallAd
+     * Set the VideoOptions to be set on the NativeAdOptions when construction AdLoader.
+     * @param videoOptions an instance of com.google.android.gms.ads.VideoOptions
      */
-    public static void setEnableAppInstallAd(boolean enableAppInstallAd) {
-        AdMobNativeSettings.enableAppInstallAd = enableAppInstallAd;
+    public static void setVideoOptions(VideoOptions videoOptions) {
+        AdMobNativeSettings.videoOptions = videoOptions;
     }
 
     /**
-     * Pass true to enable the adapter to load native content ad
-     * @param enableContentAd
+     * Pass true if you want to use MediaView to render the returned Video/ImageAssets.
+     * If not enabled MediaView will not populate the image/video asset automatically since we set: setReturnUrlsForImageAssets(true);
+     *
+     * @param enableMediaView true to enable MediaView.
+     *                        default is false.
      */
-    public static void setEnableContentAd(boolean enableContentAd) {
-        AdMobNativeSettings.enableContentAd = enableContentAd;
+    public static void setEnableMediaView(boolean enableMediaView) {
+        AdMobNativeSettings.enableMediaView = enableMediaView;
     }
+
 }

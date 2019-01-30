@@ -21,12 +21,11 @@ import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.utils.Clog;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.formats.NativeAppInstallAd;
-import com.google.android.gms.ads.formats.NativeContentAd;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
 
 import java.lang.ref.WeakReference;
 
-public class AdMobNativeListener extends AdListener implements NativeAppInstallAd.OnAppInstallAdLoadedListener, NativeContentAd.OnContentAdLoadedListener {
+public class AdMobNativeListener extends AdListener implements UnifiedNativeAd.OnUnifiedNativeAdLoadedListener {
     MediatedNativeAdController mBC;
     private WeakReference<AdMobNativeAdResponse> weakReferenceAdMobNativeAdResponse;
 
@@ -36,6 +35,7 @@ public class AdMobNativeListener extends AdListener implements NativeAppInstallA
 
     @Override
     public void onAdFailedToLoad(int errorCode) {
+        Clog.e(Clog.mediationLogTag, "AdMob - onAdFailedToLoad");
         if (mBC != null) {
             ResultCode code = ResultCode.INTERNAL_ERROR;
             switch (errorCode) {
@@ -55,25 +55,6 @@ public class AdMobNativeListener extends AdListener implements NativeAppInstallA
                     break;
             }
             mBC.onAdFailed(code);
-        }
-    }
-
-    @Override
-    public void onAppInstallAdLoaded(NativeAppInstallAd nativeAppInstallAd) {
-        if (mBC != null) {
-            AdMobNativeAdResponse response = new AdMobNativeAdResponse(nativeAppInstallAd, AdMobNativeSettings.AdMobNativeType.APP_INSTALL);
-            weakReferenceAdMobNativeAdResponse = new WeakReference<AdMobNativeAdResponse>(response);
-            mBC.onAdLoaded(response);
-        }
-
-    }
-
-    @Override
-    public void onContentAdLoaded(NativeContentAd nativeContentAd) {
-        if (mBC != null) {
-            AdMobNativeAdResponse response = new AdMobNativeAdResponse(nativeContentAd, AdMobNativeSettings.AdMobNativeType.CONTENT_AD);
-            weakReferenceAdMobNativeAdResponse = new WeakReference<AdMobNativeAdResponse>(response);
-            mBC.onAdLoaded(response);
         }
     }
 
@@ -98,4 +79,13 @@ public class AdMobNativeListener extends AdListener implements NativeAppInstallA
     }
 
 
+    @Override
+    public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
+        Clog.e(Clog.mediationLogTag, "AdMob - onUnifiedNativeAdLoaded");
+        if (mBC != null) {
+            AdMobNativeAdResponse response = new AdMobNativeAdResponse(unifiedNativeAd);
+            weakReferenceAdMobNativeAdResponse = new WeakReference<AdMobNativeAdResponse>(response);
+            mBC.onAdLoaded(response);
+        }
+    }
 }
