@@ -1,3 +1,14 @@
+## 5.1
+
+### Mediation partner upgrades/changes
++ Updated Google AdMob adapter to support UnifiedNativeAd and MediaView requirements
++ Upgraded Smart Server SDK v7.0
+
+### Bug Fixes
++ MS-3375: Force load mraid.js locally to fix MRAID 3.0 viewability issue
++ MS-3577: Hide WebChromeClient's custom view if destroy is called on Banner
++ MS-3607: Fixed an issue with BannerAd's where AdWebView was getting garbage collected too soon preventing onAdLoaded from getting called.
+
 ## 5.0
 ### New Features
 + Universal Tags version 3, including support for Native ad objects
