@@ -1,5 +1,5 @@
 // Project properties
-version = "5.1"
+version = "5.1.1"
 group='com.appnexus.opensdk'
 
 // Android build

@@ -26,21 +26,12 @@ import android.view.*;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
+import com.appnexus.opensdk.CircularProgressBar;
+
 public class ViewUtil {
-    public static ImageButton createCloseButton(Context context, boolean custom_close) {
-        final ImageButton close = new ImageButton(context);
-        if (!custom_close){
-            close.setImageDrawable(context.getResources().getDrawable(
-                    android.R.drawable.ic_menu_close_clear_cancel));
-        }
-        FrameLayout.LayoutParams blp = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.RIGHT
-                | Gravity.TOP);
-        close.setLayoutParams(blp);
-        close.setBackgroundColor(Color.TRANSPARENT);
-        return close;
-    }
+
+    public static final int CCD_MARGIN = 10;
+    public static final int CCD_DIMENSIONS = 30;
 
     public static void removeChildFromParent(View view) {
         if ((view != null) && (view.getParent() != null)) {
@@ -55,8 +46,8 @@ public class ViewUtil {
         ViewParent parent = view.getParent();
 
         if ((parent == null) || !(parent instanceof View)) {
-            if(view.getContext() instanceof MutableContextWrapper){
-                return ((MutableContextWrapper)view.getContext()).getBaseContext();
+            if (view.getContext() instanceof MutableContextWrapper) {
+                return ((MutableContextWrapper) view.getContext()).getBaseContext();
             }
             return view.getContext();
         }
@@ -87,7 +78,7 @@ public class ViewUtil {
             screenHeight = d.getHeight();
         }
 
-        return new int[] { screenWidth, screenHeight };
+        return new int[]{screenWidth, screenHeight};
     }
 
     // returns screen size as { width, height } in DP
@@ -111,8 +102,47 @@ public class ViewUtil {
         }
     }
 
-    public static int getValueInPixel(Context context, int valueInDP) {
+    public static int getValueInPixel(Context context, double valueInDP) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) ((valueInDP * scale) + 0.5f);
+    }
+
+    /**
+     * Adds the CircularProgressBar to the layout when passed
+     * Returns instance of created CircularProgressBar
+     *
+     * @param context - Context of the View/Activity currently running
+     */
+    public static CircularProgressBar createCircularProgressBar(Context context) {
+        CircularProgressBar circularProgressBar = new CircularProgressBar(context, null, android.R.attr.indeterminateOnly);
+        circularProgressBar.setId(android.R.id.closeButton);
+
+        int size = getValueInPixel(context, CCD_DIMENSIONS);
+        int margin = getValueInPixel(context, CCD_MARGIN);
+
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                size, size, Gravity.END | Gravity.TOP);
+        params.setMargins(0, margin, margin, 0);
+        circularProgressBar.setVisibility(View.GONE);
+        circularProgressBar.setLayoutParams(params);
+        return circularProgressBar;
+    }
+
+    /**
+     * Displays the Close Button when called
+     *
+     * @param circularProgressBar the instance of CircularProgressBar that is to be displayed
+     * @param custom_close boolean value that states if the custom close is enable or disabled
+     */
+    public static void showCloseButton(CircularProgressBar circularProgressBar, boolean custom_close) {
+        if (circularProgressBar != null) {
+            circularProgressBar.setVisibility(View.VISIBLE);
+            if (!custom_close) {
+                circularProgressBar.setProgress(0);
+                circularProgressBar.setTitle("X");
+            } else {
+                circularProgressBar.setTransparent();
+            }
+        }
     }
 }

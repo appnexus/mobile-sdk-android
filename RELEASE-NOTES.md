@@ -1,3 +1,11 @@
+## 5.1.1
+
+### New Features
++ MS-3220: Added Countdown Timer to Interstitial Ads
+
+### Bug Fixes
++ MS-3755: Fixed Assertion Error that occurred while initializing Settings
+
 ## 5.1
 
 ### Mediation partner upgrades/changes

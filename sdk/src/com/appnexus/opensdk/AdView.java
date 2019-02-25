@@ -37,7 +37,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 
 import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.UTRequestParameters;
@@ -358,7 +357,7 @@ public abstract class AdView extends FrameLayout implements Ad {
      * MRAID functions and variables
      */
     boolean mraid_is_closing = false;
-    ImageButton close_button;
+    CircularProgressBar close_button;
     @SuppressLint("StaticFieldLeak")
     static FrameLayout mraidFullscreenContainer;
     @SuppressLint("StaticFieldLeak")
@@ -427,7 +426,8 @@ public abstract class AdView extends FrameLayout implements Ad {
         fslayout.addView(caller.owner);
 
         if (close_button == null) {
-            close_button = ViewUtil.createCloseButton(this.getContext(), use_custom_close);
+            close_button = ViewUtil.createCircularProgressBar(this.getContext());
+            ViewUtil.showCloseButton(close_button, use_custom_close);
             close_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -461,7 +461,8 @@ public abstract class AdView extends FrameLayout implements Ad {
         MRAIDChangeSize(w, h);
 
         // Add a stock close_button button to the top right corner
-        close_button = ViewUtil.createCloseButton(this.getContext(), custom_close);
+        close_button = ViewUtil.createCircularProgressBar(this.getContext());
+        ViewUtil.showCloseButton(close_button, custom_close);
         FrameLayout.LayoutParams blp = (LayoutParams) close_button.getLayoutParams();
 
         // place the close button at the top right of the adview if it isn't fullscreen
@@ -505,7 +506,7 @@ public abstract class AdView extends FrameLayout implements Ad {
             buttonPxSideLength = (int) (50 * scale);
         }
 
-        close_button = new ImageButton(this.getContext()) {
+        close_button = new CircularProgressBar(this.getContext(), null, android.R.attr.indeterminateOnly) {
 
             @SuppressWarnings("deprecation")
             @SuppressLint({"NewApi", "DrawAllocation"})
@@ -570,8 +571,7 @@ public abstract class AdView extends FrameLayout implements Ad {
                         }
                     });
 
-                    close_button.setImageDrawable(getResources().getDrawable(
-                            android.R.drawable.ic_menu_close_clear_cancel));
+                    ViewUtil.showCloseButton(close_button, false);
                 }
             }
         };

@@ -45,11 +45,10 @@ public class Settings {
     public boolean debug_mode = false; // This should always be false here.
     public String ua = null;
     public boolean first_launch;
-    public final String sdkVersion = "5.1";
+    public final String sdkVersion = "5.1.1";
 
     public String mcc;
     public String mnc;
-    public final String dev_timezone = TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT);
     public final String language = Locale.getDefault().getLanguage();
 
     public boolean omEnabled = true;
