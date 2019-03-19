@@ -174,6 +174,10 @@ public abstract class AdView extends FrameLayout implements Ad {
 
     @Override
     public boolean isReadyToStart() {
+        if(!(getContext() instanceof Activity)){
+            Clog.e(Clog.baseLogTag, Clog.getString(R.string.passed_context_error));
+            return false;
+        }
         if (isMRAIDExpanded()) {
             Clog.e(Clog.baseLogTag, Clog.getString(R.string.already_expanded));
             return false;
