@@ -1,3 +1,8 @@
+## 5.1.2
+
+### Bug Fixes
++ MS-3763: Do not allow BannerAdView/InterstitialAdView to load an Ad if initialized with ApplicationContext.(ActivityContext is required)
+
 ## 5.1.1
 
 ### New Features
