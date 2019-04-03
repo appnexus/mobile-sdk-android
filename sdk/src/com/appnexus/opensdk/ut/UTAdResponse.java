@@ -57,6 +57,7 @@ public class UTAdResponse {
     private static final String RESPONSE_KEY_NOTIFY_URL = "notify_url";
     private static final String RESPONSE_KEY_CONTENT_SOURCE = "content_source";
 
+
     private static final String RESPONSE_KEY_CLASS = "class";
     private static final String RESPONSE_KEY_PARAM = "param";
     private static final String RESPONSE_KEY_ID = "id";
@@ -203,13 +204,8 @@ public class UTAdResponse {
                 Clog.i(Clog.httpRespLogTag, "it's a Video Ad");
                 parseVideoAdResponse(rtbObject, adType, notifyUrl, creativeId);
             } else if (rtbObject.has(UTConstants.AD_TYPE_NATIVE)) {
-                JSONObject nativeObject = JsonUtil.getJSONObject(rtbObject, UTConstants.AD_TYPE_NATIVE);
-                if (nativeObject != null) {
-                    Clog.i(Clog.httpRespLogTag, "it's a NATIVE Ad");
-                    parseNativeAds(nativeObject, creativeId, adType);
-                } else {
-                    Clog.i(Clog.httpRespLogTag, "NATIVE Ad is empty");
-                }
+                Clog.i(Clog.httpRespLogTag, "it's a NATIVE Ad");
+                parseNativeAds(adObject, creativeId, adType);
             } else {
                 Clog.e(Clog.httpRespLogTag, "handleRTB UNKNOWN AD_TYPE");
             }
@@ -328,7 +324,7 @@ public class UTAdResponse {
                             }
 
                             if (!StringUtil.isEmpty(className)) {
-                                CSMSDKAdResponse csmAd = new CSMSDKAdResponse(width, height, adType, responseUrl, impressionUrls, creativeId);
+                                CSMSDKAdResponse csmAd = new CSMSDKAdResponse(width, height, adType, responseUrl, impressionUrls, creativeId, ad);
                                 csmAd.setClassName(className);
                                 csmAd.setId(adId);
                                 csmAd.setParam(param);

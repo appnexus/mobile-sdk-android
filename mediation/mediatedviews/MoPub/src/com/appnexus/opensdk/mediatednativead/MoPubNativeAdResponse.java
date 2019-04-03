@@ -21,8 +21,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
+import com.appnexus.opensdk.BaseNativeAdResponse;
 import com.appnexus.opensdk.NativeAdEventListener;
-import com.appnexus.opensdk.NativeAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.mopub.nativeads.BaseNativeAd;
@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MoPubNativeAdResponse implements NativeAdResponse {
+public class MoPubNativeAdResponse extends BaseNativeAdResponse {
     private String title;
     private String description;
     private String imageUrl;
@@ -207,7 +207,7 @@ public class MoPubNativeAdResponse implements NativeAdResponse {
 
 
     @Override
-    public boolean registerView(View view, NativeAdEventListener listener) {
+    protected boolean registerView(View view, NativeAdEventListener listener) {
         if (mopubNativeAd != null && !registered && !expired) {
             mopubNativeAd.prepare(view);
             registeredView = view;
@@ -222,7 +222,7 @@ public class MoPubNativeAdResponse implements NativeAdResponse {
 
 
     @Override
-    public boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
+    protected boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
         if (mopubNativeAd != null && !registered && !expired) {
             registeredClickables = clickables;
             for (View clickable : clickables) {
@@ -238,7 +238,7 @@ public class MoPubNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public void unregisterViews() {
+    protected void unregisterViews() {
         if (hasExpired()) {
             Clog.d(Clog.mediationLogTag, "This NativeAdResponse has expired.");
         }
@@ -271,6 +271,7 @@ public class MoPubNativeAdResponse implements NativeAdResponse {
 
     @Override
     public void destroy() {
+        super.destroy();
         if(mopubNativeExpireHandler!=null) {
             mopubNativeExpireHandler.removeCallbacks(runnable);
             mopubNativeExpireHandler.post(runnable);

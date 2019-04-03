@@ -21,8 +21,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
+import com.appnexus.opensdk.BaseNativeAdResponse;
 import com.appnexus.opensdk.NativeAdEventListener;
-import com.appnexus.opensdk.NativeAdResponse;
 import com.appnexus.opensdk.mediatedviews.YahooFlurrySettings;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
@@ -33,7 +33,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.List;
 
-public class YahooFlurryNativeAdResponse implements NativeAdResponse {
+public class YahooFlurryNativeAdResponse extends BaseNativeAdResponse {
 
     private FlurryAdNative adNative;
     private String title;
@@ -232,7 +232,7 @@ public class YahooFlurryNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public boolean registerView(View view, NativeAdEventListener listener) {
+    protected boolean registerView(View view, NativeAdEventListener listener) {
         if (view != null && !registered && !expired) {
             this.listener = listener;
             adNative.setTrackingView(view);
@@ -247,7 +247,7 @@ public class YahooFlurryNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
+    protected boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
         Clog.i(Clog.mediationLogTag, "Yahoo Flurry native ad does not provide api to register clickables.");
         return registerView(view, listener);
     }
@@ -265,12 +265,13 @@ public class YahooFlurryNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public void unregisterViews() {
+    protected void unregisterViews() {
         destroy();
     }
 
     @Override
     public void destroy() {
+        super.destroy();
         if(yHNativeExpireHandler!=null) {
             yHNativeExpireHandler.removeCallbacks(expireRunnable);
             yHNativeExpireHandler.post(expireRunnable);

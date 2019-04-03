@@ -58,7 +58,8 @@ public class NativeAdSDK {
                         Clog.e(Clog.nativeLogTag, "View has already been registered, please unregister before reuse");
                         return;
                     }
-                    if (response.registerView(view, listener)) {
+                    if (((BaseNativeAdResponse) response).registerView(view, listener)) {
+                        ((BaseNativeAdResponse) response).registerViewforOMID(view);
                         WeakReference<NativeAdResponse> reference = new WeakReference<NativeAdResponse>(response);
                         view.setTag(R.string.native_tag, reference);
                     } else {
@@ -93,7 +94,8 @@ public class NativeAdSDK {
                         Clog.e(Clog.nativeLogTag, "View has already been registered, please unregister before reuse");
                         return;
                     }
-                    if (response.registerViewList(container, views, listener)) {
+                    if (((BaseNativeAdResponse)response).registerViewList(container, views, listener)) {
+                        ((BaseNativeAdResponse)response).registerViewforOMID(container);
                         WeakReference<NativeAdResponse> reference = new WeakReference<NativeAdResponse>(response);
                         container.setTag(R.string.native_tag, reference);
                         Clog.d(Clog.nativeLogTag, "View has been registered.");
@@ -126,7 +128,7 @@ public class NativeAdSDK {
                     NativeAdResponse response = (NativeAdResponse)reference.get();
                     if (response != null) {
                         Clog.d(Clog.nativeLogTag, "Unregister native ad response, assets will be destroyed.");
-                        response.unregisterViews();
+                        ((BaseNativeAdResponse)response).unregisterViews();
                     }
                     view.setTag(R.string.native_tag, null);
                 }

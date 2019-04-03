@@ -31,6 +31,7 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.JsonUtil;
 import com.appnexus.opensdk.utils.Settings;
@@ -44,7 +45,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class ANNativeAdResponse implements NativeAdResponse {
+public class ANNativeAdResponse extends BaseNativeAdResponse  {
     private String title;
     private String description;
     private String imageUrl;
@@ -57,6 +58,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
     private String clickUrl;
     private String clickFallBackUrl;
     private String callToAction;
+
     private HashMap<String, Object> nativeElements;
     private boolean expired = false;
     private ArrayList<String> imp_trackers;
@@ -122,13 +124,20 @@ public class ANNativeAdResponse implements NativeAdResponse {
     /**
      * Process the metadata of native response from ad server
      *
-     * @param metaData JsonObject that contains info of native ad
+     * @param adObject JsonObject that contains info of native ad
      * @return ANNativeResponse if no issue happened during processing
      */
-    public static ANNativeAdResponse create(JSONObject metaData) {
-        if (metaData == null) {
+    public static ANNativeAdResponse create(JSONObject adObject) {
+        if (adObject == null) {
             return null;
         }
+
+        JSONObject rtbObject = JsonUtil.getJSONObject(adObject, UTConstants.RTB);
+        JSONObject metaData = JsonUtil.getJSONObject(rtbObject, UTConstants.AD_TYPE_NATIVE);
+        if(metaData == null){
+            return null;
+        }
+
         JSONArray impTrackerJson = JsonUtil.getJSONArray(metaData, KEY_IMP_TRACK);
         ArrayList<String> imp_trackers = JsonUtil.getStringArrayList(impTrackerJson);
         if (imp_trackers == null) {
@@ -180,6 +189,9 @@ public class ANNativeAdResponse implements NativeAdResponse {
             response.nativeElements = new HashMap<>();
         }
         response.nativeElements.put(NATIVE_ELEMENT_OBJECT, nativeObject);
+
+        // Create an OMID Related objects.
+        response.setANVerificationScriptResources(adObject);
 
         return response;
     }
@@ -263,7 +275,8 @@ public class ANNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public boolean hasExpired() {
+    public boolean hasExpired()
+    {
         return expired;
     }
 
@@ -278,7 +291,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public boolean registerView(final View view, final NativeAdEventListener listener) {
+    protected boolean registerView(final View view, final NativeAdEventListener listener) {
         if (!expired && view != null) {
             this.listener = listener;
             visibilityDetector = VisibilityDetector.create(view);
@@ -288,7 +301,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
 
             impressionTrackers = new ArrayList<ImpressionTracker>(imp_trackers.size());
             for (String url : imp_trackers) {
-                ImpressionTracker impressionTracker = ImpressionTracker.create(url, visibilityDetector, view.getContext());
+                ImpressionTracker impressionTracker = ImpressionTracker.create(url, visibilityDetector, view.getContext(),anOmidAdSession);
                 impressionTrackers.add(impressionTracker);
             }
             this.registeredView = view;
@@ -303,7 +316,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public boolean registerViewList(final View view, final List<View> clickables, NativeAdEventListener listener) {
+    protected boolean registerViewList(final View view, final List<View> clickables, NativeAdEventListener listener) {
         if (registerView(view, listener)) {
             view.setOnClickListener(null); // unset the click listener in registerView()
             for (View clickable : clickables) {
@@ -316,7 +329,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public void unregisterViews() {
+    protected void unregisterViews() {
         if (registeredView != null) {
             registeredView.setOnClickListener(null);
         }
@@ -330,6 +343,7 @@ public class ANNativeAdResponse implements NativeAdResponse {
 
     @Override
     public void destroy() {
+        super.destroy();
         if (anNativeExpireHandler != null) {
             anNativeExpireHandler.removeCallbacks(expireRunnable);
             anNativeExpireHandler.post(expireRunnable);

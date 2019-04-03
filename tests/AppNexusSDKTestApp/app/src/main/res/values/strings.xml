@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">AppNexusSDKTestApp</string>
+    <string name="content_url_1">http://acdn.adnxs.com/mobile/video_test/content/Scenario.mp4</string>
+</resources>

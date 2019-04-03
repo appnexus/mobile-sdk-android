@@ -54,6 +54,8 @@ public class TestResponsesUT {
     private static final String MRAID_CONTENT = "<script type=\\\"text/javascript\\\" src=\\\"mraid.js\\\"></script><script type=\\\"text/javascript\\\">document.write('<div style=\\\"background-color:#EF8200;height:1000px;width:1000px;\\\"><p>%s</p></div>');</script>";
     private static final String NATIVE_MAIN_MEDIA = "[{\"url\":\"%s\",\"width\":%d,\"height\":%d,\"label\":\"default\"},{\"url\":\"%s\",\"width\":%d,\"height\":%d},{\"url\":\"%s\",\"width\":%d,\"height\":%d}]";
     private static final String NATIVE_RATING = "{\"value\":%.2f,\"scale\":%.2f}";
+    private static final String RTB_NATIVE_VIEWABILITY_CONFIG="<script type=\\\"text/javascript\\\" async=\\\"true\\\" src=\\\"https://acdn.adnxs.com/mobile/omsdk/test/omid-validation-verification-script-1.2.5.js#v;vk=dummyVendor;tv=cet=0;cecb=\\\"></script>";
+    private static final String CSM_NATIVE_VIEWABILITY_CONFIG="<script type=\\\"text/javascript\\\" async=\\\"true\\\" src=\\\"https://acdn.adnxs.com/mobile/omsdk/test/omid-validation-verification-script-1.2.5.js#v;vk=dummyVendorCSM;tv=cet=0;cecb=\\\"></script>";
     // template strings
     private static final String CLASSNAME = "com.appnexus.opensdk.testviews.%s";
 
@@ -70,8 +72,8 @@ public class TestResponsesUT {
     public static final String RTB_BANNER = "{\"content_source\":\"rtb\",\"ad_type\":\"banner\",\"buyer_member_id\":123,\"creative_id\":6332753,\"media_type_id\":1,\"media_subtype_id\":1,\"client_initiated_ad_counting\":true,\"rtb\":{\"banner\":{\"content\":\"%s\",\"width\":%d,\"height\":%d},\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}]}}";
     public static final String CSM_BANNER = "{\"content_source\":\"csm\",\"ad_type\":\"banner\",\"buyer_member_id\":123,\"creative_id\":44863345,\"media_type_id\":1,\"media_subtype_id\":1,\"client_initiated_ad_counting\":false,\"csm\":{\"banner\":{\"content\":\"%s\",\"width\":10,\"height\":10},\"timeout_ms\":500,\"handler\":[{\"param\":\"%s\",\"height\":\"%d\",\"width\":\"%d\",\"id\":\"%s\",\"type\":\"%s\",\"class\":\"%s\"},{\"param\":\"#{PARAM}\",\"height\":\"50\",\"width\":\"320\",\"id\":\"163441140754789_163441480754755\",\"type\":\"ios\",\"class\":\"DummyIOSClass\"}],\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}],\"request_url\":\"%s\",\"response_url\":\"%s\"}}";
     public static final String SSM_BANNER = "{\"content_source\":\"ssm\",\"ad_type\":\"banner\",\"buyer_member_id\":123,\"creative_id\":44863345,\"media_type_id\":1,\"media_subtype_id\":1,\"client_initiated_ad_counting\":false,\"ssm\":{\"banner\":{\"content\":\"%s\",\"width\":10,\"height\":10},\"timeout_ms\":500,\"handler\":[{\"url\":\"%s\"}],\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}],\"request_url\":\"%s\",\"response_url\":\"%s\"}}";
-    public static final String RTB_NATIVE = "{\"content_source\":\"rtb\",\"ad_type\":\"native\",\"buyer_member_id\":958,\"creative_id\":47772560,\"media_type_id\":12,\"media_subtype_id\":65,\"client_initiated_ad_counting\":true,\"rtb\":{\"native\":%s}}";
-    public static final String CSM_NATIVE = "{\"content_source\":\"csm\",\"ad_type\":\"native\",\"buyer_member_id\":958,\"creative_id\":44863492,\"media_type_id\":12,\"media_subtype_id\":65,\"client_initiated_ad_counting\":true,\"csm\": {\"timeout_ms\":500,\"handler\": [{\"type\": \"android\",\"class\": \"%s\",\"param\": \"%s\",\"id\": \"%s\"},{\"type\": \"ios\",\"class\": \"DummyIOSClass\",\"param\": \"#{PARAM}\",\"id\": \"210827375150_10154672419150151\"}],\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}],\"request_url\": \"%s\",\"response_url\": \"%s\"}}";
+    public static final String RTB_NATIVE = "{\"content_source\":\"rtb\",\"ad_type\":\"native\",\"buyer_member_id\":958,\"creative_id\":47772560,\"media_type_id\":12,\"media_subtype_id\":65,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"%s\"},\"rtb\":{\"native\":%s}}";
+    public static final String CSM_NATIVE = "{\"content_source\":\"csm\",\"ad_type\":\"native\",\"buyer_member_id\":958,\"creative_id\":44863492,\"media_type_id\":12,\"media_subtype_id\":65,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"%s\"},\"csm\": {\"timeout_ms\":500,\"handler\": [{\"type\": \"android\",\"class\": \"%s\",\"param\": \"%s\",\"id\": \"%s\"},{\"type\": \"ios\",\"class\": \"DummyIOSClass\",\"param\": \"#{PARAM}\",\"id\": \"210827375150_10154672419150151\"}],\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}],\"request_url\": \"%s\",\"response_url\": \"%s\"}}";
     public static final String NO_BID = "{\"version\":\"3.0.0\",\"tags\":[{\"tag_id\":123456789,\"auction_id\":\"3552547938089377051000000\",\"nobid\":true,\"ad_profile_id\":2707239}]}";
     public static final String RTB_VIDEO = "{\"content_source\":\"rtb\",\"ad_type\":\"video\",\"notify_url\":\"%s\",\"buyer_member_id\":123,\"creative_id\":6332753,\"media_type_id\":4,\"media_subtype_id\":64,\"client_initiated_ad_counting\":true,\"rtb\":{\"video\":{\"content\":\"%s\",\"duration_ms\":100}}}";
 
@@ -222,7 +224,7 @@ public class TestResponsesUT {
                 300, 200, "http://www.appnexus.com", "http://ib.adnxs.com/click...",
                 "http://ib.adnxs.com/it...", 111796070);
         System.out.println(nativeResponse + "\n");
-        String nativeRTB = String.format(RTB_NATIVE, nativeResponse);
+        String nativeRTB = templateRTBNativeAdResponse(nativeResponse);
 
         ArrayList<String> adsArray = new ArrayList<String>(2);
         adsArray.add(csmAd);
@@ -310,7 +312,20 @@ public class TestResponsesUT {
                 300, 200, "http://www.appnexus.com", "http://ib.adnxs.com/click...",
                 "http://ib.adnxs.com/it...", 111796070);
         System.out.println(nativeResponse + "\n");
-        String nativeRTB = String.format(RTB_NATIVE, nativeResponse);
+        String nativeRTB = templateRTBNativeAdResponse(nativeResponse);
+        System.out.println(nativeRTB + "\n");
+        String ads = String.format(ADS, nativeRTB);
+        System.out.println(ads + "\n");
+        return templateResponse(NO_BID_FALSE, NO_AD_URL, ads);
+    }
+
+    public static String anOMIDNativeRTB(){
+        String nativeResponse = templateNativeResponse("test title", "test description", "additional test description", "sponsored", "cta",
+                "5", "http://path_to_icon.com", 100, 150, "http://path_to_main.com",
+                300, 200, "http://www.appnexus.com", "http://ib.adnxs.com/click...",
+                "http://ib.adnxs.com/it...", 111796070);
+        System.out.println(nativeResponse + "\n");
+        String nativeRTB = templateRTBNativeAdResponse(nativeResponse);
         System.out.println(nativeRTB + "\n");
         String ads = String.format(ADS, nativeRTB);
         System.out.println(ads + "\n");
@@ -326,7 +341,7 @@ public class TestResponsesUT {
                 "http://ib.adnxs.com/jt...", 123456789, "http://ib.adnxs.com/display...", 10,1000, 5, 4, 987654321,
                 "AppNexus Address", "<VAST>content</VAST>", "http://ib.adnxs.com/privacy...");
         System.out.println(nativeResponse + "\n");
-        String nativeRTB = String.format(RTB_NATIVE, nativeResponse);
+        String nativeRTB = templateRTBNativeAdResponse(nativeResponse);
         System.out.println(nativeRTB + "\n");
         String ads = String.format(ADS, nativeRTB);
         System.out.println(ads + "\n");
@@ -339,7 +354,7 @@ public class TestResponsesUT {
                 300, 200, "http://www.appnexus.com", "http://ib.adnxs.com/click...",
                 "http://ib.adnxs.com/it...", 111796070);
         System.out.println(nativeResponse + "\n");
-        String nativeRTB = String.format(RTB_NATIVE, nativeResponse);
+        String nativeRTB = templateRTBNativeAdResponse(nativeResponse);
         System.out.println(nativeRTB + "\n");
         String ads = String.format(ADS, nativeRTB);
         System.out.println(ads + "\n");
@@ -352,7 +367,7 @@ public class TestResponsesUT {
                 "install", "\"http://ib.adnxs.com/click...\"", "\"http://ib.adnxs.com/it...\"", templateNativeRating(4f, 5f), "http://www.appnexus.com", "http://www.google.com", "test sponsored by", "{\"key\":\"value\"}"
         );
         System.out.println(nativeResponse + "\n");
-        String nativeRTB = String.format(RTB_NATIVE, nativeResponse);
+        String nativeRTB = templateRTBNativeAdResponse(nativeResponse);
         System.out.println(nativeRTB + "\n");
         String ads = String.format(ADS, nativeRTB);
         System.out.println(ads + "\n");
@@ -367,6 +382,12 @@ public class TestResponsesUT {
         String ads = String.format(ADS, rtbBanner);
         return templateResponse(NO_BID_FALSE, NO_AD_URL, ads);
     }
+
+
+    private static String templateRTBNativeAdResponse(String nativeResponse) {
+        return String.format(RTB_NATIVE, RTB_NATIVE_VIEWABILITY_CONFIG, nativeResponse);
+    }
+
 
 
     private static String singleRTBBanner(String content, int width, int height, String impressionURL) {
@@ -416,8 +437,8 @@ public class TestResponsesUT {
     }
 
     private static String templateSingleCSMAdResponseNative(String className, String params, String id, String impression_url, String request_url, String response_url) {
-        Clog.d("Native Ad",String.format(CSM_NATIVE, className, params, id, impression_url,request_url, response_url));
-        return String.format(CSM_NATIVE, className, params, id,impression_url, request_url, response_url);
+        Clog.d("Native Ad",String.format(CSM_NATIVE,CSM_NATIVE_VIEWABILITY_CONFIG, className, params, id, impression_url,request_url, response_url));
+        return String.format(CSM_NATIVE, CSM_NATIVE_VIEWABILITY_CONFIG, className, params, id,impression_url, request_url, response_url);
     }
 
 

@@ -25,7 +25,7 @@ public class BaseRoboTest {
     public static final int placementID = 1;
     public static final int width = 320;
     public static final int height = 50;
-    Activity activity;
+    protected Activity activity;
     Scheduler uiScheduler, bgScheduler;
     public MockWebServer server;
 

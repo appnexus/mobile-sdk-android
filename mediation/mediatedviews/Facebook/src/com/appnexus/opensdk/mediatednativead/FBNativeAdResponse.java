@@ -21,17 +21,16 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
+import com.appnexus.opensdk.BaseNativeAdResponse;
 import com.appnexus.opensdk.NativeAdEventListener;
-import com.appnexus.opensdk.NativeAdResponse;
 import com.appnexus.opensdk.utils.Settings;
 import com.facebook.ads.NativeAd;
 
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class FBNativeAdResponse implements NativeAdResponse {
+public class FBNativeAdResponse extends BaseNativeAdResponse {
     private String title;
     private String description;
     private String imageUrl;
@@ -192,7 +191,7 @@ public class FBNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public boolean registerView(View view, NativeAdEventListener listener) {
+    protected boolean registerView(View view, NativeAdEventListener listener) {
         if (nativeAd != null && !registered && !expired) {
             nativeAd.registerViewForInteraction(view);
             registered = true;
@@ -205,7 +204,7 @@ public class FBNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
+    protected boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
         if (nativeAd != null && !registered && !expired) {
             nativeAd.registerViewForInteraction(view, clickables);
             registered = true;
@@ -223,7 +222,7 @@ public class FBNativeAdResponse implements NativeAdResponse {
 
 
     @Override
-    public void unregisterViews() {
+    protected void unregisterViews() {
         if (nativeAd != null) {
             nativeAd.unregisterView();
         }
@@ -232,6 +231,7 @@ public class FBNativeAdResponse implements NativeAdResponse {
 
     @Override
     public void destroy() {
+        super.destroy();
         if(fbNativeExpireHandler!=null) {
             fbNativeExpireHandler.removeCallbacks(runnable);
             fbNativeExpireHandler.post(runnable);

@@ -23,6 +23,7 @@ import com.appnexus.opensdk.ut.UTRequestParameters;
 import com.appnexus.opensdk.utils.AdvertisingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ImageService;
+import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ public class NativeAdRequest implements Ad {
 
     public NativeAdRequest(Context context, String placementID) {
         AdvertisingIDUtil.retrieveAndSetAAID(context);
+        ANOmidViewabilty.getInstance().activateOmidAndCreatePartner(context.getApplicationContext());
         requestParameters = new UTRequestParameters(context);
         requestParameters.setPlacementID(placementID);
         requestParameters.setMediaType(MediaType.NATIVE);
@@ -52,6 +54,7 @@ public class NativeAdRequest implements Ad {
 
     public NativeAdRequest(Context context, String inventoryCode, int memberID) {
         AdvertisingIDUtil.retrieveAndSetAAID(context);
+        ANOmidViewabilty.getInstance().activateOmidAndCreatePartner(context.getApplicationContext());
         requestParameters = new UTRequestParameters(context);
         requestParameters.setInventoryCodeAndMemberID(memberID, inventoryCode);
         requestParameters.setMediaType(MediaType.NATIVE);

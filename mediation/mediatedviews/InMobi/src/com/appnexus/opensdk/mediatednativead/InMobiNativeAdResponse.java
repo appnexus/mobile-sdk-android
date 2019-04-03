@@ -21,8 +21,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
+import com.appnexus.opensdk.BaseNativeAdResponse;
 import com.appnexus.opensdk.NativeAdEventListener;
-import com.appnexus.opensdk.NativeAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.JsonUtil;
 import com.appnexus.opensdk.utils.Settings;
@@ -33,7 +33,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.List;
 
-public class InMobiNativeAdResponse implements NativeAdResponse {
+public class InMobiNativeAdResponse extends BaseNativeAdResponse {
     private InMobiNative imNative;
     private String title;
     private String description;
@@ -220,7 +220,7 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public boolean registerView(View view, NativeAdEventListener listener) {
+    protected boolean registerView(View view, NativeAdEventListener listener) {
         if (imNative != null && !registered && !expired) {
             view.setOnClickListener(clickListener);
             registeredView = view;
@@ -234,7 +234,7 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
+    protected boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
         if (imNative != null && !registered && !expired) {
             for (View clickable : clickables) {
                 clickable.setOnClickListener(clickListener);
@@ -251,7 +251,7 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public void unregisterViews() {
+    protected void unregisterViews() {
         if (hasExpired()) {
             Clog.d(Clog.mediationLogTag, "This NativeAdResponse has expired.");
         }
@@ -260,6 +260,7 @@ public class InMobiNativeAdResponse implements NativeAdResponse {
 
     @Override
     public void destroy() {
+        super.destroy();
         if (inMobiNativeExpireHandler != null) {
             inMobiNativeExpireHandler.removeCallbacks(runnable);
             inMobiNativeExpireHandler.post(runnable);

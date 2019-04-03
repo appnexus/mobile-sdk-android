@@ -150,30 +150,6 @@ public interface NativeAdResponse {
      */
     public boolean hasExpired();
 
-    /**
-     * Register view for tracking
-     *
-     * @param view the container of native ad
-     * @param listener the listener of the ad events, can be null
-     * @return True if successful
-     */
-    public boolean registerView(View view, NativeAdEventListener listener);
-
-    /**
-     * Register a list of clickable views for tracking
-     *
-     * @param view the the container of native ad
-     * @param clickables the list of clickables
-     * @param listener the listener of the ad events, can be null
-     * @return True if successful
-     */
-    public boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener);
-
-    /**
-     * Unregister views for this response
-     * This will be destroyed once views are unregistered
-     */
-    public void unregisterViews();
 
     /**
      * Destroy the response

@@ -15,6 +15,7 @@
  */
 package com.appnexus.opensdk.viewability;
 
+import android.view.View;
 import android.webkit.WebView;
 
 import com.appnexus.opensdk.SDKSettings;
@@ -26,10 +27,15 @@ import com.iab.omid.library.appnexus.adsession.AdSession;
 import com.iab.omid.library.appnexus.adsession.AdSessionConfiguration;
 import com.iab.omid.library.appnexus.adsession.AdSessionContext;
 import com.iab.omid.library.appnexus.adsession.Owner;
+import com.iab.omid.library.appnexus.adsession.VerificationScriptResource;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ANOmidAdSession {
 
     private AdSession omidAdSession;
+    List<VerificationScriptResource> verificationScriptResources = new ArrayList<>();
 
     public String prependOMIDJSToHTML(String html) {
         if (!SDKSettings.getOMEnabled())
@@ -72,6 +78,40 @@ public class ANOmidAdSession {
         } catch (NullPointerException exception){
             Clog.e(Clog.baseLogTag, "OMID Ad Session - Exception", exception);
         }
+    }
+
+    public void initNativeAdSession(View view) {
+        if (!SDKSettings.getOMEnabled())
+            return;
+        try {
+            AdSessionContext adSessionContext = AdSessionContext.createNativeAdSessionContext(ANOmidViewabilty.getInstance().getAppnexusPartner(),
+                    ANOmidViewabilty.getInstance().getOmidJsServiceContent(), verificationScriptResources, null);
+
+
+            AdSessionConfiguration adSessionConfiguration =
+                    AdSessionConfiguration.createAdSessionConfiguration(Owner.NATIVE, null , false);
+
+
+            omidAdSession = AdSession.createAdSession(adSessionConfiguration, adSessionContext);
+            omidAdSession.registerAdView(view);
+            omidAdSession.start();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (NullPointerException exception) {
+            Clog.e(Clog.baseLogTag, "OMID Ad Session - Exception", exception);
+        }
+    }
+
+    public void addToVerificationScriptResources(VerificationScriptResource verificationScriptResource){
+        verificationScriptResources.add(verificationScriptResource);
+
+    }
+
+    public boolean isVerificationResourcesPresent(){
+        if(verificationScriptResources!=null && !verificationScriptResources.isEmpty()){
+            return true;
+        }
+        return false;
     }
 
     public void fireImpression(){

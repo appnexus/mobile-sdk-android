@@ -22,6 +22,7 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.viewability.ANOmidAdSession;
 
 class ImpressionTracker extends HTTPGet {
     private String url;
@@ -29,22 +30,24 @@ class ImpressionTracker extends HTTPGet {
     private boolean fired = false;
     private Context context;
     private ImpressionListener listener;
+    private ANOmidAdSession anOmidAdSession;
 
-    static ImpressionTracker create(String url, VisibilityDetector visibilityDetector, Context context) {
+    static ImpressionTracker create(String url, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession) {
         if (visibilityDetector == null) {
             return null;
         } else {
-            ImpressionTracker impressionTracker = new ImpressionTracker(url, visibilityDetector, context);
+            ImpressionTracker impressionTracker = new ImpressionTracker(url, visibilityDetector, context, anOmidAdSession);
             visibilityDetector.addVisibilityListener(impressionTracker.listener);
             return impressionTracker;
         }
     }
 
-    private ImpressionTracker(String url, VisibilityDetector visibilityDetector, Context context) {
+    private ImpressionTracker(String url, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession) {
         this.url = url;
         this.visibilityDetector = visibilityDetector;
         this.listener = new ImpressionListener();
         this.context = context;
+        this.anOmidAdSession = anOmidAdSession;
     }
 
     private synchronized void fire() {
@@ -57,6 +60,9 @@ class ImpressionTracker extends HTTPGet {
                 listener = null;
             } else {
                 nm.addURL(url, context);
+            }
+            if(anOmidAdSession !=null){
+                anOmidAdSession.fireImpression();
             }
             fired = true;
         }

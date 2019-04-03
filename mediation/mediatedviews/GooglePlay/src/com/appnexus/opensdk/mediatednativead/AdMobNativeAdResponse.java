@@ -21,8 +21,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
+import com.appnexus.opensdk.BaseNativeAdResponse;
 import com.appnexus.opensdk.NativeAdEventListener;
-import com.appnexus.opensdk.NativeAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.google.android.gms.ads.formats.NativeAd;
@@ -32,7 +32,7 @@ import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 import java.util.HashMap;
 import java.util.List;
 
-public class AdMobNativeAdResponse implements NativeAdResponse {
+public class AdMobNativeAdResponse extends BaseNativeAdResponse {
     private String title;
     private String description;
     private String imageUrl;
@@ -213,7 +213,7 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
     private UnifiedNativeAdView adView = null;
 
     @Override
-    public boolean registerView(View view, NativeAdEventListener listener) {
+    protected boolean registerView(View view, NativeAdEventListener listener) {
         if (view != null && !registered && !expired) {
             try {
                 adView = (UnifiedNativeAdView) view;
@@ -235,7 +235,7 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
     }
 
     @Override
-    public boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
+    protected boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
         return registerView(view, listener);
     }
 
@@ -245,7 +245,7 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
 
 
     @Override
-    public void unregisterViews() {
+    protected void unregisterViews() {
         if (expired) {
             Clog.d(Clog.mediationLogTag, "This NativeAdResponse has expired.");
         }
@@ -257,6 +257,7 @@ public class AdMobNativeAdResponse implements NativeAdResponse {
 
     @Override
     public void destroy() {
+        super.destroy();
         if(nativeExpireHandler!=null) {
             nativeExpireHandler.removeCallbacks(runnable);
             nativeExpireHandler.post(runnable);

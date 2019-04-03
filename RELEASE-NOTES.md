@@ -1,3 +1,9 @@
+## 5.2
+
+### New Features
++ MS-3720: Open Measurement SDK support for Native Ads
+
+
 ## 5.1.2
 
 ### Bug Fixes

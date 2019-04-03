@@ -20,6 +20,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.View;
 
+import com.appnexus.opensdk.BaseNativeAdResponse;
 import com.appnexus.opensdk.MediatedNativeAd;
 import com.appnexus.opensdk.MediatedNativeAdController;
 import com.appnexus.opensdk.NativeAdEventListener;
@@ -45,7 +46,7 @@ public class MediatedNativeSuccessful2 implements MediatedNativeAd {
         if (mBC != null) {
             didPass = true;
             Lock.explicitSleep(2); // This is for generating latency and total latency in the response url
-            mBC.onAdLoaded(new NativeAdResponse() {
+            mBC.onAdLoaded(new BaseNativeAdResponse() {
                 @Override
                 public Network getNetworkIdentifier() {
                     return Network.APPNEXUS;
@@ -125,17 +126,17 @@ public class MediatedNativeSuccessful2 implements MediatedNativeAd {
                 }
 
                 @Override
-                public boolean registerView(View view, NativeAdEventListener listener) {
+                protected boolean registerView(View view, NativeAdEventListener listener) {
                     return false;
                 }
 
                 @Override
-                public boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
+                protected boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
                     return false;
                 }
 
                 @Override
-                public void unregisterViews() {
+                protected void unregisterViews() {
 
                 }
 

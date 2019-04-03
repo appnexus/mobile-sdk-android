@@ -21,6 +21,7 @@ import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.util.TestUtil;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.viewability.ANOmidAdSession;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,11 +37,11 @@ import static junit.framework.Assert.assertTrue;
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
                 ShadowWebView.class, ShadowWebSettings.class, ShadowLog.class, ShadowSettings.class})
-public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListener {
-    NativeAdRequest adRequest;
-    NativeAdResponse response;
+public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListener,NativeAdEventListener {
+    protected NativeAdRequest adRequest;
+    protected NativeAdResponse     response;
 
-    boolean adLoaded, adFailed;
+    protected boolean adLoaded, adFailed;
 
 
     @Override
@@ -86,4 +87,22 @@ public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListe
         assertTrue(true);
     }
 
+    @Override
+    public void onAdWasClicked() {
+
+    }
+
+    @Override
+    public void onAdWillLeaveApplication() {
+
+    }
+
+    @Override
+    public void onAdWasClicked(String clickUrl, String fallbackURL) {
+
+    }
+
+    public ANOmidAdSession getOMIDAdSession() {
+        return ((BaseNativeAdResponse)response).anOmidAdSession;
+    }
 }

@@ -35,6 +35,7 @@ import java.util.ArrayList;
 public class MediatedNativeAdController {
     WeakReference<UTAdRequester> requester;
     WeakReference<Context> contextWeakReference;
+    private WeakReference<BaseNativeAdResponse> response;
     CSMSDKAdResponse currentAd;
 
     boolean hasSucceeded = false;
@@ -130,6 +131,12 @@ public class MediatedNativeAdController {
         hasSucceeded = true;
         fireResponseURL(currentAd.getResponseUrl(), ResultCode.SUCCESS);
         UTAdRequester requester = this.requester.get();
+
+
+        // Create an OMID Related objects.
+        ((BaseNativeAdResponse)response).setANVerificationScriptResources(currentAd.getAdObject());
+        this.response = new WeakReference<>((BaseNativeAdResponse)response);
+
         if (requester != null) {
             requester.onReceiveAd(new AdResponse() {
                 @Override
@@ -201,6 +208,12 @@ public class MediatedNativeAdController {
      */
     public void onAdImpression() {
         fireImpressionTracker();
+
+        // Fire the impression event to OMID
+        BaseNativeAdResponse response = this.response.get();
+        if (response != null) {
+            response.anOmidAdSession.fireImpression();
+        }
     }
 
 
