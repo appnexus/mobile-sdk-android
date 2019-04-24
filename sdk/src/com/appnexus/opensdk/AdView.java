@@ -111,21 +111,6 @@ public abstract class AdView extends FrameLayout implements Ad {
 
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.new_adview));
 
-        SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        if (prefs.getBoolean("opensdk_first_launch", true)) {
-            // This is the first launch, store a value to remember
-            Clog.v(Clog.baseLogTag,
-                    Clog.getString(R.string.first_opensdk_launch));
-            Settings.getSettings().first_launch = true;
-            prefs.edit().putBoolean("opensdk_first_launch", false).commit();
-        } else {
-            // Found the stored value, this is NOT the first launch
-            Clog.v(Clog.baseLogTag,
-                    Clog.getString(R.string.not_first_opensdk_launch));
-            Settings.getSettings().first_launch = false;
-        }
-
         // Store the UA in the settings
         try {
             Settings.getSettings().ua = new WebView(context).getSettings()
