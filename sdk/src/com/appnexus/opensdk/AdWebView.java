@@ -249,11 +249,11 @@ class AdWebView extends WebView implements Displayable,
             StringBuilder htmlSB = new StringBuilder("<html><head><script>");
 
             // retrieve source from raw resources
-            // insert sdkjs, anjam, mraid into html content, in that order
+            // insert sdkjs, anjam  into html content, in that order
+            // mraid is loaded when intercepting network call and not needed here else created problem #MS-3790
             if (res == null
                     || !StringUtil.appendRes(htmlSB, res, R.raw.sdkjs)
-                    || !StringUtil.appendRes(htmlSB, res, R.raw.anjam)
-                    || !StringUtil.appendRes(htmlSB, res, R.raw.apn_mraid)) {
+                    || !StringUtil.appendRes(htmlSB, res, R.raw.anjam)) {
                 Clog.e(Clog.baseLogTag, "Error reading SDK's raw resources.");
                 return html;
             }
