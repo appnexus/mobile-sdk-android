@@ -683,13 +683,18 @@ class AdWebView extends WebView implements Displayable,
         omidAdSession.stopAdSession();
         // in case `this` was not removed when destroy was called
         ViewUtil.removeChildFromParent(this);
-        try {
-            super.destroy();
-        }
-        // Fatal exception in android v4.x in TextToSpeech
-        catch (IllegalArgumentException e) {
-            Clog.e(Clog.baseLogTag, Clog.getString(R.string.apn_webview_failed_to_destroy), e);
-        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    AdWebView.super.destroy();
+                }
+                // Fatal exception in android v4.x in TextToSpeech
+                catch (IllegalArgumentException e) {
+                    Clog.e(Clog.baseLogTag, Clog.getString(R.string.apn_webview_failed_to_destroy), e);
+                }
+            }
+        }, 300);
         this.removeAllViews();
         stopCheckViewable();
     }
