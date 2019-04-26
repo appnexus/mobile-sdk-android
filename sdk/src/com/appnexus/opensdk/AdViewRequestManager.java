@@ -115,6 +115,15 @@ class AdViewRequestManager extends RequestManager {
         }
         Ad owner = this.owner.get();
         if (owner != null) {
+            if (owner.getMediaType().equals(MediaType.BANNER)) {
+                BannerAdView bav = (BannerAdView) owner;
+                if (bav.getExpandsToFitScreenWidth()) {
+                    bav.expandToFitScreenWidth(ad.getResponseData().getWidth(), ad.getResponseData().getHeight(), ad.getDisplayable().getView());
+                }
+                if (bav.getResizeAdToFitContainer()) {
+                    bav.resizeViewToFitContainer(ad.getResponseData().getWidth(), ad.getResponseData().getHeight(), ad.getDisplayable().getView());
+                }
+            }
             owner.getAdDispatcher().onAdLoaded(ad);
         } else {
             ad.destroy();
@@ -266,16 +275,6 @@ class AdViewRequestManager extends RequestManager {
     private void initiateWebview(final AdView owner, final BaseAdResponse response) {
         adWebview = new AdWebView(owner, AdViewRequestManager.this);
         adWebview.loadAd(response);
-
-        if (owner.getMediaType().equals(MediaType.BANNER)) {
-            BannerAdView bav = (BannerAdView) owner;
-            if (bav.getExpandsToFitScreenWidth()) {
-                bav.expandToFitScreenWidth(response.getWidth(), response.getHeight(), adWebview);
-            }
-            if (bav.getResizeAdToFitContainer()) {
-                bav.resizeWebViewToFitContainer(response.getWidth(), response.getHeight(), adWebview);
-            }
-        }
     }
 
 }
