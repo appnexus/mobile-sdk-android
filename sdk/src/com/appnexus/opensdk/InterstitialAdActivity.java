@@ -118,7 +118,7 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
 
     private void showCloseButton() {
         if (countdownWidget != null) {
-            if (!webView.isMRAIDUseCustomClose()) {
+            if (webView == null || !webView.isMRAIDUseCustomClose()) {
                 countdownWidget.setProgress(0);
                 countdownWidget.setTitle("X");
             } else {
@@ -217,6 +217,9 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
             }
             if (autoDismissHandler != null) {
                 autoDismissHandler.removeCallbacksAndMessages(null);
+            }
+            if (countdownTimer != null) {
+                countdownTimer.cancelTimer();
             }
             adActivity.finish();
         }
