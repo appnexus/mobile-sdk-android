@@ -36,7 +36,6 @@ class VideoImplementation {
     }
 
     void webViewFinishedLoading() {
-        setOMIDPartner();
         createVastPlayerWithContent();
     }
 
@@ -85,15 +84,10 @@ class VideoImplementation {
     }
 
 
-    protected void setOMIDPartner() {
-        String inject = String.format("javascript:window.setOMIDPartner('{\"name\":\"%s\",\"version\":\"%s\"}')",
-                ANOmidViewabilty.OMID_PARTNER_NAME, Settings.getSettings().sdkVersion);
-        adWebView.injectJavaScript(inject);
-    }
-
     protected void createVastPlayerWithContent() {
+        String options = ANVideoPlayerSettings.getVideoPlayerSettings().fetchBannerSettings();
         String inject = String.format("javascript:window.createVastPlayerWithContent('%s','%s')",
-                vastXML,MediaType.BANNER);
+                vastXML, options);
         adWebView.injectJavaScript(inject);
     }
 

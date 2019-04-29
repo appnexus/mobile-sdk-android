@@ -40,6 +40,7 @@ import com.appnexus.opensdk.transitionanimation.TransitionDirection;
 import com.appnexus.opensdk.transitionanimation.TransitionType;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
 
 import java.lang.ref.WeakReference;
@@ -244,7 +245,7 @@ public class BannerAdView extends AdView {
                     public void run() {
                         if (getChildAt(0) instanceof AdWebView) {
                             AdWebView adWebView = (AdWebView) getChildAt(0);
-                            resizeWebViewToFitContainer(adWebView.getCreativeWidth(), adWebView.getCreativeHeight(), adWebView);
+                            resizeViewToFitContainer(adWebView.getCreativeWidth(), adWebView.getCreativeHeight(), adWebView);
                             adWebView.requestLayout();
                         }
 
@@ -1013,7 +1014,7 @@ public class BannerAdView extends AdView {
 
     @SuppressLint("NewApi")
     @SuppressWarnings("deprecation")
-    protected void resizeWebViewToFitContainer(int adWidth, int adHeight, AdWebView webview) {
+    protected void resizeViewToFitContainer(int adWidth, int adHeight, View view) {
         int containerWidth;
         int containerHeight;
         if (getWidth() <= 0) {
@@ -1032,45 +1033,64 @@ public class BannerAdView extends AdView {
             return;
         }
 
-        int webViewWidth;
-        int webViewHeight;
 
-        float widthRatio = ((float) adWidth) / ((float) containerWidth);
-        float heightRatio = ((float) adHeight) / ((float) containerHeight);
+        if(view instanceof WebView){
 
-        if (widthRatio < heightRatio) {
-            //expand to full container height
-            webViewHeight = containerHeight;
-            webViewWidth = (adWidth * containerHeight / adHeight);
-            webview.setInitialScale((int) Math.ceil(100 * containerHeight / adHeight));
+            int webViewWidth;
+            int webViewHeight;
 
-        } else {
-            //expand to full container width
-            webViewWidth = containerWidth;
-            webViewHeight = (adHeight * containerWidth / adWidth);
-            webview.setInitialScale((int) Math.ceil(100 * containerWidth / adWidth));
+            float widthRatio = ((float) adWidth) / ((float) containerWidth);
+            float heightRatio = ((float) adHeight) / ((float) containerHeight);
+
+            if (widthRatio < heightRatio) {
+                //expand to full container height
+                webViewHeight = containerHeight;
+                webViewWidth = (adWidth * containerHeight / adHeight);
+                ((WebView)view).setInitialScale((int) Math.ceil(100 * containerHeight / adHeight));
+
+            } else {
+                //expand to full container width
+                webViewWidth = containerWidth;
+                webViewHeight = (adHeight * containerWidth / adWidth);
+                ((WebView)view).setInitialScale((int) Math.ceil(100 * containerWidth / adWidth));
+            }
+
+            // Adjust width or height of webview to fit container
+            if (view.getLayoutParams() == null) {
+                LayoutParams layoutParams = new LayoutParams(webViewWidth, webViewHeight);
+                layoutParams.gravity = Gravity.CENTER;
+                view.setLayoutParams(layoutParams);
+
+            } else {
+                view.getLayoutParams().width = webViewWidth;
+                view.getLayoutParams().height = webViewHeight;
+                ((LayoutParams) view.getLayoutParams()).gravity = Gravity.CENTER;
+            }
+        }else {
+
+            int adWidthInPixel = ViewUtil.getValueInPixel(getContext(), adWidth);
+            int adHeightInPixel = ViewUtil.getValueInPixel(getContext(), adHeight);
+            float widthRatio = (float) containerWidth / (float) adWidthInPixel;
+            float heightRatio = (float) containerHeight / (float) adHeightInPixel;
+
+            if (widthRatio < heightRatio) {
+                view.setScaleX(widthRatio);
+                view.setScaleY(widthRatio);
+            } else {
+                view.setScaleX(heightRatio);
+                view.setScaleY(heightRatio);
+            }
         }
-
-        // Adjust width or height of webview to fit container
-        if (webview.getLayoutParams() == null) {
-            LayoutParams layoutParams = new LayoutParams(webViewWidth, webViewHeight);
-            layoutParams.gravity = Gravity.CENTER;
-            webview.setLayoutParams(layoutParams);
-
-        } else {
-            webview.getLayoutParams().width = webViewWidth;
-            webview.getLayoutParams().height = webViewHeight;
-            ((LayoutParams) webview.getLayoutParams()).gravity = Gravity.CENTER;
-        }
-        webview.invalidate();
+        view.invalidate();
     }
+
 
     protected int oldH;
     protected int oldW;
 
     @SuppressLint("NewApi")
     @SuppressWarnings("deprecation")
-    protected void expandToFitScreenWidth(int adWidth, int adHeight, AdWebView webview) {
+    protected void expandToFitScreenWidth(int adWidth, int adHeight,  View view) {
         //Determine the width of the screen
         WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
@@ -1097,17 +1117,23 @@ public class BannerAdView extends AdView {
         //Adjust height of container
         getLayoutParams().height = new_height;
 
+        if(view instanceof WebView) {
 
-        //Adjust height of webview
-        if (webview.getLayoutParams() == null) {
-            webview.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
-        } else {
-            webview.getLayoutParams().width = FrameLayout.LayoutParams.MATCH_PARENT;
-            webview.getLayoutParams().height = FrameLayout.LayoutParams.MATCH_PARENT;
+            //Adjust height of webview
+            if (view.getLayoutParams() == null) {
+                view.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+            } else {
+                view.getLayoutParams().width = FrameLayout.LayoutParams.MATCH_PARENT;
+                view.getLayoutParams().height = FrameLayout.LayoutParams.MATCH_PARENT;
+            }
+            ((WebView)view).setInitialScale((int) Math.ceil(ratio_delta * 100));
+        }else{
+            int adWidthInPixel = ViewUtil.getValueInPixel(getContext(), adWidth);
+            float widthRatio = (float) width / (float) adWidthInPixel;
+            view.setScaleX(widthRatio);
+            view.setScaleY(widthRatio);
         }
-        webview.setInitialScale((int) Math.ceil(ratio_delta * 100));
-        webview.invalidate();
-
+        view.invalidate();
         shouldResetContainer = true;
 
     }
