@@ -40,9 +40,9 @@ import android.widget.FrameLayout;
 
 
 import com.appnexus.opensdk.ANClickThroughAction;
+import com.appnexus.opensdk.ANVideoPlayerSettings;
 import com.appnexus.opensdk.AdActivity;
 import com.appnexus.opensdk.BrowserAdActivity;
-import com.appnexus.opensdk.MediaType;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.adresponse.CSMVASTAdResponse;
@@ -52,7 +52,6 @@ import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
 import com.appnexus.opensdk.viewability.ANOmidAdSession;
-import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 
 import org.json.JSONObject;
 
@@ -174,7 +173,6 @@ class VideoWebView extends WebView {
             Clog.d(Clog.videoLogTag, "onPageFinished");
             if (!firstPageLoadComplete) {
                 firstPageLoadComplete = true;
-                setOMIDPartner();
                 if (baseAdResponse.getContentSource().equalsIgnoreCase(UTConstants.CSM_VIDEO)) {
                     processMediationAd();
                 } else {
@@ -485,15 +483,10 @@ class VideoWebView extends WebView {
         playAdHandler.post(runnableCode);
     }
 
-    protected void setOMIDPartner() {
-        String inject = String.format("javascript:window.setOMIDPartner('{\"name\":\"%s\",\"version\":\"%s\"}')",
-                ANOmidViewabilty.OMID_PARTNER_NAME, Settings.getSettings().sdkVersion);
-        this.injectJavaScript(inject);
-    }
-
     protected void createVastPlayerWithContent() {
+        String options = ANVideoPlayerSettings.getVideoPlayerSettings().fetchInStreamVideoSettings();
         String inject = String.format("javascript:window.createVastPlayerWithContent('%s','%s')",
-                baseAdResponse.getAdContent(), MediaType.INSTREAM_VIDEO);
+                baseAdResponse.getAdContent(), options);
         this.injectJavaScript(inject);
     }
 
