@@ -6,7 +6,7 @@
 ### Mediation partner upgrades
 + MS-3803: Upgraded Google AdMob adapter  SDK v17.2.0
 
-### Bug Fixes
+### Bug Fixes/Improvements
 + MS-3784: Improved Open Measurement Event(Session Finish) for BannerAds
 + MS-3807: Removed unused themes (Github #41)
 + MS-3809: Fixed disk read violation issue (Github #40)
