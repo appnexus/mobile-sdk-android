@@ -1,3 +1,20 @@
+## 5.3
+
+### New Features
++ MS-3712: Resize BannerAd API for Mediation ads
++ MS-3789: Ability to customize Video Player Options
+
+### Mediation partner upgrades
++ MS-3803: Upgraded Google AdMob adapter  SDK v17.2.0
+
+### Bug Fixes/Improvements
++ MS-3784: Improved Open Measurement Event(Session Finish) for BannerAds
++ MS-3790: Fixed rendering issue with Banner creative
++ MS-3807: Removed unused themes (Github #41)
++ MS-3809: Fixed disk read violation issue (Github #40)
++ MS-3812: Fixed crashes with Interstitial Ads
+
+
 ## 5.2
 
 ### New Features
