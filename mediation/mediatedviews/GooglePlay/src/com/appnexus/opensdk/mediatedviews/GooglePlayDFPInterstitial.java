@@ -76,17 +76,6 @@ public class GooglePlayDFPInterstitial implements MediatedInterstitialAdView {
 
     private PublisherAdRequest buildRequest(TargetingParameters targetingParameters) {
         PublisherAdRequest.Builder builder = new PublisherAdRequest.Builder();
-        switch (targetingParameters.getGender()) {
-            case UNKNOWN:
-                builder.setGender(PublisherAdRequest.GENDER_UNKNOWN);
-                break;
-            case FEMALE:
-                builder.setGender(PublisherAdRequest.GENDER_FEMALE);
-                break;
-            case MALE:
-                builder.setGender(PublisherAdRequest.GENDER_MALE);
-                break;
-        }
 
         Bundle bundle = new Bundle();
 
@@ -106,7 +95,8 @@ public class GooglePlayDFPInterstitial implements MediatedInterstitialAdView {
             }
         }
 
-        builder.addNetworkExtras(new AdMobExtras(bundle));
+        //Since AdMobExtras is deprecated so we need to use below method
+        builder.addNetworkExtrasBundle(com.google.ads.mediation.admob.AdMobAdapter.class, bundle);
 
         return builder.build();
     }

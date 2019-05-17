@@ -122,18 +122,6 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
             builder.addTestDevice(ssparm.test_device);
         }
 
-        switch (targetingParameters.getGender()) {
-            case UNKNOWN:
-                builder.setGender(PublisherAdRequest.GENDER_UNKNOWN);
-                break;
-            case FEMALE:
-                builder.setGender(PublisherAdRequest.GENDER_FEMALE);
-                break;
-            case MALE:
-                builder.setGender(PublisherAdRequest.GENDER_MALE);
-                break;
-        }
-
         Bundle bundle = new Bundle();
 
         if (!StringUtil.isEmpty(ssparm.secondPrice)) {
@@ -164,8 +152,8 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
                 bundle.putString(p.first, p.second);
             }
         }
-
-        builder.addNetworkExtras(new AdMobExtras(bundle));
+        //Since AdMobExtras is deprecated so we need to use below method
+        builder.addNetworkExtrasBundle(com.google.ads.mediation.admob.AdMobAdapter.class, bundle);
 
         return builder.build();
     }

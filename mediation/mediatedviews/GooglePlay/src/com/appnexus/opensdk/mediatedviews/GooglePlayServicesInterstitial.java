@@ -82,18 +82,6 @@ public class GooglePlayServicesInterstitial implements MediatedInterstitialAdVie
     private AdRequest buildRequest(TargetingParameters targetingParameters) {
         AdRequest.Builder builder = new AdRequest.Builder();
 
-        switch (targetingParameters.getGender()) {
-            case UNKNOWN:
-                builder.setGender(AdRequest.GENDER_UNKNOWN);
-                break;
-            case FEMALE:
-                builder.setGender(AdRequest.GENDER_FEMALE);
-                break;
-            case MALE:
-                builder.setGender(AdRequest.GENDER_MALE);
-                break;
-        }
-
         Bundle bundle = new Bundle();
 
         if (targetingParameters.getAge() != null) {
@@ -112,7 +100,8 @@ public class GooglePlayServicesInterstitial implements MediatedInterstitialAdVie
             }
         }
 
-        builder.addNetworkExtras(new AdMobExtras(bundle));
+        //Since AdMobExtras is deprecated so we need to use below method
+        builder.addNetworkExtrasBundle(com.google.ads.mediation.admob.AdMobAdapter.class, bundle);
 
         return builder.build();
     }
