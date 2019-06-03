@@ -1212,9 +1212,9 @@ class AdWebView extends WebView implements Displayable,
             String htmlContentInStringFormat = StringUtil.getStringFromAsset(RENDERER_FILE, getContextFromMutableContext());
             htmlContentInStringFormat = htmlContentInStringFormat.replace(RENDERER_URL, nativeAdResponse.getRendererUrl());
             htmlContentInStringFormat = htmlContentInStringFormat.replace(RENDERER_JSON, nativeJson.toString());
-            Clog.e("NATIVE JSON", nativeJson.toString());
-            Clog.e("RENDERER URL", nativeAdResponse.getRendererUrl());
-            Clog.e("HTML", htmlContentInStringFormat);
+            Clog.d(Clog.baseLogTag + "-NATIVE_JSON", nativeJson.toString());
+            Clog.d(Clog.baseLogTag + "-RENDERER_URL", nativeAdResponse.getRendererUrl());
+            Clog.d(Clog.baseLogTag + "-HTML", htmlContentInStringFormat);
             return htmlContentInStringFormat;
         } catch (IOException e) {
             e.printStackTrace();
