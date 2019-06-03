@@ -52,6 +52,7 @@ class VideoActivity : AppCompatActivity(), VideoAdLoadListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_banner)
         context = this
+        Settings.getSettings().useHttps = true
         Settings.getSettings().debug_mode = true
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);

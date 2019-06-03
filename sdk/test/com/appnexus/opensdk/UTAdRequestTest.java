@@ -619,4 +619,8 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
     public void continueWaterfall(ResultCode reason) {
 
     }
+
+    @Override
+    public void nativeRenderingFailed() {
+    }
 }

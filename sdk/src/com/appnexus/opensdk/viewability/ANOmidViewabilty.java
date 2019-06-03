@@ -78,32 +78,13 @@ public class ANOmidViewabilty {
 
         if (StringUtil.isEmpty(OMID_JS_SERVICE_CONTENT)) {
             try {
-                fetchOmidJS(applicationContext);
+                OMID_JS_SERVICE_CONTENT =  StringUtil.getStringFromAsset("apn_omsdk.js", applicationContext);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
     }
-
-    private void fetchOmidJS(Context applicationContext) throws IOException {
-        final AssetManager assetManager =  applicationContext.getAssets();
-        InputStream inputStream = assetManager.open("apn_omsdk.js");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        StringBuilder omSDKStringBuild = new StringBuilder();
-        try {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                omSDKStringBuild.append(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            reader.close();
-        }
-        OMID_JS_SERVICE_CONTENT =  omSDKStringBuild.toString();
-    }
-
 
     public Partner getAppnexusPartner() {
         return appnexusPartner;

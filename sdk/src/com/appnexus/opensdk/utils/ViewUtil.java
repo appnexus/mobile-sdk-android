@@ -19,13 +19,10 @@ package com.appnexus.opensdk.utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.MutableContextWrapper;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.view.*;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
-
 import com.appnexus.opensdk.CircularProgressBar;
 
 public class ViewUtil {
@@ -105,6 +102,11 @@ public class ViewUtil {
     public static int getValueInPixel(Context context, double valueInDP) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) ((valueInDP * scale) + 0.5f);
+    }
+
+    public static int getValueInDP(Activity activity, int pixels) {
+        final float scale = activity.getResources().getDisplayMetrics().density;
+        return (int) ((pixels / scale) + 0.5f);
     }
 
     /**

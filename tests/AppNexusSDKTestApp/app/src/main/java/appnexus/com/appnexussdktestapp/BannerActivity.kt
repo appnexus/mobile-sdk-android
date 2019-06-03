@@ -1,5 +1,6 @@
 package appnexus.com.appnexussdktestapp
 
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -21,13 +22,16 @@ class BannerActivity : AppCompatActivity(), AdListener {
 
     val banner_id: Int = 1234
     lateinit var banner: BannerAdView
+    var clickUrl: String? = ""
     var idlingResource: CountingIdlingResource = CountingIdlingResource("Banner Load Count", true)
 
     override fun onAdClicked(p0: AdView?) {
+        clickUrl = ""
         Toast.makeText(this, "Ad Clicked", Toast.LENGTH_LONG).show()
     }
 
     override fun onAdClicked(p0: AdView?, p1: String?) {
+        clickUrl = p1
         Toast.makeText(this, "Ad Clicked with URL", Toast.LENGTH_LONG).show()
     }
 
@@ -67,6 +71,7 @@ class BannerActivity : AppCompatActivity(), AdListener {
         layout = findViewById(R.id.linearLayout)
 
         Settings.getSettings().debug_mode = true
+        Settings.getSettings().useHttps = true
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
@@ -79,7 +84,7 @@ class BannerActivity : AppCompatActivity(), AdListener {
 //        )
     }
 
-    fun triggerAdLoad(placement: String?, width: Int = 300, height: Int = 250, useHttps: Boolean = true, allowNativeDemand: Boolean = false, allowVideoDemand: Boolean = false, creativeId: Int? = null) {
+    fun triggerAdLoad(placement: String?, width: Int = 300, height: Int = 250, useHttps: Boolean = true, allowNativeDemand: Boolean = false, allowVideoDemand: Boolean = false, rendererId: Int = -1, useNativeRenderer: Boolean = false, clickThroughAction: ANClickThroughAction = ANClickThroughAction.OPEN_SDK_BROWSER, resizeToFitContainer: Boolean = false, expandsToFitScreenWidth: Boolean = false, creativeId: Int? = null) {
 
         Handler(Looper.getMainLooper()).post {
 
@@ -88,8 +93,13 @@ class BannerActivity : AppCompatActivity(), AdListener {
             banner.id = banner_id
             banner.placementID = if (placement == null) "13255429" else placement
             banner.setAdSize(width, height)
-            banner.allowNativeDemand = allowNativeDemand
+            banner.setAllowNativeDemand(allowNativeDemand)
+            banner.shouldUseNativeAssemblyRenderer(useNativeRenderer)
+            banner.loadsInBackground = false
+            banner.clickThroughAction = clickThroughAction
             banner.allowVideoDemand = allowVideoDemand
+            banner.resizeAdToFitContainer = resizeToFitContainer
+            banner.expandsToFitScreenWidth = expandsToFitScreenWidth
             SDKSettings.useHttps(useHttps)
             banner.adListener = this
             if(creativeId != null) {

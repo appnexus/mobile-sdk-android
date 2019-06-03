@@ -32,7 +32,10 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @Config(constants = BuildConfig.class, sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
@@ -97,13 +100,13 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
         assertCallbacks(true);
         assertBannerAdResponse(true);
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeWithoutImages()));
-        bannerAdView.setAllowNativeDemand(true, 127);
+        bannerAdView.enableNativeRendering(false);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         Assert.assertEquals(15000, bannerAdView.getAutoRefreshInterval());
         Assert.assertEquals(AdType.NATIVE, bannerAdView.getAdType());
-        Assert.assertEquals(127, bannerAdView.getRendererId());
+        Assert.assertEquals(false, bannerAdView.isNativeRenderingEnabled());
         assertCallbacks(true);
         assertBannerAdResponse(false);
     }
@@ -117,7 +120,7 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
     }
 
     private void executeBannerRequest() {
-        bannerAdView.setAutoRefreshInterval(15);
+        bannerAdView.setAutoRefreshInterval(15000);
         bannerAdView.loadAdOffscreen();
 
         waitForTasks();
@@ -154,10 +157,33 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
     }
 
     @Test
-    public void testgetRendererIdBannerNative() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative())); // First queue a banner Native response
-        bannerAdView.setAllowNativeDemand(true, 127);
+    public void testAutoRefreshBannerNativeRenderer() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeRenderer())); // First queue a banner Native response
+        bannerAdView.enableNativeRendering(true);
         executeBannerRequest();
-        assertEquals(127, bannerAdView.getRendererId());
+        assertTrue(bannerAdView.isNativeRenderingEnabled());
+        assertEquals(15000, bannerAdView.getAutoRefreshInterval());
+    }
+
+    @Test
+    public void testUseNativeAssemblyRendererTrue() {
+        ShadowCustomWebView.simulateRendererScriptSuccess = true;
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeRenderer())); // First queue a banner Native response
+        bannerAdView.enableNativeRendering(true);
+        executeBannerRequest();
+        assertTrue(bannerAdView.isNativeRenderingEnabled());
+        // Asserting that the AdLoaded for NativeAdResponse is not triggered
+        assertNull(nativeAdResponse);
+    }
+
+    @Test
+    public void testUseNativeAssemblyRendererFalse() {
+        ShadowCustomWebView.simulateRendererScriptSuccess = false;
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative())); // First queue a banner Native response
+        bannerAdView.enableNativeRendering(false);
+        executeBannerRequest();
+        assertFalse(bannerAdView.isNativeRenderingEnabled());
+        assertNotNull(nativeAdResponse);
+        assertBannerAdResponse(false);
     }
 }

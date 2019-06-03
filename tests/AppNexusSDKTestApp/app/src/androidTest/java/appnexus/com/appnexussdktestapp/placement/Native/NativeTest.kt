@@ -71,15 +71,18 @@ class NativeTest {
     @Test
     fun nativeAdLoadTest() {
 
-        nativeActivity.triggerAdLoad("14757580", creativeId = 138061430)
-
+        nativeActivity.triggerAdLoad("13255429", creativeId = 98249792)
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
         Espresso.onView(ViewMatchers.withId(R.id.title))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.description))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withText("NativeAd UI Test"))
+        Espresso.onView(ViewMatchers.withText("mobile_native_test"))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
-        Espresso.onView(ViewMatchers.withText("Spot testing is working using UI test"))
+        Espresso.onView(ViewMatchers.withText("This is a Mobile Test Native Ad from AppNexus"))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
         Thread.sleep(5000)
         Espresso.onView(ViewMatchers.withId(R.id.icon))
