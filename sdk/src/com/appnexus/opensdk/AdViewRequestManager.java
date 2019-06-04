@@ -36,6 +36,7 @@ class AdViewRequestManager extends RequestManager {
     private MediatedNativeAdController mediatedNativeAdController;
     private AdWebView adWebview;
     private final WeakReference<Ad> owner;
+    private BaseAdResponse currentAd;
 
     public AdViewRequestManager(Ad owner) {
         super();
@@ -99,6 +100,14 @@ class AdViewRequestManager extends RequestManager {
     }
 
     @Override
+    public void nativeRenderingFailed() {
+        if(currentAd != null && currentAd instanceof RTBNativeAdResponse) {
+            RTBNativeAdResponse response = (RTBNativeAdResponse) currentAd;
+            processNativeAd(response.getNativeAdResponse(), currentAd);
+        }
+    }
+
+    @Override
     public void onReceiveAd(AdResponse ad) {
         printMediatedClasses();
         if (controller != null) {
@@ -115,13 +124,17 @@ class AdViewRequestManager extends RequestManager {
         }
         Ad owner = this.owner.get();
         if (owner != null) {
-            if (owner.getMediaType().equals(MediaType.BANNER)) {
+            if (ad.getMediaType().equals(MediaType.BANNER)) {
                 BannerAdView bav = (BannerAdView) owner;
-                if (bav.getExpandsToFitScreenWidth()) {
-                    bav.expandToFitScreenWidth(ad.getResponseData().getWidth(), ad.getResponseData().getHeight(), ad.getDisplayable().getView());
-                }
-                if (bav.getResizeAdToFitContainer()) {
-                    bav.resizeViewToFitContainer(ad.getResponseData().getWidth(), ad.getResponseData().getHeight(), ad.getDisplayable().getView());
+                if(bav.getExpandsToFitScreenWidth() || bav.getResizeAdToFitContainer()) {
+                    int width = ad.getResponseData().getWidth() <= 1 ? bav.getRequestParameters().getPrimarySize().width() : ad.getResponseData().getWidth();
+                    int height = ad.getResponseData().getHeight() <= 1 ? bav.getRequestParameters().getPrimarySize().height() : ad.getResponseData().getHeight();
+                    if (bav.getExpandsToFitScreenWidth()) {
+                        bav.expandToFitScreenWidth(width, height, ad.getDisplayable().getView());
+                    }
+                    if (bav.getResizeAdToFitContainer()) {
+                        bav.resizeViewToFitContainer(width, height, ad.getDisplayable().getView());
+                    }
                 }
             }
             owner.getAdDispatcher().onAdLoaded(ad);
@@ -155,6 +168,7 @@ class AdViewRequestManager extends RequestManager {
         owner = this.owner.get();
         if ((owner != null) && getAdList() != null && !getAdList().isEmpty()) {
             final BaseAdResponse baseAdResponse = popAd();
+            this.currentAd = baseAdResponse;
             if (UTConstants.RTB.equalsIgnoreCase(baseAdResponse.getContentSource())) {
                 handleRTBResponse(owner, baseAdResponse);
             } else if (UTConstants.CSM.equalsIgnoreCase(baseAdResponse.getContentSource())) {
@@ -168,13 +182,23 @@ class AdViewRequestManager extends RequestManager {
         }
     }
 
-    private void handleNativeResponse(Ad owner, final BaseAdResponse baseAdResponse) {
+    private void handleNativeResponse(final Ad owner, final BaseAdResponse baseAdResponse) {
         final ANNativeAdResponse nativeAdResponse = ((RTBNativeAdResponse) baseAdResponse).getNativeAdResponse();
 
         if (owner != null) {
             nativeAdResponse.setLoadsInBackground(owner.getRequestParameters().getLoadsInBackground());
             nativeAdResponse.setClickThroughAction(owner.getRequestParameters().getClickThroughAction());
         }
+
+        if (owner instanceof BannerAdView && ((BannerAdView)owner).isNativeRenderingEnabled() && nativeAdResponse.getRendererUrl().length() > 0) {
+            initiateWebview(owner, baseAdResponse);
+        } else {
+            processNativeAd(nativeAdResponse, baseAdResponse);
+        }
+    }
+
+    protected void processNativeAd(final ANNativeAdResponse nativeAdResponse, final BaseAdResponse baseAdResponse) {
+
         onReceiveAd(new AdResponse() {
             @Override
             public MediaType getMediaType() {
@@ -214,7 +238,6 @@ class AdViewRequestManager extends RequestManager {
         if (rtbAdResponse instanceof RTBNativeAdResponse) {
             handleNativeResponse(ownerAd, rtbAdResponse);
         } else {
-            AdView owner = (AdView) ownerAd;
             if (rtbAdResponse.getAdContent() != null) {
 
                 if (UTConstants.AD_TYPE_BANNER.equalsIgnoreCase(rtbAdResponse.getAdType()) ||
@@ -227,7 +250,7 @@ class AdViewRequestManager extends RequestManager {
                     }
 
                     // Standard ads or Video Ads
-                    initiateWebview(owner, rtbAdResponse);
+                    initiateWebview(ownerAd, rtbAdResponse);
                 } else {
                     Clog.e(Clog.baseLogTag, "handleRTBResponse failed:: invalid adType::" + rtbAdResponse.getAdType());
                     continueWaterfall(ResultCode.INTERNAL_ERROR);
@@ -272,8 +295,8 @@ class AdViewRequestManager extends RequestManager {
         ssmAdViewController = MediatedSSMAdViewController.create(owner, AdViewRequestManager.this, ssmHtmlAdResponse);
     }
 
-    private void initiateWebview(final AdView owner, final BaseAdResponse response) {
-        adWebview = new AdWebView(owner, AdViewRequestManager.this);
+    private void initiateWebview(final Ad owner, final BaseAdResponse response) {
+        adWebview = new AdWebView((AdView) owner, AdViewRequestManager.this);
         adWebview.loadAd(response);
     }
 

@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.test.espresso.idling.CountingIdlingResource
 import appnexus.com.appnexussdktestapp.utility.Utils
 import com.appnexus.opensdk.*
+import com.appnexus.opensdk.utils.Settings
 import com.squareup.picasso.Picasso
 
 class NativeActivity : AppCompatActivity(), NativeAdRequestListener {
@@ -30,6 +31,7 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_native)
+        Settings.getSettings().useHttps = true
 //        triggerAdLoad(
 //            intent.getStringExtra("placement"),
 //            useHttps = intent.getBooleanExtra("useHttps", true)

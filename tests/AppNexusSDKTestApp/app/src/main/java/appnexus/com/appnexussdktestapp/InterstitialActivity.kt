@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.test.espresso.idling.CountingIdlingResource
 import appnexus.com.appnexussdktestapp.utility.Utils
 import com.appnexus.opensdk.*
+import com.appnexus.opensdk.utils.Settings
 
 class InterstitialActivity : AppCompatActivity(), AdListener {
 
@@ -66,6 +67,7 @@ class InterstitialActivity : AppCompatActivity(), AdListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_banner)
+        Settings.getSettings().useHttps = true
 //        triggerAdLoad("13255429", autoDismiss = 5)
 //        triggerAdLoad(
 //            intent.getStringExtra("placement"),

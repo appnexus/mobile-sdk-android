@@ -101,6 +101,7 @@ public class BannerAdView extends AdView {
     protected boolean shouldResetContainer;
     private boolean expandsToFitScreenWidth;
     private boolean resizeToFitContainer;
+    private boolean enableNativeRendering;
     private boolean measured;
     private Animator animator;
     private boolean autoRefreshOffInXML;
@@ -173,6 +174,7 @@ public class BannerAdView extends AdView {
         shouldResetContainer = false;
         expandsToFitScreenWidth = false;
         resizeToFitContainer = false;
+        enableNativeRendering = false;
         measured = false;
         animator = new Animator(getContext(), TransitionType.NONE, TransitionDirection.UP, 1000);
 
@@ -816,6 +818,8 @@ public class BannerAdView extends AdView {
     }
 
     /**
+     * @deprecated @deprecated Use setAllowNativeDemand(boolean) instead. Renderer to Placement mapping can now be done through Native Assembly in console.
+     *
      * Sets whether or not Native Ads(AppNexus Media Type:12) can serve on this Ad object.
      * This overrides the value set in console.
      *
@@ -827,6 +831,15 @@ public class BannerAdView extends AdView {
                 R.string.set_allow_native, enabled));
         requestParameters.setBannerNativeEnabled(enabled);
         requestParameters.setRendererId(rendererId);
+    }
+
+    /**
+     * Sets whether or not Native Ads(AppNexus Media Type:12) should be Renderered or not.
+     *
+     * @param enabled whether to enable Native Assembly Renderer or not. default is false
+     */
+    public void enableNativeRendering(boolean enabled) {
+        enableNativeRendering = enabled;
     }
 
     /**
@@ -1106,16 +1119,18 @@ public class BannerAdView extends AdView {
 
         float ratio_delta = ((float) width) / ((float) adWidth);
         int new_height = (int) Math.floor(adHeight * ratio_delta);
-        oldH = getLayoutParams().height;
-        oldW = getLayoutParams().width;
+        if(getLayoutParams() != null) {
+            oldH = getLayoutParams().height;
+            oldW = getLayoutParams().width;
 
-        //Adjust width of container
-        if (getLayoutParams().width > 0 || getLayoutParams().width == ViewGroup.LayoutParams.WRAP_CONTENT) {
-            getLayoutParams().width = width;
+            //Adjust width of container
+            if (getLayoutParams().width > 0 || getLayoutParams().width == ViewGroup.LayoutParams.WRAP_CONTENT) {
+                getLayoutParams().width = width;
+            }
+
+            //Adjust height of container
+            getLayoutParams().height = new_height;
         }
-
-        //Adjust height of container
-        getLayoutParams().height = new_height;
 
         if(view instanceof WebView) {
 
@@ -1210,12 +1225,23 @@ public class BannerAdView extends AdView {
     }
 
     /**
+     * @deprecated RendererId is not used anymore
+     *
      * Get the RendererId of the request
      *
      * @return Default int value 0, which indicates that renderer_id is not sent in the UT Request.
      */
     public int getRendererId() {
         return requestParameters.getRendererId();
+    }
+
+    /**
+     * Get the useNativeAssemblyRenderer of the request
+     *
+     * @return Default boolean value false, which indicates that the Native Ad won't be rendered.
+     */
+    public boolean isNativeRenderingEnabled() {
+        return enableNativeRendering;
     }
 
 }

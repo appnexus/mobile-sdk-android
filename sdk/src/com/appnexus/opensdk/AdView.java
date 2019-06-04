@@ -22,14 +22,12 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.MutableContextWrapper;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.Gravity;
@@ -60,6 +58,7 @@ import java.util.ArrayList;
 public abstract class AdView extends FrameLayout implements Ad {
 
     AdFetcher mAdFetcher;
+    private AdResponse ad = null;
     boolean mraid_changing_size_or_visibility = false;
     int creativeWidth;
     int creativeHeight;
@@ -1160,7 +1159,7 @@ public abstract class AdView extends FrameLayout implements Ad {
                         display(ad.getDisplayable());
                     }
 
-                    if (ad.getResponseData() != null && ad.getResponseData().getImpressionURLs().size() > 0) {
+                    if (ad.getResponseData() != null && ad.getResponseData().getImpressionURLs() != null && ad.getResponseData().getImpressionURLs().size() > 0) {
                         impressionTrackers = ad.getResponseData().getImpressionURLs();
                     }
 
@@ -1185,6 +1184,10 @@ public abstract class AdView extends FrameLayout implements Ad {
 
                     if (adListener != null)
                         adListener.onAdLoaded(AdView.this);
+                    if (ad.getNativeAdResponse() != null) {
+                        AdView.this.ad = ad;
+                        NativeAdSDK.registerTracking(ad.getNativeAdResponse(), ad.getDisplayable().getView(), null);
+                    }
                 }
             });
         }
@@ -1257,7 +1260,6 @@ public abstract class AdView extends FrameLayout implements Ad {
             return isAttachedToWindow;
         }
     }
-
 
     @Override
     public AdDispatcher getAdDispatcher() {

@@ -80,7 +80,7 @@ class BannerNativeTest {
     @Test
     fun bannerNativeLoadTest() {
 
-        bannerActivity.triggerAdLoad("14757580", allowNativeDemand = true, creativeId = 138061430)
+        bannerActivity.triggerAdLoad("13255429", allowNativeDemand = true, creativeId = 98249792)
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
@@ -89,12 +89,27 @@ class BannerNativeTest {
             .check(ViewAssertions.matches(isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.description))
             .check(ViewAssertions.matches(isDisplayed()))
-        onView(withText("NativeAd UI Test")).check(matches(isDisplayed()));
-        onView(withText("Spot testing is working using UI test")).check(matches(isDisplayed()));
+        onView(withText("mobile_native_test")).check(matches(isDisplayed()));
+        onView(withText("This is a Mobile Test Native Ad from AppNexus")).check(matches(isDisplayed()));
         Thread.sleep(5000)
         Espresso.onView(ViewMatchers.withId(R.id.icon))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.image))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+    }
+
+    /*
+    * Sanity Test for the Banner Native Assembly Renderer Ad
+    * */
+    @Test
+    fun bannerNativeAssemblyRendererLoadTest() {
+
+        bannerActivity.triggerAdLoad("15754688", allowNativeDemand = true, rendererId = 199, useNativeRenderer = true, creativeId = 154679082)
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
+        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
 }

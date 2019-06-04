@@ -182,6 +182,23 @@ public class BannerAdToRequestParametersTest extends BaseRoboTest {
         bannerAdView.getRequestParameters().getCustomKeywords().contains("content_url");
     }
 
+    @Test
+    public void testIsNativeAssemblyRendererEnabled(){
+        useNativeRenderer(true);
+        assertIsNativeAssemblyRendererEnabled(true);
+
+        useNativeRenderer(false);
+        assertIsNativeAssemblyRendererEnabled(false);
+    }
+
+    private void useNativeRenderer(boolean isNativeAssemblyRendererEnabled) {
+        bannerAdView.enableNativeRendering(isNativeAssemblyRendererEnabled);
+    }
+
+    private void assertIsNativeAssemblyRendererEnabled(boolean isNativeAssemblyRendererEnabled){
+        assertEquals(isNativeAssemblyRendererEnabled, bannerAdView.isNativeRenderingEnabled());
+    }
+
 
     private void setAdSize(){
         bannerAdView.setAdSize(720,90);

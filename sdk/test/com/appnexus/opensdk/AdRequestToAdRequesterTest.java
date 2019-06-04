@@ -187,6 +187,10 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements UTAdRequ
     }
 
     @Override
+    public void nativeRenderingFailed() {
+    }
+
+    @Override
     public void onReceiveUTResponse(UTAdResponse response){
         if(response!=null && response.getAdList() != null && !response.getAdList().isEmpty()) {
             requesterReceivedServerResponse = true;

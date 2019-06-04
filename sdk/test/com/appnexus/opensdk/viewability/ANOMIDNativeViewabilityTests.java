@@ -81,6 +81,14 @@ public class ANOMIDNativeViewabilityTests extends BaseNativeTest {
         assertTrue(verificationScriptResource.getVerificationParameters().equalsIgnoreCase("v;vk=dummyVendor;tv=cet=0;cecb="));
     }
 
+    private void assertVerificationScriptResourceNativeRenderer() {
+        ANOmidAdSession anOmidAdSession = getOMIDAdSession();
+        VerificationScriptResource verificationScriptResource = anOmidAdSession.verificationScriptResources.get(0);
+        assertTrue(verificationScriptResource.getResourceUrl().toString().equalsIgnoreCase("https://acdn.adnxs.com/mobile/omsdk/test/omid-validation-verification-script-1.2.5.js"));
+        assertTrue(verificationScriptResource.getVendorKey().equalsIgnoreCase("dummyVendorRenderer"));
+        assertTrue(verificationScriptResource.getVerificationParameters().equalsIgnoreCase("v;vk=dummyVendorRenderer;tv=cet=0;cecb="));
+    }
+
 
     private void assertVerificationScriptResourceCSM() {
         ANOmidAdSession anOmidAdSession = getOMIDAdSession();
@@ -108,6 +116,30 @@ public class ANOMIDNativeViewabilityTests extends BaseNativeTest {
         assertANOMIDAdSessionPresent();
         attachNativeAdToViewAndRegisterTracking();
         assertOMIDSessionStartRTB();
+        NativeAdSDK.unRegisterTracking(dummyNativeView);
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
+        assertOMIDSessionFinish();
+    }
+
+
+    @Test
+    public void testOmidNativeRendererJSEvents() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeRenderer()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.getForegroundThreadScheduler().runOneTask();
+        assertAdLoaded(true);
+        assertVerificationScriptResourceNativeRenderer();
+        assertANOMIDAdSessionPresent();
+        attachNativeAdToViewAndRegisterTracking();
+        assertOMIDSessionStartRenderer();
         NativeAdSDK.unRegisterTracking(dummyNativeView);
         Lock.pause(1000);
         waitForTasks();
@@ -149,6 +181,11 @@ public class ANOMIDNativeViewabilityTests extends BaseNativeTest {
     private void assertOMIDSessionStartRTB(){
         assertTrue(ShadowOMIDNativeWebView.omidInitString.contains("if(window.omidBridge!==undefined){omidBridge.init({\"impressionOwner\":\"native\",\"videoEventsOwner\":\"none\",\"isolateVerificationScripts\":false})}"));
         assertTrue(ShadowOMIDNativeWebView.omidStartSession.contains("{\"dummyVendor\":\"v;vk=dummyVendor;tv=cet=0;cecb=\"}"));
+    }
+
+    private void assertOMIDSessionStartRenderer(){
+        assertTrue(ShadowOMIDNativeWebView.omidInitString.contains("if(window.omidBridge!==undefined){omidBridge.init({\"impressionOwner\":\"native\",\"videoEventsOwner\":\"none\",\"isolateVerificationScripts\":false})}"));
+        assertTrue(ShadowOMIDNativeWebView.omidStartSession.contains("{\"dummyVendorRenderer\":\"v;vk=dummyVendorRenderer;tv=cet=0;cecb=\"}"));
     }
 
     private void assertOMIDSessionStartCSM(){

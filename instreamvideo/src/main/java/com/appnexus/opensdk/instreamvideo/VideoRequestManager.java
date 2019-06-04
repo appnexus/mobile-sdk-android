@@ -140,6 +140,9 @@ class VideoRequestManager implements UTAdRequester {
         }
     }
 
+    @Override
+    public void nativeRenderingFailed() { }
+
 
     private void handleRTBResponse(VideoAd owner, RTBVASTAdResponse rtbAdResponse) {
 

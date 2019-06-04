@@ -111,17 +111,6 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
         AdRequest.Builder builder = new AdRequest.Builder();
 
         if (targetingParameters != null) {
-            switch (targetingParameters.getGender()) {
-                case UNKNOWN:
-                    builder.setGender(AdRequest.GENDER_UNKNOWN);
-                    break;
-                case FEMALE:
-                    builder.setGender(AdRequest.GENDER_FEMALE);
-                    break;
-                case MALE:
-                    builder.setGender(AdRequest.GENDER_MALE);
-                    break;
-            }
             if (targetingParameters.getLocation() != null) {
                 builder.setLocation(targetingParameters.getLocation());
             }

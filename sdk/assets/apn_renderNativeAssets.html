@@ -1,0 +1,148 @@
+<!--
+ /*
+ *    Copyright 2019 APPNEXUS INC
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+ -->
+<html>
+<head>
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no"/>
+</head>
+
+<body style='padding:0;margin:0;'>
+<div id='targetIdForRenderer'>
+</div>
+
+
+
+<script>
+            /**
+             * Invokes renderAd with JSON body of UT Response.
+             *
+             * Define apntag in HTML file AFTER defining getApntag() (this template)
+             * and BEFORE invoking content of renderer_url:
+             *
+             *  var apntag = getApntag(utResponseBodyJSON);
+             *
+             * Apntag invokes registerRenderer() which, in turn, invokes onEvent()
+             * which passes UT Response JSON body into the renderer via renderAd().
+             *
+             */
+        function getApntag(jsonFromUTResponse) {
+            return new Apntag(jsonFromUTResponse);
+        }
+
+
+        function Apntag(jsonFromUTResponse)
+        {
+            this.currentTag = {
+                targetId: 'targetIdForRenderer'
+                // NB  This div must exist on HTML page for renderer to function.
+            };
+
+
+            this.registerRenderer = function (rendererId, renderApi)
+            {
+                if (rendererId && renderApi && renderApi.renderAd)
+                {
+                    renderApi.renderAd(this.currentTag, handleEventCallback)
+                } else {
+                    handleEventCallback(this.currentTag.targetId, 'FAILURE', 'renderAd is UNDEFINED.');
+                }
+
+                //
+                function handleEventCallback(targetId, eventType, message)
+                //FIX -- trigger delegate response to mobile plaform code
+                //FIX -- should handleEventCallback be passed in from HTML?
+                {
+                    console.log('Apntag: targetId=' +targetId+ ' eventType=' +eventType);
+
+                    if (message) {
+                        console.log('Apntag: >> ' +message);
+                    }
+                }
+            };
+
+
+            //
+            this.onEvent = function(event, targetId, incomingHandler)
+            {
+                // Create adObj from nativeStandardAd.customElements.
+                //
+                var adObj = {
+                    targetId:  this.currentTag.targetId,
+                    native:    getNativeProperties(jsonFromUTResponse)
+                }
+
+                incomingHandler(adObj);
+            }
+        }
+
+
+
+
+        /**
+         * Returns an object of native ad properties
+         */
+        function getNativeProperties(nObj)
+        {
+            // Remove all trackers and click through arrays.
+            // These are handled outside the webview by the mobile platform.
+            //
+            nObj.impression_trackers  = null;
+            nObj.javascript_trackers  = null;
+
+            return {
+                type:                       nObj.type,
+                title:                      nObj.title,
+                body:                       nObj.desc,
+                desc2:                      nObj.desc2,
+                fullText:                   nObj.full_text,
+                icon:                       nObj.icon,
+                image:                      nObj.main_img,
+                cta:                        nObj.ctatext,
+                sponsoredBy:                nObj.sponsored,
+
+                impressionTrackers:         nObj.impression_trackers,
+                clickTrackers:              nObj.link && nObj.link.click_trackers,
+                clickUrl:                   nObj.link && nObj.link.url,
+                clickFallbackUrl:           nObj.link && nObj.link.fallback_url,
+                javascriptTrackers:         nObj.javascript_trackers,
+
+                video:                      nObj.video,
+                privacyLink:                nObj.privacy_link,
+                rating:                     nObj.rating,
+                displayUrl:                 nObj.displayurl,
+                likes:                      nObj.likes,
+                downloads:                  nObj.downloads,
+                price:                      nObj.price,
+                salePrice:                  nObj.saleprice,
+                phone:                      nObj.phone,
+                address:                    nObj.address
+            };
+        }
+        </script>
+
+<script>
+
+           var  jsonFromUTResponse  = AN_NATIVE_RESPONSE_OBJECT;
+           var  apntag  = getApntag(jsonFromUTResponse);
+
+        </script>
+
+<script src="AN_NATIVE_ASSEMBLY_RENDERER_URL" onload="window.location = 'nativerenderer://success';" onerror="window.location = 'nativerenderer://failed';"></script>
+
+</body>
+
+</html>

@@ -26,9 +26,9 @@ import org.json.JSONObject;
 
 
 enum ANInitialAudioSetting {
-    SoundOn,
-    SoundOff,
-    Default
+    SOUND_ON,
+    SOUND_OFF,
+    DEFAULT
 }
 
 /*
@@ -64,6 +64,10 @@ public class ANVideoPlayerSettings {
     public static final String AN_INITIAL_AUDIO = "initialAudio";
     public static final String AN_ON = "on";
     public static final String AN_OFF = "off";
+    public static final String AN_SKIP = "skippable";
+    public static final String AN_SKIP_DESCRIPTION = "skipText";
+    public static final String AN_SKIP_LABEL_NAME = "skipButtonText";
+    public static final String AN_SKIP_OFFSET= "videoOffset";
 
     //Show or Hide the ClickThrough control on the video player. Default is YES, setting it to NO will make the entire video clickable.
     private boolean showClickThroughControl = false;
@@ -81,6 +85,14 @@ public class ANVideoPlayerSettings {
     private String adText = null;
     //Decide how the ad video sound starts initally (sound on or off). By default its on for InstreamVideo and off for Banner Video
     private ANInitialAudioSetting initialAudio;
+    //Show or hide the Skip control on the player
+    private boolean showSkip = false;
+    //Change the skip description on the video player
+    private String skipDescription = null;
+    //Change the skip button text on the video player
+    private String skipLabelName = null;
+    //Configure the skip offset on the video player
+    private Integer skipOffset = 0;
 
     private JSONObject optionsMap;
     private static ANVideoPlayerSettings anVideoPlayerSettings;
@@ -136,13 +148,42 @@ public class ANVideoPlayerSettings {
     public void setInitialAudio(ANInitialAudioSetting initialAudio) {
         this.initialAudio = initialAudio; }
 
+    public boolean isSkipEnabled() {
+        return showSkip;
+    }
+    public void shouldShowSkip(boolean showSkip) {
+        this.showSkip = showSkip; }
+
+    public String getSkipDescription() {
+        return skipDescription;
+    }
+    public void setSkipDescription(String skipDescription) {
+        this.skipDescription = skipDescription;
+    }
+
+    public String getSkipLabelName() {
+        return skipLabelName;
+    }
+    public void setSkipLabelName(String skipLabelName) {
+        this.skipLabelName = skipLabelName;
+    }
+
+    public Integer getSkipOffset() {
+        return skipOffset;
+    }
+    public void setSkipOffset(Integer skipOffset) {
+        this.skipOffset = skipOffset;
+    }
+
     private ANVideoPlayerSettings() {
         showClickThroughControl = true;
         showAdText = true;
         showVolumeControl = true;
         showFullScreenControl = true;
         showTopBar = true;
-        initialAudio = ANInitialAudioSetting.Default;
+        showSkip = true;
+        skipOffset = 5;
+        initialAudio = ANInitialAudioSetting.DEFAULT;
         optionsMap = new JSONObject();
         try {
             JSONObject partner = new JSONObject();
@@ -184,6 +225,18 @@ public class ANVideoPlayerSettings {
                 publisherOptions.put(AN_LEARN_MORE, clickthroughOptions);
             }
 
+            if (optionsMap.getString(AN_ENTRY).equals(AN_INSTREAM_VIDEO)) {
+                JSONObject skipOptions = new JSONObject();
+                if (showSkip) {
+                    skipOptions.put(AN_SKIP_DESCRIPTION, skipDescription);
+                    skipOptions.put(AN_SKIP_LABEL_NAME, skipLabelName);
+                    skipOptions.put(AN_SKIP_OFFSET, skipOffset);
+                }
+                skipOptions.put(AN_ENABLED, showSkip);
+                publisherOptions.put(AN_SKIP,skipOptions);
+
+            }
+
             publisherOptions.put(AN_MUTE, showVolumeControl);
             publisherOptions.put(AN_VOLUME, showVolumeControl);
 
@@ -192,8 +245,8 @@ public class ANVideoPlayerSettings {
                 publisherOptions.put(AN_SHOW_FULLSCREEN, showFullScreenControl);
             }
 
-            if (initialAudio != ANInitialAudioSetting.Default) {
-                if (initialAudio == ANInitialAudioSetting.SoundOn) {
+            if (initialAudio != ANInitialAudioSetting.DEFAULT) {
+                if (initialAudio == ANInitialAudioSetting.SOUND_ON) {
                     publisherOptions.put(AN_INITIAL_AUDIO, AN_ON);
                 } else {
                     publisherOptions.put(AN_INITIAL_AUDIO, AN_OFF);

@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.MutableContextWrapper;
+import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -53,6 +54,7 @@ import com.appnexus.opensdk.AdView.BrowserStyle;
 import com.appnexus.opensdk.ut.UTAdRequester;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.UTConstants;
+import com.appnexus.opensdk.ut.adresponse.RTBNativeAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
@@ -62,7 +64,15 @@ import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
 import com.appnexus.opensdk.viewability.ANOmidAdSession;
 
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -97,6 +107,7 @@ class AdWebView extends WebView implements Displayable,
     protected String initialMraidStateString;
     private boolean MRAIDUseCustomClose = false;
     protected BaseAdResponse adResponseData;
+    private boolean isNativeAd = false;
 
 
     // touch detection
@@ -106,6 +117,11 @@ class AdWebView extends WebView implements Displayable,
     private int MIN_MS_BETWEEN_CHECKPOSITION = 200;
     private Date timeOfLastCheckPosition = new Date();
     private VideoEnabledWebChromeClient mWebChromeClient;
+    private boolean nativeRenderingFailed = false;
+
+    private final String RENDERER_FILE = "apn_renderNativeAssets.html";
+    String RENDERER_URL = "AN_NATIVE_ASSEMBLY_RENDERER_URL";
+    String RENDERER_JSON = "AN_NATIVE_RESPONSE_OBJECT";
 
     public AdWebView(AdView adView, UTAdRequester requester) {
         super(new MutableContextWrapper(adView.getContext()));
@@ -177,10 +193,20 @@ class AdWebView extends WebView implements Displayable,
                 fail();
                 return;
             }
-            String html = ad.getAdContent();
+            String html = "";
+
+            isVideoAd = (UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(ad.getAdType()));
+            isNativeAd = (UTConstants.AD_TYPE_NATIVE.equalsIgnoreCase(ad.getAdType()));
+
+            if (isNativeAd) {
+                isMRAIDEnabled = false;
+                html = getNativeRendererContent(ad);
+            } else {
+                html = ad.getAdContent();
+            }
             // set creative size
-            setCreativeHeight(ad.getHeight());
-            setCreativeWidth(ad.getWidth());
+            setCreativeHeight(isNativeAd? getAdHeight() : ad.getHeight());
+            setCreativeWidth(isNativeAd? getAdWidth() : ad.getWidth());
             // Safety Check: content is verified in AdResponse, so this should never be empty
             if (StringUtil.isEmpty(html)) {
                 fail();
@@ -191,14 +217,15 @@ class AdWebView extends WebView implements Displayable,
 
             parseAdResponseExtras(ad.getExtras());
             adResponseData = ad;
-            isVideoAd = (UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(adResponseData.getAdType()));
-
 
             final float scale = adView.getContext().getResources()
                     .getDisplayMetrics().density;
             //do not modify this logic as it affects the rendering of 1x1 interstitial
             int rheight, rwidth;
-            if (ad.getHeight() == 1 && ad.getWidth() == 1) {
+            if(isNativeAd) {
+                rheight = (int) (getAdHeight() * scale + 0.5f);
+                rwidth = (int) (getAdWidth() * scale + 0.5f);
+            } else if (ad.getHeight() == 1 && ad.getWidth() == 1) {
                 rwidth = ViewGroup.LayoutParams.MATCH_PARENT;
                 rheight = ViewGroup.LayoutParams.MATCH_PARENT;
             } else {
@@ -215,10 +242,12 @@ class AdWebView extends WebView implements Displayable,
                 videoImplementation.setVASTXML(html);
                 this.loadUrl(Settings.getVideoHtmlPage());
             } else {
-                html = preLoadContent(html);
-                html = prependRawResources(html);
-                html = prependViewPort(html);
-                html = omidAdSession.prependOMIDJSToHTML(html);
+                if (!isNativeAd) {
+                    html = preLoadContent(html);
+                    html = prependRawResources(html);
+                    html = prependViewPort(html);
+                    html = omidAdSession.prependOMIDJSToHTML(html);
+                }
                 this.loadDataWithBaseURL(Settings.getBaseUrl(), html, "text/html", "UTF-8", null);
             }
         }catch (OutOfMemoryError exception){
@@ -228,6 +257,15 @@ class AdWebView extends WebView implements Displayable,
             fail();
         }
     }
+
+    private int getAdHeight() {
+        return adView.getRequestParameters().getPrimarySize().height();
+    }
+
+    private int getAdWidth() {
+        return adView.getRequestParameters().getPrimarySize().width();
+    }
+
 
     // The webview about to load the ad, and the html ad content
     private String preLoadContent(String html) {
@@ -363,6 +401,9 @@ class AdWebView extends WebView implements Displayable,
             } else if (url.startsWith("video://") && isVideoAd && videoImplementation != null) {
                 videoImplementation.dispatchNativeCallback(url);
                 return true;
+            } else if (url.startsWith("nativerenderer://") && adResponseData.getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_NATIVE)) {
+                nativeRenderingFailed = !url.contains("success");
+                return true;
             }
 
             handleClickUrl(url);
@@ -387,11 +428,21 @@ class AdWebView extends WebView implements Displayable,
                 if (isVideoAd && videoImplementation != null) {
                     videoImplementation.webViewFinishedLoading();
                 } else if (!implementation.isMRAIDTwoPartExpanded) {
-                    Clog.i(Clog.baseLogTag, "AdWebView.onPageFinished -- !isMRAIDTwoPartExpanded seding back success");
-                    AdWebView.this.success();
+                    if (!isNativeAd) {
+                        Clog.i(Clog.baseLogTag, "AdWebView.onPageFinished -- !isMRAIDTwoPartExpanded seding back success");
+                        AdWebView.this.success();
+                    } else {
+                        if (nativeRenderingFailed) {
+                            if (caller_requester != null) {
+                                caller_requester.nativeRenderingFailed();
+                            }
+                        } else {
+                            success();
+                        }
+                    }
                 }
 
-                if(!isVideoAd) {
+                if(!isVideoAd && !isNativeAd) {
                     omidAdSession.initAdSession(AdWebView.this,isVideoAd);
                 }
 
@@ -642,6 +693,8 @@ class AdWebView extends WebView implements Displayable,
 
             @Override
             public NativeAdResponse getNativeAdResponse() {
+                if (isNativeAd)
+                    return ((RTBNativeAdResponse) adResponseData).getNativeAdResponse();
                 return null;
             }
 
@@ -680,21 +733,29 @@ class AdWebView extends WebView implements Displayable,
         if(mWebChromeClient != null){
             mWebChromeClient.onHideCustomView();
         }
-        omidAdSession.stopAdSession();
+        if(isNativeAd) {
+            NativeAdSDK.unRegisterTracking(this);
+        } else {
+            omidAdSession.stopAdSession();
+        }
         // in case `this` was not removed when destroy was called
         ViewUtil.removeChildFromParent(this);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    AdWebView.super.destroy();
+        if(isNativeAd) {
+            AdWebView.super.destroy();
+        } else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        AdWebView.super.destroy();
+                    }
+                    // Fatal exception in android v4.x in TextToSpeech
+                    catch (IllegalArgumentException e) {
+                        Clog.e(Clog.baseLogTag, Clog.getString(R.string.apn_webview_failed_to_destroy), e);
+                    }
                 }
-                // Fatal exception in android v4.x in TextToSpeech
-                catch (IllegalArgumentException e) {
-                    Clog.e(Clog.baseLogTag, Clog.getString(R.string.apn_webview_failed_to_destroy), e);
-                }
-            }
-        }, 300);
+            }, 300);
+        }
         this.removeAllViews();
         stopCheckViewable();
     }
@@ -725,7 +786,7 @@ class AdWebView extends WebView implements Displayable,
 
     @Override
     public void onAdImpression() {
-        if(!isVideoAd){
+        if(!isVideoAd && !isNativeAd){
             omidAdSession.fireImpression();
         }
     }
@@ -868,6 +929,9 @@ class AdWebView extends WebView implements Displayable,
     }
 
     protected void checkPosition() {
+        if(!isMRAIDEnabled) {
+            return;
+        }
         if (tooManyCheckPositionRequests()) {
             return;
         }
@@ -1138,6 +1202,24 @@ class AdWebView extends WebView implements Displayable,
         MIN_MS_BETWEEN_CHECKPOSITION = interval;
         stopCheckViewable();
         startCheckViewable();
+    }
+
+    private String getNativeRendererContent(BaseAdResponse response) {
+        final ANNativeAdResponse nativeAdResponse = ((RTBNativeAdResponse) response).getNativeAdResponse();
+        JSONObject nativeJson = nativeAdResponse.getNativeRendererObject();
+        adResponseData = response;
+        try {
+            String htmlContentInStringFormat = StringUtil.getStringFromAsset(RENDERER_FILE, getContextFromMutableContext());
+            htmlContentInStringFormat = htmlContentInStringFormat.replace(RENDERER_URL, nativeAdResponse.getRendererUrl());
+            htmlContentInStringFormat = htmlContentInStringFormat.replace(RENDERER_JSON, nativeJson.toString());
+            Clog.d(Clog.baseLogTag + "-NATIVE_JSON", nativeJson.toString());
+            Clog.d(Clog.baseLogTag + "-RENDERER_URL", nativeAdResponse.getRendererUrl());
+            Clog.d(Clog.baseLogTag + "-HTML", htmlContentInStringFormat);
+            return htmlContentInStringFormat;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
 }

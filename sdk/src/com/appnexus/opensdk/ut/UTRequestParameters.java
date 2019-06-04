@@ -844,11 +844,18 @@ public class UTRequestParameters {
         this.forceCreativeId = forceCreativeId;
     }
 
+    /**
+    * @deprecated rendererId is not used anymore
+    * */
     public void setRendererId(int rendererId) {
         this.rendererId = rendererId;
     }
 
+    /**
+     * @deprecated rendererId is not used anymore
+     * */
     public int getRendererId() {
         return rendererId;
     }
+
 }

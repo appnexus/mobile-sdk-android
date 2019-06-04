@@ -97,7 +97,7 @@ var instreamOptions = {
         "skipButtonText"  : "SKIP",
         "skipLocation"    : "top-right",
         "skipText"        : "Video can be skipped in %%TIME%% seconds",
-        
+        "enabled"         : true,
         "videoOffset"     : 5,
         "videoThreshold"  : 15
     }

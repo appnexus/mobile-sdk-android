@@ -343,6 +343,8 @@ public class NativeAdRequest implements Ad {
     }
 
     /**
+     * @deprecated rendererId is not required anymore. Renderer to Placement mapping can now be done through Native Assembly in console.
+     *
      * Get the RendererId of the request
      *
      * @return Default int value 0, which indicates that renderer_id is not sent in the UT Request.
@@ -352,6 +354,8 @@ public class NativeAdRequest implements Ad {
     }
 
     /**
+     * @deprecated rendererId is not required anymore. Renderer to Placement mapping can now be done through Native Assembly in console.
+     *
      * Set the rendererId associated with placement.
      *
      * @param rendererId the Native Assembly renderer_id that is associated with this placement.

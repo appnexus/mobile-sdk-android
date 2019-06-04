@@ -35,10 +35,12 @@ import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.JsonUtil;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -69,6 +71,8 @@ public class ANNativeAdResponse extends BaseNativeAdResponse  {
     private String creativeId = "";
     private String videoVastXML = "";
     private String privacyLink = "";
+    private String rendererUrl = "";
+    private JSONObject nativeRendererObject = null;
     private static final String KEY_TITLE = "title";
     private static final String KEY_DESCRIPTION = "desc";
     private static final String KEY_MAIN_MEDIA = "main_img";
@@ -87,6 +91,8 @@ public class ANNativeAdResponse extends BaseNativeAdResponse  {
     private static final String KEY_VIDEO = "video";
     private static final String KEY_VIDEO_CONTENT = "content";
     private static final String KEY_PRIVACY_LINK = "privacy_link";
+    private static final String RENDERER_URL = "renderer_url";
+
 
     private Runnable expireRunnable = new Runnable() {
         @Override
@@ -124,7 +130,7 @@ public class ANNativeAdResponse extends BaseNativeAdResponse  {
     /**
      * Process the metadata of native response from ad server
      *
-     * @param adObject JsonObject that contains info of native ad
+     * @param adObject    JsonObject that contains info of native ad
      * @return ANNativeResponse if no issue happened during processing
      */
     public static ANNativeAdResponse create(JSONObject adObject) {
@@ -145,6 +151,7 @@ public class ANNativeAdResponse extends BaseNativeAdResponse  {
         }
         ANNativeAdResponse response = new ANNativeAdResponse();
         response.imp_trackers = imp_trackers;
+        response.rendererUrl = JsonUtil.getJSONString(adObject, RENDERER_URL);;
         response.title = JsonUtil.getJSONString(metaData, KEY_TITLE);
         response.description = JsonUtil.getJSONString(metaData, KEY_DESCRIPTION);
         JSONObject media = JsonUtil.getJSONObject(metaData, KEY_MAIN_MEDIA);
@@ -181,14 +188,23 @@ public class ANNativeAdResponse extends BaseNativeAdResponse  {
         response.anNativeExpireHandler = new Handler(Looper.getMainLooper());
         response.anNativeExpireHandler.postDelayed(response.expireRunnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
 
-        JSONObject nativeObject = metaData;
-        nativeObject.remove("impression_trackers");
-        nativeObject.remove("link");
-        nativeObject.remove("javascript_trackers");
-        if(response.nativeElements == null){
+        JSONObject nativeRendererObject = metaData;
+        nativeRendererObject.remove("impression_trackers");
+        nativeRendererObject.remove("javascript_trackers");
+        if (response.nativeElements == null) {
             response.nativeElements = new HashMap<>();
         }
-        response.nativeElements.put(NATIVE_ELEMENT_OBJECT, nativeObject);
+        if (!StringUtil.isEmpty(response.rendererUrl)) {
+            response.nativeRendererObject = nativeRendererObject;
+        }
+        JSONObject nativeObject = null;
+        try {
+            nativeObject = new JSONObject(nativeRendererObject.toString());
+            nativeObject.remove("link");
+            response.nativeElements.put(NATIVE_ELEMENT_OBJECT, nativeObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         // Create an OMID Related objects.
         response.setANVerificationScriptResources(adObject);
@@ -426,6 +442,14 @@ public class ANNativeAdResponse extends BaseNativeAdResponse  {
     @Override
     public String getVastXml() {
         return videoVastXML;
+    }
+
+    protected String getRendererUrl() {
+        return rendererUrl;
+    }
+
+    protected JSONObject getNativeRendererObject() {
+        return nativeRendererObject;
     }
 
     private class RedirectWebView extends WebView {

@@ -87,4 +87,8 @@ public interface UTAdRequester {
      */
     void continueWaterfall(ResultCode reason);
 
+    /*
+    * Called when the RendererUrl is invalid / fails to load
+    * */
+    void nativeRenderingFailed();
 }

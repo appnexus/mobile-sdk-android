@@ -221,7 +221,7 @@ public class ANVideoPlayerSettingsTest {
 
     @Test
     public void testInitialAudioDefaultSettings() {
-        ANVideoPlayerSettings.getVideoPlayerSettings().setInitialAudio(ANInitialAudioSetting.Default);
+        ANVideoPlayerSettings.getVideoPlayerSettings().setInitialAudio(ANInitialAudioSetting.DEFAULT);
         String json = ANVideoPlayerSettings.getVideoPlayerSettings().fetchBannerSettings();
         try{
             JSONObject jsonObject = new JSONObject(json);
@@ -235,7 +235,7 @@ public class ANVideoPlayerSettingsTest {
 
     @Test
     public void testInitialAudioOffSettings() {
-        ANVideoPlayerSettings.getVideoPlayerSettings().setInitialAudio(ANInitialAudioSetting.SoundOff);
+        ANVideoPlayerSettings.getVideoPlayerSettings().setInitialAudio(ANInitialAudioSetting.SOUND_OFF);
         String json = ANVideoPlayerSettings.getVideoPlayerSettings().fetchBannerSettings();
         try{
             JSONObject jsonObject = new JSONObject(json);
@@ -248,12 +248,73 @@ public class ANVideoPlayerSettingsTest {
 
     @Test
     public void testInitialAudioOnSettings() {
-        ANVideoPlayerSettings.getVideoPlayerSettings().setInitialAudio(ANInitialAudioSetting.SoundOn);
+        ANVideoPlayerSettings.getVideoPlayerSettings().setInitialAudio(ANInitialAudioSetting.SOUND_ON);
         String json = ANVideoPlayerSettings.getVideoPlayerSettings().fetchBannerSettings();
         try{
             JSONObject jsonObject = new JSONObject(json);
             JSONObject videoOptions = JsonUtil.getJSONObject(jsonObject,ANVideoPlayerSettings.AN_VIDEO_OPTIONS);
             assertEquals(ANVideoPlayerSettings.AN_ON,JsonUtil.getJSONString(videoOptions,ANVideoPlayerSettings.AN_INITIAL_AUDIO));
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testInstreamSkipSettingsTrue() {
+        ANVideoPlayerSettings.getVideoPlayerSettings().shouldShowSkip(true);
+        ANVideoPlayerSettings.getVideoPlayerSettings().setSkipDescription("Video Skip Demo");
+        ANVideoPlayerSettings.getVideoPlayerSettings().setSkipLabelName("Test");
+        ANVideoPlayerSettings.getVideoPlayerSettings().setSkipOffset(2);
+        String json = ANVideoPlayerSettings.getVideoPlayerSettings().fetchInStreamVideoSettings();
+        try{
+            JSONObject jsonObject = new JSONObject(json);
+            JSONObject videoOptions = JsonUtil.getJSONObject(jsonObject,ANVideoPlayerSettings.AN_VIDEO_OPTIONS);
+            JSONObject skippableOptions = JsonUtil.getJSONObject(videoOptions,ANVideoPlayerSettings.AN_SKIP);
+            assertTrue(JsonUtil.getJSONBoolean(skippableOptions,ANVideoPlayerSettings.AN_ENABLED));
+            assertEquals("Video Skip Demo",JsonUtil.getJSONString(skippableOptions,ANVideoPlayerSettings.AN_SKIP_DESCRIPTION));
+            assertEquals("Test",JsonUtil.getJSONString(skippableOptions,ANVideoPlayerSettings.AN_SKIP_LABEL_NAME));
+            assertEquals(2,JsonUtil.getJSONInt(skippableOptions,ANVideoPlayerSettings.AN_SKIP_OFFSET));
+
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testInstreamSkipSettingsFalse() {
+        ANVideoPlayerSettings.getVideoPlayerSettings().shouldShowSkip(false);
+        String json = ANVideoPlayerSettings.getVideoPlayerSettings().fetchInStreamVideoSettings();
+        try{
+            JSONObject jsonObject = new JSONObject(json);
+            JSONObject videoOptions = JsonUtil.getJSONObject(jsonObject,ANVideoPlayerSettings.AN_VIDEO_OPTIONS);
+            JSONObject skippableOptions = JsonUtil.getJSONObject(videoOptions,ANVideoPlayerSettings.AN_SKIP);
+            assertFalse(JsonUtil.getJSONBoolean(skippableOptions,ANVideoPlayerSettings.AN_ENABLED));
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testOutstreamSkipSettingsFalse() {
+        ANVideoPlayerSettings.getVideoPlayerSettings().shouldShowSkip(false);
+        String json = ANVideoPlayerSettings.getVideoPlayerSettings().fetchBannerSettings();
+        try{
+            JSONObject jsonObject = new JSONObject(json);
+            JSONObject videoOptions = JsonUtil.getJSONObject(jsonObject,ANVideoPlayerSettings.AN_VIDEO_OPTIONS);
+            assertFalse(videoOptions.has(ANVideoPlayerSettings.AN_SKIP));
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testOutstreamSkipSettingsTrue() {
+        ANVideoPlayerSettings.getVideoPlayerSettings().shouldShowSkip(true);
+        String json = ANVideoPlayerSettings.getVideoPlayerSettings().fetchBannerSettings();
+        try{
+            JSONObject jsonObject = new JSONObject(json);
+            JSONObject videoOptions = JsonUtil.getJSONObject(jsonObject,ANVideoPlayerSettings.AN_VIDEO_OPTIONS);
+            assertFalse(videoOptions.has(ANVideoPlayerSettings.AN_SKIP));
         }catch (JSONException e){
             e.printStackTrace();
         }

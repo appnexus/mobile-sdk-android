@@ -15,9 +15,14 @@
  */
 package com.appnexus.opensdk.utils;
 
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.content.res.Resources;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Scanner;
 
 public class StringUtil {
@@ -55,5 +60,23 @@ public class StringUtil {
             Clog.e(Clog.baseLogTag, "Exception while parsing integer value from string: "+s + " - "+e.getMessage(),e);
         }
         return value;
+    }
+
+    public static String getStringFromAsset(String fileName, Context context) throws IOException{
+        final AssetManager assetManager =  context.getAssets();
+        InputStream inputStream = assetManager.open(fileName);
+        StringBuilder assetContent = new StringBuilder();
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                assetContent.append(line + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            inputStream.close();
+        }
+        return assetContent.toString();
     }
 }

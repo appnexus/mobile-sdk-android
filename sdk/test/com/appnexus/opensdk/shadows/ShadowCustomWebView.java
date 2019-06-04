@@ -31,7 +31,7 @@ import org.robolectric.shadows.ShadowWebView;
 public class ShadowCustomWebView extends ShadowWebView {
 
     private WebView webView;
-
+    public static boolean simulateRendererScriptSuccess = false;
 
     /*
     * This makes it possible for onAdLoaded on Banner to be called
@@ -41,6 +41,10 @@ public class ShadowCustomWebView extends ShadowWebView {
         super.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
         if(webView == null) {
             webView = new WebView(RuntimeEnvironment.application);
+        }
+        if (simulateRendererScriptSuccess) {
+            this.getWebViewClient().shouldOverrideUrlLoading(webView, "nativerenderer://success");
+            simulateRendererScriptSuccess = false;
         }
         Clog.d(TestUtil.testLogTag, "ShadowCustomWebView loadDataWithBaseURL");
         this.getWebViewClient().onPageFinished(webView,baseUrl);

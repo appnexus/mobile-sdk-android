@@ -1,3 +1,14 @@
+## 5.4
+### New Features
++ MS-3730: Support Rendering for Banner Native ads
+
+### Mediation partner upgrades/changes
++ MS-3814: Updated the deprecated APIs of the Google mediation adapter
+
+### Bug Fixes/Improvements
++ MS-3800: Added new API to enable publishers to configure skip options for video player
+
+
 ## 5.3
 
 ### New Features
