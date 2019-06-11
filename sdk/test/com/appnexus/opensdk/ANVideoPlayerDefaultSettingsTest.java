@@ -23,6 +23,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.lang.reflect.Field;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
@@ -32,6 +34,14 @@ public class ANVideoPlayerDefaultSettingsTest {
 
     @Before
     public void setup() {
+        try {
+            Class videoPlayerSettings = ANVideoPlayerSettings.getVideoPlayerSettings().getClass();
+            Field instance = videoPlayerSettings.getDeclaredField("anVideoPlayerSettings");
+            instance.setAccessible(true);
+            instance.set(null, null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            e.printStackTrace();
+        }
     }
 
     @After
