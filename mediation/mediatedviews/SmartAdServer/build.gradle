@@ -3,12 +3,12 @@ version = "7.0.2" // supported Millennial version
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion 28
+    buildToolsVersion "29.0.0"
 
     defaultConfig {
-        minSdkVersion 10
-        targetSdkVersion 27
+        minSdkVersion 16
+        targetSdkVersion 28
         versionCode 1
         versionName version
         consumerProguardFiles 'proguard-project.txt'

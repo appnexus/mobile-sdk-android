@@ -37,7 +37,7 @@ import static junit.framework.Assert.assertTrue;
 /**
  * This tests if the API's in BannerAdView are functioning as expected.
  */
-@Config(constants = BuildConfig.class, sdk = 21,
+@Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
                 ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RobolectricTestRunner.class)

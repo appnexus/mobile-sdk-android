@@ -31,7 +31,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
-@Config(constants = BuildConfig.class, sdk = 21,
+@Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
                 ShadowCustomWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RobolectricTestRunner.class)

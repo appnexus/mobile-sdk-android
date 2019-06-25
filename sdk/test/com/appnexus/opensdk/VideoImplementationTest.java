@@ -32,7 +32,7 @@ import org.robolectric.shadows.ShadowLog;
 
 import static junit.framework.Assert.assertTrue;
 
-@Config(constants = BuildConfig.class, sdk = 21,
+@Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
                 ShadowCustomVideoWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RobolectricTestRunner.class)

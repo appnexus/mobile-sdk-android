@@ -4,18 +4,10 @@ project(':sdk').projectDir = new File(settingsDir, '../../sdk')
 include ':instreamvideo'
 project(':instreamvideo').projectDir = new File(settingsDir, '../../instreamvideo')
 
-include ':AdColony'
-include ':AdMob'
-include ':AdMarvel'
 include ':Amazon'
-include ':Chartboost'
 include ':Facebook'
 include ':GooglePlay'
 include ':InMobi'
 include ':MillennialMedia'
 include ':MoPub'
-include ':Vdopia'
-include ':Vungle'
-include ':Yahoo'
-include ':Rubicon'
 include ':SmartAdServer'

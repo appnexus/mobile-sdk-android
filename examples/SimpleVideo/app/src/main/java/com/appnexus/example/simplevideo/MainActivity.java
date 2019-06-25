@@ -33,6 +33,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.appnexus.opensdk.ResultCode;
+import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.instreamvideo.ResultCallback;
 import com.appnexus.opensdk.instreamvideo.Quartile;
 import com.appnexus.opensdk.instreamvideo.VideoAd;
@@ -61,6 +62,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        SDKSettings.useHttps(true);
         infoText = (TextView) findViewById(R.id.infotTextView);
         playButon = (ImageButton) findViewById(R.id.play_button);
         videoPlayer = (VideoView) findViewById(R.id.video_player);
@@ -68,7 +70,7 @@ public class MainActivity extends Activity {
         videoPlayer.setVideoURI(Uri.parse(getString(R.string.content_url_1)));
 
         // Initialize VideoAd
-        videoAd = new VideoAd(this, "9924002");
+        videoAd = new VideoAd(this, "16150356");
 
         // Set the Ad-Load Listener
         videoAd.setAdLoadListener(new VideoAdLoadListener() {

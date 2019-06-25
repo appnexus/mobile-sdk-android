@@ -27,7 +27,7 @@ import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
 
-@Config(constants = BuildConfig.class, sdk = 21)
+@Config(sdk = 21)
 @RunWith(RobolectricTestRunner.class)
 public class DefaultSettingsTest {
 

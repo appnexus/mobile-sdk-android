@@ -11,7 +11,7 @@ import org.robolectric.annotation.Config;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
-@Config(constants = BuildConfig.class, sdk = 21)
+@Config(sdk = 21)
 @RunWith(RobolectricTestRunner.class)
 public class BaseViewAdTest extends BaseRoboTest implements AdListener {
 

@@ -32,7 +32,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, shadows = {ShadowSettings.class, ShadowLog.class})
+@Config(sdk = 21, shadows = {ShadowSettings.class, ShadowLog.class})
 public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
     public static final int MEMBER_ID = 5;

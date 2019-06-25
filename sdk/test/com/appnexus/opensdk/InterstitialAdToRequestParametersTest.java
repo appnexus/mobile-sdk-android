@@ -37,7 +37,7 @@ import static junit.framework.Assert.assertTrue;
 /**
  * This tests if the options set on a Interstitial AdView are represented in the UT Post data in the right format.
  */
-@Config(constants = BuildConfig.class, sdk = 21,
+@Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
                 ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RobolectricTestRunner.class)
@@ -74,8 +74,8 @@ public class InterstitialAdToRequestParametersTest extends BaseRoboTest {
 
 
         String postData = getRequestParametersPostData();
-        assertTrue(postData.contains("\"primary_size\":{\"width\":320,\"height\":496},"));
-        assertTrue(postData.contains("\"sizes\":[{\"width\":10,\"height\":10},{\"width\":320,\"height\":50},{\"width\":300,\"height\":250},{\"width\":1024,\"height\":768},{\"width\":1,\"height\":1},{\"width\":320,\"height\":496}],"));
+        assertTrue(postData.contains("\"primary_size\":{\"width\":320,\"height\":414},"));
+        assertTrue(postData.contains("\"sizes\":[{\"width\":10,\"height\":10},{\"width\":320,\"height\":50},{\"width\":300,\"height\":250},{\"width\":1024,\"height\":768},{\"width\":1,\"height\":1},{\"width\":320,\"height\":414}],"));
         assertTrue(postData.contains("\"allow_smaller_sizes\":false,"));
     }
 
@@ -92,7 +92,8 @@ public class InterstitialAdToRequestParametersTest extends BaseRoboTest {
 
 
     // https://github.com/robolectric/robolectric/blob/master/shadows/framework/src/main/java/org/robolectric/shadows/ShadowDisplay.java
-    // By default Roboelectric uses the ShadowDisplay to set the DisplayMetrics so the container width=320 and height = 496 always
+    // For earlier version - By default Roboelectric uses the ShadowDisplay to set the DisplayMetrics so the container width=320 and height = 496 always
+    // For latest version - By default Roboelectric uses the ShadowDisplay to set the DisplayMetrics so the container width=320 and height = 414 always
 
 
     // Primary size is always the calculated container size.
@@ -101,8 +102,8 @@ public class InterstitialAdToRequestParametersTest extends BaseRoboTest {
     @Test
     public void testDefaultSizes(){
         String postData = getRequestParametersPostData();
-        assertTrue(postData.contains("\"primary_size\":{\"width\":320,\"height\":496},"));
-        assertTrue(postData.contains("\"sizes\":[{\"width\":1,\"height\":1},{\"width\":320,\"height\":496},{\"width\":300,\"height\":250}],"));
+        assertTrue(postData.contains("\"primary_size\":{\"width\":320,\"height\":414},"));
+        assertTrue(postData.contains("\"sizes\":[{\"width\":1,\"height\":1},{\"width\":320,\"height\":414},{\"width\":300,\"height\":250}],"));
         assertTrue(postData.contains("\"allow_smaller_sizes\":false,"));
     }
 

@@ -12,7 +12,7 @@ import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.assertTrue;
 
-@Config(constants = BuildConfig.class, sdk = 21)
+@Config(sdk = 21)
 @RunWith(RobolectricTestRunner.class)
 public class ApplicationTest {
 

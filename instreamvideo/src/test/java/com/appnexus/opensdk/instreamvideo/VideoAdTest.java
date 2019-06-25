@@ -35,7 +35,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowFrameLayout;
 import org.robolectric.shadows.ShadowLog;
 
 import static junit.framework.Assert.assertEquals;
@@ -45,8 +44,8 @@ import static junit.framework.Assert.assertTrue;
 /**
  * This tests if the API's in VideoAd are functioning as expected.
  */
-@Config(constants = com.appnexus.opensdk.instreamvideo.BuildConfig.class, sdk = 21,
-        shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class, ShadowCustomWebView.class, ShadowFrameLayout.class, ShadowSettings.class, ShadowLog.class})
+@Config(sdk = 21,
+        shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class, ShadowCustomWebView.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RobolectricTestRunner.class)
 public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, VideoAdPlaybackListener {
 

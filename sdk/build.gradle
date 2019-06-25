@@ -6,14 +6,14 @@ group='com.appnexus.opensdk'
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
+    buildToolsVersion '29.0.0'
     defaultConfig {
         versionCode 57 // An integer value that represents the version of the code, relative to other versions. Increase for each release.
         versionName version
         consumerProguardFiles 'proguard-project.txt'
         minSdkVersion 9
-        targetSdkVersion 27
+        targetSdkVersion 28
     }
 
     sourceSets {
@@ -39,11 +39,10 @@ dependencies {
     api fileTree(include: '*.jar', dir: 'libs')
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.assertj:assertj-core:1.7.0'
-    testImplementation 'org.robolectric:robolectric:3.5.1'
+    testImplementation 'org.robolectric:robolectric:4.3'
     testImplementation 'com.squareup.okhttp:mockwebserver:2.5.0'
-    testImplementation 'com.android.support:support-annotations:27.1.1'
-    testImplementation 'org.robolectric:shadows-httpclient:3.5.1'
-    testImplementation 'com.android.support:design:27.1.1'
+    testImplementation 'com.android.support:support-annotations:28.0.0'
+    testImplementation 'org.robolectric:shadows-httpclient:4.3'
 }
 
 repositories {

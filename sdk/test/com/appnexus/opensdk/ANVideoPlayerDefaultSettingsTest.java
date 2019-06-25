@@ -28,7 +28,7 @@ import java.lang.reflect.Field;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
-@Config(constants = BuildConfig.class, sdk = 21)
+@Config(sdk = 21)
 @RunWith(RobolectricTestRunner.class)
 public class ANVideoPlayerDefaultSettingsTest {
 
