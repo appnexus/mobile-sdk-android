@@ -88,7 +88,7 @@ var instreamOptions = {
     "allowFullscreen"  : false,         //show the fullscreen control
     "showFullScreenButton"                  : false,
     "aspectRatio"      : "16:9",        // Aspect ratio we expect the video to be played in
-    
+
     "disableCollapse"  : false,         // This option is used in outstream. To do freeze on last frame. Always false for instream case.
     
     "initialAudio"     : "on",          // Setting this option to true turns on initial Audio

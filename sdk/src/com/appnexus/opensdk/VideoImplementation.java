@@ -17,8 +17,7 @@
 package com.appnexus.opensdk;
 
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.Settings;
-import com.appnexus.opensdk.viewability.ANOmidViewabilty;
+import com.appnexus.opensdk.utils.ViewUtil;
 
 import org.json.JSONObject;
 
@@ -49,6 +48,9 @@ class VideoImplementation {
             String eventName = videoObject.getString("event");
             JSONObject paramsDictionary = videoObject.getJSONObject("params");
             if (eventName.equals("adReady")) {
+                if (paramsDictionary.has("aspectRatio")) {
+                    processAspectRatio(paramsDictionary.getString("aspectRatio"));
+                }
                 adWebView.success();
                 adReady = true;
             } else if (eventName.equals("videoStart")) {
@@ -68,6 +70,12 @@ class VideoImplementation {
         }
     }
 
+    private void processAspectRatio(String fetchedAspectRatio) {
+        if(adWebView.adView instanceof BannerAdView) {
+            ((BannerAdView)adWebView.adView).setVideoOrientation(ViewUtil.getVideoOrientation(fetchedAspectRatio));
+        }
+    }
+
     private void handleVideoError() {
         if (adReady && !videoComplete) {
             //AdReady has been fired but video errored before Playback completion
@@ -82,7 +90,6 @@ class VideoImplementation {
     void stopOMIDAdSession(){
         adWebView.omidAdSession.stopAdSession();
     }
-
 
     protected void createVastPlayerWithContent() {
         String options = ANVideoPlayerSettings.getVideoPlayerSettings().fetchBannerSettings();

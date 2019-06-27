@@ -16,6 +16,7 @@
 package com.appnexus.opensdk.instreamvideo;
 
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -34,19 +35,18 @@ import android.webkit.CookieManager;
 import android.webkit.ValueCallback;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.annotation.SuppressLint;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-
 
 import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.ANVideoPlayerSettings;
 import com.appnexus.opensdk.AdActivity;
 import com.appnexus.opensdk.BrowserAdActivity;
 import com.appnexus.opensdk.ResultCode;
+import com.appnexus.opensdk.VideoOrientation;
 import com.appnexus.opensdk.ut.UTConstants;
-import com.appnexus.opensdk.ut.adresponse.CSMVASTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
+import com.appnexus.opensdk.ut.adresponse.CSMVASTAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.ViewUtil;
@@ -74,6 +74,7 @@ class VideoWebView extends WebView {
     private String creativeUrl = "";
     private String vastURLContent = "";
     private String vastXMLContent = "";
+    private String aspectRatio = "";
     private ANOmidAdSession omidAdSession;
 
     // Using handler posts the playAd() call to the end of queue and fixes initial rendering black issue on Lollipop and below simulators.
@@ -231,6 +232,9 @@ class VideoWebView extends WebView {
                     }
                     if (paramsDictionary.has("vastXML")) {
                         this.vastXMLContent = paramsDictionary.getString("vastXML");
+                    }
+                    if (paramsDictionary.has("aspectRatio")) {
+                        this.aspectRatio = paramsDictionary.getString("aspectRatio");
                     }
 
                 }
@@ -529,6 +533,10 @@ class VideoWebView extends WebView {
 
     protected String getVastXML() {
         return this.vastXMLContent;
+    }
+
+    protected VideoOrientation getVideoOrientation() {
+        return ViewUtil.getVideoOrientation(aspectRatio);
     }
 
     protected String getCreativeId() {

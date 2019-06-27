@@ -17,14 +17,13 @@ package com.appnexus.opensdk.instreamvideo;
 
 import android.content.Context;
 import android.content.MutableContextWrapper;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import com.appnexus.opensdk.VideoOrientation;
 import com.appnexus.opensdk.utils.AdvertisingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
@@ -200,6 +199,14 @@ class InstreamVideoView extends FrameLayout {
         }
 
         return "";
+    }
+
+    protected VideoOrientation getVideoOrientation() {
+        if(this.videoWebView != null){
+            return this.videoWebView.getVideoOrientation();
+        }
+
+        return VideoOrientation.UNKNOWN;
     }
 
     public void getAdPlayElapsedTime(ResultCallback resultCallback){

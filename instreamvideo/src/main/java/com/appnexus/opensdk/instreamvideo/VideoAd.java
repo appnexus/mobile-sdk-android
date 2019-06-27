@@ -27,6 +27,7 @@ import com.appnexus.opensdk.AdType;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.MediaType;
+import com.appnexus.opensdk.VideoOrientation;
 import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.UTRequestParameters;
 import com.appnexus.opensdk.ResultCode;
@@ -738,6 +739,15 @@ public class VideoAd implements VideoAdInterface {
         }
 
         return "";
+    }
+
+    /**
+     * Get the Orientation of the Video rendered using the BannerAdView
+     *
+     * @return Default VideoOrientation value UNKNOWN, which indicates that aspectRatio can't be retrieved for this video.
+     */
+    public VideoOrientation getVideoOrientation() {
+        return videoAdView.getVideoOrientation();
     }
 
     /**

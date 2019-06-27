@@ -16,7 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import com.appnexus.opensdk.utils.JsonUtil;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.viewability.ANOmidViewabilty;
