@@ -15,6 +15,10 @@ android {
         consumerProguardFiles 'proguard-project.txt'
     }
 
+    sourceSets {
+        test.manifest.srcFile '../sdk/AndroidManifestTest.xml'
+    }
+
     lintOptions {
         abortOnError false
     }

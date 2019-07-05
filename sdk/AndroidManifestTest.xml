@@ -1,5 +1,5 @@
 <!--
-   Copyright 2013 APPNEXUS INC
+   Copyright 2019 APPNEXUS INC
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,14 +13,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.appnexus.opensdk">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <application>
-        <activity android:name="com.appnexus.opensdk.AdActivity"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            android:configChanges="orientation|screenLayout|screenSize|keyboardHidden" />
-    </application>
+    <uses-sdk tools:overrideLibrary="androidx.test"/>
+
 </manifest>

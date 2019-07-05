@@ -1,4 +1,4 @@
-<manifest xmlns:tools="http://schemas.android.com/tools"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.appnexus.opensdk.instreamvideo">
 
 </manifest>
