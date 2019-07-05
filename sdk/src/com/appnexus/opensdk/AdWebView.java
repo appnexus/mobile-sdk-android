@@ -291,7 +291,8 @@ class AdWebView extends WebView implements Displayable,
             // mraid is loaded when intercepting network call and not needed here else created problem #MS-3790
             if (res == null
                     || !StringUtil.appendRes(htmlSB, res, R.raw.sdkjs)
-                    || !StringUtil.appendRes(htmlSB, res, R.raw.anjam)) {
+                    || !StringUtil.appendRes(htmlSB, res, R.raw.anjam)
+                    || !StringUtil.appendRes(htmlSB, res, R.raw.apn_mraid)) {
                 Clog.e(Clog.baseLogTag, "Error reading SDK's raw resources.");
                 return html;
             }
@@ -489,10 +490,9 @@ class AdWebView extends WebView implements Displayable,
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
             try {
-                // This intercepts resource loading requests from a webview and injects local apn_mraid js file.
+                // This intercepts resource loading requests from a webview stop loading the mraid.js from server.
                 if (url.contains("mraid.js") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-                    InputStream data = getResources().openRawResource(R.raw.apn_mraid);
-                    return new WebResourceResponse("text/javascript", "UTF-8", data);
+                    return null;
                 }
             }catch (Exception e){
                 e.printStackTrace();
