@@ -30,7 +30,7 @@ import org.robolectric.shadows.ShadowLooper;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
-@Config(constants = BuildConfig.class, sdk = 21,
+@Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
                 ShadowCustomClickThroughWebView.class})
 @RunWith(RobolectricTestRunner.class)

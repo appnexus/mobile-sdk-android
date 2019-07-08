@@ -24,6 +24,7 @@ import android.os.Build;
 import android.view.*;
 import android.widget.FrameLayout;
 import com.appnexus.opensdk.CircularProgressBar;
+import com.appnexus.opensdk.VideoOrientation;
 
 public class ViewUtil {
 
@@ -145,6 +146,15 @@ public class ViewUtil {
             } else {
                 circularProgressBar.setTransparent();
             }
+        }
+    }
+
+    public static VideoOrientation getVideoOrientation(String fetchedAspectRatio) {
+        try {
+            double aspectRatio = Double.parseDouble(fetchedAspectRatio);
+            return aspectRatio == 0 ? VideoOrientation.UNKNOWN : (aspectRatio == 1) ? VideoOrientation.SQUARE : (aspectRatio > 1) ? VideoOrientation.LANDSCAPE : VideoOrientation.PORTRAIT;
+        } catch (Exception ex) {
+            return VideoOrientation.UNKNOWN;
         }
     }
 }

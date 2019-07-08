@@ -34,7 +34,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
+@Config(sdk = 21)
 public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListener,NativeAdEventListener {
     protected NativeAdRequest adRequest;
     protected NativeAdResponse     response;

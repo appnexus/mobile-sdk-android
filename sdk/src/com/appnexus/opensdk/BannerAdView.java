@@ -46,6 +46,8 @@ import com.appnexus.opensdk.utils.WebviewUtil;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
+import static com.appnexus.opensdk.VideoOrientation.UNKNOWN;
+
 
 /**
  * This view is added to an existing layout in order to display banner
@@ -105,6 +107,7 @@ public class BannerAdView extends AdView {
     private boolean measured;
     private Animator animator;
     private boolean autoRefreshOffInXML;
+    private VideoOrientation videoOrientation = UNKNOWN;
 
     private void setDefaultsBeforeXML() {
         loadAdHasBeenCalled = false;
@@ -1242,6 +1245,22 @@ public class BannerAdView extends AdView {
      */
     public boolean isNativeRenderingEnabled() {
         return enableNativeRendering;
+    }
+
+    /**
+     * Get the Orientation of the Video rendered using the BannerAdView
+     *
+     * @return Default VideoOrientation value UNKNOWN, which indicates that aspectRatio can't be retrieved for this video.
+     */
+    public VideoOrientation getVideoOrientation() {
+        return videoOrientation;
+    }
+
+    /**
+     * Set the Orientation of the Video rendered using the BannerAdView
+     */
+    protected void setVideoOrientation(VideoOrientation videoOrientation) {
+        this.videoOrientation = videoOrientation;
     }
 
 }

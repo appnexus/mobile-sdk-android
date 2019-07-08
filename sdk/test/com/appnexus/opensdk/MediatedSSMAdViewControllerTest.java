@@ -50,7 +50,7 @@ import static junit.framework.Assert.fail;
  */
 
 
-@Config(constants = BuildConfig.class, sdk = 21,
+@Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
                 ShadowCustomWebView.class})
 @RunWith(RobolectricTestRunner.class)

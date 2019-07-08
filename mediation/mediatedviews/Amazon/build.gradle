@@ -4,12 +4,12 @@ version = "5.8.1" // supported Amazon version
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
+    buildToolsVersion '29.0.0'
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName version
         consumerProguardFiles 'proguard-project.txt'

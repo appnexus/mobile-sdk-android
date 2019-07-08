@@ -24,7 +24,7 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21, shadows = {ShadowSettings.class, ShadowLog.class})
+@Config(sdk = 21, shadows = {ShadowSettings.class, ShadowLog.class})
 public class UTAdResponseTest extends BaseRoboTest {
 
     UTAdResponse utAdResponse;

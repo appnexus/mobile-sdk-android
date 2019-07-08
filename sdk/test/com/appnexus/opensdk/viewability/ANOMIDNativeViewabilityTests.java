@@ -42,7 +42,7 @@ import static com.appnexus.opensdk.ResultCode.SUCCESS;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
-@Config(constants = BuildConfig.class, sdk = 21,
+@Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
                   ShadowLog.class, ShadowSettings.class, ShadowLog.class, ShadowOMIDNativeWebView.class})
 @RunWith(RobolectricTestRunner.class)

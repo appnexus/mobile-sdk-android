@@ -39,7 +39,7 @@ import static junit.framework.Assert.assertTrue;
 /**
  * This tests if the options set on a NativeAdRequest are represented in the UT Post data in the right format.
  */
-@Config(constants = com.appnexus.opensdk.BuildConfig.class, sdk = 21,
+@Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
                 ShadowWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RobolectricTestRunner.class)

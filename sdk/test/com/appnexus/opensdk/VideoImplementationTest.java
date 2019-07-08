@@ -21,6 +21,7 @@ import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.shadows.ShadowCustomVideoWebView;
+import com.appnexus.opensdk.utils.Clog;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.Test;
@@ -32,7 +33,7 @@ import org.robolectric.shadows.ShadowLog;
 
 import static junit.framework.Assert.assertTrue;
 
-@Config(constants = BuildConfig.class, sdk = 21,
+@Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
                 ShadowCustomVideoWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RobolectricTestRunner.class)
@@ -48,6 +49,7 @@ public class VideoImplementationTest extends BaseViewAdTest {
         super.tearDown();
         ShadowCustomVideoWebView.simulateVideoError = false; // Reset the value if not next test case will fail Global instance.
         ShadowCustomVideoWebView.simulateDelayedVideoError = false; // Reset the value if not next test case will fail Global instance.
+        ShadowCustomVideoWebView.aspectRatio = "";
     }
 
      //This test Succes onAdLoaded for Video
@@ -92,6 +94,50 @@ public class VideoImplementationTest extends BaseViewAdTest {
         Robolectric.flushForegroundThreadScheduler();
         assertTrue(bannerAdView.mAdFetcher.getState() == AdFetcher.STATE.AUTO_REFRESH);
 
+    }
+
+    @Test
+    public void testGetVideoOrientationPortrait() throws Exception {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.rtbVASTVideo()));
+        ShadowCustomVideoWebView.aspectRatio = "0.5625"; // 9:16
+        executeBannerRequest();
+        assertCallbacks(true);
+        assertTrue(bannerAdView.mAdFetcher.getState() == AdFetcher.STATE.STOPPED);
+
+        assertTrue(bannerAdView.getVideoOrientation().equals(VideoOrientation.PORTRAIT));
+    }
+
+    @Test
+    public void testGetVideoOrientationLandscape() throws Exception {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.rtbVASTVideo()));
+        ShadowCustomVideoWebView.aspectRatio = "1.7778"; // 16:9
+        executeBannerRequest();
+        assertCallbacks(true);
+        assertTrue(bannerAdView.mAdFetcher.getState() == AdFetcher.STATE.STOPPED);
+
+        assertTrue(bannerAdView.getVideoOrientation().equals(VideoOrientation.LANDSCAPE));
+    }
+
+    @Test
+    public void testGetVideoOrientationSquare() throws Exception {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.rtbVASTVideo()));
+        ShadowCustomVideoWebView.aspectRatio = "1";
+        executeBannerRequest();
+        assertCallbacks(true);
+        assertTrue(bannerAdView.mAdFetcher.getState() == AdFetcher.STATE.STOPPED);
+
+        assertTrue(bannerAdView.getVideoOrientation().equals(VideoOrientation.SQUARE));
+    }
+
+    @Test
+    public void testGetVideoOrientationUnknown() throws Exception {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.rtbVASTVideo()));
+        ShadowCustomVideoWebView.aspectRatio = "";
+        executeBannerRequest();
+        assertCallbacks(true);
+        assertTrue(bannerAdView.mAdFetcher.getState() == AdFetcher.STATE.STOPPED);
+
+        assertTrue(bannerAdView.getVideoOrientation().equals(VideoOrientation.UNKNOWN));
     }
 
 

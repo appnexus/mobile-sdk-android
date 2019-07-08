@@ -29,6 +29,7 @@ import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.BannerAdView;
 import com.appnexus.opensdk.NativeAdResponse;
 import com.appnexus.opensdk.ResultCode;
+import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.utils.Clog;
 
 public class MyActivity extends Activity {
@@ -40,11 +41,13 @@ public class MyActivity extends Activity {
 
         final BannerAdView bav = new BannerAdView(this);
 
+        SDKSettings.useHttps(true);
+
         // This is your AppNexus placement ID.
-        bav.setPlacementID("1326299");
+        bav.setPlacementID("16150355");
 
         // Turning this on so we always get an ad during testing.
-        bav.setShouldServePSAs(true);
+        bav.setShouldServePSAs(false);
 
         // By default ad clicks open in an in-app WebView.
         bav.setClickThroughAction(ANClickThroughAction.OPEN_SDK_BROWSER);

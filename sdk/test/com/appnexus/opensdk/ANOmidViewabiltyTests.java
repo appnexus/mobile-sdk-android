@@ -46,7 +46,7 @@ import static junit.framework.Assert.assertTrue;
  * loadAd is not possible because of limitations in roboelectric need to figure out a workaround in future.
  */
 
-@Config(constants = BuildConfig.class, sdk = 21,
+@Config(sdk = 21,
         shadows = {ShadowSettings.class, ShadowLog.class, ShadowOMIDBannerHTMLWebView.class})
 @RunWith(RobolectricTestRunner.class)
 public class ANOmidViewabiltyTests extends BaseViewAdTest {

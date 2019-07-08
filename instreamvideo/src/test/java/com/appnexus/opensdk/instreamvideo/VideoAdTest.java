@@ -19,6 +19,7 @@ package com.appnexus.opensdk.instreamvideo;
 import android.widget.FrameLayout;
 
 import com.appnexus.opensdk.ResultCode;
+import com.appnexus.opensdk.VideoOrientation;
 import com.appnexus.opensdk.instreamvideo.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.instreamvideo.shadows.ShadowCustomWebView;
 import com.appnexus.opensdk.instreamvideo.shadows.ShadowSettings;
@@ -35,7 +36,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowFrameLayout;
 import org.robolectric.shadows.ShadowLog;
 
 import static junit.framework.Assert.assertEquals;
@@ -45,8 +45,8 @@ import static junit.framework.Assert.assertTrue;
 /**
  * This tests if the API's in VideoAd are functioning as expected.
  */
-@Config(constants = com.appnexus.opensdk.instreamvideo.BuildConfig.class, sdk = 21,
-        shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class, ShadowCustomWebView.class, ShadowFrameLayout.class, ShadowSettings.class, ShadowLog.class})
+@Config(sdk = 21,
+        shadows = {ShadowAsyncTaskNoExecutor.class, ShadowWebSettings.class, ShadowCustomWebView.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RobolectricTestRunner.class)
 public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, VideoAdPlaybackListener {
 
@@ -74,6 +74,82 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
         videoAd.setAdMinDuration(minDuration);
         videoAd.setAdMaxDuration(maxDuration);
         inspectVideoDuration(minDuration, maxDuration);
+    }
+
+    @Test
+    public void testGetVideoOrientationPortrait() throws Exception {
+        ShadowCustomWebView.aspectRatio = "0.5625"; // 9:16
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video()));
+
+        videoAd.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        Clog.w(TestUtil.testLogTag, "VideoAdTest videoAd.getVideoOrientation()" +videoAd.getVideoOrientation());
+        assertTrue(videoAd.getVideoOrientation().equals(VideoOrientation.PORTRAIT));
+    }
+
+    @Test
+    public void testGetVideoOrientationLandscape() throws Exception {
+        ShadowCustomWebView.aspectRatio = "1.7778"; // 16:9
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video()));
+
+        videoAd.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        Clog.w(TestUtil.testLogTag, "VideoAdTest videoAd.getVideoOrientation()" +videoAd.getVideoOrientation());
+        assertTrue(videoAd.getVideoOrientation().equals(VideoOrientation.LANDSCAPE));
+    }
+
+    @Test
+    public void testGetVideoOrientationSquare() throws Exception {
+        ShadowCustomWebView.aspectRatio = "1";
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video()));
+
+        videoAd.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        Clog.w(TestUtil.testLogTag, "VideoAdTest videoAd.getVideoOrientation()" +videoAd.getVideoOrientation());
+        assertTrue(videoAd.getVideoOrientation().equals(VideoOrientation.SQUARE));
+    }
+
+    @Test
+    public void testGetVideoOrientationUnknown() throws Exception {
+        ShadowCustomWebView.aspectRatio = "";
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video()));
+
+        videoAd.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        Clog.w(TestUtil.testLogTag, "VideoAdTest videoAd.getVideoOrientation()" +videoAd.getVideoOrientation());
+        assertTrue(videoAd.getVideoOrientation().equals(VideoOrientation.UNKNOWN));
     }
 
 

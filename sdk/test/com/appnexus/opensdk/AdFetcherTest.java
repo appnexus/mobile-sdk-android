@@ -16,7 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import android.arch.core.BuildConfig;
 import android.content.Context;
 
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
@@ -32,7 +31,7 @@ import org.robolectric.annotation.Config;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotSame;
 
-@Config(constants = BuildConfig.class, sdk = 21,
+@Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class})
 @RunWith(RobolectricTestRunner.class)
 public class AdFetcherTest extends BaseRoboTest {
