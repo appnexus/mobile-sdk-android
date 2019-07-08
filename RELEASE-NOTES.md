@@ -1,3 +1,10 @@
+## 5.5
+### New Features
++ MS-3778: Added new API for exposing the Video Orientation
+
+### Bug Fixes/Improvements
++ MS-3790: Fixed viewability issue
+
 ## 5.4
 ### New Features
 + MS-3730: Support Rendering for Banner Native ads
