@@ -1,6 +1,15 @@
 ## 5.5
 ### New Features
-+ MS-3778: Added new API for exposing the Video Orientation
++ MS-3778: Added new API to get Video Orientation for BannerVideo and Video Ads
+
+### Mediation partner upgrades/changes
++  Removed support for following mediation Adaptor
+    + AdColony SDK
+    + AdMarvel SDK
+    + Chartboost SDK
+    + Vdopia SDK
+    + Vungle SDK
+    + Yahoo SDK
 
 ### Bug Fixes/Improvements
 + MS-3790: Fixed viewability issue
