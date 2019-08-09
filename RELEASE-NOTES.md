@@ -1,3 +1,7 @@
+## 5.5.1
+### Bug Fixes/Improvements
++ MS-3958: Added Security check to see if it's a valid HTTP URL before loading it.
+
 ## 5.5
 ### New Features
 + MS-3778: Added new API to get Video Orientation for BannerVideo and Video Ads

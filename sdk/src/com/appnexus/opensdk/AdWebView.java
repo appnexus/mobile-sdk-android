@@ -35,6 +35,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Pair;
+import android.util.Patterns;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -73,6 +74,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -559,6 +563,16 @@ class AdWebView extends WebView implements Displayable,
         }
     }
 
+    private boolean isValidUrl(String url) {
+        try {
+            new URL(url).toURI();
+            return Patterns.WEB_URL.matcher(url).matches();
+        } catch (MalformedURLException | URISyntaxException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     // returns success or failure
     private boolean checkForApp(String url) {
         if (url.contains("://play.google.com") || (!url.startsWith("http") && !url.startsWith("about:blank"))) {
@@ -602,6 +616,12 @@ class AdWebView extends WebView implements Displayable,
 
             //If it's a direct URL to the play store, just open it.
             if (checkForApp(url)) {
+                return;
+            }
+
+
+            //If it's an invalid http url return without loading it.
+            if (!isValidUrl(url)) {
                 return;
             }
 
