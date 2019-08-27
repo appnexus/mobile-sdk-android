@@ -60,7 +60,7 @@ public class InMobiInterstitial implements MediatedInterstitialAdView {
             }
             try {
                 long placementID = Long.parseLong(uid);
-                InMobiListener listener = new InMobiListener(mIC, this.getClass().getSimpleName());
+                InMobiInterstitialAdListener listener = new InMobiInterstitialAdListener(mIC);
                 iad = new com.inmobi.ads.InMobiInterstitial(activity, placementID, listener);
                 InMobiSettings.setTargetingParams(tp);
                 iad.load();

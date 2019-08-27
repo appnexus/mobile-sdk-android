@@ -27,6 +27,7 @@ import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.mediatednativead.InMobiSettings;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.StringUtil;
+import com.inmobi.ads.listeners.BannerAdEventListener;
 
 
 /**
@@ -73,7 +74,7 @@ public class InMobiBanner implements MediatedBannerAdView {
                 imBanner.setLayoutParams(lp);
                 InMobiSettings.setTargetingParams(tp);
 
-                imBanner.setListener(new InMobiListener(mBC, this.getClass().getSimpleName()));
+                imBanner.setListener(new InMobiBannerAdListener(mBC));
                 imBanner.load();
                 return imBanner;
             } catch (NumberFormatException e) {
@@ -87,7 +88,8 @@ public class InMobiBanner implements MediatedBannerAdView {
     @Override
     public void destroy() {
         if (imBanner != null) {
-            imBanner.setListener(null);
+            BannerAdEventListener listener = null;
+            imBanner.setListener(listener);
             imBanner = null;
         }
     }
