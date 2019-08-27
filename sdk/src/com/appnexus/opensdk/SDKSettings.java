@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 import android.location.Location;
+import android.os.Build;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
@@ -74,17 +75,22 @@ public class SDKSettings {
 
     /**
      * Set true to allow Open-Measurement for viewability and verification measurement for ads served
-     *
-     * @param enabled to enable OMSDK. default is true
+     * The Android version needs to be KITKAT(4.4) or above for enabling the Open Measurement
+     * @param enabled to enable OMSDK. default is true for Android KITKAT(4.4) and above
      */
     public static void setOMEnabled(boolean enabled) {
         Settings.getSettings().omEnabled = enabled;
     }
     /**
-     * Return true if the ad server calls allow to include Open-Measurement for viewability and verificatio information
+     * Return true only if the Android Version is KITKAT(4.4) or above
+     * and if the ad server calls allow to include Open-Measurement for viewability and verification information
      * or false otherwise.
      */
     public static boolean getOMEnabled() {
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            Clog.e(Clog.omidLogTag, Clog.getString(R.string.apn_omid_enable_failure));
+            return false;
+        }
         return Settings.getSettings().omEnabled;
     }
 
