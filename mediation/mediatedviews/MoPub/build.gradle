@@ -1,5 +1,5 @@
 // Project Properties
-version = "4.8.0" // supported MoPub version
+version = "5.8.0" // supported MoPub version
 
 apply plugin: 'com.android.library'
 
@@ -8,7 +8,7 @@ android {
     buildToolsVersion '29.0.0'
 
     defaultConfig {
-        minSdkVersion 9
+        minSdkVersion 16
         targetSdkVersion 28
         versionCode 1
         versionName version
