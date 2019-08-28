@@ -20,80 +20,24 @@ import com.appnexus.opensdk.MediatedAdViewController;
 import com.appnexus.opensdk.mediatednativead.InMobiSettings;
 import com.appnexus.opensdk.utils.Clog;
 import com.inmobi.ads.InMobiAdRequestStatus;
-import com.inmobi.ads.InMobiBanner;
 import com.inmobi.ads.InMobiInterstitial;
+import com.inmobi.ads.listeners.InterstitialAdEventListener;
 
 import java.util.Map;
 
-public class InMobiListener implements InMobiBanner.BannerAdListener, InMobiInterstitial.InterstitialAdListener2 {
+public class InMobiInterstitialAdListener extends InterstitialAdEventListener {
 
     private final MediatedAdViewController mediatedAdViewController;
-    private final String className;
 
-    public InMobiListener(MediatedAdViewController mediatedAdViewController, String className) {
+    public InMobiInterstitialAdListener(MediatedAdViewController mediatedAdViewController) {
         this.mediatedAdViewController = mediatedAdViewController;
-        this.className = className;
-    }
-
-    // Banner Listener implementation
-
-    @Override
-    public void onAdLoadSucceeded(InMobiBanner inMobiBanner) {
-        Clog.d(Clog.mediationLogTag, "InMobiBanner: onAdLoadSucceeded" );
-        if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdLoaded();
-        }
-    }
-
-    @Override
-    public void onAdLoadFailed(InMobiBanner inMobiBanner, InMobiAdRequestStatus inMobiAdRequestStatus) {
-        Clog.e(Clog.mediationLogTag, "InMobiBanner: onAdLoadFailed" );
-        if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdFailed(InMobiSettings.getResultCode(inMobiAdRequestStatus));
-        }
-    }
-
-    @Override
-    public void onAdDisplayed(InMobiBanner inMobiBanner) {
-        Clog.d(Clog.mediationLogTag, "InMobiBanner: onAdDisplayed" );
-        if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdExpanded();
-        }
-    }
-
-    @Override
-    public void onAdDismissed(InMobiBanner inMobiBanner) {
-        Clog.d(Clog.mediationLogTag, "InMobiBanner: onAdDismissed" );
-        if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdCollapsed();
-        }
-    }
-
-    @Override
-    public void onAdInteraction(InMobiBanner inMobiBanner, Map<Object, Object> map) {
-        Clog.d(Clog.mediationLogTag, "InMobiBanner: onAdInteraction" );
-        if (mediatedAdViewController != null) {
-            mediatedAdViewController.onAdClicked();
-        }
-    }
-
-    @Override
-    public void onUserLeftApplication(InMobiBanner inMobiBanner) {
-        Clog.d(Clog.mediationLogTag, "InMobiBanner: onUserLeftApplication" );
-
-    }
-
-    @Override
-    public void onAdRewardActionCompleted(InMobiBanner inMobiBanner, Map<Object, Object> map) {
-        Clog.d(Clog.mediationLogTag, "InMobiBanner: onAdRewardActionCompleted" );
-
     }
 
     // Interstitial listener implementation
 
     @Override
-    public void onAdRewardActionCompleted(InMobiInterstitial inMobiInterstitial, Map<Object, Object> map) {
-        Clog.d(Clog.mediationLogTag, "InMobiInterstitial: onAdRewardActionCompleted" );
+    public void onRewardsUnlocked(InMobiInterstitial inMobiInterstitial, Map<Object, Object> map) {
+        Clog.d(Clog.mediationLogTag, "InMobiInterstitial: onRewardsUnlocked" );
 
     }
 
@@ -117,8 +61,8 @@ public class InMobiListener implements InMobiBanner.BannerAdListener, InMobiInte
     }
 
     @Override
-    public void onAdInteraction(InMobiInterstitial inMobiInterstitial, Map<Object, Object> map) {
-        Clog.d(Clog.mediationLogTag, "InMobiInterstitial: onAdInteraction" );
+    public void onAdClicked(InMobiInterstitial inMobiInterstitial, Map<Object, Object> map) {
+        Clog.d(Clog.mediationLogTag, "InMobiInterstitial: onAdClicked" );
         if (mediatedAdViewController != null) {
             mediatedAdViewController.onAdClicked();
         }

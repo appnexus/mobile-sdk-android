@@ -1,3 +1,14 @@
+## 6.0
+
+### Mediation partner upgrades
++ Mopub SDK v5.8.0
++ InMobi SDK v8.2.0
++ GooglePlay SDK v18.1.1
++ SmartAdServer SDK v7.1.1
+
+### Bug Fixes/Improvements
++ Open Measurement SDK is now supported only on phones running Android Kitkat and above (MS-3962, MS-3978, Github #43)
+
 ## 5.5.1
 ### Bug Fixes/Improvements
 + MS-3958: Added Security check to see if it's a valid HTTP URL before loading it.

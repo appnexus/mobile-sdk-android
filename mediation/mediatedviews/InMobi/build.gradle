@@ -1,5 +1,5 @@
 // Project Properties
-version = "7.1.0" // supported InMobi version
+version = "8.2.0" // supported InMobi version
 
 apply plugin: 'com.android.library'
 
@@ -8,7 +8,7 @@ android {
     buildToolsVersion '29.0.0'
 
     defaultConfig {
-        minSdkVersion 9
+        minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
         versionName version

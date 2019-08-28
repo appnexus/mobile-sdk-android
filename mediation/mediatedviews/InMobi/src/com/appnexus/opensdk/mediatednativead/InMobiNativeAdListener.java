@@ -25,7 +25,7 @@ import com.inmobi.ads.InMobiNative;
 
 import java.lang.ref.WeakReference;
 
-public class InMobiNativeAdListener implements InMobiNative.NativeAdListener {
+public class InMobiNativeAdListener extends com.inmobi.ads.listeners.NativeAdEventListener {
     private final MediatedNativeAdController controller;
     private WeakReference<InMobiNativeAdResponse> weakReferenceInMobiNativeAdResponse;
 
@@ -55,6 +55,11 @@ public class InMobiNativeAdListener implements InMobiNative.NativeAdListener {
         if (controller != null) {
             controller.onAdFailed(InMobiSettings.getResultCode(inMobiAdRequestStatus));
         }
+    }
+
+    @Override
+    public void onAdReceived(InMobiNative inMobiNative) {
+        Clog.d(Clog.mediationLogTag, "InMobiNative - onAdReceived");
     }
 
     @Override
@@ -105,17 +110,8 @@ public class InMobiNativeAdListener implements InMobiNative.NativeAdListener {
     }
 
     @Override
-    public void onMediaPlaybackComplete(InMobiNative inMobiNative) {
-        Clog.d(Clog.mediationLogTag, "InMobiNative - onMediaPlaybackComplete");
-    }
-
-    @Override
     public void onAdStatusChanged(InMobiNative inMobiNative) {
         Clog.d(Clog.mediationLogTag, "InMobiNative - onAdStatusChanged");
     }
 
-    @Override
-    public void onUserSkippedMedia(InMobiNative inMobiNative) {
-        Clog.d(Clog.mediationLogTag, "InMobiNative - onUserSkippedMedia");
-    }
 }

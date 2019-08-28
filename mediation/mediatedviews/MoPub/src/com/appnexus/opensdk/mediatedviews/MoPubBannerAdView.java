@@ -17,10 +17,7 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
@@ -60,9 +57,7 @@ public class MoPubBannerAdView implements MediatedBannerAdView {
 
         adView.setMinimumWidth(width);
         adView.setMinimumHeight(height);
-        adView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER));
-
-        adView.loadAd();
+        adView.loadAd(MoPubView.MoPubAdSize.valueOf(height));
         return adView;
     }
 

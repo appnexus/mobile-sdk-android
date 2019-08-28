@@ -174,6 +174,7 @@ public class Clog {
     public static String nativeLogTag = baseLogTag + "-NATIVE";
     public static String visibilityLogTag = baseLogTag + "-VISIBILITY";
     public static final String videoLogTag = Clog.baseLogTag + "-INSTREAMVIDEO";
+    public static final String omidLogTag = Clog.baseLogTag + "-OMID";
 
     public static void setErrorContext(Context c) {
         Clog.clog_context = new WeakReference<Context>(c);

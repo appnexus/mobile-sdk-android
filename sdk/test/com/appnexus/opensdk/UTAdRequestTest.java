@@ -1,6 +1,6 @@
 package com.appnexus.opensdk;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.ut.UTAdRequest;
