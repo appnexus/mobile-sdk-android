@@ -47,7 +47,7 @@ ext {
     pom_groupId = "com.appnexus.opensdk.mediatedviews"
     pom_artifactId = "appnexus-smartadserver-mediation"
     pom_packaging = "aar"
-    pom_version = project(':sdk').version + "-" + project.version
+    pom_version = project(':sdk').version + "-" + project.displaySDKVersion
 
     pom_distribution_snapshotRepo_id = "ossrh"
     pom_distribution_snapshotRepo_url = "https://oss.sonatype.org/content/repositories/snapshots"
