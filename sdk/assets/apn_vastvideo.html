@@ -142,14 +142,8 @@
                 targetDiv.style.position  = "absolute";
                 targetDiv.style.left      = 0;
                 targetDiv.style.top       = 0;
-
-                if ("iOS" == ua) {
-                    var  maxScreenSize  = Math.max(screen.width, screen.height);
-
-                } else {
-                    targetDiv.style.width     = screen.width  * window.devicePixelRatio;
-                    targetDiv.style.height    = screen.height * window.devicePixelRatio;
-                }
+                targetDiv.style.width     = screen.width  * window.devicePixelRatio;
+                targetDiv.style.height    = screen.height * window.devicePixelRatio;
             }
         }
 
@@ -165,9 +159,7 @@
                 targetDiv.style.width     = window.innerWidth;
                 targetDiv.style.height    = window.innerHeight;
 
-                // For iOS setting window.innerWidth and window.innerHeight causes issue when we go into fullscreen mode
-                // by setting it to maxScreenSize MobileVastPlayer.js is able to adapt to the fullscreen and back + rotation cases internally.
-                if ("iOS" == ua || targetDiv.style.width == "0px" || targetDiv.style.height == "0px")
+                if (targetDiv.style.width == "0px" || targetDiv.style.height == "0px")
                 {
                     var maxScreenSize       = Math.max(screen.width, screen.height);
                     targetDiv.style.width   = maxScreenSize;
