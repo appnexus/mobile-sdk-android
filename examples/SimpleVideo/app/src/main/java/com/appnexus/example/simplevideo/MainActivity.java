@@ -70,7 +70,7 @@ public class MainActivity extends Activity {
         videoPlayer.setVideoURI(Uri.parse(getString(R.string.content_url_1)));
 
         // Initialize VideoAd
-        videoAd = new VideoAd(this, "16150356");
+        videoAd = new VideoAd(this, "15215010");
 
         // Set the Ad-Load Listener
         videoAd.setAdLoadListener(new VideoAdLoadListener() {
