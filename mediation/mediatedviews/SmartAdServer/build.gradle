@@ -1,8 +1,5 @@
 // Project Properties
-ext {
-    displaySDKVersion = "7.1.1"  // supported SmartAdServer version
-    coreSDKVersion = "7.1.0"
-}
+version = "7.2.0"  // supported SmartAdServer version
 apply plugin: 'com.android.library'
 
 android {
@@ -24,8 +21,8 @@ android {
 
 dependencies {
     api project(':sdk')
-    api "com.smartadserver.android:smart-display-sdk:$displaySDKVersion@aar"
-    api "com.smartadserver.android:smart-core-sdk:$coreSDKVersion@aar"
+    api "com.smartadserver.android:smart-display-sdk:$version@aar"
+    api "com.smartadserver.android:smart-core-sdk:$version@aar"
     api 'com.squareup.okhttp3:okhttp:3.12.1'
 }
 
@@ -47,7 +44,7 @@ ext {
     pom_groupId = "com.appnexus.opensdk.mediatedviews"
     pom_artifactId = "appnexus-smartadserver-mediation"
     pom_packaging = "aar"
-    pom_version = project(':sdk').version + "-" + project.displaySDKVersion
+    pom_version = project(':sdk').version + "-" + project.version
 
     pom_distribution_snapshotRepo_id = "ossrh"
     pom_distribution_snapshotRepo_url = "https://oss.sonatype.org/content/repositories/snapshots"
