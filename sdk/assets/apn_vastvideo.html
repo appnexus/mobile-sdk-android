@@ -20,7 +20,7 @@
 
 <html lang="en-US" prefix="og: http://ogp.me/ns#">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 </head>
 
 <body style="margin: 0;padding: 0;">
@@ -103,21 +103,50 @@
             }
         }
 
+        // This method is intented to be private and should be called only from within this file.
+        // Native code should never call this method directly but instead call playAd();
+        function playVideoAd(targetId) {
+            resizePlayer();
+            APNVideo_MobileVastPlayer.sendPlay(targetId);
+        }
 
         function playAd() {
             console.log(":: sendPlay");
 
             var targetId = "video-content";
-            resizePlayer();
-            APNVideo_MobileVastPlayer.sendPlay(targetId);
+            playVideoAd(targetId);
+            var playInterval = window.setInterval(function () {
+                if (!getIsVideoPlaying(targetId)) {
+                    playVideoAd(targetId);
+                } else {
+                    window.clearInterval(playInterval);
+                }
+            }, 300);
         }
 
         function pauseAd() {
             console.log(":: sendPause");
 
             var targetId = "video-content";
+            pauseVideoAd(targetId);
+            var pauseInterval = window.setInterval(function () {
+                if (getIsVideoPlaying(targetId)) {
+                    pauseVideoAd(targetId);
+                } else {
+                    window.clearInterval(pauseInterval);
+                }
+            }, 300);
+        }
+
+        // This method is intented to be private and should be called only from within this file.
+        // Native code should never call this method directly but instead call pauseAd();
+        function pauseVideoAd(targetId) {
             resizePlayer();
             APNVideo_MobileVastPlayer.sendPause(targetId);
+        }
+
+        function getIsVideoPlaying(targetId) {
+            return APNVideo_MobileVastPlayer.getIsVideoPlaying(targetId);
         }
 
         function getCurrentPlayHeadTime() {

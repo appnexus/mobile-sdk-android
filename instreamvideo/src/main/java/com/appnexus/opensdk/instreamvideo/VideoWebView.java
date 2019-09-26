@@ -66,8 +66,6 @@ class VideoWebView extends WebView {
     private boolean adIsPlaying = false;
     private boolean failed = false;
     private VideoRequestManager manager;
-    private static final int TOTAL_RETRY_TIMES = 10;
-    private static final int WAIT_INTERVAL_MILLES = 300;
 
     private int adDuration = 0;
     private String creativeId = "";
@@ -460,32 +458,24 @@ class VideoWebView extends WebView {
 
 
     protected void playAd() {
-
-        playAdHandler = new Handler();
-
-        Runnable runnableCode = new Runnable() {
-            int retryTimes = 0;
-
-            @Override
-            public void run() {
-                // Play the Ad if WindowFocus is true else retry after 300ms
-                if (hasWindowFocus()) {
-                    adIsPlaying = true;
-                    injectJavaScript("javascript:window.playAd()");
-                } else if (retryTimes < TOTAL_RETRY_TIMES) {
-                    Clog.i(Clog.videoLogTag, "Has no focus Retrying::" + retryTimes);
-                    retryTimes++;
-                    playAdHandler.postDelayed(this, WAIT_INTERVAL_MILLES);
-                } else {
-                    Clog.e(Clog.videoLogTag, "Failed to play Video-Ad giving up");
-                    owner.getAdDispatcher().onPlaybackError();
-                }
-            }
-        };
-
-        // There is no delay for first playAd() call
-        playAdHandler.post(runnableCode);
+        adIsPlaying = true;
+        injectJavaScript("javascript:window.playAd()");
     }
+
+
+    protected void pauseAd(){
+        injectJavaScript("javascript:window.pauseAd()");
+    }
+
+    protected void resumeAd() {
+        // This is for resuming the playback after pause.
+        if (adIsPlaying) {
+            // Just need to call playAd() again for resuming the ad, there is no seperate resumeAd() function in MobileVastPlayer
+            playAd();
+        }
+    }
+
+
 
     protected void createVastPlayerWithContent() {
         String options = ANVideoPlayerSettings.getVideoPlayerSettings().fetchInStreamVideoSettings();
@@ -605,6 +595,7 @@ class VideoWebView extends WebView {
     @Override
     public void onPause() {
         super.onPause();
+    // no need to call pause ad here. OS will auto pause the ad if app/activity goes to paused state.
     }
 
     @Override
@@ -621,13 +612,6 @@ class VideoWebView extends WebView {
         // Fatal exception in android v4.x in TextToSpeech
         catch (IllegalArgumentException e) {
             Clog.e(Clog.baseLogTag, Clog.getString(com.appnexus.opensdk.R.string.apn_webview_failed_to_destroy), e);
-        }
-    }
-
-    void resumeVideo() {
-        // This is for resuming the playback after pause.
-        if (adIsPlaying) {
-            playAd();
         }
     }
 
