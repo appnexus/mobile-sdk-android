@@ -606,13 +606,18 @@ class VideoWebView extends WebView {
     @Override
     public void destroy() {
         stopOMIDAdSession();
-        try {
-            super.destroy();
-        }
-        // Fatal exception in android v4.x in TextToSpeech
-        catch (IllegalArgumentException e) {
-            Clog.e(Clog.baseLogTag, Clog.getString(com.appnexus.opensdk.R.string.apn_webview_failed_to_destroy), e);
-        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    VideoWebView.super.destroy();
+                }
+                // Fatal exception in android v4.x in TextToSpeech
+                catch (IllegalArgumentException e) {
+                    Clog.e(Clog.baseLogTag, Clog.getString(com.appnexus.opensdk.R.string.apn_webview_failed_to_destroy), e);
+                }
+            }
+        }, 300);
     }
 
     @Override
