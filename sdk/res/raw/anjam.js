@@ -50,6 +50,7 @@
     var MRAID_MAX_SIZE = "maxSize";
     var MRAID_DEFAULT_POSITION = "defaultPosition";
     var MRAID_CURRENT_POSITION = "currentPosition";
+    var MRAID_CURRENT_APP_ORIENTATION = "currentAppOrientation";
 
     // public window variables
     var anjam = window.anjam = {};
@@ -183,6 +184,10 @@
         mraidProperties[MRAID_DEFAULT_POSITION] = {};
         mraidProperties[MRAID_CURRENT_POSITION] = {};
 
+        mraidProperties[MRAID_CURRENT_APP_ORIENTATION] = {
+           orientation: "none",
+           locked: false
+        };
         // mraid event listeners
 
         mraid.addEventListener = function (eventName, method) {
@@ -249,6 +254,10 @@
 
         mraid.getCurrentPosition = function () {
             return mraidProperties[MRAID_CURRENT_POSITION];
+        }
+
+        mraid.getCurrentAppOrientation = function () {
+            return mraidProperties[MRAID_CURRENT_APP_ORIENTATION];
         }
 
         // mraid methods that need to be forwarded to main
