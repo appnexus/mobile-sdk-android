@@ -28,6 +28,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
+import android.util.Base64;
 import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +55,8 @@ import com.appnexus.opensdk.utils.WebviewUtil;
 import com.appnexus.opensdk.viewability.ANOmidAdSession;
 
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
 
 
 class VideoWebView extends WebView {
@@ -478,10 +481,16 @@ class VideoWebView extends WebView {
 
 
     protected void createVastPlayerWithContent() {
-        String options = ANVideoPlayerSettings.getVideoPlayerSettings().fetchInStreamVideoSettings();
-        String inject = String.format("javascript:window.createVastPlayerWithContent('%s','%s')",
-                baseAdResponse.getAdContent(), options);
-        this.injectJavaScript(inject);
+        try {
+            //Encode videoXML to Base64String
+            String encodedVastContent = Base64.encodeToString(baseAdResponse.getAdContent().getBytes("UTF-8"), Base64.NO_WRAP);
+            String options = ANVideoPlayerSettings.getVideoPlayerSettings().fetchInStreamVideoSettings();
+            String inject = String.format("javascript:window.createVastPlayerWithContent('%s','%s')",
+                    encodedVastContent, options);
+            this.injectJavaScript(inject);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 
 

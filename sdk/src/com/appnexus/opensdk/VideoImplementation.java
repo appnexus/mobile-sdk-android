@@ -16,10 +16,14 @@
 
 package com.appnexus.opensdk;
 
+import android.util.Base64;
+
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ViewUtil;
 
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
 
 
 class VideoImplementation {
@@ -92,10 +96,16 @@ class VideoImplementation {
     }
 
     protected void createVastPlayerWithContent() {
-        String options = ANVideoPlayerSettings.getVideoPlayerSettings().fetchBannerSettings();
-        String inject = String.format("javascript:window.createVastPlayerWithContent('%s','%s')",
-                vastXML, options);
-        adWebView.injectJavaScript(inject);
+        try {
+            //Encode videoXML to Base64String
+            String encodedVastContent = Base64.encodeToString(vastXML.getBytes("UTF-8"), Base64.NO_WRAP);
+            String options = ANVideoPlayerSettings.getVideoPlayerSettings().fetchBannerSettings();
+            String inject = String.format("javascript:window.createVastPlayerWithContent('%s','%s')",
+                    encodedVastContent, options);
+            adWebView.injectJavaScript(inject);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 
     protected void fireViewableChangeEvent(){

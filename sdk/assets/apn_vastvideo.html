@@ -41,6 +41,10 @@
                 console.log(':: createVastPlayerWithContent');
                 //vastContent = "VAST_CONTENT_FOR_TESTING";
 
+
+                //  atob is used to decode vastContent from Base64String to VastXML
+                var videoVastContent = atob(vastContent);
+
                 var targetId = "video-content";
                 window.document.write(final_video_content);
 
@@ -53,7 +57,7 @@
 
                 APNVideo_MobileVastPlayer.playVast( targetElement,
                                                    options,
-                                                   vastContent,
+                                                   videoVastContent,
                                                    function(eventName) {
                                                    console.log(eventName);
                                                    sendBackMessage(eventName);
