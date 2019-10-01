@@ -1,0 +1,3 @@
+# KotlinSample
+
+This is a sample "app" written using Kotlin, just to fetch and show different Ad types (Banner, Interstitial, Native, Video) using the [AppNexus SDK](https://github.com/appnexus/mobile-sdk-android).
