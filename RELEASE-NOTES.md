@@ -1,5 +1,18 @@
-## 6.0
+## 6.1
+### New Features
++ MS-4019: Added new API to Pause/Resume(https://wiki.xandr.com/display/sdk/Show+An+Instream+Video+Ad+on+Android) VideoAd
 
+### Mediation partner upgrades
+    + Smart Server SDK v7.2.0
+    + FacebookAd SDK v5.5.0(has breaking changes, please look at Mediation Docs(https://wiki.xandr.com/display/sdk/Mediate+with+Android+SDK) for updated integration instruction)
+    + Google AdMob SDK v18.2.0
+
+### Improvements/Bug Fixes
++ MS-3976: Fixed escape character breaking VideoAd load
++ MS-3989: Upgraded to OMSDK v1.2.19
++ MS-4060: Added getCurrentAppOrientation support for MRAID
+
+## 6.0
 ### Mediation partner upgrades
 + Mopub SDK v5.8.0
 + InMobi SDK v8.2.0
