@@ -1,10 +1,10 @@
 ## 6.1
 ### New Features
-+ MS-4019: Added new API to Pause/Resume(link) VideoAd
++ MS-4019: Added new API to Pause/Resume(https://wiki.xandr.com/display/sdk/Show+An+Instream+Video+Ad+on+Android) VideoAd
 
 ### Mediation partner upgrades
     + Smart Server SDK v7.2.0
-    + FacebookAd SDK v5.5.0(has breaking changes, please look at Mediation Docs(link) for updated integration instruction)
+    + FacebookAd SDK v5.5.0(has breaking changes, please look at Mediation Docs(https://wiki.xandr.com/display/sdk/Mediate+with+Android+SDK) for updated integration instruction)
     + Google AdMob SDK v18.2.0
 
 ### Improvements/Bug Fixes
