@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/xandrWhite"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/an_native_container"
+        android:layout_width="0dp"
+        android:layout_margin="8dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/an_icon"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="8dp"
+            android:contentDescription="Icon Image"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/an_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/an_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/xandrCharcoal"
+            android:layout_margin="8dp"
+            android:padding="5dp"
+            android:singleLine="true"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/an_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Title" />
+
+
+
+        <ImageView
+            android:id="@+id/an_image"
+            android:layout_width="0dp"
+            android:layout_height="250dp"
+            android:layout_margin="8dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="Main Image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/an_icon" />
+
+        <TextView
+            android:id="@+id/an_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:padding="5dp"
+            android:textColor="@color/xandrCharcoal"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/an_clickThrough"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/an_image"
+            tools:text="Description" />
+
+        <Button
+            android:id="@+id/an_clickThrough"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/xandrCoral"
+            tools:text="Learn More"
+            android:textColor="@color/xandrWhite"
+            android:textSize="12sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/an_description"
+            app:layout_constraintEnd_toEndOf="@+id/an_image" />
+
+        <TextView
+            android:id="@+id/an_sponsoredBy"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_marginTop="8dp"
+            android:padding="5dp"
+            android:singleLine="true"
+            android:textColor="@color/xandrCharcoal"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/an_description"
+            tools:text="Sponsored By" />
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

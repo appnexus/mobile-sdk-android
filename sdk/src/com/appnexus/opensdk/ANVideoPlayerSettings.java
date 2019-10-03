@@ -55,7 +55,6 @@ public class ANVideoPlayerSettings {
     public static final String AN_TEXT = "text";
     public static final String AN_LEARN_MORE = "learnMore";
     public static final String AN_MUTE = "showMute";
-    public static final String AN_VOLUME = "showVolume";
     public static final String AN_ALLOW_FULLSCREEN = "allowFullscreen";
     public static final String AN_SHOW_FULLSCREEN = "showFullScreenButton";
     public static final String AN_DISABLE_TOPBAR = "disableTopBar";
@@ -237,7 +236,6 @@ public class ANVideoPlayerSettings {
             }
 
             publisherOptions.put(AN_MUTE, showVolumeControl);
-            publisherOptions.put(AN_VOLUME, showVolumeControl);
 
             if (optionsMap.getString(AN_ENTRY).equals(AN_BANNER)) {
                 publisherOptions.put(AN_ALLOW_FULLSCREEN, showFullScreenControl);

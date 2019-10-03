@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/xandrWhite"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:id="@+id/instream_parent_Layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="@color/xandrWhite"
+        android:gravity="top">
+
+        <RelativeLayout
+            android:id="@+id/instream_container_Layout"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:background="@color/colorBlack">
+
+            <VideoView
+                android:id="@+id/video_player"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center" />
+
+            <ImageButton
+                android:id="@+id/play_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:visibility="gone"
+                android:src="@android:drawable/ic_media_play" />
+        </RelativeLayout>
+
+    </LinearLayout>
+</RelativeLayout>

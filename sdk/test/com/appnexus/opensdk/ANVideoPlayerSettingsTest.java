@@ -143,7 +143,6 @@ public class ANVideoPlayerSettingsTest {
             JSONObject jsonObject = new JSONObject(json);
             JSONObject videoOptions = JsonUtil.getJSONObject(jsonObject,ANVideoPlayerSettings.AN_VIDEO_OPTIONS);
             assertFalse(JsonUtil.getJSONBoolean(videoOptions,ANVideoPlayerSettings.AN_MUTE));
-            assertFalse(JsonUtil.getJSONBoolean(videoOptions,ANVideoPlayerSettings.AN_VOLUME));
         }catch (JSONException e){
             e.printStackTrace();
         }
@@ -157,7 +156,6 @@ public class ANVideoPlayerSettingsTest {
             JSONObject jsonObject = new JSONObject(json);
             JSONObject videoOptions = JsonUtil.getJSONObject(jsonObject,ANVideoPlayerSettings.AN_VIDEO_OPTIONS);
             assertTrue(JsonUtil.getJSONBoolean(videoOptions,ANVideoPlayerSettings.AN_MUTE));
-            assertTrue(JsonUtil.getJSONBoolean(videoOptions,ANVideoPlayerSettings.AN_VOLUME));
         }catch (JSONException e){
             e.printStackTrace();
         }

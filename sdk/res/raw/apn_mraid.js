@@ -38,6 +38,12 @@
         allowOrientationChange: true,
         forceOrientation: "none"
     };
+
+    var currentAppOrientation = {
+        orientation: "none",
+        locked: false
+    };
+
     var resize_properties = {
         customClosePosition: 'top-right',
         allowOffscreen: true
@@ -68,6 +74,7 @@
     var MRAID_MAX_SIZE = "maxSize";
     var MRAID_DEFAULT_POSITION = "defaultPosition";
     var MRAID_CURRENT_POSITION = "currentPosition";
+    var MRAID_CURRENT_APP_ORIENTATION = "currentAppOrientation";
 
     // ----- MRAID AD API FUNCTIONS -----
 
@@ -129,7 +136,7 @@
         }
         mraid_enable_called = true;
         if (page_finished) {
-            mraid.util.nativeCall("mraid://enable/");
+        mraid.util.nativeCall("mraid://enable/");
         }
     };
 
@@ -168,13 +175,7 @@
                     mraid.util.errorEvent("mraid.expand() cannot be called for the placement_type " + placement_type, "mraid.expand()");
                     return;
                 }
-                mraid.util.nativeCall("mraid://expand/"
-                    + "?w=-1"
-                    + "&h=-1"
-                    + "&useCustomClose=" + mraid.getExpandProperties().useCustomClose
-                    + (url != null ? "&url=" + url : "")
-                    + "&allow_orientation_change=" + orientation_properties.allowOrientationChange
-                    + "&force_orientation=" + orientation_properties.forceOrientation);
+                mraid.util.nativeCall("mraid://expand/" + "?w=-1" + "&h=-1" + "&useCustomClose=" + mraid.getExpandProperties().useCustomClose + (url != null ? "&url=" + url : "") + "&allow_orientation_change=" + orientation_properties.allowOrientationChange + "&force_orientation=" + orientation_properties.forceOrientation);
                 break;
             case 'expanded':
                 mraid.util.errorEvent("mraid.expand() called while state is 'expanded'.", "mraid.expand()");
@@ -235,13 +236,7 @@
                     return;
                 }
                 if (resize_properties) {
-                    mraid.util.nativeCall("mraid://resize/?w="
-                        + resize_properties.width
-                        + "&h=" + resize_properties.height
-                        + "&offset_x=" + resize_properties.offsetX
-                        + "&offset_y=" + resize_properties.offsetY
-                        + "&custom_close_position=" + resize_properties.customClosePosition
-                        + "&allow_offscreen=" + resize_properties.allowOffscreen);
+                    mraid.util.nativeCall("mraid://resize/?w=" + resize_properties.width + "&h=" + resize_properties.height + "&offset_x=" + resize_properties.offsetX + "&offset_y=" + resize_properties.offsetY + "&custom_close_position=" + resize_properties.customClosePosition + "&allow_offscreen=" + resize_properties.allowOffscreen);
                 } else {
                     mraid.util.errorEvent("mraid.resize() called with no resize_properties set", "mraid.resize()");
                 }
@@ -279,24 +274,34 @@
         return orientation_properties;
     }
 
+    mraid.getCurrentAppOrientation = function() {
+        return currentAppOrientation;
+    }
+
     // Takes an object... {allowOrientationChange:true, forceOrientation:"none"};
     mraid.setOrientationProperties = function(properties) {
+        if (mraid.getState() == "loading") {
+            mraid.util.errorEvent("Method 'mraid.setOrientationProperties()' called during loading state.", "mraid.setOrientationProperties()");
+            return;
+        }
+
         if (typeof properties === "undefined") {
             mraid.util.errorEvent("Invalid orientationProperties.", "mraid.setOrientationProperties()");
             return;
-        } else {
+        }
 
+        if (!mraid.getCurrentAppOrientation().locked) {
             if (properties.forceOrientation === 'portrait' || properties.forceOrientation === 'landscape' || properties.forceOrientation === 'none') {
                 orientation_properties.forceOrientation = properties.forceOrientation;
             } else {
                 mraid.util.errorEvent("Invalid orientationProperties forceOrientation property", "mraid.setOrientationProperties()");
             }
+        }
 
-            if (typeof properties.allowOrientationChange === "boolean") {
-                orientation_properties.allowOrientationChange = properties.allowOrientationChange;
-            } else {
-                mraid.util.errorEvent("Invalid orientationProperties allowOrientationChange property", "mraid.setOrientationProperties()");
-            }
+        if (typeof properties.allowOrientationChange === "boolean") {
+            orientation_properties.allowOrientationChange = properties.allowOrientationChange;
+        } else {
+            mraid.util.errorEvent("Invalid orientationProperties allowOrientationChange property", "mraid.setOrientationProperties()");
         }
 
         if ((typeof window.sdkjs) !== "undefined") {
@@ -328,7 +333,7 @@
         } else {
             expand_properties.useCustomClose = false;
         }
-       mraid.util.nativeCall("mraid://setUseCustomClose/?value=" + expand_properties.useCustomClose);
+        mraid.util.nativeCall("mraid://setUseCustomClose/?value=" + expand_properties.useCustomClose);
     }
 
     // Checks if a feature is supported by this device
@@ -343,6 +348,7 @@
         }
         return supports[feature];
     }
+
 
     // Gets the screen size of the device
     mraid.getScreenSize = function() {
@@ -494,7 +500,7 @@
         page_finished = true;
         if (mraid_enable_called) {
             mraid.util.nativeCall("mraid://enable/");
-        }
+    }
     }
 
     mraid.util.setSupports = function(feature, value) {
@@ -548,4 +554,11 @@
         }
     }
 
+    mraid.util.setCurrentAppOrientation = function(orientation,locked) {
+        currentAppOrientation.orientation  = orientation;
+        currentAppOrientation.locked  = locked;
+        if ((typeof window.sdkjs) !== "undefined") {
+         window.sdkjs.mraidUpdateProperty(MRAID_CURRENT_APP_ORIENTATION, currentAppOrientation);
+        }
+    }
 }());

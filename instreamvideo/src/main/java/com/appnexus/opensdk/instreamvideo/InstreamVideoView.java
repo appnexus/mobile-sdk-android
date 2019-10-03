@@ -143,7 +143,7 @@ class InstreamVideoView extends FrameLayout {
     public void onResume() {
         if (videoWebView != null) {
             videoWebView.onResume();
-            videoWebView.resumeVideo();
+            videoWebView.resumeAd();
         }
     }
 
@@ -157,6 +157,18 @@ class InstreamVideoView extends FrameLayout {
         // Update the MutableContext Wrapper. with the new activity context.
         if(this.videoWebView.getContext() instanceof MutableContextWrapper) {
             ((MutableContextWrapper)this.videoWebView.getContext()).setBaseContext(layout.getContext());
+        }
+    }
+
+    public void pauseAd(){
+        if(this.videoWebView != null){
+            this.videoWebView.pauseAd();
+        }
+    }
+
+    public void resumeAd(){
+        if(this.videoWebView != null){
+            this.videoWebView.resumeAd();
         }
     }
 

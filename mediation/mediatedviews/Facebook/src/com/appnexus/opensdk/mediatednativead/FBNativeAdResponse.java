@@ -20,10 +20,12 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
-
+import android.view.ViewGroup;
 import com.appnexus.opensdk.BaseNativeAdResponse;
 import com.appnexus.opensdk.NativeAdEventListener;
 import com.appnexus.opensdk.utils.Settings;
+import com.facebook.ads.AdIconView;
+import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeAd;
 
 
@@ -33,8 +35,6 @@ import java.util.List;
 public class FBNativeAdResponse extends BaseNativeAdResponse {
     private String title;
     private String description;
-    private String imageUrl;
-    private String iconUrl;
     private String callToAction;
     private Bitmap coverImage;
     private Bitmap icon;
@@ -53,6 +53,9 @@ public class FBNativeAdResponse extends BaseNativeAdResponse {
     private String additionalDescription = "";
     private String vastXML = "";
     private String privacyLink = "";
+
+    private MediaView adMediaView = null;
+    private AdIconView adIconView = null;
 
     public FBNativeAdResponse(NativeAd ad) {
         this.nativeAd = ad;
@@ -100,7 +103,7 @@ public class FBNativeAdResponse extends BaseNativeAdResponse {
 
     @Override
     public String getImageUrl() {
-        return imageUrl;
+        return "";
     }
 
     @Override
@@ -125,7 +128,7 @@ public class FBNativeAdResponse extends BaseNativeAdResponse {
 
     @Override
     public String getIconUrl() {
-        return iconUrl;
+        return "";
     }
 
     @Override
@@ -160,20 +163,15 @@ public class FBNativeAdResponse extends BaseNativeAdResponse {
 
     boolean setResources() {
         if (nativeAd != null && nativeAd.isAdLoaded()) {
-            title = nativeAd.getAdTitle();
-            description = nativeAd.getAdBody();
+            title = nativeAd.getAdHeadline();
+            description = nativeAd.getAdBodyText();
+            sponsporedBy = nativeAd.getSponsoredTranslation();
             nativeElements.put(NATIVE_ELEMENT_OBJECT, nativeAd);
             if(nativeAd.getAdChoicesIcon() != null) {
                 nativeElements.put(FacebookNativeSettings.KEY_ADCHOICES_ICON, nativeAd.getAdChoicesIcon());
             }
             if(nativeAd.getAdChoicesLinkUrl() != null) {
                 nativeElements.put(FacebookNativeSettings.KEY_ADCHOICES_LINKURL, nativeAd.getAdChoicesLinkUrl());
-            }
-            if (nativeAd.getAdIcon() != null) {
-                iconUrl = nativeAd.getAdIcon().getUrl();
-            }
-            if (nativeAd.getAdCoverImage() != null) {
-                imageUrl = nativeAd.getAdCoverImage().getUrl();
             }
             callToAction = nativeAd.getAdCallToAction();
             if (nativeAd.getAdStarRating() != null) {
@@ -190,13 +188,43 @@ public class FBNativeAdResponse extends BaseNativeAdResponse {
         return expired;
     }
 
+    private boolean getMediaViewsForRegisterView(View view) {
+
+        if(view instanceof ViewGroup){
+            ViewGroup subViews =  (ViewGroup)view;
+            for (int i = 0; i < subViews.getChildCount(); i++) {
+                final View subview = subViews.getChildAt(i);
+                if (subview instanceof AdIconView) {
+                    adIconView = (AdIconView )subview;
+                }else if (subview instanceof MediaView) {
+                    adMediaView = (MediaView )subview;
+                }else if(subview instanceof ViewGroup){
+                    getMediaViewsForRegisterView(subview);
+                }
+                if(adMediaView != null && adIconView != null){
+                    break;
+                }
+            }
+        }
+        if(adMediaView != null){
+            return true;
+        }
+        return false;
+    }
+
     @Override
     protected boolean registerView(View view, NativeAdEventListener listener) {
         if (nativeAd != null && !registered && !expired) {
-            nativeAd.registerViewForInteraction(view);
-            registered = true;
-            if(fbNativeExpireHandler!=null) {
-                fbNativeExpireHandler.removeCallbacks(runnable);
+            if(getMediaViewsForRegisterView(view)) {
+                if (adIconView != null) {
+                    nativeAd.registerViewForInteraction(view, adMediaView, adIconView);
+                } else {
+                    nativeAd.registerViewForInteraction(view, adMediaView);
+                }
+                registered = true;
+                if (fbNativeExpireHandler != null) {
+                    fbNativeExpireHandler.removeCallbacks(runnable);
+                }
             }
         }
         this.listener = listener;
@@ -206,10 +234,16 @@ public class FBNativeAdResponse extends BaseNativeAdResponse {
     @Override
     protected boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener) {
         if (nativeAd != null && !registered && !expired) {
-            nativeAd.registerViewForInteraction(view, clickables);
-            registered = true;
-            if(fbNativeExpireHandler!=null) {
-                fbNativeExpireHandler.removeCallbacks(runnable);
+            if(getMediaViewsForRegisterView(view)) {
+               if (adIconView != null) {
+                    nativeAd.registerViewForInteraction(view, adMediaView, adIconView ,clickables);
+                }else{
+                    nativeAd.registerViewForInteraction(view, adMediaView , clickables);
+                }
+                registered = true;
+                if(fbNativeExpireHandler!=null) {
+                    fbNativeExpireHandler.removeCallbacks(runnable);
+                }
             }
         }
         this.listener = listener;

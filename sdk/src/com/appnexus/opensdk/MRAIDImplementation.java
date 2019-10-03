@@ -94,6 +94,7 @@ class MRAIDImplementation {
                 setScreenSize();
                 setMaxSize();
                 setDefaultPosition();
+                setCurrentAppOrientation();
             }
 
             owner.checkPosition(); //set CURRENT position, in addition to default
@@ -132,6 +133,20 @@ class MRAIDImplementation {
 
         owner.injectJavaScript(String.format("javascript:window.mraid.util.setDefaultPosition(%d, %d, %d, %d)",
                 location[0], location[1], size[0], size[1]));
+    }
+
+    private void setCurrentAppOrientation(){
+        String orientationString = "none"; //portrait,landscape,none
+        boolean orientationLocked = false; // always false for Android, since orientation is locked at activity level vs app level in iOS.
+
+        Activity a = (Activity) owner.getContextFromMutableContext();
+        if(a!=null) {
+            int orientation = a.getResources().getConfiguration().orientation;
+            orientationString = (orientation == Configuration.ORIENTATION_PORTRAIT) ? "portrait" : "landscape";
+        }
+
+        owner.injectJavaScript(String.format("javascript:window.mraid.util.setCurrentAppOrientation(\'%s\', %s)",
+                orientationString, String.valueOf(orientationLocked)));
     }
 
     private void setSupports(AdWebView view, String feature, boolean value) {

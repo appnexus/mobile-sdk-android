@@ -25,7 +25,7 @@ import com.facebook.ads.*;
 import java.lang.ref.WeakReference;
 
 
-public class FacebookNativeAdListener implements AdListener {
+public class FacebookNativeAdListener implements NativeAdListener {
 
     private final MediatedNativeAdController controller;
     private WeakReference<FBNativeAdResponse> response;
@@ -85,5 +85,10 @@ public class FacebookNativeAdListener implements AdListener {
         if(controller!=null) {
             controller.onAdImpression();
         }
+    }
+
+    @Override
+    public void onMediaDownloaded(Ad ad) {
+        Clog.d(Clog.mediationLogTag, "Facebook -  onMediaDownloaded");
     }
 }

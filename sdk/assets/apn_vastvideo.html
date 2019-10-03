@@ -20,7 +20,7 @@
 
 <html lang="en-US" prefix="og: http://ogp.me/ns#">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 </head>
 
 <body style="margin: 0;padding: 0;">
@@ -41,6 +41,10 @@
                 console.log(':: createVastPlayerWithContent');
                 //vastContent = "VAST_CONTENT_FOR_TESTING";
 
+
+                //  atob is used to decode vastContent from Base64String to VastXML
+                var videoVastContent = atob(vastContent);
+
                 var targetId = "video-content";
                 window.document.write(final_video_content);
 
@@ -53,7 +57,7 @@
 
                 APNVideo_MobileVastPlayer.playVast( targetElement,
                                                    options,
-                                                   vastContent,
+                                                   videoVastContent,
                                                    function(eventName) {
                                                    console.log(eventName);
                                                    sendBackMessage(eventName);
@@ -103,21 +107,50 @@
             }
         }
 
+        // This method is intented to be private and should be called only from within this file.
+        // Native code should never call this method directly but instead call playAd();
+        function playVideoAd(targetId) {
+            resizePlayer();
+            APNVideo_MobileVastPlayer.sendPlay(targetId);
+        }
 
         function playAd() {
             console.log(":: sendPlay");
 
             var targetId = "video-content";
-            resizePlayer();
-            APNVideo_MobileVastPlayer.sendPlay(targetId);
+            playVideoAd(targetId);
+            var playInterval = window.setInterval(function () {
+                if (!getIsVideoPlaying(targetId)) {
+                    playVideoAd(targetId);
+                } else {
+                    window.clearInterval(playInterval);
+                }
+            }, 300);
         }
 
         function pauseAd() {
             console.log(":: sendPause");
 
             var targetId = "video-content";
+            pauseVideoAd(targetId);
+            var pauseInterval = window.setInterval(function () {
+                if (getIsVideoPlaying(targetId)) {
+                    pauseVideoAd(targetId);
+                } else {
+                    window.clearInterval(pauseInterval);
+                }
+            }, 300);
+        }
+
+        // This method is intented to be private and should be called only from within this file.
+        // Native code should never call this method directly but instead call pauseAd();
+        function pauseVideoAd(targetId) {
             resizePlayer();
             APNVideo_MobileVastPlayer.sendPause(targetId);
+        }
+
+        function getIsVideoPlaying(targetId) {
+            return APNVideo_MobileVastPlayer.getIsVideoPlaying(targetId);
         }
 
         function getCurrentPlayHeadTime() {
@@ -142,14 +175,8 @@
                 targetDiv.style.position  = "absolute";
                 targetDiv.style.left      = 0;
                 targetDiv.style.top       = 0;
-
-                if ("iOS" == ua) {
-                    var  maxScreenSize  = Math.max(screen.width, screen.height);
-
-                } else {
-                    targetDiv.style.width     = screen.width  * window.devicePixelRatio;
-                    targetDiv.style.height    = screen.height * window.devicePixelRatio;
-                }
+                targetDiv.style.width     = screen.width  * window.devicePixelRatio;
+                targetDiv.style.height    = screen.height * window.devicePixelRatio;
             }
         }
 
@@ -165,9 +192,7 @@
                 targetDiv.style.width     = window.innerWidth;
                 targetDiv.style.height    = window.innerHeight;
 
-                // For iOS setting window.innerWidth and window.innerHeight causes issue when we go into fullscreen mode
-                // by setting it to maxScreenSize MobileVastPlayer.js is able to adapt to the fullscreen and back + rotation cases internally.
-                if ("iOS" == ua || targetDiv.style.width == "0px" || targetDiv.style.height == "0px")
+                if (targetDiv.style.width == "0px" || targetDiv.style.height == "0px")
                 {
                     var maxScreenSize       = Math.max(screen.width, screen.height);
                     targetDiv.style.width   = maxScreenSize;

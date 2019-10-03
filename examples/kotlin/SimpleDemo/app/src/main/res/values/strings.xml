@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SimpleDemo</string>
+    <string name="content_url_1">http://acdn.adnxs.com/mobile/video_test/content/Scenario.mp4</string>
+    <string name="interstitial">Interstitial</string>
+    <string name="banner">Banner</string>
+    <string name="native_ad">Native</string>
+    <string name="video_ad">Video</string>
+</resources>

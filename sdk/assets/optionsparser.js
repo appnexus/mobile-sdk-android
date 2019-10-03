@@ -73,7 +73,8 @@ var options = {
     "showProgressBar"                       : true,
     
     "terminateUnresponsiveVPAIDCreative"  : false,
-    
+     "showVolume": false,
+
     "vpaidEnvironmentVars": {
         "rhythmone"  : true
     },

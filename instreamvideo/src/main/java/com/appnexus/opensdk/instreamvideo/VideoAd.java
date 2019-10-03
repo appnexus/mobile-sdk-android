@@ -689,6 +689,20 @@ public class VideoAd implements VideoAdInterface {
         }
     }
 
+
+    public void pauseAd(){
+        if (videoAdView != null) {
+            videoAdView.pauseAd();
+        }
+    }
+
+
+    public void resumeAd(){
+        if (videoAdView != null) {
+            videoAdView.resumeAd();
+        }
+    }
+
     void reset() {
         validAdExists = false;
         if (videoAdView != null) {
