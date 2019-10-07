@@ -216,4 +216,12 @@ public class SDKSettings {
         return Settings.getSettings().locationEnabledForCreative;
     }
 
+
+    /**
+     * Returns AppNexus SDK Version
+     */
+    public static String getSDKVersion(){
+       return Settings.getSettings().sdkVersion;
+    }
+
 }
