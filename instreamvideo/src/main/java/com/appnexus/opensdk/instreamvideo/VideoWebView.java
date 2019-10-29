@@ -69,6 +69,8 @@ class VideoWebView extends WebView {
     private boolean adIsPlaying = false;
     private boolean failed = false;
     private VideoRequestManager manager;
+    private static final int TOTAL_RETRY_TIMES = 10;
+    private static final int WAIT_INTERVAL_MILLES = 300;
 
     private int adDuration = 0;
     private String creativeId = "";
@@ -79,7 +81,6 @@ class VideoWebView extends WebView {
     private ANOmidAdSession omidAdSession;
 
     // Using handler posts the playAd() call to the end of queue and fixes initial rendering black issue on Lollipop and below simulators.
-    // And during resume Ad, this handler is used to retry until the parent window comes in focus else fail gracefully. Its observed parent window gets focus approx 200ms after the resume of activity.
     private Handler playAdHandler;
 
     public VideoWebView(Context context, VideoAd owner, VideoRequestManager manager) {
@@ -461,8 +462,30 @@ class VideoWebView extends WebView {
 
 
     protected void playAd() {
-        adIsPlaying = true;
-        injectJavaScript("javascript:window.playAd()");
+        playAdHandler = new Handler();
+
+        Runnable runnableCode = new Runnable() {
+            int retryTimes = 0;
+
+            @Override
+            public void run() {
+                // Play the Ad if WindowFocus is true else retry after 300ms
+                if (hasWindowFocus()) {
+                    adIsPlaying = true;
+                    injectJavaScript("javascript:window.playAd()");
+                } else if (retryTimes < TOTAL_RETRY_TIMES) {
+                    Clog.i(Clog.videoLogTag, "Has no focus Retrying::" + retryTimes);
+                    retryTimes++;
+                    playAdHandler.postDelayed(this, WAIT_INTERVAL_MILLES);
+                } else {
+                    Clog.e(Clog.videoLogTag, "Failed to play Video-Ad giving up");
+                    owner.getAdDispatcher().onPlaybackError();
+                }
+            }
+        };
+
+        // There is no delay for first playAd() call
+        playAdHandler.post(runnableCode);
     }
 
 
@@ -473,8 +496,7 @@ class VideoWebView extends WebView {
     protected void resumeAd() {
         // This is for resuming the playback after pause.
         if (adIsPlaying) {
-            // Just need to call playAd() again for resuming the ad, there is no seperate resumeAd() function in MobileVastPlayer
-            playAd();
+            injectJavaScript("javascript:window.playAd()");
         }
     }
 
