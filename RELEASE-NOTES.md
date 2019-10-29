@@ -3,7 +3,7 @@
 + MS-4019: Added new API to get SDK Version in SDKSettings.
 
 ### Improvements/Bug Fixes
-+ Ms-4079: Fixed incorrect percentageInView when OMID geometryChange event is called.
++ MS-4079: Fixed incorrect percentageInView when OMID geometryChange event is called.
 
 ## 6.1
 ### New Features
