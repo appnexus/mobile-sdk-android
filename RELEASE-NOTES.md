@@ -1,3 +1,10 @@
+## 6.1.1
+### New Features
++ MS-4019: Added new API to get SDK Version in SDKSettings.
+
+### Improvements/Bug Fixes
++ MS-4079: Fixed incorrect percentageInView when OMID geometryChange event is called.
+
 ## 6.1
 ### New Features
 + MS-4019: Added new API to Pause/Resume(https://wiki.xandr.com/display/sdk/Show+An+Instream+Video+Ad+on+Android) VideoAd
