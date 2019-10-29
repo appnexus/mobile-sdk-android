@@ -45,7 +45,7 @@ public class Settings {
     public boolean debug_mode = false; // This should always be false here.
     public String ua = null;
 
-    public final String sdkVersion = "6.1";
+    public final String sdkVersion = "6.1.1";
 
     public String mcc;
     public String mnc;
