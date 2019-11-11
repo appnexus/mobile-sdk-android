@@ -35,7 +35,7 @@ import java.io.InputStreamReader;
 public class ANOmidViewabilty {
 
     private static ANOmidViewabilty omid_instance = null;
-    public static final String OMID_PARTNER_NAME = "appnexus.com-omandroid";
+    public static final String OMID_PARTNER_NAME = "Appnexus";
     private static String OMID_JS_SERVICE_CONTENT = "";
 
     private static Partner appnexusPartner = null;
