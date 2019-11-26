@@ -1,5 +1,8 @@
 package com.appnexus.opensdk;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import androidx.annotation.NonNull;
 
 import com.appnexus.opensdk.shadows.ShadowSettings;
@@ -50,6 +53,11 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
     boolean requesterReceivedServerResponse = false;
     public static final int PLACEMENT_ID = 123456;
     public static final String EXTERNAL_UID = "b865df7e-097f-4167-8a5c-44d778e75ee6";
+
+    //   IAB USPrivacy
+    private static final String IAB_USPRIVACY_STRING = "IABUSPrivacy_String";
+    private static final String US_PRIVACY = "us_privacy";
+
 
     @Override
     public void setup() {
@@ -350,6 +358,50 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         JSONObject postDataWithGDPRValueSet = inspectPostData();
         assertEquals(true, postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getBoolean("consent_required"));
         assertEquals("fooBar", postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getString("consent_string"));
+    }
+
+    /**
+     * Test USPrivacy_consent in /ut request body
+     * @throws Exception
+     */
+    @Test
+    public void testUSPrivacySettings() throws Exception {
+
+        //  US Privacy is not set
+        ANUSPrivacySettings.reset(activity);
+        executionSteps();
+        JSONObject postDataBeforeUSPrivacyValueSet = inspectPostData();
+        assertFalse(postDataBeforeUSPrivacyValueSet.has(IAB_USPRIVACY_STRING));
+
+
+        //  US Privacy is set using ANConsentSettings.setIABUSPrivacyString
+        ANUSPrivacySettings.setUSPrivacyString(activity,"1ynn");
+        executionSteps();
+        JSONObject postDataUSPrivacyValueSet = inspectPostData();
+        assertEquals("1ynn", postDataUSPrivacyValueSet.getString(US_PRIVACY));
+
+
+        // Reset ANConsentSettings.resetUSPrivacyConsent
+        ANUSPrivacySettings.reset(activity);
+
+        //  US Privacy is set using IABUSPrivacy_StringKey
+        PreferenceManager.getDefaultSharedPreferences(activity).edit().putString(IAB_USPRIVACY_STRING, "1nnn").apply();
+        executionSteps();
+        JSONObject postDataUSPrivacyValueSetUsingDefaultKey = inspectPostData();
+        assertEquals("1nnn", postDataUSPrivacyValueSetUsingDefaultKey.getString(US_PRIVACY));
+
+        //  Remove IABUSPrivacy_StringKey
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(activity);
+        if (pref.contains(IAB_USPRIVACY_STRING)) {
+            pref.edit().remove(IAB_USPRIVACY_STRING).apply();
+        }
+
+        // Set USPrivacy as Empty String
+        ANUSPrivacySettings.setUSPrivacyString(activity,"");
+        executionSteps();
+        JSONObject postDataEmptyUSPrivacyValueSet = inspectPostData();
+        assertFalse(postDataEmptyUSPrivacyValueSet.has(US_PRIVACY));
+
     }
 
 
