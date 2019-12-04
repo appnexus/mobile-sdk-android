@@ -44,7 +44,7 @@ public class FacebookNativeAdListener implements NativeAdListener {
         if (adError.getErrorCode() == AdError.NO_FILL.getErrorCode()) {
             code = ResultCode.UNABLE_TO_FILL;
         } else if (adError.getErrorCode() == AdError.LOAD_TOO_FREQUENTLY.getErrorCode()) {
-            code = ResultCode.INVALID_REQUEST;
+            code = ResultCode.REQUEST_TOO_FREQUENT;
         } else if (adError.getErrorCode() == AdError.INTERNAL_ERROR.getErrorCode()) {
             code = ResultCode.INTERNAL_ERROR;
         } else if (adError.getErrorCode() == AdError.MISSING_PROPERTIES.getErrorCode()) {

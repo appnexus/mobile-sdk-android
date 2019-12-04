@@ -54,5 +54,9 @@ public enum ResultCode {
      * An internal error is detected in the interacting with the
      * third-party SDK.
      */
-    INTERNAL_ERROR
+    INTERNAL_ERROR,
+    /**
+     * Called loadAd too many times
+     */
+    REQUEST_TOO_FREQUENT
 }
