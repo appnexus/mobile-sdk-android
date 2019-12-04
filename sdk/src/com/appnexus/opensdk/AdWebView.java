@@ -514,6 +514,7 @@ class AdWebView extends WebView implements Displayable,
         @Override
         public void onReceivedSslError(WebView view,
                                        SslErrorHandler handler, SslError error) {
+            handler.cancel();
             AdWebView.this.fail();
             Clog.w(Clog.httpRespLogTag,
                     Clog.getString(R.string.webclient_error,
