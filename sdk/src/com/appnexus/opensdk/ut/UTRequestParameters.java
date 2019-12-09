@@ -27,6 +27,7 @@ import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 import android.util.Pair;
 
+import com.appnexus.opensdk.ANUSPrivacySettings;
 import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.ANGDPRSettings;
 import com.appnexus.opensdk.AdSize;
@@ -133,6 +134,9 @@ public class UTRequestParameters {
     private static final String GDPR_CONSENT_STRING = "consent_string";
     private static final String GDPR_CONSENT_REQUIRED = "consent_required";
     private static final String FORCE_CREATIVE_ID = "force_creative_id";
+
+    private static final String US_PRIVACY = "us_privacy";
+
 
     private static final int ALLOWED_TYPE_BANNER = 1;
     private static final int ALLOWED_TYPE_INTERSTITIAL = 3;
@@ -428,6 +432,13 @@ public class UTRequestParameters {
             if (gdprConsent != null && gdprConsent.length() > 0) {
                 postData.put(GDPR_CONSENT, gdprConsent);
             }
+
+            // add USPrivacy String
+            String privacyString = ANUSPrivacySettings.getUSPrivacyString(context);
+            if (!privacyString.isEmpty()) {
+                postData.put(US_PRIVACY, privacyString);
+            }
+
 
         } catch (JSONException e) {
             Clog.e(Clog.httpReqLogTag, "JSONException: " + e.getMessage());
@@ -807,6 +818,10 @@ public class UTRequestParameters {
     }
 
 
+
+
+
+
     private JSONArray getCustomKeywordsArray() {
         JSONArray keywords = new JSONArray();
         try {
@@ -845,8 +860,8 @@ public class UTRequestParameters {
     }
 
     /**
-    * @deprecated rendererId is not used anymore
-    * */
+     * @deprecated rendererId is not used anymore
+     * */
     public void setRendererId(int rendererId) {
         this.rendererId = rendererId;
     }

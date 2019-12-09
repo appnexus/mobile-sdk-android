@@ -124,7 +124,7 @@ var outstreamOptions = {
 
 // Default Partner. This will later be overriden by call from native layer to setOMIDPartner.
 var partner = {
-    "name"  : "appnexus.com-omios",            // This option name is to get OMID partner name
+    "name"  : "Appnexus",            // This option name is to get OMID partner name
     "version"  : "Default-version",          // This option name is to get OMID partner version
 };
 

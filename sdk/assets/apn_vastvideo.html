@@ -100,9 +100,10 @@
         }
 
         function viewabilityUpdate(isViewable) {
-            if (isViewable == "true") {
+             var targetId = "video-content";
+            if (isViewable == "true" && !getIsVideoPlaying(targetId)) {
                 playAd();
-            } else {
+            } else if(isViewable == "false" && getIsVideoPlaying(targetId)){
                 pauseAd();
             }
         }
