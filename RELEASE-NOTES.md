@@ -1,3 +1,14 @@
+## 6.2
+### New Features
++ MS-4097 California Consumer Privacy Act (CCPA) Support (https://wiki.xandr.com/display/consoledrafts/SDK+Privacy+for+iOS)
+
+### Bug Fixes
++ MS-4127 Implemented ssl error handling (Github #48)
++ MS-4051 Added error code to identify frequent ad refresh
++ MS-4095 Updated OMID partner name  
++ MS-4086 Fixed OMID Pause multiple calls during application background state
+
+
 ## 6.1.1
 ### New Features
 + MS-4019: Added new API to get SDK Version in SDKSettings.
