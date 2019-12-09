@@ -1,6 +1,6 @@
 ## 6.2
 ### New Features
-+ MS-4097 California Consumer Privacy Act (CCPA) Support (https://wiki.xandr.com/display/consoledrafts/SDK+Privacy+for+iOS)
++ MS-4097 California Consumer Privacy Act (CCPA) Support (https://wiki.xandr.com/display/sdk/SDK+Privacy+for+Android)
 
 ### Bug Fixes
 + MS-4127 Implemented ssl error handling (Github #48)
