@@ -1,5 +1,6 @@
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.mar.MultiAdRequestListener;
 import com.appnexus.opensdk.util.TestUtil;
 import com.appnexus.opensdk.utils.Clog;
 
@@ -13,16 +14,17 @@ import static junit.framework.Assert.assertTrue;
 
 @Config(sdk = 21)
 @RunWith(RobolectricTestRunner.class)
-public class BaseViewAdTest extends BaseRoboTest implements AdListener {
+public class BaseViewAdTest extends BaseRoboTest implements AdListener, MultiAdRequestListener {
 
     BannerAdView bannerAdView;
     InterstitialAdView interstitialAdView;
     AdViewRequestManager requestManager;
 
-    boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked, adClickedWithUrl;
+    boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked, adClickedWithUrl, marCompleted, marFailed;
     boolean isAutoDismissDelay, enableInterstitialShowonLoad;
     NativeAdResponse nativeAdResponse;
-    private boolean isBannerLoaded;
+    boolean isBannerLoaded;
+    boolean isInterstitialLoaded;
 
     public void setAutoDismissDelay(boolean autoDismissDelay) {
         isAutoDismissDelay = autoDismissDelay;
@@ -53,6 +55,20 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener {
         adClicked = false;
         adClickedWithUrl = false;
 
+        isBannerLoaded = false;
+        isInterstitialLoaded = false;
+
+        marCompleted = false;
+        marFailed = false;
+
+    }
+
+    @Override
+    public void tearDown() {
+        bannerAdView = null;
+        interstitialAdView = null;
+        requestManager = null;
+        super.tearDown();
     }
 
     public void assertCallbacks(boolean success) {
@@ -81,6 +97,10 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener {
         assertEquals(isBannerLoaded, this.isBannerLoaded);
     }
 
+    public void assertInterstitialAdResponse(boolean isInterstitial) {
+        assertEquals(isInterstitial, this.isInterstitialLoaded);
+    }
+
     @Test
     public void testDummy() {
         assertTrue(true);
@@ -94,6 +114,7 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener {
             isBannerLoaded = true;
         }
         if (adView.getMediaType() == MediaType.INTERSTITIAL) {
+            isInterstitialLoaded = true;
             if (enableInterstitialShowonLoad) {
                 if (isAutoDismissDelay) {
                     interstitialAdView.showWithAutoDismissDelay(5);
@@ -142,5 +163,14 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener {
         adClickedWithUrl = true;
     }
 
+    @Override
+    public void onMultiAdRequestCompleted() {
+        marCompleted = true;
+    }
+
+    @Override
+    public void onMultiAdRequestFailed(ResultCode code) {
+        marFailed = true;
+    }
 }
 

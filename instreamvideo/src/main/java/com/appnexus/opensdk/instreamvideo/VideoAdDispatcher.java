@@ -16,6 +16,7 @@
 package com.appnexus.opensdk.instreamvideo;
 
 import com.appnexus.opensdk.ANClickThroughAction;
+import com.appnexus.opensdk.BaseAdDispatcher;
 import com.appnexus.opensdk.ResultCode;
 
 /**
@@ -23,31 +24,12 @@ import com.appnexus.opensdk.ResultCode;
  * This should not be used by application.
  */
 
-interface VideoAdDispatcher {
-    /**
-     * Called when an ad is ready to be used, indicates a successful ad request
-     */
-    public void onAdLoaded();
-
-    /**
-     * Called when the Ad Request has ended in a failure
-     *
-     * @param errorCode the error code describing the failure.
-     */
-    public void onAdFailed(ResultCode errorCode);
+interface VideoAdDispatcher extends BaseAdDispatcher {
 
     /**
      * called when the ad play is started
      */
     public void onAdPlaying();
-
-    /**
-     * Called when the ad being clicked
-     * and the ClickThroughAction is set as either ANClickThroughAction.OPEN_DEVICE_BROWSER
-     * or ANClickThroughAction.OPEN_SDK_BROWSER
-     * {@link ANClickThroughAction}
-     */
-    public void onAdClicked();
 
     /**
      * Called when Ad video is skipped
@@ -75,11 +57,4 @@ interface VideoAdDispatcher {
      * Called when there is an error in playback
      */
     public void onPlaybackError();
-
-    /**
-     * Called when the ad being clicked
-     * and the ClickThroughAction is set as ANClickThroughAction.RETURN_URL
-     * {@link ANClickThroughAction}
-     */
-    public void onAdClicked(String clickUrl);
 }

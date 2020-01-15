@@ -1,4 +1,19 @@
 <resources>
     <string name="app_name">AppNexusSDKTestApp</string>
     <string name="content_url_1">http://acdn.adnxs.com/mobile/video_test/content/Scenario.mp4</string>
+    <string name="hello_world">Hello from MARActivity!</string>
+
+    <string-array name="ad_type_array">
+        <item>Banner</item>
+        <item>Interstitial</item>
+        <item>Video</item>
+        <item>Native</item>
+    </string-array>
+
+    <string-array name="bid_type_array">
+        <item>RTB</item>
+        <item>CSM</item>
+        <item>SSM</item>
+    </string-array>
+
 </resources>

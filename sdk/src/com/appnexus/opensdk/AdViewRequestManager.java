@@ -22,15 +22,18 @@ import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.UTRequestParameters;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMSDKAdResponse;
+import com.appnexus.opensdk.ut.adresponse.CSMVASTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBNativeAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.SSMHTMLAdResponse;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.StringUtil;
 
 import java.lang.ref.WeakReference;
 
-class AdViewRequestManager extends RequestManager {
+public class AdViewRequestManager extends RequestManager {
 
+    private final ANMultiAdRequest anMultiAdRequest;
     private MediatedAdViewController controller;
     private MediatedSSMAdViewController ssmAdViewController;
     private MediatedNativeAdController mediatedNativeAdController;
@@ -41,6 +44,13 @@ class AdViewRequestManager extends RequestManager {
     public AdViewRequestManager(Ad owner) {
         super();
         this.owner = new WeakReference<Ad>(owner);
+        anMultiAdRequest = null;
+    }
+
+    public AdViewRequestManager(ANMultiAdRequest anMultiAdRequest) {
+        super();
+        this.owner = new WeakReference<>(null);
+        this.anMultiAdRequest = anMultiAdRequest;
     }
 
     @Override
@@ -70,9 +80,11 @@ class AdViewRequestManager extends RequestManager {
 
     @Override
     public UTRequestParameters getRequestParams() {
-        Ad owner = this.owner.get();
         if (owner != null) {
-            return owner.getRequestParameters();
+            Ad owner = this.owner.get();
+            if (owner != null) {
+                return owner.getRequestParameters();
+            }
         }
         return null;
     }
@@ -137,7 +149,7 @@ class AdViewRequestManager extends RequestManager {
                     }
                 }
             }
-            owner.getAdDispatcher().onAdLoaded(ad);
+            ((AdDispatcher)owner.getAdDispatcher()).onAdLoaded(ad);
         } else {
             ad.destroy();
         }
@@ -169,12 +181,15 @@ class AdViewRequestManager extends RequestManager {
         if ((owner != null) && getAdList() != null && !getAdList().isEmpty()) {
             final BaseAdResponse baseAdResponse = popAd();
             this.currentAd = baseAdResponse;
+
             if (UTConstants.RTB.equalsIgnoreCase(baseAdResponse.getContentSource())) {
                 handleRTBResponse(owner, baseAdResponse);
             } else if (UTConstants.CSM.equalsIgnoreCase(baseAdResponse.getContentSource())) {
                 handleCSMResponse(owner, (CSMSDKAdResponse) baseAdResponse);
             } else if (UTConstants.SSM.equalsIgnoreCase(baseAdResponse.getContentSource())) {
                 handleSSMResponse((AdView) owner, (SSMHTMLAdResponse) baseAdResponse);
+            } else if (UTConstants.CSM_VIDEO.equalsIgnoreCase(baseAdResponse.getContentSource())) {
+                handleCSMVASTAdResponse(owner, (CSMVASTAdResponse) baseAdResponse);
             } else {
                 Clog.e(Clog.baseLogTag, "processNextAd failed:: invalid content source:: " + baseAdResponse.getContentSource());
                 continueWaterfall(ResultCode.INTERNAL_ERROR);
@@ -235,7 +250,19 @@ class AdViewRequestManager extends RequestManager {
 
     private void handleRTBResponse(Ad ownerAd, BaseAdResponse rtbAdResponse) {
 
-        if (rtbAdResponse instanceof RTBNativeAdResponse) {
+        if(rtbAdResponse instanceof RTBVASTAdResponse && !(ownerAd instanceof BannerAdView)) {
+            if (rtbAdResponse.getAdContent() != null) {
+                if (UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(rtbAdResponse.getAdType())) {
+                    // Vast ads
+                    handleRTBVASTResponse(ownerAd, (RTBVASTAdResponse) rtbAdResponse);
+
+                } else {
+                    continueWaterfall(ResultCode.UNABLE_TO_FILL);
+                }
+            } else {
+                continueWaterfall(ResultCode.UNABLE_TO_FILL);
+            }
+        } else if (rtbAdResponse instanceof RTBNativeAdResponse) {
             handleNativeResponse(ownerAd, rtbAdResponse);
         } else {
             if (rtbAdResponse.getAdContent() != null) {
@@ -258,6 +285,32 @@ class AdViewRequestManager extends RequestManager {
             } else {
                 continueWaterfall(ResultCode.UNABLE_TO_FILL);
             }
+        }
+    }
+
+    private void handleRTBVASTResponse(final Ad owner, final RTBVASTAdResponse rtbAdResponse) {
+
+        if (!StringUtil.isEmpty(rtbAdResponse.getAdContent())) {
+            fireNotifyUrlForVideo(rtbAdResponse);
+            if (rtbAdResponse != null && rtbAdResponse.getAdContent() != null) {
+                owner.getMultiAd().initiateVastAdView(rtbAdResponse, this);
+            } else {
+                continueWaterfall(ResultCode.UNABLE_TO_FILL);
+            }
+        }
+    }
+
+    private void handleCSMVASTAdResponse(Ad owner, CSMVASTAdResponse csmvastAdResponse) {
+        if (csmvastAdResponse != null && csmvastAdResponse.getAdJSONContent() != null) {
+            if (UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(csmvastAdResponse.getAdType())) {
+                // @NOTE no need to fire notify URL here it is taken care by ASTMediationManager.js
+
+                owner.getMultiAd().initiateVastAdView(csmvastAdResponse, this);
+            } else {
+                continueWaterfall(ResultCode.UNABLE_TO_FILL);
+            }
+        } else {
+            continueWaterfall(ResultCode.UNABLE_TO_FILL);
         }
     }
 
@@ -300,4 +353,7 @@ class AdViewRequestManager extends RequestManager {
         adWebview.loadAd(response);
     }
 
+    public ANMultiAdRequest getMultiAdRequest() {
+        return anMultiAdRequest;
+    }
 }

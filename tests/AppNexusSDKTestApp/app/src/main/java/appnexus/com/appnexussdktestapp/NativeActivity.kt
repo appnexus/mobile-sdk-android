@@ -32,6 +32,7 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_native)
         Settings.getSettings().useHttps = true
+//        triggerAdLoad("17982237", creativeId = 162039377)
 //        triggerAdLoad(
 //            intent.getStringExtra("placement"),
 //            useHttps = intent.getBooleanExtra("useHttps", true)
@@ -41,8 +42,8 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener {
     fun triggerAdLoad(placement: String?, useHttps: Boolean = true, creativeId: Int? = null) {
         Handler(Looper.getMainLooper()).post {
 
-            nativeAdRequest = NativeAdRequest(this, if (placement == null) "13255429" else placement)
-            nativeAdRequest.placementID = if (placement == null) "13255429" else placement
+            nativeAdRequest = NativeAdRequest(this, if (placement == null) "17982237" else placement)
+            nativeAdRequest.placementID = if (placement == null) "17982237" else placement
             SDKSettings.useHttps(useHttps)
             nativeAdRequest.listener = this
             if(creativeId != null) {

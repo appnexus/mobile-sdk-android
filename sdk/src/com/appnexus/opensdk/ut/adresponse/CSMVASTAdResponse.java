@@ -16,8 +16,6 @@
 
 package com.appnexus.opensdk.ut.adresponse;
 
-import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,7 +23,7 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.UUID;
 
 
 public class CSMVASTAdResponse extends BaseAdResponse {
@@ -33,13 +31,12 @@ public class CSMVASTAdResponse extends BaseAdResponse {
     private int tag_id;
     private String auction_id;
     private int timeout_ms;
-    private String uuid;
     private JSONObject adJSONContent;
+    private String uuid;
 
-    public CSMVASTAdResponse(int width, int height, String adType, ArrayList<String> impressionURLs  , String creativeId) {
+    public CSMVASTAdResponse(int width, int height, String adType, ArrayList<String> impressionURLs, String creativeId, String uuid) {
         super(width, height, adType, impressionURLs , creativeId);
-        int random=new Random().nextInt(65536) + 1;
-        this.uuid= String.valueOf(random);
+        this.uuid = uuid;
     }
 
     public JSONObject getAdJSONContent() {
@@ -74,11 +71,6 @@ public class CSMVASTAdResponse extends BaseAdResponse {
         this.timeout_ms = timeout_ms;
     }
 
-    public String getUuid() {
-        return uuid;
-    }
-
-
     public String getCSMVASTAdResponse() {
         JSONObject tag = new JSONObject();
         JSONArray ads = new JSONArray();
@@ -100,6 +92,10 @@ public class CSMVASTAdResponse extends BaseAdResponse {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public String getUuid() {
+        return uuid;
     }
 }
 

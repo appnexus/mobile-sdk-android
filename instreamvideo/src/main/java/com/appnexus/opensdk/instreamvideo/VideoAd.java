@@ -22,15 +22,22 @@ import android.util.Pair;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import com.appnexus.opensdk.ANClickThroughAction;
+import com.appnexus.opensdk.ANMultiAdRequest;
+import com.appnexus.opensdk.Ad;
+import com.appnexus.opensdk.AdFetcher;
 import com.appnexus.opensdk.AdSize;
 import com.appnexus.opensdk.AdType;
 import com.appnexus.opensdk.AdView;
-import com.appnexus.opensdk.ANClickThroughAction;
+import com.appnexus.opensdk.AdViewRequestManager;
+import com.appnexus.opensdk.MultiAd;
 import com.appnexus.opensdk.MediaType;
+import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.VideoOrientation;
+import com.appnexus.opensdk.ut.UTAdRequester;
 import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.UTRequestParameters;
-import com.appnexus.opensdk.ResultCode;
+import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.viewability.ANOmidViewabilty;
@@ -39,13 +46,13 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 
-public class VideoAd implements VideoAdInterface {
+public class VideoAd implements Ad, MultiAd {
 
 
     private UTRequestParameters requestParameters;
     private VideoAdPlaybackListener videoPlaybackListener;
     private VideoAdLoadListener adLoadListener;
-    private final VideoAdFetcher mVideoAdFetcher;
+    private final AdFetcher mVideoAdFetcher;
     boolean isLoading = false;
 
     boolean validAdExists = false;
@@ -56,13 +63,12 @@ public class VideoAd implements VideoAdInterface {
     boolean doesLoadingInBackground = true;
     private boolean showLoadingIndicator = true;
 
-
     public VideoAd(Context context, String placementID) {
         weakContext = new WeakReference<Context>(context);
         requestParameters = new UTRequestParameters(getContext());
         requestParameters.setPlacementID(placementID);
         requestParameters.setMediaType(MediaType.INSTREAM_VIDEO);
-        mVideoAdFetcher = new VideoAdFetcher(this);
+        mVideoAdFetcher = new AdFetcher(this);
         // setting the period to -1 disables autorefresh
         mVideoAdFetcher.setPeriod(-1);
         dispatcher = new VideoAdViewDispatcher();
@@ -77,7 +83,7 @@ public class VideoAd implements VideoAdInterface {
         requestParameters = new UTRequestParameters(getContext());
         requestParameters.setInventoryCodeAndMemberID(memberID, inventoryCode);
         requestParameters.setMediaType(MediaType.INSTREAM_VIDEO);
-        mVideoAdFetcher = new VideoAdFetcher(this);
+        mVideoAdFetcher = new AdFetcher(this);
         // setting the period to -1 disables autorefresh
         mVideoAdFetcher.setPeriod(-1);
         dispatcher = new VideoAdViewDispatcher();
@@ -349,16 +355,19 @@ public class VideoAd implements VideoAdInterface {
     }
 
 
-    UTRequestParameters getRequestParameters() {
+    @Override
+    public UTRequestParameters getRequestParameters() {
         return requestParameters;
     }
 
 
+    @Override
     public MediaType getMediaType() {
         return requestParameters.getMediaType();
     }
 
 
+    @Override
     public boolean isReadyToStart() {
         return requestParameters.isReadyForRequest();
     }
@@ -366,7 +375,7 @@ public class VideoAd implements VideoAdInterface {
     /**
      * Call this to request a VideoAd for parameters described by this object.
      */
-
+    @Override
     public boolean loadAd() {
         if (isLoading) {
             Clog.e(Clog.videoLogTag, "Still loading last Video ad , won't load a new ad");
@@ -407,10 +416,25 @@ public class VideoAd implements VideoAdInterface {
         reset();
     }
 
-    protected VideoAdDispatcher getAdDispatcher() {
+    @Override
+    public VideoAdDispatcher getAdDispatcher() {
         return dispatcher;
     }
 
+    @Override
+    public ANMultiAdRequest getMultiAdRequest() {
+        return requestParameters.getMultiAdRequest();
+    }
+
+    @Override
+    public void associateWithMultiAdRequest(ANMultiAdRequest anMultiAdRequest) {
+        requestParameters.associateWithMultiAdRequest(anMultiAdRequest);
+    }
+
+    @Override
+    public void disassociateFromMultiAdRequest() {
+        requestParameters.disassociateFromMultiAdRequest();
+    }
 
     protected void setAllowedSizes() {
         Clog.d(Clog.videoLogTag,
@@ -777,5 +801,23 @@ public class VideoAd implements VideoAdInterface {
         if (videoAdView != null) {
             videoAdView.getAdPlayElapsedTime(resultCallback);
         }
+    }
+
+    @Override
+    public void initiateVastAdView(BaseAdResponse response, AdViewRequestManager adViewRequestManager) {
+        Clog.d(Clog.videoLogTag, "Creating WebView for::" + response.getContentSource());
+        VideoWebView adVideoView = new VideoWebView(getContext(), this, adViewRequestManager);
+        getVideoAdView().setVideoWebView(adVideoView);
+        adVideoView.loadAd(response);
+    }
+
+    @Override
+    public void setRequestManager(UTAdRequester requester) {
+        mVideoAdFetcher.setRequestManager(requester);
+    }
+
+    @Override
+    public MultiAd getMultiAd() {
+        return this;
     }
 }

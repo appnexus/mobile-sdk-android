@@ -30,6 +30,8 @@ import android.util.Pair;
 import com.appnexus.opensdk.ANUSPrivacySettings;
 import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.ANGDPRSettings;
+import com.appnexus.opensdk.ANMultiAdRequest;
+import com.appnexus.opensdk.Ad;
 import com.appnexus.opensdk.AdSize;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.MediaType;
@@ -45,8 +47,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.UUID;
 
 public class UTRequestParameters {
 
@@ -68,7 +72,6 @@ public class UTRequestParameters {
     private ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
     private int videoAdMinDuration;
     private int videoAdMaxDuration;
-
 
     private int forceCreativeId = 0;
     private ANClickThroughAction clickThroughAction = ANClickThroughAction.OPEN_SDK_BROWSER;
@@ -93,6 +96,7 @@ public class UTRequestParameters {
     private static final String TAG_RENDERER_ID = "renderer_id";
     private static final boolean TAG_ASSET_URL_VALUE = false;
     private static final String TAG_CODE = "code";
+    private static final String TAG_UUID = "uuid";
     private static final String USER = "user";
     private static final String USER_AGE = "age";
     private static final String USER_GENDER = "gender";
@@ -146,9 +150,15 @@ public class UTRequestParameters {
 
     private Context context;
     private int rendererId = 0;
+    private ArrayList<WeakReference<Ad>> adUnitList;
+    private String uuid;
+
+    private WeakReference<ANMultiAdRequest> anMultiAdRequest;
 
     public UTRequestParameters(Context context) {
         this.context = context;
+        adUnitList = new ArrayList<>();
+        anMultiAdRequest = new WeakReference<>(null);
     }
 
     public String getPlacementID() {
@@ -162,6 +172,10 @@ public class UTRequestParameters {
     public void setInventoryCodeAndMemberID(int memberId, String invCode) {
         this.memberID = memberId;
         this.invCode = invCode;
+    }
+
+    public void setMemberID(int memberID) {
+        this.memberID = memberID;
     }
 
     public int getMemberID() {
@@ -396,7 +410,11 @@ public class UTRequestParameters {
                 postData.put(TAGS, tags);
             }
             // add user
-            JSONObject user = getUserObject();
+            UTRequestParameters localParams = this;
+            if (anMultiAdRequest.get() != null) {
+                localParams = anMultiAdRequest.get().getRequestParameters();
+            }
+            JSONObject user = getUserObject(localParams);
             if (user != null && user.length() > 0) {
                 postData.put(USER, user);
             }
@@ -421,10 +439,24 @@ public class UTRequestParameters {
 
             postData.put(SUPPLY_TYPE, SUPPLY_TYPE_CONTENT);
 
-            // add custom keywords
-            JSONArray keywordsArray = getCustomKeywordsArray();
-            if (keywordsArray != null && keywordsArray.length() > 0) {
-                postData.put(KEYWORDS, keywordsArray);
+            if (anMultiAdRequest.get() != null || (adUnitList != null && adUnitList.size() > 0)) {
+                // add custom keywords
+                ANMultiAdRequest multiAdRequest = anMultiAdRequest.get();
+                ArrayList<Pair<String, String>> customKeywords = getCustomKeywords();
+                int memberID = getMemberID();
+                if (multiAdRequest != null) {
+                    customKeywords = multiAdRequest.getCustomKeywords();
+                    memberID = multiAdRequest.getRequestParameters().getMemberID();
+                }
+                JSONArray keywordsArray = getCustomKeywordsArray(customKeywords);
+                if (keywordsArray != null && keywordsArray.length() > 0) {
+                    postData.put(KEYWORDS, keywordsArray);
+                }
+
+                //add Member ID
+                if (memberID > 0) {
+                    postData.put(MEMBER_ID, memberID);
+                }
             }
 
             // add GDPR Consent
@@ -455,98 +487,130 @@ public class UTRequestParameters {
 
     private JSONArray getTagsObject(JSONObject postData) {
         JSONArray tags = new JSONArray();
-        JSONObject tag = new JSONObject();
-        try {
-            if (!StringUtil.isEmpty(this.getInvCode()) && this.getMemberID() > 0) {
-                tag.put(TAG_CODE, this.getInvCode());
-                postData.put(MEMBER_ID, this.getMemberID());
-            } else if (!StringUtil.isEmpty(this.getPlacementID())) {
-                tag.put(TAG_ID, StringUtil.getIntegerValue(this.getPlacementID()));
-            } else {
-                tag.put(TAG_ID, 0);
-            }
-
-            JSONObject primesize = new JSONObject();
-            primesize.put(SIZE_WIDTH, this.primarySize.width());
-            primesize.put(SIZE_HEIGHT, this.primarySize.height());
-            tag.put(TAG_PRIMARY_SIZE, primesize);
-
-            if (this.forceCreativeId>0) {
-                tag.put(FORCE_CREATIVE_ID, this.forceCreativeId);
-            }
-
-            ArrayList<AdSize> sizesArray = this.getSizes();
-            JSONArray sizes = new JSONArray();
-            if (sizesArray != null && sizesArray.size() > 0) {
-                for (AdSize s : sizesArray) {
-                    JSONObject size = new JSONObject();
-                    size.put(SIZE_WIDTH, s.width());
-                    size.put(SIZE_HEIGHT, s.height());
-                    sizes.put(size);
+        int limit = adUnitList != null && adUnitList.size() > 0 ? adUnitList.size() : 1;
+        boolean isMultiAdList = (adUnitList != null && adUnitList.size() > 0);
+        for (int count = 0; count < limit; count++) {
+            String uuid = UUID.randomUUID().toString();
+            UTRequestParameters utRequestParameters = this;
+            if (isMultiAdList) {
+                Ad ad = adUnitList.get(count).get();
+                if (ad == null) {
+                    continue;
                 }
+                ad.getRequestParameters().setUUID(uuid);
+                utRequestParameters = ad.getRequestParameters();
             }
-            tag.put(TAG_SIZES, sizes);
+            JSONObject tag = new JSONObject();
+            try {
+                if (!StringUtil.isEmpty(utRequestParameters.getInvCode()) && utRequestParameters.getMemberID() > 0) {
+                    tag.put(TAG_CODE, utRequestParameters.getInvCode());
+                    postData.put(MEMBER_ID, utRequestParameters.getMemberID());
+                } else if (!StringUtil.isEmpty(utRequestParameters.getPlacementID())) {
+                    tag.put(TAG_ID, StringUtil.getIntegerValue(utRequestParameters.getPlacementID()));
+                } else {
+                    tag.put(TAG_ID, 0);
+                }
 
-            tag.put(TAG_ALLOW_SMALLER_SIZES, getAllowSmallerSizes());
+                if (uuid != null) {
+                    tag.put(TAG_UUID, uuid);
+                }
 
-            JSONArray allowedMediaAdTypes = new JSONArray();
-            if (this.getMediaType() == MediaType.BANNER) {
-                allowedMediaAdTypes.put(ALLOWED_TYPE_BANNER);
-                if(isBannerVideoEnabled) {
+                JSONObject primesize = new JSONObject();
+                primesize.put(SIZE_WIDTH, utRequestParameters.primarySize.width());
+                primesize.put(SIZE_HEIGHT, utRequestParameters.primarySize.height());
+                tag.put(TAG_PRIMARY_SIZE, primesize);
+
+                if (utRequestParameters.forceCreativeId > 0) {
+                    tag.put(FORCE_CREATIVE_ID, utRequestParameters.forceCreativeId);
+                }
+
+                // add custom parameters if there are any
+                JSONArray keywordsArray = getCustomKeywordsArray(utRequestParameters.getCustomKeywords());
+                if (keywordsArray != null && keywordsArray.length() > 0) {
+                    tag.put(KEYWORDS, keywordsArray);
+                }
+
+                ArrayList<AdSize> sizesArray = utRequestParameters.getSizes();
+                JSONArray sizes = new JSONArray();
+                if (sizesArray != null && sizesArray.size() > 0) {
+                    for (AdSize s : sizesArray) {
+                        JSONObject size = new JSONObject();
+                        size.put(SIZE_WIDTH, s.width());
+                        size.put(SIZE_HEIGHT, s.height());
+                        sizes.put(size);
+                    }
+                }
+                tag.put(TAG_SIZES, sizes);
+
+                tag.put(TAG_ALLOW_SMALLER_SIZES, getAllowSmallerSizes());
+
+                JSONArray allowedMediaAdTypes = new JSONArray();
+                if (utRequestParameters.getMediaType() == MediaType.BANNER) {
+                    allowedMediaAdTypes.put(ALLOWED_TYPE_BANNER);
+                    if (utRequestParameters.isBannerVideoEnabled) {
+                        allowedMediaAdTypes.put(ALLOWED_TYPE_VIDEO);
+                    }
+                    if (utRequestParameters.isBannerNativeEnabled) {
+                        allowedMediaAdTypes.put(ALLOWED_TYPE_NATIVE);
+                    }
+                } else if (utRequestParameters.getMediaType() == MediaType.INTERSTITIAL) {
+                    allowedMediaAdTypes.put(ALLOWED_TYPE_BANNER);
+                    allowedMediaAdTypes.put(ALLOWED_TYPE_INTERSTITIAL);
+                } else if (utRequestParameters.getMediaType() == MediaType.NATIVE) {
+                    allowedMediaAdTypes.put(ALLOWED_TYPE_NATIVE);
+                } else if (utRequestParameters.getMediaType() == MediaType.INSTREAM_VIDEO) {
                     allowedMediaAdTypes.put(ALLOWED_TYPE_VIDEO);
                 }
-                if(isBannerNativeEnabled) {
-                    allowedMediaAdTypes.put(ALLOWED_TYPE_NATIVE);
+
+                tag.put(TAG_ALLOWED_MEDIA_AD_TYPES, allowedMediaAdTypes);
+
+                if (utRequestParameters.getMediaType() == MediaType.INSTREAM_VIDEO) {
+                    JSONObject videoObject = utRequestParameters.getVideoObject();
+                    if (videoObject.length() > 0) {
+                        tag.put(TAG_VIDEO, videoObject);
+                    }
                 }
-            } else if (this.getMediaType() == MediaType.INTERSTITIAL) {
-                allowedMediaAdTypes.put(ALLOWED_TYPE_BANNER);
-                allowedMediaAdTypes.put(ALLOWED_TYPE_INTERSTITIAL);
-            } else if (this.getMediaType() == MediaType.NATIVE) {
-                allowedMediaAdTypes.put(ALLOWED_TYPE_NATIVE);
-            } else if (this.getMediaType() == MediaType.INSTREAM_VIDEO) {
-                allowedMediaAdTypes.put(ALLOWED_TYPE_VIDEO);
-            }
 
-            tag.put(TAG_ALLOWED_MEDIA_AD_TYPES, allowedMediaAdTypes);
 
-            if (this.getMediaType() == MediaType.INSTREAM_VIDEO) {
-                JSONObject videoObject = this.getVideoObject();
-                if (videoObject.length() > 0) {
-                    tag.put(TAG_VIDEO, videoObject);
+                tag.put(TAG_PREBID, false);
+                if (utRequestParameters.getReserve() > 0) {
+                    tag.put(TAG_RESERVE, utRequestParameters.getReserve());
+                    tag.put(TAG_DISABLE_PSA, true);
+                } else {
+                    tag.put(TAG_DISABLE_PSA, !utRequestParameters.getShouldServePSAs());
                 }
-            }
+                tag.put(TAG_ASSET_URL, TAG_ASSET_URL_VALUE);
 
-
-            tag.put(TAG_PREBID, false);
-            if (this.getReserve() > 0) {
-                tag.put(TAG_RESERVE, this.getReserve());
-                tag.put(TAG_DISABLE_PSA, true);
-            } else {
-                tag.put(TAG_DISABLE_PSA, !this.getShouldServePSAs());
-            }
-            tag.put(TAG_ASSET_URL, TAG_ASSET_URL_VALUE);
-
-            if (this.getMediaType() == MediaType.NATIVE || (this.getMediaType() == MediaType.BANNER && isBannerNativeEnabled())) {
-                JSONObject nativeObject = getNativeRendererObject();
-                if (nativeObject != null) {
-                    tag.put(TAG_NATIVE, nativeObject);
+                if (utRequestParameters.getMediaType() == MediaType.NATIVE || (utRequestParameters.getMediaType() == MediaType.BANNER && isBannerNativeEnabled())) {
+                    JSONObject nativeObject = getNativeRendererObject(utRequestParameters);
+                    if (nativeObject != null) {
+                        tag.put(TAG_NATIVE, nativeObject);
+                    }
                 }
-            }
 
-        } catch (JSONException e) {
-            Clog.e(Clog.baseLogTag, "Exception: " + e.getMessage());
-        }
-        if (tag.length() > 0) {
-            tags.put(tag);
+            } catch (JSONException e) {
+                Clog.e(Clog.baseLogTag, "Exception: " + e.getMessage());
+            }
+            if (tag.length() > 0) {
+                tags.put(tag);
+            }
         }
         return tags;
     }
 
-    private JSONObject getNativeRendererObject() {
-        if (getRendererId() != 0) {
+    private void setUUID(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getUUID() {
+        return uuid;
+    }
+
+    private JSONObject getNativeRendererObject(UTRequestParameters utRequestParameters) {
+        if (utRequestParameters.getRendererId() != 0) {
             try {
                 JSONObject nativeObject = new JSONObject();
-                nativeObject.put(TAG_RENDERER_ID, this.getRendererId());
+                nativeObject.put(TAG_RENDERER_ID, utRequestParameters.getRendererId());
                 return nativeObject;
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -556,14 +620,14 @@ public class UTRequestParameters {
     }
 
 
-    private JSONObject getUserObject() {
+    private JSONObject getUserObject(UTRequestParameters utRequestParameters) {
         JSONObject user = new JSONObject();
         try {
-            if (StringUtil.getIntegerValue(this.getAge()) > 0) {
-                user.put(USER_AGE, StringUtil.getIntegerValue(this.getAge()));
+            if (StringUtil.getIntegerValue(utRequestParameters.getAge()) > 0) {
+                user.put(USER_AGE, StringUtil.getIntegerValue(utRequestParameters.getAge()));
             }
 
-            AdView.GENDER gender = this.getGender();
+            AdView.GENDER gender = utRequestParameters.getGender();
             int g = 0;
             switch (gender) {
                 case FEMALE:
@@ -581,8 +645,8 @@ public class UTRequestParameters {
                 user.put(USER_LANGUAGE, Settings.getSettings().language);
             }
 
-            if (!StringUtil.isEmpty(this.getExternalUid())) {
-                user.put(USER_EXTERNALUID, this.getExternalUid());
+            if (!StringUtil.isEmpty(utRequestParameters.getExternalUid())) {
+                user.put(USER_EXTERNALUID, utRequestParameters.getExternalUid());
             }
 
 
@@ -818,15 +882,9 @@ public class UTRequestParameters {
     }
 
 
-
-
-
-
-    private JSONArray getCustomKeywordsArray() {
+    private JSONArray getCustomKeywordsArray(ArrayList<Pair<String, String>> customKeywords) {
         JSONArray keywords = new JSONArray();
         try {
-            // add custom parameters if there are any
-            ArrayList<Pair<String, String>> customKeywords = this.getCustomKeywords();
             if (customKeywords != null) {
                 for (Pair<String, String> pair : customKeywords) {
                     if (!StringUtil.isEmpty(pair.first) && !StringUtil.isEmpty(pair.second) && !updateIfKeyExists(pair.first, pair.second, keywords)) {
@@ -861,16 +919,46 @@ public class UTRequestParameters {
 
     /**
      * @deprecated rendererId is not used anymore
-     * */
+     */
     public void setRendererId(int rendererId) {
         this.rendererId = rendererId;
     }
 
     /**
      * @deprecated rendererId is not used anymore
-     * */
+     */
     public int getRendererId() {
         return rendererId;
     }
 
+    public void addAdUnit(WeakReference<Ad> adWeakReference) {
+        adUnitList.add(adWeakReference);
+    }
+
+    public void removeAdUnit(Ad adUnit) {
+        ArrayList<WeakReference<Ad>> tempAdUnitList = new ArrayList<>();
+        tempAdUnitList.addAll(adUnitList);
+        for (WeakReference<Ad> adWeakReference : tempAdUnitList) {
+            if (adWeakReference.get() == adUnit) {
+                adUnitList.remove(adWeakReference);
+            }
+        }
+    }
+
+    public ArrayList<WeakReference<Ad>> getAdUnitList() {
+        Clog.e(Clog.SRMLogTag, "ADUNITLIST SIZE: " + adUnitList.size());
+        return adUnitList;
+    }
+
+    public ANMultiAdRequest getMultiAdRequest() {
+        return anMultiAdRequest.get();
+    }
+
+    public void associateWithMultiAdRequest(ANMultiAdRequest anMultiAdRequest) {
+        this.anMultiAdRequest = new WeakReference<>(anMultiAdRequest);
+    }
+
+    public void disassociateFromMultiAdRequest() {
+        this.anMultiAdRequest = new WeakReference<>(null);
+    }
 }

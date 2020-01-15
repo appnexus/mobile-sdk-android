@@ -577,8 +577,11 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
     private void inspectCustomKeywords(String keywordString, JSONObject postData) throws JSONException {
         System.out.println("Checking custom keywords validity...");
-        assertTrue(postData.has("keywords"));
-        JSONArray keyWordObject = postData.getJSONArray("keywords");
+        assertTrue(postData.has("tags"));
+        JSONArray tags = postData.getJSONArray("tags");
+        JSONObject tag = tags.getJSONObject(0);
+        assertTrue(tag.has("keywords"));
+        JSONArray keyWordObject = tag.getJSONArray("keywords");
         assertNotNull(keyWordObject);
         assertEquals(keywordString, keyWordObject.toString());
         System.out.println("Custom keywords validity test passed!");

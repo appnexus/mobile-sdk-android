@@ -1,6 +1,5 @@
 package appnexus.com.appnexussdktestapp
 
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -75,6 +74,9 @@ class BannerActivity : AppCompatActivity(), AdListener {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
+//        triggerAdLoad("17982237", allowNativeDemand = true, creativeId = 162039377)
+//        triggerAdLoad("15754688", allowNativeDemand = true, rendererId = 199, useNativeRenderer = true, creativeId = 154485807)
+
 
 //        triggerAdLoad(
 //            intent.getStringExtra("placement"),
@@ -91,10 +93,10 @@ class BannerActivity : AppCompatActivity(), AdListener {
             idlingResource.increment()
             banner = BannerAdView(this)
             banner.id = banner_id
-            banner.placementID = if (placement == null) "13255429" else placement
+            banner.placementID = if (placement == null) "17982237" else placement
             banner.setAdSize(width, height)
             banner.setAllowNativeDemand(allowNativeDemand)
-            banner.shouldUseNativeAssemblyRenderer(useNativeRenderer)
+            banner.enableNativeRendering(useNativeRenderer)
             banner.loadsInBackground = false
             banner.clickThroughAction = clickThroughAction
             banner.allowVideoDemand = allowVideoDemand

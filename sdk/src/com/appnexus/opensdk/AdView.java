@@ -36,8 +36,10 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
 
+import com.appnexus.opensdk.ut.UTAdRequester;
 import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.UTRequestParameters;
+import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBHTMLAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.utils.AdvertisingIDUtil;
@@ -55,7 +57,7 @@ import java.util.ArrayList;
  * BannerAdView}.  This may not be instantiated directly.  Its public
  * methods are accessed through one of its sub classes.
  */
-public abstract class AdView extends FrameLayout implements Ad {
+public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
     AdFetcher mAdFetcher;
     private AdResponse ad = null;
@@ -1053,12 +1055,18 @@ public abstract class AdView extends FrameLayout implements Ad {
         }
 
         @Override
+        public void onAdLoaded() {
+
+        }
+
+        @Override
         public void onAdFailed(final ResultCode code) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (adListener != null)
+                    if (adListener != null) {
                         adListener.onAdRequestFailed(AdView.this, code);
+                    }
                 }
             });
 
@@ -1138,8 +1146,9 @@ public abstract class AdView extends FrameLayout implements Ad {
             setCreativeId(ad.getResponseData().getCreativeId());
             final NativeAdResponse response = ad.getNativeAdResponse();
             response.setCreativeId(ad.getResponseData().getCreativeId());
-
-            adListener.onAdLoaded(response);
+            if(adListener != null) {
+                adListener.onAdLoaded(response);
+            }
         }
 
         private void handleBannerOrInterstitialAd(final AdResponse ad) {
@@ -1181,7 +1190,6 @@ public abstract class AdView extends FrameLayout implements Ad {
                     } else if (ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER)) {
                         setAdType(AdType.BANNER);
                     }
-
                     if (adListener != null)
                         adListener.onAdLoaded(AdView.this);
                     if (ad.getNativeAdResponse() != null) {
@@ -1253,7 +1261,7 @@ public abstract class AdView extends FrameLayout implements Ad {
 
     boolean isAdViewAttachedToWindow() {
 
-        // Use the framework API value if its KITKAT and Aboev.
+        // Use the framework API value if its KITKAT and Above.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             return isAttachedToWindow();
         } else {
@@ -1282,4 +1290,33 @@ public abstract class AdView extends FrameLayout implements Ad {
     abstract public void activityOnResume();
 
     abstract void interacted();
+
+    @Override
+    public ANMultiAdRequest getMultiAdRequest() {
+        return requestParameters.getMultiAdRequest();
+    }
+
+    @Override
+    public void associateWithMultiAdRequest(ANMultiAdRequest anMultiAdRequest) {
+        requestParameters.associateWithMultiAdRequest(anMultiAdRequest);
+    }
+
+    @Override
+    public void disassociateFromMultiAdRequest() {
+        requestParameters.disassociateFromMultiAdRequest();
+    }
+
+    @Override
+    public void initiateVastAdView(BaseAdResponse baseAdResponse, AdViewRequestManager adViewRequestManager) {
+    }
+
+    @Override
+    public void setRequestManager(UTAdRequester requester) {
+        mAdFetcher.setRequestManager(requester);
+    }
+
+    @Override
+    public MultiAd getMultiAd() {
+        return this;
+    }
 }

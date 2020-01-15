@@ -324,7 +324,7 @@ class AdWebView extends WebView implements Displayable,
         }
 
         if (extras.containsKey(UTConstants.EXTRAS_KEY_ORIENTATION)
-                && extras.get(UTConstants.EXTRAS_KEY_ORIENTATION).equals("h")) {
+                && extras.get(UTConstants.EXTRAS_KEY_ORIENTATION) != null && extras.get(UTConstants.EXTRAS_KEY_ORIENTATION).equals("h")) {
             this.orientation = Configuration.ORIENTATION_LANDSCAPE;
         } else {
             this.orientation = Configuration.ORIENTATION_PORTRAIT;

@@ -58,14 +58,15 @@ public class BaseRoboTest {
 
     @After
     public void tearDown() {
+        activity.finish();
         try {
             server.shutdown();
+            server = null;
             bgScheduler.reset();
             uiScheduler.reset();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        activity.finish();
     }
 
     private void scheduleTimerToCheckForTasks() {
