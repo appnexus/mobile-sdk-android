@@ -24,8 +24,8 @@ import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMSDKAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMVASTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBHTMLAdResponse;
-import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBNativeAdResponse;
+import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.SSMHTMLAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.JsonUtil;
@@ -61,6 +61,7 @@ public class UTAdResponse {
     private static final String RESPONSE_KEY_CLASS = "class";
     private static final String RESPONSE_KEY_PARAM = "param";
     private static final String RESPONSE_KEY_ID = "id";
+    private static final String RESPONSE_KEY_UUID = "uuid";
     private static final String RESPONSE_KEY_HANDLER_URL = "url";
     private static final String RESPONSE_VALUE_ANDROID = "android";
     private static final String RESPONSE_KEY_TYPE = "type";
@@ -75,12 +76,15 @@ public class UTAdResponse {
     private static final String RESPONSE_KEY_TAG_ID = "tag_id";
     private static final String RESPONSE_KEY_AUCTION_ID = "auction_id";
     private static final String RESPONSE_KEY_SECOND_PRICE = "second_price";
+    private JSONObject tag;
+    private Integer key = null;
 
 
     private boolean isHttpError = false;
     private LinkedList<BaseAdResponse> adList;
     private String noAdUrl;
     private int tagId;
+    private String uuid;
     private int auctionID;
     private int timeout;
     private MediaType mediaType;
@@ -88,10 +92,19 @@ public class UTAdResponse {
 
 
     public UTAdResponse(String body, Map<String, List<String>> headers, MediaType requestMediaType, String orientation) {
+        this(body, null, headers, requestMediaType, orientation);
+    }
+
+    public UTAdResponse(boolean isHttpError) {
+        this.isHttpError = isHttpError;
+    }
+
+    public UTAdResponse(String body, JSONObject tag, Map<String, List<String>> headers, MediaType requestMediaType, String orientation) {
         if (StringUtil.isEmpty(body)) {
             Clog.clearLastResponse();
             return;
         }
+        this.tag = tag;
         this.mediaType = requestMediaType;
         this.orientation = orientation;
 
@@ -102,10 +115,6 @@ public class UTAdResponse {
         printHeaders(headers);
 
         parseResponseV2(body);
-    }
-
-    public UTAdResponse(boolean isHttpError) {
-        this.isHttpError = isHttpError;
     }
 
     private void printHeaders(Map<String, List<String>> headers) {
@@ -143,7 +152,12 @@ public class UTAdResponse {
         try {
             JSONArray tagsArray = JsonUtil.getJSONArray(response, RESPONSE_KEY_TAGS);
             if (tagsArray != null) {
-                JSONObject tagObject = JsonUtil.getJSONObjectFromArray(tagsArray, 0);
+                JSONObject tagObject = null;
+                if(tag == null) {
+                    tagObject = JsonUtil.getJSONObjectFromArray(tagsArray, 0);
+                } else {
+                    tagObject = tag;
+                }
                 // If it contains nobid response, don't parse further.
                 if (JsonUtil.getJSONBoolean(tagObject, RESPONSE_KEY_NO_BID)) {
                     return;
@@ -157,7 +171,6 @@ public class UTAdResponse {
         }
     }
 
-
     /**
      * @param response (JSONObject)
      * @return (boolean)
@@ -170,6 +183,7 @@ public class UTAdResponse {
         tagId = JsonUtil.getJSONInt(response, RESPONSE_KEY_TAG_ID);
         auctionID = JsonUtil.getJSONInt(response, RESPONSE_KEY_AUCTION_ID);
         timeout = JsonUtil.getJSONInt(response, RESPONSE_KEY_TIMEOUT);
+        uuid = JsonUtil.getJSONString(response, RESPONSE_KEY_UUID);
         JSONArray ads = JsonUtil.getJSONArray(response, RESPONSE_KEY_ADS);
         if (ads != null) {
             adList = new LinkedList<BaseAdResponse>();
@@ -238,6 +252,7 @@ public class UTAdResponse {
 
     /**
      * Parse UT-V3 VAST response
+     *
      * @param rtbObject (JSONObject)
      * @param adType    (String)
      * @throws Exception
@@ -343,7 +358,7 @@ public class UTAdResponse {
         if (csm != null) {
             JSONArray handler = JsonUtil.getJSONArray(csm, RESPONSE_KEY_HANDLER);
             if (handler != null) {
-                CSMVASTAdResponse csmVideoAd = new CSMVASTAdResponse(-1, -1, adType, null, creativeId);
+                CSMVASTAdResponse csmVideoAd = new CSMVASTAdResponse(-1, -1, adType, null, creativeId, uuid);
                 csmVideoAd.setAdJSONContent(ad);
                 csmVideoAd.setAuction_id(String.valueOf(auctionID));
                 csmVideoAd.setTag_id(tagId);

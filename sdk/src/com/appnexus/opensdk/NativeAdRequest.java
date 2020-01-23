@@ -19,7 +19,9 @@ package com.appnexus.opensdk;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import com.appnexus.opensdk.ut.UTAdRequester;
 import com.appnexus.opensdk.ut.UTRequestParameters;
+import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.utils.AdvertisingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ImageService;
@@ -31,7 +33,7 @@ import java.util.HashMap;
 /**
  * Define the attributes used for requesting a native ad.
  */
-public class NativeAdRequest implements Ad {
+public class NativeAdRequest implements Ad, MultiAd {
     private NativeAdRequestListener listener;
     private final UTRequestParameters requestParameters;
     private final AdFetcher mAdFetcher;
@@ -471,6 +473,11 @@ public class NativeAdRequest implements Ad {
         }
 
         @Override
+        public void onAdLoaded() {
+
+        }
+
+        @Override
         public void onAdFailed(ResultCode resultCode) {
             if (listener != null) {
                 listener.onAdFailed(resultCode);
@@ -512,5 +519,34 @@ public class NativeAdRequest implements Ad {
     @Override
     public AdDispatcher getAdDispatcher() {
         return dispatcher;
+    }
+
+    @Override
+    public ANMultiAdRequest getMultiAdRequest() {
+        return requestParameters.getMultiAdRequest();
+    }
+
+    @Override
+    public void associateWithMultiAdRequest(ANMultiAdRequest anMultiAdRequest) {
+        requestParameters.associateWithMultiAdRequest(anMultiAdRequest);
+    }
+
+    @Override
+    public void disassociateFromMultiAdRequest() {
+        requestParameters.disassociateFromMultiAdRequest();
+    }
+
+    @Override
+    public void initiateVastAdView(BaseAdResponse baseAdResponse, AdViewRequestManager adViewRequestManager) {
+    }
+
+    @Override
+    public void setRequestManager(UTAdRequester requestManager) {
+        mAdFetcher.setRequestManager(requestManager);
+    }
+
+    @Override
+    public MultiAd getMultiAd() {
+        return this;
     }
 }

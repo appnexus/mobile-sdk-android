@@ -42,6 +42,7 @@ import android.widget.FrameLayout;
 import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.ANVideoPlayerSettings;
 import com.appnexus.opensdk.AdActivity;
+import com.appnexus.opensdk.AdViewRequestManager;
 import com.appnexus.opensdk.BrowserAdActivity;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.VideoOrientation;
@@ -68,7 +69,7 @@ class VideoWebView extends WebView {
     private boolean firstPageLoadComplete = false;
     private boolean adIsPlaying = false;
     private boolean failed = false;
-    private VideoRequestManager manager;
+    private AdViewRequestManager manager;
     private static final int TOTAL_RETRY_TIMES = 10;
     private static final int WAIT_INTERVAL_MILLES = 300;
 
@@ -83,7 +84,7 @@ class VideoWebView extends WebView {
     // Using handler posts the playAd() call to the end of queue and fixes initial rendering black issue on Lollipop and below simulators.
     private Handler playAdHandler;
 
-    public VideoWebView(Context context, VideoAd owner, VideoRequestManager manager) {
+    public VideoWebView(Context context, VideoAd owner, AdViewRequestManager manager) {
         super(new MutableContextWrapper(context));
         this.owner = owner;
         this.manager = manager;

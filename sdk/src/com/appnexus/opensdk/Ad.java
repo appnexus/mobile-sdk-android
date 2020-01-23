@@ -21,9 +21,10 @@ import com.appnexus.opensdk.ut.UTRequestParameters;
 /**
  * Define the basics for an ad, package only
  */
-interface Ad {
+public interface Ad {
+
     /**
-     * Media type can be Banner, Interstitial or Native
+     * Media type can be Banner, Interstitial, Native or Video
      *
      * @return the media type of this ad
      */
@@ -44,16 +45,28 @@ interface Ad {
     public boolean loadAd();
 
     /**
-     * Provide the ad dispatcher of this ad
-     *
-     * @return ad dispatcher
-     */
-    public AdDispatcher getAdDispatcher();
-
-    /**
      * Provide the request parameters of this ad
      *
      * @return {@link UTRequestParameters}
      */
     public UTRequestParameters getRequestParameters();
+
+    /**
+     * Provide the ad dispatcher of this ad
+     *
+     * @return {@link BaseAdDispatcher}
+     */
+    public BaseAdDispatcher getAdDispatcher();
+
+    /**
+     * Provide the MultiAdRequest instance, this ad is attached with (if any)
+     *
+     * @return {@link ANMultiAdRequest}
+     */
+    ANMultiAdRequest getMultiAdRequest();
+
+    /**
+     * Not intended to be used outside of SDK.
+     * */
+    MultiAd getMultiAd();
 }

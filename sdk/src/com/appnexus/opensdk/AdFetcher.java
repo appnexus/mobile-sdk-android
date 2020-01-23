@@ -32,8 +32,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * AdFetcher class that schedules requests based on auto refresh settings
  */
-class AdFetcher {
+public class AdFetcher {
 
+    private final ANMultiAdRequest anMultiAdRequest;
     private ScheduledExecutorService tasker;
     private int period = -1;
     private final RequestHandler handler;
@@ -43,6 +44,10 @@ class AdFetcher {
     private UTAdRequester requestManager;
     private STATE state = STATE.STOPPED;
 
+    public void setRequestManager(UTAdRequester requester) {
+        requestManager = requester;
+    }
+
     enum STATE {
         STOPPED,    // AdFetcher is Stopped
         SINGLE_REQUEST, // Request on demand mode
@@ -50,12 +55,20 @@ class AdFetcher {
     }
 
     // Fires requests whenever it receives a message
-    AdFetcher(Ad owner) {
+    public AdFetcher(Ad owner) {
         this.owner = owner;
         handler = new RequestHandler(this);
+        requestManager = new AdViewRequestManager(owner);
+        anMultiAdRequest = null;
     }
 
-    void setPeriod(int period) {
+    AdFetcher(ANMultiAdRequest anMultiAdRequest) {
+        this.owner = null;
+        handler = new RequestHandler(this);
+        this.anMultiAdRequest = anMultiAdRequest;
+    }
+
+    public void setPeriod(int period) {
         boolean periodChanged = this.period != period;
         this.period = period;
         if ((periodChanged) && !state.equals(STATE.STOPPED)) {
@@ -67,7 +80,7 @@ class AdFetcher {
         }
     }
 
-    void stop() {
+    public void stop() {
         if (requestManager != null) {
             requestManager.cancel();
             requestManager = null;
@@ -80,7 +93,7 @@ class AdFetcher {
         state = STATE.STOPPED;
     }
 
-    void start() {
+    public void start() {
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.start));
         createTasker();
         switch (state) {
@@ -147,7 +160,7 @@ class AdFetcher {
 
     }
 
-    void clearDurations() {
+    public void clearDurations() {
         lastFetchTime = -1;
         timePausedAt = -1;
     }
@@ -183,7 +196,7 @@ class AdFetcher {
             AdFetcher fetcher = mFetcher.get();
 
             if (fetcher == null
-                    || !fetcher.owner.isReadyToStart())
+                    || (fetcher.owner != null && !fetcher.owner.isReadyToStart()))
                 return;
 
             // Update last fetch time once
@@ -197,12 +210,17 @@ class AdFetcher {
             fetcher.lastFetchTime = System.currentTimeMillis();
 
             // Spawn an AdRequest
-            MediaType mediaType = fetcher.owner.getMediaType();
-            if (mediaType.equals(MediaType.NATIVE) || mediaType.equals(MediaType.INTERSTITIAL) || mediaType.equals(MediaType.BANNER)) {
-                fetcher.requestManager = new AdViewRequestManager(fetcher.owner);
+            if (fetcher.owner == null && fetcher.anMultiAdRequest != null && fetcher.anMultiAdRequest.isMARRequestInProgress()) {
+                fetcher.requestManager = new AdViewRequestManager(fetcher.anMultiAdRequest);
                 fetcher.requestManager.execute();
-            }else{
-                fetcher.owner.getAdDispatcher().onAdFailed(ResultCode.INVALID_REQUEST);
+            } else {
+                MediaType mediaType = fetcher.owner.getMediaType();
+                if (mediaType.equals(MediaType.NATIVE) || mediaType.equals(MediaType.INTERSTITIAL) || mediaType.equals(MediaType.BANNER) || mediaType.equals(MediaType.INSTREAM_VIDEO)) {
+                    fetcher.requestManager = new AdViewRequestManager(fetcher.owner);
+                    fetcher.requestManager.execute();
+                } else {
+                    fetcher.owner.getAdDispatcher().onAdFailed(ResultCode.INVALID_REQUEST);
+                }
             }
         }
     }

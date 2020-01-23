@@ -1,0 +1,4 @@
+# SimpleSRM
+
+This is the simplest possible "app" that can fetch and show banner ads
+using the [AppNexus SDK](https://github.com/appnexus/mobile-sdk-android).

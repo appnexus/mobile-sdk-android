@@ -68,7 +68,7 @@ class InterstitialActivity : AppCompatActivity(), AdListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_banner)
         Settings.getSettings().useHttps = true
-//        triggerAdLoad("13255429", autoDismiss = 5)
+//        triggerAdLoad("17982237", autoDismiss = 5)
 //        triggerAdLoad(
 //            intent.getStringExtra("placement"),
 //            useHttps = intent.getBooleanExtra("useHttps", false),
@@ -83,7 +83,7 @@ class InterstitialActivity : AppCompatActivity(), AdListener {
             this.autoDismiss = autoDismiss
             interstitial = InterstitialAdView(this)
             interstitial.id = interstitial_id
-            interstitial.placementID = if (placement == null) "13255429" else placement
+            interstitial.placementID = if (placement == null) "17982237" else placement
             SDKSettings.useHttps(useHttps)
             interstitial.adListener = this
             interstitial.closeButtonDelay = closeButtonDelay

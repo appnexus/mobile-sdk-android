@@ -770,6 +770,9 @@ public class BannerAdView extends AdView {
      * @param period The auto-refresh interval, in milliseconds.
      */
     public void setAutoRefreshInterval(int period) {
+        if (getMultiAdRequest() != null) {
+            return;
+        }
         if (period > 0) {
             this.period = Math.max(Settings.MIN_REFRESH_MILLISECONDS,
                     period);

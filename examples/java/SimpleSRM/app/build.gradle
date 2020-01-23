@@ -1,0 +1,54 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion '29.0.0'
+    lintOptions {
+        abortOnError false
+    }
+    defaultConfig {
+        applicationId "com.example.simplesrm"
+        minSdkVersion 18
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main.manifest.srcFile 'src/main/AndroidManifest.xml'
+        main.java.srcDir 'src/main/java'
+        main.res.srcDir 'src/main/res'
+        main.resources.srcDir 'src/main/java'
+    }
+    packagingOptions {
+        exclude 'AndroidManifest.xml'
+        exclude 'res/drawable/progress.xml'
+        exclude 'res/layout/activity_in_app_browser.xml'
+        exclude 'res/raw/anjam.js'
+        exclude 'res/raw/mraid.js'
+        exclude 'res/raw/sdkjs.js'
+    }
+    productFlavors {
+    }
+}
+
+dependencies {
+    implementation('com.google.android.gms:play-services-base:16.1.0') { transitive = false }
+    implementation 'com.android.support:multidex:1.0.3'
+    api project(':sdk')
+    api project(':instreamvideo')
+//    implementation project(':GooglePlay')
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    androidTestImplementation 'androidx.test:rules:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-web:3.1.1'
+    implementation 'androidx.test.espresso:espresso-idling-resource:3.1.1'
+//    implementation project(':SmartAdServer')
+}

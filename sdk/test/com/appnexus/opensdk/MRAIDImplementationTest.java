@@ -351,6 +351,11 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
         }
 
         @Override
+        public void onAdLoaded() {
+
+        }
+
+        @Override
         public void onAdFailed(ResultCode errorCode) {
             adFailed = true;
         }

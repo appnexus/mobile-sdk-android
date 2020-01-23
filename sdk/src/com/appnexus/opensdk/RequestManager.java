@@ -21,9 +21,11 @@ import android.os.Build;
 import com.appnexus.opensdk.ut.UTAdRequest;
 import com.appnexus.opensdk.ut.UTAdRequester;
 import com.appnexus.opensdk.ut.UTAdResponse;
+import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.UTRequestParameters;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMSDKAdResponse;
+import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
@@ -133,6 +135,12 @@ public abstract class RequestManager implements UTAdRequester{
                 return trackerUrl;
             }
         }.execute();
+    }
+
+    protected void fireNotifyUrlForVideo(RTBVASTAdResponse adResponse) {
+        if (UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(adResponse.getAdType())) {
+            fireTracker(adResponse.getNotifyUrl(), Clog.getString(R.string.notify_url));
+        }
     }
 
     // returns the first mediated ad if available

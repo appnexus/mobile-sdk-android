@@ -1,0 +1,13 @@
+include ':app'
+
+include ':sdk'
+project(':sdk').projectDir = new File(settingsDir, '../../../sdk')
+
+include ':instreamvideo'
+project(':instreamvideo').projectDir = new File(settingsDir, '../../../instreamvideo')
+
+//include ':GooglePlay'
+//project(':GooglePlay').projectDir = new File(settingsDir, '../../../mediation/mediatedviews/GooglePlay')
+
+//include ':SmartAdServer'
+//project(':SmartAdServer').projectDir = new File(settingsDir, '../../../mediation/mediatedviews/SmartAdServer')

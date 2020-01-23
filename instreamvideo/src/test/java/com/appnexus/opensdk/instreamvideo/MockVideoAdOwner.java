@@ -3,13 +3,15 @@ package com.appnexus.opensdk.instreamvideo;
 
 import android.content.Context;
 
+import com.appnexus.opensdk.AdFetcher;
+
 public class MockVideoAdOwner extends VideoAd {
 
-    VideoAdFetcher adFetcher;
+    AdFetcher adFetcher;
 
     public MockVideoAdOwner(Context context) {
         super(context, "PLACEMENT_ID");
-        adFetcher = new VideoAdFetcher(this);
+        adFetcher = new AdFetcher(this);
     }
 
     @Override

@@ -16,7 +16,7 @@
 
 package com.appnexus.opensdk;
 
-interface AdDispatcher {
+interface AdDispatcher extends BaseAdDispatcher{
     /**
      * Called when an ad is ready to be used, indicates a successful ad
      * request
@@ -24,13 +24,6 @@ interface AdDispatcher {
      * @param ad the response from either AppNexus server or mediated networks
      */
     public void onAdLoaded(AdResponse ad);
-
-    /**
-     * Called when the mediation waterfall has ended in a failure
-     *
-     * @param errorCode the error code describing the failure.
-     */
-    public void onAdFailed(ResultCode errorCode);
 
     /**
      * Called when the third-party mediation network has alerted the
@@ -45,12 +38,6 @@ interface AdDispatcher {
     public void onAdCollapsed();
 
     /**
-     * Called when the third-party mediation network has alerted the
-     * SDK of an ad being clicked
-     */
-    public void onAdClicked();
-
-    /**
      * Called when the ad has sent the app an event via the
      * AppNexus Javascript API for Mobile
      */
@@ -61,6 +48,4 @@ interface AdDispatcher {
      * Used only by Banner Video
      */
     public void toggleAutoRefresh();
-
-    public void onAdClicked(String clickUrl);
 }
