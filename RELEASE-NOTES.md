@@ -1,3 +1,7 @@
+## 7.0
+### New Features
++ MS-3885 Added support for Multi Ad Request (MAR) [https://wiki.xandr.com/display/sdk/Single+Request+Mode+for+Android]
+
 ## 6.2
 ### New Features
 + MS-4097 California Consumer Privacy Act (CCPA) Support (https://wiki.xandr.com/display/sdk/SDK+Privacy+for+Android)
