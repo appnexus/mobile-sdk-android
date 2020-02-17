@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.MutableContextWrapper;
-import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -34,7 +33,6 @@ import android.net.http.SslError;
 import android.os.Build;
 import android.os.Handler;
 import android.util.DisplayMetrics;
-import android.util.Pair;
 import android.util.Patterns;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -51,7 +49,6 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.appnexus.opensdk.AdView.BrowserStyle;
 import com.appnexus.opensdk.ut.UTAdRequester;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.UTConstants;
@@ -67,13 +64,7 @@ import com.appnexus.opensdk.viewability.ANOmidAdSession;
 
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -592,13 +583,6 @@ class AdWebView extends WebView implements Displayable,
         intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
 
         BrowserAdActivity.BROWSER_QUEUE.add(fwdWebView);
-        if (adView.getBrowserStyle() != null) {
-            String i = "" + super.hashCode();
-            intent.putExtra("bridgeid", i);
-            AdView.BrowserStyle.bridge
-                    .add(new Pair<String, BrowserStyle>(i,
-                            adView.getBrowserStyle()));
-        }
 
         try {
             adView.getContext().startActivity(intent);

@@ -401,13 +401,6 @@ class VideoWebView extends WebView {
         intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
 
         BrowserAdActivity.BROWSER_QUEUE.add(fwdWebView);
-        if (owner.getBrowserStyle() != null) {
-            String i = "" + super.hashCode();
-            intent.putExtra("bridgeid", i);
-            VideoAd.BrowserStyle.bridge
-                    .add(new Pair<String, VideoAd.BrowserStyle>(i,
-                            owner.getBrowserStyle()));
-        }
 
         try {
             owner.getContext().startActivity(intent);

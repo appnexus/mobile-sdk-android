@@ -59,7 +59,6 @@ public class VideoAd implements Ad, MultiAd {
     private VideoAdViewDispatcher dispatcher;
     private WeakReference<Context> weakContext;
     private InstreamVideoView videoAdView;
-    private BrowserStyle browserStyle;
     boolean doesLoadingInBackground = true;
     private boolean showLoadingIndicator = true;
 
@@ -592,33 +591,6 @@ public class VideoAd implements Ad, MultiAd {
             this.videoAdView.onResume();
         }
     }
-
-
-    static class BrowserStyle {
-
-        public BrowserStyle(Drawable forwardButton, Drawable backButton,
-                            Drawable refreshButton) {
-            this.forwardButton = forwardButton;
-            this.backButton = backButton;
-            this.refreshButton = refreshButton;
-        }
-
-        final Drawable forwardButton;
-        final Drawable backButton;
-        final Drawable refreshButton;
-
-        static final ArrayList<Pair<String, BrowserStyle>> bridge = new ArrayList<Pair<String, BrowserStyle>>();
-    }
-
-
-    BrowserStyle getBrowserStyle() {
-        return browserStyle;
-    }
-
-    protected void setBrowserStyle(BrowserStyle browserStyle) {
-        this.browserStyle = browserStyle;
-    }
-
 
     /**
      * Sets whether or not to load landing pages in the background before displaying them.

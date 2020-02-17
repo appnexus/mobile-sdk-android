@@ -166,14 +166,6 @@ class ANJAMImplementation {
         BrowserAdActivity.BROWSER_QUEUE.add(browserWebView);
         browserWebView.loadUrl(url);
 
-        if (webView.adView.getBrowserStyle() != null) {
-            String i = "" + browserWebView.hashCode();
-            intent.putExtra("bridgeid", i);
-            AdView.BrowserStyle.bridge
-                    .add(new Pair<String, AdView.BrowserStyle>(i,
-                            webView.adView.getBrowserStyle()));
-        }
-
         try {
             webView.getContext().startActivity(intent);
         } catch (ActivityNotFoundException e) {

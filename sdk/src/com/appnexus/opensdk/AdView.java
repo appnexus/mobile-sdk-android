@@ -68,7 +68,6 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     String creativeId = "";
     private AdListener adListener;
     private AppEventListener appEventListener;
-    private BrowserStyle browserStyle;
 
     final Handler handler = new Handler(Looper.getMainLooper());
     protected Displayable lastDisplayable;
@@ -729,14 +728,6 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
         requestParameters.setClickThroughAction(clickThroughAction);
     }
 
-    BrowserStyle getBrowserStyle() {
-        return browserStyle;
-    }
-
-    protected void setBrowserStyle(BrowserStyle browserStyle) {
-        this.browserStyle = browserStyle;
-    }
-
     /**
      * Retrieve the current PSA setting.  PSAs (Public Service
      * Announcements) are ads for various causes or nonprofit
@@ -928,22 +919,6 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
      */
     public ArrayList<Pair<String, String>> getCustomKeywords() {
         return requestParameters.getCustomKeywords();
-    }
-
-    static class BrowserStyle {
-
-        public BrowserStyle(Drawable forwardButton, Drawable backButton,
-                            Drawable refreshButton) {
-            this.forwardButton = forwardButton;
-            this.backButton = backButton;
-            this.refreshButton = refreshButton;
-        }
-
-        final Drawable forwardButton;
-        final Drawable backButton;
-        final Drawable refreshButton;
-
-        static final ArrayList<Pair<String, BrowserStyle>> bridge = new ArrayList<Pair<String, BrowserStyle>>();
     }
 
     void setCreativeWidth(int w) {
