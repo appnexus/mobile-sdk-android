@@ -32,16 +32,6 @@ public interface UTAdRequester {
     void failed(ResultCode code);
 
     void onReceiveAd(AdResponse ad);
-    /**
-     * Mark the beginning of an ad request for latency recording
-     */
-    void markLatencyStart();
-
-    /**
-     * Returns the difference from latency start to parameter `now`
-     * @param now current time
-     */
-    long getLatency(long now);
 
     /**
      * Cancels the request, both to AppNexus server and to mediated networks

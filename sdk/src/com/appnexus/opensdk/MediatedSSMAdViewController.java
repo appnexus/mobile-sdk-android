@@ -126,7 +126,6 @@ public class MediatedSSMAdViewController {
         }
         ResponseUrl responseUrl = new ResponseUrl.Builder(ssmHtmlAdResponse.getResponseURL(), result)
                 .latency(getLatencyParam())
-                .totalLatency(getTotalLatencyParam(caller_requester.get()))
                 .build();
         responseUrl.execute();
     }
@@ -201,18 +200,6 @@ public class MediatedSSMAdViewController {
     private long getLatencyParam() {
         if ((latencyStart > 0) && (latencyStop > 0)) {
             return (latencyStop - latencyStart);
-        }
-        // return -1 if invalid.
-        return -1;
-    }
-
-    /**
-     * The running total latency of the ad call.
-     * @return the running total latency, -1 if `latencyStop` not set.
-     */
-    private long getTotalLatencyParam(UTAdRequester requester) {
-        if ((requester != null) && (latencyStop > 0)) {
-            return requester.getLatency(latencyStop);
         }
         // return -1 if invalid.
         return -1;

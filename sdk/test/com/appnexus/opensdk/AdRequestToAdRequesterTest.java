@@ -211,16 +211,6 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements UTAdRequ
     }
 
     @Override
-    public void markLatencyStart() {
-        time = System.currentTimeMillis();
-    }
-
-    @Override
-    public long getLatency(long now) {
-        return System.currentTimeMillis() - time;
-    }
-
-    @Override
     public void cancel() {
 
     }

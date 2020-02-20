@@ -71,7 +71,6 @@ public abstract class RequestManager implements UTAdRequester{
     @Override
     public void execute() {
         utAdRequest = new UTAdRequest(this);
-        markLatencyStart();
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -89,17 +88,6 @@ public abstract class RequestManager implements UTAdRequester{
     }
 
     public abstract UTRequestParameters getRequestParams();
-
-    @Override
-    public void markLatencyStart() {
-
-        time = System.currentTimeMillis();
-    }
-
-    @Override
-    public long getLatency(long now) {
-        return System.currentTimeMillis() - time;
-    }
 
     // For logging mediated classes
     private ArrayList<String> mediatedClasses = new ArrayList<String>();

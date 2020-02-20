@@ -93,16 +93,13 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
                     sanitizer.setAllowUnregisteredParamaters(true);
                     sanitizer.parseUrl(response_url);
 
-                    int reasonVal = Integer.parseInt(sanitizer.getValue("reason"));
-                    String str_total_latencyVal = sanitizer.getValue("total_latency");
-                    int totalLatencyVal = Integer.parseInt(str_total_latencyVal.replace("_HTTP/1.1", ""));
+                    int reasonVal = Integer.parseInt(sanitizer.getValue("reason").replace("_HTTP/1.1", ""));
 
                     assertEquals(reasonVal, errorCode.ordinal());
-                    assertTrue(totalLatencyVal > 0); // should be greater than 0 at the minimum and should be present in the response
 
                     if(checkLatency) {
                         String str_latencyVal = sanitizer.getValue("latency");
-                        int latencyVal = Integer.parseInt(str_latencyVal);
+                        int latencyVal = Integer.parseInt(str_latencyVal.replace("_HTTP/1.1", ""));
                         assertTrue(latencyVal > 0); // should be greater than 0 at the minimum and should be present in the response
                     }
 
@@ -112,6 +109,7 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
             System.out.print("/InterruptedException" + errorCode.ordinal());
             e.printStackTrace();
         } catch (Exception e) {
+            e.printStackTrace();
             fail();
         }
     }
