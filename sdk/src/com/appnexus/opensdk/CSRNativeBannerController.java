@@ -204,7 +204,6 @@ public class CSRNativeBannerController implements CSRController {
         }
         ResponseUrl responseUrl = new ResponseUrl.Builder(responseURL, result)
                 .latency(getLatencyParam())
-                .totalLatency(getTotalLatencyParam(requester))
                 .build();
         responseUrl.execute();
 
@@ -289,19 +288,6 @@ public class CSRNativeBannerController implements CSRController {
     private long getLatencyParam() {
         if ((latencyStart > 0) && (latencyStop > 0)) {
             return (latencyStop - latencyStart);
-        }
-        // return -1 if invalid.
-        return -1;
-    }
-
-    /**
-     * The running total latency of the ad call.
-     *
-     * @return the running total latency, -1 if `latencyStop` not set.
-     */
-    private long getTotalLatencyParam(UTAdRequester requester) {
-        if ((requester != null) && (latencyStop > 0)) {
-            return requester.getLatency(latencyStop);
         }
         // return -1 if invalid.
         return -1;
