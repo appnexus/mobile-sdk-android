@@ -27,10 +27,10 @@ import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 import android.util.Pair;
 
-import com.appnexus.opensdk.ANUSPrivacySettings;
 import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.ANGDPRSettings;
 import com.appnexus.opensdk.ANMultiAdRequest;
+import com.appnexus.opensdk.ANUSPrivacySettings;
 import com.appnexus.opensdk.Ad;
 import com.appnexus.opensdk.AdSize;
 import com.appnexus.opensdk.AdView;
@@ -48,9 +48,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.UUID;
+
 
 public class UTRequestParameters {
 
@@ -154,6 +157,8 @@ public class UTRequestParameters {
     private String uuid;
 
     private WeakReference<ANMultiAdRequest> anMultiAdRequest;
+
+    public static String FB_SETTINGS_CLASS = "com.appnexus.opensdk.csr.FBSettings";
 
     public UTRequestParameters(Context context) {
         this.context = context;
@@ -389,6 +394,45 @@ public class UTRequestParameters {
         return new TargetingParameters(age, gender, customKeywords, SDKSettings.getLocation(), externalUid);
     }
 
+    private String getFacebookBidderToken(Context context) {
+        try {
+            Class clazz = Class.forName(FB_SETTINGS_CLASS);
+            Method method = clazz.getMethod("getBidderToken", Context.class);
+            Object result = method.invoke(null, context);
+            if (result instanceof String) {
+                return (String) result;
+            }
+        } catch (NullPointerException e) {
+            Clog.d(Clog.csrLogTag, e.getMessage());
+        } catch (NoSuchMethodException e) {
+            Clog.d(Clog.csrLogTag, e.getMessage());
+        } catch (InvocationTargetException e) {
+            Clog.d(Clog.csrLogTag, e.getMessage());
+        } catch (IllegalAccessException e) {
+            Clog.d(Clog.csrLogTag, e.getMessage());
+        } catch (ClassNotFoundException e) {
+            Clog.d(Clog.csrLogTag, e.getMessage());
+        }
+        return null;
+    }
+
+    private void appendFBToken(JSONObject postData, Context context) {
+        String token = getFacebookBidderToken(context);
+        if (token != null) {
+            try {
+                JSONObject fan = new JSONObject();
+                fan.put("provider", "audienceNetwork");
+                fan.put("user_id", token);
+                JSONArray tpuids = new JSONArray();
+                tpuids.put(fan);
+                postData.put("tpuids", tpuids);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     // Package only for testing purpose
     String getPostData() {
         Context context = this.getContext();
@@ -464,6 +508,8 @@ public class UTRequestParameters {
             if (gdprConsent != null && gdprConsent.length() > 0) {
                 postData.put(GDPR_CONSENT, gdprConsent);
             }
+            // add Facebook bidder token if available
+            appendFBToken(postData, context);
 
             // add USPrivacy String
             String privacyString = ANUSPrivacySettings.getUSPrivacyString(context);
@@ -529,6 +575,7 @@ public class UTRequestParameters {
                 if (keywordsArray != null && keywordsArray.length() > 0) {
                     tag.put(KEYWORDS, keywordsArray);
                 }
+
 
                 ArrayList<AdSize> sizesArray = utRequestParameters.getSizes();
                 JSONArray sizes = new JSONArray();
@@ -882,7 +929,8 @@ public class UTRequestParameters {
     }
 
 
-    private JSONArray getCustomKeywordsArray(ArrayList<Pair<String, String>> customKeywords) {
+    private JSONArray getCustomKeywordsArray
+            (ArrayList<Pair<String, String>> customKeywords) {
         JSONArray keywords = new JSONArray();
         try {
             if (customKeywords != null) {
@@ -902,7 +950,8 @@ public class UTRequestParameters {
         return keywords;
     }
 
-    private boolean updateIfKeyExists(String key, String value, JSONArray keywords) throws JSONException {
+    private boolean updateIfKeyExists(String key, String value, JSONArray keywords) throws
+            JSONException {
         for (int i = 0; i < keywords.length(); i++) {
             JSONObject key_val = keywords.getJSONObject(i);
             if (key_val.getString(KEYVAL_KEY).equalsIgnoreCase(key)) {

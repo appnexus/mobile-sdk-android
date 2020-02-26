@@ -5,6 +5,7 @@ import com.appnexus.opensdk.ut.UTAdResponse;
 import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMSDKAdResponse;
+import com.appnexus.opensdk.ut.adresponse.CSRAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBNativeAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.SSMHTMLAdResponse;
@@ -35,6 +36,19 @@ public class UTAdResponseTest extends BaseRoboTest {
 
     }
 
+    @Test
+    public void testCSRNative() {
+        utAdResponse = new UTAdResponse(TestResponsesUT.csrNativeSuccessful(), null, MediaType.NATIVE, "v");
+        assertNotNull(utAdResponse);
+        LinkedList<BaseAdResponse> list = utAdResponse.getAdList();
+        assertEquals(1, list.size());
+        assertEquals(MediaType.NATIVE, utAdResponse.getMediaType());
+        BaseAdResponse response = list.get(0);
+        assertEquals("csr", response.getContentSource());
+        CSRAdResponse csr = (CSRAdResponse) response;
+        assertEquals("com.appnexus.opensdk.testviews.CSRNativeSuccessful", csr.getClassName());
+        assertEquals("{\"placement_id\":\"333673923704415_469697383435401\"}", csr.getPayload());
+    }
 
     /**
      * Tests no ad response

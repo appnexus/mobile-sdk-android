@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 
@@ -134,8 +135,8 @@ public class MediatedNativeAdController {
 
 
         // Create an OMID Related objects.
-        ((BaseNativeAdResponse)response).setANVerificationScriptResources(currentAd.getAdObject());
-        this.response = new WeakReference<>((BaseNativeAdResponse)response);
+        ((BaseNativeAdResponse) response).setANVerificationScriptResources(currentAd.getAdObject());
+        this.response = new WeakReference<>((BaseNativeAdResponse) response);
 
         if (requester != null) {
             requester.onReceiveAd(new AdResponse() {
@@ -346,7 +347,7 @@ public class MediatedNativeAdController {
 
     void fireTracker(final String trackerUrl) {
 
-        new HTTPGet() {
+        HTTPGet tracker = new HTTPGet() {
             @Override
             protected void onPostExecute(HTTPResponse response) {
                 if (response != null && response.getSucceeded()) {
@@ -358,8 +359,12 @@ public class MediatedNativeAdController {
             protected String getUrl() {
                 return trackerUrl;
             }
-        }.execute();
-
+        };
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            tracker.executeOnExecutor(SDKSettings.getExternalExecutor());
+        } else {
+            tracker.execute();
+        }
     }
 
 }

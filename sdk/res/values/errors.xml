@@ -101,6 +101,7 @@
 	<string formatted="false" name="opening_url_failed">Failed to launch custom protocol: %s</string>
 	<string formatted="false" name="ignoring_url">Currently launching native intent. Ignoring url: %s</string>
 	<string formatted="false" name="mediation_instantiation_failure">Instantiating mediated ad failed due to %s</string>
+	<string formatted="false" name="csr_instantiation_failure">Instantiating csr ad failed due to %s</string>
 	<string formatted="false" name="mediation_adding_invalid">Adding %s to invalid networks list</string>
 	<string formatted="false" name="instantiating_class">Instantiating %s</string>
 	<string formatted="false" name="instance_exception">MediatedAdView is null or not an instance of %s</string>

@@ -20,9 +20,10 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.appnexus.opensdk.BaseNativeTest;
-import com.appnexus.opensdk.BuildConfig;
 import com.appnexus.opensdk.NativeAdSDK;
+import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.TestResponsesUT;
+import com.appnexus.opensdk.mocks.MockDefaultExecutorSupplier;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowOMIDNativeWebView;
 import com.appnexus.opensdk.shadows.ShadowSettings;
@@ -38,8 +39,8 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
-import static com.appnexus.opensdk.ResultCode.SUCCESS;
-import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotSame;
 import static junit.framework.Assert.assertTrue;
 
 @Config(sdk = 21,
@@ -98,7 +99,16 @@ public class ANOMIDNativeViewabilityTests extends BaseNativeTest {
         assertTrue(verificationScriptResource.getVerificationParameters().equalsIgnoreCase("v;vk=dummyVendorCSM;tv=cet=0;cecb="));
     }
 
-
+    //This verifies that the AsyncTask for Request is being executed on the Correct Executor.
+    @Test
+    public void testRequestExecutorForBackgroundTasks() {
+        SDKSettings.setExternalExecutor(MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+        assertNotSame(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+        adRequest.loadAd();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertEquals(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+    }
 
     @Test
     public void testOmidNativeJSEventsRTB() {

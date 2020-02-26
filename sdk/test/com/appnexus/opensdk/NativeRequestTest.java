@@ -17,12 +17,17 @@
 package com.appnexus.opensdk;
 
 
+import com.appnexus.opensdk.mocks.MockFBNativeBannerAdResponse;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
+import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.util.Lock;
 import com.appnexus.opensdk.utils.Settings;
+import com.squareup.okhttp.HttpUrl;
+import com.squareup.okhttp.mockwebserver.Dispatcher;
 import com.squareup.okhttp.mockwebserver.MockResponse;
+import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,8 +37,14 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowWebView;
 
+import java.util.HashMap;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 @Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
@@ -57,6 +68,129 @@ public class NativeRequestTest extends BaseNativeTest {
     public void setup() {
         super.setup();
         Settings.getSettings().ua = "";
+    }
+
+    @Test
+    public void testNativeCSRResponseLogImpresionsClicksProperly() {
+        final HashMap<String, Boolean> logs = new HashMap<>();
+        logs.put("impression", false);
+        logs.put("click", false);
+        logs.put("request_url", false);
+        logs.put("response_url", false);
+        HttpUrl impression = server.url("/impression");
+        HttpUrl click = server.url("/click");
+        final HttpUrl request_url = server.url("/request_url");
+        final HttpUrl response_url = server.url("/response_url");
+        final MockResponse impbusResponse = new MockResponse().setResponseCode(200).setBody(TestResponsesUT.csrNativeSuccesfulWithMockTrackers(impression.toString(), click.toString(), request_url.toString(), response_url.toString()));
+        final Dispatcher dispatcher = new Dispatcher() {
+            @Override
+            public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
+                String path = request.getPath();
+                if ("/".equals(path)) {
+                    return impbusResponse;
+                } else if ("/impression".equals(path)) {
+                    logs.put("impresssion", true);
+                    return new MockResponse().setResponseCode(200);
+                } else if ("/click".equals(path)) {
+                    logs.put("click", true);
+                    return new MockResponse().setResponseCode(200);
+                } else if ("/request_url".equals(path)) {
+                    logs.put("request_url", true);
+                    return new MockResponse().setResponseCode(200);
+                } else if (path != null && path.startsWith("/response_url")) {
+                    logs.put("response_url", true);
+                    return new MockResponse().setResponseCode(200);
+                }
+                return new MockResponse().setResponseCode(404);
+            }
+        };
+        server.setDispatcher(dispatcher);
+        HttpUrl impbus = server.url("/");
+        UTConstants.REQUEST_BASE_URL_UT = impbus.toString();
+        NativeAdRequestListener listener = new NativeAdRequestListener() {
+            @Override
+            public void onAdLoaded(NativeAdResponse response) {
+                ((MockFBNativeBannerAdResponse) response).logImpression();
+                ((MockFBNativeBannerAdResponse) response).clickAd();
+            }
+
+            @Override
+            public void onAdFailed(ResultCode errorcode) {
+            }
+        };
+        NativeAdRequestListener listenerSpy = spy(listener);
+        adRequest.setListener(listenerSpy);
+        adRequest.loadAd();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        verify(listenerSpy).onAdLoaded(any(MockFBNativeBannerAdResponse.class));
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertTrue(logs.get("impresssion"));
+        assertTrue(logs.get("click"));
+        assertTrue(logs.get("response_url"));
+    }
+
+    @Test
+    public void requestNativeGetsMediationNoFillThenCSR() {
+        server.enqueue(new MockResponse().setBody(TestResponsesUT.mediationNoFillThenCSRSuccessfull()).setResponseCode(200));
+        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
+        adRequest.setListener(adListener);
+        adRequest.loadAd();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        verify(adListener).onAdLoaded(any(MockFBNativeBannerAdResponse.class));
+    }
+
+    @Test
+    public void requestNativeGetsCSRNofillThenMediation() {
+        server.enqueue(new MockResponse().setBody(TestResponsesUT.csrNoFillThenMediationSuccessfull()).setResponseCode(200));
+        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
+        adRequest.setListener(adListener);
+        adRequest.loadAd();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        verify(adListener).onAdLoaded(any(BaseNativeAdResponse.class));
+    }
+
+    @Test
+    public void requestNativeCSRNofill() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.csrNativeNofill()));
+        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
+        adRequest.setListener(adListener);
+        adRequest.loadAd();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        verify(adListener).onAdFailed(ResultCode.UNABLE_TO_FILL);
+    }
+
+    @Test
+    public void requestNativeCSRSuccessful() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.csrNativeSuccessful()));
+        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
+        adRequest.setListener(adListener);
+        adRequest.loadAd();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        verify(adListener).onAdLoaded(any(MockFBNativeBannerAdResponse.class));
     }
 
     @Test
@@ -90,7 +224,6 @@ public class NativeRequestTest extends BaseNativeTest {
     }
 
 
-
     @Test
     public void testCreativeId() {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
@@ -102,7 +235,7 @@ public class NativeRequestTest extends BaseNativeTest {
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
-        assertEquals("47772560",response.getCreativeId());
+        assertEquals("47772560", response.getCreativeId());
         assertAdLoaded(true);
     }
 

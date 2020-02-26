@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk;
 
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 
@@ -64,7 +65,7 @@ public class MediatedSSMAdViewController {
     }
 
     private void instantiateNewMediatedSSMAd() {
-        new HTTPGet() {
+        HTTPGet loadUrl = new HTTPGet() {
             @Override
             protected HTTPResponse doInBackground(Void... params) {
                 return super.doInBackground(params);
@@ -90,8 +91,12 @@ public class MediatedSSMAdViewController {
             protected String getUrl() {
                 return ssmHtmlAdResponse.getAdUrl();
             }
-        }.execute();
-
+        };
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            loadUrl.executeOnExecutor(SDKSettings.getExternalExecutor());
+        } else {
+            loadUrl.execute();
+        }
     }
 
     public void onAdFailed(ResultCode reason) {
@@ -114,7 +119,7 @@ public class MediatedSSMAdViewController {
         fireResponseURL(ssmHtmlAdResponse, ResultCode.SUCCESS);
         UTAdRequester requester = this.caller_requester.get();
         if (requester != null) {
-            final AdWebView output = new AdWebView(owner,requester);
+            final AdWebView output = new AdWebView(owner, requester);
             output.loadAd(ssmHtmlAdResponse);
         }
     }
@@ -166,6 +171,7 @@ public class MediatedSSMAdViewController {
             }
         }
     }
+
     // if the mediated network fails to call us within the timeout period, fail
     private final Handler timeoutHandler = new TimeoutHandler(this);
 
@@ -194,6 +200,7 @@ public class MediatedSSMAdViewController {
 
     /**
      * The latency of the call to the mediated SDK.
+     *
      * @return the mediated SDK latency, -1 if `latencyStart`
      * or `latencyStop` not set.
      */

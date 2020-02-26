@@ -20,7 +20,20 @@ package com.appnexus.opensdk;
  * Define the events that an ad may fire.
  */
 public interface NativeAdEventListener {
+    /**
+     * Called when the developer sets the ad click to be handled by the SDK
+     */
     public void onAdWasClicked();
+
+    /**
+     * Called when the ad takes the user away from the application
+     */
     public void onAdWillLeaveApplication();
+
+    /**
+     * Called when the developer sets the ad click to be handled by the app
+     * @param clickUrl the click url
+     * @param fallbackURL the fallback url
+     */
     public void onAdWasClicked(String clickUrl,String fallbackURL);
 }

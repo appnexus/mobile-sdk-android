@@ -20,12 +20,12 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.HttpErrorCode;
-
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -91,14 +91,14 @@ public class SharedNetworkManager {
                                 if (urlObject.retryTimes < TOTAL_RETRY_TIMES) {
                                     {
 
-                                        new HTTPGet() {
+                                        HTTPGet fire = new HTTPGet() {
                                             @Override
                                             protected void onPostExecute(HTTPResponse response) {
                                                 if (response == null ||
                                                         (!response.getSucceeded() && response.getErrorCode() == HttpErrorCode.CONNECTION_FAILURE)) {
                                                     urlObject.retryTimes += 1;
                                                     urls.add(urlObject);
-                                                }else{
+                                                } else {
                                                     // Nothing more to do just print logs and exit.
                                                     Clog.d(Clog.baseLogTag, "SharedNetworkManager Retry Successful");
                                                 }
@@ -109,7 +109,12 @@ public class SharedNetworkManager {
                                             protected String getUrl() {
                                                 return urlObject.url;
                                             }
-                                        }.execute();
+                                        };
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                                            fire.executeOnExecutor(SDKSettings.getExternalExecutor());
+                                        } else {
+                                            fire.execute();
+                                        }
                                     }
                                 }
                             } else {

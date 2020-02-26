@@ -16,9 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
-import com.appnexus.opensdk.shadows.ShadowSettings;
-import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.util.TestUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.viewability.ANOmidAdSession;
@@ -27,8 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
-import org.robolectric.shadows.ShadowWebView;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;

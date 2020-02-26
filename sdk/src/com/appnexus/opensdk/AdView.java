@@ -159,7 +159,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
     @Override
     public boolean isReadyToStart() {
-        if(!(getContext() instanceof Activity)){
+        if (!(getContext() instanceof Activity)) {
             Clog.e(Clog.baseLogTag, Clog.getString(R.string.passed_context_error));
             return false;
         }
@@ -190,7 +190,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
             mAdFetcher.stop();
             mAdFetcher.clearDurations();
             mAdFetcher.start();
-            if(this.getWindowVisibility() != VISIBLE){
+            if (this.getWindowVisibility() != VISIBLE) {
                 loadedOffscreen = true;
             }
             return true;
@@ -229,11 +229,11 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     }
 
 
-    protected void loadAdFromVAST(String VASTXML,int width,int height) {
+    protected void loadAdFromVAST(String VASTXML, int width, int height) {
         // load an ad directly from VASTXML
         loadedOffscreen = true;
         AdWebView output = new AdWebView(this, null);
-        RTBVASTAdResponse response = new RTBVASTAdResponse(width,height,AdType.VIDEO.toString(), null,null,"1");
+        RTBVASTAdResponse response = new RTBVASTAdResponse(width, height, AdType.VIDEO.toString(), null, null, "1");
         response.setAdContent(VASTXML);
         response.setContentSource(UTConstants.RTB);
         response.addToExtras(UTConstants.EXTRAS_KEY_MRAID, true);
@@ -721,8 +721,8 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
      * It is ASSUMED that the App will handle it appropriately.
      *
      * @param clickThroughAction ANClickThroughAction.OPEN_SDK_BROWSER which is default or
-     *             ANClickThroughAction.OPEN_DEVICE_BROWSER or
-     *             ANClickThroughAction.RETURN_URL
+     *                           ANClickThroughAction.OPEN_DEVICE_BROWSER or
+     *                           ANClickThroughAction.RETURN_URL
      */
     public void setClickThroughAction(ANClickThroughAction clickThroughAction) {
         requestParameters.setClickThroughAction(clickThroughAction);
@@ -1121,7 +1121,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
             setCreativeId(ad.getResponseData().getCreativeId());
             final NativeAdResponse response = ad.getNativeAdResponse();
             response.setCreativeId(ad.getResponseData().getCreativeId());
-            if(adListener != null) {
+            if (adListener != null) {
                 adListener.onAdLoaded(response);
             }
         }
@@ -1209,7 +1209,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
                 // Making it to null so that there is no duplicate firing. We fire exactly only once.
                 impressionTrackers = null;
             }
-            if(lastDisplayable !=null){
+            if (lastDisplayable != null) {
                 lastDisplayable.onAdImpression();
             }
         }
@@ -1218,7 +1218,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
     void fireImpressionTracker(final String trackerUrl) {
 
-        new HTTPGet() {
+        HTTPGet impTracker = new HTTPGet() {
             @Override
             protected void onPostExecute(HTTPResponse response) {
                 if (response != null && response.getSucceeded()) {
@@ -1230,8 +1230,12 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
             protected String getUrl() {
                 return trackerUrl;
             }
-        }.execute();
-
+        };
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            impTracker.executeOnExecutor(SDKSettings.getExternalExecutor());
+        } else {
+            impTracker.execute();
+        }
     }
 
     boolean isAdViewAttachedToWindow() {

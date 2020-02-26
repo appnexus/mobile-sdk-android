@@ -63,9 +63,21 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
     public void setup() {
         super.setup();
         utRequestParameters = new UTRequestParameters(activity);
-        utRequestParameters.setPrimarySize(new AdSize(1,1));
+        utRequestParameters.setPrimarySize(new AdSize(1, 1));
         Settings.getSettings().ua = "";
 
+    }
+
+    @Test
+    public void testFBBidderTokenAttached() throws JSONException, InterruptedException {
+        UTRequestParameters.FB_SETTINGS_CLASS = "com.appnexus.opensdk.mocks.MockFBSettings";
+        executionSteps();
+        JSONObject postData = inspectPostData();
+        assertTrue(inspectFBSettingsData(postData));
+        UTRequestParameters.FB_SETTINGS_CLASS = "com.appnexus.opensdk.csr.FBSettings";
+        executionSteps();
+        postData = inspectPostData();
+        assertFalse(inspectFBSettingsData(postData));
     }
 
     /**
@@ -100,8 +112,8 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
      */
     @Test
     public void testCustomKeywords() throws Exception {
-        String stringToTest=String.format("[{\"key\":\"%1$s\",\"value\":[\"%2$s\"]}]", TEST_KEY_STATES, TEST_VALUE_STATES_1);
-        utRequestParameters.addCustomKeywords(TEST_KEY_STATES,TEST_VALUE_STATES_1);
+        String stringToTest = String.format("[{\"key\":\"%1$s\",\"value\":[\"%2$s\"]}]", TEST_KEY_STATES, TEST_VALUE_STATES_1);
+        utRequestParameters.addCustomKeywords(TEST_KEY_STATES, TEST_VALUE_STATES_1);
         executionSteps();
         JSONObject postData = inspectPostData();
         inspectCustomKeywords(stringToTest, postData);
@@ -116,14 +128,13 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
      */
     @Test
     public void testCustomKeywords_MultipleValues() throws Exception {
-        String stringToTest=String.format("[{\"key\":\"%1$s\",\"value\":[\"%2$s\",\"%3$s\"]}]", TEST_KEY_STATES, TEST_VALUE_STATES_1,TEST_VALUE_STATES_2);
-        utRequestParameters.addCustomKeywords(TEST_KEY_STATES,TEST_VALUE_STATES_1);
-        utRequestParameters.addCustomKeywords(TEST_KEY_STATES,TEST_VALUE_STATES_2);
+        String stringToTest = String.format("[{\"key\":\"%1$s\",\"value\":[\"%2$s\",\"%3$s\"]}]", TEST_KEY_STATES, TEST_VALUE_STATES_1, TEST_VALUE_STATES_2);
+        utRequestParameters.addCustomKeywords(TEST_KEY_STATES, TEST_VALUE_STATES_1);
+        utRequestParameters.addCustomKeywords(TEST_KEY_STATES, TEST_VALUE_STATES_2);
         executionSteps();
         JSONObject postData = inspectPostData();
         inspectCustomKeywords(stringToTest, postData);
     }
-
 
 
     /**
@@ -134,10 +145,10 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
      */
     @Test
     public void testCustomKeywords_MultipleKeys_And_Multiple_Values() throws Exception {
-        String stringToTest=String.format("[{\"key\":\"%1$s\",\"value\":[\"%2$s\",\"%3$s\"]},{\"key\":\"%4$s\",\"value\":[\"%5$s\"]}]", TEST_KEY_STATES, TEST_VALUE_STATES_1,TEST_VALUE_STATES_2,TEST_KEY_MUSIC_CATEGORY,TEST_VALUE_MUSIC_CATEGORY_1);
-        utRequestParameters.addCustomKeywords(TEST_KEY_STATES,TEST_VALUE_STATES_1);
-        utRequestParameters.addCustomKeywords(TEST_KEY_STATES,TEST_VALUE_STATES_2);
-        utRequestParameters.addCustomKeywords(TEST_KEY_MUSIC_CATEGORY,TEST_VALUE_MUSIC_CATEGORY_1);
+        String stringToTest = String.format("[{\"key\":\"%1$s\",\"value\":[\"%2$s\",\"%3$s\"]},{\"key\":\"%4$s\",\"value\":[\"%5$s\"]}]", TEST_KEY_STATES, TEST_VALUE_STATES_1, TEST_VALUE_STATES_2, TEST_KEY_MUSIC_CATEGORY, TEST_VALUE_MUSIC_CATEGORY_1);
+        utRequestParameters.addCustomKeywords(TEST_KEY_STATES, TEST_VALUE_STATES_1);
+        utRequestParameters.addCustomKeywords(TEST_KEY_STATES, TEST_VALUE_STATES_2);
+        utRequestParameters.addCustomKeywords(TEST_KEY_MUSIC_CATEGORY, TEST_VALUE_MUSIC_CATEGORY_1);
         executionSteps();
         JSONObject postData = inspectPostData();
         inspectCustomKeywords(stringToTest, postData);
@@ -244,11 +255,11 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
     }
 
 
-/**
- * Tests whether allowed sizes data is passed correctly in the request
- *
- * @throws Exception
- */
+    /**
+     * Tests whether allowed sizes data is passed correctly in the request
+     *
+     * @throws Exception
+     */
 
     @Test
     public void testAllowedSizes() throws Exception {
@@ -286,6 +297,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
         inspectSizes(allowedSizes, tag);
     }
+
     /**
      * Tests the value of allowed ad types ,ExternalUid
      *
@@ -344,6 +356,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
     /**
      * Test gdpr_consent in /ut request body
+     *
      * @throws Exception
      */
     @Test
@@ -352,8 +365,8 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         JSONObject postDataBeforeGDPRValueSet = inspectPostData();
         assertFalse(postDataBeforeGDPRValueSet.has("gdpr_consent"));
 
-        ANGDPRSettings.setConsentRequired(activity,true);
-        ANGDPRSettings.setConsentString(activity,"fooBar");
+        ANGDPRSettings.setConsentRequired(activity, true);
+        ANGDPRSettings.setConsentString(activity, "fooBar");
         executionSteps();
         JSONObject postDataWithGDPRValueSet = inspectPostData();
         assertEquals(true, postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getBoolean("consent_required"));
@@ -362,6 +375,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
     /**
      * Test USPrivacy_consent in /ut request body
+     *
      * @throws Exception
      */
     @Test
@@ -375,7 +389,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
 
         //  US Privacy is set using ANConsentSettings.setIABUSPrivacyString
-        ANUSPrivacySettings.setUSPrivacyString(activity,"1ynn");
+        ANUSPrivacySettings.setUSPrivacyString(activity, "1ynn");
         executionSteps();
         JSONObject postDataUSPrivacyValueSet = inspectPostData();
         assertEquals("1ynn", postDataUSPrivacyValueSet.getString(US_PRIVACY));
@@ -397,7 +411,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         }
 
         // Set USPrivacy as Empty String
-        ANUSPrivacySettings.setUSPrivacyString(activity,"");
+        ANUSPrivacySettings.setUSPrivacyString(activity, "");
         executionSteps();
         JSONObject postDataEmptyUSPrivacyValueSet = inspectPostData();
         assertFalse(postDataEmptyUSPrivacyValueSet.has(US_PRIVACY));
@@ -417,7 +431,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         }
     }
 
-    private void executionSteps(){
+    private void executionSteps() {
         utAdRequest = new UTAdRequest(this);
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
         utAdRequest.execute();
@@ -484,7 +498,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         System.out.println("Age validity test passed!");
     }
 
-    private void inspectMaxDuration (int maxDuration, JSONObject tagData) throws JSONException {
+    private void inspectMaxDuration(int maxDuration, JSONObject tagData) throws JSONException {
 
         System.out.println("Checking max duration...");
 
@@ -497,7 +511,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
     }
 
-    private void inspectMinDuration (int minDuration, JSONObject tagData) throws JSONException {
+    private void inspectMinDuration(int minDuration, JSONObject tagData) throws JSONException {
 
         System.out.println("Checking min duration...");
 
@@ -510,7 +524,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
     }
 
-    private void inspectNoDuration (JSONObject tagData) throws JSONException {
+    private void inspectNoDuration(JSONObject tagData) throws JSONException {
 
         System.out.println("Null video object check...");
 
@@ -521,7 +535,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
     }
 
-    private void inspectMaxandMinDuration (int minDuration, int maxDuration, JSONObject tagData) throws JSONException {
+    private void inspectMaxandMinDuration(int minDuration, int maxDuration, JSONObject tagData) throws JSONException {
 
         System.out.println("Checking max and min duration...");
 
@@ -538,17 +552,31 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
     }
 
+    private boolean inspectFBSettingsData(JSONObject postData) throws JSONException {
+        System.out.println("Checking if FB bidderToken exists...");
+        if (postData.has("tpuids")) {
+            JSONArray tupids = postData.getJSONArray("tpuids");
+            return tupids.getJSONObject(0).getString("user_id").equals("ThisIsMockFBBidderToken")
+                    && tupids.getJSONObject(0).getString("provider").equals("audienceNetwork");
+        }
+
+
+        return false;
+    }
+
     private JSONObject getTagsData(JSONObject postData) throws JSONException {
         JSONArray tags = postData.getJSONArray("tags");
         assertNotNull(tags);
         assertEquals(1, tags.length());
         return (JSONObject) tags.get(0);
     }
+
     private JSONObject getUserData(JSONObject postData) throws JSONException {
         JSONObject user = postData.getJSONObject("user");
         assertNotNull(user);
         return user;
     }
+
     @NonNull
     private JSONObject inspectPostData() throws InterruptedException, JSONException {
         System.out.println("Testing POST data...");
@@ -615,6 +643,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
 
     long time;
+
     @Override
     public void failed(ResultCode code) {
 
@@ -652,9 +681,9 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
     @Override
     public void onReceiveUTResponse(UTAdResponse response) {
-        if(response != null && response.getAdList() != null && !response.getAdList().isEmpty()) {
+        if (response != null && response.getAdList() != null && !response.getAdList().isEmpty()) {
             requesterReceivedServerResponse = true;
-        }else{
+        } else {
             failed(ResultCode.UNABLE_TO_FILL);
         }
         this.response = response;

@@ -22,6 +22,7 @@ import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.UTRequestParameters;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMSDKAdResponse;
+import com.appnexus.opensdk.ut.adresponse.CSRAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMVASTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBNativeAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
@@ -37,6 +38,7 @@ public class AdViewRequestManager extends RequestManager {
     private MediatedAdViewController controller;
     private MediatedSSMAdViewController ssmAdViewController;
     private MediatedNativeAdController mediatedNativeAdController;
+    private CSRNativeBannerController csrNativeBannerController;
     private AdWebView adWebview;
     private final WeakReference<Ad> owner;
     private BaseAdResponse currentAd;
@@ -68,6 +70,11 @@ public class AdViewRequestManager extends RequestManager {
         if (mediatedNativeAdController != null) {
             mediatedNativeAdController.cancel(true);
             mediatedNativeAdController = null;
+        }
+
+        if (csrNativeBannerController != null) {
+            csrNativeBannerController.cancel(true);
+            csrNativeBannerController = null;
         }
 
         if (ssmAdViewController != null) {
@@ -113,7 +120,7 @@ public class AdViewRequestManager extends RequestManager {
 
     @Override
     public void nativeRenderingFailed() {
-        if(currentAd != null && currentAd instanceof RTBNativeAdResponse) {
+        if (currentAd != null && currentAd instanceof RTBNativeAdResponse) {
             RTBNativeAdResponse response = (RTBNativeAdResponse) currentAd;
             processNativeAd(response.getNativeAdResponse(), currentAd);
         }
@@ -134,11 +141,14 @@ public class AdViewRequestManager extends RequestManager {
             // do not hold a reference of current ssm mediated ad controller after ad is loaded
             ssmAdViewController = null;
         }
+        if (csrNativeBannerController != null) {
+            csrNativeBannerController = null;
+        }
         Ad owner = this.owner.get();
         if (owner != null) {
             if (ad.getMediaType().equals(MediaType.BANNER)) {
                 BannerAdView bav = (BannerAdView) owner;
-                if(bav.getExpandsToFitScreenWidth() || bav.getResizeAdToFitContainer()) {
+                if (bav.getExpandsToFitScreenWidth() || bav.getResizeAdToFitContainer()) {
                     int width = ad.getResponseData().getWidth() <= 1 ? bav.getRequestParameters().getPrimarySize().width() : ad.getResponseData().getWidth();
                     int height = ad.getResponseData().getHeight() <= 1 ? bav.getRequestParameters().getPrimarySize().height() : ad.getResponseData().getHeight();
                     if (bav.getExpandsToFitScreenWidth()) {
@@ -176,8 +186,7 @@ public class AdViewRequestManager extends RequestManager {
     private void processNextAd() {
         // If we're about to dispatch a creative to a banner
         // that has been resized by ad stretching, reset its size
-        Ad owner = null;
-        owner = this.owner.get();
+        Ad owner = this.owner.get();
         if ((owner != null) && getAdList() != null && !getAdList().isEmpty()) {
             final BaseAdResponse baseAdResponse = popAd();
             this.currentAd = baseAdResponse;
@@ -188,6 +197,8 @@ public class AdViewRequestManager extends RequestManager {
                 handleCSMResponse(owner, (CSMSDKAdResponse) baseAdResponse);
             } else if (UTConstants.SSM.equalsIgnoreCase(baseAdResponse.getContentSource())) {
                 handleSSMResponse((AdView) owner, (SSMHTMLAdResponse) baseAdResponse);
+            } else if (UTConstants.CSR.equalsIgnoreCase(baseAdResponse.getContentSource())) {
+                handleCSRResponse(owner, (CSRAdResponse) baseAdResponse);
             } else if (UTConstants.CSM_VIDEO.equalsIgnoreCase(baseAdResponse.getContentSource())) {
                 handleCSMVASTAdResponse(owner, (CSMVASTAdResponse) baseAdResponse);
             } else {
@@ -205,7 +216,7 @@ public class AdViewRequestManager extends RequestManager {
             nativeAdResponse.setClickThroughAction(owner.getRequestParameters().getClickThroughAction());
         }
 
-        if (owner instanceof BannerAdView && ((BannerAdView)owner).isNativeRenderingEnabled() && nativeAdResponse.getRendererUrl().length() > 0) {
+        if (owner instanceof BannerAdView && ((BannerAdView) owner).isNativeRenderingEnabled() && nativeAdResponse.getRendererUrl().length() > 0) {
             initiateWebview(owner, baseAdResponse);
         } else {
             processNativeAd(nativeAdResponse, baseAdResponse);
@@ -341,6 +352,11 @@ public class AdViewRequestManager extends RequestManager {
                 continueWaterfall(ResultCode.INVALID_REQUEST);
             }
         }
+    }
+
+    private void handleCSRResponse(Ad ownerAd, CSRAdResponse csrAdResponse) {
+        Clog.i(Clog.baseLogTag, "Content source type is CSR, passing it to CSRHandler.");
+        csrNativeBannerController = new CSRNativeBannerController(csrAdResponse, AdViewRequestManager.this );
     }
 
     private void handleSSMResponse(final AdView owner, final SSMHTMLAdResponse ssmHtmlAdResponse) {

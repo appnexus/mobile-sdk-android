@@ -18,6 +18,7 @@ package com.appnexus.opensdk;
 
 import android.content.Context;
 
+import com.appnexus.opensdk.mocks.MockDefaultExecutorSupplier;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.util.Lock;
 import com.squareup.okhttp.mockwebserver.MockResponse;
@@ -78,6 +79,17 @@ public class AdFetcherTest extends BaseRoboTest {
         // Check that the AdRequest was queued
         int bgTaskCount = Robolectric.getBackgroundThreadScheduler().size();
         assertEquals("Expected: " + expectedBgTaskCount + ", actual: " + bgTaskCount, expectedBgTaskCount, bgTaskCount);
+    }
+
+    //This verifies that the AsyncTask for Request is being executed on the Correct Executor.
+    @Test
+    public void testRequestExecutorForBackgroundTasks() {
+        SDKSettings.setExternalExecutor(MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+        assertNotSame(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+        adFetcher.start();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertEquals(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
     }
 
     @Test

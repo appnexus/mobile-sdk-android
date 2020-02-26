@@ -25,8 +25,16 @@ import java.util.concurrent.Executor;
 
 @Implements(AsyncTask.class)
 public class ShadowAsyncTaskNoExecutor extends ShadowLegacyAsyncTask {
+
+    static Executor executor = null;
+
     @Override
     public AsyncTask executeOnExecutor(Executor executor, Object[] params) {
+        this.executor = executor;
         return this.execute(params);
+    }
+
+    public static Executor getExecutor() {
+        return executor;
     }
 }

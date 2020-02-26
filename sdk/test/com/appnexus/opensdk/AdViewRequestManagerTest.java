@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.mocks.MockDefaultExecutorSupplier;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
@@ -31,6 +32,8 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotSame;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -61,7 +64,14 @@ public class AdViewRequestManagerTest extends BaseViewAdTest {
         assertTrue(no_AdURL.startsWith("GET /vast_track/v2?info&notifyURL HTTP/1.1"));
     }
 
-
+    //This verifies that the AsyncTask for Request is being executed on the Correct Executor.
+    @Test
+    public void testRequestExecutorForBackgroundTasks() {
+        SDKSettings.setExternalExecutor(MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+        assertNotSame(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+        requestManager.execute();
+        assertEquals(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+    }
 
     // After we receive adReady we fire AdLoaded and stop autorefresh
     // If we receive video-error after adReady but before video-complete then we should turn on Autorefresh again

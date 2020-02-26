@@ -23,6 +23,7 @@ import com.appnexus.opensdk.R;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMSDKAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMVASTAdResponse;
+import com.appnexus.opensdk.ut.adresponse.CSRAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBHTMLAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBNativeAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
@@ -60,6 +61,7 @@ public class UTAdResponse {
 
     private static final String RESPONSE_KEY_CLASS = "class";
     private static final String RESPONSE_KEY_PARAM = "param";
+    private static final String RESPONSE_KEY_PAYLOAD = "payload";
     private static final String RESPONSE_KEY_ID = "id";
     private static final String RESPONSE_KEY_UUID = "uuid";
     private static final String RESPONSE_KEY_HANDLER_URL = "url";
@@ -69,6 +71,7 @@ public class UTAdResponse {
     private static final String RESPONSE_KEY_HANDLER = "handler";
     private static final String RESPONSE_KEY_TRACKERS = "trackers";
     private static final String RESPONSE_KEY_IMPRESSION_URLS = "impression_urls";
+    private static final String RESPONSE_KEY_CLICK_URLS = "click_urls";
     private static final String RESPONSE_KEY_ERROR_URLS = "error_urls";
     private static final String RESPONSE_KEY_TIMEOUT = "timeout_ms";
     private static final String RESPONSE_KEY_RESPONSE_URL = "response_url";
@@ -201,8 +204,59 @@ public class UTAdResponse {
                     handleSSM(ad, adType, creativeId);
                 } else if (contentSource != null && contentSource.equalsIgnoreCase(UTConstants.RTB)) {
                     handleRTB(ad, adType, notifyUrl, creativeId);
+                } else if (UTConstants.CSR.equalsIgnoreCase(contentSource)) {
+                    handleCSR(ad, adType, notifyUrl, creativeId);
                 } else {
                     Clog.e(Clog.httpRespLogTag, "handleAdResponse unknown content_source");
+                }
+            }
+        }
+    }
+
+    private void handleCSR(JSONObject adObject, String adType, String notifyUrl, String createivId) {
+        JSONObject csrObject = JsonUtil.getJSONObject(adObject, UTConstants.CSR);
+        if (csrObject != null) {
+            parseCSRNativeBannerAd(adObject, createivId, adType, notifyUrl);
+        }
+    }
+
+    private void parseCSRNativeBannerAd(JSONObject adObject, String creativeId, String adType, String notifyUrl) {
+        JSONObject csr = JsonUtil.getJSONObject(adObject, UTConstants.CSR);
+
+        if (csr != null) {
+            JSONArray handler = JsonUtil.getJSONArray(csr, RESPONSE_KEY_HANDLER);
+            ArrayList<String> impressionUrls = getImpressionUrls(csr);
+            ArrayList<String> clickeUrls = getClickUrls(csr);
+            String responseUrl = JsonUtil.getJSONString(csr, RESPONSE_KEY_RESPONSE_URL);
+
+            if (handler != null) {
+                for (int j = 0; j < handler.length(); j++) {
+                    // get mediatedAd fields from handlerElement if available
+                    JSONObject handlerElement = JsonUtil.getJSONObjectFromArray(handler, j);
+                    if (handlerElement != null) {
+                        // we only care about handlers for android
+                        String type = JsonUtil.getJSONString(handlerElement, RESPONSE_KEY_TYPE);
+                        if (type != null) {
+                            type = type.toLowerCase(Locale.US);
+                        }
+                        if ((type != null) && type.equals(RESPONSE_VALUE_ANDROID)) {
+                            String className = JsonUtil.getJSONString(handlerElement, RESPONSE_KEY_CLASS);
+                            String payload = JsonUtil.getJSONString(handlerElement, RESPONSE_KEY_PAYLOAD);
+                            int height = JsonUtil.getJSONInt(handlerElement, RESPONSE_KEY_HEIGHT);
+                            int width = JsonUtil.getJSONInt(handlerElement, RESPONSE_KEY_WIDTH);
+                            String adId = JsonUtil.getJSONString(handlerElement, RESPONSE_KEY_ID);
+
+
+                            if (!StringUtil.isEmpty(className)) {
+                                CSRAdResponse csrAd = new CSRAdResponse(width, height, adType, responseUrl, impressionUrls, creativeId, adObject);
+                                csrAd.setClassName(className);
+                                csrAd.setClickUrls(clickeUrls);
+                                csrAd.setPayload(payload);
+                                csrAd.setContentSource(UTConstants.CSR);
+                                adList.add(csrAd);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -400,6 +454,26 @@ public class UTAdResponse {
         }
     }
 
+
+    private ArrayList<String> getClickUrls(JSONObject contentSourceObject) {
+        JSONArray trackers = JsonUtil.getJSONArray(contentSourceObject, RESPONSE_KEY_TRACKERS);
+
+        ArrayList<String> clickUrls = new ArrayList<String>();
+        if (trackers != null) {
+            for (int i = 0; i < trackers.length(); i++) {
+                try {
+                    JSONObject obj = trackers.getJSONObject(0);
+                    JSONArray trackerClickUrls = JsonUtil.getJSONArray(obj, RESPONSE_KEY_CLICK_URLS);
+                    ArrayList<String> trackerClickUrlsStringArray = JsonUtil.getStringArrayList(trackerClickUrls);
+                    if (trackerClickUrlsStringArray != null) {
+                        clickUrls.addAll(trackerClickUrlsStringArray);
+                    }
+                } catch (JSONException e) {
+                }
+            }
+        }
+        return clickUrls;
+    }
 
     private ArrayList<String> getImpressionUrls(JSONObject contentSourceObject) {
         JSONArray trackers = JsonUtil.getJSONArray(contentSourceObject, RESPONSE_KEY_TRACKERS);

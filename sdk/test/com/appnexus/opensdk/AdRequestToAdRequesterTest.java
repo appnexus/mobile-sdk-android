@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.mocks.MockDefaultExecutorSupplier;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
@@ -39,6 +40,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotSame;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
@@ -93,6 +95,18 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements UTAdRequ
         requestParameters.setPlacementID("0");
         requestParameters.setPrimarySize(new AdSize(1,1));
         requestParameters.setMediaType(MediaType.NATIVE);
+    }
+
+    //This verifies that the AsyncTask for Request is being executed on the Correct Executor.
+    @Test
+    public void testRequestExecutorForBackgroundTasks() {
+        SDKSettings.setExternalExecutor(MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+        assertNotSame(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+        adRequest = new UTAdRequest(this);
+        adRequest.execute();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertEquals(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
     }
 
     @Test
