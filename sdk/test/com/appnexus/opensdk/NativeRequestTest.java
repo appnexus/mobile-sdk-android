@@ -40,7 +40,9 @@ import org.robolectric.shadows.ShadowWebView;
 import java.util.HashMap;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -108,8 +110,10 @@ public class NativeRequestTest extends BaseNativeTest {
         HttpUrl impbus = server.url("/");
         UTConstants.REQUEST_BASE_URL_UT = impbus.toString();
         NativeAdRequestListener listener = new NativeAdRequestListener() {
+
             @Override
             public void onAdLoaded(NativeAdResponse response) {
+                nativeAdResponse = response;
                 ((MockFBNativeBannerAdResponse) response).logImpression();
                 ((MockFBNativeBannerAdResponse) response).clickAd();
             }
@@ -118,15 +122,16 @@ public class NativeRequestTest extends BaseNativeTest {
             public void onAdFailed(ResultCode errorcode) {
             }
         };
-        NativeAdRequestListener listenerSpy = spy(listener);
-        adRequest.setListener(listenerSpy);
+        adRequest.setListener(listener);
         adRequest.loadAd();
+        waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
-        verify(listenerSpy).onAdLoaded(any(MockFBNativeBannerAdResponse.class));
+        assertNotNull(nativeAdResponse);
+        assertTrue(nativeAdResponse instanceof MockFBNativeBannerAdResponse);
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         waitForTasks();
@@ -140,57 +145,74 @@ public class NativeRequestTest extends BaseNativeTest {
     @Test
     public void requestNativeGetsMediationNoFillThenCSR() {
         server.enqueue(new MockResponse().setBody(TestResponsesUT.mediationNoFillThenCSRSuccessfull()).setResponseCode(200));
-        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
-        adRequest.setListener(adListener);
+//        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
+        adRequest.setListener(this);
         adRequest.loadAd();
+        waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
-        verify(adListener).onAdLoaded(any(MockFBNativeBannerAdResponse.class));
+        assertNotNull(nativeAdResponse);
+        assertTrue(nativeAdResponse instanceof MockFBNativeBannerAdResponse);
+//        verify(adListener).onAdLoaded(any(MockFBNativeBannerAdResponse.class));
     }
 
     @Test
     public void requestNativeGetsCSRNofillThenMediation() {
         server.enqueue(new MockResponse().setBody(TestResponsesUT.csrNoFillThenMediationSuccessfull()).setResponseCode(200));
-        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
-        adRequest.setListener(adListener);
+//        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
+        adRequest.setListener(this);
+        assertNull(nativeAdResponse);
         adRequest.loadAd();
+        waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
-        verify(adListener).onAdLoaded(any(BaseNativeAdResponse.class));
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertNotNull(nativeAdResponse);
+        assertTrue(nativeAdResponse instanceof BaseNativeAdResponse);
+//        verify(adListener).onAdLoaded(any(BaseNativeAdResponse.class));
     }
 
     @Test
     public void requestNativeCSRNofill() {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.csrNativeNofill()));
-        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
-        adRequest.setListener(adListener);
+//        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
+        adRequest.setListener(this);
         adRequest.loadAd();
+        waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
-        verify(adListener).onAdFailed(ResultCode.UNABLE_TO_FILL);
+        assertNull(nativeAdResponse);
+        assertAdFailed(true);
+        assertEquals(ResultCode.UNABLE_TO_FILL, failErrorCode);
+//        verify(adListener).onAdFailed(ResultCode.UNABLE_TO_FILL);
     }
 
     @Test
     public void requestNativeCSRSuccessful() {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.csrNativeSuccessful()));
-        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
-        adRequest.setListener(adListener);
+//        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
+        adRequest.setListener(this);
         adRequest.loadAd();
+        waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
-        verify(adListener).onAdLoaded(any(MockFBNativeBannerAdResponse.class));
+        assertNotNull(nativeAdResponse);
+        assertTrue(nativeAdResponse instanceof MockFBNativeBannerAdResponse);
+//        verify(adListener).onAdLoaded(any(MockFBNativeBannerAdResponse.class));
     }
 
     @Test

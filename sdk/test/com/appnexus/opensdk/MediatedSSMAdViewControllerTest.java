@@ -84,7 +84,7 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
                     sanitizer.setAllowUnregisteredParamaters(true);
                     sanitizer.parseUrl(response_url);
 
-                    int reasonVal = Integer.parseInt(sanitizer.getValue("reason"));
+                    int reasonVal = Integer.parseInt(sanitizer.getValue("reason").replace("_HTTP/1.1", ""));
 
                     assertEquals(reasonVal, errorCode.ordinal());
 
@@ -125,6 +125,10 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
     private void executeUTRequest() {
         requestManager.execute();
         // execute main ad request
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
     }
@@ -133,10 +137,18 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
         assertResponseURL(positionInQueue, errorCode, checkLatency);
     }
 
     private void executeAndAssertNoAdURL(int positionInQueue) {
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
@@ -167,7 +179,9 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
 
-
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
     }
 
     // Verify that a successful mediation response,

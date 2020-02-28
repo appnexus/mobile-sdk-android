@@ -104,6 +104,7 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements UTAdRequ
         assertNotSame(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
         adRequest = new UTAdRequest(this);
         adRequest.execute();
+        waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         assertEquals(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());

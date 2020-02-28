@@ -29,12 +29,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
+import org.robolectric.shadows.ShadowLooper;
 
+import static android.os.Looper.getMainLooper;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotSame;
 import static junit.framework.Assert.assertTrue;
+import static org.robolectric.Shadows.shadowOf;
 
 /**
  * This tests AdViewRequestManager
@@ -87,6 +91,18 @@ public class AdViewRequestManagerTest extends BaseViewAdTest {
 
         request = server.takeRequest(); // Discard the first request since its a HTTP Post for /ut/v3 ad request call
         request = server.takeRequest();
+
+        waitForTasks();
+        // execute main ad request
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+
+        ShadowLooper shadowLooper = shadowOf(getMainLooper());
+        if (!shadowLooper.isIdle()) {
+            shadowLooper.idle();
+        }
+        RuntimeEnvironment.getMasterScheduler().advanceToNextPostedRunnable();
+
         assertNotifyURL(request);
     }
 
@@ -102,6 +118,12 @@ public class AdViewRequestManagerTest extends BaseViewAdTest {
         // execute main ad request
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
+
+        ShadowLooper shadowLooper = shadowOf(getMainLooper());
+        if (!shadowLooper.isIdle()) {
+            shadowLooper.idle();
+        }
+        RuntimeEnvironment.getMasterScheduler().advanceToNextPostedRunnable();
     }
 
 

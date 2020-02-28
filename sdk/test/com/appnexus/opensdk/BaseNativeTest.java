@@ -27,6 +27,7 @@ import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 21)
@@ -35,6 +36,8 @@ public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListe
     protected NativeAdResponse     response;
 
     protected boolean adLoaded, adFailed;
+    NativeAdResponse nativeAdResponse;
+    ResultCode failErrorCode;
 
 
     @Override
@@ -43,6 +46,8 @@ public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListe
 
         adLoaded = false;
         adFailed = false;
+        nativeAdResponse = null;
+        failErrorCode = null;
 
         adRequest = new NativeAdRequest(activity, "0");
         adRequest.setListener(this);
@@ -64,6 +69,7 @@ public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListe
     @Override
     public void onAdLoaded(NativeAdResponse response) {
         adLoaded = true;
+        nativeAdResponse = response;
         this.response = response;
         Clog.w(TestUtil.testLogTag, "BaseNativeTest onAdLoaded");
     }
@@ -71,6 +77,7 @@ public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListe
     @Override
     public void onAdFailed(ResultCode errorcode) {
         adFailed = true;
+        failErrorCode = errorcode;
         Clog.w(TestUtil.testLogTag, "BaseNativeTest onAdFailed");
 
     }
