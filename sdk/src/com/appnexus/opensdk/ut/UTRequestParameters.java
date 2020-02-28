@@ -802,7 +802,7 @@ public class UTRequestParameters {
             // limited ad tracking
             device.put(DEVICE_LMT, Settings.getSettings().limitTrackingEnabled);
 
-            if (ANGDPRSettings.getDeviceAccessConsent() && !StringUtil.isEmpty(Settings.getSettings().aaid)) {
+            if (ANGDPRSettings.getDeviceAccessConsent(context) && !StringUtil.isEmpty(Settings.getSettings().aaid)) {
                 // device id
                 JSONObject device_id = new JSONObject();
                 device_id.put(DEVICE_ID_AAID, Settings.getSettings().aaid);

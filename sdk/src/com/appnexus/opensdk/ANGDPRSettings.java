@@ -161,7 +161,7 @@ public class ANGDPRSettings {
      * @return A valid Base64 encode consent string as per https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework
      * or "" if not set
      */
-    public static Boolean getDeviceAccessConsent() {
+    public static Boolean getDeviceAccessConsent(Context context) {
 
         String deviceConsent = "Nil";
 
