@@ -16,11 +16,11 @@
 
 package com.appnexus.opensdk;
 
-import com.appnexus.opensdk.mocks.MockDefaultExecutorSupplier;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowCustomVideoWebView;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
+import com.appnexus.opensdk.ut.UTConstants;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.Test;
@@ -34,15 +34,16 @@ import org.robolectric.shadows.ShadowLooper;
 
 import static android.os.Looper.getMainLooper;
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotSame;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.robolectric.Shadows.shadowOf;
 
 @Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
                 ShadowCustomVideoWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RobolectricTestRunner.class)
-public class BannerAdViewVideoLoadAdTest extends BaseViewAdTest {
+public class ANAdResponseInfoBannerVideoTests extends BaseViewAdTest {
 
     @Override
     public void setup() {
@@ -54,39 +55,34 @@ public class BannerAdViewVideoLoadAdTest extends BaseViewAdTest {
         super.tearDown();
     }
 
-    //This verifies that the AsyncTask for Request is being executed on the Correct Executor.
     @Test
-    public void testRequestExecutorForBackgroundTasks() {
-        SDKSettings.setExternalExecutor(MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
-        assertNotSame(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
-        bannerAdView.loadAd();
-        waitForTasks();
-        Robolectric.flushBackgroundThreadScheduler();
-        Robolectric.flushForegroundThreadScheduler();
-        assertEquals(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
-    }
-
-    @Test
-    public void testgetAdTypeVideo() {
+    public void testAdResponseInfoRTBBannerVideo() {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.rtbVASTVideo())); // First queue a regular HTML banner response
-        assertTrue(bannerAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOW initially
+        assertNull(bannerAdView.getAdResponseInfo());
+        assertTrue(bannerAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOWN initially
         executeBannerRequest();
-        assertTrue(bannerAdView.getAdType() == AdType.VIDEO); // If a VAST Video is served then VIDEO
+        assertCallbacks(true);
+        assertTrue(bannerAdView.getAdType() == AdType.VIDEO); // If a HTML banner is served then BANNER
+        assertNotNull(bannerAdView.getAdResponseInfo());
+        assertEquals(bannerAdView.getAdResponseInfo().getAdType(), AdType.VIDEO);
+        assertEquals(bannerAdView.getAdResponseInfo().getCreativeId(), "6332753");
+        assertEquals(bannerAdView.getAdResponseInfo().getTagId(), "123456");
+        assertEquals(bannerAdView.getAdResponseInfo().getBuyMemberId(), 123);
+        assertEquals(bannerAdView.getAdResponseInfo().getContentSource(), UTConstants.RTB);
+        assertEquals(bannerAdView.getAdResponseInfo().getNetworkName(), "");
     }
 
     @Test
-    public void testgetCreativeIdVideoCreativeId() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.rtbVASTVideo())); // First queue a regular HTML banner response
+    public void testgetCreativeIdBannerVideoCreativeId() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.rtbVASTVideo())); // First queue a banner Native response
+        assertNull(bannerAdView.getAdResponseInfo());
         executeBannerRequest();
-        assertEquals("6332753", bannerAdView.getCreativeId());
+        assertEquals("6332753", bannerAdView.getAdResponseInfo().getCreativeId());
     }
-
-
-
 
     private void executeBannerRequest() {
-        bannerAdView.setAutoRefreshInterval(15);
-        bannerAdView.loadAdOffscreen();
+        bannerAdView.setAutoRefreshInterval(15000);
+        bannerAdView.loadAd();
 
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
@@ -102,9 +98,4 @@ public class BannerAdViewVideoLoadAdTest extends BaseViewAdTest {
         }
         RuntimeEnvironment.getMasterScheduler().advanceToNextPostedRunnable();
     }
-
-
-
-
-
 }

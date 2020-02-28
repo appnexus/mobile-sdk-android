@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.widget.RelativeLayout;
 
+import com.appnexus.opensdk.ANAdResponseInfo;
 import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.AdListener;
 import com.appnexus.opensdk.AdView;

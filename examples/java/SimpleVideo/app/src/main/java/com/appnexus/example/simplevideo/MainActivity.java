@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.appnexus.opensdk.ANAdResponseInfo;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.instreamvideo.ResultCallback;

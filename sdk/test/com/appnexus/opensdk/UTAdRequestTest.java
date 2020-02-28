@@ -52,6 +52,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
     UTAdResponse response;
     boolean requesterReceivedServerResponse = false;
     public static final int PLACEMENT_ID = 123456;
+    public static final int PUBLISHER_ID = 9876;
     public static final String EXTERNAL_UID = "b865df7e-097f-4167-8a5c-44d778e75ee6";
 
     //   IAB USPrivacy
@@ -102,6 +103,31 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         executionSteps();
 
         inspectRequestForValidId(false);
+    }
+
+    /**
+     * Tests PublisherId validity in the request
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testPublisherId() throws Exception {
+        utRequestParameters.setPublisherId(PUBLISHER_ID);
+        executionSteps();
+        inspectPublisherId(PUBLISHER_ID);
+    }
+
+    /**
+     * Tests Invalid PublisherId validity in the request
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testInvalidPublisherId() throws Exception {
+        utRequestParameters.setPublisherId(-1);
+        executionSteps();
+        JSONObject postData = inspectPostData();
+        assertFalse(postData.has("publisher_id"));
     }
 
     /**
@@ -511,6 +537,14 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
     }
 
+    private void inspectPublisherId(int publisherId) throws JSONException, InterruptedException {
+        JSONObject postData = inspectPostData();
+        System.out.println("Checking Publisher ID...");
+        assertTrue(postData.has("publisher_id"));
+        assertEquals(publisherId, postData.getInt("publisher_id"));
+        System.out.println("Publisher ID test passed!");
+    }
+
     private void inspectMinDuration(int minDuration, JSONObject tagData) throws JSONException {
 
         System.out.println("Checking min duration...");
@@ -645,7 +679,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
     long time;
 
     @Override
-    public void failed(ResultCode code) {
+    public void failed(ResultCode code, ANAdResponseInfo adResponseInfo) {
 
     }
 
@@ -683,8 +717,8 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
     public void onReceiveUTResponse(UTAdResponse response) {
         if (response != null && response.getAdList() != null && !response.getAdList().isEmpty()) {
             requesterReceivedServerResponse = true;
-        } else {
-            failed(ResultCode.UNABLE_TO_FILL);
+        }else{
+            failed(ResultCode.UNABLE_TO_FILL, response.getAdResponseInfo());
         }
         this.response = response;
     }

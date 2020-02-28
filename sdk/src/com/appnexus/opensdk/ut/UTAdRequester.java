@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk.ut;
 
+import com.appnexus.opensdk.ANAdResponseInfo;
 import com.appnexus.opensdk.AdResponse;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
@@ -29,7 +30,7 @@ public interface UTAdRequester {
      *
      * @param code reason why the request fails.
      */
-    void failed(ResultCode code);
+    void failed(ResultCode code, ANAdResponseInfo responseInfo);
 
     void onReceiveAd(AdResponse ad);
 

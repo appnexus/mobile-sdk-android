@@ -97,6 +97,11 @@ public class AdViewRequestManagerTest extends BaseViewAdTest {
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
 
+        waitForTasks();
+        // execute main ad request
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+
         ShadowLooper shadowLooper = shadowOf(getMainLooper());
         if (!shadowLooper.isIdle()) {
             shadowLooper.idle();

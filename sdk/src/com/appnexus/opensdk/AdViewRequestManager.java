@@ -97,13 +97,13 @@ public class AdViewRequestManager extends RequestManager {
     }
 
     @Override
-    public void failed(ResultCode code) {
+    public void failed(ResultCode code, ANAdResponseInfo responseInfo) {
         printMediatedClasses();
         Clog.e("AdViewRequestManager", code.name());
         Ad owner = this.owner.get();
         fireTracker(noAdUrl, Clog.getString(R.string.no_ad_url));
         if (owner != null) {
-            owner.getAdDispatcher().onAdFailed(code);
+            owner.getAdDispatcher().onAdFailed(code, responseInfo);
         }
     }
 
@@ -111,7 +111,7 @@ public class AdViewRequestManager extends RequestManager {
     public void continueWaterfall(ResultCode reason) {
         Clog.d(Clog.baseLogTag, "Waterfall continueWaterfall");
         if (getAdList() == null || getAdList().isEmpty()) {
-            failed(reason);
+            failed(reason, currentAd != null ? currentAd.getAdResponseInfo() : null);
         } else {
             // Process next available ad response
             processNextAd();
@@ -175,7 +175,7 @@ public class AdViewRequestManager extends RequestManager {
             processNextAd();
         } else {
             Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
-            failed(ResultCode.UNABLE_TO_FILL);
+            failed(ResultCode.UNABLE_TO_FILL, response.getAdResponseInfo());
         }
     }
 
@@ -266,7 +266,6 @@ public class AdViewRequestManager extends RequestManager {
                 if (UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(rtbAdResponse.getAdType())) {
                     // Vast ads
                     handleRTBVASTResponse(ownerAd, (RTBVASTAdResponse) rtbAdResponse);
-
                 } else {
                     continueWaterfall(ResultCode.UNABLE_TO_FILL);
                 }
@@ -372,4 +371,5 @@ public class AdViewRequestManager extends RequestManager {
     public ANMultiAdRequest getMultiAdRequest() {
         return anMultiAdRequest;
     }
+
 }

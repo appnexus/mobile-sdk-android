@@ -46,7 +46,7 @@ public abstract class RequestManager implements UTAdRequester {
      *
      * @param code reason why the request fails.
      */
-    public abstract void failed(ResultCode code);
+    public abstract void failed(ResultCode code, ANAdResponseInfo responseInfo);
 
     public abstract void onReceiveAd(AdResponse ad);
 

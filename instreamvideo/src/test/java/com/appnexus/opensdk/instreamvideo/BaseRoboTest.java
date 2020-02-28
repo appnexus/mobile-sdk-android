@@ -3,6 +3,7 @@ package com.appnexus.opensdk.instreamvideo;
 import android.app.Activity;
 
 
+import com.appnexus.opensdk.ANAdResponseInfo;
 import com.appnexus.opensdk.instreamvideo.shadows.ShadowSettings;
 import com.appnexus.opensdk.instreamvideo.util.Lock;
 import com.appnexus.opensdk.ut.UTConstants;

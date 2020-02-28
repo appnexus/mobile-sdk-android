@@ -16,6 +16,8 @@
 
 package com.appnexus.opensdk.ut.adresponse;
 
+import com.appnexus.opensdk.ANAdResponseInfo;
+
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -28,8 +30,8 @@ public class CSRAdResponse extends BaseAdResponse {
     private JSONObject adObject;
     private ArrayList<String> clickUrls;
 
-    public CSRAdResponse(int width, int height, String adType, String responseUrl, ArrayList<String> impressionURLs, String creativeId, JSONObject adObject) {
-        super(width, height, adType, impressionURLs, creativeId);
+    public CSRAdResponse(int width, int height, String adType, String responseUrl, ArrayList<String> impressionURLs, ANAdResponseInfo adResponseInfo, JSONObject adObject) {
+        super(width, height, adType, impressionURLs, adResponseInfo);
         this.adObject = adObject;
         this.responseUrl = responseUrl;
     }

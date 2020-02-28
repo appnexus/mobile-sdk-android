@@ -24,7 +24,6 @@ import android.content.Intent;
 import android.content.MutableContextWrapper;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -82,6 +81,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     UTRequestParameters requestParameters;
 
     protected ArrayList<String> impressionTrackers;
+    private ANAdResponseInfo adResponseInfo;
 
     /**
      * Begin Construction
@@ -222,7 +222,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
         // load an ad directly from html
         loadedOffscreen = true;
         AdWebView output = new AdWebView(this, null);
-        RTBHTMLAdResponse response = new RTBHTMLAdResponse(width, height, getMediaType().toString(), null, getCreativeId());
+        RTBHTMLAdResponse response = new RTBHTMLAdResponse(width, height, getMediaType().toString(), null, getAdResponseInfo());
         response.setAdContent(html);
         output.loadAd(response);
         display(output);
@@ -233,7 +233,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
         // load an ad directly from VASTXML
         loadedOffscreen = true;
         AdWebView output = new AdWebView(this, null);
-        RTBVASTAdResponse response = new RTBVASTAdResponse(width, height, AdType.VIDEO.toString(), null, null, "1");
+        RTBVASTAdResponse response = new RTBVASTAdResponse(width,height,AdType.VIDEO.toString(), null,null,getAdResponseInfo());
         response.setAdContent(VASTXML);
         response.setContentSource(UTConstants.RTB);
         response.addToExtras(UTConstants.EXTRAS_KEY_MRAID, true);
@@ -302,13 +302,33 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
         requestParameters.setInventoryCodeAndMemberID(memberID, inventoryCode);
     }
 
+    @Deprecated
     /**
      * Retrieve the member ID.
      *
      * @return the member id that this AdView belongs to.
+     * @deprecated use {{@link ANAdResponseInfo}.getBuyMemberId}
      */
     public int getMemberID() {
         return requestParameters.getMemberID();
+    }
+
+    /**
+     * Retrieve the Publisher ID.
+     *
+     * @return the Publisher id that this AdView belongs to.
+     */
+    public int getPublisherId() {
+        return requestParameters.getPublisherId();
+    }
+
+    /**
+     * Retrieve the Publisher ID.
+     *
+     * @@param publisherId the Publisher id that this AdView belongs to.
+     */
+    public void setPublisherId(int publisherId) {
+        requestParameters.setPublisherId(publisherId);
     }
 
     /**
@@ -937,12 +957,13 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     }
 
 
+    @Deprecated
     /**
      * Retrieve the Creative Id  of the creative .
      *
      * @return the creativeId
+     * @deprecated see ({@link ANAdResponseInfo}.getCreativeId)
      */
-
     public String getCreativeId() {
         return creativeId;
     }
@@ -971,13 +992,14 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
         adType = type;
     }
 
+    @Deprecated
     /**
      * Retrieve the AdType being served on the AdView
      * AdType can be Banner/Video
      *
      * @return AdType of the Creative
+     * @deprecated Use ({@link ANAdResponseInfo}.getAdType)
      */
-
     public AdType getAdType() {
         return adType;
     }
@@ -1025,7 +1047,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
                 handleNativeAd(ad);
             } else {
                 Clog.e(Clog.baseLogTag, "UNKNOWN media type::" + ad.getMediaType());
-                onAdFailed(ResultCode.INTERNAL_ERROR);
+                onAdFailed(ResultCode.INTERNAL_ERROR, null);
             }
         }
 
@@ -1035,10 +1057,11 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
         }
 
         @Override
-        public void onAdFailed(final ResultCode code) {
+        public void onAdFailed(final ResultCode code, final ANAdResponseInfo adResponseInfo) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    setAdResponseInfo(adResponseInfo);
                     if (adListener != null) {
                         adListener.onAdRequestFailed(AdView.this, code);
                     }
@@ -1118,10 +1141,12 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
         private void handleNativeAd(AdResponse ad) {
             setAdType(AdType.NATIVE);
 
-            setCreativeId(ad.getResponseData().getCreativeId());
+            setCreativeId(ad.getResponseData().getAdResponseInfo().getCreativeId());
             final NativeAdResponse response = ad.getNativeAdResponse();
-            response.setCreativeId(ad.getResponseData().getCreativeId());
-            if (adListener != null) {
+            response.setAdResponseInfo(ad.getResponseData().getAdResponseInfo());
+//            setAdResponseInfo(ad.getResponseData().getAdResponseInfo());
+            response.setCreativeId(ad.getResponseData().getAdResponseInfo().getCreativeId());
+            if(adListener != null) {
                 adListener.onAdLoaded(response);
             }
         }
@@ -1132,7 +1157,8 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
                 public void run() {
                     setCreativeWidth(ad.getDisplayable().getCreativeWidth());
                     setCreativeHeight(ad.getDisplayable().getCreativeHeight());
-                    setCreativeId(ad.getResponseData().getCreativeId());
+                    setCreativeId(ad.getResponseData().getAdResponseInfo().getCreativeId());
+                    setAdResponseInfo(ad.getResponseData().getAdResponseInfo());
                     if (ad.isMediated() && ad.getResponseData().getContentSource() == UTConstants.CSM) {
                         try {
                             displayMediated((MediatedDisplayable) ad.getDisplayable());
@@ -1297,5 +1323,13 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     @Override
     public MultiAd getMultiAd() {
         return this;
+    }
+
+    public ANAdResponseInfo getAdResponseInfo() {
+        return adResponseInfo;
+    }
+
+    private void setAdResponseInfo(ANAdResponseInfo adResponseInfo) {
+        this.adResponseInfo = adResponseInfo;
     }
 }

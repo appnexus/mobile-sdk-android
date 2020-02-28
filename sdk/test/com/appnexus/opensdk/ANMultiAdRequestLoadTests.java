@@ -53,7 +53,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     @Override
     public void setup() {
         super.setup();
-        anMultiAdRequest = new ANMultiAdRequest(activity, 0, this);
+        anMultiAdRequest = new ANMultiAdRequest(activity, 0, 1234, this);
         anMultiAdRequest.addAdUnit(bannerAdView);
         anMultiAdRequest.addAdUnit(interstitialAdView);
     }
@@ -330,7 +330,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
         interstitialAdView.setPlacementID("0");
         interstitialAdView.setAdListener(this);
 
-        new ANMultiAdRequest(activity, 0, this, true, bannerAdView, interstitialAdView);
+        new ANMultiAdRequest(activity, 0, 1234, this, true, bannerAdView, interstitialAdView);
 
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
@@ -360,7 +360,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     }
 
     private void executeSecondMARRequest() {
-        ANMultiAdRequest anMultiAdRequest = new ANMultiAdRequest(activity, 123, new MultiAdRequestListener() {
+        ANMultiAdRequest anMultiAdRequest = new ANMultiAdRequest(activity, 123, 1234, new MultiAdRequestListener() {
             @Override
             public void onMultiAdRequestCompleted() {
                 secondMarCompleted = true;

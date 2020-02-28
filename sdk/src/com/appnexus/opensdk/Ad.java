@@ -69,4 +69,5 @@ public interface Ad {
      * Not intended to be used outside of SDK.
      * */
     MultiAd getMultiAd();
+    
 }

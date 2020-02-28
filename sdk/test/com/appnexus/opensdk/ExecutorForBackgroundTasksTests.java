@@ -125,7 +125,7 @@ public class ExecutorForBackgroundTasksTests extends BaseViewAdTest {
         try {
             ArrayList<String> stringArrayList = new ArrayList<>();
             stringArrayList.add(url);
-            SSMHTMLAdResponse ssmhtmlAdResponse = new SSMHTMLAdResponse(300, 250, "banner", url, stringArrayList, "12345");
+            SSMHTMLAdResponse ssmhtmlAdResponse = new SSMHTMLAdResponse(300, 250, "banner", url, stringArrayList, new ANAdResponseInfo());
             Class<?> aClass = Class.forName("com.appnexus.opensdk.MediatedSSMAdViewController");
             Method met = aClass.getDeclaredMethod("instantiateNewMediatedSSMAd", null);
             met.setAccessible(true);
@@ -139,6 +139,7 @@ public class ExecutorForBackgroundTasksTests extends BaseViewAdTest {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+        waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         assertEquals(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
@@ -223,7 +224,7 @@ public class ExecutorForBackgroundTasksTests extends BaseViewAdTest {
         try {
             ArrayList<String> stringArrayList = new ArrayList<>();
             stringArrayList.add(url);
-            CSMSDKAdResponse csmsdkAdResponse = new CSMSDKAdResponse(300, 250, "banner", url, stringArrayList, "12345", null);
+            CSMSDKAdResponse csmsdkAdResponse = new CSMSDKAdResponse(300, 250, "banner", url, stringArrayList, new ANAdResponseInfo(), null);
             MediatedNativeAdController mediatedNativeAdController = MediatedNativeAdController.create(csmsdkAdResponse, new AdViewRequestManager(bannerAdView));
             Class<?> aClass = Class.forName("com.appnexus.opensdk.MediatedNativeAdController");
             Method met = aClass.getDeclaredMethod("fireTracker", String.class);
@@ -250,7 +251,8 @@ public class ExecutorForBackgroundTasksTests extends BaseViewAdTest {
         try {
             ArrayList<String> stringArrayList = new ArrayList<>();
             stringArrayList.add(url);
-            CSRAdResponse csrAdResponse = new CSRAdResponse(300, 250, "banner", url, stringArrayList, "12345", null);
+            // Create a RTB Banner Ad
+            CSRAdResponse csrAdResponse = new CSRAdResponse(300, 250, "banner", url, stringArrayList, new ANAdResponseInfo(), null);
             CSRNativeBannerController csrNativeBannerController = new CSRNativeBannerController(csrAdResponse, new AdViewRequestManager(bannerAdView));
             Class<?> aClass = Class.forName("com.appnexus.opensdk.CSRNativeBannerController");
             Method met = aClass.getDeclaredMethod("fireTracker", String.class);

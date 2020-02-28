@@ -17,7 +17,6 @@
 package com.appnexus.opensdk.instreamvideo;
 
 import com.appnexus.opensdk.ANClickThroughAction;
-import com.appnexus.opensdk.BuildConfig;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.instreamvideo.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.instreamvideo.shadows.ShadowCustomClickThroughWebView;

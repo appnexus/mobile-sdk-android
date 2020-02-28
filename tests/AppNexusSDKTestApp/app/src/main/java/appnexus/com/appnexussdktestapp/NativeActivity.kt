@@ -23,7 +23,7 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener {
         handleNativeResponse(nativeAdResponse)
     }
 
-    override fun onAdFailed(errorcode: ResultCode?) {
+    override fun onAdFailed(errorcode: ResultCode?, adResponseinfo:ANAdResponseInfo) {
         if (!idlingResource.isIdleNow)
             idlingResource.decrement()
     }

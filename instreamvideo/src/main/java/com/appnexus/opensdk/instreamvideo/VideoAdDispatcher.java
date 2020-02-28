@@ -15,9 +15,7 @@
  */
 package com.appnexus.opensdk.instreamvideo;
 
-import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.BaseAdDispatcher;
-import com.appnexus.opensdk.ResultCode;
 
 /**
  * This interface is used by internal classes of SDK to send callbacks to the VideoAd class.

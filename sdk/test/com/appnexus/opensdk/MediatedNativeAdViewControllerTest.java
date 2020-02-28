@@ -397,8 +397,8 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
     }
 
     @Override
-    public void onAdFailed(ResultCode errorcode) {
-        super.onAdFailed(errorcode);
+    public void onAdFailed(ResultCode errorcode, ANAdResponseInfo adResponseInfo) {
+        super.onAdFailed(errorcode, adResponseInfo);
         Lock.unpause();
     }
 

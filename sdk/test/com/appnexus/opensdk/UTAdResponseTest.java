@@ -103,7 +103,7 @@ public class UTAdResponseTest extends BaseRoboTest {
         while (!list.isEmpty()) {
             BaseAdResponse baseAdResponse = (BaseAdResponse) list.removeFirst();
             assertEquals("rtb", baseAdResponse.getContentSource());
-            assertEquals("6332753", baseAdResponse.getCreativeId());
+            assertEquals("6332753", baseAdResponse.getAdResponseInfo().getCreativeId());
         }
     }
 
@@ -156,7 +156,7 @@ public class UTAdResponseTest extends BaseRoboTest {
             assertTrue(nativeAdResponse.getNativeAdResponse().getImageUrl().contains("http://path_to_main.com"));
             assertEquals(false, nativeAdResponse.getNativeAdResponse().isOpenNativeBrowser());
             assertEquals(true, nativeAdResponse.getNativeAdResponse().getLoadsInBackground());
-            assertEquals("47772560", nativeAdResponse.getCreativeId());
+            assertEquals("47772560", nativeAdResponse.getAdResponseInfo().getCreativeId());
         }
     }
 
@@ -177,11 +177,11 @@ public class UTAdResponseTest extends BaseRoboTest {
         System.out.println("Printing first");
         CSMSDKAdResponse baseCSMSDKAdResponse = (CSMSDKAdResponse) list.getFirst();
         assertEquals("csm", baseCSMSDKAdResponse.getContentSource());
-        assertEquals("44863345", baseCSMSDKAdResponse.getCreativeId());
+        assertEquals("44863345", baseCSMSDKAdResponse.getAdResponseInfo().getCreativeId());
         System.out.println("Printing second");
         BaseAdResponse baseAdResponse = (BaseAdResponse) list.getLast();
         assertEquals("rtb", baseAdResponse.getContentSource());
-        assertEquals("6332753", baseAdResponse.getCreativeId());
+        assertEquals("6332753", baseAdResponse.getAdResponseInfo().getCreativeId());
 
     }
 
@@ -202,7 +202,7 @@ public class UTAdResponseTest extends BaseRoboTest {
         CSMSDKAdResponse baseCSMSDKAdResponse = (CSMSDKAdResponse) list.getFirst();
         assertEquals("csm", baseCSMSDKAdResponse.getContentSource());
         assertNull(baseCSMSDKAdResponse.getAdContent());
-        assertEquals("44863345", baseCSMSDKAdResponse.getCreativeId());
+        assertEquals("44863345", baseCSMSDKAdResponse.getAdResponseInfo().getCreativeId());
 
 
     }
@@ -224,7 +224,7 @@ public class UTAdResponseTest extends BaseRoboTest {
         SSMHTMLAdResponse baseSSMHTMLAdResponse = (SSMHTMLAdResponse) list.getFirst();
         assertEquals("ssm", baseSSMHTMLAdResponse.getContentSource());
         assertEquals((TestResponsesUT.SSM_URL), baseSSMHTMLAdResponse.getAdUrl());
-        assertEquals("44863345", baseSSMHTMLAdResponse.getCreativeId());
+        assertEquals("44863345", baseSSMHTMLAdResponse.getAdResponseInfo().getCreativeId());
     }
 
     /**

@@ -3,6 +3,7 @@ package com.appnexus.opensdk.mocks;
 import android.graphics.Bitmap;
 import android.view.View;
 
+import com.appnexus.opensdk.ANAdResponseInfo;
 import com.appnexus.opensdk.BaseNativeAdResponse;
 import com.appnexus.opensdk.CSRController;
 import com.appnexus.opensdk.NativeAdEventListener;
@@ -12,6 +13,7 @@ import java.util.List;
 
 public class MockFBNativeBannerAdResponse extends BaseNativeAdResponse {
     private CSRController callback;
+    private ANAdResponseInfo adResponseInfo;
 
     public MockFBNativeBannerAdResponse(CSRController callback) {
         this.callback = callback;
@@ -83,6 +85,16 @@ public class MockFBNativeBannerAdResponse extends BaseNativeAdResponse {
     @Override
     public void setCreativeId(String creativeId) {
 
+    }
+
+    @Override
+    public ANAdResponseInfo getAdResponseInfo() {
+        return adResponseInfo;
+    }
+
+    @Override
+    public void setAdResponseInfo(ANAdResponseInfo adResponseInfo) {
+        this.adResponseInfo = adResponseInfo;
     }
 
     @Override

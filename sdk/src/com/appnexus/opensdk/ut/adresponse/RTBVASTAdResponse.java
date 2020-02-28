@@ -17,6 +17,8 @@
 package com.appnexus.opensdk.ut.adresponse;
 
 
+import com.appnexus.opensdk.ANAdResponseInfo;
+
 import java.util.ArrayList;
 
 public class RTBVASTAdResponse extends BaseAdResponse {
@@ -24,8 +26,8 @@ public class RTBVASTAdResponse extends BaseAdResponse {
     private String notifyUrl;
 
 
-    public RTBVASTAdResponse(int width, int height, String adType, String notifyUrl, ArrayList<String> impressionURLs, String creativeId) {
-        super(width, height, adType, impressionURLs, creativeId);
+    public RTBVASTAdResponse(int width, int height, String adType, String notifyUrl, ArrayList<String> impressionURLs, ANAdResponseInfo adResponseInfo) {
+        super(width, height, adType, impressionURLs, adResponseInfo);
         this.notifyUrl = notifyUrl;
     }
 

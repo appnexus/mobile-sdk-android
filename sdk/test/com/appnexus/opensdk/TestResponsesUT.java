@@ -223,6 +223,17 @@ public class TestResponsesUT {
         return templateMediatedWaterFallResponses(adsArray.toArray(new String[adsArray.size()]));
     }
 
+    public static String noFillCSMBanner() {
+        //Create a CSM - Ad
+        String csmAd = templateSingleCSMAdResponseBannerInterstitial(createClassName("MediatedBannerNoFillView"), 320, 50, IMPRESSION_URL, REQUEST_URL, RESPONSE_URL, "", "", "android");
+
+        ArrayList<String> adsArray = new ArrayList<String>(1);
+        adsArray.add(csmAd);
+
+        //Return a WaterFall response
+        return templateMediatedWaterFallResponses(adsArray.toArray(new String[adsArray.size()]));
+    }
+
     public static String noFillCSM_RTBInterstitial() {
         //Create a CSM - Ad
         String csmAd = templateSingleCSMAdResponseBannerInterstitial(createClassName("MediatedInterstitialNoFillView"), 320, 480, IMPRESSION_URL, REQUEST_URL, RESPONSE_URL, "", "", "android");

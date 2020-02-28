@@ -35,6 +35,7 @@ public interface NativeAdRequestListener {
     /**
      * Called when a native ad call has failed
      * @param errorcode reason the call failed. Error codes TBD
+     * @param adResponseInfo
      */
-    public void onAdFailed(ResultCode errorcode);
+    public void onAdFailed(ResultCode errorcode, ANAdResponseInfo adResponseInfo);
 }

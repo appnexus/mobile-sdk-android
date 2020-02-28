@@ -16,6 +16,8 @@
 
 package com.appnexus.opensdk.ut.adresponse;
 
+import com.appnexus.opensdk.ANAdResponseInfo;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -24,7 +26,7 @@ public abstract class BaseAdResponse {
     private int width;
     private int height;
 
-    private String creativeId = "";
+    private ANAdResponseInfo adResponseInfo;
 
     private String adType;
     private String contentSource;
@@ -33,20 +35,12 @@ public abstract class BaseAdResponse {
 
     private HashMap<String, Object> extras = new HashMap<String, Object>();
 
-    public BaseAdResponse(int width, int height, String adType, ArrayList<String> impressionURLs , String creativeId) {
+    public BaseAdResponse(int width, int height, String adType, ArrayList<String> impressionURLs , ANAdResponseInfo adResponseInfo) {
         this.width = width;
         this.height = height;
         this.adType = adType;
-        this.creativeId = creativeId;
+        this.adResponseInfo = adResponseInfo;
         this.impressionURLs = impressionURLs;
-    }
-
-    public String getCreativeId() {
-        return creativeId;
-    }
-
-    public void setCreativeId(String creativeId) {
-        this.creativeId = creativeId;
     }
 
     public int getWidth() {
@@ -110,4 +104,11 @@ public abstract class BaseAdResponse {
         this.adContent = adContent;
     }
 
+    public ANAdResponseInfo getAdResponseInfo() {
+        return adResponseInfo;
+    }
+
+    public void setAdResponseInfo(ANAdResponseInfo adResponseInfo) {
+        this.adResponseInfo = adResponseInfo;
+    }
 }

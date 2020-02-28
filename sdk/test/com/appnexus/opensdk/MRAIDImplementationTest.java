@@ -344,6 +344,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
         boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked, appEventOccurred, adClickedWithUrl;
 
         String eventName, eventData;
+        private ANAdResponseInfo mAdResponseInfo;
 
         @Override
         public void onAdLoaded(AdResponse ad) {
@@ -356,7 +357,8 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
         }
 
         @Override
-        public void onAdFailed(ResultCode errorCode) {
+        public void onAdFailed(ResultCode errorCode, ANAdResponseInfo adResponseInfo) {
+//            setAdResponseInfo(adResponseInfo);
             adFailed = true;
         }
 

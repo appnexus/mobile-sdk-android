@@ -86,7 +86,7 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
                 if (ad != null) {
                     UTAdRequester requester = new AdViewRequestManager(ad);
                     if (requester != null) {
-                        requester.failed(code);
+                        requester.failed(code, null);
                     }
                 }
             }
@@ -94,7 +94,7 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
         }
         UTAdRequester requester = this.requester.get();
         if (requester != null) {
-            requester.failed(code);
+            requester.failed(code, null);
         }
         Clog.clearLastResponse();
     }
@@ -240,15 +240,10 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
                 Clog.d(Clog.SRMLogTag, "RECIEVED: " + ad);
                 if (ad != null) {
                     UTAdRequester requester = new AdViewRequestManager(ad);
-                    // TODO: find other way for this
                     ad.getMultiAd().setRequestManager(requester);
-//                            ad.getAdFetcher().getRequestManager();
-                    //TODO: To be discussed for using new AdViewRequestManager(),
-                    // Although this will initialize new RequestManager for every request
-                    // but it prevents exposing the AdFetcher and RequestManager.
                     if (adResponseMap == null) {
                         Clog.e(Clog.SRMLogTag, "FAILED: " + ResultCode.INVALID_REQUEST);
-                        requester.failed(ResultCode.INVALID_REQUEST);
+                        requester.failed(ResultCode.INVALID_REQUEST, null);
                         continue;
                     }
                     UTAdResponse result = adResponseMap.get(ad.getRequestParameters().getUUID());
@@ -257,12 +252,12 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
                     if (requester != null) {
                         if (result == null) {
                             Clog.e(Clog.SRMLogTag, "FAILED: " + ResultCode.NETWORK_ERROR);
-                            requester.failed(ResultCode.NETWORK_ERROR);
+                            requester.failed(ResultCode.NETWORK_ERROR, null);
                             continue;
                         }
                         if (result.isHttpError()) {
                             Clog.e(Clog.SRMLogTag, "FAILED: " + ResultCode.NETWORK_ERROR);
-                            requester.failed(ResultCode.NETWORK_ERROR);
+                            requester.failed(ResultCode.NETWORK_ERROR, null);
                             continue;
                         }
                         Clog.e(Clog.SRMLogTag, "SUCCESS: " + ad);

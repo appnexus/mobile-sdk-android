@@ -224,6 +224,24 @@ public class NativeAdRequest implements Ad, MultiAd {
     }
 
     /**
+     * Retrieve the Publisher ID.
+     *
+     * @return the Publisher id that this NativeAdRequest belongs to.
+     */
+    public int getPublisherId() {
+        return requestParameters.getPublisherId();
+    }
+
+    /**
+     * Retrieve the Publisher ID.
+     *
+     * @@param publisherId the Publisher id that this NativeAdRequest belongs to.
+     */
+    public void setPublisherId(int publisherId) {
+        requestParameters.setPublisherId(publisherId);
+    }
+
+    /**
      * Retrieve the inventory code.
      *
      * @return the current inventory code.
@@ -431,11 +449,12 @@ public class NativeAdRequest implements Ad, MultiAd {
         @Override
         public void onAdLoaded(final AdResponse ad) {
             if (!ad.getMediaType().equals(MediaType.NATIVE)) {
-                onAdFailed(ResultCode.INTERNAL_ERROR);
+                onAdFailed(ResultCode.INTERNAL_ERROR, null);
             } else {
                 final String IMAGE_URL = "image", ICON_URL = "icon";
                 final NativeAdResponse response = ad.getNativeAdResponse();
-                response.setCreativeId(ad.getResponseData().getCreativeId());
+                response.setAdResponseInfo(ad.getResponseData().getAdResponseInfo());
+                response.setCreativeId(ad.getResponseData().getAdResponseInfo().getCreativeId());
                 if (!loadImage && !loadIcon) {
                     if (listener != null) {
                         listener.onAdLoaded(response);
@@ -478,9 +497,9 @@ public class NativeAdRequest implements Ad, MultiAd {
         }
 
         @Override
-        public void onAdFailed(ResultCode resultCode) {
+        public void onAdFailed(ResultCode resultCode, ANAdResponseInfo adResponseInfo) {
             if (listener != null) {
-                listener.onAdFailed(resultCode);
+                listener.onAdFailed(resultCode, adResponseInfo);
             }
             isLoading = false;
         }
@@ -549,4 +568,5 @@ public class NativeAdRequest implements Ad, MultiAd {
     public MultiAd getMultiAd() {
         return this;
     }
+
 }

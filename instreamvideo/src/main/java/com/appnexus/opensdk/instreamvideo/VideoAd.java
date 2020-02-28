@@ -17,11 +17,10 @@ package com.appnexus.opensdk.instreamvideo;
 
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.util.Pair;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import com.appnexus.opensdk.ANAdResponseInfo;
 import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.ANMultiAdRequest;
 import com.appnexus.opensdk.Ad;
@@ -30,8 +29,8 @@ import com.appnexus.opensdk.AdSize;
 import com.appnexus.opensdk.AdType;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.AdViewRequestManager;
-import com.appnexus.opensdk.MultiAd;
 import com.appnexus.opensdk.MediaType;
+import com.appnexus.opensdk.MultiAd;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.VideoOrientation;
 import com.appnexus.opensdk.ut.UTAdRequester;
@@ -61,6 +60,7 @@ public class VideoAd implements Ad, MultiAd {
     private InstreamVideoView videoAdView;
     boolean doesLoadingInBackground = true;
     private boolean showLoadingIndicator = true;
+    private ANAdResponseInfo adResponseInfo;
 
     public VideoAd(Context context, String placementID) {
         weakContext = new WeakReference<Context>(context);
@@ -175,6 +175,24 @@ public class VideoAd implements Ad, MultiAd {
      */
     public int getMemberID() {
         return requestParameters.getMemberID();
+    }
+
+    /**
+     * Retrieve the Publisher ID.
+     *
+     * @return the Publisher id that this NativeAdRequest belongs to.
+     */
+    public int getPublisherId() {
+        return requestParameters.getPublisherId();
+    }
+
+    /**
+     * Retrieve the Publisher ID.
+     *
+     * @@param publisherId the Publisher id that this NativeAdRequest belongs to.
+     */
+    public void setPublisherId(int publisherId) {
+        requestParameters.setPublisherId(publisherId);
     }
 
     /**
@@ -399,7 +417,7 @@ public class VideoAd implements Ad, MultiAd {
     protected void loadAdFromVAST(String VASTXML,int width,int height) {
         // load an ad directly from VASTXML
         VideoWebView output = new VideoWebView(this.getContext(),this, null);
-        RTBVASTAdResponse response = new RTBVASTAdResponse(width,height, AdType.VIDEO.toString(), null,null,"1");
+        RTBVASTAdResponse response = new RTBVASTAdResponse(width,height, AdType.VIDEO.toString(), null,null, getAdResponseInfo());
         response.setAdContent(VASTXML);
         response.setContentSource(UTConstants.RTB);
         response.addToExtras(UTConstants.EXTRAS_KEY_MRAID, true);
@@ -498,9 +516,10 @@ public class VideoAd implements Ad, MultiAd {
         }
 
         @Override
-        public void onAdFailed(ResultCode errorCode) {
+        public void onAdFailed(ResultCode errorCode, ANAdResponseInfo adResponseInfo) {
             isLoading = false;
             validAdExists = false;
+            setAdResponseInfo(adResponseInfo);
             if (adLoadListener != null) {
                 adLoadListener.onAdRequestFailed(VideoAd.this, errorCode);
             }
@@ -730,15 +749,16 @@ public class VideoAd implements Ad, MultiAd {
         return 0;
     }
 
+    @Deprecated
     /**
      * Retrieve the Creative Id  of the creative .
      *
      * @return the creativeId
+     * @deprecated use ({@link ANAdResponseInfo}.getCreativeId)
      */
-
     public String getCreativeId() {
-        if (videoAdView != null) {
-            return videoAdView.getCreativeId();
+        if (getAdResponseInfo() != null) {
+            return getAdResponseInfo().getCreativeId();
         }
         return "";
     }
@@ -778,6 +798,7 @@ public class VideoAd implements Ad, MultiAd {
     @Override
     public void initiateVastAdView(BaseAdResponse response, AdViewRequestManager adViewRequestManager) {
         Clog.d(Clog.videoLogTag, "Creating WebView for::" + response.getContentSource());
+        setAdResponseInfo(response.getAdResponseInfo());
         VideoWebView adVideoView = new VideoWebView(getContext(), this, adViewRequestManager);
         getVideoAdView().setVideoWebView(adVideoView);
         adVideoView.loadAd(response);
@@ -792,4 +813,13 @@ public class VideoAd implements Ad, MultiAd {
     public MultiAd getMultiAd() {
         return this;
     }
+
+    public ANAdResponseInfo getAdResponseInfo() {
+        return adResponseInfo;
+    }
+
+    private void setAdResponseInfo(ANAdResponseInfo adResponseInfo) {
+        this.adResponseInfo = adResponseInfo;
+    }
+
 }

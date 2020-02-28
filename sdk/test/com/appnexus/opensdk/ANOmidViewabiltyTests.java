@@ -16,7 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;

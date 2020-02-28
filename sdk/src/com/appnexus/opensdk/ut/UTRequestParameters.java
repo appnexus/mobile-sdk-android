@@ -61,6 +61,7 @@ public class UTRequestParameters {
     private String placementID;
     private String externalUid;
     private int memberID;
+    private int publisherId;
     private String invCode;
     private boolean doesLoadingInBackground = true;
     private AdSize primarySize;
@@ -127,6 +128,7 @@ public class UTRequestParameters {
     private static final String APP_ID = "appid";
     private static final String KEYWORDS = "keywords";
     private static final String MEMBER_ID = "member_id";
+    private static final String PUBLISHER_ID = "publisher_id";
     private static final String KEYVAL_KEY = "key";
     private static final String KEYVAL_VALUE = "value";
     private static final String SDK_VERSION = "sdkver";
@@ -488,9 +490,11 @@ public class UTRequestParameters {
                 ANMultiAdRequest multiAdRequest = anMultiAdRequest.get();
                 ArrayList<Pair<String, String>> customKeywords = getCustomKeywords();
                 int memberID = getMemberID();
+                int publisherId = getPublisherId();
                 if (multiAdRequest != null) {
                     customKeywords = multiAdRequest.getCustomKeywords();
                     memberID = multiAdRequest.getRequestParameters().getMemberID();
+                    publisherId = multiAdRequest.getRequestParameters().getPublisherId();
                 }
                 JSONArray keywordsArray = getCustomKeywordsArray(customKeywords);
                 if (keywordsArray != null && keywordsArray.length() > 0) {
@@ -500,6 +504,10 @@ public class UTRequestParameters {
                 //add Member ID
                 if (memberID > 0) {
                     postData.put(MEMBER_ID, memberID);
+                }
+
+                if (publisherId > 0) {
+                    postData.put(PUBLISHER_ID, publisherId);
                 }
             }
 
@@ -559,6 +567,10 @@ public class UTRequestParameters {
 
                 if (uuid != null) {
                     tag.put(TAG_UUID, uuid);
+                }
+
+                if ((anMultiAdRequest.get() == null) && utRequestParameters.getPublisherId() > 0) {
+                    postData.put(PUBLISHER_ID, utRequestParameters.getPublisherId());
                 }
 
                 JSONObject primesize = new JSONObject();
@@ -1009,5 +1021,13 @@ public class UTRequestParameters {
 
     public void disassociateFromMultiAdRequest() {
         this.anMultiAdRequest = new WeakReference<>(null);
+    }
+
+    public int getPublisherId() {
+        return publisherId;
+    }
+
+    public void setPublisherId(int publisherId) {
+        this.publisherId = publisherId;
     }
 }

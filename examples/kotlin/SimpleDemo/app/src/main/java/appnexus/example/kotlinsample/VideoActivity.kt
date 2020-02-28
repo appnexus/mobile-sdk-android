@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.appnexus.opensdk.ANAdResponseInfo
 import com.appnexus.opensdk.ResultCode
 import com.appnexus.opensdk.instreamvideo.*
 

@@ -29,8 +29,7 @@ public interface VideoAdLoadListener {
     /**
      * Called when an ad request has failed.  Ad requests can fail
      * because no ad is available, or because of networking errors.
-     *
-     * @param videoAd   The {@link VideoAd} that loaded the ad.
+     *  @param videoAd   The {@link VideoAd} that loaded the ad.
      * @param errorCode the ResultCode describing the failure.
      */
     public void onAdRequestFailed(VideoAd videoAd, ResultCode errorCode);

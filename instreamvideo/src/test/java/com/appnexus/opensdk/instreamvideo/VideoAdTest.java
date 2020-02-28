@@ -16,8 +16,6 @@
 
 package com.appnexus.opensdk.instreamvideo;
 
-import android.widget.FrameLayout;
-
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.VideoOrientation;
 import com.appnexus.opensdk.instreamvideo.shadows.ShadowAsyncTaskNoExecutor;

@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk.ut.adresponse;
 
+import com.appnexus.opensdk.ANAdResponseInfo;
 import com.appnexus.opensdk.ANNativeAdResponse;
 
 import java.util.ArrayList;
@@ -24,8 +25,8 @@ public class RTBNativeAdResponse extends BaseAdResponse {
 
     private ANNativeAdResponse nativeAdResponse;
 
-    public RTBNativeAdResponse(int width, int height, String adType, ANNativeAdResponse nativeAdResponse, ArrayList<String> impressionURLs, String creativeId) {
-        super(width, height, adType, impressionURLs, creativeId);
+    public RTBNativeAdResponse(int width, int height, String adType, ANNativeAdResponse nativeAdResponse, ArrayList<String> impressionURLs, ANAdResponseInfo adResponseInfo) {
+        super(width, height, adType, impressionURLs, adResponseInfo);
         this.nativeAdResponse = nativeAdResponse;
     }
 

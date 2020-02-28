@@ -16,6 +16,8 @@
 
 package com.appnexus.opensdk.ut.adresponse;
 
+import com.appnexus.opensdk.ANAdResponseInfo;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,8 +36,8 @@ public class CSMVASTAdResponse extends BaseAdResponse {
     private JSONObject adJSONContent;
     private String uuid;
 
-    public CSMVASTAdResponse(int width, int height, String adType, ArrayList<String> impressionURLs, String creativeId, String uuid) {
-        super(width, height, adType, impressionURLs , creativeId);
+    public CSMVASTAdResponse(int width, int height, String adType, ArrayList<String> impressionURLs, ANAdResponseInfo adResponseInfo, String uuid) {
+        super(width, height, adType, impressionURLs , adResponseInfo);
         this.uuid = uuid;
     }
 
