@@ -36,6 +36,12 @@ public class ANGDPRSettings {
     private static final String ANGDPR_CONSENT_REQUIRED = "ANGDPR_ConsentRequired";
 
 
+    //TCF 2.0 consent parameters
+    private static final String IABTCF_CONSENT_STRING = "IABTCF_TCString";
+    private static final String IABTCF_SUBJECT_TO_GDPR = "IABTCF_gdprApplies";
+
+    private static final String  ANGDPR_DeviceAccessConsent = "ANGDPR_DeviceAccessConsent";
+
     /**
      * Set the consent string in the SDK
      *
@@ -94,7 +100,9 @@ public class ANGDPRSettings {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
             if (pref.contains(ANGDPR_CONSENT_STRING)) {
                 return pref.getString(ANGDPR_CONSENT_STRING, "");
-            } else if (pref.contains(IAB_SUBJECT_TO_GDPR)) {
+            } else if (pref.contains(IABTCF_CONSENT_STRING)) {
+                return pref.getString(IABTCF_CONSENT_STRING, "");
+            } else if (pref.contains(IAB_CONSENT_STRING)) {
                 return pref.getString(IAB_CONSENT_STRING, "");
             }
         }
@@ -115,6 +123,8 @@ public class ANGDPRSettings {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
             if (pref.contains(ANGDPR_CONSENT_REQUIRED)) {
                 subjectToGdprValue = pref.getString(ANGDPR_CONSENT_REQUIRED, "Nil");
+            } else if (pref.contains(IABTCF_SUBJECT_TO_GDPR)) {
+                subjectToGdprValue = pref.getString(IABTCF_SUBJECT_TO_GDPR, "Nil");
             } else if (pref.contains(IAB_SUBJECT_TO_GDPR)) {
                 subjectToGdprValue = pref.getString(IAB_SUBJECT_TO_GDPR, "Nil");
             }
@@ -127,4 +137,47 @@ public class ANGDPRSettings {
         }
         return null;
     }
+
+    /**
+     * Set the device access Consent by the publisher.
+     *
+     * @param context
+     * @param A consent set by the publisher to access the device data as per https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework
+     */
+    public static void setDeviceAccessConsent(Context context, boolean deviceConsent) {
+        if (context != null) {
+            if (deviceConsent) {
+                PreferenceManager.getDefaultSharedPreferences(context).edit().putString(ANGDPR_DeviceAccessConsent, "1").apply();
+            } else {
+                PreferenceManager.getDefaultSharedPreferences(context).edit().putString(ANGDPR_DeviceAccessConsent, "0").apply();
+            }
+        }
+    }
+
+    /**
+     * Get the device access Consent set by the publisher.
+     *
+     * @param context
+     * @return A valid Base64 encode consent string as per https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework
+     * or "" if not set
+     */
+    public static Boolean getDeviceAccessConsent() {
+
+        String deviceConsent = "Nil";
+
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+            if (pref.contains(ANGDPR_DeviceAccessConsent)) {
+                deviceConsent = pref.getString(ANGDPR_DeviceAccessConsent, "Nil");
+            }
+
+
+        if (deviceConsent.equalsIgnoreCase("1")) {
+            return true;
+        } else if (deviceConsent.equalsIgnoreCase("0")) {
+            return false;
+        }
+        return null;
+    }
+
+
 }
