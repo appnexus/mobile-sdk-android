@@ -1,5 +1,5 @@
 // Project Properties
-version = "5.6.1" // supported Facebook version
+version = "5.7.1" // supported Facebook version
 
 apply plugin: 'com.android.library'
 

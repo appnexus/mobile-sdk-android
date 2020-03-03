@@ -103,8 +103,6 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
     @Override
     protected HashMap<String, UTAdResponse> doInBackground(Void... params) {
 
-//        UTAdRequester requester = this.requester.get();
-//        if (requester != null) {
         try {
 
             String baseUrl = SDKSettings.isHttpsEnabled() ? UTConstants.REQUEST_BASE_URL_UT.replace("http:", "https:") : UTConstants.REQUEST_BASE_URL_UT;
