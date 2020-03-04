@@ -34,13 +34,13 @@ public class ANGDPRSettings {
 
     private static final String ANGDPR_CONSENT_STRING = "ANGDPR_ConsentString";
     private static final String ANGDPR_CONSENT_REQUIRED = "ANGDPR_ConsentRequired";
-
+    private static final String ANGDPR_PurposeConsents = "ANGDPR_PurposeConsents";
 
     //TCF 2.0 consent parameters
     private static final String IABTCF_CONSENT_STRING = "IABTCF_TCString";
     private static final String IABTCF_SUBJECT_TO_GDPR = "IABTCF_gdprApplies";
+    private static final String IABTCF_PurposeConsents = "IABTCF_PurposeConsents";
 
-    private static final String  ANGDPR_DeviceAccessConsent = "ANGDPR_DeviceAccessConsent";
 
     /**
      * Set the consent string in the SDK
@@ -144,13 +144,9 @@ public class ANGDPRSettings {
      * @param context
      * @param A consent set by the publisher to access the device data as per https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework
      */
-    public static void setDeviceAccessConsent(Context context, boolean deviceConsent) {
-        if (context != null) {
-            if (deviceConsent) {
-                PreferenceManager.getDefaultSharedPreferences(context).edit().putString(ANGDPR_DeviceAccessConsent, "1").apply();
-            } else {
-                PreferenceManager.getDefaultSharedPreferences(context).edit().putString(ANGDPR_DeviceAccessConsent, "0").apply();
-            }
+    public static void setPurposeConsents(Context context, String purposeConsents) {
+        if (context != null && !purposeConsents.isEmpty()) {
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putString(ANGDPR_PurposeConsents, purposeConsents).apply();
         }
     }
 
@@ -161,21 +157,24 @@ public class ANGDPRSettings {
      * @return A valid Base64 encode consent string as per https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework
      * or "" if not set
      */
-    public static Boolean getDeviceAccessConsent(Context context) {
+    public static String getDeviceAccessConsent(Context context) {
+
+        if(context == null)
+            return null;
 
         String deviceConsent = "Nil";
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-            if (pref.contains(ANGDPR_DeviceAccessConsent)) {
-                deviceConsent = pref.getString(ANGDPR_DeviceAccessConsent, "Nil");
-            }
-
-
-        if (deviceConsent.equalsIgnoreCase("1")) {
-            return true;
-        } else if (deviceConsent.equalsIgnoreCase("0")) {
-            return false;
+        if (pref.contains(ANGDPR_PurposeConsents)) {
+                deviceConsent = pref.getString(ANGDPR_PurposeConsents, "Nil");
+        } else if (pref.contains(IABTCF_PurposeConsents)){
+                deviceConsent = pref.getString(IABTCF_PurposeConsents, "Nil");
         }
+
+
+        if (deviceConsent != "Nil")
+            return deviceConsent.substring(0);
+
         return null;
     }
 
