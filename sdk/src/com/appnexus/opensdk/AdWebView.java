@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.MutableContextWrapper;
-import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -34,7 +33,6 @@ import android.net.http.SslError;
 import android.os.Build;
 import android.os.Handler;
 import android.util.DisplayMetrics;
-import android.util.Pair;
 import android.util.Patterns;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -51,10 +49,9 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.appnexus.opensdk.AdView.BrowserStyle;
 import com.appnexus.opensdk.ut.UTAdRequester;
-import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.UTConstants;
+import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBNativeAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
@@ -67,13 +64,7 @@ import com.appnexus.opensdk.viewability.ANOmidAdSession;
 
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -209,8 +200,8 @@ class AdWebView extends WebView implements Displayable,
                 html = ad.getAdContent();
             }
             // set creative size
-            setCreativeHeight(isNativeAd? getAdHeight() : ad.getHeight());
-            setCreativeWidth(isNativeAd? getAdWidth() : ad.getWidth());
+            setCreativeHeight(isNativeAd ? getAdHeight() : ad.getHeight());
+            setCreativeWidth(isNativeAd ? getAdWidth() : ad.getWidth());
             // Safety Check: content is verified in AdResponse, so this should never be empty
             if (StringUtil.isEmpty(html)) {
                 fail();
@@ -226,7 +217,7 @@ class AdWebView extends WebView implements Displayable,
                     .getDisplayMetrics().density;
             //do not modify this logic as it affects the rendering of 1x1 interstitial
             int rheight, rwidth;
-            if(isNativeAd) {
+            if (isNativeAd) {
                 rheight = (int) (getAdHeight() * scale + 0.5f);
                 rwidth = (int) (getAdWidth() * scale + 0.5f);
             } else if (ad.getHeight() == 1 && ad.getWidth() == 1) {
@@ -254,7 +245,7 @@ class AdWebView extends WebView implements Displayable,
                 }
                 this.loadDataWithBaseURL(Settings.getBaseUrl(), html, "text/html", "UTF-8", null);
             }
-        }catch (OutOfMemoryError exception){
+        } catch (OutOfMemoryError exception) {
             // System is running low in memory and cannot process loadAd just return a failure.
             // This prevents app crash because of ads.
             Clog.e(Clog.baseLogTag, "AdWebView.loadAd -- Caught OutOfMemoryError", exception);
@@ -332,7 +323,7 @@ class AdWebView extends WebView implements Displayable,
     }
 
     protected void loadUrlWithMRAID(final String url) {
-        new HTTPGet() {
+        HTTPGet load = new HTTPGet() {
             @Override
             protected void onPostExecute(HTTPResponse response) {
                 if (response.getSucceeded()) {
@@ -349,8 +340,12 @@ class AdWebView extends WebView implements Displayable,
             protected String getUrl() {
                 return url;
             }
-        }.execute();
-
+        };
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            load.executeOnExecutor(SDKSettings.getExternalExecutor());
+        } else {
+            load.execute();
+        }
     }
 
     protected MRAIDImplementation getMRAIDImplementation() {
@@ -447,8 +442,8 @@ class AdWebView extends WebView implements Displayable,
                     }
                 }
 
-                if(!isVideoAd && !isNativeAd) {
-                    omidAdSession.initAdSession(AdWebView.this,isVideoAd);
+                if (!isVideoAd && !isNativeAd) {
+                    omidAdSession.initAdSession(AdWebView.this, isVideoAd);
                 }
 
                 firstPageFinished = true;
@@ -498,7 +493,7 @@ class AdWebView extends WebView implements Displayable,
                 if (url.contains("mraid.js") && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
                     return null;
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return super.shouldInterceptRequest(view, url);
@@ -592,13 +587,6 @@ class AdWebView extends WebView implements Displayable,
         intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
 
         BrowserAdActivity.BROWSER_QUEUE.add(fwdWebView);
-        if (adView.getBrowserStyle() != null) {
-            String i = "" + super.hashCode();
-            intent.putExtra("bridgeid", i);
-            AdView.BrowserStyle.bridge
-                    .add(new Pair<String, BrowserStyle>(i,
-                            adView.getBrowserStyle()));
-        }
 
         try {
             adView.getContext().startActivity(intent);
@@ -686,8 +674,8 @@ class AdWebView extends WebView implements Displayable,
     // Called from VideoImplementation on Video Ad Success
     protected void success() {
         // Delay creation of AdSession till JS loads completely for WebView Video
-        if(isVideoAd) {
-            omidAdSession.initAdSession(AdWebView.this,isVideoAd);
+        if (isVideoAd) {
+            omidAdSession.initAdSession(AdWebView.this, isVideoAd);
         }
         if (caller_requester != null) {
             caller_requester.onReceiveAd(getAdResponse());
@@ -751,17 +739,17 @@ class AdWebView extends WebView implements Displayable,
 
     @Override
     public void destroy() {
-        if(mWebChromeClient != null){
+        if (mWebChromeClient != null) {
             mWebChromeClient.onHideCustomView();
         }
-        if(isNativeAd) {
+        if (isNativeAd) {
             NativeAdSDK.unRegisterTracking(this);
         } else {
             omidAdSession.stopAdSession();
         }
         // in case `this` was not removed when destroy was called
         ViewUtil.removeChildFromParent(this);
-        if(isNativeAd) {
+        if (isNativeAd) {
             AdWebView.super.destroy();
         } else {
             new Handler().postDelayed(new Runnable() {
@@ -807,7 +795,7 @@ class AdWebView extends WebView implements Displayable,
 
     @Override
     public void onAdImpression() {
-        if(!isVideoAd && !isNativeAd){
+        if (!isVideoAd && !isNativeAd) {
             omidAdSession.fireImpression();
         }
     }
@@ -950,7 +938,7 @@ class AdWebView extends WebView implements Displayable,
     }
 
     protected void checkPosition() {
-        if(!isMRAIDEnabled) {
+        if (!isMRAIDEnabled) {
             return;
         }
         if (tooManyCheckPositionRequests()) {

@@ -48,7 +48,7 @@ public class AdvertisingIDUtil {
         AAIDTask getAAIDTask = new AAIDTask(context);
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                getAAIDTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                getAAIDTask.executeOnExecutor(SDKSettings.getExternalExecutor());
             } else {
                 getAAIDTask.execute();
             }

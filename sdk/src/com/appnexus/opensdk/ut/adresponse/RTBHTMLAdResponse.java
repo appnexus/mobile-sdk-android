@@ -16,11 +16,13 @@
 
 package com.appnexus.opensdk.ut.adresponse;
 
+import com.appnexus.opensdk.ANAdResponseInfo;
+
 import java.util.ArrayList;
 
 
 public class RTBHTMLAdResponse extends BaseAdResponse {
-    public RTBHTMLAdResponse(int width, int height, String adType, ArrayList<String> impressionURLs, String creativeId) {
-        super(width, height, adType, impressionURLs, creativeId);
+    public RTBHTMLAdResponse(int width, int height, String adType, ArrayList<String> impressionURLs, ANAdResponseInfo adResponseInfo) {
+        super(width, height, adType, impressionURLs, adResponseInfo);
     }
 }

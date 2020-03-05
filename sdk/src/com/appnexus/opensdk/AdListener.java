@@ -39,8 +39,7 @@ public interface AdListener {
     /**
      * Called when an ad request has failed.  Ad requests can fail
      * because no ad is available, or because of networking errors.
-     *
-     * @param adView    The {@link com.appnexus.opensdk.AdView} that loaded the ad.
+     *  @param adView    The {@link AdView} that loaded the ad.
      * @param errorCode the error code describing the failure.
      */
     public void onAdRequestFailed(AdView adView, ResultCode errorCode);

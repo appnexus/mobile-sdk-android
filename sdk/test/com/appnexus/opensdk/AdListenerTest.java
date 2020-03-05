@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.mocks.MockDefaultExecutorSupplier;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowCustomWebView;
 import com.appnexus.opensdk.shadows.ShadowSettings;
@@ -31,6 +32,9 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotSame;
+
 @Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
                 ShadowCustomWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
@@ -40,6 +44,16 @@ public class AdListenerTest extends BaseViewAdTest {
     @Override
     public void setup() {
         super.setup();
+    }
+
+    //This verifies that the AsyncTask for Request is being executed on the Correct Executor.
+    @Test
+    public void testRequestExecutorForBackgroundTasks() {
+        SDKSettings.setExternalExecutor(MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+        assertNotSame(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+        requestManager = new AdViewRequestManager(bannerAdView);
+        requestManager.execute();
+        assertEquals(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
     }
 
     // Banner Testing

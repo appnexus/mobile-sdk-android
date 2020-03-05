@@ -16,24 +16,27 @@
 
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.mocks.MockDefaultExecutorSupplier;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowCustomVideoWebView;
-import com.appnexus.opensdk.shadows.ShadowCustomWebView;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.squareup.okhttp.mockwebserver.MockResponse;
-
-import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
+import org.robolectric.shadows.ShadowLooper;
 
+import static android.os.Looper.getMainLooper;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotSame;
 import static junit.framework.Assert.assertTrue;
+import static org.robolectric.Shadows.shadowOf;
 
 @Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
@@ -51,7 +54,17 @@ public class BannerAdViewVideoLoadAdTest extends BaseViewAdTest {
         super.tearDown();
     }
 
-
+    //This verifies that the AsyncTask for Request is being executed on the Correct Executor.
+    @Test
+    public void testRequestExecutorForBackgroundTasks() {
+        SDKSettings.setExternalExecutor(MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+        assertNotSame(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+        bannerAdView.loadAd();
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertEquals(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+    }
 
     @Test
     public void testgetAdTypeVideo() {
@@ -82,6 +95,12 @@ public class BannerAdViewVideoLoadAdTest extends BaseViewAdTest {
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
+
+        ShadowLooper shadowLooper = shadowOf(getMainLooper());
+        if (!shadowLooper.isIdle()) {
+            shadowLooper.idle();
+        }
+        RuntimeEnvironment.getMasterScheduler().advanceToNextPostedRunnable();
     }
 
 

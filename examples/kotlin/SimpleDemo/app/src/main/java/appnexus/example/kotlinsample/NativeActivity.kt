@@ -52,7 +52,7 @@ class NativeActivity : AppCompatActivity(),NativeAdRequestListener,NativeAdEvent
         NativeAdSDK.registerTracking(nativeAdResponse, nativeContainer, mutableListOf(clickThrough) as List<View>?,this)
     }
 
-    override fun onAdFailed(errorcode: ResultCode) {
+    override fun onAdFailed(errorcode: ResultCode, adResponseinfo:ANAdResponseInfo) {
         log("Native Ad Failed: " + errorcode.name)
     }
     // NativeAdRequestListener - End

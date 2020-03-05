@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.MutableContextWrapper;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -47,7 +48,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class ANNativeAdResponse extends BaseNativeAdResponse  {
+public class ANNativeAdResponse extends BaseNativeAdResponse {
     private String title;
     private String description;
     private String imageUrl;
@@ -130,7 +131,7 @@ public class ANNativeAdResponse extends BaseNativeAdResponse  {
     /**
      * Process the metadata of native response from ad server
      *
-     * @param adObject    JsonObject that contains info of native ad
+     * @param adObject JsonObject that contains info of native ad
      * @return ANNativeResponse if no issue happened during processing
      */
     public static ANNativeAdResponse create(JSONObject adObject) {
@@ -140,7 +141,7 @@ public class ANNativeAdResponse extends BaseNativeAdResponse  {
 
         JSONObject rtbObject = JsonUtil.getJSONObject(adObject, UTConstants.RTB);
         JSONObject metaData = JsonUtil.getJSONObject(rtbObject, UTConstants.AD_TYPE_NATIVE);
-        if(metaData == null){
+        if (metaData == null) {
             return null;
         }
 
@@ -151,7 +152,8 @@ public class ANNativeAdResponse extends BaseNativeAdResponse  {
         }
         ANNativeAdResponse response = new ANNativeAdResponse();
         response.imp_trackers = imp_trackers;
-        response.rendererUrl = JsonUtil.getJSONString(adObject, RENDERER_URL);;
+        response.rendererUrl = JsonUtil.getJSONString(adObject, RENDERER_URL);
+        ;
         response.title = JsonUtil.getJSONString(metaData, KEY_TITLE);
         response.description = JsonUtil.getJSONString(metaData, KEY_DESCRIPTION);
         JSONObject media = JsonUtil.getJSONObject(metaData, KEY_MAIN_MEDIA);
@@ -291,8 +293,7 @@ public class ANNativeAdResponse extends BaseNativeAdResponse  {
     }
 
     @Override
-    public boolean hasExpired()
-    {
+    public boolean hasExpired() {
         return expired;
     }
 
@@ -317,7 +318,7 @@ public class ANNativeAdResponse extends BaseNativeAdResponse  {
 
             impressionTrackers = new ArrayList<ImpressionTracker>(imp_trackers.size());
             for (String url : imp_trackers) {
-                ImpressionTracker impressionTracker = ImpressionTracker.create(url, visibilityDetector, view.getContext(),anOmidAdSession);
+                ImpressionTracker impressionTracker = ImpressionTracker.create(url, visibilityDetector, view.getContext(), anOmidAdSession);
                 impressionTrackers.add(impressionTracker);
             }
             this.registeredView = view;
@@ -407,7 +408,11 @@ public class ANNativeAdResponse extends BaseNativeAdResponse  {
                 // fire click tracker first
                 if (click_trackers != null) {
                     for (String url : click_trackers) {
-                        new ClickTracker(url).execute();
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                            new ClickTracker(url).executeOnExecutor(SDKSettings.getExternalExecutor());
+                        } else {
+                            new ClickTracker(url).execute();
+                        }
                     }
                 }
                 if (getClickThroughAction() == ANClickThroughAction.RETURN_URL) {

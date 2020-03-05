@@ -16,9 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
-import com.appnexus.opensdk.shadows.ShadowSettings;
-import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.util.TestUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.viewability.ANOmidAdSession;
@@ -27,8 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
-import org.robolectric.shadows.ShadowWebView;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -40,6 +35,9 @@ public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListe
     protected NativeAdResponse     response;
 
     protected boolean adLoaded, adFailed;
+    NativeAdResponse nativeAdResponse;
+    ResultCode failErrorCode;
+    protected ANAdResponseInfo adResponseInfo;
 
 
     @Override
@@ -48,6 +46,10 @@ public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListe
 
         adLoaded = false;
         adFailed = false;
+        nativeAdResponse = null;
+        failErrorCode = null;
+
+        adResponseInfo = null;
 
         adRequest = new NativeAdRequest(activity, "0");
         adRequest.setListener(this);
@@ -69,13 +71,16 @@ public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListe
     @Override
     public void onAdLoaded(NativeAdResponse response) {
         adLoaded = true;
+        nativeAdResponse = response;
         this.response = response;
         Clog.w(TestUtil.testLogTag, "BaseNativeTest onAdLoaded");
     }
 
     @Override
-    public void onAdFailed(ResultCode errorcode) {
+    public void onAdFailed(ResultCode errorcode, ANAdResponseInfo adResponseInfo) {
         adFailed = true;
+        failErrorCode = errorcode;
+        this.adResponseInfo = adResponseInfo;
         Clog.w(TestUtil.testLogTag, "BaseNativeTest onAdFailed");
 
     }

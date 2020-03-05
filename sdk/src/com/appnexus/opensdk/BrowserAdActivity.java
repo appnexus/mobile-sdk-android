@@ -28,7 +28,6 @@ import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.*;
@@ -53,7 +52,14 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
     @SuppressLint({"SetJavaScriptEnabled", "NewApi"})
     @Override
     public void create() {
-        adActivity.setContentView(R.layout.activity_in_app_browser);
+        adActivity.setContentView(R.layout.an_activity_in_app_browser);
+        final ImageButton close = adActivity.findViewById(R.id.close);
+        close.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finishAdActivity();
+                }
+            });
 
         webView = BROWSER_QUEUE.poll();
         if ((webView == null) || (webView.getSettings() == null)) {
@@ -106,29 +112,6 @@ public class BrowserAdActivity implements AdActivity.AdActivityImplementation {
                     back.setImageBitmap(rotated);
                 }
             });
-        }
-
-        String id = adActivity.getIntent().getStringExtra("bridgeid");
-
-        if (id != null) {
-            AdView.BrowserStyle style = null;
-            for (Pair<String, AdView.BrowserStyle> p : AdView.BrowserStyle.bridge) {
-                if (p.first.equals(id)) {
-                    style = p.second;
-                    AdView.BrowserStyle.bridge.remove(p);
-                }
-            }
-            if (style != null) {
-                if (sdk >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                    back.setBackground(style.backButton);
-                    forward.setBackground(style.forwardButton);
-                    refresh.setBackground(style.refreshButton);
-                } else {
-                    back.setBackgroundDrawable(style.backButton);
-                    forward.setBackgroundDrawable(style.forwardButton);
-                    refresh.setBackgroundDrawable(style.refreshButton);
-                }
-            }
         }
 
         back.setOnClickListener(new View.OnClickListener() {

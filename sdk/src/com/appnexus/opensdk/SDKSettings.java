@@ -17,10 +17,13 @@
 package com.appnexus.opensdk;
 
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Build;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+
+import java.util.concurrent.Executor;
 
 /**
  * Global static functions that apply to all SDK views and calls.
@@ -35,7 +38,7 @@ public class SDKSettings {
     /**
      * Sets the Android Advertising ID to be passed in the ad request.
      *
-     * @param aaid the android advertising id value.
+     * @param aaid                 the android advertising id value.
      * @param limitTrackingEnabled whether limitTracking is enabled or not.
      */
     public static void setAAID(String aaid, boolean limitTrackingEnabled) {
@@ -76,18 +79,20 @@ public class SDKSettings {
     /**
      * Set true to allow Open-Measurement for viewability and verification measurement for ads served
      * The Android version needs to be KITKAT(4.4) or above for enabling the Open Measurement
+     *
      * @param enabled to enable OMSDK. default is true for Android KITKAT(4.4) and above
      */
     public static void setOMEnabled(boolean enabled) {
         Settings.getSettings().omEnabled = enabled;
     }
+
     /**
      * Return true only if the Android Version is KITKAT(4.4) or above
      * and if the ad server calls allow to include Open-Measurement for viewability and verification information
      * or false otherwise.
      */
     public static boolean getOMEnabled() {
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             Clog.e(Clog.omidLogTag, Clog.getString(R.string.apn_omid_enable_failure));
             return false;
         }
@@ -124,8 +129,7 @@ public class SDKSettings {
                 location.setLongitude(Math.round(location.getLongitude() * power) / power);
             }
             Settings.getSettings().location = location;
-        }
-        else {
+        } else {
             Settings.getSettings().location = null;
         }
     }
@@ -155,14 +159,14 @@ public class SDKSettings {
      *
      * @return The digits after decimal of latitude and longitude
      */
-    public static int getLocationDecimalDigits(){
+    public static int getLocationDecimalDigits() {
         return Settings.getSettings().locationDecimalDigits;
     }
 
     /**
      * Register a mapping for an external mediation class.
      *
-     * @param className the end class name.
+     * @param className         the end class name.
      * @param customAdaptorName the intermediary class name. The intermediate
      *                          class needs to have a constructor that
      *                          takes a single String parameter.
@@ -186,8 +190,8 @@ public class SDKSettings {
      * @param useHttps whether to enable Https or not. default is false
      */
 
-    public static void useHttps(boolean useHttps){
-        Settings.getSettings().useHttps=useHttps;
+    public static void useHttps(boolean useHttps) {
+        Settings.getSettings().useHttps = useHttps;
     }
 
     /**
@@ -204,7 +208,7 @@ public class SDKSettings {
      *
      * @param enable whether to enable location permission alert or not. default is true
      */
-    public static void setLocationEnabledForCreative(boolean enable){
+    public static void setLocationEnabledForCreative(boolean enable) {
         Settings.getSettings().locationEnabledForCreative = enable;
     }
 
@@ -212,7 +216,7 @@ public class SDKSettings {
      * Returns false if the locationEnabledForCreative is set to false
      * or true otherwise
      */
-    public static boolean isLocationEnabledForCreative(){
+    public static boolean isLocationEnabledForCreative() {
         return Settings.getSettings().locationEnabledForCreative;
     }
 
@@ -220,8 +224,21 @@ public class SDKSettings {
     /**
      * Returns AppNexus SDK Version
      */
-    public static String getSDKVersion(){
-       return Settings.getSettings().sdkVersion;
+    public static String getSDKVersion() {
+        return Settings.getSettings().sdkVersion;
+    }
+
+    private static Executor clientExecutor = null;
+
+    public static void setExternalExecutor(Executor clientExecutor) {
+        SDKSettings.clientExecutor = clientExecutor;
+    }
+
+    public static Executor getExternalExecutor() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && clientExecutor == null) {
+            return AsyncTask.THREAD_POOL_EXECUTOR;
+        }
+        return clientExecutor;
     }
 
 }

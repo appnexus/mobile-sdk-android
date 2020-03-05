@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk;
 
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 
@@ -64,7 +65,7 @@ public class MediatedSSMAdViewController {
     }
 
     private void instantiateNewMediatedSSMAd() {
-        new HTTPGet() {
+        HTTPGet loadUrl = new HTTPGet() {
             @Override
             protected HTTPResponse doInBackground(Void... params) {
                 return super.doInBackground(params);
@@ -90,8 +91,12 @@ public class MediatedSSMAdViewController {
             protected String getUrl() {
                 return ssmHtmlAdResponse.getAdUrl();
             }
-        }.execute();
-
+        };
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            loadUrl.executeOnExecutor(SDKSettings.getExternalExecutor());
+        } else {
+            loadUrl.execute();
+        }
     }
 
     public void onAdFailed(ResultCode reason) {
@@ -114,7 +119,7 @@ public class MediatedSSMAdViewController {
         fireResponseURL(ssmHtmlAdResponse, ResultCode.SUCCESS);
         UTAdRequester requester = this.caller_requester.get();
         if (requester != null) {
-            final AdWebView output = new AdWebView(owner,requester);
+            final AdWebView output = new AdWebView(owner, requester);
             output.loadAd(ssmHtmlAdResponse);
         }
     }
@@ -126,7 +131,6 @@ public class MediatedSSMAdViewController {
         }
         ResponseUrl responseUrl = new ResponseUrl.Builder(ssmHtmlAdResponse.getResponseURL(), result)
                 .latency(getLatencyParam())
-                .totalLatency(getTotalLatencyParam(caller_requester.get()))
                 .build();
         responseUrl.execute();
     }
@@ -167,6 +171,7 @@ public class MediatedSSMAdViewController {
             }
         }
     }
+
     // if the mediated network fails to call us within the timeout period, fail
     private final Handler timeoutHandler = new TimeoutHandler(this);
 
@@ -195,24 +200,13 @@ public class MediatedSSMAdViewController {
 
     /**
      * The latency of the call to the mediated SDK.
+     *
      * @return the mediated SDK latency, -1 if `latencyStart`
      * or `latencyStop` not set.
      */
     private long getLatencyParam() {
         if ((latencyStart > 0) && (latencyStop > 0)) {
             return (latencyStop - latencyStart);
-        }
-        // return -1 if invalid.
-        return -1;
-    }
-
-    /**
-     * The running total latency of the ad call.
-     * @return the running total latency, -1 if `latencyStop` not set.
-     */
-    private long getTotalLatencyParam(UTAdRequester requester) {
-        if ((requester != null) && (latencyStop > 0)) {
-            return requester.getLatency(latencyStop);
         }
         // return -1 if invalid.
         return -1;

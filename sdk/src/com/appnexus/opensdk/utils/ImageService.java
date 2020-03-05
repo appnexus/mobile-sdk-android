@@ -19,6 +19,9 @@ package com.appnexus.opensdk.utils;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Build;
+
+import com.appnexus.opensdk.SDKSettings;
 
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
@@ -73,7 +76,11 @@ public class ImageService {
             for (Map.Entry pairs : imageUrlMap.entrySet()) {
                 ImageDownloader downloader = new ImageDownloader(imageReceiver, (String) pairs.getKey(), (String) pairs.getValue(), this);
                 Clog.d(Clog.baseLogTag, "Downloading " + pairs.getKey() + " from url: " + pairs.getValue());
-                downloader.execute();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    downloader.executeOnExecutor(SDKSettings.getExternalExecutor());
+                } else {
+                    downloader.execute();
+                }
             }
         } else {
             imageServiceListener.onAllImageDownloadsFinish();

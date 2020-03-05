@@ -5,6 +5,7 @@ import com.appnexus.opensdk.ut.UTAdResponse;
 import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMSDKAdResponse;
+import com.appnexus.opensdk.ut.adresponse.CSRAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBNativeAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.SSMHTMLAdResponse;
@@ -35,6 +36,19 @@ public class UTAdResponseTest extends BaseRoboTest {
 
     }
 
+    @Test
+    public void testCSRNative() {
+        utAdResponse = new UTAdResponse(TestResponsesUT.csrNativeSuccessful(), null, MediaType.NATIVE, "v");
+        assertNotNull(utAdResponse);
+        LinkedList<BaseAdResponse> list = utAdResponse.getAdList();
+        assertEquals(1, list.size());
+        assertEquals(MediaType.NATIVE, utAdResponse.getMediaType());
+        BaseAdResponse response = list.get(0);
+        assertEquals("csr", response.getContentSource());
+        CSRAdResponse csr = (CSRAdResponse) response;
+        assertEquals("com.appnexus.opensdk.testviews.CSRNativeSuccessful", csr.getClassName());
+        assertEquals("{\"placement_id\":\"333673923704415_469697383435401\"}", csr.getPayload());
+    }
 
     /**
      * Tests no ad response
@@ -89,7 +103,7 @@ public class UTAdResponseTest extends BaseRoboTest {
         while (!list.isEmpty()) {
             BaseAdResponse baseAdResponse = (BaseAdResponse) list.removeFirst();
             assertEquals("rtb", baseAdResponse.getContentSource());
-            assertEquals("6332753", baseAdResponse.getCreativeId());
+            assertEquals("6332753", baseAdResponse.getAdResponseInfo().getCreativeId());
         }
     }
 
@@ -142,7 +156,7 @@ public class UTAdResponseTest extends BaseRoboTest {
             assertTrue(nativeAdResponse.getNativeAdResponse().getImageUrl().contains("http://path_to_main.com"));
             assertEquals(false, nativeAdResponse.getNativeAdResponse().isOpenNativeBrowser());
             assertEquals(true, nativeAdResponse.getNativeAdResponse().getLoadsInBackground());
-            assertEquals("47772560", nativeAdResponse.getCreativeId());
+            assertEquals("47772560", nativeAdResponse.getAdResponseInfo().getCreativeId());
         }
     }
 
@@ -163,11 +177,11 @@ public class UTAdResponseTest extends BaseRoboTest {
         System.out.println("Printing first");
         CSMSDKAdResponse baseCSMSDKAdResponse = (CSMSDKAdResponse) list.getFirst();
         assertEquals("csm", baseCSMSDKAdResponse.getContentSource());
-        assertEquals("44863345", baseCSMSDKAdResponse.getCreativeId());
+        assertEquals("44863345", baseCSMSDKAdResponse.getAdResponseInfo().getCreativeId());
         System.out.println("Printing second");
         BaseAdResponse baseAdResponse = (BaseAdResponse) list.getLast();
         assertEquals("rtb", baseAdResponse.getContentSource());
-        assertEquals("6332753", baseAdResponse.getCreativeId());
+        assertEquals("6332753", baseAdResponse.getAdResponseInfo().getCreativeId());
 
     }
 
@@ -188,7 +202,7 @@ public class UTAdResponseTest extends BaseRoboTest {
         CSMSDKAdResponse baseCSMSDKAdResponse = (CSMSDKAdResponse) list.getFirst();
         assertEquals("csm", baseCSMSDKAdResponse.getContentSource());
         assertNull(baseCSMSDKAdResponse.getAdContent());
-        assertEquals("44863345", baseCSMSDKAdResponse.getCreativeId());
+        assertEquals("44863345", baseCSMSDKAdResponse.getAdResponseInfo().getCreativeId());
 
 
     }
@@ -210,7 +224,7 @@ public class UTAdResponseTest extends BaseRoboTest {
         SSMHTMLAdResponse baseSSMHTMLAdResponse = (SSMHTMLAdResponse) list.getFirst();
         assertEquals("ssm", baseSSMHTMLAdResponse.getContentSource());
         assertEquals((TestResponsesUT.SSM_URL), baseSSMHTMLAdResponse.getAdUrl());
-        assertEquals("44863345", baseSSMHTMLAdResponse.getCreativeId());
+        assertEquals("44863345", baseSSMHTMLAdResponse.getAdResponseInfo().getCreativeId());
     }
 
     /**

@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk.ut;
 
+import com.appnexus.opensdk.ANAdResponseInfo;
 import com.appnexus.opensdk.AdResponse;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
@@ -29,19 +30,9 @@ public interface UTAdRequester {
      *
      * @param code reason why the request fails.
      */
-    void failed(ResultCode code);
+    void failed(ResultCode code, ANAdResponseInfo responseInfo);
 
     void onReceiveAd(AdResponse ad);
-    /**
-     * Mark the beginning of an ad request for latency recording
-     */
-    void markLatencyStart();
-
-    /**
-     * Returns the difference from latency start to parameter `now`
-     * @param now current time
-     */
-    long getLatency(long now);
 
     /**
      * Cancels the request, both to AppNexus server and to mediated networks

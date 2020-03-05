@@ -28,7 +28,7 @@ public interface BaseAdDispatcher {
      *
      * @param errorCode the error code describing the failure.
      */
-    public void onAdFailed(ResultCode errorCode);
+    public void onAdFailed(ResultCode errorCode, ANAdResponseInfo responseInfo);
 
     /**
      * Called when the ad being clicked

@@ -68,6 +68,7 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener, MultiAdR
         bannerAdView = null;
         interstitialAdView = null;
         requestManager = null;
+        nativeAdResponse = null;
         super.tearDown();
     }
 

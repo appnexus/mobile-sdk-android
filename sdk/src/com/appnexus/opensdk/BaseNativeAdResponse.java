@@ -29,12 +29,24 @@ import java.util.List;
 public abstract class BaseNativeAdResponse implements NativeAdResponse {
 
     protected ANOmidAdSession anOmidAdSession = new ANOmidAdSession();
+    private ANAdResponseInfo adResponseInfo;
 
     protected abstract boolean registerView(View view, NativeAdEventListener listener);
 
     protected abstract boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener);
 
     protected abstract void unregisterViews();
+
+    @Override
+    public ANAdResponseInfo getAdResponseInfo() {
+        return adResponseInfo;
+    }
+
+    @Override
+    public void setAdResponseInfo(ANAdResponseInfo adResponseInfo) {
+        this.adResponseInfo = adResponseInfo;
+    }
+
 
 
     protected void registerViewforOMID(View view){

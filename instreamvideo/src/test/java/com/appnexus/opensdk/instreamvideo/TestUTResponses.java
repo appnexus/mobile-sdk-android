@@ -20,8 +20,7 @@ public class TestUTResponses {
 
     public static String NO_AD_URL = "http://mobile.devnxs.net/no_ad_url?";
     public static final String NO_BID_FALSE = "false";
-
-
+    public static final String NO_BID = "{\"version\":\"3.0.0\",\"tags\":[{\"tag_id\":123456789,\"auction_id\":\"3552547938089377051000000\",\"nobid\":true,\"ad_profile_id\":2707239}]}";
 
     private static final String DUMMY_VIDEO_CONTENT = "<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\n" +
             "<VAST version=\\\"2.0\\\">\n" +

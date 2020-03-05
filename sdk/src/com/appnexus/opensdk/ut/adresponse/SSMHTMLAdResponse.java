@@ -16,6 +16,8 @@
 
 package com.appnexus.opensdk.ut.adresponse;
 
+import com.appnexus.opensdk.ANAdResponseInfo;
+
 import java.util.ArrayList;
 
 
@@ -24,8 +26,8 @@ public class SSMHTMLAdResponse extends BaseAdResponse {
     private int ssmTimeout;
     private String responseURL;
 
-    public SSMHTMLAdResponse(int width, int height, String adType, String responseURL, ArrayList<String> impressionURLs, String creativeId) {
-        super(width, height, adType, impressionURLs, creativeId);
+    public SSMHTMLAdResponse(int width, int height, String adType, String responseURL, ArrayList<String> impressionURLs, ANAdResponseInfo adResponseInfo) {
+        super(width, height, adType, impressionURLs, adResponseInfo);
         this.responseURL = responseURL;
     }
 

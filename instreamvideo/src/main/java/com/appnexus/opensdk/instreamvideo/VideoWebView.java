@@ -74,7 +74,6 @@ class VideoWebView extends WebView {
     private static final int WAIT_INTERVAL_MILLES = 300;
 
     private int adDuration = 0;
-    private String creativeId = "";
     private String creativeUrl = "";
     private String vastURLContent = "";
     private String vastXMLContent = "";
@@ -401,13 +400,6 @@ class VideoWebView extends WebView {
         intent.putExtra(AdActivity.INTENT_KEY_ACTIVITY_TYPE, AdActivity.ACTIVITY_TYPE_BROWSER);
 
         BrowserAdActivity.BROWSER_QUEUE.add(fwdWebView);
-        if (owner.getBrowserStyle() != null) {
-            String i = "" + super.hashCode();
-            intent.putExtra("bridgeid", i);
-            VideoAd.BrowserStyle.bridge
-                    .add(new Pair<String, VideoAd.BrowserStyle>(i,
-                            owner.getBrowserStyle()));
-        }
 
         try {
             owner.getContext().startActivity(intent);
@@ -537,7 +529,6 @@ class VideoWebView extends WebView {
             return;
         }
         this.baseAdResponse = baseAdResponse;
-        this.creativeId = baseAdResponse.getCreativeId();
         this.loadUrl(Settings.getVideoHtmlPage());
     }
 
@@ -560,11 +551,6 @@ class VideoWebView extends WebView {
     protected VideoOrientation getVideoOrientation() {
         return ViewUtil.getVideoOrientation(aspectRatio);
     }
-
-    protected String getCreativeId() {
-        return this.creativeId;
-    }
-
 
     private class RedirectWebView extends WebView {
 

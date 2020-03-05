@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 
@@ -134,8 +135,8 @@ public class MediatedNativeAdController {
 
 
         // Create an OMID Related objects.
-        ((BaseNativeAdResponse)response).setANVerificationScriptResources(currentAd.getAdObject());
-        this.response = new WeakReference<>((BaseNativeAdResponse)response);
+        ((BaseNativeAdResponse) response).setANVerificationScriptResources(currentAd.getAdObject());
+        this.response = new WeakReference<>((BaseNativeAdResponse) response);
 
         if (requester != null) {
             requester.onReceiveAd(new AdResponse() {
@@ -225,7 +226,6 @@ public class MediatedNativeAdController {
         }
         ResponseUrl responseUrl = new ResponseUrl.Builder(responseURL, result)
                 .latency(getLatencyParam())
-                .totalLatency(getTotalLatencyParam(requester))
                 .build();
         responseUrl.execute();
 
@@ -309,19 +309,6 @@ public class MediatedNativeAdController {
     }
 
     /**
-     * The running total latency of the ad call.
-     *
-     * @return the running total latency, -1 if `latencyStop` not set.
-     */
-    private long getTotalLatencyParam(UTAdRequester requester) {
-        if ((requester != null) && (latencyStop > 0)) {
-            return requester.getLatency(latencyStop);
-        }
-        // return -1 if invalid.
-        return -1;
-    }
-
-    /**
      * Cancel mediated native ad request
      */
     void cancel(boolean hasCancelled) {
@@ -360,7 +347,7 @@ public class MediatedNativeAdController {
 
     void fireTracker(final String trackerUrl) {
 
-        new HTTPGet() {
+        HTTPGet tracker = new HTTPGet() {
             @Override
             protected void onPostExecute(HTTPResponse response) {
                 if (response != null && response.getSucceeded()) {
@@ -372,8 +359,12 @@ public class MediatedNativeAdController {
             protected String getUrl() {
                 return trackerUrl;
             }
-        }.execute();
-
+        };
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            tracker.executeOnExecutor(SDKSettings.getExternalExecutor());
+        } else {
+            tracker.execute();
+        }
     }
 
 }

@@ -219,7 +219,7 @@ public class AdFetcher {
                     fetcher.requestManager = new AdViewRequestManager(fetcher.owner);
                     fetcher.requestManager.execute();
                 } else {
-                    fetcher.owner.getAdDispatcher().onAdFailed(ResultCode.INVALID_REQUEST);
+                    fetcher.owner.getAdDispatcher().onAdFailed(ResultCode.INVALID_REQUEST, null);
                 }
             }
         }

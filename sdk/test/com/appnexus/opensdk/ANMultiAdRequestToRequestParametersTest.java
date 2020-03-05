@@ -56,7 +56,7 @@ public class ANMultiAdRequestToRequestParametersTest extends BaseRoboTest {
     @Override
     public void setup() {
         super.setup();
-        anMultiAdRequest = new ANMultiAdRequest(activity, 100, null);
+        anMultiAdRequest = new ANMultiAdRequest(activity, 100, 123, null);
         bav = new BannerAdView(activity);
         bav.setAdSize(320, 50);
         anMultiAdRequest.addAdUnit(bav);
@@ -66,6 +66,11 @@ public class ANMultiAdRequestToRequestParametersTest extends BaseRoboTest {
     @Test
     public void testMemberId() {
         assertMARGlobalMemberIdInUTRequestParams();
+    }
+
+    @Test
+    public void testPublisherId() {
+        assertMARGlobalPublisherIdInUTRequestParams();
     }
 
     @Test
@@ -146,6 +151,21 @@ public class ANMultiAdRequestToRequestParametersTest extends BaseRoboTest {
         assertAttachedBannerGlobalMemberIdInUTRequestParams();
         anMultiAdRequest.removeAdUnit(bav);
         assertRemovedBannerGlobalMemberIdInUTRequestParams();
+    }
+
+    @Test
+    public void testAttachedBannerAdViewPublisherIdToMarIndividualAdLoad() {
+        anMultiAdRequest.addAdUnit(bav);
+        assertAttachedBannerGlobalPublisherIdInUTRequestParams();
+    }
+
+    @Test
+    public void testAttachedThenRemoveBannerAdViewPublisherToMarIndividualAdLoad() {
+        anMultiAdRequest.addAdUnit(bav);
+        bav.setPublisherId(1234);
+        assertAttachedBannerGlobalPublisherIdInUTRequestParams();
+        anMultiAdRequest.removeAdUnit(bav);
+        assertRemovedBannerGlobalPublisherIdInUTRequestParams();
     }
 
     @Test
@@ -302,6 +322,19 @@ public class ANMultiAdRequestToRequestParametersTest extends BaseRoboTest {
         assertEquals(100, memberId);
     }
 
+    private void assertMARGlobalPublisherIdInUTRequestParams() {
+        String postData = getRequestParametersPostData();
+        assertTrue(postData.contains("\"publisher_id\":123"));
+        int publisherId = -1;
+        try {
+            JSONObject json = new JSONObject(postData);
+            publisherId = json.getInt("publisher_id");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        assertEquals(123, publisherId);
+    }
+
     private void assertAttachedBannerGlobalMemberIdInUTRequestParams() {
         String postData = getBannerRequestParametersPostData();
         assertTrue(postData.contains("\"member_id\":100"));
@@ -315,6 +348,12 @@ public class ANMultiAdRequestToRequestParametersTest extends BaseRoboTest {
         assertEquals(100, memberId);
     }
 
+    private void assertAttachedBannerGlobalPublisherIdInUTRequestParams() {
+        String postData = getBannerRequestParametersPostData();
+        assertFalse(postData.contains("\"publisher_id\":1234"));
+        assertMARGlobalPublisherIdInUTRequestParams();
+    }
+
     private void assertRemovedBannerGlobalMemberIdInUTRequestParams() {
         String postData = getBannerRequestParametersPostData();
         assertTrue(postData.contains("\"member_id\":2000"));
@@ -326,6 +365,19 @@ public class ANMultiAdRequestToRequestParametersTest extends BaseRoboTest {
             e.printStackTrace();
         }
         assertEquals(2000, memberId);
+    }
+
+    private void assertRemovedBannerGlobalPublisherIdInUTRequestParams() {
+        String postData = getBannerRequestParametersPostData();
+        assertTrue(postData.contains("\"publisher_id\":1234"));
+        int publisherId = -1;
+        try {
+            JSONObject json = new JSONObject(postData);
+            publisherId = json.getInt("publisher_id");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        assertEquals(1234, publisherId);
     }
 
     private void assertTagCountInUTRequestParams() {

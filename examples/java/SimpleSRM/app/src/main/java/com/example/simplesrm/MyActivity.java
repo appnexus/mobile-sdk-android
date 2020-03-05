@@ -36,6 +36,7 @@ import android.widget.VideoView;
 
 import androidx.test.espresso.idling.CountingIdlingResource;
 
+import com.appnexus.opensdk.ANAdResponseInfo;
 import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.ANMultiAdRequest;
 import com.appnexus.opensdk.AdListener;
@@ -164,7 +165,7 @@ public class MyActivity extends Activity {
 //        adUnitList.add(adRequest);
 //        adUnitList.add(videoAd);
 
-        anMultiAdRequest2 = new ANMultiAdRequest(this, 0, new MultiAdRequestListener() {
+        anMultiAdRequest2 = new ANMultiAdRequest(this, 0, 0, new MultiAdRequestListener() {
             @Override
             public void onMultiAdRequestCompleted() {
                 msg += "MAR 2 Load Completed";
@@ -188,7 +189,7 @@ public class MyActivity extends Activity {
 //        anMultiAdRequest2.load();
 
 
-        anMultiAdRequest = new ANMultiAdRequest(this, 0,
+        anMultiAdRequest = new ANMultiAdRequest(this, 0, 0,
                 new MultiAdRequestListener() {
                     @Override
                     public void onMultiAdRequestCompleted() {
@@ -208,14 +209,14 @@ public class MyActivity extends Activity {
                 });
         anMultiAdRequest.addAdUnit(bav);
         anMultiAdRequest.addAdUnit(iav);
-//        anMultiAdRequest.addAdUnit(adRequest);
-//        anMultiAdRequest.addAdUnit(videoAd);
+        anMultiAdRequest.addAdUnit(adRequest);
+        anMultiAdRequest.addAdUnit(videoAd);
 //        anMultiAdRequest.addAdUnit(setupVideoAd());
 //        bav = null;
 //        System.gc();
 //        iav = null;
 //        adRequest = null;
-//        load();
+        load();
 //        bav.loadAd();
 
         tv.setOnClickListener(new View.OnClickListener() {
@@ -293,7 +294,7 @@ public class MyActivity extends Activity {
             }
 
             @Override
-            public void onAdFailed(ResultCode errorcode) {
+            public void onAdFailed(ResultCode errorcode, ANAdResponseInfo adResponseInfo) {
                 msg += "Native Ad Failed:" + errorcode + "\n";
                 toast();
             }

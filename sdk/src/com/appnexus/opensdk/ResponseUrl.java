@@ -17,11 +17,11 @@
 package com.appnexus.opensdk;
 
 import android.net.Uri;
+import android.os.Build;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
-import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 
 public final class ResponseUrl {
@@ -33,7 +33,7 @@ public final class ResponseUrl {
     private final long totalLatency; // optional
 
 
-    private ResponseUrl(Builder builder){
+    private ResponseUrl(Builder builder) {
         this.url = builder.url;
         this.resultCode = builder.resultCode;
         this.latency = builder.latency;
@@ -41,7 +41,7 @@ public final class ResponseUrl {
     }
 
 
-    public static class Builder{
+    public static class Builder {
 
         private final String url;
         private final ResultCode resultCode;
@@ -49,34 +49,34 @@ public final class ResponseUrl {
         private long totalLatency;
 
 
-        public Builder(String url,ResultCode resultCode){
+        public Builder(String url, ResultCode resultCode) {
             this.url = url;
             this.resultCode = resultCode;
         }
 
-        public Builder latency(long latency){
+        public Builder latency(long latency) {
             this.latency = latency;
             return this;
         }
 
-        public Builder totalLatency(long totalLatency){
+        public Builder totalLatency(long totalLatency) {
             this.totalLatency = totalLatency;
             return this;
         }
 
-        public ResponseUrl build(){
+        public ResponseUrl build() {
             return new ResponseUrl(this);
         }
     }
 
-    public void execute(){
+    public void execute() {
 
         if ((url == null) || StringUtil.isEmpty(url)) {
             Clog.w(Clog.mediationLogTag, Clog.getString(R.string.fire_responseurl_null));
             return;
         }
 
-        new HTTPGet() {
+        HTTPGet fire = new HTTPGet() {
             @Override
             protected HTTPResponse doInBackground(Void... params) {
                 return super.doInBackground(params);
@@ -103,7 +103,12 @@ public final class ResponseUrl {
 
                 return sb.toString();
             }
-        }.execute();
+        };
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            fire.executeOnExecutor(SDKSettings.getExternalExecutor());
+        } else {
+            fire.execute();
+        }
 
 
     }

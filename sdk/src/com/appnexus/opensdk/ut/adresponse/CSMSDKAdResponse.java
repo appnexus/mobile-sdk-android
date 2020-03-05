@@ -16,6 +16,8 @@
 
 package com.appnexus.opensdk.ut.adresponse;
 
+import com.appnexus.opensdk.ANAdResponseInfo;
+
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -29,8 +31,8 @@ public class CSMSDKAdResponse extends BaseAdResponse {
     private String responseUrl;
     private JSONObject adObject;
 
-    public CSMSDKAdResponse(int width, int height, String adType, String responseUrl, ArrayList<String> impressionURLs , String creativeId,JSONObject adObject) {
-        super(width, height, adType, impressionURLs , creativeId);
+    public CSMSDKAdResponse(int width, int height, String adType, String responseUrl, ArrayList<String> impressionURLs , ANAdResponseInfo adResponseInfo, JSONObject adObject) {
+        super(width, height, adType, impressionURLs , adResponseInfo);
         this.responseUrl = responseUrl;
         this.adObject = adObject;
     }

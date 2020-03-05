@@ -26,15 +26,14 @@ import static com.appnexus.opensdk.utils.ClogListener.LOG_LEVEL;
 
 public class Clog {
     /**
-     * @deprecated
-     * As of release 1.21, logging system properties are used instead.
+     * @deprecated As of release 1.21, logging system properties are used instead.
      * See Log.isLoggable() for more info.
      */
     @Deprecated
     public static boolean clogged = false;
     private static final int MAX_LOG_TAG_LENGTH = 22;
 
-    private static void logIfLoggable(String LogTag, String message, int level, Throwable tr){
+    private static void logIfLoggable(String LogTag, String message, int level, Throwable tr) {
         try {
             //Allow logging if baseLogTag would allow it, or if this log tag
             //specifically allows it.
@@ -82,9 +81,9 @@ public class Clog {
                     }
                 }
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             //Added to avoid any exception while logging creating a crash of application.
-            Log.e(baseLogTag,"Exception while logging",e);
+            Log.e(baseLogTag, "Exception while logging", e);
         }
     }
 
@@ -164,6 +163,7 @@ public class Clog {
 
     public static String baseLogTag = "OPENSDK";
     public static String mediationLogTag = baseLogTag + "-MEDIATION";
+    public static String csrLogTag = baseLogTag + "-CSR";
     public static String publicFunctionsLogTag = baseLogTag + "-INTERFACE";
     public static String httpReqLogTag = baseLogTag + "-REQUEST";
     public static String httpRespLogTag = baseLogTag + "-RESPONSE";

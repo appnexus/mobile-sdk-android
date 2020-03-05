@@ -51,8 +51,18 @@ public class ANMultiAdRequestApiTest extends BaseRoboTest {
     @Override
     public void setup() {
         super.setup();
-        anMultiAdRequest = new ANMultiAdRequest(activity, 100, null);
+        anMultiAdRequest = new ANMultiAdRequest(activity, 100, 1234, null);
         bav = new BannerAdView(activity);
+    }
+
+    @Test
+    public void testGetMemberId() {
+        assertEquals(100, anMultiAdRequest.getMemberId());
+    }
+
+    @Test
+    public void testGetPublisherID() {
+        assertEquals(1234, anMultiAdRequest.getPublisherId());
     }
 
     @Test

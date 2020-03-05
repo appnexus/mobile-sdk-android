@@ -15,7 +15,6 @@
  */
 package com.appnexus.opensdk;
 
-import android.os.AsyncTask;
 import android.os.Build;
 
 import com.appnexus.opensdk.ut.UTAdRequest;
@@ -35,7 +34,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.RejectedExecutionException;
 
-public abstract class RequestManager implements UTAdRequester{
+public abstract class RequestManager implements UTAdRequester {
     UTAdRequest utAdRequest;
     private LinkedList<BaseAdResponse> adList;
     String noAdUrl;
@@ -47,19 +46,19 @@ public abstract class RequestManager implements UTAdRequester{
      *
      * @param code reason why the request fails.
      */
-    public abstract void failed(ResultCode code);
+    public abstract void failed(ResultCode code, ANAdResponseInfo responseInfo);
 
     public abstract void onReceiveAd(AdResponse ad);
 
     @Override
-    public boolean isHttpsEnabled(){
+    public boolean isHttpsEnabled() {
         return Settings.getSettings().isHttpsEnabled();
     }
 
     @Override
-    public void onReceiveUTResponse(UTAdResponse response){
+    public void onReceiveUTResponse(UTAdResponse response) {
         //First set the NoAdUrl from response. This will be used to fire tracked for failed case.
-        if(response != null){
+        if (response != null) {
             noAdUrl = response.getNoAdUrl();
         }
     }
@@ -71,14 +70,14 @@ public abstract class RequestManager implements UTAdRequester{
     @Override
     public void execute() {
         utAdRequest = new UTAdRequest(this);
-        markLatencyStart();
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                utAdRequest.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                utAdRequest.executeOnExecutor(SDKSettings.getExternalExecutor());
             } else {
                 utAdRequest.execute();
             }
+
         } catch (RejectedExecutionException rejectedExecutionException) {
             Clog.e(Clog.baseLogTag, "Concurrent Thread Exception while firing new ad request: "
                     + rejectedExecutionException.getMessage());
@@ -89,17 +88,6 @@ public abstract class RequestManager implements UTAdRequester{
     }
 
     public abstract UTRequestParameters getRequestParams();
-
-    @Override
-    public void markLatencyStart() {
-
-        time = System.currentTimeMillis();
-    }
-
-    @Override
-    public long getLatency(long now) {
-        return System.currentTimeMillis() - time;
-    }
 
     // For logging mediated classes
     private ArrayList<String> mediatedClasses = new ArrayList<String>();
@@ -115,16 +103,16 @@ public abstract class RequestManager implements UTAdRequester{
     }
 
     protected void fireTracker(final String trackerUrl, final String trackerType) {
-        if((trackerUrl == null) || trackerUrl == "") return;
+        if ((trackerUrl == null) || trackerUrl == "") return;
 
-        new HTTPGet() {
+        HTTPGet fireTracker = new HTTPGet() {
             @Override
             protected void onPostExecute(HTTPResponse response) {
                 if (response != null && response.getSucceeded()) {
                     //noinspection ConstantConditions
                     try {
                         Clog.i(Clog.baseLogTag, trackerType.concat(Clog.getString(R.string.fire_tracker_succesfully_message)));
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         // We are just printing logs here and it was crashing the app no need to recover from here just make sure we donot crash app.
                     }
                 }
@@ -134,7 +122,12 @@ public abstract class RequestManager implements UTAdRequester{
             protected String getUrl() {
                 return trackerUrl;
             }
-        }.execute();
+        };
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            fireTracker.executeOnExecutor(SDKSettings.getExternalExecutor());
+        } else {
+            fireTracker.execute();
+        }
     }
 
     protected void fireNotifyUrlForVideo(RTBVASTAdResponse adResponse) {
@@ -146,8 +139,8 @@ public abstract class RequestManager implements UTAdRequester{
     // returns the first mediated ad if available
     protected BaseAdResponse popAd() {
         if ((adList != null) && (adList.getFirst() != null)) {
-            if (adList.getFirst().getContentSource() != null && adList.getFirst().getContentSource().equalsIgnoreCase("csm")){
-                CSMSDKAdResponse CSMSDKAdResponse = (CSMSDKAdResponse)adList.getFirst();
+            if (adList.getFirst().getContentSource() != null && adList.getFirst().getContentSource().equalsIgnoreCase("csm")) {
+                CSMSDKAdResponse CSMSDKAdResponse = (CSMSDKAdResponse) adList.getFirst();
                 mediatedClasses.add(CSMSDKAdResponse.getClassName());
             }
 

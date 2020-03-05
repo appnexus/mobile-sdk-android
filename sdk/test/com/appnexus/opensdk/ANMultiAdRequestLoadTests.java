@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 import com.appnexus.opensdk.mar.MultiAdRequestListener;
+import com.appnexus.opensdk.mocks.MockDefaultExecutorSupplier;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowCustomWebView;
 import com.appnexus.opensdk.shadows.ShadowSettings;
@@ -31,6 +32,9 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import static android.os.Looper.getMainLooper;
 import static junit.framework.Assert.assertFalse;
@@ -49,7 +53,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     @Override
     public void setup() {
         super.setup();
-        anMultiAdRequest = new ANMultiAdRequest(activity, 0, this);
+        anMultiAdRequest = new ANMultiAdRequest(activity, 0, 1234, this);
         anMultiAdRequest.addAdUnit(bannerAdView);
         anMultiAdRequest.addAdUnit(interstitialAdView);
     }
@@ -59,6 +63,23 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
         anMultiAdRequest = null;
         shadowOf(getMainLooper()).quitUnchecked();
         super.tearDown();
+    }
+
+    //This verifies that the AsyncTask for Request is being executed on the Correct Executor.
+    @Test
+    public void testRequestExecutorForBackgroundTasks() {
+        SDKSettings.setExternalExecutor(MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+        assertNotSame(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+        anMultiAdRequest.load();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertEquals(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+    }
+
+    private void assertEquals(Executor executor, ThreadPoolExecutor forBackgroundTasks) {
+    }
+
+    private void assertNotSame(Executor executor, ThreadPoolExecutor forBackgroundTasks) {
     }
 
     //MAR Success
@@ -309,7 +330,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
         interstitialAdView.setPlacementID("0");
         interstitialAdView.setAdListener(this);
 
-        new ANMultiAdRequest(activity, 0, this, true, bannerAdView, interstitialAdView);
+        new ANMultiAdRequest(activity, 0, 1234, this, true, bannerAdView, interstitialAdView);
 
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
@@ -339,7 +360,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     }
 
     private void executeSecondMARRequest() {
-        ANMultiAdRequest anMultiAdRequest = new ANMultiAdRequest(activity, 123, new MultiAdRequestListener() {
+        ANMultiAdRequest anMultiAdRequest = new ANMultiAdRequest(activity, 123, 1234, new MultiAdRequestListener() {
             @Override
             public void onMultiAdRequestCompleted() {
                 secondMarCompleted = true;

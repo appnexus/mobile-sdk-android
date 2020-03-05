@@ -20,6 +20,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.View;
 
+import com.appnexus.opensdk.ANAdResponseInfo;
 import com.appnexus.opensdk.BaseNativeAdResponse;
 import com.appnexus.opensdk.MediatedNativeAd;
 import com.appnexus.opensdk.MediatedNativeAdController;
@@ -40,6 +41,7 @@ public class MediatedNativeSuccessful2 implements MediatedNativeAd {
     public static boolean didPass;
     private NativeAdResponse.ImageSize mainImageSize = new NativeAdResponse.ImageSize(-1, -1);
     private NativeAdResponse.ImageSize iconSize = new NativeAdResponse.ImageSize(-1, -1);
+    private ANAdResponseInfo adResponseInfo;
 
     @Override
     public void requestNativeAd(Context context, String parameterString, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
@@ -85,6 +87,16 @@ public class MediatedNativeSuccessful2 implements MediatedNativeAd {
                 @Override
                 public void setCreativeId(String creativeId) {
 
+                }
+
+                @Override
+                public ANAdResponseInfo getAdResponseInfo() {
+                    return adResponseInfo;
+                }
+
+                @Override
+                public void setAdResponseInfo(ANAdResponseInfo adResponseInfo) {
+                    MediatedNativeSuccessful2.this.adResponseInfo = adResponseInfo;
                 }
 
                 @Override

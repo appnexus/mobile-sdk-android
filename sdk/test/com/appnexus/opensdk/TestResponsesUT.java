@@ -48,15 +48,15 @@ public class TestResponsesUT {
     }
 
     public static final String DUMMY_BANNER_CONTENT = "<script type=\\\"text/javascript\\\">document.write('<div style=\\\"background-color:#EF8200;height:1000px;width:1000px;\\\"><p>%s</p></div>');</script>";
-//    private static final String AN_NATIVE_RESPONSE = "[{\"type\":\"%s\",\"title\":\"%s\",\"description\":\"%s\", \"desc2\":\"%s\",\"full_text\":\"%s\",\"context\":\"%s\",\"icon_img_url\":\"%s\",\"main_media\":%s,\"cta\":\"%s\",\"click_trackers\":[%s],\"impression_trackers\":[%s],\"rating\":%s,\"click_url\":\"%s\",\"click_fallback_url\":\"%s\",\"sponsored_by\":\"%s\",\"custom\":%s}]";
+    //    private static final String AN_NATIVE_RESPONSE = "[{\"type\":\"%s\",\"title\":\"%s\",\"description\":\"%s\", \"desc2\":\"%s\",\"full_text\":\"%s\",\"context\":\"%s\",\"icon_img_url\":\"%s\",\"main_media\":%s,\"cta\":\"%s\",\"click_trackers\":[%s],\"impression_trackers\":[%s],\"rating\":%s,\"click_url\":\"%s\",\"click_fallback_url\":\"%s\",\"sponsored_by\":\"%s\",\"custom\":%s}]";
     private static final String AN_NATIVE_RESPONSE = "{\"title\": \"%s\", \"desc\": \"%s\", \"sponsored\": \"%s\", \"ctatext\": \"%s\", \"rating\": \"%s\", \"icon\": {\"url\": \"%s\", \"width\": %d, \"height\": %d}, \"main_img\": {\"url\": \"%s\", \"width\": %d, \"height\": %d},  \"link\": {\"url\": \"%s\", \"click_trackers\": [\"%s\"]}, \"impression_trackers\": [\"%s\"], \"id\": %d, \"desc2\": \"%s\"}";
     public static final String AN_NATIVE_VIDEO_RESPONSE = "{ \"title\": \"%s\", \"desc\": \"%s\", \"sponsored\": \"%s\", \"ctatext\": \"%s\", \"rating\": \"%d\", \"icon\": { \"url\": \"%s\", \"width\": %d, \"height\": %d }, \"main_img\": { \"url\": \"%s\", \"width\": %d, \"height\": %d }, \"link\": { \"url\": \"%s\", \"fallback_url\": \"%s\", \"click_trackers\": [ \"%s\", \"%s\", \"%s\" ] }, \"impression_trackers\": [ \"%s\", \"%s\", \"%s\", \"%s\" ], \"javascript_trackers\": \"%s\", \"id\": %d, \"displayurl\": \"%s\", \"likes\": \"%d\", \"downloads\": \"%d\", \"price\": \"%d\", \"saleprice\": \"%d\", \"phone\": \"%d\", \"address\": \"%s\", \"desc2\": \"%s\", \"video\": { \"content\": \"%s\" }, \"privacy_link\": \"%s\" }";
     private static final String MRAID_CONTENT = "<script type=\\\"text/javascript\\\" src=\\\"mraid.js\\\"></script><script type=\\\"text/javascript\\\">document.write('<div style=\\\"background-color:#EF8200;height:1000px;width:1000px;\\\"><p>%s</p></div>');</script>";
     private static final String NATIVE_MAIN_MEDIA = "[{\"url\":\"%s\",\"width\":%d,\"height\":%d,\"label\":\"default\"},{\"url\":\"%s\",\"width\":%d,\"height\":%d},{\"url\":\"%s\",\"width\":%d,\"height\":%d}]";
     private static final String NATIVE_RATING = "{\"value\":%.2f,\"scale\":%.2f}";
-    private static final String RTB_NATIVE_VIEWABILITY_CONFIG="<script type=\\\"text/javascript\\\" async=\\\"true\\\" src=\\\"https://acdn.adnxs.com/mobile/omsdk/test/omid-validation-verification-script-1.2.5.js#v;vk=dummyVendor;tv=cet=0;cecb=\\\"></script>";
-    private static final String RTB_NATIVE_RENDERER_VIEWABILITY_CONFIG="<script type=\\\"text/javascript\\\" async=\\\"true\\\" src=\\\"https://acdn.adnxs.com/mobile/omsdk/test/omid-validation-verification-script-1.2.5.js#v;vk=dummyVendorRenderer;tv=cet=0;cecb=\\\"></script>";
-    private static final String CSM_NATIVE_VIEWABILITY_CONFIG="<script type=\\\"text/javascript\\\" async=\\\"true\\\" src=\\\"https://acdn.adnxs.com/mobile/omsdk/test/omid-validation-verification-script-1.2.5.js#v;vk=dummyVendorCSM;tv=cet=0;cecb=\\\"></script>";
+    private static final String RTB_NATIVE_VIEWABILITY_CONFIG = "<script type=\\\"text/javascript\\\" async=\\\"true\\\" src=\\\"https://acdn.adnxs.com/mobile/omsdk/test/omid-validation-verification-script-1.2.5.js#v;vk=dummyVendor;tv=cet=0;cecb=\\\"></script>";
+    private static final String RTB_NATIVE_RENDERER_VIEWABILITY_CONFIG = "<script type=\\\"text/javascript\\\" async=\\\"true\\\" src=\\\"https://acdn.adnxs.com/mobile/omsdk/test/omid-validation-verification-script-1.2.5.js#v;vk=dummyVendorRenderer;tv=cet=0;cecb=\\\"></script>";
+    private static final String CSM_NATIVE_VIEWABILITY_CONFIG = "<script type=\\\"text/javascript\\\" async=\\\"true\\\" src=\\\"https://acdn.adnxs.com/mobile/omsdk/test/omid-validation-verification-script-1.2.5.js#v;vk=dummyVendorCSM;tv=cet=0;cecb=\\\"></script>";
     // template strings
     private static final String CLASSNAME = "com.appnexus.opensdk.testviews.%s";
 
@@ -78,6 +78,30 @@ public class TestResponsesUT {
     public static final String CSM_NATIVE = "{\"content_source\":\"csm\",\"ad_type\":\"native\",\"buyer_member_id\":958,\"creative_id\":44863492,\"media_type_id\":12,\"media_subtype_id\":65,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"%s\"},\"csm\": {\"timeout_ms\":500,\"handler\": [{\"type\": \"android\",\"class\": \"%s\",\"param\": \"%s\",\"id\": \"%s\"},{\"type\": \"ios\",\"class\": \"DummyIOSClass\",\"param\": \"#{PARAM}\",\"id\": \"210827375150_10154672419150151\"}],\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}],\"request_url\": \"%s\",\"response_url\": \"%s\"}}";
     public static final String NO_BID = "{\"version\":\"3.0.0\",\"tags\":[{\"tag_id\":123456789,\"auction_id\":\"3552547938089377051000000\",\"nobid\":true,\"ad_profile_id\":2707239}]}";
     public static final String RTB_VIDEO = "{\"content_source\":\"rtb\",\"ad_type\":\"video\",\"notify_url\":\"%s\",\"buyer_member_id\":123,\"creative_id\":6332753,\"media_type_id\":4,\"media_subtype_id\":64,\"client_initiated_ad_counting\":true,\"rtb\":{\"video\":{\"content\":\"%s\",\"duration_ms\":100}}}";
+    public static final String CSR_NATIVE = "{\"version\":\"3.0.0\",\"tags\":[{\"tag_id\":16268678,\"auction_id\":\"4050477843877235823\",\"nobid\":false,\"no_ad_url\":\"https://nym1-mobile.adnxs.com/it\",\"timeout_ms\":0,\"ad_profile_id\":1266762,\"rtb_video_fallback\":false,\"ads\":[{\"content_source\":\"csr\",\"ad_type\":\"native\",\"buyer_member_id\":10094,\"creative_id\":163940558,\"media_type_id\":12,\"media_subtype_id\":65,\"brand_category_id\":17,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"<script></script>\"},\"csr\":{\"timeout_ms\":500,\"handler\":[{\"type\":\"android\",\"class\":\"%s\",\"payload\":\"{\\\"placement_id\\\":\\\"333673923704415_469697383435401\\\"}\",\"id\":\"333673923704415_469697383435401\"},{\"type\":\"ios\",\"class\":\"ANAdAdapterCSRNativeBannerFacebook\",\"payload\":\"test param\",\"id\":\"333673923704415_469697383435401\"}],\"trackers\":[{\"impression_urls\":[\"https://nym1-mobile.adnxs.com/it\"],\"video_events\":{}}],\"request_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_req\",\"response_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_resp\"}}]}]}";
+
+    public static String mediationNoFillThenCSRSuccessfull() {
+        return "{\"version\":\"3.0.0\",\"tags\":[{\"tag_id\":16268678,\"auction_id\":\"4050477843877235823\",\"nobid\":false,\"no_ad_url\":\"https://nym1-mobile.adnxs.com/it\",\"timeout_ms\":0,\"ad_profile_id\":1266762,\"rtb_video_fallback\":false,\"ads\":[{\"content_source\":\"csm\",\"ad_type\":\"native\",\"buyer_member_id\":10094,\"creative_id\":163940558,\"media_type_id\":12,\"media_subtype_id\":65,\"brand_category_id\":17,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"<script></script>\"},\"csm\":{\"timeout_ms\":500,\"handler\":[{\"type\":\"android\",\"class\":\"com.appnexus.opensdk.testviews.MediatedNativeNoFill\",\"param\":\"test param\",\"id\":\"2038077109846299_2317914228529251\"},{\"type\":\"ios\",\"class\":\"ANAdAdapterNativeFacebook\",\"param\":\"test param\",\"id\":\"2038077109846299_2317914228529251\"}],\"trackers\":[{\"impression_urls\":[\"https://nym1-mobile.adnxs.com/it\"],\"video_events\":{}}],\"request_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_req\",\"response_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_resp\"}},{\"content_source\":\"csr\",\"ad_type\":\"native\",\"buyer_member_id\":10094,\"creative_id\":163940558,\"media_type_id\":12,\"media_subtype_id\":65,\"brand_category_id\":17,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"<script></script>\"},\"csr\":{\"timeout_ms\":500,\"handler\":[{\"type\":\"android\",\"class\":\"com.appnexus.opensdk.testviews.CSRNativeSuccessful\",\"payload\":\"{\\\"placement_id\\\":\\\"333673923704415_469697383435401\\\"}\",\"id\":\"333673923704415_469697383435401\"},{\"type\":\"ios\",\"class\":\"ANAdAdapterCSRNativeBannerFacebook\",\"payload\":\"test param\",\"id\":\"333673923704415_469697383435401\"}],\"trackers\":[{\"impression_urls\":[\"https://nym1-mobile.adnxs.com/it\"],\"video_events\":{}}],\"request_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_req\",\"response_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_resp\"}}]}]}";
+    }
+
+    public static String csrNoFillThenMediationSuccessfull() {
+        return "{\"version\":\"3.0.0\",\"tags\":[{\"tag_id\":16268678,\"auction_id\":\"4050477843877235823\",\"nobid\":false,\"no_ad_url\":\"https://nym1-mobile.adnxs.com/it\",\"timeout_ms\":0,\"ad_profile_id\":1266762,\"rtb_video_fallback\":false,\"ads\":[{\"content_source\":\"csr\",\"ad_type\":\"native\",\"buyer_member_id\":10094,\"creative_id\":163940558,\"media_type_id\":12,\"media_subtype_id\":65,\"brand_category_id\":17,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"<script></script>\"},\"csr\":{\"timeout_ms\":500,\"handler\":[{\"type\":\"android\",\"class\":\"com.appnexus.opensdk.testviews.CSRNativeNoFill\",\"payload\":\"{\\\"placement_id\\\":\\\"333673923704415_469697383435401\\\"}\",\"id\":\"333673923704415_469697383435401\"},{\"type\":\"ios\",\"class\":\"ANAdAdapterCSRNativeBannerFacebook\",\"payload\":\"test param\",\"id\":\"333673923704415_469697383435401\"}],\"trackers\":[{\"impression_urls\":[\"https://nym1-mobile.adnxs.com/it\"],\"video_events\":{}}],\"request_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_req\",\"response_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_resp\"}},{\"content_source\":\"csm\",\"ad_type\":\"native\",\"buyer_member_id\":10094,\"creative_id\":163940558,\"media_type_id\":12,\"media_subtype_id\":65,\"brand_category_id\":17,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"<script></script>\"},\"csm\":{\"timeout_ms\":500,\"handler\":[{\"type\":\"android\",\"class\":\"com.appnexus.opensdk.testviews.MediatedNativeSuccessful\",\"param\":\"test param\",\"id\":\"2038077109846299_2317914228529251\"},{\"type\":\"ios\",\"class\":\"ANAdAdapterNativeFacebook\",\"param\":\"test param\",\"id\":\"2038077109846299_2317914228529251\"}],\"trackers\":[{\"impression_urls\":[\"https://nym1-mobile.adnxs.com/it\"],\"video_events\":{}}],\"request_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_req\",\"response_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_resp\"}}]}]}";
+    }
+
+    public static String csrNativeNofill() {
+        String className = createClassName("CSRNativeNoFill");
+        return String.format(CSR_NATIVE, className);
+    }
+
+    public static String csrNativeSuccessful() {
+        String className = createClassName("CSRNativeSuccessful");
+        return String.format(CSR_NATIVE, className);
+    }
+
+    public static String csrNativeSuccesfulWithMockTrackers(String impression, String click, String requestUrl, String responseUrl) {
+        String template = "{\"version\":\"3.0.0\",\"tags\":[{\"tag_id\":16268678,\"auction_id\":\"4050477843877235823\",\"nobid\":false,\"no_ad_url\":\"https://nym1-mobile.adnxs.com/it\",\"timeout_ms\":0,\"ad_profile_id\":1266762,\"rtb_video_fallback\":false,\"ads\":[{\"content_source\":\"csr\",\"ad_type\":\"native\",\"buyer_member_id\":10094,\"creative_id\":163940558,\"media_type_id\":12,\"media_subtype_id\":65,\"brand_category_id\":17,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"<script></script>\"},\"csr\":{\"timeout_ms\":500,\"handler\":[{\"type\":\"android\",\"class\":\"%s\",\"payload\":\"{\\\"placement_id\\\":\\\"333673923704415_469697383435401\\\"}\",\"id\":\"333673923704415_469697383435401\"},{\"type\":\"ios\",\"class\":\"ANAdAdapterCSRNativeBannerFacebook\",\"payload\":\"test param\",\"id\":\"333673923704415_469697383435401\"}],\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{},\"click_urls\":[\"%s\"]}],\"request_url\":\"%s\",\"response_url\":\"%s\"}}]}]}";
+        return String.format(template, createClassName("CSRNativeSuccessful"), impression, click, requestUrl, responseUrl);
+    }
 
     public static String blank() {
         return "";
@@ -199,6 +223,17 @@ public class TestResponsesUT {
         return templateMediatedWaterFallResponses(adsArray.toArray(new String[adsArray.size()]));
     }
 
+    public static String noFillCSMBanner() {
+        //Create a CSM - Ad
+        String csmAd = templateSingleCSMAdResponseBannerInterstitial(createClassName("MediatedBannerNoFillView"), 320, 50, IMPRESSION_URL, REQUEST_URL, RESPONSE_URL, "", "", "android");
+
+        ArrayList<String> adsArray = new ArrayList<String>(1);
+        adsArray.add(csmAd);
+
+        //Return a WaterFall response
+        return templateMediatedWaterFallResponses(adsArray.toArray(new String[adsArray.size()]));
+    }
+
     public static String noFillCSM_RTBInterstitial() {
         //Create a CSM - Ad
         String csmAd = templateSingleCSMAdResponseBannerInterstitial(createClassName("MediatedInterstitialNoFillView"), 320, 480, IMPRESSION_URL, REQUEST_URL, RESPONSE_URL, "", "", "android");
@@ -218,7 +253,7 @@ public class TestResponsesUT {
 
     public static String noFillCSM_RTBNative() {
         //Create a CSM - Ad
-        String csmAd = templateSingleCSMAdResponseNative(createClassName("MediatedNativeNoFill"), "", "", IMPRESSION_URL,REQUEST_URL, RESPONSE_URL);
+        String csmAd = templateSingleCSMAdResponseNative(createClassName("MediatedNativeNoFill"), "", "", IMPRESSION_URL, REQUEST_URL, RESPONSE_URL);
 
         // Create a RTB Banner Ad
         String nativeResponse = templateNativeResponse("test title", "description", "desc2", "sponsored", "cta",
@@ -285,7 +320,7 @@ public class TestResponsesUT {
         ArrayList<String> adsArray = new ArrayList<String>(classNames.length);
 
         for (int i = 0; i < classNames.length; i++) {
-            String singleCSMAd = templateSingleCSMAdResponseNative(createClassName(classNames[i]), "", "", IMPRESSION_URL,REQUEST_URL, responseURLS[i]);
+            String singleCSMAd = templateSingleCSMAdResponseNative(createClassName(classNames[i]), "", "", IMPRESSION_URL, REQUEST_URL, responseURLS[i]);
             adsArray.add(singleCSMAd);
         }
 
@@ -321,7 +356,7 @@ public class TestResponsesUT {
         return templateResponse(NO_BID_FALSE, NO_AD_URL, ads);
     }
 
-    public static String anOMIDNativeRTB(){
+    public static String anOMIDNativeRTB() {
         String nativeResponse = templateNativeResponse("test title", "test description", "additional test description", "sponsored", "cta",
                 "5", "http://path_to_icon.com", 100, 150, "http://path_to_main.com",
                 300, 200, "http://www.appnexus.com", "http://ib.adnxs.com/click...",
@@ -340,7 +375,7 @@ public class TestResponsesUT {
                 300, 200, "http://www.appnexus.com", "http://ib.adnxs.com/fallback",
                 "http://ib.adnxs.com/click...1", "http://ib.adnxs.com/click...2", "http://ib.adnxs.com/click...3",
                 "http://ib.adnxs.com/it...1", "http://ib.adnxs.com/it...2", "http://ib.adnxs.com/it...3", "http://ib.adnxs.com/it...4",
-                "http://ib.adnxs.com/jt...", 123456789, "http://ib.adnxs.com/display...", 10,1000, 5, 4, 987654321,
+                "http://ib.adnxs.com/jt...", 123456789, "http://ib.adnxs.com/display...", 10, 1000, 5, 4, 987654321,
                 "AppNexus Address", "<VAST>content</VAST>", "http://ib.adnxs.com/privacy...");
         System.out.println(nativeResponse + "\n");
         String nativeRTB = templateRTBNativeAdResponse(nativeResponse);
@@ -404,7 +439,6 @@ public class TestResponsesUT {
     }
 
 
-
     private static String singleRTBBanner(String content, int width, int height, String impressionURL) {
         return (String.format(RTB_BANNER, content, width, height, impressionURL));
     }
@@ -430,7 +464,7 @@ public class TestResponsesUT {
     }
 
     private static String templateSingleCSMAdResponseNative(String className, String response_url) {
-        String csmNative = templateSingleCSMAdResponseNative(className, "abc", "1234", IMPRESSION_URL,REQUEST_URL, response_url);
+        String csmNative = templateSingleCSMAdResponseNative(className, "abc", "1234", IMPRESSION_URL, REQUEST_URL, response_url);
         return templateMediatedAdResponse(csmNative);
     }
 
@@ -452,8 +486,8 @@ public class TestResponsesUT {
     }
 
     private static String templateSingleCSMAdResponseNative(String className, String params, String id, String impression_url, String request_url, String response_url) {
-        Clog.d("Native Ad",String.format(CSM_NATIVE,CSM_NATIVE_VIEWABILITY_CONFIG, className, params, id, impression_url,request_url, response_url));
-        return String.format(CSM_NATIVE, CSM_NATIVE_VIEWABILITY_CONFIG, className, params, id,impression_url, request_url, response_url);
+        Clog.d("Native Ad", String.format(CSM_NATIVE, CSM_NATIVE_VIEWABILITY_CONFIG, className, params, id, impression_url, request_url, response_url));
+        return String.format(CSM_NATIVE, CSM_NATIVE_VIEWABILITY_CONFIG, className, params, id, impression_url, request_url, response_url);
     }
 
 
@@ -483,12 +517,12 @@ public class TestResponsesUT {
     }
 
     private static String templateNativeVideoResponse(String title, String description, String additionalDescription, String sponsored, String cta,
-                                                 int rating, String icon_url, int icon_width, int icon_height, String main_img_url,
-                                                 int main_img_width, int main_img_height, String link_url, String fallback_url, String click_trackers1,
-                                                 String click_trackers2, String click_trackers3, String imp_tracker1, String impression_tracker2,
-                                                 String impression_tracker3, String impression_tracker4, String javascript_trackers, int id,
-                                                 String displayurl, int likes, int downloads, int price, int saleprice, int phone, String address,
-                                                 String video_content, String privacy_link) {
+                                                      int rating, String icon_url, int icon_width, int icon_height, String main_img_url,
+                                                      int main_img_width, int main_img_height, String link_url, String fallback_url, String click_trackers1,
+                                                      String click_trackers2, String click_trackers3, String imp_tracker1, String impression_tracker2,
+                                                      String impression_tracker3, String impression_tracker4, String javascript_trackers, int id,
+                                                      String displayurl, int likes, int downloads, int price, int saleprice, int phone, String address,
+                                                      String video_content, String privacy_link) {
         return String.format(AN_NATIVE_VIDEO_RESPONSE, title, description, sponsored, cta, rating, icon_url, icon_width, icon_height, main_img_url,
                 main_img_width, main_img_height, link_url, fallback_url, click_trackers1, click_trackers2, click_trackers3, imp_tracker1,
                 impression_tracker2, impression_tracker3, impression_tracker4, javascript_trackers, id, displayurl, likes, downloads, price,

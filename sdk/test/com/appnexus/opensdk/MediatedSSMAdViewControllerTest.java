@@ -20,8 +20,6 @@ import android.net.UrlQuerySanitizer;
 
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowCustomWebView;
-import com.appnexus.opensdk.shadows.ShadowSettings;
-import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.util.Lock;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
@@ -31,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 
 import java.util.concurrent.TimeUnit;
 
@@ -84,16 +81,13 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
                     sanitizer.setAllowUnregisteredParamaters(true);
                     sanitizer.parseUrl(response_url);
 
-                    int reasonVal = Integer.parseInt(sanitizer.getValue("reason"));
-                    String str_total_latencyVal = sanitizer.getValue("total_latency");
-                    int totalLatencyVal = Integer.parseInt(str_total_latencyVal.replace("_HTTP/1.1", ""));
+                    int reasonVal = Integer.parseInt(sanitizer.getValue("reason").replace("_HTTP/1.1", ""));
 
                     assertEquals(reasonVal, errorCode.ordinal());
-                    assertTrue(totalLatencyVal >= 1); // should be greater than 0 at the minimum and should be present in the response
 
                     if(checkLatency) {
                         String str_latencyVal = sanitizer.getValue("latency");
-                        int latencyVal = Integer.parseInt(str_latencyVal);
+                        int latencyVal = Integer.parseInt(str_latencyVal.replace("_HTTP/1.1", ""));
                         assertTrue(latencyVal > 0); // should be greater than 0 at the minimum and should be present in the response
                     }
 
@@ -128,6 +122,10 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
     private void executeUTRequest() {
         requestManager.execute();
         // execute main ad request
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
     }
@@ -136,10 +134,18 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
         assertResponseURL(positionInQueue, errorCode, checkLatency);
     }
 
     private void executeAndAssertNoAdURL(int positionInQueue) {
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
@@ -170,7 +176,9 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
 
-
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
     }
 
     // Verify that a successful mediation response,

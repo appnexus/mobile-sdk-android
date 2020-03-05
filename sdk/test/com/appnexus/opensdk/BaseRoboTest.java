@@ -58,6 +58,7 @@ public class BaseRoboTest {
 
     @After
     public void tearDown() {
+        SDKSettings.setExternalExecutor(null);
         activity.finish();
         try {
             server.shutdown();

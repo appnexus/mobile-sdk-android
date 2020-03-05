@@ -1,0 +1,36 @@
+/**
+ AppNexus Android SDK Mediation Adaptors Build
+ **/
+
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven {
+            url 'https://maven.google.com'
+            // Alternative URL is 'https://dl.google.com/dl/android/maven2/'
+        }
+        google()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.1.1'
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven {
+            url 'https://maven.google.com'
+            // Alternative URL is 'https://dl.google.com/dl/android/maven2/'
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+
+    evaluationDependsOnChildren()
+}

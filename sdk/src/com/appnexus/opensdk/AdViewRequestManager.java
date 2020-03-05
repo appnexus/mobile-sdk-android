@@ -22,6 +22,7 @@ import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.UTRequestParameters;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMSDKAdResponse;
+import com.appnexus.opensdk.ut.adresponse.CSRAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMVASTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBNativeAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
@@ -37,6 +38,7 @@ public class AdViewRequestManager extends RequestManager {
     private MediatedAdViewController controller;
     private MediatedSSMAdViewController ssmAdViewController;
     private MediatedNativeAdController mediatedNativeAdController;
+    private CSRNativeBannerController csrNativeBannerController;
     private AdWebView adWebview;
     private final WeakReference<Ad> owner;
     private BaseAdResponse currentAd;
@@ -70,6 +72,11 @@ public class AdViewRequestManager extends RequestManager {
             mediatedNativeAdController = null;
         }
 
+        if (csrNativeBannerController != null) {
+            csrNativeBannerController.cancel(true);
+            csrNativeBannerController = null;
+        }
+
         if (ssmAdViewController != null) {
             ssmAdViewController = null;
         }
@@ -90,13 +97,13 @@ public class AdViewRequestManager extends RequestManager {
     }
 
     @Override
-    public void failed(ResultCode code) {
+    public void failed(ResultCode code, ANAdResponseInfo responseInfo) {
         printMediatedClasses();
         Clog.e("AdViewRequestManager", code.name());
         Ad owner = this.owner.get();
         fireTracker(noAdUrl, Clog.getString(R.string.no_ad_url));
         if (owner != null) {
-            owner.getAdDispatcher().onAdFailed(code);
+            owner.getAdDispatcher().onAdFailed(code, responseInfo);
         }
     }
 
@@ -104,7 +111,7 @@ public class AdViewRequestManager extends RequestManager {
     public void continueWaterfall(ResultCode reason) {
         Clog.d(Clog.baseLogTag, "Waterfall continueWaterfall");
         if (getAdList() == null || getAdList().isEmpty()) {
-            failed(reason);
+            failed(reason, currentAd != null ? currentAd.getAdResponseInfo() : null);
         } else {
             // Process next available ad response
             processNextAd();
@@ -113,7 +120,7 @@ public class AdViewRequestManager extends RequestManager {
 
     @Override
     public void nativeRenderingFailed() {
-        if(currentAd != null && currentAd instanceof RTBNativeAdResponse) {
+        if (currentAd != null && currentAd instanceof RTBNativeAdResponse) {
             RTBNativeAdResponse response = (RTBNativeAdResponse) currentAd;
             processNativeAd(response.getNativeAdResponse(), currentAd);
         }
@@ -134,11 +141,14 @@ public class AdViewRequestManager extends RequestManager {
             // do not hold a reference of current ssm mediated ad controller after ad is loaded
             ssmAdViewController = null;
         }
+        if (csrNativeBannerController != null) {
+            csrNativeBannerController = null;
+        }
         Ad owner = this.owner.get();
         if (owner != null) {
             if (ad.getMediaType().equals(MediaType.BANNER)) {
                 BannerAdView bav = (BannerAdView) owner;
-                if(bav.getExpandsToFitScreenWidth() || bav.getResizeAdToFitContainer()) {
+                if (bav.getExpandsToFitScreenWidth() || bav.getResizeAdToFitContainer()) {
                     int width = ad.getResponseData().getWidth() <= 1 ? bav.getRequestParameters().getPrimarySize().width() : ad.getResponseData().getWidth();
                     int height = ad.getResponseData().getHeight() <= 1 ? bav.getRequestParameters().getPrimarySize().height() : ad.getResponseData().getHeight();
                     if (bav.getExpandsToFitScreenWidth()) {
@@ -165,7 +175,7 @@ public class AdViewRequestManager extends RequestManager {
             processNextAd();
         } else {
             Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
-            failed(ResultCode.UNABLE_TO_FILL);
+            failed(ResultCode.UNABLE_TO_FILL, response.getAdResponseInfo());
         }
     }
 
@@ -176,8 +186,7 @@ public class AdViewRequestManager extends RequestManager {
     private void processNextAd() {
         // If we're about to dispatch a creative to a banner
         // that has been resized by ad stretching, reset its size
-        Ad owner = null;
-        owner = this.owner.get();
+        Ad owner = this.owner.get();
         if ((owner != null) && getAdList() != null && !getAdList().isEmpty()) {
             final BaseAdResponse baseAdResponse = popAd();
             this.currentAd = baseAdResponse;
@@ -188,6 +197,8 @@ public class AdViewRequestManager extends RequestManager {
                 handleCSMResponse(owner, (CSMSDKAdResponse) baseAdResponse);
             } else if (UTConstants.SSM.equalsIgnoreCase(baseAdResponse.getContentSource())) {
                 handleSSMResponse((AdView) owner, (SSMHTMLAdResponse) baseAdResponse);
+            } else if (UTConstants.CSR.equalsIgnoreCase(baseAdResponse.getContentSource())) {
+                handleCSRResponse(owner, (CSRAdResponse) baseAdResponse);
             } else if (UTConstants.CSM_VIDEO.equalsIgnoreCase(baseAdResponse.getContentSource())) {
                 handleCSMVASTAdResponse(owner, (CSMVASTAdResponse) baseAdResponse);
             } else {
@@ -205,7 +216,7 @@ public class AdViewRequestManager extends RequestManager {
             nativeAdResponse.setClickThroughAction(owner.getRequestParameters().getClickThroughAction());
         }
 
-        if (owner instanceof BannerAdView && ((BannerAdView)owner).isNativeRenderingEnabled() && nativeAdResponse.getRendererUrl().length() > 0) {
+        if (owner instanceof BannerAdView && ((BannerAdView) owner).isNativeRenderingEnabled() && nativeAdResponse.getRendererUrl().length() > 0) {
             initiateWebview(owner, baseAdResponse);
         } else {
             processNativeAd(nativeAdResponse, baseAdResponse);
@@ -255,7 +266,6 @@ public class AdViewRequestManager extends RequestManager {
                 if (UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(rtbAdResponse.getAdType())) {
                     // Vast ads
                     handleRTBVASTResponse(ownerAd, (RTBVASTAdResponse) rtbAdResponse);
-
                 } else {
                     continueWaterfall(ResultCode.UNABLE_TO_FILL);
                 }
@@ -343,6 +353,11 @@ public class AdViewRequestManager extends RequestManager {
         }
     }
 
+    private void handleCSRResponse(Ad ownerAd, CSRAdResponse csrAdResponse) {
+        Clog.i(Clog.baseLogTag, "Content source type is CSR, passing it to CSRHandler.");
+        csrNativeBannerController = new CSRNativeBannerController(csrAdResponse, AdViewRequestManager.this );
+    }
+
     private void handleSSMResponse(final AdView owner, final SSMHTMLAdResponse ssmHtmlAdResponse) {
         Clog.i(Clog.baseLogTag, "Mediation type is SSM, passing it to SSMAdViewController.");
         ssmAdViewController = MediatedSSMAdViewController.create(owner, AdViewRequestManager.this, ssmHtmlAdResponse);
@@ -356,4 +371,5 @@ public class AdViewRequestManager extends RequestManager {
     public ANMultiAdRequest getMultiAdRequest() {
         return anMultiAdRequest;
     }
+
 }

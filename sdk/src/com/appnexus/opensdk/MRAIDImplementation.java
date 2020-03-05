@@ -46,6 +46,7 @@ import com.appnexus.opensdk.utils.*;
 import java.io.*;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Locale;
 
 @SuppressLint("InlinedApi")
 class MRAIDImplementation {
@@ -781,9 +782,9 @@ class MRAIDImplementation {
             Activity a = (Activity) owner.getContextFromMutableContext();
             int[] size = {visibleRect.left, visibleRect.top, visibleRect.width(), visibleRect.height()};
             ViewUtil.convertFromPixelsToDP(a, size);
-            newExposureVal = String.format("{\"exposedPercentage\":%.1f,\"visibleRectangle\":{\"x\":%d,\"y\":%d,\"width\":%d,\"height\":%d},\"occlusionRectangles\":null}", exposedPercentage, size[0], size[1], size[2], size[3]);
+            newExposureVal = String.format(Locale.ROOT,"{\"exposedPercentage\":%.1f,\"visibleRectangle\":{\"x\":%d,\"y\":%d,\"width\":%d,\"height\":%d},\"occlusionRectangles\":null}", exposedPercentage, size[0], size[1], size[2], size[3]);
         } else {
-            newExposureVal = String.format("{\"exposedPercentage\":%.1f,\"visibleRectangle\":null,\"occlusionRectangles\":null}", exposedPercentage);
+            newExposureVal = String.format(Locale.ROOT,"{\"exposedPercentage\":%.1f,\"visibleRectangle\":null,\"occlusionRectangles\":null}", exposedPercentage);
         }
 
         if (!exposureVal.equals(newExposureVal)) {

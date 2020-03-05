@@ -43,16 +43,18 @@ public class ANMultiAdRequest {
      *
      * @param context
      * @param memberId
+     * @param publisherId
      * @param ads
      * @param multiAdRequestListener
      * @param loadOnInit
      */
-    public ANMultiAdRequest(Context context, int memberId, MultiAdRequestListener multiAdRequestListener, boolean loadOnInit, Ad... ads) {
+    public ANMultiAdRequest(Context context, int memberId, int publisherId, MultiAdRequestListener multiAdRequestListener, boolean loadOnInit, Ad... ads) {
         mAdFetcher = new AdFetcher(this);
         this.context = context;
         this.multiAdRequestListener = multiAdRequestListener;
         utRequestParameters = new UTRequestParameters(context);
         utRequestParameters.setMemberID(memberId);
+        utRequestParameters.setPublisherId(publisherId);
         if (ads != null && ads.length > 0) {
             for (Ad ad : ads) {
                 addAdUnit(ad);
@@ -80,10 +82,11 @@ public class ANMultiAdRequest {
      *
      * @param context
      * @param memberId
+     * @param publisherId
      * @param multiAdRequestListener
      */
-    public ANMultiAdRequest(Context context, int memberId, MultiAdRequestListener multiAdRequestListener) {
-        this(context, memberId, multiAdRequestListener, false);
+    public ANMultiAdRequest(Context context, int memberId, int publisherId, MultiAdRequestListener multiAdRequestListener) {
+        this(context, memberId, publisherId, multiAdRequestListener, false);
     }
 
 
@@ -108,6 +111,14 @@ public class ANMultiAdRequest {
             Clog.e(Clog.SRMLogTag, "addAdUnit Failed: Member ID mismatch");
             return false;
         }
+
+        //Reads properties of AdUnit: Publisher ID
+        //Reject AdUnit if Publisher ID is set, but does not match MAR Publisher ID  or  if it does not match the Publisher ID of any other AdUnit.
+        if (utRequestParameters.getPublisherId() != 0 && adUnit.getRequestParameters().getPublisherId() != 0 && adUnit.getRequestParameters().getPublisherId() != utRequestParameters.getPublisherId()) {
+            Clog.e(Clog.SRMLogTag, "addAdUnit Failed: Publisher ID mismatch");
+            return false;
+        }
+
         //Reject AdUnit if delegate is already set
         if (adUnit.getMultiAdRequest() == null) {
             if (adUnit instanceof BannerAdView) {
@@ -167,6 +178,20 @@ public class ANMultiAdRequest {
     // Internal API
     public ArrayList<WeakReference<Ad>> getAdUnitList() {
         return utRequestParameters.getAdUnitList();
+    }
+
+    /**
+     * @return Member Id that is set to this instance of ANMultiAdRequest
+     * */
+    public int getMemberId() {
+        return utRequestParameters.getMemberID();
+    }
+
+    /**
+     * @return Publisher Id that is set to this instance of ANMultiAdRequest
+     * */
+    public int getPublisherId() {
+        return utRequestParameters.getPublisherId();
     }
 
     // For End User
@@ -258,12 +283,6 @@ public class ANMultiAdRequest {
     public UTRequestParameters getRequestParameters() {
         return utRequestParameters;
     }
-
-    // TODO: check for the robustness of the MAR code when an AdUnit goes out of scope (UI Test)
-    // DONE: Mark the completion on receiving the UTResponse
-    // DONE: MAR load() can be called at anytime (cancel already running request)
-    // DONE: Removing the Internal Listener
-    // DONE: Passing the MAR instance to the Ad Units
 
     public void onMARLoadCompleted() {
         if (ANMultiAdRequest.this.multiAdRequestListener != null) {

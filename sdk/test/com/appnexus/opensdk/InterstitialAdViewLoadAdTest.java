@@ -28,10 +28,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowLog;
+import org.robolectric.shadows.ShadowLooper;
 
+import static android.os.Looper.getMainLooper;
 import static com.appnexus.opensdk.AdActivity.ACTIVITY_TYPE_INTERSTITIAL;
 import static com.appnexus.opensdk.AdActivity.INTENT_KEY_ACTIVITY_TYPE;
 import static com.appnexus.opensdk.InterstitialAdView.INTENT_KEY_AUTODISMISS_DELAY;
@@ -116,5 +119,15 @@ public class InterstitialAdViewLoadAdTest extends BaseViewAdTest {
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+
+        ShadowLooper shadowLooper = shadowOf(getMainLooper());
+        if (!shadowLooper.isIdle()) {
+            shadowLooper.idle();
+        }
+        RuntimeEnvironment.getMasterScheduler().advanceToNextPostedRunnable();
     }
 }

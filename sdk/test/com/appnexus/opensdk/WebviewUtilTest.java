@@ -16,6 +16,7 @@
  */
 package com.appnexus.opensdk;
 
+import com.appnexus.opensdk.mocks.MockDefaultExecutorSupplier;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
@@ -33,6 +34,7 @@ import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowWebView;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotSame;
 
 @Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
@@ -53,6 +55,15 @@ public class WebviewUtilTest extends BaseViewAdTest {
     //Set the cookies to -1
     public void resetCookies() {
 
+    }
+
+    //This verifies that the AsyncTask for Request is being executed on the Correct Executor.
+    @Test
+    public void testRequestExecutorForBackgroundTasks() {
+        SDKSettings.setExternalExecutor(MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+        assertNotSame(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+        requestManager.execute();
+        assertEquals(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
     }
 
 

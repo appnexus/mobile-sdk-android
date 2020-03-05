@@ -17,12 +17,15 @@ package com.appnexus.opensdk.ut;
 
 import android.text.TextUtils;
 
+import com.appnexus.opensdk.ANAdResponseInfo;
 import com.appnexus.opensdk.ANNativeAdResponse;
+import com.appnexus.opensdk.AdType;
 import com.appnexus.opensdk.MediaType;
 import com.appnexus.opensdk.R;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMSDKAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMVASTAdResponse;
+import com.appnexus.opensdk.ut.adresponse.CSRAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBHTMLAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBNativeAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
@@ -60,6 +63,7 @@ public class UTAdResponse {
 
     private static final String RESPONSE_KEY_CLASS = "class";
     private static final String RESPONSE_KEY_PARAM = "param";
+    private static final String RESPONSE_KEY_PAYLOAD = "payload";
     private static final String RESPONSE_KEY_ID = "id";
     private static final String RESPONSE_KEY_UUID = "uuid";
     private static final String RESPONSE_KEY_HANDLER_URL = "url";
@@ -69,6 +73,7 @@ public class UTAdResponse {
     private static final String RESPONSE_KEY_HANDLER = "handler";
     private static final String RESPONSE_KEY_TRACKERS = "trackers";
     private static final String RESPONSE_KEY_IMPRESSION_URLS = "impression_urls";
+    private static final String RESPONSE_KEY_CLICK_URLS = "click_urls";
     private static final String RESPONSE_KEY_ERROR_URLS = "error_urls";
     private static final String RESPONSE_KEY_TIMEOUT = "timeout_ms";
     private static final String RESPONSE_KEY_RESPONSE_URL = "response_url";
@@ -76,6 +81,7 @@ public class UTAdResponse {
     private static final String RESPONSE_KEY_TAG_ID = "tag_id";
     private static final String RESPONSE_KEY_AUCTION_ID = "auction_id";
     private static final String RESPONSE_KEY_SECOND_PRICE = "second_price";
+    private static final String RESPONSE_KEY_BUYER_MEMBER_ID = "buyer_member_id";
     private JSONObject tag;
     private Integer key = null;
 
@@ -89,7 +95,7 @@ public class UTAdResponse {
     private int timeout;
     private MediaType mediaType;
     private String orientation;
-
+    private ANAdResponseInfo adResponseInfo;
 
     public UTAdResponse(String body, Map<String, List<String>> headers, MediaType requestMediaType, String orientation) {
         this(body, null, headers, requestMediaType, orientation);
@@ -160,6 +166,9 @@ public class UTAdResponse {
                 }
                 // If it contains nobid response, don't parse further.
                 if (JsonUtil.getJSONBoolean(tagObject, RESPONSE_KEY_NO_BID)) {
+                    adResponseInfo = new ANAdResponseInfo();
+                    tagId = JsonUtil.getJSONInt(tagObject, RESPONSE_KEY_TAG_ID);
+                    adResponseInfo.setTagId(String.valueOf(tagId));
                     return;
                 }
 
@@ -194,13 +203,23 @@ public class UTAdResponse {
                 String notifyUrl = JsonUtil.getJSONString(ad, RESPONSE_KEY_NOTIFY_URL);
                 String contentSource = JsonUtil.getJSONString(ad, RESPONSE_KEY_CONTENT_SOURCE);
                 String creativeId = JsonUtil.getJSONString(ad, RESPONSE_KEY_CREATIVE_ID);
+                int memberId = JsonUtil.getJSONInt(ad, RESPONSE_KEY_BUYER_MEMBER_ID);
+
+                ANAdResponseInfo adResponseInfo = new ANAdResponseInfo();
+                adResponseInfo.setAdType(getAdType(adType));
+                adResponseInfo.setTagId(String.valueOf(tagId));
+                adResponseInfo.setCreativeId(creativeId);
+                adResponseInfo.setContentSource(contentSource);
+                adResponseInfo.setBuyMemberId(memberId);
 
                 if (contentSource != null && contentSource.equalsIgnoreCase(UTConstants.CSM)) {
-                    handleCSM(ad, adType, notifyUrl, creativeId);
+                    handleCSM(ad, adType, notifyUrl, adResponseInfo);
                 } else if (contentSource != null && contentSource.equalsIgnoreCase(UTConstants.SSM)) {
-                    handleSSM(ad, adType, creativeId);
+                    handleSSM(ad, adType, adResponseInfo);
                 } else if (contentSource != null && contentSource.equalsIgnoreCase(UTConstants.RTB)) {
-                    handleRTB(ad, adType, notifyUrl, creativeId);
+                    handleRTB(ad, adType, notifyUrl, adResponseInfo);
+                } else if (UTConstants.CSR.equalsIgnoreCase(contentSource)) {
+                    handleCSR(ad, adType, notifyUrl, adResponseInfo);
                 } else {
                     Clog.e(Clog.httpRespLogTag, "handleAdResponse unknown content_source");
                 }
@@ -208,18 +227,67 @@ public class UTAdResponse {
         }
     }
 
-    private void handleRTB(JSONObject adObject, String adType, String notifyUrl, String creativeId) throws Exception {
+    private void handleCSR(JSONObject adObject, String adType, String notifyUrl, ANAdResponseInfo adResponseInfo) {
+        JSONObject csrObject = JsonUtil.getJSONObject(adObject, UTConstants.CSR);
+        if (csrObject != null) {
+            parseCSRNativeBannerAd(adObject, adResponseInfo, adType, notifyUrl);
+        }
+    }
+
+    private void parseCSRNativeBannerAd(JSONObject adObject, ANAdResponseInfo adResponseInfo, String adType, String notifyUrl) {
+        JSONObject csr = JsonUtil.getJSONObject(adObject, UTConstants.CSR);
+
+        if (csr != null) {
+            JSONArray handler = JsonUtil.getJSONArray(csr, RESPONSE_KEY_HANDLER);
+            ArrayList<String> impressionUrls = getImpressionUrls(csr);
+            ArrayList<String> clickeUrls = getClickUrls(csr);
+            String responseUrl = JsonUtil.getJSONString(csr, RESPONSE_KEY_RESPONSE_URL);
+
+            if (handler != null) {
+                for (int j = 0; j < handler.length(); j++) {
+                    // get mediatedAd fields from handlerElement if available
+                    JSONObject handlerElement = JsonUtil.getJSONObjectFromArray(handler, j);
+                    if (handlerElement != null) {
+                        // we only care about handlers for android
+                        String type = JsonUtil.getJSONString(handlerElement, RESPONSE_KEY_TYPE);
+                        if (type != null) {
+                            type = type.toLowerCase(Locale.US);
+                        }
+                        if ((type != null) && type.equals(RESPONSE_VALUE_ANDROID)) {
+                            String className = JsonUtil.getJSONString(handlerElement, RESPONSE_KEY_CLASS);
+                            String payload = JsonUtil.getJSONString(handlerElement, RESPONSE_KEY_PAYLOAD);
+                            int height = JsonUtil.getJSONInt(handlerElement, RESPONSE_KEY_HEIGHT);
+                            int width = JsonUtil.getJSONInt(handlerElement, RESPONSE_KEY_WIDTH);
+                            String adId = JsonUtil.getJSONString(handlerElement, RESPONSE_KEY_ID);
+
+
+                            if (!StringUtil.isEmpty(className)) {
+                                CSRAdResponse csrAd = new CSRAdResponse(width, height, adType, responseUrl, impressionUrls, adResponseInfo, adObject);
+                                csrAd.setClassName(className);
+                                csrAd.setClickUrls(clickeUrls);
+                                csrAd.setPayload(payload);
+                                csrAd.setContentSource(UTConstants.CSR);
+                                adList.add(csrAd);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void handleRTB(JSONObject adObject, String adType, String notifyUrl, ANAdResponseInfo adResponseInfo) throws Exception {
         JSONObject rtbObject = JsonUtil.getJSONObject(adObject, UTConstants.RTB);
         if (rtbObject != null) {
             if (rtbObject.has(UTConstants.AD_TYPE_BANNER)) {
                 Clog.i(Clog.httpRespLogTag, "it's an HTML Ad");
-                parseHtmlAdResponse(rtbObject, adType, creativeId);
+                parseHtmlAdResponse(rtbObject, adType, adResponseInfo);
             } else if (rtbObject.has(UTConstants.AD_TYPE_VIDEO)) {
                 Clog.i(Clog.httpRespLogTag, "it's a Video Ad");
-                parseVideoAdResponse(rtbObject, adType, notifyUrl, creativeId);
+                parseVideoAdResponse(rtbObject, adType, notifyUrl, adResponseInfo);
             } else if (rtbObject.has(UTConstants.AD_TYPE_NATIVE)) {
                 Clog.i(Clog.httpRespLogTag, "it's a NATIVE Ad");
-                parseNativeAds(adObject, creativeId, adType);
+                parseNativeAds(adObject, adResponseInfo, adType);
             } else {
                 Clog.e(Clog.httpRespLogTag, "handleRTB UNKNOWN AD_TYPE");
             }
@@ -227,7 +295,7 @@ public class UTAdResponse {
     }
 
 
-    private void parseHtmlAdResponse(JSONObject rtbObject, String adType, String creativeId) throws Exception {
+    private void parseHtmlAdResponse(JSONObject rtbObject, String adType, ANAdResponseInfo adResponseInfo) throws Exception {
         JSONObject bannerObject = JsonUtil.getJSONObject(rtbObject, UTConstants.AD_TYPE_BANNER);
         if (bannerObject != null) {
             int height = JsonUtil.getJSONInt(bannerObject, RESPONSE_KEY_HEIGHT);
@@ -237,7 +305,7 @@ public class UTAdResponse {
             if (StringUtil.isEmpty(content)) {
                 Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.blank_ad));
             } else {
-                RTBHTMLAdResponse rtbAd = new RTBHTMLAdResponse(width, height, adType, getImpressionUrls(rtbObject), creativeId);
+                RTBHTMLAdResponse rtbAd = new RTBHTMLAdResponse(width, height, adType, getImpressionUrls(rtbObject), adResponseInfo);
                 rtbAd.setAdContent(content);
                 rtbAd.setContentSource(UTConstants.RTB);
                 if (content.contains(UTConstants.MRAID_JS_FILENAME)) {
@@ -255,9 +323,10 @@ public class UTAdResponse {
      *
      * @param rtbObject (JSONObject)
      * @param adType    (String)
+     * @param adResponseInfo
      * @throws Exception
      */
-    private void parseVideoAdResponse(JSONObject rtbObject, String adType, String notifyUrl, String creativeId) throws Exception {
+    private void parseVideoAdResponse(JSONObject rtbObject, String adType, String notifyUrl, ANAdResponseInfo adResponseInfo) throws Exception {
 
         JSONObject videoObject = JsonUtil.getJSONObject(rtbObject, UTConstants.AD_TYPE_VIDEO);
         if (videoObject != null) {
@@ -266,7 +335,7 @@ public class UTAdResponse {
             int width = JsonUtil.getJSONInt(videoObject, RESPONSE_KEY_PLAYER_WIDTH);
             //String vastResponse = JsonUtil.getJSONString(videoObject,RESPONSE_KEY_ASSET_URL);
             if (!StringUtil.isEmpty(vastResponse)) {
-                RTBVASTAdResponse rtbAd = new RTBVASTAdResponse(width, height, adType, notifyUrl, getImpressionUrls(rtbObject), creativeId);
+                RTBVASTAdResponse rtbAd = new RTBVASTAdResponse(width, height, adType, notifyUrl, getImpressionUrls(rtbObject), adResponseInfo);
                 rtbAd.setAdContent(vastResponse);
                 rtbAd.setContentSource(UTConstants.RTB);
                 rtbAd.addToExtras(UTConstants.EXTRAS_KEY_MRAID, true);
@@ -276,31 +345,31 @@ public class UTAdResponse {
     }
 
     // returns true if response contains a native response, false if not
-    private void parseNativeAds(JSONObject response, String creativeId, String adType) {
+    private void parseNativeAds(JSONObject response, ANAdResponseInfo adResponseInfo, String adType) {
         if (response != null) {
             ANNativeAdResponse anNativeAdResponse = ANNativeAdResponse.create(response);
             if (anNativeAdResponse != null) {
-                RTBNativeAdResponse nativeRTB = new RTBNativeAdResponse(1, 1, adType, anNativeAdResponse, null, creativeId);
+                RTBNativeAdResponse nativeRTB = new RTBNativeAdResponse(1, 1, adType, anNativeAdResponse, null, adResponseInfo);
                 nativeRTB.setContentSource(UTConstants.RTB);
                 adList.add(nativeRTB);
             }
         }
     }
 
-    private void handleCSM(JSONObject ad, String adType, String notifyUrl, String creativeId) {
+    private void handleCSM(JSONObject ad, String adType, String notifyUrl, ANAdResponseInfo adResponseInfo) {
         if (adType.equalsIgnoreCase(UTConstants.AD_TYPE_BANNER)) {
             Clog.i(Clog.httpRespLogTag, "Parsing SDK Mediation Ad");
-            parseCSMSDKMediation(ad, adType, creativeId);
+            parseCSMSDKMediation(ad, adType, adResponseInfo);
         } else if (adType.equalsIgnoreCase(UTConstants.AD_TYPE_NATIVE)) {
             Clog.i(Clog.httpRespLogTag, "Parsing Native Mediation Ad");
-            parseCSMSDKMediation(ad, adType, creativeId);
+            parseCSMSDKMediation(ad, adType, adResponseInfo);
         } else if (adType.equalsIgnoreCase(UTConstants.AD_TYPE_VIDEO)) {
             Clog.i(Clog.httpRespLogTag, "Parsing Video CSM Ad");
-            parseVideoCSMResponse(ad, adType, notifyUrl, creativeId);
+            parseVideoCSMResponse(ad, adType, notifyUrl, adResponseInfo);
         }
     }
 
-    private void parseCSMSDKMediation(JSONObject ad, String adType, String creativeId) {
+    private void parseCSMSDKMediation(JSONObject ad, String adType, ANAdResponseInfo adResponseInfo) {
 
         JSONObject csm = JsonUtil.getJSONObject(ad, UTConstants.CSM);
 
@@ -327,7 +396,6 @@ public class UTAdResponse {
                             String adId = JsonUtil.getJSONString(handlerElement, RESPONSE_KEY_ID);
                             String secondPrice = JsonUtil.getJSONString(handlerElement, RESPONSE_KEY_SECOND_PRICE);
 
-
                             if (param.contains("\"optimized\":true") && !StringUtil.isEmpty(secondPrice)) {
                                 try {
                                     JSONObject paramObj = new JSONObject(param);
@@ -339,7 +407,8 @@ public class UTAdResponse {
                             }
 
                             if (!StringUtil.isEmpty(className)) {
-                                CSMSDKAdResponse csmAd = new CSMSDKAdResponse(width, height, adType, responseUrl, impressionUrls, creativeId, ad);
+                                adResponseInfo.setNetworkName(className);
+                                CSMSDKAdResponse csmAd = new CSMSDKAdResponse(width, height, adType, responseUrl, impressionUrls, adResponseInfo, ad);
                                 csmAd.setClassName(className);
                                 csmAd.setId(adId);
                                 csmAd.setParam(param);
@@ -353,12 +422,12 @@ public class UTAdResponse {
         }
     }
 
-    private void parseVideoCSMResponse(JSONObject ad, String adType, String notifyUrl, String creativeId) {
+    private void parseVideoCSMResponse(JSONObject ad, String adType, String notifyUrl, ANAdResponseInfo adResponseInfo) {
         JSONObject csm = JsonUtil.getJSONObject(ad, UTConstants.CSM);
         if (csm != null) {
             JSONArray handler = JsonUtil.getJSONArray(csm, RESPONSE_KEY_HANDLER);
             if (handler != null) {
-                CSMVASTAdResponse csmVideoAd = new CSMVASTAdResponse(-1, -1, adType, null, creativeId, uuid);
+                CSMVASTAdResponse csmVideoAd = new CSMVASTAdResponse(-1, -1, adType, null, adResponseInfo, uuid);
                 csmVideoAd.setAdJSONContent(ad);
                 csmVideoAd.setAuction_id(String.valueOf(auctionID));
                 csmVideoAd.setTag_id(tagId);
@@ -370,7 +439,7 @@ public class UTAdResponse {
     }
 
 
-    private void handleSSM(JSONObject ad, String adType, String creativeId) {
+    private void handleSSM(JSONObject ad, String adType, ANAdResponseInfo adResponseInfo) {
         JSONObject ssm = JsonUtil.getJSONObject(ad, UTConstants.SSM);
         if (ssm != null) {
             JSONArray handler = JsonUtil.getJSONArray(ssm, RESPONSE_KEY_HANDLER);
@@ -387,7 +456,7 @@ public class UTAdResponse {
                         String handlerUrl = JsonUtil.getJSONString(handlerElement, RESPONSE_KEY_HANDLER_URL);
                         if (!StringUtil.isEmpty(handlerUrl)) {
                             String responseUrl = JsonUtil.getJSONString(ssm, RESPONSE_KEY_RESPONSE_URL);
-                            SSMHTMLAdResponse ssmAd = new SSMHTMLAdResponse(width, height, adType, responseUrl, getImpressionUrls(ssm), creativeId);
+                            SSMHTMLAdResponse ssmAd = new SSMHTMLAdResponse(width, height, adType, responseUrl, getImpressionUrls(ssm), adResponseInfo);
                             ssmAd.setAdUrl(handlerUrl);
                             ssmAd.setSsmTimeout(ssmTimeout);
                             ssmAd.setContentSource(UTConstants.SSM);
@@ -400,6 +469,26 @@ public class UTAdResponse {
         }
     }
 
+
+    private ArrayList<String> getClickUrls(JSONObject contentSourceObject) {
+        JSONArray trackers = JsonUtil.getJSONArray(contentSourceObject, RESPONSE_KEY_TRACKERS);
+
+        ArrayList<String> clickUrls = new ArrayList<String>();
+        if (trackers != null) {
+            for (int i = 0; i < trackers.length(); i++) {
+                try {
+                    JSONObject obj = trackers.getJSONObject(0);
+                    JSONArray trackerClickUrls = JsonUtil.getJSONArray(obj, RESPONSE_KEY_CLICK_URLS);
+                    ArrayList<String> trackerClickUrlsStringArray = JsonUtil.getStringArrayList(trackerClickUrls);
+                    if (trackerClickUrlsStringArray != null) {
+                        clickUrls.addAll(trackerClickUrlsStringArray);
+                    }
+                } catch (JSONException e) {
+                }
+            }
+        }
+        return clickUrls;
+    }
 
     private ArrayList<String> getImpressionUrls(JSONObject contentSourceObject) {
         JSONArray trackers = JsonUtil.getJSONArray(contentSourceObject, RESPONSE_KEY_TRACKERS);
@@ -444,4 +533,18 @@ public class UTAdResponse {
         return noAdUrl;
     }
 
+    public ANAdResponseInfo getAdResponseInfo() {
+        return adResponseInfo;
+    }
+
+    private AdType getAdType(String adTypeString){
+        if (adTypeString.equalsIgnoreCase(UTConstants.AD_TYPE_BANNER)) {
+            return AdType.BANNER;
+        } else if (adTypeString.equalsIgnoreCase(UTConstants.AD_TYPE_VIDEO)) {
+            return AdType.VIDEO;
+        } else if (adTypeString.equalsIgnoreCase(UTConstants.AD_TYPE_NATIVE)) {
+            return AdType.NATIVE;
+        }
+        return AdType.UNKNOWN;
+    }
 }
