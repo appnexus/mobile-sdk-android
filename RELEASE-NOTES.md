@@ -1,3 +1,14 @@
+## 7.1
+### New Feature
++ MS-3956 Added ANAdResponseInfo to return associated data with Ad response
++ MS-4075 Added Client Side Rendering for FB mediated Ads.
+### Mediation partner upgrade
++ MS-4209 Google AdMob SDK v18.3.0
+### Improvements/Bug Fixes
++ MS-3581 InApp Browser Redesign
++ MS-3882 Added option to include "publisher_id" in Ad request
++ MS-4166 Fixed VideoAd OMID session tracker firing bug
+
 ## 7.0
 ### New Features
 + MS-3885 Added support for Multi Ad Request (MAR) [https://wiki.xandr.com/display/sdk/Single+Request+Mode+for+Android]
