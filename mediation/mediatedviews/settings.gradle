@@ -11,3 +11,6 @@ include ':InMobi'
 include ':MillennialMedia'
 include ':MoPub'
 include ':SmartAdServer'
+
+include ':FacebookCSR'
+project(':FacebookCSR').projectDir = new File(settingsDir, '../../csr/Facebook')
