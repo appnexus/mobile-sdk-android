@@ -165,7 +165,7 @@ public class ANGDPRSettings {
                 deviceConsent = pref.getString(IABTCF_PurposeConsents, null);
         }
 
-        return deviceConsent;
+        return deviceConsent != null ? deviceConsent.substring(0, 1) : null;
     }
 
 
