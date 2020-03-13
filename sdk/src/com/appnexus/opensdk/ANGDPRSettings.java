@@ -118,31 +118,25 @@ public class ANGDPRSettings {
      * null undetermined.
      */
     public static Boolean getConsentRequired(Context context) {
-        String subjectToGdprValue = "Nil";
+        String subjectToGdprValue = "";
         if (context != null) {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
             if (pref.contains(ANGDPR_CONSENT_REQUIRED)) {
-                subjectToGdprValue = pref.getString(ANGDPR_CONSENT_REQUIRED, "Nil");
+                subjectToGdprValue = pref.getString(ANGDPR_CONSENT_REQUIRED, "");
             } else if (pref.contains(IABTCF_SUBJECT_TO_GDPR)) {
-                subjectToGdprValue = pref.getString(IABTCF_SUBJECT_TO_GDPR, "Nil");
+                subjectToGdprValue = pref.getString(IABTCF_SUBJECT_TO_GDPR, "");
             } else if (pref.contains(IAB_SUBJECT_TO_GDPR)) {
-                subjectToGdprValue = pref.getString(IAB_SUBJECT_TO_GDPR, "Nil");
+                subjectToGdprValue = pref.getString(IAB_SUBJECT_TO_GDPR, "");
             }
         }
 
-        if (subjectToGdprValue.equalsIgnoreCase("1")) {
-            return true;
-        } else if (subjectToGdprValue.equalsIgnoreCase("0")) {
-            return false;
-        }
-        return null;
+        return TextUtils.isEmpty(subjectToGdprValue) ? null : subjectToGdprValue.equals("1");
     }
 
     /**
      * Set the device access Consent by the publisher.
      *
-     * @param context
-     * @param A consent set by the publisher to access the device data as per https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework
+     * @param purposeConsents A consent set by the publisher to access the device data as per https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework
      */
     public static void setPurposeConsents(Context context, String purposeConsents) {
         if (context != null && !purposeConsents.isEmpty()) {
@@ -162,20 +156,16 @@ public class ANGDPRSettings {
         if(context == null)
             return null;
 
-        String deviceConsent = "Nil";
+        String deviceConsent = null;
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         if (pref.contains(ANGDPR_PurposeConsents)) {
-                deviceConsent = pref.getString(ANGDPR_PurposeConsents, "Nil");
+                deviceConsent = pref.getString(ANGDPR_PurposeConsents, null);
         } else if (pref.contains(IABTCF_PurposeConsents)){
-                deviceConsent = pref.getString(IABTCF_PurposeConsents, "Nil");
+                deviceConsent = pref.getString(IABTCF_PurposeConsents, null);
         }
 
-
-        if (deviceConsent != "Nil")
-            return deviceConsent.substring(0);
-
-        return null;
+        return deviceConsent != null ? deviceConsent.substring(0, 1) : null;
     }
 
 

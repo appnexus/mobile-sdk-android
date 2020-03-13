@@ -811,8 +811,8 @@ public class UTRequestParameters {
             consentRequired=undefined    Yes, read IDFA             No, don’t read IDFA           Yes, read IDFA
             */
 
-            if(((ANGDPRSettings.getDeviceAccessConsent(context) == null) && (ANGDPRSettings.getConsentRequired(context) == false)) ||
-                    (ANGDPRSettings.getDeviceAccessConsent(context).equals("1"))){
+            if(((ANGDPRSettings.getDeviceAccessConsent(context) == null) && (ANGDPRSettings.getConsentRequired(context) == null || ANGDPRSettings.getConsentRequired(context) == false)) ||
+                    (ANGDPRSettings.getDeviceAccessConsent(context) != null && ANGDPRSettings.getDeviceAccessConsent(context).equals("1"))){
                 if (!StringUtil.isEmpty(Settings.getSettings().aaid)) {
                     // device id
                     JSONObject device_id = new JSONObject();
@@ -826,6 +826,7 @@ public class UTRequestParameters {
             // os
             device.put(DEVICE_OS, os);
         } catch (JSONException e) {
+            Clog.e(Clog.baseLogTag, e.getMessage());
         }
 
         return device;
