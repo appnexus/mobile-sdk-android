@@ -23,6 +23,7 @@ import android.text.TextUtils;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.StringUtil;
 
 /**
  * Global GDPR Settings class.
@@ -166,6 +167,24 @@ public class ANGDPRSettings {
         }
 
         return deviceConsent != null ? deviceConsent.substring(0, 1) : null;
+    }
+
+    public static Boolean canIAccessDeviceData(Context context) {
+        //fetch advertising identifier based TCF 2.0 Purpose1 value
+        //truth table
+            /*
+                                    deviceAccessConsent=true   deviceAccessConsent=false  deviceAccessConsent undefined
+            consentRequired=false        Yes, read IDFA             No, don’t read IDFA           Yes, read IDFA
+            consentRequired=true         Yes, read IDFA             No, don’t read IDFA           No, don’t read IDFA
+            consentRequired=undefined    Yes, read IDFA             No, don’t read IDFA           Yes, read IDFA
+            */
+
+        if(((ANGDPRSettings.getDeviceAccessConsent(context) == null) && (ANGDPRSettings.getConsentRequired(context) == null || ANGDPRSettings.getConsentRequired(context) == false)) ||
+                (ANGDPRSettings.getDeviceAccessConsent(context) != null && ANGDPRSettings.getDeviceAccessConsent(context).equals("1"))){
+            return true;
+        }
+
+        return false;
     }
 
 

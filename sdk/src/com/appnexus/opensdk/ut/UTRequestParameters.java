@@ -802,17 +802,7 @@ public class UTRequestParameters {
             // limited ad tracking
             device.put(DEVICE_LMT, Settings.getSettings().limitTrackingEnabled);
 
-            //fetch advertising identifier based TCF 2.0 Purpose1 value
-            //truth table
-            /*
-                                    deviceAccessConsent=true   deviceAccessConsent=false  deviceAccessConsent undefined
-            consentRequired=false        Yes, read IDFA             No, don’t read IDFA           Yes, read IDFA
-            consentRequired=true         Yes, read IDFA             No, don’t read IDFA           No, don’t read IDFA
-            consentRequired=undefined    Yes, read IDFA             No, don’t read IDFA           Yes, read IDFA
-            */
-
-            if(((ANGDPRSettings.getDeviceAccessConsent(context) == null) && (ANGDPRSettings.getConsentRequired(context) == null || ANGDPRSettings.getConsentRequired(context) == false)) ||
-                    (ANGDPRSettings.getDeviceAccessConsent(context) != null && ANGDPRSettings.getDeviceAccessConsent(context).equals("1"))){
+            if(ANGDPRSettings.canIAccessDeviceData(context)){
                 if (!StringUtil.isEmpty(Settings.getSettings().aaid)) {
                     // device id
                     JSONObject device_id = new JSONObject();
@@ -820,9 +810,6 @@ public class UTRequestParameters {
                     device.put(DEVICE_DEVICE_ID, device_id);
                 }
             }
-
-
-
             // os
             device.put(DEVICE_OS, os);
         } catch (JSONException e) {
