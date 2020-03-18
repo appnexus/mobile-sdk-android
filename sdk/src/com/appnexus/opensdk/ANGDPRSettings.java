@@ -125,7 +125,8 @@ public class ANGDPRSettings {
             if (pref.contains(ANGDPR_CONSENT_REQUIRED)) {
                 subjectToGdprValue = pref.getString(ANGDPR_CONSENT_REQUIRED, "");
             } else if (pref.contains(IABTCF_SUBJECT_TO_GDPR)) {
-                subjectToGdprValue = pref.getString(IABTCF_SUBJECT_TO_GDPR, "");
+                int iabTcfSubjectToGdpr = pref.getInt(IABTCF_SUBJECT_TO_GDPR, -1);
+                subjectToGdprValue = iabTcfSubjectToGdpr == -1 ? "" : String.valueOf(iabTcfSubjectToGdpr);
             } else if (pref.contains(IAB_SUBJECT_TO_GDPR)) {
                 subjectToGdprValue = pref.getString(IAB_SUBJECT_TO_GDPR, "");
             }
