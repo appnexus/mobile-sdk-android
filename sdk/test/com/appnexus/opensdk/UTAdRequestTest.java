@@ -399,6 +399,33 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         assertEquals("fooBar", postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getString("consent_string"));
     }
 
+    /*
+     * Test AAID with Consent Required set as true
+     * and Purpose Consent set as true in /ut request body
+     * @throws Exception
+     */
+    @Test
+    public void testAAIDWithConsentRequiredTrueAndPurposeConsentTrue() throws Exception {
+        executionSteps();
+        JSONObject postDataBeforeGDPRValueSet = inspectPostData();
+        assertFalse(postDataBeforeGDPRValueSet.has("gdpr_consent"));
+
+        SDKSettings.setAAID("1234", true);
+        ANGDPRSettings.setConsentRequired(activity,true);
+        ANGDPRSettings.setPurposeConsents(activity,"1");
+        executionSteps();
+        JSONObject postDataWithGDPRValueSet = inspectPostData();
+        System.out.println("POST DATA: " + postDataWithGDPRValueSet);
+        JSONObject device = postDataWithGDPRValueSet.getJSONObject("device");
+        JSONObject device_id = device.getJSONObject("device_id");
+        assertNotNull(device_id);
+        String aaid = device_id.getString("aaid");
+        assertNotNull(aaid);
+
+        assertEquals("1234", aaid);
+        assertEquals(true, postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getBoolean("consent_required"));
+    }
+
     /**
      * Test USPrivacy_consent in /ut request body
      *
