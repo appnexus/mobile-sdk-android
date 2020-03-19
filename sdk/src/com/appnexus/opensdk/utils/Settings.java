@@ -33,6 +33,8 @@ public class Settings {
     public String carrierName = null;
     public String aaid = null;
     public boolean limitTrackingEnabled = false;
+    @Deprecated
+    public boolean useHttps=true;
 
     public final String deviceMake = Build.MANUFACTURER;
     public final String deviceModel = Build.MODEL;
