@@ -236,11 +236,6 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements UTAdRequ
     }
 
     @Override
-    public boolean isHttpsEnabled(){
-        return false;
-    }
-
-    @Override
     public LinkedList<BaseAdResponse> getAdList() {
         return null;
     }

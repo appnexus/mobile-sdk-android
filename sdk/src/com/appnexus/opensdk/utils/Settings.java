@@ -33,7 +33,6 @@ public class Settings {
     public String carrierName = null;
     public String aaid = null;
     public boolean limitTrackingEnabled = false;
-    public boolean useHttps=false;
 
     public final String deviceMake = Build.MANUFACTURER;
     public final String deviceModel = Build.MODEL;
@@ -82,11 +81,11 @@ public class Settings {
 
     public static final int VIDEO_AUTOPLAY_PERCENTAGE = 50;
 
-    private static String COOKIE_DOMAIN = "http://mediation.adnxs.com";
+    private static String COOKIE_DOMAIN = "https://mediation.adnxs.com";
     public static final String AN_UUID = "uuid2";
-    private static String BASE_URL = "http://mediation.adnxs.com/";
-    private static String REQUEST_BASE_URL = "http://mediation.adnxs.com/mob?";
-    private static String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
+    private static String BASE_URL = "https://mediation.adnxs.com/";
+    private static String REQUEST_BASE_URL = "https://mediation.adnxs.com/mob?";
+    private static String INSTALL_BASE_URL = "https://mediation.adnxs.com/install?";
 
     private static String VIDEO_HTML = "file:///android_asset/apn_vastvideo.html";
 
@@ -133,20 +132,16 @@ public class Settings {
         return null;
     }
 
-    public static boolean isHttpsEnabled(){
-        return Settings.getSettings().useHttps;
-    }
-
     public static String getBaseUrl() {
-        return Settings.getSettings().useHttps ? BASE_URL.replace("http:", "https:") : BASE_URL;
+        return BASE_URL;
     }
 
     public static String getRequestBaseUrl() {
-        return Settings.getSettings().useHttps ? REQUEST_BASE_URL.replace("http:", "https:") : REQUEST_BASE_URL;
+        return REQUEST_BASE_URL;
     }
 
     public static String getInstallBaseUrl() {
-        return Settings.getSettings().useHttps ? INSTALL_BASE_URL.replace("http:", "https:") : INSTALL_BASE_URL;
+        return INSTALL_BASE_URL;
     }
 
 

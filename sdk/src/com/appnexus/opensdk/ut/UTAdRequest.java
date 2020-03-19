@@ -109,6 +109,7 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
             String baseUrl = UTConstants.REQUEST_BASE_URL_UT;
             URL url = new URL(baseUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//            conn.setSSLSocketFactory((SSLSocketFactory) SSLSocketFactory.getDefault());
             conn.setDoOutput(true);
             conn.setDoInput(true);
             conn.setRequestProperty("Content-Type", "application/json");

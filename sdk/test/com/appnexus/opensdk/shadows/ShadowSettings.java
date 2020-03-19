@@ -29,15 +29,15 @@ public class ShadowSettings {
     public boolean test_mode = true;
 
     public static String getBaseUrl() {
-        return Settings.getSettings().useHttps ? BASE_URL.replace("http:", "https:") : BASE_URL;
+        return BASE_URL;
     }
 
     public static String getRequestBaseUrl() {
-        return Settings.getSettings().useHttps ? REQUEST_BASE_URL.replace("http:", "https:") : REQUEST_BASE_URL;
+        return REQUEST_BASE_URL;
     }
 
     public static String getInstallBaseUrl() {
-        return Settings.getSettings().useHttps ? INSTALL_BASE_URL.replace("http:", "https:") : INSTALL_BASE_URL;
+        return INSTALL_BASE_URL;
     }
 
     public static String getCookieDomain() {
