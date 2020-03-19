@@ -38,6 +38,7 @@ public class BaseRoboTest {
         shadowOf(activity).grantPermissions("android.permission.INTERNET");
         server= new MockWebServer();
         try {
+//            server.useHttps((SSLSocketFactory) SSLSocketFactory.getDefault(), true);
             server.start();
             HttpUrl url= server.url("/");
             UTConstants.REQUEST_BASE_URL_UT = url.toString();
