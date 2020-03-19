@@ -106,7 +106,7 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
 
         try {
 
-            String baseUrl = SDKSettings.isHttpsEnabled() ? UTConstants.REQUEST_BASE_URL_UT.replace("http:", "https:") : UTConstants.REQUEST_BASE_URL_UT;
+            String baseUrl = UTConstants.REQUEST_BASE_URL_UT;
             URL url = new URL(baseUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);

@@ -185,24 +185,6 @@ public class SDKSettings {
     }
 
     /**
-     * Enable HTTPS in the SDK if set to true.
-     *
-     * @param useHttps whether to enable Https or not. default is false
-     */
-
-    public static void useHttps(boolean useHttps) {
-        Settings.getSettings().useHttps = useHttps;
-    }
-
-    /**
-     * Returns true if the Https is enabled for the ad calls
-     * or false otherwise.
-     */
-    public static boolean isHttpsEnabled() {
-        return Settings.getSettings().useHttps;
-    }
-
-    /**
      * Sets whether or not location (latitude, longitude)
      * permission alert will be shown to the user when called by the Creative.
      *
