@@ -736,11 +736,6 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
     }
 
     @Override
-    public boolean isHttpsEnabled() {
-        return false;
-    }
-
-    @Override
     public void onReceiveUTResponse(UTAdResponse response) {
         if (response != null && response.getAdList() != null && !response.getAdList().isEmpty()) {
             requesterReceivedServerResponse = true;

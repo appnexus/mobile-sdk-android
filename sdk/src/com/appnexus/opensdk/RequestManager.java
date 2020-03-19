@@ -51,11 +51,6 @@ public abstract class RequestManager implements UTAdRequester {
     public abstract void onReceiveAd(AdResponse ad);
 
     @Override
-    public boolean isHttpsEnabled() {
-        return Settings.getSettings().isHttpsEnabled();
-    }
-
-    @Override
     public void onReceiveUTResponse(UTAdResponse response) {
         //First set the NoAdUrl from response. This will be used to fire tracked for failed case.
         if (response != null) {
