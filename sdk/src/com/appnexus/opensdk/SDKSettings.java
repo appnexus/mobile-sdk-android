@@ -185,6 +185,26 @@ public class SDKSettings {
     }
 
     /**
+     * @deprecated The SDK uses Https by default.
+     * This API does not bring any change.
+     *
+     * @param useHttps whether to enable Https or not.
+     */
+    @Deprecated
+    public static void useHttps(boolean useHttps) {
+        return;
+    }
+
+    /**
+     * @deprecated The SDK uses Https by default.
+     * This API always returns true.
+     */
+    @Deprecated
+    public static boolean isHttpsEnabled() {
+        return true;
+    }
+
+    /**
      * Sets whether or not location (latitude, longitude)
      * permission alert will be shown to the user when called by the Creative.
      *
