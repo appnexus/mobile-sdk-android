@@ -22,10 +22,10 @@ import org.robolectric.annotation.Implements;
 @Implements(value = Settings.class, callThroughByDefault = true)
 public class ShadowSettings {
 
-    private static String COOKIE_DOMAIN = "http://mediation.adnxs.com";
-    private static String BASE_URL = "http://mediation.adnxs.com/";
-    private static String REQUEST_BASE_URL = "http://mediation.adnxs.com/ut/v3";
-    private static String INSTALL_BASE_URL = "http://mediation.adnxs.com/install?";
+    private static String COOKIE_DOMAIN = "https://mediation.adnxs.com";
+    private static String BASE_URL = "https://mediation.adnxs.com/";
+    private static String REQUEST_BASE_URL = "https://mediation.adnxs.com/ut/v3";
+    private static String INSTALL_BASE_URL = "https://mediation.adnxs.com/install?";
 
     public static final long MEDIATED_NETWORK_TIMEOUT = 1000;
 
