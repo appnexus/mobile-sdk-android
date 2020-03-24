@@ -102,11 +102,11 @@ public class AdViewRequestManagerTest extends BaseViewAdTest {
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
 
-        ShadowLooper shadowLooper = shadowOf(getMainLooper());
-        if (!shadowLooper.isIdle()) {
-            shadowLooper.idle();
-        }
-        RuntimeEnvironment.getMasterScheduler().advanceToNextPostedRunnable();
+//        ShadowLooper shadowLooper = shadowOf(getMainLooper());
+//        if (!shadowLooper.isIdle()) {
+//            shadowLooper.idle();
+//        }
+//        RuntimeEnvironment.getMasterScheduler().advanceToNextPostedRunnable();
 
         assertNotifyURL(request);
     }
@@ -124,11 +124,11 @@ public class AdViewRequestManagerTest extends BaseViewAdTest {
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
 
-        ShadowLooper shadowLooper = shadowOf(getMainLooper());
-        if (!shadowLooper.isIdle()) {
-            shadowLooper.idle();
-        }
-        RuntimeEnvironment.getMasterScheduler().advanceToNextPostedRunnable();
+//        ShadowLooper shadowLooper = shadowOf(getMainLooper());
+//        if (!shadowLooper.isIdle()) {
+//            shadowLooper.idle();
+//        }
+//        RuntimeEnvironment.getMasterScheduler().advanceToNextPostedRunnable();
     }
 
 

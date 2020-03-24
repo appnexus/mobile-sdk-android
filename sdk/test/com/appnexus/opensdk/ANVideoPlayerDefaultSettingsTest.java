@@ -34,6 +34,7 @@ public class ANVideoPlayerDefaultSettingsTest {
 
     @Before
     public void setup() {
+        SDKSettings.setExternalExecutor(null);
         try {
             Class videoPlayerSettings = ANVideoPlayerSettings.getVideoPlayerSettings().getClass();
             Field instance = videoPlayerSettings.getDeclaredField("anVideoPlayerSettings");

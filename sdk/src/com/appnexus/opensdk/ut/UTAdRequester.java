@@ -59,13 +59,6 @@ public interface UTAdRequester {
     UTRequestParameters getRequestParams();
 
     /**
-     * This functions returns if the request has to be secured or not based on the user preference
-     * @return  (Boolean)
-     */
-
-    boolean isHttpsEnabled();
-
-    /**
      * Called when a Universal Tag response from AppNexus server is received
      * @param response UTAdResponse which was received.
      *

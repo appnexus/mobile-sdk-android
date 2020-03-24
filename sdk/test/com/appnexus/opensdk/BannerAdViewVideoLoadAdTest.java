@@ -19,6 +19,7 @@ package com.appnexus.opensdk;
 import com.appnexus.opensdk.mocks.MockDefaultExecutorSupplier;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowCustomVideoWebView;
+import com.appnexus.opensdk.shadows.ShadowCustomWebView;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.squareup.okhttp.mockwebserver.MockResponse;
@@ -96,11 +97,14 @@ public class BannerAdViewVideoLoadAdTest extends BaseViewAdTest {
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
 
-        ShadowLooper shadowLooper = shadowOf(getMainLooper());
-        if (!shadowLooper.isIdle()) {
-            shadowLooper.idle();
-        }
-        RuntimeEnvironment.getMasterScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+
+//        ShadowLooper shadowLooper = shadowOf(getMainLooper());
+//        if (!shadowLooper.isIdle()) {
+//            shadowLooper.idle();
+//        }
+//        RuntimeEnvironment.getMasterScheduler().advanceToNextPostedRunnable();
     }
 
 

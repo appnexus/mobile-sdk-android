@@ -2,6 +2,7 @@ package com.appnexus.opensdk;
 
 import android.app.Activity;
 
+import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.util.Lock;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.os.Looper.getMainLooper;
 import static org.robolectric.Shadows.shadowOf;
 
 public class BaseRoboTest {
@@ -31,6 +33,7 @@ public class BaseRoboTest {
 
     @Before
     public void setup() {
+        SDKSettings.setExternalExecutor(null);
         Robolectric.getBackgroundThreadScheduler().reset();
         Robolectric.getForegroundThreadScheduler().reset();
         ShadowLog.stream = System.out;
@@ -58,9 +61,10 @@ public class BaseRoboTest {
 
     @After
     public void tearDown() {
-        SDKSettings.setExternalExecutor(null);
         activity.finish();
         try {
+            System.out.println("REQUEST COUNT"+server.getRequestCount());
+            shadowOf(getMainLooper()).quitUnchecked();
             server.shutdown();
             server = null;
             bgScheduler.reset();

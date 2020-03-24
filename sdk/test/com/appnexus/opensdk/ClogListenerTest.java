@@ -42,6 +42,7 @@ public class ClogListenerTest {
 
     @Before
     public void setup() {
+        SDKSettings.setExternalExecutor(null);
         Clog.clogged = false;
     }
 

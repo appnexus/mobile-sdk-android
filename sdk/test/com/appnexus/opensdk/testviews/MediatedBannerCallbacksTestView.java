@@ -23,6 +23,7 @@ import android.view.View;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
+import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.util.Lock;
 import com.appnexus.opensdk.utils.Settings;
 
@@ -56,7 +57,7 @@ public class MediatedBannerCallbacksTestView implements MediatedBannerAdView {
                         controller.onAdLoaded();
                         Lock.unpause();
                     }
-                }, Settings.MEDIATED_NETWORK_TIMEOUT + defaultWaitTime + 1000);
+                }, ShadowSettings.MEDIATED_NETWORK_TIMEOUT + defaultWaitTime + 1000);
                 break;
             // load then fail
             case 20:
@@ -81,7 +82,7 @@ public class MediatedBannerCallbacksTestView implements MediatedBannerAdView {
                         controller.onAdCollapsed();
                         Lock.unpause();
                     }
-                }, Settings.MEDIATED_NETWORK_TIMEOUT + defaultWaitTime);
+                }, ShadowSettings.MEDIATED_NETWORK_TIMEOUT + defaultWaitTime);
                 break;
             // fail then extra
             case 23:
@@ -94,7 +95,7 @@ public class MediatedBannerCallbacksTestView implements MediatedBannerAdView {
                         controller.onAdCollapsed();
                         Lock.unpause();
                     }
-                }, Settings.MEDIATED_NETWORK_TIMEOUT + defaultWaitTime);
+                }, ShadowSettings.MEDIATED_NETWORK_TIMEOUT + defaultWaitTime);
                 break;
             // fail multiple
             case 24:

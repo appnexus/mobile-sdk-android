@@ -185,21 +185,23 @@ public class SDKSettings {
     }
 
     /**
-     * Enable HTTPS in the SDK if set to true.
+     * @deprecated The SDK uses Https by default.
+     * This API does not bring any change.
      *
-     * @param useHttps whether to enable Https or not. default is false
+     * @param useHttps whether to enable Https or not.
      */
-
+    @Deprecated
     public static void useHttps(boolean useHttps) {
-        Settings.getSettings().useHttps = useHttps;
+        return;
     }
 
     /**
-     * Returns true if the Https is enabled for the ad calls
-     * or false otherwise.
+     * @deprecated The SDK uses Https by default.
+     * This API always returns true.
      */
+    @Deprecated
     public static boolean isHttpsEnabled() {
-        return Settings.getSettings().useHttps;
+        return true;
     }
 
     /**

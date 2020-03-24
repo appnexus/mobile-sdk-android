@@ -41,6 +41,7 @@ public class ANVideoPlayerSettingsTest {
 
     @Before
     public void setup() {
+        SDKSettings.setExternalExecutor(null);
     }
 
     @After

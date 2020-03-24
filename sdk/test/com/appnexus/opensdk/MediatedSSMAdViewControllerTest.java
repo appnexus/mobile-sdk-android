@@ -20,7 +20,9 @@ import android.net.UrlQuerySanitizer;
 
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowCustomWebView;
+import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.util.Lock;
+import com.appnexus.opensdk.utils.Settings;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
@@ -49,7 +51,7 @@ import static junit.framework.Assert.fail;
 
 @Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowCustomWebView.class})
+                ShadowCustomWebView.class, ShadowSettings.class})
 @RunWith(RobolectricTestRunner.class)
 public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
     boolean requestQueued = false;
@@ -86,18 +88,20 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
                     assertEquals(reasonVal, errorCode.ordinal());
 
                     if(checkLatency) {
-                        String str_latencyVal = sanitizer.getValue("latency");
+                        String str_latencyVal = sanitizer.getValue("latency").replace("_HTTP/1.1", "");
                         int latencyVal = Integer.parseInt(str_latencyVal.replace("_HTTP/1.1", ""));
                         assertTrue(latencyVal > 0); // should be greater than 0 at the minimum and should be present in the response
                     }
 
                 }
+                Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+                Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
             }
         } catch (InterruptedException e) {
             System.out.print("/InterruptedException" + errorCode.ordinal());
             e.printStackTrace();
         } catch (Exception e) {
-            fail();
+            fail(e.getMessage());
         }
     }
 
@@ -128,6 +132,9 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
+
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
     }
 
     private void executeAndAssertResponseURL(int positionInQueue, ResultCode errorCode,boolean checkLatency) {
@@ -156,13 +163,21 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
     // common format for several of the basic mediation tests
     public void runBasicSSMMediationTest(ResultCode errorCode, boolean success, boolean checkLatency) {
         executeUTRequest();
+        Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT + 1000);
+
         executeSSMRequest();
 
         if(!success){
             executeAndAssertNoAdURL(3);
+            Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+            Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
             executeAndAssertResponseURL(1, errorCode, checkLatency);
+            Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+            Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
         }else{
             executeAndAssertResponseURL(3, errorCode, checkLatency);
+            Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+            Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
         }
 
 
@@ -179,6 +194,9 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
+
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
     }
 
     // Verify that a successful mediation response,
@@ -200,6 +218,7 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for Response URL
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));// This is for No Ad URL
         executeUTRequest();
+        Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT + 1000);
 
         executeSSMRequest();
 
@@ -226,6 +245,7 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
         //runBasicSSMMediationTest(SUCCESS, ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
 
         executeUTRequest();
+        Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT + 1000);
 
         executeSSMRequest();
 
