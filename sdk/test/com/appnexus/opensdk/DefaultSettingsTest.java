@@ -33,6 +33,7 @@ public class DefaultSettingsTest {
 
     @Before
     public void setup() {
+        SDKSettings.setExternalExecutor(null);
     }
 
     @After

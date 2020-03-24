@@ -88,7 +88,7 @@ public class MediationCallbacksTest extends BaseViewAdTest {
         Robolectric.flushForegroundThreadScheduler();
         Robolectric.flushBackgroundThreadScheduler();
 
-        Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT + 1000);
+        Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT + 1000);
 
         assertCallbacks(success);
     }

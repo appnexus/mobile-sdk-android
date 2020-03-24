@@ -144,6 +144,9 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
+
+//        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
     }
 
 

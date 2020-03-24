@@ -92,10 +92,13 @@ public class ANAdResponseInfoBannerVideoTests extends BaseViewAdTest {
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
 
-        ShadowLooper shadowLooper = shadowOf(getMainLooper());
-        if (!shadowLooper.isIdle()) {
-            shadowLooper.idle();
-        }
-        RuntimeEnvironment.getMasterScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+
+//        ShadowLooper shadowLooper = shadowOf(getMainLooper());
+//        if (!shadowLooper.isIdle()) {
+//            shadowLooper.idle();
+//        }
+//        RuntimeEnvironment.getMasterScheduler().advanceToNextPostedRunnable();
     }
 }

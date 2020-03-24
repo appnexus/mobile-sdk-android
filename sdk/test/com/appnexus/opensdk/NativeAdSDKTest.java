@@ -82,8 +82,8 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
         waitForTasks();
         Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
         Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
-        //Robolectric.flushForegroundThreadScheduler();
-        //Lock.pause(2000);
+//        Robolectric.flushForegroundThreadScheduler();
+//        Lock.pause(2000);
         assertAdLoaded(true);
         nativeAdView = DummyView.getDummyView(activity);
         attachToWindow(nativeAdView);

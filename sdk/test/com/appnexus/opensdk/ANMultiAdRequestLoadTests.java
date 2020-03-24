@@ -340,11 +340,11 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
 
-        ShadowLooper shadowLooper = shadowOf(getMainLooper());
-        if (!shadowLooper.isIdle()) {
-            shadowLooper.idle();
-        }
-        RuntimeEnvironment.getMasterScheduler().advanceToNextPostedRunnable();
+//        ShadowLooper shadowLooper = shadowOf(getMainLooper());
+//        if (!shadowLooper.isIdle()) {
+//            shadowLooper.idle();
+//        }
+//        RuntimeEnvironment.getMasterScheduler().advanceToNextPostedRunnable();
     }
 
     //Concurrent MAR Success
@@ -402,6 +402,9 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
+
+//        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
     }
 
     private void executeInterstitialRequest() {
@@ -446,11 +449,11 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
 //        ShadowLooper.idleMainLooper();
 //        ShadowLooper.idleMainLooperConstantly(true);
 //        ShadowLooper.shadowMainLooper().quitUnchecked();
-        ShadowLooper shadowLooper = shadowOf(getMainLooper());
-        if (!shadowLooper.isIdle()) {
-            shadowLooper.idle();
-        }
-        RuntimeEnvironment.getMasterScheduler().advanceToNextPostedRunnable();
+//        ShadowLooper shadowLooper = shadowOf(getMainLooper());
+//        if (!shadowLooper.isIdle()) {
+//            shadowLooper.idle();
+//        }
+//        RuntimeEnvironment.getMasterScheduler().advanceToNextPostedRunnable();
     }
 
     private void reset() {

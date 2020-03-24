@@ -21,6 +21,7 @@ import android.view.View;
 
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowCustomWebView;
+import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.testviews.DummyView;
 import com.appnexus.opensdk.testviews.MediatedBannerNoFillView;
 import com.appnexus.opensdk.testviews.MediatedBannerNoRequest;
@@ -58,7 +59,7 @@ import static junit.framework.Assert.fail;
 
 @Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowCustomWebView.class})
+                ShadowCustomWebView.class, ShadowSettings.class})
 @RunWith(RobolectricTestRunner.class)
 public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
     boolean requestQueued = false;
@@ -142,7 +143,7 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
     // common format for several of the basic mediation tests
     public void runBasicMediationTest(ResultCode errorCode, boolean success, boolean checkLatency) {
         executeUTRequest();
-        Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT + 1000);
+        Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT + 1000);
         executeAndAssertResponseURL(2, errorCode, checkLatency);
         assertCallbacks(success);
     }
@@ -272,7 +273,7 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
 
-        Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT);
+        Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT);
 
         View view = bannerAdView.getChildAt(0);
         assertTrue(view instanceof AdWebView);
@@ -291,7 +292,7 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
 
-        Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT);
+        Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT);
         assertResponseURL(3, SUCCESS, CHECK_LATENCY_TRUE);
         View mediatedView = bannerAdView.getChildAt(0);
         assertNotNull(mediatedView);
@@ -359,7 +360,7 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
         //2 request are already taken out of queue current position of ResponseURL in queue is 1
         executeAndAssertResponseURL(1, SUCCESS, CHECK_LATENCY_TRUE);
 
-        Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT + 1000);
+        Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT + 1000);
         assertCallbacks(ASSERT_AD_LOAD_SUCESS);
 
         assertTrue(MediatedBannerSuccessful2.didPass);
@@ -381,7 +382,7 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
         //2 request are already taken out of queue current position of ResponseURL in queue is 1
         executeAndAssertResponseURL(1, UNABLE_TO_FILL, CHECK_LATENCY_TRUE);
 
-        Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT + 1000);
+        Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT + 1000);
 
         assertCallbacks(false);
         assertNoAdURL();
@@ -415,7 +416,7 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
         //2 request are already taken out of queue current position of ResponseURL in queue is 1
         executeAndAssertResponseURL(1, SUCCESS, CHECK_LATENCY_TRUE);
 
-        Lock.pause(Settings.MEDIATED_NETWORK_TIMEOUT + 1000);
+        Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT + 1000);
 
         assertCallbacks(true);
 

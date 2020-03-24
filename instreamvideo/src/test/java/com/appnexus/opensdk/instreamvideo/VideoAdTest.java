@@ -86,8 +86,8 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
         Robolectric.flushBackgroundThreadScheduler();
 
         waitForTasks();
-        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
-        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
         assertAdLoaded(true);
         Clog.w(TestUtil.testLogTag, "VideoAdTest videoAd.getVideoOrientation()" +videoAd.getVideoOrientation());
         assertTrue(videoAd.getVideoOrientation().equals(VideoOrientation.PORTRAIT));
@@ -105,8 +105,8 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
         Robolectric.flushBackgroundThreadScheduler();
 
         waitForTasks();
-        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
-        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
         assertAdLoaded(true);
         Clog.w(TestUtil.testLogTag, "VideoAdTest videoAd.getVideoOrientation()" +videoAd.getVideoOrientation());
         assertTrue(videoAd.getVideoOrientation().equals(VideoOrientation.LANDSCAPE));
@@ -124,8 +124,8 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
         Robolectric.flushBackgroundThreadScheduler();
 
         waitForTasks();
-        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
-        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
         assertAdLoaded(true);
         Clog.w(TestUtil.testLogTag, "VideoAdTest videoAd.getVideoOrientation()" +videoAd.getVideoOrientation());
         assertTrue(videoAd.getVideoOrientation().equals(VideoOrientation.SQUARE));
@@ -143,8 +143,8 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
         Robolectric.flushBackgroundThreadScheduler();
 
         waitForTasks();
-        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
-        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
         assertAdLoaded(true);
         Clog.w(TestUtil.testLogTag, "VideoAdTest videoAd.getVideoOrientation()" +videoAd.getVideoOrientation());
         assertTrue(videoAd.getVideoOrientation().equals(VideoOrientation.UNKNOWN));
@@ -162,8 +162,8 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
         Robolectric.flushBackgroundThreadScheduler();
 
         waitForTasks();
-        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
-        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
         assertAdLoaded(true);
         Clog.w(TestUtil.testLogTag, "VideoAdTest videoAd.getCreativeURL()" +videoAd.getCreativeURL());
         assertTrue(videoAd.getCreativeURL().equalsIgnoreCase("http://vcdn.adnxs.com/p/creative-video/ef/a6/d0/bb/efa6d0bb-8c19-44a8-b140-4b0bc2e02087/efa6d0bb-8c19-44a8-b140-4b0bc2e02087_768_432_500k.mp4"));
@@ -181,8 +181,8 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
         Robolectric.flushBackgroundThreadScheduler();
 
         waitForTasks();
-        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
-        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
         assertAdLoaded(true);
         Clog.w(TestUtil.testLogTag, "VideoAdTest videoAd.getCreativeURL()" +videoAd.getCreativeURL());
         assertTrue(videoAd.getVideoAdDuration() == 145000);
@@ -199,8 +199,8 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
         Robolectric.flushBackgroundThreadScheduler();
 
         waitForTasks();
-        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
-        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
         assertAdLoaded(true);
         Clog.w(TestUtil.testLogTag, "VideoAdTest videoAd.getVastXML()" +videoAd.getVastXML());
         assertTrue(videoAd.getVastXML() != "");
@@ -217,8 +217,8 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
         Robolectric.flushBackgroundThreadScheduler();
 
         waitForTasks();
-        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
-        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
         assertAdLoaded(true);
         Clog.w(TestUtil.testLogTag, "VideoAdTest videoAd.getVastURL()" +videoAd.getVastURL());
         assertTrue(videoAd.getVastURL() == "");
@@ -235,8 +235,8 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
         Robolectric.flushBackgroundThreadScheduler();
 
         waitForTasks();
-        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
-        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
         assertAdLoaded(true);
 
         //@FIXME This test is not possible this case can only be tested in Integration Tests. We need to delete this note and test once we add integration tests

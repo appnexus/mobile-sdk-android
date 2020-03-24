@@ -475,13 +475,13 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
     @Override
     public void tearDown() {
         super.tearDown();
-        try {
-            if (server != null) {
-                server.shutdown();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            if (server != null) {
+//                server.shutdown();
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private void executionSteps() {
