@@ -21,6 +21,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.text.TextUtils;
 
+import com.appnexus.opensdk.ANGDPRSettings;
 import com.appnexus.opensdk.ANMultiAdRequest;
 import com.appnexus.opensdk.Ad;
 import com.appnexus.opensdk.AdViewRequestManager;
@@ -105,7 +106,7 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
 
         try {
 
-            String baseUrl = SDKSettings.isHttpsEnabled() ? UTConstants.REQUEST_BASE_URL_UT.replace("http:", "https:") : UTConstants.REQUEST_BASE_URL_UT;
+            String baseUrl = UTConstants.REQUEST_BASE_URL_UT;
             URL url = new URL(baseUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
@@ -113,10 +114,14 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("User-Agent", Settings.getSettings().ua);
-            String cookieString = WebviewUtil.getCookie();
-            if (!TextUtils.isEmpty(cookieString)) {
-                conn.setRequestProperty("Cookie", cookieString);
+            if(ANGDPRSettings.canIAccessDeviceData(requestParams.getContext())){
+                String cookieString = WebviewUtil.getCookie();
+                if (!TextUtils.isEmpty(cookieString)) {
+                    conn.setRequestProperty("Cookie", cookieString);
+                }
             }
+
+
             conn.setRequestMethod("POST");
 
             conn.setConnectTimeout(Settings.HTTP_CONNECTION_TIMEOUT);
@@ -151,7 +156,9 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
 
                 Clog.i(Clog.httpRespLogTag, "RESPONSE - " + result);
                 Map<String, List<String>> headers = conn.getHeaderFields();
-                WebviewUtil.cookieSync(headers);
+                if(ANGDPRSettings.canIAccessDeviceData(requestParams.getContext())) {
+                    WebviewUtil.cookieSync(headers);
+                }
                 if (anMultiAdRequest == null) {
                     adResponseMap.put(requestParams.getUUID(), new UTAdResponse(result, conn.getHeaderFields(), requestParams.getMediaType(), requestParams.getOrientation()));
                 } else {

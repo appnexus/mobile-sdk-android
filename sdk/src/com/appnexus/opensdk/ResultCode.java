@@ -20,43 +20,64 @@ package com.appnexus.opensdk;
  * This enum contains the result codes sent to the
  * <code>onAdRequestFailed</code> method in {@link AdListener},
  * except for <code>SUCCESS</code>.
- *
+ * <p>
  * Mediation adaptors should use these result codes to
  * inform the AppNexus SDK of success or failure.
- *
+ * <p>
  * Note that the result code passed to the app developer signifies
  * the final result of an ad request, not each individual result passed
  * by mediation networks.
  */
 public enum ResultCode {
+
     /**
      * The ad loaded successfully.
      */
-    SUCCESS,
+    SUCCESS(""),
     /**
      * The ad request failed due to an invalid configuration (for example, size
      * or placement ID not set).
      */
-    INVALID_REQUEST,
+    INVALID_REQUEST(""),
     /**
      * The network did not return an ad in this call.
      */
-    UNABLE_TO_FILL,
+    UNABLE_TO_FILL(""),
     /**
      * Used internally when the third-party SDK is not available.
      */
-    MEDIATED_SDK_UNAVAILABLE,
+    MEDIATED_SDK_UNAVAILABLE(""),
     /**
      * The ad request failed due to a network error.
      */
-    NETWORK_ERROR,
+    NETWORK_ERROR(""),
     /**
      * An internal error is detected in the interacting with the
      * third-party SDK.
      */
-    INTERNAL_ERROR,
+    INTERNAL_ERROR(""),
     /**
      * Called loadAd too many times
      */
-    REQUEST_TOO_FREQUENT
+    REQUEST_TOO_FREQUENT(""),
+    /**
+     * Pass errors from adapters to users
+     */
+    CUSTOM_ADAPTER_ERROR("");
+
+    private String message;
+
+    ResultCode(String message) {
+        this.message = message;
+    }
+
+    public void setMessage(String message) {
+        if (this.equals(ResultCode.CUSTOM_ADAPTER_ERROR)) {
+            this.message = message;
+        }
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }

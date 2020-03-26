@@ -22,8 +22,8 @@ import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.UTRequestParameters;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMSDKAdResponse;
-import com.appnexus.opensdk.ut.adresponse.CSRAdResponse;
 import com.appnexus.opensdk.ut.adresponse.CSMVASTAdResponse;
+import com.appnexus.opensdk.ut.adresponse.CSRAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBNativeAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.SSMHTMLAdResponse;
@@ -100,6 +100,7 @@ public class AdViewRequestManager extends RequestManager {
     public void failed(ResultCode code, ANAdResponseInfo responseInfo) {
         printMediatedClasses();
         Clog.e("AdViewRequestManager", code.name());
+
         Ad owner = this.owner.get();
         fireTracker(noAdUrl, Clog.getString(R.string.no_ad_url));
         if (owner != null) {
@@ -159,7 +160,7 @@ public class AdViewRequestManager extends RequestManager {
                     }
                 }
             }
-            ((AdDispatcher)owner.getAdDispatcher()).onAdLoaded(ad);
+            ((AdDispatcher) owner.getAdDispatcher()).onAdLoaded(ad);
         } else {
             ad.destroy();
         }
@@ -261,7 +262,7 @@ public class AdViewRequestManager extends RequestManager {
 
     private void handleRTBResponse(Ad ownerAd, BaseAdResponse rtbAdResponse) {
 
-        if(rtbAdResponse instanceof RTBVASTAdResponse && !(ownerAd instanceof BannerAdView)) {
+        if (rtbAdResponse instanceof RTBVASTAdResponse && !(ownerAd instanceof BannerAdView)) {
             if (rtbAdResponse.getAdContent() != null) {
                 if (UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(rtbAdResponse.getAdType())) {
                     // Vast ads
@@ -355,7 +356,7 @@ public class AdViewRequestManager extends RequestManager {
 
     private void handleCSRResponse(Ad ownerAd, CSRAdResponse csrAdResponse) {
         Clog.i(Clog.baseLogTag, "Content source type is CSR, passing it to CSRHandler.");
-        csrNativeBannerController = new CSRNativeBannerController(csrAdResponse, AdViewRequestManager.this );
+        csrNativeBannerController = new CSRNativeBannerController(csrAdResponse, AdViewRequestManager.this);
     }
 
     private void handleSSMResponse(final AdView owner, final SSMHTMLAdResponse ssmHtmlAdResponse) {

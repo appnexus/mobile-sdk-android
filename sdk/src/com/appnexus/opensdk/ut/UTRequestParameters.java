@@ -861,16 +861,18 @@ public class UTRequestParameters {
             // limited ad tracking
             device.put(DEVICE_LMT, Settings.getSettings().limitTrackingEnabled);
 
-            if (!StringUtil.isEmpty(Settings.getSettings().aaid)) {
-                // device id
-                JSONObject device_id = new JSONObject();
-                device_id.put(DEVICE_ID_AAID, Settings.getSettings().aaid);
-                device.put(DEVICE_DEVICE_ID, device_id);
+            if(ANGDPRSettings.canIAccessDeviceData(context)){
+                if (!StringUtil.isEmpty(Settings.getSettings().aaid)) {
+                    // device id
+                    JSONObject device_id = new JSONObject();
+                    device_id.put(DEVICE_ID_AAID, Settings.getSettings().aaid);
+                    device.put(DEVICE_DEVICE_ID, device_id);
+                }
             }
-
             // os
             device.put(DEVICE_OS, os);
         } catch (JSONException e) {
+            Clog.e(Clog.baseLogTag, e.getMessage());
         }
 
         return device;

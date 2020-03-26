@@ -44,7 +44,7 @@ import static org.robolectric.Shadows.shadowOf;
 
 @Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
-                ShadowCustomWebView.class, ShadowWebSettings.class, ShadowSettings.class, ShadowLog.class})
+                ShadowCustomWebView.class, ShadowSettings.class, ShadowLog.class})
 @RunWith(RobolectricTestRunner.class)
 public class InterstitialAdViewLoadAdTest extends BaseViewAdTest {
 
@@ -124,10 +124,10 @@ public class InterstitialAdViewLoadAdTest extends BaseViewAdTest {
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
 
-        ShadowLooper shadowLooper = shadowOf(getMainLooper());
-        if (!shadowLooper.isIdle()) {
-            shadowLooper.idle();
-        }
-        RuntimeEnvironment.getMasterScheduler().advanceToNextPostedRunnable();
+//        ShadowLooper shadowLooper = shadowOf(getMainLooper());
+//        if (!shadowLooper.isIdle()) {
+//            shadowLooper.idle();
+//        }
+//        RuntimeEnvironment.getMasterScheduler().advanceToNextPostedRunnable();
     }
 }

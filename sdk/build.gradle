@@ -1,5 +1,5 @@
 // Project properties
-version = "7.1"
+version = "7.2"
 group='com.appnexus.opensdk'
 
 // Android build
@@ -9,7 +9,7 @@ android {
     compileSdkVersion 28
     buildToolsVersion '29.0.0'
     defaultConfig {
-        versionCode 65 // An integer value that represents the version of the code, relative to other versions. Increase for each release.
+        versionCode 66 // An integer value that represents the version of the code, relative to other versions. Increase for each release.
         versionName version
         consumerProguardFiles 'proguard-project.txt'
         minSdkVersion 9
@@ -39,12 +39,12 @@ android {
 dependencies {
     api fileTree(include: '*.jar', dir: 'libs')
     testImplementation 'junit:junit:4.12'
-    testImplementation 'org.assertj:assertj-core:1.7.0'
-    testImplementation 'org.robolectric:robolectric:4.3'
+    testImplementation 'org.assertj:assertj-core:2.6.0'
+    testImplementation 'org.robolectric:robolectric:4.3.1'
     testImplementation 'com.squareup.okhttp:mockwebserver:2.7.5'
     testImplementation 'com.android.support:support-annotations:28.0.0'
-    testImplementation 'org.robolectric:shadows-httpclient:4.3'
-    testImplementation 'org.mockito:mockito-core:2.7.22'
+    testImplementation 'org.robolectric:shadows-httpclient:4.3.1'
+//    testImplementation 'org.mockito:mockito-core:2.24.0'
 }
 
 repositories {

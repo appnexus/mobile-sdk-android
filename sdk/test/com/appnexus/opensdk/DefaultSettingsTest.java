@@ -33,6 +33,7 @@ public class DefaultSettingsTest {
 
     @Before
     public void setup() {
+        SDKSettings.setExternalExecutor(null);
     }
 
     @After
@@ -51,10 +52,10 @@ public class DefaultSettingsTest {
         assertEquals(3600000, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
         assertEquals(1000, Settings.NATIVE_AD_VISIBLE_PERIOD_MILLIS);
         assertEquals(50, Settings.MIN_PERCENTAGE_VIEWED);
-        assertEquals("http://mediation.adnxs.com", Settings.getCookieDomain());
+        assertEquals("https://mediation.adnxs.com", Settings.getCookieDomain());
         assertEquals("uuid2", Settings.AN_UUID);
-        assertEquals("http://mediation.adnxs.com/", Settings.getBaseUrl());
-        assertEquals("http://mediation.adnxs.com/mob?", Settings.getRequestBaseUrl());
-        assertEquals("http://mediation.adnxs.com/install?", Settings.getInstallBaseUrl());
+        assertEquals("https://mediation.adnxs.com/", Settings.getBaseUrl());
+        assertEquals("https://mediation.adnxs.com/mob?", Settings.getRequestBaseUrl());
+        assertEquals("https://mediation.adnxs.com/install?", Settings.getInstallBaseUrl());
     }
 }
