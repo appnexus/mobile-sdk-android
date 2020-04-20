@@ -81,7 +81,7 @@ class MARLoadAndDisplayActivity : Activity() {
         recyclerListAdView.adapter = AdViewRecyclerAdapter(arrayListAd, this)
 
 
-        anMultiAdRequest = ANMultiAdRequest(this, 0,
+        anMultiAdRequest = ANMultiAdRequest(this, 0, 0,
             object : MultiAdRequestListener {
                 override fun onMultiAdRequestCompleted() {
                     msg += "MAR Load Completed"
@@ -167,7 +167,7 @@ class MARLoadAndDisplayActivity : Activity() {
                     idlingResource.decrement()
             }
 
-            override fun onAdFailed(errorcode: ResultCode) {
+            override fun onAdFailed(errorcode: ResultCode, adResponseInfo: ANAdResponseInfo) {
                 msg += "Native Ad Failed:$errorcode\n"
                 toast()
                 if (!idlingResource.isIdleNow)

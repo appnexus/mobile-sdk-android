@@ -41,8 +41,9 @@ public class NativeAdSDK {
      * @param response A NativeAdResponse
      * @param view     can be a single view, or container, or a view group
      * @param listener A NativeAdEventListener
+     * @param friendlyObstructionsList a list of Friendly Obstruction
      */
-    public static void registerTracking(final NativeAdResponse response, final View view, final NativeAdEventListener listener) {
+    public static void registerTracking(final NativeAdResponse response, final View view, final NativeAdEventListener listener, final List<View> friendlyObstructionsList) {
         if (isValid(response)) {
             if (view == null) {
                 Clog.e(Clog.nativeLogTag, "View is not valid for registering");
@@ -59,7 +60,7 @@ public class NativeAdSDK {
                         return;
                     }
                     if (((BaseNativeAdResponse) response).registerView(view, listener)) {
-                        ((BaseNativeAdResponse) response).registerViewforOMID(view);
+                        ((BaseNativeAdResponse) response).registerViewforOMID(view, friendlyObstructionsList);
                         WeakReference<NativeAdResponse> reference = new WeakReference<NativeAdResponse>(response);
                         view.setTag(R.string.native_tag, reference);
                     } else {
@@ -78,8 +79,9 @@ public class NativeAdSDK {
      * @param response  that contains the meta data of native ad
      * @param views     a list of clickables
      * @param listener  called when Ad event happens, can be null
+     * @param friendlyObstructionsList a list of Friendly Obstruction
      */
-    public static void registerTracking(final NativeAdResponse response, final View container, final List<View> views, final NativeAdEventListener listener) {
+    public static void registerTracking(final NativeAdResponse response, final View container, final List<View> views, final NativeAdEventListener listener, final List<View> friendlyObstructionsList) {
         if (isValid(response)) {
             if (container == null || views == null || views.isEmpty()) {
                 Clog.e(Clog.nativeLogTag, "Views are not valid for registering");
@@ -95,7 +97,7 @@ public class NativeAdSDK {
                         return;
                     }
                     if (((BaseNativeAdResponse)response).registerViewList(container, views, listener)) {
-                        ((BaseNativeAdResponse)response).registerViewforOMID(container);
+                        ((BaseNativeAdResponse)response).registerViewforOMID(container, friendlyObstructionsList);
                         WeakReference<NativeAdResponse> reference = new WeakReference<NativeAdResponse>(response);
                         container.setTag(R.string.native_tag, reference);
                         Clog.d(Clog.nativeLogTag, "View has been registered.");
@@ -105,6 +107,36 @@ public class NativeAdSDK {
                 }
             });
         }
+    }
+
+    /**
+     * Only one of the registerTracking methods below should be called for any single
+     * ad response, If you wish to reuse the view object you must call unRegisterTracking before
+     * registering the view(s) with a new NativeAdResponse.
+     */
+    /**
+     * Register the developer view that will track impressions and respond to clicks
+     * for the native ad.
+     *
+     * @param response A NativeAdResponse
+     * @param view     can be a single view, or container, or a view group
+     * @param listener A NativeAdEventListener
+     */
+    public static void registerTracking(final NativeAdResponse response, final View view, final NativeAdEventListener listener) {
+        registerTracking(response, view, listener, null);
+    }
+
+    /**
+     * Register a list developer views that will track impressions and respond to clicks
+     * for the native ad.
+     *
+     * @param container view/view group that will show native ad
+     * @param response  that contains the meta data of native ad
+     * @param views     a list of clickables
+     * @param listener  called when Ad event happens, can be null
+     */
+    public static void registerTracking(final NativeAdResponse response, final View container, final List<View> views, final NativeAdEventListener listener) {
+        registerTracking(response, container, views, listener, null);
     }
 
     /**
@@ -144,4 +176,5 @@ public class NativeAdSDK {
         Clog.d(Clog.nativeLogTag, "NativeAdResponse is not valid");
         return false;
     }
+
 }

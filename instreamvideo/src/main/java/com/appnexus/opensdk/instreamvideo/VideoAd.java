@@ -17,6 +17,7 @@ package com.appnexus.opensdk.instreamvideo;
 
 
 import android.content.Context;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
@@ -510,6 +511,7 @@ public class VideoAd implements Ad, MultiAd {
         public void onAdLoaded() {
             isLoading = false;
             validAdExists = true;
+            addFriendlyObstructions();
             if (adLoadListener != null) {
                 adLoadListener.onAdLoaded(VideoAd.this);
             }
@@ -589,7 +591,6 @@ public class VideoAd implements Ad, MultiAd {
             }
         }
     }
-
 
     public void activityOnDestroy() {
         if (this.videoAdView != null) {
@@ -827,6 +828,53 @@ public class VideoAd implements Ad, MultiAd {
 
     private void setAdResponseInfo(ANAdResponseInfo adResponseInfo) {
         this.adResponseInfo = adResponseInfo;
+    }
+
+    /**
+     * For adding Friendly Obstruction View
+     * @param view to be added
+     */
+    public void addFriendlyObstruction(View view) {
+        if (videoAdView != null) {
+            videoAdView.addFriendlyObstruction(view);
+        }
+    }
+
+    /**
+     * For removing Friendly Obstruction View
+     * @param view to be removed
+     */
+    public void removeFriendlyObstruction(View view) {
+        if (videoAdView != null) {
+            videoAdView.removeFriendlyObstruction(view);
+        }
+    }
+
+    /**
+     * For clearing the Friendly Obstruction Views
+     */
+    public void removeAllFriendlyObstructions() {
+        if (videoAdView != null) {
+            videoAdView.removeAllFriendlyObstructions();
+        }
+    }
+
+    protected ArrayList<WeakReference<View>> getFriendlyObstructionList() {
+        if (videoAdView != null) {
+            return videoAdView.getFriendlyObstructionList();
+        }
+        return null;
+    }
+
+    private void addFriendlyObstructions() {
+        if (getFriendlyObstructionList() == null || videoAdView == null) {
+            return;
+        }
+        for (WeakReference<View> viewWeakReference: getFriendlyObstructionList()) {
+            if (viewWeakReference.get() != null) {
+                videoAdView.addFriendlyObstruction(viewWeakReference.get());
+            }
+        }
     }
 
 }

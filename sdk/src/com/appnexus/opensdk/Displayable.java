@@ -36,5 +36,11 @@ interface Displayable {
     public void onDestroy();
 
     public void onAdImpression();
+
+    public void addFriendlyObstruction(View friendlyObstructionView);
+
+    public void removeFriendlyObstruction(View friendlyObstructionView);
+
+    public void removeAllFriendlyObstructions();
 }
 

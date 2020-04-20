@@ -65,9 +65,11 @@ import com.appnexus.opensdk.viewability.ANOmidAdSession;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -800,6 +802,26 @@ class AdWebView extends WebView implements Displayable,
         }
     }
 
+    @Override
+    public void addFriendlyObstruction(View friendlyObstructionView) {
+        if (omidAdSession != null) {
+            omidAdSession.addFriendlyObstruction(friendlyObstructionView);
+        }
+    }
+
+    @Override
+    public void removeFriendlyObstruction(View friendlyObstructionView) {
+        if (omidAdSession != null) {
+            omidAdSession.removeFriendlyObstruction(friendlyObstructionView);
+        }
+    }
+
+    @Override
+    public void removeAllFriendlyObstructions() {
+        if (omidAdSession != null) {
+            omidAdSession.removeAllFriendlyObstructions();
+        }
+    }
 
     public boolean isMRAIDUseCustomClose() {
         return MRAIDUseCustomClose;

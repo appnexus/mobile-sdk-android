@@ -17,7 +17,9 @@ package com.appnexus.opensdk.instreamvideo;
 
 import android.content.Context;
 import android.content.MutableContextWrapper;
+import android.os.Build;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
@@ -28,10 +30,14 @@ import com.appnexus.opensdk.utils.AdvertisingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+
 
 class InstreamVideoView extends FrameLayout {
     public static final String TAG = InstreamVideoView.class.getName();
     private VideoWebView videoWebView;
+    private ArrayList<WeakReference<View>> friendlyObstructionList = new ArrayList<>();
 
     /**
      * Begin Construction
@@ -218,4 +224,48 @@ class InstreamVideoView extends FrameLayout {
         }
     }
 
+    protected void addFriendlyObstruction(View view) {
+        if (view == null) {
+            Clog.e(Clog.baseLogTag, "Invalid Friendly Obstruction View. The friendly obstruction view cannot be null.");
+            return;
+        }
+        if (!alreadyAddedToFriendlyObstruction(view)) {
+            friendlyObstructionList.add(new WeakReference<View>(view));
+        }
+        if (videoWebView != null) {
+            videoWebView.addFriendlyObstruction(view);
+        }
+    }
+
+    protected void removeFriendlyObstruction(View view) {
+        for (WeakReference<View> viewWeakReference : friendlyObstructionList) {
+            if (viewWeakReference.get() != null && viewWeakReference.get() == view) {
+                friendlyObstructionList.remove(viewWeakReference);
+                break;
+            }
+        }
+        if (videoWebView != null) {
+            videoWebView.removeFriendlyObstruction(view);
+        }
+    }
+
+    protected void removeAllFriendlyObstructions() {
+        friendlyObstructionList.clear();
+        if (videoWebView != null) {
+            videoWebView.removeAllFriendlyObstructions();
+        }
+    }
+
+    private boolean alreadyAddedToFriendlyObstruction(View view) {
+        for (WeakReference<View> viewWeakReference: friendlyObstructionList) {
+            if (viewWeakReference.get() != null && viewWeakReference.get() == view) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected ArrayList<WeakReference<View>> getFriendlyObstructionList() {
+        return friendlyObstructionList;
+    }
 }
