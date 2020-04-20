@@ -66,7 +66,7 @@ public class MyActivity extends Activity {
     LinearLayout layout;
     LinearLayout layoutBanner, layoutVideo, layoutNative;
     String placementID = "16150452";
-    String bannerPlacementId = "10263964";
+    String bannerPlacementId = "17982237";
     String interstitialPlacementId = "7067108";
     String nativePlacementId = "9505207";
     String videoPlacementId = placementID;
@@ -208,9 +208,9 @@ public class MyActivity extends Activity {
                     }
                 });
         anMultiAdRequest.addAdUnit(bav);
-        anMultiAdRequest.addAdUnit(iav);
-        anMultiAdRequest.addAdUnit(adRequest);
-        anMultiAdRequest.addAdUnit(videoAd);
+//        anMultiAdRequest.addAdUnit(iav);
+//        anMultiAdRequest.addAdUnit(adRequest);
+//        anMultiAdRequest.addAdUnit(videoAd);
 //        anMultiAdRequest.addAdUnit(setupVideoAd());
 //        bav = null;
 //        System.gc();
@@ -358,6 +358,8 @@ public class MyActivity extends Activity {
 //                }
                 msg += "Banner Ad Loaded\n";
                 toast();
+                layoutBanner.removeAllViews();
+                layoutBanner.addView(av);
             }
 
             @Override
@@ -389,8 +391,8 @@ public class MyActivity extends Activity {
             }
         });
 
-        layoutBanner.removeAllViews();
-        layoutBanner.addView(bav);
+//        layoutBanner.removeAllViews();
+//        layoutBanner.addView(bav);
         return bav;
 
     }

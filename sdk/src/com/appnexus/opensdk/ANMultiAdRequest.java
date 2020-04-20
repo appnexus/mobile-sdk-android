@@ -179,12 +179,22 @@ public class ANMultiAdRequest {
             mAdFetcher.stop();
             mAdFetcher.clearDurations();
 
+            initAds();
             //Setting the isMARRequestInProgress to true
             isMARRequestInProgress = true;
             mAdFetcher.start();
             return true;
         }
         return false;
+    }
+
+    private void initAds() {
+        for (WeakReference<Ad> ads: getAdUnitList()) {
+            Ad ad = ads.get();
+            if (ad != null && ad.getMultiAd() != null) {
+                ad.getMultiAd().init();
+            }
+        }
     }
 
     // Internal API

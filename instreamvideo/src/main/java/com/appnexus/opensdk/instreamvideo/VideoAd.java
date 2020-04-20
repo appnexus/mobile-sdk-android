@@ -400,7 +400,7 @@ public class VideoAd implements Ad, MultiAd {
         }
 
         // Before calling loadAd we make sure that the views are not attached to any parents because of previous loadAd call.
-        videoAdView.clearSelf();
+        init();
 
         if (requestParameters.isReadyForRequest()) {
             mVideoAdFetcher.stop();
@@ -807,6 +807,13 @@ public class VideoAd implements Ad, MultiAd {
     @Override
     public void setRequestManager(UTAdRequester requester) {
         mVideoAdFetcher.setRequestManager(requester);
+    }
+
+    @Override
+    public void init() {
+        if (videoAdView != null) {
+            videoAdView.clearSelf();
+        }
     }
 
     @Override

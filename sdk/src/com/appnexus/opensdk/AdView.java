@@ -144,6 +144,13 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
         // sized yet.
     }
 
+    @Override
+    public void init() {
+        if (this.getWindowVisibility() != VISIBLE) {
+            loadedOffscreen = true;
+        }
+    }
+
     /**
      * The view layout
      */
@@ -190,9 +197,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
             mAdFetcher.stop();
             mAdFetcher.clearDurations();
             mAdFetcher.start();
-            if (this.getWindowVisibility() != VISIBLE) {
-                loadedOffscreen = true;
-            }
+            init();
             return true;
         }
         return false;

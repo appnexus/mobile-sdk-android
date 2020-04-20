@@ -54,4 +54,11 @@ public interface MultiAd {
      * Call this to set the Request Manager
      * */
     void setRequestManager(UTAdRequester requester);
+
+    /**
+     * Not intended to be used outside of SDK.
+     *
+     * Call this to initialize the variables respective to each Ad Units while making an MAR request.
+     * */
+    void init();
 }
