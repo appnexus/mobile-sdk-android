@@ -73,6 +73,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     private AdViewDispatcher dispatcher;
     boolean loadedOffscreen = false;
     boolean isMRAIDExpanded = false;
+    boolean countBannerImpressionOnAdLoad = false;
 
     private boolean shouldResizeParent = false;
     private boolean showLoadingIndicator = true;
@@ -1181,7 +1182,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
                     // Banner OnAdLoaded and if View is attached to window Impression is counted.
                     if (getMediaType().equals(MediaType.BANNER)) {
-                        if (isAdViewAttachedToWindow()) {
+                        if (isAdViewAttachedToWindow() || countBannerImpressionOnAdLoad) {
                             if (impressionTrackers != null && impressionTrackers.size() > 0) {
                                 fireImpressionTracker();
                             }
