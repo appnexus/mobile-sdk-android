@@ -1,6 +1,6 @@
 ## 7.3
 ### New Feature
-+ MS-4266 Added API to support Friendly Obstruction for Open Measurement
++ MS-4266 Enable OMID SDK support for "friendly obstructions"
 ### Improvements/Bug Fixes
 + MS-4294 Fixed Ad Load block when used with MAR
 + MS-4287 Support MAR instance initialization without Publisher ID
