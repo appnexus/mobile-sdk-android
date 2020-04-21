@@ -1,3 +1,10 @@
+## 7.3
+### New Feature
++ MS-4266 Added API to support Friendly Obstruction for Open Measurement
+### Improvements/Bug Fixes
++ MS-4294 Fixed Ad Load block when used with MAR
++ MS-4287 Support MAR instance initialization without Publisher ID
+
 ## 7.2
 ### Improvements/Bug Fixes
 + MS-4200 : Support IAB Europe Transparency & Consent Framework v2.0
