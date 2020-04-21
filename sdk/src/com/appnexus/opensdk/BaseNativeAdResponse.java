@@ -47,11 +47,14 @@ public abstract class BaseNativeAdResponse implements NativeAdResponse {
         this.adResponseInfo = adResponseInfo;
     }
 
-
-
     protected void registerViewforOMID(View view){
+        registerViewforOMID(view, null);
+    }
+
+    protected void registerViewforOMID(View view, List<View> friendlyObstructionsList){
         if(anOmidAdSession!=null && anOmidAdSession.isVerificationResourcesPresent()) {
             anOmidAdSession.initNativeAdSession(view);
+            addFriendlyObstructions(friendlyObstructionsList);
         }
     }
 
@@ -69,4 +72,16 @@ public abstract class BaseNativeAdResponse implements NativeAdResponse {
             anOmidAdSession.addToVerificationScriptResources(verificationScriptResource);
         }
     }
+
+    private void addFriendlyObstructions(List<View> friendlyObstructionViews) {
+        if (friendlyObstructionViews == null) {
+            return;
+        }
+        for (View view : friendlyObstructionViews) {
+            if (view != null) {
+                anOmidAdSession.addFriendlyObstruction(view);
+            }
+        }
+    }
+
 }

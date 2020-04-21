@@ -29,7 +29,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Base64;
-import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
@@ -647,6 +646,31 @@ class VideoWebView extends WebView {
         firstPageLoadComplete = false;
         failed = false;
 
+    }
+
+    /**
+     * For removing Friendly Obstruction View
+     * @param view to be removed
+     */
+    protected void removeFriendlyObstruction(View view) {
+        if (omidAdSession != null) {
+            omidAdSession.removeFriendlyObstruction(view);
+        }
+    }
+
+    /**
+     * For clearing the Friendly Obstruction Views
+     */
+    protected void removeAllFriendlyObstructions() {
+        if (omidAdSession != null) {
+            omidAdSession.removeAllFriendlyObstructions();
+        }
+    }
+
+    protected void addFriendlyObstruction(View view) {
+        if (omidAdSession != null) {
+            omidAdSession.addFriendlyObstruction(view);
+        }
     }
 
 }

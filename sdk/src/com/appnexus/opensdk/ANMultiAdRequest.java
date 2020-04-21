@@ -65,17 +65,29 @@ public class ANMultiAdRequest {
         }
     }
 
-//    /**
-//     * Initialise the Multi Ad Request with Ad List
-//     *
-//     * @param context
-//     * @param memberId
-//     * @param adArrayList
-//     * @param multiAdRequestListener
-//     * */
-//    public ANMultiAdRequest(Context context, int memberId, ArrayList<Ad> adArrayList, MultiAdRequestListener multiAdRequestListener) {
-//        this(context, memberId, adArrayList, multiAdRequestListener, false);
-//    }
+    /**
+     * Initialise and load the Multi Ad Request with Ad List
+     *
+     * @param context
+     * @param memberId
+     * @param ads
+     * @param multiAdRequestListener
+     * @param loadOnInit
+     */
+    public ANMultiAdRequest(Context context, int memberId, MultiAdRequestListener multiAdRequestListener, boolean loadOnInit, Ad... ads) {
+        this(context, memberId, 0, multiAdRequestListener, loadOnInit, ads);
+    }
+
+    /**
+     * Initialise the Multi Ad Request
+     *
+     * @param context
+     * @param memberId
+     * @param multiAdRequestListener
+     */
+    public ANMultiAdRequest(Context context, int memberId, MultiAdRequestListener multiAdRequestListener) {
+        this(context, memberId, 0, multiAdRequestListener, false);
+    }
 
     /**
      * Initialise the Multi Ad Request
@@ -167,12 +179,22 @@ public class ANMultiAdRequest {
             mAdFetcher.stop();
             mAdFetcher.clearDurations();
 
+            initAds();
             //Setting the isMARRequestInProgress to true
             isMARRequestInProgress = true;
             mAdFetcher.start();
             return true;
         }
         return false;
+    }
+
+    private void initAds() {
+        for (WeakReference<Ad> ads: getAdUnitList()) {
+            Ad ad = ads.get();
+            if (ad != null && ad.getMultiAd() != null) {
+                ad.getMultiAd().init();
+            }
+        }
     }
 
     // Internal API

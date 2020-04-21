@@ -36,19 +36,8 @@ import android.widget.VideoView
 
 import androidx.test.espresso.idling.CountingIdlingResource
 import appnexus.com.appnexussdktestapp.utility.Utils
+import com.appnexus.opensdk.*
 
-import com.appnexus.opensdk.ANClickThroughAction
-import com.appnexus.opensdk.ANMultiAdRequest
-import com.appnexus.opensdk.AdListener
-import com.appnexus.opensdk.AdSize
-import com.appnexus.opensdk.AdView
-import com.appnexus.opensdk.BannerAdView
-import com.appnexus.opensdk.InterstitialAdView
-import com.appnexus.opensdk.NativeAdRequest
-import com.appnexus.opensdk.NativeAdRequestListener
-import com.appnexus.opensdk.NativeAdResponse
-import com.appnexus.opensdk.ResultCode
-import com.appnexus.opensdk.SDKSettings
 import com.appnexus.opensdk.instreamvideo.Quartile
 import com.appnexus.opensdk.instreamvideo.VideoAd
 import com.appnexus.opensdk.instreamvideo.VideoAdLoadListener
@@ -162,7 +151,7 @@ class MARActivity : Activity() {
         //        adUnitList.add(adRequest);
         //        adUnitList.add(videoAd);
 
-        anMultiAdRequest2 = ANMultiAdRequest(this, 0, object : MultiAdRequestListener {
+        anMultiAdRequest2 = ANMultiAdRequest(this, 0, 0, object : MultiAdRequestListener {
             override fun onMultiAdRequestCompleted() {
                 msg += "MAR 2 Load Completed"
                 multiAdRequestCompleted2 = true
@@ -184,7 +173,7 @@ class MARActivity : Activity() {
         //        anMultiAdRequest2.load();
 
 
-        anMultiAdRequest = ANMultiAdRequest(this, 0,
+        anMultiAdRequest = ANMultiAdRequest(this, 0, 0,
             object : MultiAdRequestListener {
                 override fun onMultiAdRequestCompleted() {
                     msg += "MAR Load Completed"
@@ -282,7 +271,7 @@ class MARActivity : Activity() {
                 handleNativeResponse(response)
             }
 
-            override fun onAdFailed(errorcode: ResultCode) {
+            override fun onAdFailed(errorcode: ResultCode, adResponseInfo: ANAdResponseInfo) {
                 msg += "Native Ad Failed:$errorcode\n"
                 toast()
             }

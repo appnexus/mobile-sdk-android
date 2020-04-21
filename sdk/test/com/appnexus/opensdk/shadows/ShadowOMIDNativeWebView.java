@@ -41,7 +41,7 @@ public class  ShadowOMIDNativeWebView extends ShadowWebView {
     public void loadUrl(String url) {
         super.loadUrl(url);
         webView = new WebView(RuntimeEnvironment.application);
-        Clog.d(TestUtil.testLogTag, "ShadowOMIDNativeWebView loadUrl::"+url);
+        Clog.e(TestUtil.testLogTag, "ShadowOMIDNativeWebView loadUrl::"+url);
         if(url.contains("omidBridge.init")){
             omidInitString = url;
         }

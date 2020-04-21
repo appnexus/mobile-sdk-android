@@ -61,8 +61,6 @@ public interface CSRAd {
      * @param payload An string passed from the ad network's server
      *                side. Used to be passed to 3rd party SDK for
      *                rendering.
-     * @param uid     An optional platform id to be passed to 3rd party
-     *                SDK.
      * @param mBC     The controller to notify on load, failure, etc.
      * @param tp      Targeting parameters passed from SDK to adapter.
      */

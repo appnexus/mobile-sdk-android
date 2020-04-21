@@ -118,6 +118,24 @@ public class BannerImpressionTests extends BaseViewAdTest {
         assertImpressionURL(2);
     }
 
+    // 1. Loads the banner off screen with setCountImpressionOnAdLoad(true)
+    // 2. Checks if impression_url is fired succesfully
+    @Test
+    public void test_3BannerImpressionFiringonAdLoad() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // This is for UT Request
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for Impression
+        bannerAdView.setCountImpressionOnAdLoad(true);
+
+        //runBasicBannerTest();
+
+        executeBannerRequest();
+
+       // attachBannerToView();
+
+        assertImpressionURL(2);
+    }
+
+
     //////////////// END TESTS ////////////////////////
 
 
@@ -177,9 +195,9 @@ public class BannerImpressionTests extends BaseViewAdTest {
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
 
-        waitForTasks();
-        Robolectric.flushBackgroundThreadScheduler();
-        Robolectric.flushForegroundThreadScheduler();
+       // waitForTasks();
+       // Robolectric.flushBackgroundThreadScheduler();
+       // Robolectric.flushForegroundThreadScheduler();
 
 //        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
 //        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();

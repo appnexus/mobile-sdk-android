@@ -66,6 +66,14 @@ public class ANMultiAdRequestApiTest extends BaseRoboTest {
     }
 
     @Test
+    public void testDefaultGetPublisherID() {
+        anMultiAdRequest = new ANMultiAdRequest(activity, 100, null);
+        assertEquals(0, anMultiAdRequest.getPublisherId());
+        anMultiAdRequest = new ANMultiAdRequest(activity, 100, null, false);
+        assertEquals(0, anMultiAdRequest.getPublisherId());
+    }
+
+    @Test
     public void testAddAdUnit() {
         assertEquals(anMultiAdRequest.getAdUnitList().size(), 0);
         anMultiAdRequest.addAdUnit(bav);

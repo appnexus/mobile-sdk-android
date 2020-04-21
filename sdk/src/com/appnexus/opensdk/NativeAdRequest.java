@@ -565,6 +565,10 @@ public class NativeAdRequest implements Ad, MultiAd {
     }
 
     @Override
+    public void init() {
+    }
+
+    @Override
     public MultiAd getMultiAd() {
         return this;
     }
