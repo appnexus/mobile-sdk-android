@@ -47,6 +47,10 @@ public abstract class BaseNativeAdResponse implements NativeAdResponse {
         this.adResponseInfo = adResponseInfo;
     }
 
+    protected void registerViewforOMID(View view){
+        registerViewforOMID(view, null);
+    }
+
     protected void registerViewforOMID(View view, List<View> friendlyObstructionsList){
         if(anOmidAdSession!=null && anOmidAdSession.isVerificationResourcesPresent()) {
             anOmidAdSession.initNativeAdSession(view);
