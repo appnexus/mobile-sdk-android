@@ -1266,4 +1266,20 @@ public class BannerAdView extends AdView {
         this.videoOrientation = videoOrientation;
     }
 
+    public void enableLazyLoad(boolean enable) {
+        super.enableLazyLoad(enable);
+    }
+
+    public boolean isLazyLoadEnabled() {
+        return super.isLazyLoadEnabled();
+    }
+
+    public boolean isLazyLoadInactive() {
+        return super.isLazyLoadInactive();
+    }
+
+    public void loadWebview() {
+        super.loadWebview();
+    }
+
 }

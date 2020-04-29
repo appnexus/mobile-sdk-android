@@ -77,11 +77,14 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     private boolean shouldResizeParent = false;
     private boolean showLoadingIndicator = true;
     private boolean isAttachedToWindow = false;
+    private boolean enableLazyLoad = false;
+    private boolean activateWebview = false;
 
     UTRequestParameters requestParameters;
 
     protected ArrayList<String> impressionTrackers;
     private ANAdResponseInfo adResponseInfo;
+    private boolean isFetching = false;
 
     /**
      * Begin Construction
@@ -149,6 +152,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
         if (this.getWindowVisibility() != VISIBLE) {
             loadedOffscreen = true;
         }
+        isFetching = true;
     }
 
     /**
@@ -1036,7 +1040,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
      * Private class to bridge events from mediation to the user
      * AdListener class.
      */
-    private class AdViewDispatcher implements AdDispatcher {
+    private class AdViewDispatcher implements LazyLoadAdDispatcher {
 
         Handler handler;
 
@@ -1046,6 +1050,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
         @Override
         public void onAdLoaded(final AdResponse ad) {
+            isFetching = false;
             if (ad.getMediaType().equals(MediaType.BANNER) || ad.getMediaType().equals(MediaType.INTERSTITIAL)) {
                 handleBannerOrInterstitialAd(ad);
             } else if (ad.getMediaType().equals(MediaType.NATIVE)) {
@@ -1058,16 +1063,21 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
         @Override
         public void onAdLoaded() {
-
+            isFetching = false;
         }
 
         @Override
         public void onAdFailed(final ResultCode code, final ANAdResponseInfo adResponseInfo) {
+            isFetching = false;
             handler.post(new Runnable() {
                 @Override
                 public void run() {
                     setAdResponseInfo(adResponseInfo);
                     if (adListener != null) {
+//                        Add More Checks
+//                        if (isLazyLoadEnabled()) {
+//                            adListener.onLazyAdFailed(AdView.this, code);
+//                        }
                         adListener.onAdRequestFailed(AdView.this, code);
                     }
                 }
@@ -1181,7 +1191,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
                     // Banner OnAdLoaded and if View is attached to window Impression is counted.
                     if (getMediaType().equals(MediaType.BANNER)) {
-                        if (isAdViewAttachedToWindow()) {
+                        if (isAdViewAttachedToWindow() || isLazyLoadEnabled()) {
                             if (impressionTrackers != null && impressionTrackers.size() > 0) {
                                 fireImpressionTracker();
                             }
@@ -1196,8 +1206,13 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
                     } else if (ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER)) {
                         setAdType(AdType.BANNER);
                     }
-                    if (adListener != null)
+                    if (adListener != null) {
+//                        Add More Checks
+//                        if (isLazyLoadEnabled()) {
+//                            adListener.onLazyAdLoaded(AdView.this);
+//                        }
                         adListener.onAdLoaded(AdView.this);
+                    }
                     if (ad.getNativeAdResponse() != null) {
                         AdView.this.ad = ad;
                         NativeAdSDK.registerTracking(ad.getNativeAdResponse(), ad.getDisplayable().getView(), null);
@@ -1206,6 +1221,12 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
             });
         }
 
+        @Override
+        public void onAdLazyLoaded() {
+            //DONE: Add AdView as a parameter
+            isFetching = false;
+            adListener.onLazyAdLoaded(AdView.this);
+        }
     }
 
     @Override
@@ -1254,6 +1275,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
             protected void onPostExecute(HTTPResponse response) {
                 if (response != null && response.getSucceeded()) {
                     Clog.d(Clog.baseLogTag, "Impression Tracked successfully!");
+                    Clog.e("LAZYLOAD", "Impression Tracked successfully!");
                 }
             }
 
@@ -1336,5 +1358,48 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
     private void setAdResponseInfo(ANAdResponseInfo adResponseInfo) {
         this.adResponseInfo = adResponseInfo;
+    }
+
+    protected void enableLazyLoad(boolean enable) {
+        //DONE: if the fetcher is not already in progress
+        if (isFetching) {
+            Clog.e("LAZYLOAD", "enableLazyLoad() Failed. AdRequest is already in progress.");
+            return;
+        }
+        //DONE: if it isn't already enabled once
+        if (enableLazyLoad) {
+            Clog.e("LAZYLOAD", "enableLazyLoad() Failed. Already enabled once.");
+            return;
+        }
+        this.enableLazyLoad = enable;
+    }
+
+    protected boolean isLazyLoadEnabled() {
+        return enableLazyLoad;
+    }
+
+    protected boolean isLazyLoadInactive() {
+        return !isWebviewActivated() && enableLazyLoad;
+    }
+
+    protected void loadWebview() {
+        //DONE: loadWebview has not been already called
+        if (activateWebview) {
+            Clog.e("LAZYLOAD", "loadWebview() has already been called once.");
+            return;
+        }
+        if (!enableLazyLoad) {
+            //DONE: Log
+            Clog.e("LAZYLOAD", "loadWebview() cannot be called when the lazy load isn't enabled.");
+            return;
+        }
+        activateWebview = true;
+        if (mAdFetcher != null) {
+            mAdFetcher.loadWebview();
+        }
+    }
+
+    protected boolean isWebviewActivated() {
+        return activateWebview;
     }
 }

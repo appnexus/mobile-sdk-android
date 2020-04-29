@@ -42,6 +42,7 @@ public class AdViewRequestManager extends RequestManager {
     private AdWebView adWebview;
     private final WeakReference<Ad> owner;
     private BaseAdResponse currentAd;
+    private BaseAdResponse cachedResponse = null;
 
     public AdViewRequestManager(Ad owner) {
         super();
@@ -288,7 +289,13 @@ public class AdViewRequestManager extends RequestManager {
                     }
 
                     // Standard ads or Video Ads
-                    initiateWebview(ownerAd, rtbAdResponse);
+                    if (ownerAd instanceof BannerAdView && ((BannerAdView)ownerAd).isLazyLoadInactive() && UTConstants.AD_TYPE_BANNER.equalsIgnoreCase(rtbAdResponse.getAdType())) {
+                        cachedResponse = rtbAdResponse;
+                        ((LazyLoadAdDispatcher)ownerAd.getAdDispatcher()).onAdLazyLoaded();
+                    } else {
+                        cachedResponse = null;
+                        initiateWebview(ownerAd, rtbAdResponse);
+                    }
                 } else {
                     Clog.e(Clog.baseLogTag, "handleRTBResponse failed:: invalid adType::" + rtbAdResponse.getAdType());
                     continueWaterfall(ResultCode.INTERNAL_ERROR);
@@ -371,6 +378,16 @@ public class AdViewRequestManager extends RequestManager {
 
     public ANMultiAdRequest getMultiAdRequest() {
         return anMultiAdRequest;
+    }
+
+    protected void loadWebview() {
+        Ad adOwner = owner.get();
+        if (adOwner != null && cachedResponse != null) {
+            initiateWebview(adOwner, cachedResponse);
+            //DONE: fireImpressionTrackers when it is loaded successfully, do not wait for it to be attached to the window.
+        } else {
+            failed(ResultCode.INTERNAL_ERROR, null);
+        }
     }
 
 }

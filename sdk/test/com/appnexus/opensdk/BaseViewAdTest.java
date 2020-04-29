@@ -165,6 +165,11 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener, MultiAdR
     }
 
     @Override
+    public void onLazyAdLoaded(AdView adView) {
+        Clog.w(TestUtil.testLogTag, "BaseViewAdTest onAdLazyLoaded");
+    }
+
+    @Override
     public void onMultiAdRequestCompleted() {
         marCompleted = true;
     }

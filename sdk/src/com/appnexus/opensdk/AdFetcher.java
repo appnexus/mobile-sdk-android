@@ -206,6 +206,10 @@ public class AdFetcher {
                         Clog.getString(
                                 R.string.new_ad_since,
                                 Math.max(0, (int) (System.currentTimeMillis() - fetcher.lastFetchTime))));
+                if (fetcher.owner != null && fetcher.owner instanceof BannerAdView && ((BannerAdView)fetcher.owner).isLazyLoadInactive()) {
+                    Clog.e("LAZYLOAD", "Not Fetching due to Lazy Load");
+                    return;
+                }
             }
             fetcher.lastFetchTime = System.currentTimeMillis();
 
@@ -231,5 +235,11 @@ public class AdFetcher {
 
     STATE getState() {
         return this.state;
+    }
+
+    protected void loadWebview() {
+        if (requestManager != null && requestManager instanceof AdViewRequestManager) {
+            ((AdViewRequestManager)requestManager).loadWebview();
+        }
     }
 }
