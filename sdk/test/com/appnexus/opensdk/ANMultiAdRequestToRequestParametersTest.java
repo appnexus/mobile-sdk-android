@@ -261,7 +261,6 @@ public class ANMultiAdRequestToRequestParametersTest extends BaseRoboTest {
         // Assert Default UserInfo
         assertAttachedBannerDefaultUserInfo();
 
-        setBannerUserInfo();
         // Set User Info
         setUserInfo();
 
@@ -582,13 +581,6 @@ public class ANMultiAdRequestToRequestParametersTest extends BaseRoboTest {
         setExternalUId();
     }
 
-    private void setBannerUserInfo() {
-        setBannerAge();
-        setBannerGender();
-        setBannerExternalUId();
-//        setBannerCustomKeywords();
-    }
-
     private void assertUserInfoRequestParameters() {
         String postData = getRequestParametersPostData();
         assertTrue(postData.contains("\"user\":{\"age\":20,\"gender\":2,\"language\":\"en\",\"external_uid\":\"AppNexus\"}"));
@@ -607,18 +599,6 @@ public class ANMultiAdRequestToRequestParametersTest extends BaseRoboTest {
     private void assertAttachedBannerDefaultUserInfo() {
         String postData = getBannerRequestParametersPostData();
         assertTrue(postData.contains("\"user\":{\"gender\":0,\"language\":\"en\"}"));
-    }
-
-    private void setBannerExternalUId() {
-        bav.setExternalUid("AppNexus");
-    }
-
-    private void setBannerAge() {
-        bav.setAge("20");
-    }
-
-    private void setBannerGender() {
-        bav.setGender(AdView.GENDER.FEMALE);
     }
 
     private void setExternalUId() {

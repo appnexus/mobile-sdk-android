@@ -51,7 +51,7 @@ import static junit.framework.Assert.fail;
  * 2) Checks if ResponseURL is fired with correct response code.
  * 3) Checks if ResponseURL is fired with latency populated.
  * 4) Also tries to assert if the SDK get the correct onAdLoaded/onAdFailed callback.
- * 5) Confirms isReady() and loadWebview() for Interstitial are fired
+ * 5) Confirms isReady() and showAd() for Interstitial are fired
  */
 
 
