@@ -384,7 +384,6 @@ public class AdViewRequestManager extends RequestManager {
         Ad adOwner = owner.get();
         if (adOwner != null && cachedResponse != null) {
             initiateWebview(adOwner, cachedResponse);
-            //DONE: fireImpressionTrackers when it is loaded successfully, do not wait for it to be attached to the window.
         } else {
             failed(ResultCode.INTERNAL_ERROR, null);
         }

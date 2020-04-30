@@ -36,19 +36,8 @@ import android.widget.VideoView
 
 import androidx.test.espresso.idling.CountingIdlingResource
 import appnexus.com.appnexussdktestapp.utility.Utils
+import com.appnexus.opensdk.*
 
-import com.appnexus.opensdk.ANClickThroughAction
-import com.appnexus.opensdk.ANMultiAdRequest
-import com.appnexus.opensdk.AdListener
-import com.appnexus.opensdk.AdSize
-import com.appnexus.opensdk.AdView
-import com.appnexus.opensdk.BannerAdView
-import com.appnexus.opensdk.InterstitialAdView
-import com.appnexus.opensdk.NativeAdRequest
-import com.appnexus.opensdk.NativeAdRequestListener
-import com.appnexus.opensdk.NativeAdResponse
-import com.appnexus.opensdk.ResultCode
-import com.appnexus.opensdk.SDKSettings
 import com.appnexus.opensdk.instreamvideo.Quartile
 import com.appnexus.opensdk.instreamvideo.VideoAd
 import com.appnexus.opensdk.instreamvideo.VideoAdLoadListener
@@ -123,6 +112,9 @@ class MARActivity : Activity() {
                     msg += "Interstitial Ad Failed: $errorCode\n"
                 }
                 toast()
+            }
+
+            override fun onLazyAdLoaded(adView: AdView?) {
             }
 
             override fun onAdLoaded(av: AdView) {
@@ -282,7 +274,7 @@ class MARActivity : Activity() {
                 handleNativeResponse(response)
             }
 
-            override fun onAdFailed(errorcode: ResultCode) {
+            override fun onAdFailed(errorcode: ResultCode, anAdResponseInfo: ANAdResponseInfo) {
                 msg += "Native Ad Failed:$errorcode\n"
                 toast()
             }
@@ -340,6 +332,9 @@ class MARActivity : Activity() {
                     msg += "Banner Ad Failed: $errorCode\n"
                     toast()
                 }
+            }
+
+            override fun onLazyAdLoaded(adView: AdView?) {
             }
 
             override fun onAdLoaded(av: AdView) {

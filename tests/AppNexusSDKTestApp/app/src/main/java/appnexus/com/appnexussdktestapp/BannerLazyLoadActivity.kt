@@ -24,29 +24,37 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.test.espresso.idling.CountingIdlingResource
 import com.appnexus.opensdk.*
 import com.appnexus.opensdk.utils.Clog
+import com.appnexus.opensdk.utils.ClogListener
 
-class BannerLazyLoadActivity : AppCompatActivity() {
+class BannerLazyLoadActivity : AppCompatActivity(), AppEventListener {
 
-    var bav: BannerAdView? = null
+    val banner_id: Int = 1234
+    lateinit var banner: BannerAdView
     var msg = ""
+    var logListener = LogListener()
+    var idlingResource: CountingIdlingResource = CountingIdlingResource("Banner Load Count", true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_my)
-        bav = BannerAdView(this)
+        setContentView(R.layout.activity_banner_lazy_load)
+        Clog.registerListener(logListener)
+        banner = BannerAdView(this)
+        banner.appEventListener = this
+        banner.id = banner_id
         SDKSettings.useHttps(true)
         // This is your AppNexus placement ID.
-        bav!!.placementID = "17058950"
+        banner.placementID = "17058950"
         // Turning this on so we always get an ad during testing.
-        bav!!.shouldServePSAs = false
+        banner.shouldServePSAs = false
         // By default ad clicks open in an in-app WebView.
-        bav!!.clickThroughAction = ANClickThroughAction.OPEN_SDK_BROWSER
+        banner.clickThroughAction = ANClickThroughAction.OPEN_SDK_BROWSER
         // Get a 300x50 ad.
-        bav!!.setAdSize(300, 250)
+        banner.setAdSize(300, 250)
         // Resizes the container size to fit the banner ad
-        bav!!.resizeAdToFitContainer = true
+        banner.resizeAdToFitContainer = true
         // Set up a listener on this ad view that logs events.
         val adListener: AdListener = object : AdListener {
             override fun onAdRequestFailed(bav: AdView, errorCode: ResultCode) {
@@ -55,6 +63,9 @@ class BannerLazyLoadActivity : AppCompatActivity() {
                 } else {
                     Clog.v("SIMPLEBANNER", "Ad request failed: $errorCode")
                 }
+                if (!idlingResource.isIdleNow) {
+                    idlingResource.decrement()
+                }
             }
 
             override fun onAdLoaded(bav: AdView) {
@@ -62,6 +73,9 @@ class BannerLazyLoadActivity : AppCompatActivity() {
                 toast()
                 Clog.v("SIMPLEBANNER", "The Ad Loaded!")
                 Handler().postDelayed({ showAd() }, 5000)
+                if (!idlingResource.isIdleNow) {
+                    idlingResource.decrement()
+                }
             }
 
             override fun onAdLoaded(nativeAdResponse: NativeAdResponse) {
@@ -87,10 +101,13 @@ class BannerLazyLoadActivity : AppCompatActivity() {
             override fun onLazyAdLoaded(adView: AdView) {
                 msg = "onAdLazyLoaded"
                 toast()
+                if (!idlingResource.isIdleNow) {
+                    idlingResource.decrement()
+                }
             }
         }
-        bav!!.adListener = adListener
-        bav!!.enableWebviewLazyLoad(true)
+        banner.adListener = adListener
+        banner.enableLazyLoad(true)
         load()
     }
 
@@ -103,30 +120,34 @@ class BannerLazyLoadActivity : AppCompatActivity() {
             RelativeLayout.LayoutParams.WRAP_CONTENT
         )
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT)
-        bav!!.layoutParams = layoutParams
-        layout.addView(bav)
+        banner.layoutParams = layoutParams
+        layout.addView(banner)
         msg += "Banner Added to the Screen."
         toast()
     }
 
     open fun removeFromParent() {
-        if (bav!!.parent != null && bav!!.parent is ViewGroup) {
-            (bav!!.parent as ViewGroup).removeView(bav)
+        if (banner.parent != null && banner!!.parent is ViewGroup) {
+            (banner.parent as ViewGroup).removeView(banner)
             msg = "Banner removed From Parent, "
         }
     }
 
-    open fun load() { // If auto-refresh is enabled (the default), a call to
-// `FrameLayout.addView()` followed directly by
-// `BannerAdView.loadAd()` will succeed.  However, if
-// auto-refresh is disabled, the call to
-// `BannerAdView.loadAd()` needs to be wrapped in a `Handler`
-// block to ensure that the banner ad view is in the view
-// hierarchy *before* the call to `loadAd()`.  Otherwise the
-// visibility check in `loadAd()` will fail, and no ad will be
-// shown.
+    open fun load() {
+        // If auto-refresh is enabled (the default), a call to
+        // `FrameLayout.addView()` followed directly by
+        // `BannerAdView.loadAd()` will succeed.  However, if
+        // auto-refresh is disabled, the call to
+        // `BannerAdView.loadAd()` needs to be wrapped in a `Handler`
+        // block to ensure that the banner ad view is in the view
+        // hierarchy *before* the call to `loadAd()`.  Otherwise the
+        // visibility check in `loadAd()` will fail, and no ad will be
+        // shown.
+        if (idlingResource.isIdleNow) {
+            idlingResource.increment()
+        }
         Handler().postDelayed({
-            bav!!.loadAd()
+            banner!!.loadAd()
             msg += " loadAd() triggered"
             toast()
         }, 0)
@@ -134,8 +155,8 @@ class BannerLazyLoadActivity : AppCompatActivity() {
 
     fun toggleLazyLoadAndReload(v: View?) {
         val tv = findViewById<View>(R.id.enableAndReload) as TextView
-        bav!!.enableWebviewLazyLoad(!bav!!.isWebviewLazyLoadEnabled)
-        if (bav!!.isWebviewLazyLoadEnabled) {
+        banner.enableLazyLoad(!banner!!.isLazyLoadEnabled)
+        if (banner.isLazyLoadEnabled) {
             tv.text = "Disable And Reload"
             msg = "Lazy Load Enabled"
         } else {
@@ -146,7 +167,10 @@ class BannerLazyLoadActivity : AppCompatActivity() {
     }
 
     fun activateWebview(v: View?) {
-        bav!!.loadWebview()
+        if (idlingResource.isIdleNow) {
+            idlingResource.increment()
+        }
+        banner.loadWebview()
         msg = "Webview Activated"
         toast()
     }
@@ -154,5 +178,38 @@ class BannerLazyLoadActivity : AppCompatActivity() {
     open fun toast() {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
         Clog.e("LAZYLOAD", msg)
+    }
+
+    class LogListener : ClogListener() {
+
+        var logMsg: String = ""
+
+        override fun onReceiveMessage(
+            level: ClogListener.LOG_LEVEL?,
+            LogTag: String?,
+            message: String?
+        ) {
+            if (LogTag.equals("LAZYLOAD", true)) {
+                logMsg += message + "\n"
+            }
+        }
+
+        override fun onReceiveMessage(
+            level: ClogListener.LOG_LEVEL?,
+            LogTag: String?,
+            message: String?,
+            tr: Throwable?
+        ) {
+
+        }
+
+        override fun getLogLevel(): ClogListener.LOG_LEVEL {
+            return LOG_LEVEL.E
+        }
+    }
+
+    override fun onAppEvent(adView: AdView?, name: String?, data: String?) {
+        Clog.e("LAZYLOAD", name)
+//        appEvent = name
     }
 }

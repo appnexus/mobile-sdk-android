@@ -1189,9 +1189,9 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
                     }
 
 
-                    // Banner OnAdLoaded and if View is attached to window Impression is counted.
+                    // Banner OnAdLoaded and if View is attached to window, or if the LazyLoad is enabled Impression is counted.
                     if (getMediaType().equals(MediaType.BANNER)) {
-                        if (isAdViewAttachedToWindow() || isLazyLoadEnabled()) {
+                        if (isAdViewAttachedToWindow() || (isLazyLoadEnabled() && isWebviewActivated() && ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER))) {
                             if (impressionTrackers != null && impressionTrackers.size() > 0) {
                                 fireImpressionTracker();
                             }
@@ -1207,10 +1207,6 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
                         setAdType(AdType.BANNER);
                     }
                     if (adListener != null) {
-//                        Add More Checks
-//                        if (isLazyLoadEnabled()) {
-//                            adListener.onLazyAdLoaded(AdView.this);
-//                        }
                         adListener.onAdLoaded(AdView.this);
                     }
                     if (ad.getNativeAdResponse() != null) {
@@ -1223,7 +1219,6 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
         @Override
         public void onAdLazyLoaded() {
-            //DONE: Add AdView as a parameter
             isFetching = false;
             adListener.onLazyAdLoaded(AdView.this);
         }
@@ -1361,12 +1356,10 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     }
 
     protected void enableLazyLoad(boolean enable) {
-        //DONE: if the fetcher is not already in progress
         if (isFetching) {
             Clog.e("LAZYLOAD", "enableLazyLoad() Failed. AdRequest is already in progress.");
             return;
         }
-        //DONE: if it isn't already enabled once
         if (enableLazyLoad) {
             Clog.e("LAZYLOAD", "enableLazyLoad() Failed. Already enabled once.");
             return;
@@ -1383,13 +1376,11 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     }
 
     protected void loadWebview() {
-        //DONE: loadWebview has not been already called
         if (activateWebview) {
             Clog.e("LAZYLOAD", "loadWebview() has already been called once.");
             return;
         }
         if (!enableLazyLoad) {
-            //DONE: Log
             Clog.e("LAZYLOAD", "loadWebview() cannot be called when the lazy load isn't enabled.");
             return;
         }

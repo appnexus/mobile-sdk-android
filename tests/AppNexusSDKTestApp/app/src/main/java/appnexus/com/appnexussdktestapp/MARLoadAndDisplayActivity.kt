@@ -40,13 +40,15 @@ class MARLoadAndDisplayActivity : Activity() {
         val BID_TYPE = "BID_TYPE"
     }
 
+    var onLazyLoadAdLoaded: Boolean = false
+    var onLazyAdLoaded: Boolean = false
     private var displayAd = true
     private val arrayListAd = ArrayList<Any?>()
     private val arrayListAdUnits = ArrayList<Ad>()
     internal var msg = ""
     lateinit var layout: LinearLayout
     //    internal var placementID = "17982237"
-    internal var placementID = "14790206"
+    internal var placementID = "17058950"
     //    internal var csmVideo = placementID
     internal var csmVideo = "18121480"
     internal var csmBanner = "18108595"
@@ -54,7 +56,7 @@ class MARLoadAndDisplayActivity : Activity() {
     internal var csmInterstitial = "18108597"
     internal var nativePlacementId = placementID
 
-    internal var videoCreativeId = 182192610
+    internal var videoCreativeId = 162035356
     internal var bannerCreativeId = 166843311
     internal var nativeCreativeId = 162039377
     internal var interstitialCreativeId = 166843825
@@ -84,7 +86,7 @@ class MARLoadAndDisplayActivity : Activity() {
         anMultiAdRequest = ANMultiAdRequest(this, 0,
             object : MultiAdRequestListener {
                 override fun onMultiAdRequestCompleted() {
-                    msg += "MAR Load Completed"
+                    msg = "MAR Load Completed"
                     multiAdRequestCompleted = true
                     Clog.i("MAR TESTING", "IDLING RESOURCE IDLE: " + idlingResource.isIdleNow)
                     if (!idlingResource.isIdleNow)
@@ -111,6 +113,9 @@ class MARLoadAndDisplayActivity : Activity() {
             } else if (str.equals("Banner", true)) {
                 idlingResource.increment()
                 arrayListAdUnits.add(setupBannerAd(bidArrayListExtra.get(index)))
+            } else if (str.equals("Banner-LazyLoad", true)) {
+                idlingResource.increment()
+                arrayListAdUnits.add(setupBannerAd(bidArrayListExtra.get(index), true))
             } else if (str.equals("Native", true)) {
                 idlingResource.increment()
                 arrayListAdUnits.add(setupNativeAd(bidArrayListExtra.get(index)))
@@ -158,7 +163,7 @@ class MARLoadAndDisplayActivity : Activity() {
         }
         adRequest.listener = object : NativeAdRequestListener {
             override fun onAdLoaded(response: NativeAdResponse) {
-                msg += "Native Ad Loaded\n"
+                msg = "Native Ad Loaded\n"
                 toast()
                 arrayListAd.add(response)
                 if (displayAd)
@@ -167,7 +172,7 @@ class MARLoadAndDisplayActivity : Activity() {
                     idlingResource.decrement()
             }
 
-            override fun onAdFailed(errorcode: ResultCode) {
+            override fun onAdFailed(errorcode: ResultCode, anAdResponseInfo: ANAdResponseInfo) {
                 msg += "Native Ad Failed:$errorcode\n"
                 toast()
                 if (!idlingResource.isIdleNow)
@@ -185,7 +190,7 @@ class MARLoadAndDisplayActivity : Activity() {
         } else {
             iav.placementID = placementID
             val utils = Utils()
-            utils.setForceCreativeId(interstitialCreativeId, interstitial = iav)
+            utils.setForceCreativeId(bannerCreativeId, interstitial = iav)
         }
 
         iav.adListener = object : AdListener {
@@ -200,8 +205,11 @@ class MARLoadAndDisplayActivity : Activity() {
                 toast()
             }
 
+            override fun onLazyAdLoaded(adView: AdView?) {
+            }
+
             override fun onAdLoaded(av: AdView) {
-                msg += "Interstitial Ad Loaded\n"
+                msg = "Interstitial Ad Loaded\n"
                 toast()
                 arrayListAd.add(av)
                 if (displayAd)
@@ -211,7 +219,7 @@ class MARLoadAndDisplayActivity : Activity() {
             }
 
             override fun onAdLoaded(nativeAdResponse: NativeAdResponse) {
-                msg += "Banner-Native Ad Loaded\n"
+                msg = "Banner-Native Ad Loaded\n"
                 toast()
                 arrayListAd.add(nativeAdResponse)
                 if (displayAd)
@@ -240,7 +248,7 @@ class MARLoadAndDisplayActivity : Activity() {
         return iav
     }
 
-    private fun setupBannerAd(bidType: String): BannerAdView {
+    private fun setupBannerAd(bidType: String, lazyLoad: Boolean = false): BannerAdView {
         val bav = BannerAdView(this)
 
         // This is your AppNexus placement ID.
@@ -255,7 +263,7 @@ class MARLoadAndDisplayActivity : Activity() {
         bav.allowNativeDemand = false
         bav.allowVideoDemand = false
         bav.autoRefreshInterval = 0
-
+        bav.enableLazyLoad(lazyLoad)
         // Turning this on so we always get an ad during testing.
         bav.shouldServePSAs = false
 
@@ -290,14 +298,29 @@ class MARLoadAndDisplayActivity : Activity() {
                 }
             }
 
+            override fun onLazyAdLoaded(adView: AdView?) {
+                msg = "Banner Ad Lazy Loaded\n"
+                toast()
+                onLazyAdLoaded = true
+                arrayListAd.add(adView)
+                if (displayAd)
+                    recyclerListAdView.adapter!!.notifyDataSetChanged()
+                if (!idlingResource.isIdleNow)
+                    idlingResource.decrement()
+            }
+
             override fun onAdLoaded(av: AdView) {
                 Clog.v("SimpleSRM", "The Ad Loaded!")
                 //                if (av.getParent() != null && av.getParent() instanceof ViewGroup) {
                 //                    ((ViewGroup) av.getParent()).removeAllViews();
                 //                }
-                msg += "Banner Ad Loaded\n"
+                msg = "Banner Ad Loaded\n"
                 toast()
-                arrayListAd.add(av)
+                if (!bav.isLazyLoadEnabled()) {
+                    arrayListAd.add(av)
+                } else {
+                    onLazyLoadAdLoaded = true
+                }
                 if (displayAd)
                     recyclerListAdView.adapter!!.notifyDataSetChanged()
                 if (!idlingResource.isIdleNow)
@@ -306,7 +329,7 @@ class MARLoadAndDisplayActivity : Activity() {
 
             override fun onAdLoaded(nativeAdResponse: NativeAdResponse) {
                 Clog.v("SimpleSRM", "Ad onAdLoaded NativeAdResponse")
-                msg += "Banner-Native Ad Loaded\n"
+                msg = "Banner-Native Ad Loaded\n"
                 toast()
                 arrayListAd.add(nativeAdResponse)
                 if (displayAd)
@@ -352,12 +375,16 @@ class MARLoadAndDisplayActivity : Activity() {
             utils.setForceCreativeId(videoCreativeId, video = videoAd);
         }
 
+        videoAd.age = "22"
+        videoAd.gender = AdView.GENDER.FEMALE
+        videoAd.externalUid = "VIDEO"
+
         videoAd.clearCustomKeywords()
 
         videoAd.adLoadListener = object : VideoAdLoadListener {
             override fun onAdLoaded(adView: VideoAd) {
                 Clog.d("VideoAd", "AD READY")
-                msg += "Video Ad Loaded\n"
+                msg = "Video Ad Loaded\n"
                 toast()
                 if (displayAd) {
                     Toast.makeText(
@@ -391,5 +418,6 @@ class MARLoadAndDisplayActivity : Activity() {
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
         }
         Clog.e("TOAST", msg)
+        Clog.e("LAZYLOAD", msg)
     }
 }

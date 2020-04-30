@@ -1,5 +1,5 @@
 /*
- *    Copyright 2019 APPNEXUS INC
+ *    Copyright 2012 APPNEXUS INC
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingPolicies
 import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -30,17 +31,18 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.runner.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import appnexus.com.appnexussdktestapp.BannerActivity
+import appnexus.com.appnexussdktestapp.BannerLazyLoadActivity
 import appnexus.com.appnexussdktestapp.R
 import com.appnexus.opensdk.ANClickThroughAction
 import com.appnexus.opensdk.AdActivity
 import com.appnexus.opensdk.utils.StringUtil
 import com.appnexus.opensdk.utils.ViewUtil
 import com.microsoft.appcenter.espresso.Factory
+import org.hamcrest.CoreMatchers
 import org.junit.*
 
 import org.junit.runner.RunWith
@@ -52,7 +54,7 @@ import java.util.concurrent.TimeUnit
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-class BannerNativeTest {
+class BannerLazyLoadTest {
     val Int.dp: Int
         get() = (this / Resources.getSystem().displayMetrics.density).toInt()
     val Int.px: Int
@@ -63,9 +65,9 @@ class BannerNativeTest {
 
     @Rule
     @JvmField
-    var mActivityTestRule = IntentsTestRule(BannerActivity::class.java, false, false)
+    var mActivityTestRule = IntentsTestRule(BannerLazyLoadActivity::class.java, false, false)
 
-    lateinit var bannerActivity: BannerActivity
+    lateinit var bannerActivity: BannerLazyLoadActivity
 
     @Before
     fun setup() {
@@ -87,121 +89,38 @@ class BannerNativeTest {
     * Test for the Invalid Renderer Url for Banner Native Ad (NativeAssemblyRenderer)
     * */
     @Test
-    fun bannerNativeAssemblyRendererLoadWrongRendererUrlTest() {
+    fun bannerLazyLoad() {
 
-        bannerActivity.triggerAdLoad("14790187", allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, creativeId = 162039377)
-        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+        Thread.sleep(2000)
+
+        Espresso.onView(ViewMatchers.withId(R.id.main_content))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
-            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
-        Espresso.onView(ViewMatchers.withId(R.id.title))
-            .check(ViewAssertions.matches(isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.description))
-            .check(ViewAssertions.matches(isDisplayed()))
-        onView(withText("What is in the Name....")).check(matches(isDisplayed()));
-        onView(withText("The person who said \"What is in the Name\" wrote his name below the quote...")).check(matches(isDisplayed()));
+
+        Espresso.onView(ViewMatchers.withId(R.id.main_content))
+            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(2)))
+//        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
+//            .check(ViewAssertions.matches(CoreMatchers.not(ViewMatchers.isDisplayed())))
+
+        onView(withId(R.id.activateWebview)).perform(ViewActions.click())
+
         Thread.sleep(5000)
-        Espresso.onView(ViewMatchers.withId(R.id.icon))
+
+        Espresso.onView(ViewMatchers.withId(R.id.main_content))
+            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(3)))
+        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.image))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Assert.assertTrue(
+            "Wrong Ad Width",
+            bannerActivity.banner.getChildAt(0).width.dp >= (bannerActivity.banner.adWidth - 1) ||
+                    bannerActivity.banner.getChildAt(0).width.dp <= (bannerActivity.banner.adWidth + 1)
+        )
+        Assert.assertTrue(
+            "Wrong Ad Height",
+            bannerActivity.banner.getChildAt(0).height.dp >= (bannerActivity.banner.adHeight - 1) ||
+                    bannerActivity.banner.getChildAt(0).height.dp <= (bannerActivity.banner.adHeight + 1)
+        )
+
+        println("LAZY LOAD: " + bannerActivity.logListener.logMsg)
     }
 
-    /*
-    * Test Clickthrough Action - SDKBrowser
-    * */
-    @Test
-    fun bannerNativeAssemblyRendererClickThroughSDKBrowserTest() {
-
-        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, clickThroughAction = ANClickThroughAction.OPEN_SDK_BROWSER, creativeId = 162039377)
-        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
-            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
-        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
-            .perform(ViewActions.click())
-
-        //check if the triggered intent is pointing to the AdActivity
-        Intents.intended(IntentMatchers.hasComponent(AdActivity::class.java.name))
-    }
-
-    /*
-    * Test Clickthrough Action - DeviceBrowser
-    * */
-    @Test
-    fun bannerNativeAssemblyRendererClickThroughDeviceBrowserTest() {
-
-        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, clickThroughAction = ANClickThroughAction.OPEN_DEVICE_BROWSER, creativeId = 162039377)
-        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
-            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
-        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
-            .perform(ViewActions.click())
-
-        //check if the triggered intent has Action set as ACTION_VIEW
-        Intents.intended(IntentMatchers.hasAction(Intent.ACTION_VIEW))
-    }
-
-
-    /*
-    * Test Clickthrough Action - ReturnUrl
-    * */
-    @Test
-    fun bannerNativeAssemblyRendererClickThroughReturnUrlTest() {
-
-        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, clickThroughAction = ANClickThroughAction.RETURN_URL, creativeId = 162039377)
-        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
-            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
-        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
-            .perform(ViewActions.click())
-
-        Assert.assertFalse(StringUtil.isEmpty(bannerActivity.clickUrl))
-    }
-
-    /*
-    * ResizeToFitContainerSize Test for the Banner Native Assembly Renderer Ad
-    * */
-    @Test
-    fun bannerNativeAssemblyRendererResizeToFitContainerTest() {
-
-        bannerActivity.triggerAdLoad("17982237", width = 300, height = 250, allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, resizeToFitContainer = true, expandsToFitScreenWidth = false, creativeId = 162039377)
-        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
-            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
-        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-
-        var width = ViewUtil.getValueInDP(bannerActivity, bannerActivity.banner.width)
-        var height = ViewUtil.getValueInDP(bannerActivity, bannerActivity.banner.height)
-//        Assert.assertTrue("Width Resize Assertion Failure expected = 300, actual = " + width, width >= 299 && width <= 301)
-        Assert.assertTrue("Height Resize Assertion Failure expected = 250, actual = " + height, height >= 249 && height <= 251)
-    }
-
-    /*
-    * ExpandToFitScreenWidth Test for the Banner Native Assembly Renderer Ad
-    * */
-    @Test
-    fun bannerNativeAssemblyRendererExpandToFitScreenTest() {
-
-        bannerActivity.triggerAdLoad("17982237", width = 300, height = 250, allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, expandsToFitScreenWidth = true, creativeId = 162039377)
-        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
-            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
-        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-
-        var width = ViewUtil.getValueInDP(bannerActivity, bannerActivity.banner.width)
-        Assert.assertTrue("Screen Width Resize Assertion Failure expected = " + ViewUtil.getScreenSizeAsDP(bannerActivity)[0] + ", actual = " + width, width == ViewUtil.getScreenSizeAsDP(bannerActivity)[0])
-    }
 }
