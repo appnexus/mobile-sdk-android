@@ -42,7 +42,6 @@ public class AdViewRequestManager extends RequestManager {
     private AdWebView adWebview;
     private final WeakReference<Ad> owner;
     private BaseAdResponse currentAd;
-    private BaseAdResponse cachedResponse = null;
 
     public AdViewRequestManager(Ad owner) {
         super();
@@ -290,10 +289,8 @@ public class AdViewRequestManager extends RequestManager {
 
                     // Standard ads or Video Ads
                     if (ownerAd instanceof BannerAdView && ((BannerAdView)ownerAd).isLazyLoadInactive() && UTConstants.AD_TYPE_BANNER.equalsIgnoreCase(rtbAdResponse.getAdType())) {
-                        cachedResponse = rtbAdResponse;
                         ((LazyLoadAdDispatcher)ownerAd.getAdDispatcher()).onAdLazyLoaded();
                     } else {
-                        cachedResponse = null;
                         initiateWebview(ownerAd, rtbAdResponse);
                     }
                 } else {
@@ -382,8 +379,8 @@ public class AdViewRequestManager extends RequestManager {
 
     protected void loadWebview() {
         Ad adOwner = owner.get();
-        if (adOwner != null && cachedResponse != null) {
-            initiateWebview(adOwner, cachedResponse);
+        if (adOwner != null && currentAd != null) {
+            initiateWebview(adOwner, currentAd);
         } else {
             failed(ResultCode.INTERNAL_ERROR, null);
         }
