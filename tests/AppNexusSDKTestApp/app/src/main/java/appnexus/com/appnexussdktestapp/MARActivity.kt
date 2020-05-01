@@ -154,7 +154,7 @@ class MARActivity : Activity() {
         //        adUnitList.add(adRequest);
         //        adUnitList.add(videoAd);
 
-        anMultiAdRequest2 = ANMultiAdRequest(this, 0, object : MultiAdRequestListener {
+        anMultiAdRequest2 = ANMultiAdRequest(this, 0, 0, object : MultiAdRequestListener {
             override fun onMultiAdRequestCompleted() {
                 msg += "MAR 2 Load Completed"
                 multiAdRequestCompleted2 = true
@@ -176,7 +176,7 @@ class MARActivity : Activity() {
         //        anMultiAdRequest2.load();
 
 
-        anMultiAdRequest = ANMultiAdRequest(this, 0,
+        anMultiAdRequest = ANMultiAdRequest(this, 0, 0,
             object : MultiAdRequestListener {
                 override fun onMultiAdRequestCompleted() {
                     msg += "MAR Load Completed"
@@ -274,7 +274,7 @@ class MARActivity : Activity() {
                 handleNativeResponse(response)
             }
 
-            override fun onAdFailed(errorcode: ResultCode, anAdResponseInfo: ANAdResponseInfo) {
+            override fun onAdFailed(errorcode: ResultCode, adResponseInfo: ANAdResponseInfo) {
                 msg += "Native Ad Failed:$errorcode\n"
                 toast()
             }

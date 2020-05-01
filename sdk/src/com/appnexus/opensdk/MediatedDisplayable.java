@@ -83,6 +83,21 @@ class MediatedDisplayable implements Displayable {
 
     }
 
+    @Override
+    public void addFriendlyObstruction(View friendlyObstructionView) {
+        // For adding the FriendlyObstruction
+    }
+
+    @Override
+    public void removeFriendlyObstruction(View friendlyObstructionView) {
+        // For removing the FriendlyObstruction
+    }
+
+    @Override
+    public void removeAllFriendlyObstructions() {
+        // For clearing all the Friendly Obstruction
+    }
+
     void setView(View view) {
         this.view = view;
     }

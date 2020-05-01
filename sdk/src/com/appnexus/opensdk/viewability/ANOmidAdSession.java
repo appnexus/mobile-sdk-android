@@ -35,6 +35,7 @@ import java.util.List;
 public class ANOmidAdSession {
 
     private AdSession omidAdSession;
+
     List<VerificationScriptResource> verificationScriptResources = new ArrayList<>();
 
     public String prependOMIDJSToHTML(String html) {
@@ -138,5 +139,32 @@ public class ANOmidAdSession {
         }
     }
 
+    /**
+     * For removing Friendly Obstruction View
+     * @param view to be removed
+     */
+    public void removeFriendlyObstruction(View view) {
+        if (!SDKSettings.getOMEnabled())
+            return;
+        if (omidAdSession != null) {
+            omidAdSession.removeFriendlyObstruction(view);
+        }
+    }
 
+    /**
+     * For clearing the Friendly Obstruction Views
+     */
+    public void removeAllFriendlyObstructions() {
+        if (!SDKSettings.getOMEnabled())
+            return;
+        if (omidAdSession != null) {
+            omidAdSession.removeAllFriendlyObstructions();
+        }
+    }
+
+    public void addFriendlyObstruction(View friendlyObstructionView) {
+        if (friendlyObstructionView != null && omidAdSession != null) {
+            omidAdSession.addFriendlyObstruction(friendlyObstructionView);
+        }
+    }
 }

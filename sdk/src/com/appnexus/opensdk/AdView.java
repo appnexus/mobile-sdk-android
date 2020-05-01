@@ -49,7 +49,9 @@ import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The parent class of {@link InterstitialAdView} and {@link
@@ -73,6 +75,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     private AdViewDispatcher dispatcher;
     boolean loadedOffscreen = false;
     boolean isMRAIDExpanded = false;
+    boolean countBannerImpressionOnAdLoad = false;
 
     private boolean shouldResizeParent = false;
     private boolean showLoadingIndicator = true;
@@ -85,6 +88,8 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     protected ArrayList<String> impressionTrackers;
     private ANAdResponseInfo adResponseInfo;
     private boolean isFetching = false;
+
+    private ArrayList<WeakReference<View>> friendlyObstructionList = new ArrayList<>();
 
     /**
      * Begin Construction
@@ -1074,10 +1079,6 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
                 public void run() {
                     setAdResponseInfo(adResponseInfo);
                     if (adListener != null) {
-//                        Add More Checks
-//                        if (isLazyLoadEnabled()) {
-//                            adListener.onLazyAdFailed(AdView.this, code);
-//                        }
                         adListener.onAdRequestFailed(AdView.this, code);
                     }
                 }
@@ -1181,6 +1182,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
                             Clog.e(Clog.baseLogTag, "The SDK shouldn't fail downcasts to MediatedDisplayable in AdView");
                         }
                     } else {
+                        setFriendlyObstruction(ad.getDisplayable());
                         display(ad.getDisplayable());
                     }
 
@@ -1191,7 +1193,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
                     // Banner OnAdLoaded and if View is attached to window, or if the LazyLoad is enabled Impression is counted.
                     if (getMediaType().equals(MediaType.BANNER)) {
-                        if (isAdViewAttachedToWindow() || (isLazyLoadEnabled() && isWebviewActivated() && ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER))) {
+                        if (isAdViewAttachedToWindow() || countBannerImpressionOnAdLoad || (isLazyLoadEnabled() && isWebviewActivated() && ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER))) {
                             if (impressionTrackers != null && impressionTrackers.size() > 0) {
                                 fireImpressionTracker();
                             }
@@ -1211,7 +1213,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
                     }
                     if (ad.getNativeAdResponse() != null) {
                         AdView.this.ad = ad;
-                        NativeAdSDK.registerTracking(ad.getNativeAdResponse(), ad.getDisplayable().getView(), null);
+                        NativeAdSDK.registerTracking(ad.getNativeAdResponse(), ad.getDisplayable().getView(), null, getFriendlyObstructionViewsList());
                     }
                 }
             });
@@ -1354,6 +1356,79 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     private void setAdResponseInfo(ANAdResponseInfo adResponseInfo) {
         this.adResponseInfo = adResponseInfo;
     }
+
+    /**
+     * For adding Friendly Obstruction View
+     * @param view to be added
+     */
+    public void addFriendlyObstruction(View view) {
+        if (view == null) {
+            Clog.e(Clog.baseLogTag, "Invalid Friendly Obstruction View. The friendly obstruction view cannot be null.");
+            return;
+        }
+        if (!alreadyAddedToFriendlyObstruction(view)) {
+            friendlyObstructionList.add(new WeakReference<View>(view));
+        }
+        if (lastDisplayable != null) {
+            lastDisplayable.addFriendlyObstruction(view);
+        }
+    }
+
+    /**
+     * For removing Friendly Obstruction View
+     * @param friendlyObstructionView to be removed
+     */
+    public void removeFriendlyObstruction(View friendlyObstructionView) {
+        for (WeakReference<View> viewWeakReference : friendlyObstructionList) {
+            if (viewWeakReference.get() != null && viewWeakReference.get() == friendlyObstructionView) {
+                friendlyObstructionList.remove(viewWeakReference);
+                break;
+            }
+        }
+        if (lastDisplayable != null) {
+            lastDisplayable.removeFriendlyObstruction(friendlyObstructionView);
+        }
+    }
+
+    /**
+     * For clearing the Friendly Obstruction Views
+     */
+    public void removeAllFriendlyObstructions() {
+        friendlyObstructionList.clear();
+        if (lastDisplayable != null) {
+            lastDisplayable.removeAllFriendlyObstructions();
+        }
+    }
+
+    protected ArrayList<WeakReference<View>> getFriendlyObstructionList() {
+        return friendlyObstructionList;
+    }
+
+    private List<View> getFriendlyObstructionViewsList() {
+        List<View> viewsList = new ArrayList<View>();
+        for (WeakReference<View> view : friendlyObstructionList) {
+            viewsList.add(view.get());
+        }
+        return viewsList;
+    }
+
+    private boolean alreadyAddedToFriendlyObstruction(View view) {
+        for (WeakReference<View> viewWeakReference: friendlyObstructionList) {
+            if (viewWeakReference.get() != null && viewWeakReference.get() == view) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void setFriendlyObstruction(Displayable displayable) {
+        for (WeakReference<View> viewWeakReference : friendlyObstructionList) {
+            if (viewWeakReference.get() != null) {
+                displayable.addFriendlyObstruction(viewWeakReference.get());
+            }
+        }
+    }
+
 
     protected void enableLazyLoad(boolean enable) {
         if (isFetching) {

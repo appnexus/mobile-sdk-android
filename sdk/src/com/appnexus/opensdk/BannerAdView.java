@@ -1266,6 +1266,29 @@ public class BannerAdView extends AdView {
         this.videoOrientation = videoOrientation;
     }
 
+
+    /**
+     * Set whether to count impression when the creative html loads.
+     * This feature is disabled by default.
+     *
+     * @param enabled If set to true, impression will be counted when creative html loads.
+     */
+    public void setCountImpressionOnAdLoad(boolean enabled) {
+        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
+                R.string.set_count_on_ad_load, enabled));
+        countBannerImpressionOnAdLoad = true;
+    }
+
+
+    /**
+     * Check whether impression is being counted on creative html load
+     *
+     * @return If true, impression will be counted when creative html loads.
+     */
+    public boolean getCountImpressionOnAdLoad() {
+        return countBannerImpressionOnAdLoad;
+    }
+
     public void enableLazyLoad(boolean enable) {
         super.enableLazyLoad(enable);
     }

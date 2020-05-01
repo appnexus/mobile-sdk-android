@@ -1,5 +1,5 @@
 // Project properties
-version = "7.2"
+version = "7.3"
 group='com.appnexus.opensdk'
 
 // Android build
@@ -9,7 +9,7 @@ android {
     compileSdkVersion 28
     buildToolsVersion '29.0.0'
     defaultConfig {
-        versionCode 66 // An integer value that represents the version of the code, relative to other versions. Increase for each release.
+        versionCode 67 // An integer value that represents the version of the code, relative to other versions. Increase for each release.
         versionName version
         consumerProguardFiles 'proguard-project.txt'
         minSdkVersion 9
@@ -44,7 +44,7 @@ dependencies {
     testImplementation 'com.squareup.okhttp:mockwebserver:2.7.5'
     testImplementation 'com.android.support:support-annotations:28.0.0'
     testImplementation 'org.robolectric:shadows-httpclient:4.3.1'
-//    testImplementation 'org.mockito:mockito-core:2.24.0'
+    testImplementation 'org.mockito:mockito-core:2.24.0'
 }
 
 repositories {
