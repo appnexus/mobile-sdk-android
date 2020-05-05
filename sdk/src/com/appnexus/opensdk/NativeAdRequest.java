@@ -18,6 +18,7 @@ package com.appnexus.opensdk;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.webkit.WebView;
 
 import com.appnexus.opensdk.ut.UTAdRequester;
 import com.appnexus.opensdk.ut.UTRequestParameters;
@@ -25,6 +26,7 @@ import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.utils.AdvertisingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ImageService;
+import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 
 import java.util.ArrayList;
@@ -52,6 +54,17 @@ public class NativeAdRequest implements Ad, MultiAd {
         mAdFetcher.setPeriod(-1);
         dispatcher = new NativeAdDispatcher();
         Clog.setErrorContext(context.getApplicationContext());
+        // Store the UA in the settings
+        try {
+            Settings.getSettings().ua = new WebView(context).getSettings()
+                    .getUserAgentString();
+            Clog.v(Clog.baseLogTag,
+                    Clog.getString(R.string.ua, Settings.getSettings().ua));
+        } catch (Exception e) {
+            // Catches PackageManager$NameNotFoundException for webview
+            Settings.getSettings().ua = "";
+            Clog.e(Clog.baseLogTag, " Exception: " + e.getMessage());
+        }
     }
 
     public NativeAdRequest(Context context, String inventoryCode, int memberID) {
@@ -65,6 +78,17 @@ public class NativeAdRequest implements Ad, MultiAd {
         mAdFetcher.setPeriod(-1);
         dispatcher = new NativeAdDispatcher();
         Clog.setErrorContext(context.getApplicationContext());
+        // Store the UA in the settings
+        try {
+            Settings.getSettings().ua = new WebView(context).getSettings()
+                    .getUserAgentString();
+            Clog.v(Clog.baseLogTag,
+                    Clog.getString(R.string.ua, Settings.getSettings().ua));
+        } catch (Exception e) {
+            // Catches PackageManager$NameNotFoundException for webview
+            Settings.getSettings().ua = "";
+            Clog.e(Clog.baseLogTag, " Exception: " + e.getMessage());
+        }
     }
 
     /**
