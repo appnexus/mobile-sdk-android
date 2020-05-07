@@ -1,3 +1,7 @@
+## 7.3.1
+### Improvements/Bug Fixes
++ MS-4342 Fixed issue with User Agent string not being passed for Native Ad requests 
+
 ## 7.3
 ### New Feature
 + MS-4266 Enable OMID SDK support for "friendly obstructions"
