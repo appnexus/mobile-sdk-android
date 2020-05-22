@@ -69,6 +69,7 @@ public class UTRequestParameters {
     private boolean allowSmallerSizes = false;
     private boolean shouldServePSAs = false;
     private boolean isBannerVideoEnabled = false;
+    private boolean isBannerEnabled = true;
     private boolean isBannerNativeEnabled = false;
     private float reserve = 0.00f;
     private String age;
@@ -359,6 +360,10 @@ public class UTRequestParameters {
     public void setBannerVideoEnabled(boolean bannerVideoEnabled) {
         isBannerVideoEnabled = bannerVideoEnabled;
     }
+    public void setBannerEnabled(boolean bannerEnabled) {
+        isBannerEnabled = bannerEnabled;
+    }
+
 
     public boolean isBannerNativeEnabled() {
         return isBannerNativeEnabled;
@@ -605,7 +610,9 @@ public class UTRequestParameters {
 
                 JSONArray allowedMediaAdTypes = new JSONArray();
                 if (utRequestParameters.getMediaType() == MediaType.BANNER) {
-                    allowedMediaAdTypes.put(ALLOWED_TYPE_BANNER);
+                    if (utRequestParameters.isBannerEnabled) {
+                        allowedMediaAdTypes.put(ALLOWED_TYPE_BANNER);
+                    }
                     if (utRequestParameters.isBannerVideoEnabled) {
                         allowedMediaAdTypes.put(ALLOWED_TYPE_VIDEO);
                     }

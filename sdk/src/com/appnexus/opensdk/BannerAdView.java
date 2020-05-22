@@ -823,6 +823,19 @@ public class BannerAdView extends AdView {
         requestParameters.setBannerVideoEnabled(enabled);
     }
 
+
+    /**
+     * Sets whether or not Banner Ads(AppNexus Media Type:1) can serve on this Ad object.
+     * This overrides the value set in console.
+     *
+     * @param enabled whether to enable Banner Ads or not. default is true
+     */
+    public void setAllowBannerDemand(boolean enabled) {
+        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
+                R.string.set_allow_banner, enabled));
+        requestParameters.setBannerEnabled(enabled);
+    }
+
     /**
      * @deprecated @deprecated Use setAllowNativeDemand(boolean) instead. Renderer to Placement mapping can now be done through Native Assembly in console.
      *

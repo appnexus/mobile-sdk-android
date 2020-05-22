@@ -32,6 +32,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 
@@ -124,6 +125,39 @@ public class BannerAdToRequestParametersTest extends BaseRoboTest {
         assertEquals(true,bannerAdView.getAllowVideoDemand());
         String bannerVideoPostData = getRequestParametersPostData();
         assertTrue(bannerVideoPostData.contains("\"allowed_media_types\":[1,4]"));
+    }
+
+
+    // Test setAllowBanner
+    @Test
+    public void testSetAllowBanner(){
+        assertEquals(false,bannerAdView.getAllowVideoDemand());
+        String bannerPostData = getRequestParametersPostData();
+        assertTrue(bannerPostData.contains("\"allowed_media_types\":[1]"));
+
+        bannerAdView.setAllowBannerDemand(false);
+        bannerPostData = getRequestParametersPostData();
+        assertTrue(bannerPostData.contains("\"allowed_media_types\":[]"));
+
+
+        bannerAdView.setAllowVideoDemand(true);
+        assertEquals(true,bannerAdView.getAllowVideoDemand());
+        bannerPostData = getRequestParametersPostData();
+        assertTrue(bannerPostData.contains("\"allowed_media_types\":[4]"));
+
+        bannerAdView.setAllowVideoDemand(false);
+        bannerAdView.setAllowNativeDemand(true);
+        assertEquals(true,bannerAdView.getAllowNativeDemand());
+        bannerPostData = getRequestParametersPostData();
+        assertTrue(bannerPostData.contains("\"allowed_media_types\":[12]"));
+
+        bannerAdView.setAllowBannerDemand(true);
+        assertEquals(false,bannerAdView.getAllowVideoDemand());
+        bannerPostData = getRequestParametersPostData();
+        assertTrue(bannerPostData.contains("\"allowed_media_types\":[1,12]"));
+
+
+
     }
 
 

@@ -70,6 +70,7 @@
 	<string formatted="false" name="get_should_resume">getShouldReloadOnResume() returned %b</string>
 	<string formatted="false" name="set_should_resume">setShouldReloadOnResume() to %b</string>
 	<string formatted="false" name="set_allow_video">setAllowVideo() to %b</string>
+	<string formatted="false" name="set_allow_banner">setAllowBanner() to %b</string>
 	<string formatted="false" name="set_allow_native">setAllowNative() to %b</string>
 	<string formatted="false" name="set_count_on_ad_load">setCountImpressionOnAdLoad() to %b</string>
 	<string formatted="false" name="webview_loading">WebView loading body: %s</string>
