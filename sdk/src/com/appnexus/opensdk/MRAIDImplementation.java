@@ -103,8 +103,17 @@ class MRAIDImplementation {
             view.injectJavaScript("javascript:window.mraid.util.readyEvent();");
 
             // Store width and height for close()
-            default_width = owner.getLayoutParams().width;
-            default_height = owner.getLayoutParams().height;
+            owner.adView.post(new Runnable() {
+                @Override
+                public void run() {
+                    ViewGroup.LayoutParams layoutParams = owner.adView.getLayoutParams();
+                    if (layoutParams != null) {
+                        default_width = layoutParams.width;
+                        default_height = layoutParams.height;
+                    }
+                }
+            });
+
             if (owner.adView.getMediaType().equals(MediaType.BANNER)) {
                 default_gravity = ((FrameLayout.LayoutParams) owner.getLayoutParams()).gravity;
             }
