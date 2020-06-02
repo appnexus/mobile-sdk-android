@@ -141,7 +141,7 @@ public class MediatedSSMAdViewController {
 
     void startTimeout() {
         if (hasSucceeded || hasFailed) return;
-        timeoutHandler.sendEmptyMessageDelayed(0, Settings.MEDIATED_NETWORK_TIMEOUT);
+        timeoutHandler.sendEmptyMessageDelayed(0, ssmHtmlAdResponse.getNetworkTimeout());
     }
 
     void cancelTimeout() {

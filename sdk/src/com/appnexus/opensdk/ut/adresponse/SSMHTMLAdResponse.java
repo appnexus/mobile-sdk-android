@@ -20,11 +20,13 @@ import com.appnexus.opensdk.ANAdResponseInfo;
 
 import java.util.ArrayList;
 
+import com.appnexus.opensdk.utils.Settings;
+
 
 public class SSMHTMLAdResponse extends BaseAdResponse {
     private String adUrl;
-    private int ssmTimeout;
     private String responseURL;
+    private long networkTimeout;
 
     public SSMHTMLAdResponse(int width, int height, String adType, String responseURL, ArrayList<String> impressionURLs, ANAdResponseInfo adResponseInfo) {
         super(width, height, adType, impressionURLs, adResponseInfo);
@@ -39,14 +41,15 @@ public class SSMHTMLAdResponse extends BaseAdResponse {
         this.adUrl = adUrl;
     }
 
-    public String getResponseURL() {return responseURL;}
-
-    public int getSsmTimeout() {
-        return ssmTimeout;
+    public String getResponseURL() {
+        return responseURL;
     }
 
-    public void setSsmTimeout(int ssmTimeout) {
-        this.ssmTimeout = ssmTimeout;
+    public void setNetworkTimeout(int networkTimeout) {
+        this.networkTimeout = networkTimeout;
     }
 
+    public long getNetworkTimeout() {
+        return networkTimeout;
+    }
 }

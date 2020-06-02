@@ -32,6 +32,7 @@ import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.SSMHTMLAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.JsonUtil;
+import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 
 import org.json.JSONArray;
@@ -395,6 +396,9 @@ public class UTAdResponse {
                             int width = JsonUtil.getJSONInt(handlerElement, RESPONSE_KEY_WIDTH);
                             String adId = JsonUtil.getJSONString(handlerElement, RESPONSE_KEY_ID);
                             String secondPrice = JsonUtil.getJSONString(handlerElement, RESPONSE_KEY_SECOND_PRICE);
+                            int networkTimeout = JsonUtil.getJSONInt(csm, RESPONSE_KEY_TIMEOUT);
+                            int csmTimeout = (networkTimeout > 0 &&  networkTimeout != 500) ? networkTimeout : (int) Settings.MEDIATED_NETWORK_TIMEOUT;
+
 
                             if (param.contains("\"optimized\":true") && !StringUtil.isEmpty(secondPrice)) {
                                 try {
@@ -412,6 +416,7 @@ public class UTAdResponse {
                                 csmAd.setClassName(className);
                                 csmAd.setId(adId);
                                 csmAd.setParam(param);
+                                csmAd.setNetworkTimeout(csmTimeout);
                                 csmAd.setContentSource(UTConstants.CSM);
                                 adList.add(csmAd);
                             }
@@ -444,7 +449,9 @@ public class UTAdResponse {
         if (ssm != null) {
             JSONArray handler = JsonUtil.getJSONArray(ssm, RESPONSE_KEY_HANDLER);
             JSONObject banner = JsonUtil.getJSONObject(ssm, UTConstants.AD_TYPE_BANNER);
-            int ssmTimeout = JsonUtil.getJSONInt(ssm, RESPONSE_KEY_TIMEOUT);
+            int networkTimeout = JsonUtil.getJSONInt(ssm, RESPONSE_KEY_TIMEOUT);
+            int ssmTimeout = (networkTimeout > 0 &&  networkTimeout != 500) ? networkTimeout : (int) Settings.MEDIATED_NETWORK_TIMEOUT;
+
             int height = JsonUtil.getJSONInt(banner, RESPONSE_KEY_HEIGHT);
             int width = JsonUtil.getJSONInt(banner, RESPONSE_KEY_WIDTH);
 
@@ -458,7 +465,7 @@ public class UTAdResponse {
                             String responseUrl = JsonUtil.getJSONString(ssm, RESPONSE_KEY_RESPONSE_URL);
                             SSMHTMLAdResponse ssmAd = new SSMHTMLAdResponse(width, height, adType, responseUrl, getImpressionUrls(ssm), adResponseInfo);
                             ssmAd.setAdUrl(handlerUrl);
-                            ssmAd.setSsmTimeout(ssmTimeout);
+                            ssmAd.setNetworkTimeout(ssmTimeout);
                             ssmAd.setContentSource(UTConstants.SSM);
                             ssmAd.addToExtras(UTConstants.EXTRAS_KEY_ORIENTATION, orientation);
                             adList.add(ssmAd);
