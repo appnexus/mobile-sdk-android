@@ -513,9 +513,11 @@ class AdWebView extends WebView implements Displayable,
                                        SslErrorHandler handler, SslError error) {
             handler.cancel();
             AdWebView.this.fail();
-            Clog.w(Clog.httpRespLogTag,
-                    Clog.getString(R.string.webclient_error,
-                            error.getPrimaryError(), error.toString()));
+            try {
+                Clog.w(Clog.httpRespLogTag,
+                        Clog.getString(R.string.webclient_error,
+                                error.getPrimaryError(), error.toString()));
+            } catch (NullPointerException e) { }
         }
     }
 

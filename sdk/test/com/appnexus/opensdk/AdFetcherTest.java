@@ -30,20 +30,23 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNotSame;
+import static junit.framework.Assert.assertTrue;
 
 @Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class})
 @RunWith(RobolectricTestRunner.class)
 public class AdFetcherTest extends BaseRoboTest {
     private AdFetcher adFetcher;
+    MockAdOwner owner;
 
     @Override
     public void setup() {
         super.setup();
         // Since ad type is not a key factor that affects ad fetcher
         // Using BannerAdView as the owner ad of AdFetcher here
-        MockAdOwner owner = new MockAdOwner(activity);
+        owner = new MockAdOwner(activity);
         owner.setPlacementID("0");
         owner.setAdSize(320, 50);
         adFetcher = new AdFetcher(owner);
@@ -130,6 +133,108 @@ public class AdFetcherTest extends BaseRoboTest {
     }
 
     @Test
+    public void testStartWithRefreshOnWithLazyLoad() {
+        assertTrue(owner.enableLazyLoad());
+        // default state was stopped
+
+        adFetcher = owner.mAdFetcher;
+
+        adFetcher.setPeriod(15000);
+        adFetcher.start();
+        Lock.pause(1000); // added this so jenkins can have enough time to process
+        // assert 3 here because a AAID async task
+        assertExpectedBGTasksAfterOneAdRequest(2);
+
+        assertEquals(AdFetcher.STATE.AUTO_REFRESH, adFetcher.getState());
+
+        // reset background scheduler, clear tasks for the refresh
+        Lock.pause(15000 + 1000); // We wait for till autorefresh is triggered
+
+        assertNotNull(owner.getAdResponseInfo());
+
+        // in the following method, wait until next ad request is enqueued
+        assertExpectedBGTasksAfterOneAdRequest(2);
+        assertEquals(AdFetcher.STATE.AUTO_REFRESH, adFetcher.getState());
+
+        Lock.pause(5000);
+
+
+        assertTrue(owner.loadLazyAd());
+
+        // reset background scheduler, clear tasks for the refresh
+        Lock.pause(10000 + 1000); // We wait for till autorefresh is triggered
+
+        // in the following method, wait until next ad request is enqueued
+        assertExpectedBGTasksAfterOneAdRequest(3);
+        assertEquals(AdFetcher.STATE.AUTO_REFRESH, adFetcher.getState());
+    }
+
+    @Test
+    public void testStartWithRefreshOnWithLazyLoadAndReload() {
+        assertTrue(owner.enableLazyLoad());
+        // default state was stopped
+
+        adFetcher = owner.mAdFetcher;
+
+        adFetcher.setPeriod(15000);
+        adFetcher.start();
+        Lock.pause(1000); // added this so jenkins can have enough time to process
+        // assert 3 here because a AAID async task
+        assertExpectedBGTasksAfterOneAdRequest(2);
+
+        assertEquals(AdFetcher.STATE.AUTO_REFRESH, adFetcher.getState());
+
+        // reset background scheduler, clear tasks for the refresh
+        Lock.pause(15000 + 1000); // We wait for till autorefresh is triggered
+
+        assertNotNull(owner.getAdResponseInfo());
+
+        // in the following method, wait until next ad request is enqueued
+        assertExpectedBGTasksAfterOneAdRequest(2);
+        assertEquals(AdFetcher.STATE.AUTO_REFRESH, adFetcher.getState());
+
+        Lock.pause(5000);
+
+
+        assertTrue(owner.loadLazyAd());
+
+        // reset background scheduler, clear tasks for the refresh
+        Lock.pause(10000 + 1000); // We wait for till autorefresh is triggered
+
+        // in the following method, wait until next ad request is enqueued
+        assertExpectedBGTasksAfterOneAdRequest(3);
+        assertEquals(AdFetcher.STATE.AUTO_REFRESH, adFetcher.getState());
+
+        owner.loadAd();
+        Lock.pause(1000); // added this so jenkins can have enough time to process
+        // assert 3 here because a AAID async task
+        assertExpectedBGTasksAfterOneAdRequest(4);
+
+        assertEquals(AdFetcher.STATE.AUTO_REFRESH, adFetcher.getState());
+
+        // reset background scheduler, clear tasks for the refresh
+        Lock.pause(15000 + 1000); // We wait for till autorefresh is triggered
+
+        assertNotNull(owner.getAdResponseInfo());
+
+        // in the following method, wait until next ad request is enqueued
+        assertExpectedBGTasksAfterOneAdRequest(4);
+        assertEquals(AdFetcher.STATE.AUTO_REFRESH, adFetcher.getState());
+
+        Lock.pause(5000);
+
+
+        assertTrue(owner.loadLazyAd());
+
+        // reset background scheduler, clear tasks for the refresh
+        Lock.pause(10000 + 1000); // We wait for till autorefresh is triggered
+
+        // in the following method, wait until next ad request is enqueued
+        assertExpectedBGTasksAfterOneAdRequest(5);
+        assertEquals(AdFetcher.STATE.AUTO_REFRESH, adFetcher.getState());
+    }
+
+    @Test
     public void testStop() {
         if (adFetcher != null) {
             // not needed, but in case AdRequest is run
@@ -187,5 +292,11 @@ public class AdFetcherTest extends BaseRoboTest {
             return true;
         }
 
+        @Override
+        public ANAdResponseInfo getAdResponseInfo() {
+            ANAdResponseInfo info = new ANAdResponseInfo();
+            info.setAdType(AdType.BANNER);
+            return info;
+        }
     }
 }

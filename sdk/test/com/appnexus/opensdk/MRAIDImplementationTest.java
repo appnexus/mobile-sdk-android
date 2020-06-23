@@ -390,6 +390,11 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
         }
 
         @Override
+        public void onLazyAdLoaded(ANAdResponseInfo adResponseInfo) {
+
+        }
+
+        @Override
         public void onAdClicked(String clickUrl) {
             adClickedWithUrl = true;
         }

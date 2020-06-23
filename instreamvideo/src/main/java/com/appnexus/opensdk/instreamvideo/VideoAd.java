@@ -815,6 +815,7 @@ public class VideoAd implements Ad, MultiAd {
         if (videoAdView != null) {
             videoAdView.clearSelf();
         }
+        adResponseInfo = null;
     }
 
     @Override

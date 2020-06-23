@@ -29,16 +29,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
-
-import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import static android.os.Looper.getMainLooper;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.robolectric.Shadows.shadowOf;
 
 @Config(sdk = 21,
@@ -74,12 +71,6 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         assertEquals(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
-    }
-
-    private void assertEquals(Executor executor, ThreadPoolExecutor forBackgroundTasks) {
-    }
-
-    private void assertNotSame(Executor executor, ThreadPoolExecutor forBackgroundTasks) {
     }
 
     //MAR Success
@@ -147,6 +138,53 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
         assertCallbacks(false);
         assertBannerAdResponse(false);
         assertInterstitialAdResponse(false);
+    }
+
+    //MAR Success with the AdListener success calls for the AdUnits
+    @Test
+    public void testMARSuccessWithAdListenerLazyLoad() {
+        bannerAdView.enableLazyLoad();
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        assertFalse(marCompleted);
+        executeMARRequest();
+        assertTrue(marCompleted);
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertTrue(adLazyLoaded);
+        assertInterstitialAdResponse(true);
+        assertBannerAdResponse(false);
+        bannerAdView.loadLazyAd();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertBannerAdResponse(true);
+    }
+
+    //MAR Success with the AdListener success calls for the AdUnits
+    @Test
+    public void testMARSuccessWithAdListenerLazyLoadBeforeAndAfterInititializingMARRequest() {
+        bannerAdView.enableLazyLoad();
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        assertFalse(marCompleted);
+        assertFalse(bannerAdView.loadLazyAd());
+        executeMARRequest();
+        assertTrue(marCompleted);
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertTrue(adLazyLoaded);
+        assertInterstitialAdResponse(true);
+        assertBannerAdResponse(false);
+        assertTrue(bannerAdView.loadLazyAd());
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertBannerAdResponse(true);
     }
 
     //MAR Success with Success Reload

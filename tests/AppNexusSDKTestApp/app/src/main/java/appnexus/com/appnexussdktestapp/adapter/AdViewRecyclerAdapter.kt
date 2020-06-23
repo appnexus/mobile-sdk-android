@@ -12,6 +12,7 @@ import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import appnexus.com.appnexussdktestapp.R
 import com.appnexus.opensdk.AdView
+import com.appnexus.opensdk.BannerAdView
 import com.appnexus.opensdk.InterstitialAdView
 import com.appnexus.opensdk.NativeAdResponse
 import com.appnexus.opensdk.instreamvideo.Quartile
@@ -22,11 +23,14 @@ import com.appnexus.opensdk.utils.ViewUtil
 import kotlinx.android.synthetic.main.layout_ad_view.view.*
 import java.util.*
 
-class AdViewRecyclerAdapter(val items: ArrayList<Any?>, val context: Context) : RecyclerView.Adapter<AdViewRecyclerAdapter.ViewHolder>() {
+class AdViewRecyclerAdapter(val items: ArrayList<Any?>, val context: Context) :
+    RecyclerView.Adapter<AdViewRecyclerAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(LayoutInflater.from(context).inflate(
-            R.layout.layout_ad_view, parent, false
-        ))
+        return ViewHolder(
+            LayoutInflater.from(context).inflate(
+                R.layout.layout_ad_view, parent, false
+            )
+        )
     }
 
     override fun getItemCount(): Int {
@@ -43,21 +47,53 @@ class AdViewRecyclerAdapter(val items: ArrayList<Any?>, val context: Context) : 
                     currentAd.show()
                 })
             } else {
-                ViewUtil.removeChildFromParent(currentAd)
-                holder.layoutMain.addView(currentAd)
-                currentAd.post({
-                    Clog.e("WIDTH","${currentAd.width}")
-                    Clog.e("HEIGHT","${currentAd.height}")
-                    currentAd.invalidate()
-                    currentAd.visibility = View.VISIBLE
-                })
+
+                if (currentAd is BannerAdView) {
+                    if (currentAd.isLazyLoadEnabled && currentAd.getTag(
+                            R.string.button_tag
+                        ) == null
+                    ) {
+                        val btn = Button(context)
+                        btn.setText("Activate")
+                        btn.setOnClickListener {
+                            Clog.e("LAZYLOAD", "Webview Activated")
+                            currentAd.loadLazyAd()
+                            currentAd.setTag(R.string.button_tag, btn)
+                        }
+                        currentAd.setTag(R.string.button_tag, true)
+                        holder.layoutMain.addView(btn)
+                    } else {
+                        if (currentAd.getTag(R.string.button_tag) is Button && currentAd.isLazyLoadEnabled) {
+                            ViewUtil.removeChildFromParent(currentAd.getTag(R.string.button_tag) as Button)
+                            ViewUtil.removeChildFromParent(currentAd)
+                            holder.layoutMain.addView(currentAd)
+                            Clog.e("LAZYLOAD", "Banner Added to the parent view")
+                            currentAd.post({
+                                Clog.e("WIDTH", "${currentAd.width}")
+                                Clog.e("HEIGHT", "${currentAd.height}")
+                                currentAd.invalidate()
+                                currentAd.visibility = View.VISIBLE
+                            })
+                        } else {
+                            ViewUtil.removeChildFromParent(currentAd)
+                            holder.layoutMain.addView(currentAd)
+                            Clog.e("LAZYLOAD", "Banner Added to the parent view")
+                            currentAd.post({
+                                Clog.e("WIDTH", "${currentAd.width}")
+                                Clog.e("HEIGHT", "${currentAd.height}")
+                                currentAd.invalidate()
+                                currentAd.visibility = View.VISIBLE
+                            })
+                        }
+                    }
+                }
             }
-        }  else if (currentAd is VideoAd) {
+        } else if (currentAd is VideoAd) {
             handleVideoAd(currentAd, holder.layoutMain)
         }
     }
 
-    class ViewHolder (view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         // Holds the TextView that will add each animal to
         val layoutMain = view.layoutMain
     }
@@ -65,7 +101,8 @@ class AdViewRecyclerAdapter(val items: ArrayList<Any?>, val context: Context) : 
     private fun handleVideoAd(videoAd: VideoAd, layoutVideo: LinearLayout) {
         // Load and display a Video
         // Video Ad elements
-        val instreamVideoLayout = LayoutInflater.from(context).inflate(R.layout.fragment_preview_instream, null)
+        val instreamVideoLayout =
+            LayoutInflater.from(context).inflate(R.layout.fragment_preview_instream, null)
         val playButon = instreamVideoLayout.findViewById(R.id.play_button) as ImageButton
         playButon.visibility = View.VISIBLE
         val videoPlayer = instreamVideoLayout.findViewById(R.id.video_player) as VideoView
@@ -166,7 +203,8 @@ class AdViewRecyclerAdapter(val items: ArrayList<Any?>, val context: Context) : 
         var adStarRating: TextView
         var socialContext: TextView
         var sponsoredBy: TextView
-        var customView = null // Any Mediated network requiring to render there own view for impression tracking would go in here.
+        var customView =
+            null // Any Mediated network requiring to render there own view for impression tracking would go in here.
         var views: LinkedList<View>? = null
 
         val allViews: LinkedList<View>

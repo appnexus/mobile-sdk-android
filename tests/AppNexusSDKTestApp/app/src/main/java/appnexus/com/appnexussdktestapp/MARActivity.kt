@@ -114,6 +114,9 @@ class MARActivity : Activity() {
                 toast()
             }
 
+            override fun onLazyAdLoaded(adView: AdView?) {
+            }
+
             override fun onAdLoaded(av: AdView) {
                 if (av is InterstitialAdView) {
                     msg += "Interstitial Ad Loaded\n"
@@ -329,6 +332,9 @@ class MARActivity : Activity() {
                     msg += "Banner Ad Failed: $errorCode\n"
                     toast()
                 }
+            }
+
+            override fun onLazyAdLoaded(adView: AdView?) {
             }
 
             override fun onAdLoaded(av: AdView) {

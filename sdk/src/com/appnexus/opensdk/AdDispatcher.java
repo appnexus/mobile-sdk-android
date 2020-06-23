@@ -48,4 +48,10 @@ interface AdDispatcher extends BaseAdDispatcher{
      * Used only by Banner Video
      */
     public void toggleAutoRefresh();
+
+    /**
+     * Called when an ad is ready to be used, but isn't loaded into the webview.
+     * @param adResponseInfo
+     */
+    public void onLazyAdLoaded(ANAdResponseInfo adResponseInfo);
 }

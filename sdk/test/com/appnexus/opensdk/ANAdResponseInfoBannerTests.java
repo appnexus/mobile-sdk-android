@@ -16,12 +16,16 @@
 
 package com.appnexus.opensdk;
 
+import android.webkit.WebView;
+
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowCustomWebView;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.ut.UTConstants;
 import com.squareup.okhttp.mockwebserver.MockResponse;
+
+import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,6 +67,65 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
         assertEquals(bannerAdView.getAdResponseInfo().getCreativeId(), "6332753");
         assertEquals(bannerAdView.getAdResponseInfo().getTagId(), "123456");
         assertEquals(bannerAdView.getAdResponseInfo().getBuyMemberId(), 123);
+        assertEquals(bannerAdView.getAdResponseInfo().getContentSource(), UTConstants.RTB);
+        assertEquals(bannerAdView.getAdResponseInfo().getNetworkName(), "");
+    }
+
+    @Test
+    public void testAdResponseInfoLazyLoadBanner() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        assertNull(bannerAdView.getAdResponseInfo());
+        assertTrue(bannerAdView.enableLazyLoad());
+        executeBannerRequest();
+        assertLazyLoadCallbackInProgress();
+        assertNotNull(bannerAdView.getAdResponseInfo());
+        assertEquals(bannerAdView.getAdResponseInfo().getAdType(), AdType.BANNER);
+        assertEquals(bannerAdView.getAdResponseInfo().getCreativeId(), "6332753");
+        assertEquals(bannerAdView.getAdResponseInfo().getTagId(), "123456");
+        assertEquals(bannerAdView.getAdResponseInfo().getBuyMemberId(), 123);
+        assertEquals(bannerAdView.getAdResponseInfo().getContentSource(), UTConstants.RTB);
+        assertEquals(bannerAdView.getAdResponseInfo().getNetworkName(), "");
+    }
+
+    // This proves that the second loadAd() behaves as a Lazy load even after the Lazy Ad has already been loaded once (after calling loadLazyAd())
+    @Test
+    public void testAdResponseInfoForLazyBannerAdLoadedSuccessAndLoadAgainWithAnotherResponse() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+        bannerAdView.enableLazyLoad();
+        executeBannerRequest();
+        Assert.assertFalse(bannerAdView.getChildAt(0) instanceof WebView);
+        assertLazyLoadCallbackInProgress();
+        bannerAdView.loadLazyAd();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertLazyLoadCallbackSuccess();
+        assertTrue(bannerAdView.getChildAt(0) instanceof WebView);
+        assertNotNull(bannerAdView.getAdResponseInfo());
+        assertEquals(bannerAdView.getAdResponseInfo().getAdType(), AdType.BANNER);
+        assertEquals(bannerAdView.getAdResponseInfo().getCreativeId(), "6332753");
+        assertEquals(bannerAdView.getAdResponseInfo().getTagId(), "123456");
+        assertEquals(bannerAdView.getAdResponseInfo().getBuyMemberId(), 123);
+        assertEquals(bannerAdView.getAdResponseInfo().getContentSource(), UTConstants.RTB);
+        assertEquals(bannerAdView.getAdResponseInfo().getNetworkName(), "");
+        adLoaded = false;
+        adLazyLoaded = false;
+        adFailed = false;
+        restartServer();
+        // mocking different banner response
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner_()));
+        executeBannerRequest();
+        Assert.assertFalse(bannerAdView.getChildAt(0) instanceof WebView);
+        assertLazyLoadCallbackInProgress();
+        bannerAdView.loadLazyAd();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertLazyLoadCallbackSuccess();
+        assertTrue(bannerAdView.getChildAt(0) instanceof WebView);
+        assertNotNull(bannerAdView.getAdResponseInfo());
+        assertEquals(bannerAdView.getAdResponseInfo().getAdType(), AdType.BANNER);
+        assertEquals(bannerAdView.getAdResponseInfo().getCreativeId(), "1234567");
+        assertEquals(bannerAdView.getAdResponseInfo().getTagId(), "987654");
+        assertEquals(bannerAdView.getAdResponseInfo().getBuyMemberId(), 456);
         assertEquals(bannerAdView.getAdResponseInfo().getContentSource(), UTConstants.RTB);
         assertEquals(bannerAdView.getAdResponseInfo().getNetworkName(), "");
     }
@@ -122,6 +185,22 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.NO_BID));
         assertNull(bannerAdView.getAdResponseInfo());
         executeBannerRequest();
+        assertNotNull(bannerAdView.getAdResponseInfo());
+        assertEquals(bannerAdView.getAdResponseInfo().getAdType(), null);
+        assertEquals(bannerAdView.getAdResponseInfo().getCreativeId(), "");
+        assertEquals(bannerAdView.getAdResponseInfo().getTagId(), "123456789");
+        assertEquals(bannerAdView.getAdResponseInfo().getBuyMemberId(), 0);
+        assertEquals(bannerAdView.getAdResponseInfo().getContentSource(), "");
+        assertEquals(bannerAdView.getAdResponseInfo().getNetworkName(), "");
+    }
+
+    @Test
+    public void testAdResponseInfoRTBBannerNoBidLazyLoad() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.NO_BID));
+        assertNull(bannerAdView.getAdResponseInfo());
+        bannerAdView.enableLazyLoad();
+        executeBannerRequest();
+        assertCallbacks(false);
         assertNotNull(bannerAdView.getAdResponseInfo());
         assertEquals(bannerAdView.getAdResponseInfo().getAdType(), null);
         assertEquals(bannerAdView.getAdResponseInfo().getCreativeId(), "");

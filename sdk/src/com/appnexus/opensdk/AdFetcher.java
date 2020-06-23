@@ -206,6 +206,18 @@ public class AdFetcher {
                         Clog.getString(
                                 R.string.new_ad_since,
                                 Math.max(0, (int) (System.currentTimeMillis() - fetcher.lastFetchTime))));
+                // Condition to restrict the Auto Refresh for the Lazy Loaded Ad.
+                if (fetcher.owner != null && fetcher.owner instanceof BannerAdView && ((BannerAdView)fetcher.owner).isLazyWebviewInactive() && ((BannerAdView)fetcher.owner).isLastResponseSuccessful()) {
+                    Clog.w(Clog.lazyLoadLogTag, "Not Fetching due to Lazy Load");
+                    return;
+                }
+            }
+            // Checks if the lazy load is enabled and de activates the Webview (activateWebview - boolean in the AdView), so that the AutoRefresh for Lazy Load can work.
+            // Doing this will deActivate the Webview, which will be required to be activated by calling the loadLazyAd() later.
+            // The deActivated webview means the AutoRefresh needs to pause.
+            if (fetcher.owner != null && fetcher.owner instanceof BannerAdView && ((BannerAdView)fetcher.owner).isLazyLoadEnabled()) {
+                Clog.e(Clog.lazyLoadLogTag, "Lazy Load Fetching");
+                ((AdView)fetcher.owner).deactivateWebviewForNextCall();
             }
             fetcher.lastFetchTime = System.currentTimeMillis();
 
@@ -231,5 +243,11 @@ public class AdFetcher {
 
     STATE getState() {
         return this.state;
+    }
+
+    protected void loadLazyAd() {
+        if (requestManager != null && requestManager instanceof AdViewRequestManager) {
+            ((AdViewRequestManager)requestManager).loadLazyAd();
+        }
     }
 }

@@ -1302,4 +1302,31 @@ public class BannerAdView extends AdView {
         return countBannerImpressionOnAdLoad;
     }
 
+    /**
+     * To enable the Lazy Loading for this instance of Banner
+     *
+     * @return*/
+    public boolean enableLazyLoad() {
+        return super.enableLazyLoad();
+    }
+
+    /**
+     * Check whether the Lazy Load is Enabled for this instance of Banner
+     * */
+    public boolean isLazyLoadEnabled() {
+        return super.isLazyLoadEnabled();
+    }
+
+    protected boolean isLazyWebviewInactive() {
+        return super.isLazyWebviewInactive();
+    }
+
+    /**
+     * To load the lazy loaded creative's content in the webview (applicable only if the Lazy Load is enabled)
+     * @return boolean Whether the loadLazyAd was triggered or not.
+     * */
+    public boolean loadLazyAd() {
+        return super.loadLazyAd();
+    }
+
 }
