@@ -32,6 +32,7 @@
     var CALL_RECORDEVENT = "RecordEvent";
     var CALL_DISPATCHAPPEVENT = "DispatchAppEvent";
     var CALL_GETDEVICEID = "GetDeviceID";
+    var CALL_GETCUSTOMKEYWORDS = "GetCustomKeywords";
     var CALL_SETMRAIDREFRESHFREQUENCY = "SetMRAIDRefreshFrequency";
     var CALL_READY = "ready";
     var CALL_RESULT = "result";
@@ -130,6 +131,8 @@
                 sdkjs.callDispatchAppEvent(queryParameters);
             } else if (path === CALL_GETDEVICEID) {
                 sdkjs.callGetDeviceID(queryParameters);
+            } else if (path === CALL_GETCUSTOMKEYWORDS) {
+                sdkjs.callGetCustomKeywords(queryParameters);
             } else if (path === CALL_MRAID) {
                 sdkjs.callMraid(queryParameters);
             } else if (path === CALL_SETMRAIDREFRESHFREQUENCY) {
@@ -255,6 +258,12 @@
         var cb = queryParameters.cb;
 
         sdkjs.makeNativeCall("GetDeviceID?cb=" + cb);
+    }
+ 
+    sdkjs.callGetCustomKeywords = function (queryParameters) {
+        var cb = queryParameters.cb;
+
+        sdkjs.makeNativeCall("GetCustomKeywords?cb=" + cb);
     }
 
     sdkjs.callSetMraidRefreshFrequency = function (queryParameters) {
