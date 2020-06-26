@@ -750,6 +750,7 @@ class AdWebView extends WebView implements Displayable,
             NativeAdSDK.unRegisterTracking(this);
         } else {
             omidAdSession.stopAdSession();
+            implementation.destroy();
         }
         // in case `this` was not removed when destroy was called
         ViewUtil.removeChildFromParent(this);

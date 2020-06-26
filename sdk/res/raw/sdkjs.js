@@ -311,6 +311,8 @@
         "exposureChange");
     sdkjs.mraidSizeChangeEventHandler = new sdkjs.mraidEventHandler(
         "sizeChange");
+    sdkjs.mraidAudioVolumeChangeEventHandler = new sdkjs.mraidEventHandler(
+          "audioVolumeChange");
 
     if ((typeof mraid) !== "undefined") {
         // add mraid event listeners to pass to anjam
@@ -324,6 +326,8 @@
             sdkjs.mraidExposureChangeEventHandler.call);
         mraid.addEventListener("sizeChange", sdkjs.mraidSizeChangeEventHandler
             .call);
+        mraid.addEventListener("audioVolumeChange",
+            sdkjs.mraidAudioVolumeChangeEventHandler.call);
     }
 
     sdkjs.mraidUpdateProperty = function (propertyName, value) {
