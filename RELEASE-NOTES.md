@@ -1,6 +1,6 @@
 ## 7.4
 ### New Feature
-+ MS-4214 Added support for loading the Ad lazily (Lazy Load) [https://wiki.xandr.com/display/sdk/Lazy+Load+for+Android] 
++ MS-4214 Added (optional) support for lazy loading of AdUnits [https://wiki.xandr.com/display/sdk/Lazy+Load+for+Android]
 ### Improvements/Bug Fixes
 + MS-4231 Added support to respect timeout set in Console
 + MS-4284 Implemented support for MRAID 3.0  audioVolumeChange event  
