@@ -33,6 +33,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 21, shadows = {ShadowSettings.class, ShadowLog.class})
@@ -397,6 +398,33 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         JSONObject postDataWithGDPRValueSet = inspectPostData();
         assertEquals(true, postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getBoolean("consent_required"));
         assertEquals("fooBar", postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getString("consent_string"));
+    }
+
+    /**
+     * Test ANGDPRSettings.reset()
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGDPRSettingsReset() throws Exception {
+        executionSteps();
+        JSONObject postDataBeforeGDPRValueSet = inspectPostData();
+        assertFalse(postDataBeforeGDPRValueSet.has("gdpr_consent"));
+
+        SDKSettings.setAAID("1234", true);
+        ANGDPRSettings.setConsentRequired(activity, true);
+        ANGDPRSettings.setConsentString(activity, "fooBar");
+        ANGDPRSettings.setPurposeConsents(activity, "1");
+        executionSteps();
+        JSONObject postDataWithGDPRValueSet = inspectPostData();
+        assertEquals(true, postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getBoolean("consent_required"));
+        assertEquals("fooBar", postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getString("consent_string"));
+        assertEquals("1", ANGDPRSettings.getDeviceAccessConsent(activity));
+        ANGDPRSettings.reset(activity);
+        executionSteps();
+        postDataWithGDPRValueSet = inspectPostData();
+        assertEquals(false, postDataWithGDPRValueSet.has("gdpr_consent"));
+        assertNull(ANGDPRSettings.getDeviceAccessConsent(activity));
     }
 
     /*
