@@ -114,7 +114,6 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
         // mocking different banner response
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner_()));
         executeBannerRequest();
-        Assert.assertFalse(bannerAdView.getChildAt(0) instanceof WebView);
         assertLazyLoadCallbackInProgress();
         bannerAdView.loadLazyAd();
         Robolectric.flushBackgroundThreadScheduler();
