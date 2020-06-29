@@ -1,3 +1,14 @@
+## 7.4
+### New Feature
++ MS-4214 Added support for loading the Ad lazily (Lazy Load) [https://wiki.xandr.com/display/sdk/Lazy+Load+for+Android] 
+### Improvements/Bug Fixes
++ MS-4231 Added support to respect timeout set in Console
++ MS-4284 Implemented support for MRAID 3.0  audioVolumeChange event  
++ MS-4290 Added support to get Custom Keywords in the JavaScript layer via ANJAM
++ MS-4337 Added support to disable Banner demand for BannerAdView
++ MS-4381 Fixed MRAID re-sizing issue
++ MS-4404 Fixed GDPR reset method to clear Purpose Consent
+
 ## 7.3.1
 ### Improvements/Bug Fixes
 + MS-4342 Fixed issue with User Agent string not being passed for Native Ad requests 

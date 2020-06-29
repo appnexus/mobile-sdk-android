@@ -105,7 +105,6 @@ public class AdListenerTest extends BaseViewAdTest {
         restartServer();
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
         executeBannerRequest();
-        assertFalse(bannerAdView.getChildAt(0) instanceof WebView);
         assertLazyLoadCallbackInProgress();
         bannerAdView.loadLazyAd();
         Robolectric.flushBackgroundThreadScheduler();
