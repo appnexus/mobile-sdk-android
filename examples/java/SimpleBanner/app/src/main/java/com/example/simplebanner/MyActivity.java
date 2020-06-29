@@ -99,6 +99,11 @@ public class MyActivity extends Activity {
             public void onAdClicked(AdView adView, String clickUrl) {
                 Clog.v("SIMPLEBANNER", "onAdClicked with click URL");
             }
+
+            @Override
+            public void onLazyAdLoaded(AdView adView) {
+
+            }
         };
 
         bav.setAdListener(adListener);

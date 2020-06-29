@@ -21,6 +21,7 @@ import com.appnexus.opensdk.ANAdResponseInfo;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import com.appnexus.opensdk.utils.Settings;
 
 
 public class CSMSDKAdResponse extends BaseAdResponse {
@@ -30,6 +31,7 @@ public class CSMSDKAdResponse extends BaseAdResponse {
     private String param;
     private String responseUrl;
     private JSONObject adObject;
+    private long networkTimeout;
 
     public CSMSDKAdResponse(int width, int height, String adType, String responseUrl, ArrayList<String> impressionURLs , ANAdResponseInfo adResponseInfo, JSONObject adObject) {
         super(width, height, adType, impressionURLs , adResponseInfo);
@@ -70,4 +72,11 @@ public class CSMSDKAdResponse extends BaseAdResponse {
         return adObject;
     }
 
+    public void setNetworkTimeout(int networkTimeout) {
+        this.networkTimeout = networkTimeout;
+    }
+
+    public long getNetworkTimeout() {
+        return networkTimeout;
+    }
 }

@@ -288,7 +288,11 @@ public class AdViewRequestManager extends RequestManager {
                     }
 
                     // Standard ads or Video Ads
-                    initiateWebview(ownerAd, rtbAdResponse);
+                    if (ownerAd instanceof BannerAdView && ((BannerAdView)ownerAd).isLazyWebviewInactive() && UTConstants.AD_TYPE_BANNER.equalsIgnoreCase(rtbAdResponse.getAdType())) {
+                        ((AdDispatcher)ownerAd.getAdDispatcher()).onLazyAdLoaded(currentAd.getAdResponseInfo());
+                    } else {
+                        initiateWebview(ownerAd, rtbAdResponse);
+                    }
                 } else {
                     Clog.e(Clog.baseLogTag, "handleRTBResponse failed:: invalid adType::" + rtbAdResponse.getAdType());
                     continueWaterfall(ResultCode.INTERNAL_ERROR);
@@ -371,6 +375,17 @@ public class AdViewRequestManager extends RequestManager {
 
     public ANMultiAdRequest getMultiAdRequest() {
         return anMultiAdRequest;
+    }
+
+    protected void loadLazyAd() {
+        Ad adOwner = owner.get();
+
+        if (adOwner == null || currentAd == null) {
+            failed(ResultCode.INTERNAL_ERROR, null);
+            return;
+        }
+
+        initiateWebview(adOwner, currentAd);
     }
 
 }

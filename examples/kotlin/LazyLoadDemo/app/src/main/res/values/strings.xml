@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">LazyLoadDemo</string>
+    <string name="content_url_1">http://acdn.adnxs.com/mobile/video_test/content/Scenario.mp4</string>
+    <string name="hello_world">Hello from MARActivity!</string>
+    <string name="button_tag">button_tag</string>
+
+    <string-array name="ad_type_array">
+        <item>Banner</item>
+        <item>Banner-LazyLoad</item>
+        <item>Interstitial</item>
+        <item>Video</item>
+        <item>Native</item>
+    </string-array>
+
+</resources>

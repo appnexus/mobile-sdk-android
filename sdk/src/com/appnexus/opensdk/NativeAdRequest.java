@@ -554,6 +554,11 @@ public class NativeAdRequest implements Ad, MultiAd {
         }
 
         @Override
+        public void onLazyAdLoaded(ANAdResponseInfo adResponseInfo) {
+
+        }
+
+        @Override
         public void onAdClicked(String clickUrl) {
 
         }

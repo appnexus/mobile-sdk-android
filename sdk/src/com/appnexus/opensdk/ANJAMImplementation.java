@@ -29,6 +29,8 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 import com.appnexus.opensdk.utils.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,6 +43,7 @@ class ANJAMImplementation {
     private static final String CALL_DISPATCHAPPEVENT = "DispatchAppEvent";
     private static final String CALL_GETDEVICEID = "GetDeviceID";
     private static final String CALL_SETMRAIDREFRESHFREQUENCY = "SetMRAIDRefreshFrequency";
+    private static final String CALL_GETCUSTOMKEYWORDS = "GetCustomKeywords";
 
     private static final String KEY_CALLER = "caller";
 
@@ -75,6 +78,8 @@ class ANJAMImplementation {
             callGetDeviceID(webView, uri);
         } else if (CALL_SETMRAIDREFRESHFREQUENCY.equals(call)) {
             callSetMraidRefreshFrequency(webView, uri);
+        } else if (CALL_GETCUSTOMKEYWORDS.equals(call)) {
+            callGetcustomkeywords(webView, uri);
         } else {
             Clog.w(Clog.baseLogTag, "ANJAM called with unsupported function: " + call);
         }
@@ -238,6 +243,33 @@ class ANJAMImplementation {
     private static void callSetMraidRefreshFrequency(AdWebView webView, Uri uri) {
         String milliseconds = uri.getQueryParameter("ms");
         webView.setCheckPositionTimeInterval(Integer.parseInt(milliseconds));
+    }
+
+    private static void callGetcustomkeywords(AdWebView webView, Uri uri) {
+        String cb = uri.getQueryParameter("cb");
+        loadResult(webView, cb, getFormattedCustomKeywords(webView.adView.getCustomKeywords()));
+    }
+
+    private static List<Pair<String, String>> getFormattedCustomKeywords(ArrayList<Pair<String, String>> customKeywords) {
+        HashMap<String, String> tempMap = new HashMap<>();
+        ArrayList<Pair<String, String>> formattedCustomKeywords = new ArrayList<>();
+
+        for (Pair<String, String> customKeyValue :
+                customKeywords) {
+            updateIfKeyExists(customKeyValue.first, customKeyValue.second, tempMap);
+        }
+
+        for (String key : tempMap.keySet()) {
+            formattedCustomKeywords.add(new Pair<String, String>(key, tempMap.get(key)));
+        }
+        return formattedCustomKeywords;
+    }
+
+    private static void updateIfKeyExists(String key, String value, HashMap<String, String> tempMap) {
+        if (tempMap.containsKey(key)) {
+            value = tempMap.get(key) + "," + value;
+        }
+        tempMap.put(key, value);
     }
 
     // Send the result back to JS

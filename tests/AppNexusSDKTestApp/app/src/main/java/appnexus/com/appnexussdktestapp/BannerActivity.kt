@@ -49,6 +49,9 @@ class BannerActivity : AppCompatActivity(), AdListener {
             idlingResource.decrement()
     }
 
+    override fun onLazyAdLoaded(adView: AdView?) {
+    }
+
     override fun onAdLoaded(ad: AdView?) {
         Toast.makeText(this, "AdLoaded", Toast.LENGTH_LONG).show()
         if (layout.childCount > 0)

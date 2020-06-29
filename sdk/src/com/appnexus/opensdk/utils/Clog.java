@@ -176,6 +176,7 @@ public class Clog {
     public static final String videoLogTag = Clog.baseLogTag + "-INSTREAMVIDEO";
     public static final String omidLogTag = Clog.baseLogTag + "-OMID";
     public static final String SRMLogTag = Clog.baseLogTag + "-MULTIADREQUEST";
+    public static final String lazyLoadLogTag = Clog.baseLogTag + "-LAZYLOAD";
 
     public static void setErrorContext(Context c) {
         Clog.clog_context = new WeakReference<Context>(c);

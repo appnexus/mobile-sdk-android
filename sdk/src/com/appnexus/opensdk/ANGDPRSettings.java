@@ -86,6 +86,10 @@ public class ANGDPRSettings {
             if (pref.contains(ANGDPR_CONSENT_REQUIRED)) {
                 pref.edit().remove(ANGDPR_CONSENT_REQUIRED).apply();
             }
+
+            if (pref.contains(ANGDPR_PurposeConsents)) {
+                pref.edit().remove(ANGDPR_PurposeConsents).apply();
+            }
         }
     }
 

@@ -513,9 +513,11 @@ class AdWebView extends WebView implements Displayable,
                                        SslErrorHandler handler, SslError error) {
             handler.cancel();
             AdWebView.this.fail();
-            Clog.w(Clog.httpRespLogTag,
-                    Clog.getString(R.string.webclient_error,
-                            error.getPrimaryError(), error.toString()));
+            try {
+                Clog.w(Clog.httpRespLogTag,
+                        Clog.getString(R.string.webclient_error,
+                                error.getPrimaryError(), error.toString()));
+            } catch (NullPointerException e) { }
         }
     }
 
@@ -748,6 +750,7 @@ class AdWebView extends WebView implements Displayable,
             NativeAdSDK.unRegisterTracking(this);
         } else {
             omidAdSession.stopAdSession();
+            implementation.destroy();
         }
         // in case `this` was not removed when destroy was called
         ViewUtil.removeChildFromParent(this);

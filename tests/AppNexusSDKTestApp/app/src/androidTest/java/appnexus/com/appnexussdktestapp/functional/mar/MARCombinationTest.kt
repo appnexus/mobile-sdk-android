@@ -20,12 +20,15 @@ import android.content.Intent
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.IdlingPolicies
 import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import appnexus.com.appnexussdktestapp.MARLoadAndDisplayActivity
 import appnexus.com.appnexussdktestapp.R
+import junit.framework.Assert.assertFalse
+import junit.framework.Assert.assertTrue
 import org.junit.*
 import org.junit.runner.RunWith
 import java.util.concurrent.TimeUnit
@@ -221,6 +224,64 @@ class MARCombinationTest {
         Assert.assertTrue(
             "MultiAdRequest is still in progress, Idling Resource isn't working properly",
             myActivity.multiAdRequestCompleted)
+    }
+
+    @Test
+    fun testMARCombinationRTBBannerWithLazyLoad() {
+        setupRTBBannerWithLazyLoad()
+        val intent = Intent()
+        intent.putExtra(MARLoadAndDisplayActivity.AD_TYPE, arrayListAdType)
+        intent.putExtra(MARLoadAndDisplayActivity.BID_TYPE, arrayListBidType)
+        mActivityTestRule.launchActivity(intent)
+        myActivity = mActivityTestRule.getActivity() as MARLoadAndDisplayActivity
+        IdlingRegistry.getInstance().register(myActivity.idlingResource)
+
+        Espresso.onView(ViewMatchers.withId(R.id.recyclerListAdView))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+
+        Assert.assertTrue(
+            "MultiAdRequest is still in progress, Idling Resource isn't working properly",
+            myActivity.multiAdRequestCompleted)
+
+        assertTrue(myActivity.onLazyAdLoaded)
+        assertFalse(myActivity.onLazyLoadAdLoaded)
+
+
+        Thread.sleep(2000)
+        Espresso.onView(ViewMatchers.withText("Activate")).perform(ViewActions.click())
+        Thread.sleep(8000)
+
+        assertTrue(myActivity.onLazyAdLoaded)
+        assertTrue(myActivity.onLazyLoadAdLoaded)
+    }
+
+    @Test
+    fun testMARCombinationAllRTBWithBannerLazyLoad() {
+        setupAllRTBWithBannerLazyLoad()
+        val intent = Intent()
+        intent.putExtra(MARLoadAndDisplayActivity.AD_TYPE, arrayListAdType)
+        intent.putExtra(MARLoadAndDisplayActivity.BID_TYPE, arrayListBidType)
+        mActivityTestRule.launchActivity(intent)
+        myActivity = mActivityTestRule.getActivity() as MARLoadAndDisplayActivity
+        IdlingRegistry.getInstance().register(myActivity.idlingResource)
+
+        Espresso.onView(ViewMatchers.withId(R.id.recyclerListAdView))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+
+        Assert.assertTrue(
+            "MultiAdRequest is still in progress, Idling Resource isn't working properly",
+            myActivity.multiAdRequestCompleted)
+
+        assertTrue(myActivity.onLazyAdLoaded)
+        assertFalse(myActivity.onLazyLoadAdLoaded)
+
+
+        Thread.sleep(2000)
+        Espresso.onView(ViewMatchers.withText("Activate")).perform(ViewActions.click())
+        Thread.sleep(8000)
+
+        assertTrue(myActivity.onLazyAdLoaded)
+        assertTrue(myActivity.onLazyLoadAdLoaded)
     }
 
     @Test
@@ -500,6 +561,11 @@ class MARCombinationTest {
         addRTB()
     }
 
+    private fun setupRTBBannerWithLazyLoad() {
+        addBannerLazyLoad()
+        addRTB()
+    }
+
     private fun setupTwoBannerRTBAndCSM() {
         addBanner()
         addRTB()
@@ -557,6 +623,19 @@ class MARCombinationTest {
         addInterstitial()
         addRTB()
         addNative()
+        addRTB()
+    }
+
+    private fun setupAllRTBWithBannerLazyLoad() {
+        addVideo()
+        addRTB()
+        addBanner()
+        addRTB()
+        addInterstitial()
+        addRTB()
+        addNative()
+        addRTB()
+        addBannerLazyLoad()
         addRTB()
     }
 
@@ -749,6 +828,10 @@ class MARCombinationTest {
 
     private fun addBanner() {
         arrayListAdType.add("Banner")
+    }
+
+    private fun addBannerLazyLoad() {
+        arrayListAdType.add("Banner-LazyLoad")
     }
 
 }

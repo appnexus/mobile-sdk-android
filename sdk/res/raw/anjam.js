@@ -34,6 +34,7 @@
     var CALL_DISPATCHAPPEVENT = "DispatchAppEvent";
     var CALL_GETVERSION = "GetVersion";
     var CALL_GETDEVICEID = "GetDeviceID";
+    var CALL_GETCUSTOMKEYWORDS = "GetCustomKeywords";
     var CALL_SETMRAIDREFRESHFREQUENCY = "SetMRAIDRefreshFrequency";
     var CALL_READY = "ready";
     var CALL_RESULT = "result";
@@ -585,6 +586,18 @@
         anjam.addCallback(callback);
 
         anjam.fireMessage(CALL_GETDEVICEID, [new anjam.pair(
+            "cb", callbacksCounter)]);
+    }
+  
+    // required: callback
+    anjam.GetCustomKeywords = function (callback) {
+        if (typeof callback !== "function") {
+            anjam.anlog("GetCustomKeywords error: callback parameter should be a function");
+            return;
+        }
+        anjam.addCallback(callback);
+
+        anjam.fireMessage(CALL_GETCUSTOMKEYWORDS, [new anjam.pair(
             "cb", callbacksCounter)]);
     }
 

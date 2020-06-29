@@ -28,6 +28,9 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Rect;
+import android.media.AudioManager;
+import android.media.MediaRouter;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -39,17 +42,31 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
-import android.graphics.Rect;
 
-import com.appnexus.opensdk.utils.*;
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Hex;
+import com.appnexus.opensdk.utils.StringUtil;
+import com.appnexus.opensdk.utils.ViewUtil;
+import com.appnexus.opensdk.utils.W3CEvent;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import static android.content.Context.MEDIA_ROUTER_SERVICE;
+import static android.media.MediaRouter.CALLBACK_FLAG_UNFILTERED_EVENTS;
+import static android.media.MediaRouter.ROUTE_TYPE_USER;
+
 @SuppressLint("InlinedApi")
 class MRAIDImplementation {
+    private MediaRouter mediaRouter;
+    private MediaRouter.Callback callback;
+
     protected static enum MRAID_INIT_STATE {
         STARTING_DEFAULT,
         STARTING_EXPANDED
@@ -103,8 +120,17 @@ class MRAIDImplementation {
             view.injectJavaScript("javascript:window.mraid.util.readyEvent();");
 
             // Store width and height for close()
-            default_width = owner.getLayoutParams().width;
-            default_height = owner.getLayoutParams().height;
+            owner.adView.post(new Runnable() {
+                @Override
+                public void run() {
+                    ViewGroup.LayoutParams layoutParams = owner.adView.getLayoutParams();
+                    if (layoutParams != null) {
+                        default_width = layoutParams.width;
+                        default_height = layoutParams.height;
+                    }
+                }
+            });
+
             if (owner.adView.getMediaType().equals(MediaType.BANNER)) {
                 default_gravity = ((FrameLayout.LayoutParams) owner.getLayoutParams()).gravity;
             }
@@ -205,6 +231,11 @@ class MRAIDImplementation {
     void onExposureChange() {
         if (!readyFired) return;
         owner.injectJavaScript(String.format("javascript:window.mraid.util.exposureChangeEvent(%s)", exposureVal));
+    }
+
+    void onAudioVolumeChange(String volumePercentage) {
+        if (!readyFired) return;
+        owner.injectJavaScript(String.format("javascript:window.mraid.util.audioVolumeChangeEvent(%s)", volumePercentage));
     }
 
 
@@ -436,6 +467,10 @@ class MRAIDImplementation {
             }
         } else if (func.equals("setUseCustomClose")) {
             setUseCustomClose(parameters);
+        } else if (func.equals("audioVolumeChange")) {
+            if (mediaRouter == null) {
+                startAudioVolumeListener();
+            }
         } else {
             if (func.equals("enable")) {
                 // suppress error for enable command
@@ -772,6 +807,9 @@ class MRAIDImplementation {
         boolean isCurrentlyViewable = owner.isViewable();
         if (isViewable != isCurrentlyViewable) {
             this.onViewableChange(isCurrentlyViewable);
+            if (mediaRouter != null) {
+                fireAudioVolumeChangeEvent(getAudioVolumePercentage());
+            }
         }
     }
 
@@ -790,6 +828,19 @@ class MRAIDImplementation {
         if (!exposureVal.equals(newExposureVal)) {
             exposureVal = newExposureVal;
             this.onExposureChange();
+        }
+    }
+
+    //Fire AudioVolumeChange event whenever there is change in audio volume of device
+    void fireAudioVolumeChangeEvent(Double volumePercentage) {
+        if (isViewable) {
+            String newAudioVolumeVal = "";
+            if (volumePercentage == null) {
+                newAudioVolumeVal = String.format(Locale.ROOT, "{\"volumePercentage\":null}");
+            } else {
+                newAudioVolumeVal = String.format(Locale.ROOT, "{\"volumePercentage\":%.1f}", volumePercentage);
+            }
+            this.onAudioVolumeChange(newAudioVolumeVal);
         }
     }
 
@@ -815,5 +866,90 @@ class MRAIDImplementation {
 
     void setDefaultContainer(ViewGroup defaultContainer) {
         this.defaultContainer = defaultContainer;
+    }
+
+    //Initialise AudioVolumeContentObserver to get notified whenever audio volume changes take place
+    private void startAudioVolumeListener() {
+        mediaRouter = (MediaRouter) owner.getContext().getSystemService(MEDIA_ROUTER_SERVICE);
+        setupCallback();
+        mediaRouter.addCallback(ROUTE_TYPE_USER, callback, CALLBACK_FLAG_UNFILTERED_EVENTS);
+        fireAudioVolumeChangeEvent(getAudioVolumePercentage());
+    }
+
+    private void setupCallback() {
+        callback = new MediaRouter.Callback() {
+
+            @Override
+            public void onRouteSelected(MediaRouter router, int type, MediaRouter.RouteInfo info) {
+                Clog.d("onRouteSelected", info.getName().toString());
+                // This is called when the MediaRoute is changed from Phone or Headphones to Bluetooth or vice-versa
+                fireAudioVolumeChangeEvent(getAudioVolumePercentage());
+            }
+
+            @Override
+            public void onRouteUnselected(MediaRouter router, int type, MediaRouter.RouteInfo info) {
+                Clog.d("onRouteUnselected", info.getName().toString());
+            }
+
+            @Override
+            public void onRouteAdded(MediaRouter router, MediaRouter.RouteInfo info) {
+                Clog.d("onRouteAdded", info.getName().toString());
+            }
+
+            @Override
+            public void onRouteRemoved(MediaRouter router, MediaRouter.RouteInfo info) {
+                Clog.d("onRouteRemoved", info.getName().toString());
+            }
+
+            @Override
+            public void onRouteChanged(MediaRouter router, MediaRouter.RouteInfo info) {
+                Clog.d("onRouteChanged", info.getName().toString());
+                // This is called when the MediaRoute is changed from Phone to Headphone or vice-versa
+                fireAudioVolumeChangeEvent(getAudioVolumePercentage());
+            }
+
+            @Override
+            public void onRouteGrouped(MediaRouter router, MediaRouter.RouteInfo info, MediaRouter.RouteGroup group, int index) {
+                Clog.d("onRouteUngrouped", info.getName().toString());
+            }
+
+            @Override
+            public void onRouteUngrouped(MediaRouter router, MediaRouter.RouteInfo info, MediaRouter.RouteGroup group) {
+                Clog.d("onRouteUngrouped", info.getName().toString());
+
+            }
+
+            @Override
+            public void onRouteVolumeChanged(MediaRouter router, MediaRouter.RouteInfo info) {
+                Clog.d("onRouteVolumeChanged", router.getDefaultRoute().getCategory().getName().toString());
+                Clog.d("onRouteVolumeChanged", info.getName() + ", " + info.getVolume() + ", " + info.getSupportedTypes());
+                fireAudioVolumeChangeEvent(getAudioVolumePercentage());
+            }
+        };
+
+    }
+
+    //Deallocate AudioVolumeContentObserver when memory cleanup takes place
+    private void stopAudioVolumeListener() {
+        if (mediaRouter != null && callback != null) {
+            mediaRouter.removeCallback(callback);
+            mediaRouter = null;
+            callback = null;
+        }
+    }
+
+    public void destroy() {
+        stopAudioVolumeListener();
+    }
+
+    // Helper method to fetch volume level of device
+    private Double getAudioVolumePercentage() {
+        AudioManager audioManager = (AudioManager)owner.getContext().getSystemService(Context.AUDIO_SERVICE);
+        if(audioManager == null){
+            return null;
+        }
+        int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        return (100.0 * currentVolume) / maxVolume;
     }
 }

@@ -66,16 +66,24 @@ public class TestResponsesUT {
 
     // UT Response - Template String
     public static final String RESPONSE = "{\"version\":\"3.0.0\",\"tags\":[{\"tag_id\":123456,\"auction_id\":\"123456789\",\"nobid\":\"%s\",\"no_ad_url\":\"%s\",\"timeout_ms\":10000,\"ad_profile_id\":98765,%s}]}";
+    public static final String RESPONSE_ = "{\"version\":\"3.0.0\",\"tags\":[{\"tag_id\":987654,\"auction_id\":\"123456789\",\"nobid\":\"%s\",\"no_ad_url\":\"%s\",\"timeout_ms\":10000,\"ad_profile_id\":98765,%s}]}";
 
     public static final String ADS = "\"ads\":[%s]";
 
     // Ad objects
     public static final String RTB_BANNER = "{\"content_source\":\"rtb\",\"ad_type\":\"banner\",\"buyer_member_id\":123,\"creative_id\":6332753,\"media_type_id\":1,\"media_subtype_id\":1,\"client_initiated_ad_counting\":true,\"rtb\":{\"banner\":{\"content\":\"%s\",\"width\":%d,\"height\":%d},\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}]}}";
+    public static final String RTB_BANNER_ = "{\"content_source\":\"rtb\",\"ad_type\":\"banner\",\"buyer_member_id\":456,\"creative_id\":1234567,\"media_type_id\":1,\"media_subtype_id\":1,\"client_initiated_ad_counting\":true,\"rtb\":{\"banner\":{\"content\":\"%s\",\"width\":%d,\"height\":%d},\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}]}}";
     public static final String CSM_BANNER = "{\"content_source\":\"csm\",\"ad_type\":\"banner\",\"buyer_member_id\":123,\"creative_id\":44863345,\"media_type_id\":1,\"media_subtype_id\":1,\"client_initiated_ad_counting\":false,\"csm\":{\"banner\":{\"content\":\"%s\",\"width\":10,\"height\":10},\"timeout_ms\":500,\"handler\":[{\"param\":\"%s\",\"height\":\"%d\",\"width\":\"%d\",\"id\":\"%s\",\"type\":\"%s\",\"class\":\"%s\"},{\"param\":\"#{PARAM}\",\"height\":\"50\",\"width\":\"320\",\"id\":\"163441140754789_163441480754755\",\"type\":\"ios\",\"class\":\"DummyIOSClass\"}],\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}],\"request_url\":\"%s\",\"response_url\":\"%s\"}}";
+    public static final String CSM_BANNER_TIMEOUT_ZERO = "{\"content_source\":\"csm\",\"ad_type\":\"banner\",\"buyer_member_id\":123,\"creative_id\":44863345,\"media_type_id\":1,\"media_subtype_id\":1,\"client_initiated_ad_counting\":false,\"csm\":{\"banner\":{\"content\":\"%s\",\"width\":10,\"height\":10},\"timeout_ms\":0,\"handler\":[{\"param\":\"%s\",\"height\":\"%d\",\"width\":\"%d\",\"id\":\"%s\",\"type\":\"%s\",\"class\":\"%s\"},{\"param\":\"#{PARAM}\",\"height\":\"50\",\"width\":\"320\",\"id\":\"163441140754789_163441480754755\",\"type\":\"ios\",\"class\":\"DummyIOSClass\"}],\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}],\"request_url\":\"%s\",\"response_url\":\"%s\"}}";
+    public static final String CSM_BANNER_TIMEOUT_NON_ZERO = "{\"content_source\":\"csm\",\"ad_type\":\"banner\",\"buyer_member_id\":123,\"creative_id\":44863345,\"media_type_id\":1,\"media_subtype_id\":1,\"client_initiated_ad_counting\":false,\"csm\":{\"banner\":{\"content\":\"%s\",\"width\":10,\"height\":10},\"timeout_ms\":200,\"handler\":[{\"param\":\"%s\",\"height\":\"%d\",\"width\":\"%d\",\"id\":\"%s\",\"type\":\"%s\",\"class\":\"%s\"},{\"param\":\"#{PARAM}\",\"height\":\"50\",\"width\":\"320\",\"id\":\"163441140754789_163441480754755\",\"type\":\"ios\",\"class\":\"DummyIOSClass\"}],\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}],\"request_url\":\"%s\",\"response_url\":\"%s\"}}";
     public static final String SSM_BANNER = "{\"content_source\":\"ssm\",\"ad_type\":\"banner\",\"buyer_member_id\":123,\"creative_id\":44863345,\"media_type_id\":1,\"media_subtype_id\":1,\"client_initiated_ad_counting\":false,\"ssm\":{\"banner\":{\"content\":\"%s\",\"width\":10,\"height\":10},\"timeout_ms\":500,\"handler\":[{\"url\":\"%s\"}],\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}],\"request_url\":\"%s\",\"response_url\":\"%s\"}}";
+    public static final String SSM_BANNER_TIMEOUT_ZERO = "{\"content_source\":\"ssm\",\"ad_type\":\"banner\",\"buyer_member_id\":123,\"creative_id\":44863345,\"media_type_id\":1,\"media_subtype_id\":1,\"client_initiated_ad_counting\":false,\"ssm\":{\"banner\":{\"content\":\"%s\",\"width\":10,\"height\":10},\"timeout_ms\":0,\"handler\":[{\"url\":\"%s\"}],\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}],\"request_url\":\"%s\",\"response_url\":\"%s\"}}";
+    public static final String SSM_BANNER_TIMEOUT_NON_ZERO = "{\"content_source\":\"ssm\",\"ad_type\":\"banner\",\"buyer_member_id\":123,\"creative_id\":44863345,\"media_type_id\":1,\"media_subtype_id\":1,\"client_initiated_ad_counting\":false,\"ssm\":{\"banner\":{\"content\":\"%s\",\"width\":10,\"height\":10},\"timeout_ms\":200,\"handler\":[{\"url\":\"%s\"}],\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}],\"request_url\":\"%s\",\"response_url\":\"%s\"}}";
     public static final String RTB_NATIVE = "{\"content_source\":\"rtb\",\"ad_type\":\"native\",\"buyer_member_id\":958,\"creative_id\":47772560,\"media_type_id\":12,\"media_subtype_id\":65,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"%s\"},\"rtb\":{\"native\":%s}}";
     public static final String RTB_NATIVE_RENDERER = "{\"content_source\":\"rtb\",\"ad_type\":\"native\",\"buyer_member_id\":958,\"creative_id\":47772560,\"media_type_id\":12,\"media_subtype_id\":65,\"renderer_url\": \"http://dcdn.adnxs.com/renderer-content/59929529-1dfd-49c3-a19d-f863befc96d7\", \"renderer_id\": 88, \"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"%s\"},\"rtb\":{\"native\":%s}}";
     public static final String CSM_NATIVE = "{\"content_source\":\"csm\",\"ad_type\":\"native\",\"buyer_member_id\":958,\"creative_id\":44863492,\"media_type_id\":12,\"media_subtype_id\":65,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"%s\"},\"csm\": {\"timeout_ms\":500,\"handler\": [{\"type\": \"android\",\"class\": \"%s\",\"param\": \"%s\",\"id\": \"%s\"},{\"type\": \"ios\",\"class\": \"DummyIOSClass\",\"param\": \"#{PARAM}\",\"id\": \"210827375150_10154672419150151\"}],\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}],\"request_url\": \"%s\",\"response_url\": \"%s\"}}";
+    public static final String CSM_NATIVE_TIMEOUT_ZERO = "{\"content_source\":\"csm\",\"ad_type\":\"native\",\"buyer_member_id\":958,\"creative_id\":44863492,\"media_type_id\":12,\"media_subtype_id\":65,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"%s\"},\"csm\": {\"timeout_ms\":0,\"handler\": [{\"type\": \"android\",\"class\": \"%s\",\"param\": \"%s\",\"id\": \"%s\"},{\"type\": \"ios\",\"class\": \"DummyIOSClass\",\"param\": \"#{PARAM}\",\"id\": \"210827375150_10154672419150151\"}],\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}],\"request_url\": \"%s\",\"response_url\": \"%s\"}}";
+    public static final String CSM_NATIVE_TIMEOUT_NON_ZERO = "{\"content_source\":\"csm\",\"ad_type\":\"native\",\"buyer_member_id\":958,\"creative_id\":44863492,\"media_type_id\":12,\"media_subtype_id\":65,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"%s\"},\"csm\": {\"timeout_ms\":200,\"handler\": [{\"type\": \"android\",\"class\": \"%s\",\"param\": \"%s\",\"id\": \"%s\"},{\"type\": \"ios\",\"class\": \"DummyIOSClass\",\"param\": \"#{PARAM}\",\"id\": \"210827375150_10154672419150151\"}],\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}],\"request_url\": \"%s\",\"response_url\": \"%s\"}}";
     public static final String NO_BID = "{\"version\":\"3.0.0\",\"tags\":[{\"tag_id\":123456789,\"auction_id\":\"3552547938089377051000000\",\"nobid\":true,\"ad_profile_id\":2707239}]}";
     public static final String RTB_VIDEO = "{\"content_source\":\"rtb\",\"ad_type\":\"video\",\"notify_url\":\"%s\",\"buyer_member_id\":123,\"creative_id\":6332753,\"media_type_id\":4,\"media_subtype_id\":64,\"client_initiated_ad_counting\":true,\"rtb\":{\"video\":{\"content\":\"%s\",\"duration_ms\":100}}}";
     public static final String CSR_NATIVE = "{\"version\":\"3.0.0\",\"tags\":[{\"tag_id\":16268678,\"auction_id\":\"4050477843877235823\",\"nobid\":false,\"no_ad_url\":\"https://nym1-mobile.adnxs.com/it\",\"timeout_ms\":0,\"ad_profile_id\":1266762,\"rtb_video_fallback\":false,\"ads\":[{\"content_source\":\"csr\",\"ad_type\":\"native\",\"buyer_member_id\":10094,\"creative_id\":163940558,\"media_type_id\":12,\"media_subtype_id\":65,\"brand_category_id\":17,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"<script></script>\"},\"csr\":{\"timeout_ms\":500,\"handler\":[{\"type\":\"android\",\"class\":\"%s\",\"payload\":\"{\\\"placement_id\\\":\\\"333673923704415_469697383435401\\\"}\",\"id\":\"333673923704415_469697383435401\"},{\"type\":\"ios\",\"class\":\"ANAdAdapterCSRNativeBannerFacebook\",\"payload\":\"test param\",\"id\":\"333673923704415_469697383435401\"}],\"trackers\":[{\"impression_urls\":[\"https://nym1-mobile.adnxs.com/it\"],\"video_events\":{}}],\"request_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_req\",\"response_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_resp\"}}]}]}";
@@ -119,8 +127,20 @@ public class TestResponsesUT {
         return templateBannerRTBAdsResponse(bannerContent, 320, 50, IMPRESSION_URL);
     }
 
+    /**
+     * Returns a RTB HTML Banner UT Response
+     */
+    public static String banner_() {
+        String bannerContent = String.format(DUMMY_BANNER_CONTENT, "Test Banner Content");
+        return templateBannerRTBAdsResponse_(bannerContent, 320, 50, IMPRESSION_URL);
+    }
+
     public static String blankBanner() {
         return templateBannerRTBAdsResponse("", 320, 50, IMPRESSION_URL);
+    }
+
+    public static String invalidBanner() {
+        return templateBannerRTBAdsResponse("Error", 320, 50, IMPRESSION_URL);
     }
 
     public static String mraidBanner(String name) {
@@ -137,6 +157,15 @@ public class TestResponsesUT {
         return templateSingleCSMAdResponseBannerInterstitial(createClassName("MediatedBannerSuccessful"), RESPONSE_URL);
     }
 
+    public static String mediatedSuccessfulBannerTimeout() {
+        return templateSingleCSMAdResponseBannerInterstitialTimeout(createClassName("MediatedBannerSuccessful"), RESPONSE_URL);
+    }
+
+    public static String mediatedSuccessfulBannerTimeoutNonZero() {
+        return templateSingleCSMAdResponseNativeTimeoutNonZero(createClassName("MediatedBannerSuccessful"), RESPONSE_URL);
+    }
+
+
     public static String mediatedNoRequestBanner() {
         return templateSingleCSMAdResponseBannerInterstitial(createClassName("MediatedBannerNoRequest"), RESPONSE_URL);
     }
@@ -151,6 +180,13 @@ public class TestResponsesUT {
 
     public static String mediatedSuccessfulInterstitial() {
         return templateSingleCSMAdResponseBannerInterstitial(createClassName("MediatedInterstitialSuccessful"), RESPONSE_URL);
+    }
+    public static String mediatedSuccessfulInterstitialTimeout() {
+        return templateSingleCSMAdResponseBannerInterstitialTimeout(createClassName("MediatedInterstitialSuccessful"), RESPONSE_URL);
+    }
+
+    public static String mediatedSuccessfulInterstitialTimeoutNonZero() {
+        return templateSingleCSMAdResponseBannerInterstitialTimeoutNonZero(createClassName("MediatedInterstitialSuccessful"), RESPONSE_URL);
     }
 
     public static String mediatedNoRequestInterstitial() {
@@ -178,6 +214,17 @@ public class TestResponsesUT {
         return templateSingleCSMAdResponseNative(createClassName("MediatedNativeSuccessful"), RESPONSE_URL);
     }
 
+
+    public static String mediatedSuccessfulNativeTimeout() {
+        return templateSingleCSMAdResponseNativeTimeout(createClassName("MediatedNativeSuccessful"), RESPONSE_URL);
+    }
+
+
+    public static String mediatedSuccessfulNativeTimeoutNonZero() {
+        return templateSingleCSMAdResponseNativeTimeoutNonZero(createClassName("MediatedNativeSuccessful"), RESPONSE_URL);
+    }
+
+
     public static String mediatedNoRequestNative() {
         return templateSingleCSMAdResponseNative(createClassName("MediatedNativeNoRequest"), RESPONSE_URL);
     }
@@ -201,6 +248,11 @@ public class TestResponsesUT {
 
     public static String mediatedSSMBanner() {
         return templateSingleSSMAdResponse();
+    }
+
+
+    public static String mediatedSSMBannerWithTimeoutZero() {
+        return templateSingleSSMAdResponseWithTimeoutZero();
     }
 
     public static String mediatedNoSSMBanner() {
@@ -433,6 +485,12 @@ public class TestResponsesUT {
         return templateResponse(NO_BID_FALSE, NO_AD_URL, ads);
     }
 
+    private static String templateBannerRTBAdsResponse_(String content, int width, int height, String impressionURL) {
+        String rtbBanner = singleRTBBanner_(content, width, height, impressionURL);
+        String ads = String.format(ADS, rtbBanner);
+        return templateResponse_(NO_BID_FALSE, NO_AD_URL, ads);
+    }
+
 
     private static String templateRTBNativeAdResponse(String nativeResponse) {
         return String.format(RTB_NATIVE, RTB_NATIVE_VIEWABILITY_CONFIG, nativeResponse);
@@ -441,6 +499,10 @@ public class TestResponsesUT {
 
     private static String singleRTBBanner(String content, int width, int height, String impressionURL) {
         return (String.format(RTB_BANNER, content, width, height, impressionURL));
+    }
+
+    private static String singleRTBBanner_(String content, int width, int height, String impressionURL) {
+        return (String.format(RTB_BANNER_, content, width, height, impressionURL));
     }
 
     private static String singleRTBVideo(String content) {
@@ -453,10 +515,27 @@ public class TestResponsesUT {
         return String.format(RESPONSE, noBid, noAdURL, ads);
     }
 
+    private static String templateResponse_(String noBid, String noAdURL, String ads) {
+        System.out.println(String.format(RESPONSE_, noBid, noAdURL, ads));
+        return String.format(RESPONSE_, noBid, noAdURL, ads);
+    }
+
     private static String templateSingleCSMAdResponseBannerInterstitial(String className, String response_url) {
         String csmBanner = templateSingleCSMAdResponseBannerInterstitial(className, 320, 50, IMPRESSION_URL, REQUEST_URL, response_url, "", "", "android");
         return templateMediatedAdResponse(csmBanner);
     }
+
+    private static String templateSingleCSMAdResponseBannerInterstitialTimeout(String className, String response_url) {
+        String csmBanner = templateSingleCSMAdResponseBannerInterstitialTimeout(className, 320, 50, IMPRESSION_URL, REQUEST_URL, response_url, "", "", "android");
+        return templateMediatedAdResponse(csmBanner);
+    }
+
+
+    private static String templateSingleCSMAdResponseBannerInterstitialTimeoutNonZero(String className, String response_url) {
+        String csmBanner = templateSingleCSMAdResponseBannerInterstitialTimeoutNonZero(className, 320, 50, IMPRESSION_URL, REQUEST_URL, response_url, "", "", "android");
+        return templateMediatedAdResponse(csmBanner);
+    }
+
 
     public static String templateSingleCSMAdResponseBannerInterstitial(String className, String response_url, String id) {
         String csmBanner = templateSingleCSMAdResponseBannerInterstitial(className, 320, 50, IMPRESSION_URL, REQUEST_URL, response_url, "", id, "android");
@@ -466,6 +545,24 @@ public class TestResponsesUT {
     private static String templateSingleCSMAdResponseNative(String className, String response_url) {
         String csmNative = templateSingleCSMAdResponseNative(className, "abc", "1234", IMPRESSION_URL, REQUEST_URL, response_url);
         return templateMediatedAdResponse(csmNative);
+    }
+
+
+    private static String templateSingleCSMAdResponseNativeTimeout(String className, String response_url) {
+        String csmNative = templateSingleCSMAdResponseNativeTimeout(className, "abc", "1234", IMPRESSION_URL, REQUEST_URL, response_url);
+        return templateMediatedAdResponse(csmNative);
+    }
+
+    private static String templateSingleCSMAdResponseNativeTimeoutNonZero(String className, String response_url) {
+        String csmNative = templateSingleCSMAdResponseNativeTimeoutNonZero(className, "abc", "1234", IMPRESSION_URL, REQUEST_URL, response_url);
+        return templateMediatedAdResponse(csmNative);
+    }
+
+
+    private static String templateSingleSSMAdResponseWithTimeoutZero() {
+        String ssmAdTag = String.format(SSM_BANNER_TIMEOUT_ZERO, DUMMY_BANNER_CONTENT, SSM_URL, IMPRESSION_URL, REQUEST_URL, RESPONSE_URL);
+        String ads = String.format(ADS, ssmAdTag);
+        return String.format(RESPONSE, NO_BID_FALSE, NO_AD_URL, ads);
     }
 
     private static String templateSingleSSMAdResponse() {
@@ -485,9 +582,27 @@ public class TestResponsesUT {
         return String.format(CSM_BANNER, DUMMY_BANNER_CONTENT, params, height, width, id, type, className, impressionURL, request_url, response_url);
     }
 
+    private static String templateSingleCSMAdResponseBannerInterstitialTimeout(String className, int width, int height, String impressionURL, String request_url, String response_url, String params, String id, String type) {
+        return String.format(CSM_BANNER_TIMEOUT_ZERO, DUMMY_BANNER_CONTENT, params, height, width, id, type, className, impressionURL, request_url, response_url);
+    }
+
+    private static String templateSingleCSMAdResponseBannerInterstitialTimeoutNonZero(String className, int width, int height, String impressionURL, String request_url, String response_url, String params, String id, String type) {
+        return String.format(CSM_BANNER_TIMEOUT_NON_ZERO, DUMMY_BANNER_CONTENT, params, height, width, id, type, className, impressionURL, request_url, response_url);
+    }
     private static String templateSingleCSMAdResponseNative(String className, String params, String id, String impression_url, String request_url, String response_url) {
         Clog.d("Native Ad", String.format(CSM_NATIVE, CSM_NATIVE_VIEWABILITY_CONFIG, className, params, id, impression_url, request_url, response_url));
         return String.format(CSM_NATIVE, CSM_NATIVE_VIEWABILITY_CONFIG, className, params, id, impression_url, request_url, response_url);
+    }
+
+
+    private static String templateSingleCSMAdResponseNativeTimeout(String className, String params, String id, String impression_url, String request_url, String response_url) {
+        return String.format(CSM_NATIVE_TIMEOUT_ZERO, CSM_NATIVE_VIEWABILITY_CONFIG, className, params, id, impression_url, request_url, response_url);
+    }
+
+
+
+    private static String templateSingleCSMAdResponseNativeTimeoutNonZero(String className, String params, String id, String impression_url, String request_url, String response_url) {
+        return String.format(CSM_NATIVE_TIMEOUT_NON_ZERO, CSM_NATIVE_VIEWABILITY_CONFIG, className, params, id, impression_url, request_url, response_url);
     }
 
 

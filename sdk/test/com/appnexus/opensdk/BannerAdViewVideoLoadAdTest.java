@@ -19,7 +19,6 @@ package com.appnexus.opensdk;
 import com.appnexus.opensdk.mocks.MockDefaultExecutorSupplier;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowCustomVideoWebView;
-import com.appnexus.opensdk.shadows.ShadowCustomWebView;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.squareup.okhttp.mockwebserver.MockResponse;
@@ -28,16 +27,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.robolectric.shadows.ShadowLooper;
 
-import static android.os.Looper.getMainLooper;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotSame;
 import static junit.framework.Assert.assertTrue;
-import static org.robolectric.Shadows.shadowOf;
 
 @Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
@@ -73,6 +69,17 @@ public class BannerAdViewVideoLoadAdTest extends BaseViewAdTest {
         assertTrue(bannerAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOW initially
         executeBannerRequest();
         assertTrue(bannerAdView.getAdType() == AdType.VIDEO); // If a VAST Video is served then VIDEO
+    }
+
+    @Test
+    public void testLazyBannerVideoAdLoaded() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.rtbVASTVideo()));
+        bannerAdView.enableLazyLoad();
+        bannerAdView.setAllowVideoDemand(true);
+        executeBannerRequest();
+        assertCallbacks(true);
+        assertFalse(bannerAdView.loadLazyAd());
+        assertCallbacks(true);
     }
 
     @Test

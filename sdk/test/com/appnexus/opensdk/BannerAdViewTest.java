@@ -30,6 +30,7 @@ import org.robolectric.shadows.ShadowWebView;
 import java.util.ArrayList;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
@@ -48,6 +49,8 @@ public class BannerAdViewTest extends BaseRoboTest {
     public void setup() {
         super.setup();
         bannerAdView = new BannerAdView(activity);
+        bannerAdView.setPlacementID("123456");
+        bannerAdView.setAdSize(320, 50);
     }
 
 
@@ -119,7 +122,33 @@ public class BannerAdViewTest extends BaseRoboTest {
     public void testSetExternalUId(){
         setExternalUId();
         assertSetExternalUId();
+    }
 
+    // Tests the functionality of the public facing API for enabling the Lazy Load works as expected
+    @Test
+    public void testEnableLazyLoad(){
+        assertFalse(bannerAdView.isLazyLoadEnabled());
+        assertTrue(bannerAdView.enableLazyLoad());
+        assertTrue(bannerAdView.isLazyLoadEnabled());
+    }
+
+    @Test
+    public void testEnableLazyLoadWhenAlreadyEnabled(){
+        assertFalse(bannerAdView.isLazyLoadEnabled());
+        bannerAdView.enableLazyLoad();
+        assertTrue(bannerAdView.isLazyLoadEnabled());
+        // This call to enableLazyLoad does not make any changes (as the Lazy Load has already been enabled), and returns false
+        assertFalse(bannerAdView.enableLazyLoad());
+        assertTrue(bannerAdView.isLazyLoadEnabled());
+    }
+
+    @Test
+    public void testEnableLazyLoadWhenAdRequestHasAlreadyBeenStarted(){
+        assertFalse(bannerAdView.isLazyLoadEnabled());
+        bannerAdView.loadAd();
+        // Does not enable the Lazy Load as the AdRequest is alredy in progress
+        assertFalse(bannerAdView.enableLazyLoad());
+        assertFalse(bannerAdView.isLazyLoadEnabled());
     }
 
     private void setExternalUId(){

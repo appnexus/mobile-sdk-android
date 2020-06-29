@@ -19,6 +19,10 @@ package com.appnexus.opensdk;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.ValueCallback;
+import android.widget.FrameLayout;
+
+import androidx.annotation.Nullable;
 
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowSettings;
@@ -247,6 +251,16 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
         implementation.dispatch_mraid_call(mraidCall, true);
     }
 
+    @Test
+    public void testMRAIDAudioVolumeChangeEventOnScreen() {
+        assertEquals("default", mockAdWebView.testString);
+        implementation.webViewFinishedLoading(mockAdWebView, mockAdWebView.initialMraidStateString);
+        implementation.isViewable = true;
+        String mraidCall = String.format("mraid://audioVolumeChange");
+        implementation.dispatch_mraid_call(mraidCall, true);
+        assertEquals("javascript:window.mraid.util.audioVolumeChangeEvent({\"volumePercentage\":0.0})", mockAdWebView.testString);
+    }
+
     static class MockAdWebView extends AdWebView {
         String testString = "default";
         int width, height, offsetX, offsetY;
@@ -257,7 +271,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
 
         public MockAdWebView(AdView owner) {
             super(new MockBannerAdView(owner.getContext()), null);
-            this.setLayoutParams(new ViewGroup.LayoutParams(0, 0));
+            this.setLayoutParams(new FrameLayout.LayoutParams(0, 0));
         }
 
         @Override
@@ -324,6 +338,12 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
             if (!url.startsWith("javascript"))
                 testString = url;
         }
+
+        @Override
+        public void evaluateJavascript(String script, @Nullable ValueCallback<String> resultCallback) {
+            super.evaluateJavascript(script, resultCallback);
+            testString = script;
+        }
     }
 
     static class MockBannerAdView extends BannerAdView {
@@ -387,6 +407,11 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
         @Override
         public void toggleAutoRefresh() {
             //@FIXME
+        }
+
+        @Override
+        public void onLazyAdLoaded(ANAdResponseInfo adResponseInfo) {
+
         }
 
         @Override

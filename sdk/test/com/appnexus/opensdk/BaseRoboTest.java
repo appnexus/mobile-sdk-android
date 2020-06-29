@@ -62,16 +62,16 @@ public class BaseRoboTest {
     @After
     public void tearDown() {
         activity.finish();
+        System.out.println("REQUEST COUNT"+server.getRequestCount());
+        shadowOf(getMainLooper()).quitUnchecked();
         try {
-            System.out.println("REQUEST COUNT"+server.getRequestCount());
-            shadowOf(getMainLooper()).quitUnchecked();
             server.shutdown();
-            server = null;
-            bgScheduler.reset();
-            uiScheduler.reset();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        server = null;
+        bgScheduler.reset();
+        uiScheduler.reset();
     }
 
     private void scheduleTimerToCheckForTasks() {
@@ -92,5 +92,25 @@ public class BaseRoboTest {
     public void waitForTasks() {
         scheduleTimerToCheckForTasks();
         Lock.pause();
+    }
+
+    public void restartServer() {
+        try {
+            server.shutdown();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        server= new MockWebServer();
+        try {
+            server.start();
+            HttpUrl url= server.url("/");
+            UTConstants.REQUEST_BASE_URL_UT = url.toString();
+            System.out.println(UTConstants.REQUEST_BASE_URL_UT);
+            ShadowSettings.setTestURL(url.toString());
+            TestResponsesUT.setTestURL(url.toString());
+        } catch (IOException e) {
+            System.out.print("IOException");
+        }
     }
 }

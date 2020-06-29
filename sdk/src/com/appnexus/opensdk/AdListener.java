@@ -89,4 +89,11 @@ public interface AdListener {
      */
     public void onAdClicked(AdView adView, String clickUrl);
 
+    /**
+     * Called when an ad has successfully been received for lazy loading from the server.
+     *
+     * @param adView The {@link AdView} that loaded the ad.
+     */
+    public void onLazyAdLoaded(AdView adView);
+
 }

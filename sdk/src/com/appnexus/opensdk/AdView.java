@@ -80,11 +80,23 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     private boolean shouldResizeParent = false;
     private boolean showLoadingIndicator = true;
     private boolean isAttachedToWindow = false;
+    // This is to keep track if the lazy Load has been enabled for the current Ad Request (applies only to BannerAdView)
+    private boolean enableLazyLoad = false;
+    // This is to keep track if the loadLazyAd has been called or not
+    private boolean activateWebview = false;
 
     UTRequestParameters requestParameters;
 
     protected ArrayList<String> impressionTrackers;
     private ANAdResponseInfo adResponseInfo;
+    /**
+     * This variable keeps track of the Complete AdRequest
+     * starting from loadAd() and ending at onAdLoaded(), onAdFailed() or onLazyAdLoaded()
+     * initial value is false
+     * the value is set to true while initialising and AdRequest (eg banner.loadAd() / mar.load())
+     * the value is set to false while sending back these callbacks: onAdLoaded(), onAdFailed() or onLazyAdLoaded()
+     * */
+    private boolean isFetching = false;
 
     private ArrayList<WeakReference<View>> friendlyObstructionList = new ArrayList<>();
 
@@ -154,6 +166,9 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
         if (this.getWindowVisibility() != VISIBLE) {
             loadedOffscreen = true;
         }
+        isFetching = true;
+        activateWebview = false;
+        adResponseInfo = null;
     }
 
     /**
@@ -1051,6 +1066,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
         @Override
         public void onAdLoaded(final AdResponse ad) {
+            isFetching = false;
             if (ad.getMediaType().equals(MediaType.BANNER) || ad.getMediaType().equals(MediaType.INTERSTITIAL)) {
                 handleBannerOrInterstitialAd(ad);
             } else if (ad.getMediaType().equals(MediaType.NATIVE)) {
@@ -1063,11 +1079,12 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
         @Override
         public void onAdLoaded() {
-
+            isFetching = false;
         }
 
         @Override
         public void onAdFailed(final ResultCode code, final ANAdResponseInfo adResponseInfo) {
+            isFetching = false;
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -1185,9 +1202,9 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
                     }
 
 
-                    // Banner OnAdLoaded and if View is attached to window Impression is counted.
+                    // Banner OnAdLoaded and if View is attached to window, or if the LazyLoad is enabled Impression is counted.
                     if (getMediaType().equals(MediaType.BANNER)) {
-                        if (isAdViewAttachedToWindow() || countBannerImpressionOnAdLoad) {
+                        if (isAdViewAttachedToWindow() || countBannerImpressionOnAdLoad || (isLazyLoadEnabled() && isWebviewActivated() && ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER))) {
                             if (impressionTrackers != null && impressionTrackers.size() > 0) {
                                 fireImpressionTracker();
                             }
@@ -1202,8 +1219,9 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
                     } else if (ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER)) {
                         setAdType(AdType.BANNER);
                     }
-                    if (adListener != null)
+                    if (adListener != null) {
                         adListener.onAdLoaded(AdView.this);
+                    }
                     if (ad.getNativeAdResponse() != null) {
                         AdView.this.ad = ad;
                         NativeAdSDK.registerTracking(ad.getNativeAdResponse(), ad.getDisplayable().getView(), null, getFriendlyObstructionViewsList());
@@ -1212,6 +1230,12 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
             });
         }
 
+        @Override
+        public void onLazyAdLoaded(ANAdResponseInfo adResponseInfo) {
+            isFetching = false;
+            setAdResponseInfo(adResponseInfo);
+            adListener.onLazyAdLoaded(AdView.this);
+        }
     }
 
     @Override
@@ -1416,4 +1440,101 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
         }
     }
 
+    /**
+     * This is called to enable the Lazy Load
+     * @return true if the call to enableLazyLoad() is successful
+     */
+    protected boolean enableLazyLoad() {
+
+        // enableLazyLoad() works only if the AdRequest is not already started.
+        if (isFetching) {
+            Clog.w(Clog.lazyLoadLogTag, getContext().getString(R.string.apn_enable_lazy_webview_failure_request_in_progress));
+            return false;
+        }
+
+        // enableLazyLoad() works only if it is not already enabled.
+        if (enableLazyLoad) {
+            Clog.w(Clog.lazyLoadLogTag, getContext().getString(R.string.apn_enable_lazy_webview_failure_already_enabled));
+            return false;
+        }
+
+        this.enableLazyLoad = true;
+        return true;
+    }
+
+    /**
+     * @return true if the user has enabled the Lazy Load, using enableLazyLoad()
+     */
+    protected boolean isLazyLoadEnabled() {
+        return enableLazyLoad;
+    }
+
+    /**
+     * Tells the status of the Lazy Load in conjunction with Webview activation
+     * @return true only if the lazy load enabled but the lazyLoadAd() has not been called yet.
+     */
+    protected boolean isLazyWebviewInactive() {
+        return !isWebviewActivated() && enableLazyLoad;
+    }
+
+    /**
+     * This method is called to load the content of a Lazy loaded Ad to the Webview (only if the Lazy Load is enabled)
+     * @return true if the call to loadLazyAd() is successful
+     */
+    protected boolean loadLazyAd() {
+
+        // loadLazyAd() works only if the lazy load has been enabled (i.e enableLazyLoad is set to true)
+        if (!enableLazyLoad) {
+            Clog.w(Clog.lazyLoadLogTag, getContext().getString(R.string.apn_load_webview_failure_disabled_lazy_load));
+            return false;
+        }
+
+        // loadLazyAd() works only if it isn't already called
+        if (activateWebview) {
+            Clog.w(Clog.lazyLoadLogTag, getContext().getString(R.string.apn_load_webview_failure_repeated_loadLazyAd));
+            return false;
+        }
+
+        // loadLazyAd() only if the AdResponseInfo is already attached to the Banner instance
+        if (getAdResponseInfo() == null) {
+            Clog.w(Clog.lazyLoadLogTag, getContext().getString(R.string.apn_load_webview_failure_is_not_lazy_load));
+            return false;
+        }
+
+        // loadLazyAd() only if the AdType is AdType.BANNER
+        if (getAdResponseInfo().getAdType() != AdType.BANNER) {
+            Clog.w(Clog.lazyLoadLogTag, getContext().getString(R.string.apn_enable_lazy_webview_failure_non_banner));
+            return false;
+        }
+
+        activateWebview = true;
+        if (mAdFetcher != null) {
+            mAdFetcher.loadLazyAd();
+        }
+        return true;
+    }
+
+    /**
+     * This returns if the Webview for the Lazy Load has been activated or not
+     * The webview once activated is de-activated by calling the deactivateWebviewForNextCall() {basically for AutoRefresh }
+     * */
+    private boolean isWebviewActivated() {
+        return activateWebview;
+    }
+
+    /**
+     * This method deactivated the Webview - which means that, to load the Webview we need to call loadLazyAd()
+     * This is make AutoRefresh work for Laay Load
+     * */
+    protected void deactivateWebviewForNextCall() {
+        activateWebview = false;
+    }
+
+    /**
+     * This is used to know if the last response was successful, based on the content of the AdResponseInfo
+     * see {@link ANAdResponseInfo}
+     * */
+    protected boolean isLastResponseSuccessful() {
+        return getAdResponseInfo() != null && getAdResponseInfo().getAdType() == AdType.BANNER;
+    }
 }

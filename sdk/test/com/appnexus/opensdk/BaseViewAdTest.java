@@ -20,7 +20,7 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener, MultiAdR
     InterstitialAdView interstitialAdView;
     AdViewRequestManager requestManager;
 
-    boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked, adClickedWithUrl, marCompleted, marFailed;
+    boolean adLazyLoaded, adLoaded, adFailed, adExpanded, adCollapsed, adClicked, adClickedWithUrl, marCompleted, marFailed;
     boolean isAutoDismissDelay, enableInterstitialShowonLoad;
     NativeAdResponse nativeAdResponse;
     boolean isBannerLoaded;
@@ -75,6 +75,24 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener, MultiAdR
     public void assertCallbacks(boolean success) {
         assertEquals(success, adLoaded);
         assertEquals(!success, adFailed);
+    }
+
+    public void assertLazyLoadCallbackInProgress() {
+        assertEquals(true, adLazyLoaded);
+        assertEquals(false, adLoaded);
+        assertEquals(false, adFailed);
+    }
+
+    public void assertLazyLoadCallbackSuccess() {
+        assertEquals(true, adLazyLoaded);
+        assertEquals(true, adLoaded);
+        assertEquals(false, adFailed);
+    }
+
+    public void assertLazyLoadCallbackFailure() {
+        assertEquals(true, adLazyLoaded);
+        assertEquals(false, adLoaded);
+        assertEquals(true, adFailed);
     }
 
     public void assertOpensInNativeBrowser() {
@@ -162,6 +180,12 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener, MultiAdR
     public void onAdClicked(AdView adView, String clickUrl) {
         Clog.w(TestUtil.testLogTag, "BaseViewAdTest onAdClickedWithUrl");
         adClickedWithUrl = true;
+    }
+
+    @Override
+    public void onLazyAdLoaded(AdView adView) {
+        adLazyLoaded = true;
+        Clog.w(TestUtil.testLogTag, "BaseViewAdTest onLazyAdLoaded");
     }
 
     @Override

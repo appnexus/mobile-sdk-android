@@ -16,8 +16,7 @@
 
 package com.appnexus.opensdk.shadows;
 
-import android.os.Handler;
-import android.webkit.ValueCallback;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 
 import com.appnexus.opensdk.util.TestUtil;
@@ -26,6 +25,9 @@ import com.appnexus.opensdk.utils.Clog;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowWebView;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 @Implements(value = WebView.class, callThroughByDefault = true)
 public class ShadowCustomWebView extends ShadowWebView {
@@ -45,6 +47,28 @@ public class ShadowCustomWebView extends ShadowWebView {
         if (simulateRendererScriptSuccess) {
             this.getWebViewClient().shouldOverrideUrlLoading(webView, "nativerenderer://success");
             simulateRendererScriptSuccess = false;
+        }
+
+        if (data.contains("</script></head><body style='padding:0;margin:0;'>Error</body></html>")) {
+            try {
+                Class<?> sslErrorHandler = Class.forName("android.webkit.SslErrorHandler");
+                Constructor<?> constructor = sslErrorHandler.getConstructor();
+                constructor.setAccessible(true);
+                SslErrorHandler o = (SslErrorHandler) constructor.newInstance();
+                this.getWebViewClient().onReceivedSslError(webView, o, null);
+                return;
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+
         }
         Clog.d(TestUtil.testLogTag, "ShadowCustomWebView loadDataWithBaseURL");
         this.getWebViewClient().onPageFinished(webView,baseUrl);
