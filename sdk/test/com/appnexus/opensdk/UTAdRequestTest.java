@@ -427,6 +427,39 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         assertNull(ANGDPRSettings.getDeviceAccessConsent(activity));
     }
 
+    /**
+     * Test ANGDPRSettings.reset()
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGDPRSettingsResetAndAssignEmptyConsent() throws Exception {
+        executionSteps();
+        JSONObject postDataBeforeGDPRValueSet = inspectPostData();
+        assertFalse(postDataBeforeGDPRValueSet.has("gdpr_consent"));
+
+        SDKSettings.setAAID("1234", true);
+        ANGDPRSettings.setConsentRequired(activity, true);
+        ANGDPRSettings.setConsentString(activity, "fooBar");
+        ANGDPRSettings.setPurposeConsents(activity, "1");
+        executionSteps();
+        JSONObject postDataWithGDPRValueSet = inspectPostData();
+        assertEquals(true, postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getBoolean("consent_required"));
+        assertEquals("fooBar", postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getString("consent_string"));
+        assertEquals("1", ANGDPRSettings.getDeviceAccessConsent(activity));
+        ANGDPRSettings.reset(activity);
+        executionSteps();
+        postDataWithGDPRValueSet = inspectPostData();
+        assertEquals(false, postDataWithGDPRValueSet.has("gdpr_consent"));
+        assertNull(ANGDPRSettings.getDeviceAccessConsent(activity));
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        prefs.edit().putString("IABTCF_PurposeConsents", "").apply();
+        executionSteps();
+        postDataWithGDPRValueSet = inspectPostData();
+        assertEquals(false, postDataWithGDPRValueSet.has("gdpr_consent"));
+        assertNull(ANGDPRSettings.getDeviceAccessConsent(activity));
+    }
+
     /*
      * Test AAID with Consent Required set as true
      * and Purpose Consent set as true in /ut request body
