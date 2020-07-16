@@ -1,3 +1,7 @@
+## 7.4.1
+## Improvements/Bug Fixes
++ MS-4440 : Fixed issue with empty TCF 2.0 purpose consent string
+
 ## 7.4
 ### New Feature
 + MS-4214 Added (optional) support for lazy loading of AdUnits [https://wiki.xandr.com/x/U5FlBg]
