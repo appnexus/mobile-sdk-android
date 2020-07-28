@@ -157,6 +157,11 @@ public class MyActivity extends Activity {
             public void onAdClicked(AdView adView, String clickUrl) {
                 Clog.v("SimpleSRM", "onAdClicked with click URL");
             }
+
+            @Override
+            public void onLazyAdLoaded(AdView adView) {
+
+            }
         });
 
 //        List<Ad> adUnitList = new ArrayList<>();
@@ -388,6 +393,11 @@ public class MyActivity extends Activity {
             @Override
             public void onAdClicked(AdView adView, String clickUrl) {
                 Clog.v("SimpleSRM", "onAdClicked with click URL");
+            }
+
+            @Override
+            public void onLazyAdLoaded(AdView adView) {
+
             }
         });
 
