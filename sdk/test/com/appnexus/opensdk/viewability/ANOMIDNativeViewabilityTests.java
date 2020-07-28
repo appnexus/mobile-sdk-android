@@ -193,17 +193,17 @@ public class ANOMIDNativeViewabilityTests extends BaseNativeTest {
     }
 
     private void assertOMIDSessionStartRTB(){
-        assertTrue(ShadowOMIDNativeWebView.omidInitString.contains("if(window.omidBridge!==undefined){omidBridge.init({\"impressionOwner\":\"native\",\"videoEventsOwner\":\"none\",\"isolateVerificationScripts\":false})}"));
+        assertTrue(ShadowOMIDNativeWebView.omidInitString.contains("if(window.omidBridge!==undefined){omidBridge.init({\"impressionOwner\":\"native\",\"mediaEventsOwner\":\"none\",\"creativeType\":\"nativeDisplay\",\"impressionType\":\"viewable\",\"isolateVerificationScripts\":false})}"));
         assertTrue(ShadowOMIDNativeWebView.omidStartSession.contains("{\"dummyVendor\":\"v;vk=dummyVendor;tv=cet=0;cecb=\"}"));
     }
 
     private void assertOMIDSessionStartRenderer(){
-        assertTrue(ShadowOMIDNativeWebView.omidInitString.contains("if(window.omidBridge!==undefined){omidBridge.init({\"impressionOwner\":\"native\",\"videoEventsOwner\":\"none\",\"isolateVerificationScripts\":false})}"));
+        assertTrue(ShadowOMIDNativeWebView.omidInitString.contains("if(window.omidBridge!==undefined){omidBridge.init({\"impressionOwner\":\"native\",\"mediaEventsOwner\":\"none\",\"creativeType\":\"nativeDisplay\",\"impressionType\":\"viewable\",\"isolateVerificationScripts\":false})}"));
         assertTrue(ShadowOMIDNativeWebView.omidStartSession.contains("{\"dummyVendorRenderer\":\"v;vk=dummyVendorRenderer;tv=cet=0;cecb=\"}"));
     }
 
     private void assertOMIDSessionStartCSM(){
-        assertTrue(ShadowOMIDNativeWebView.omidInitString.contains("if(window.omidBridge!==undefined){omidBridge.init({\"impressionOwner\":\"native\",\"videoEventsOwner\":\"none\",\"isolateVerificationScripts\":false})}"));
+        assertTrue(ShadowOMIDNativeWebView.omidInitString.contains("if(window.omidBridge!==undefined){omidBridge.init({\"impressionOwner\":\"native\",\"mediaEventsOwner\":\"none\",\"creativeType\":\"nativeDisplay\",\"impressionType\":\"viewable\",\"isolateVerificationScripts\":false})}"));
         assertTrue(ShadowOMIDNativeWebView.omidStartSession.contains("{\"dummyVendorCSM\":\"v;vk=dummyVendorCSM;tv=cet=0;cecb=\"}"));
     }
 

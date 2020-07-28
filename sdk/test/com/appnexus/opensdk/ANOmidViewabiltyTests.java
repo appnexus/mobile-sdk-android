@@ -84,7 +84,7 @@ public class ANOmidViewabiltyTests extends BaseViewAdTest {
         runBasicBannerTest();
         attachBannerToView();
 
-        assertTrue(ShadowOMIDBannerHTMLWebView.omidInitString.contains("if(window.omidBridge!==undefined){omidBridge.init({\"impressionOwner\":\"native\",\"videoEventsOwner\":\"none\",\"isolateVerificationScripts\":false})}"));
+        assertTrue(ShadowOMIDBannerHTMLWebView.omidInitString.contains("if(window.omidBridge!==undefined){omidBridge.init({\"impressionOwner\":\"native\",\"mediaEventsOwner\":\"none\",\"creativeType\":\"htmlDisplay\",\"impressionType\":\"viewable\",\"isolateVerificationScripts\":false})}"));
         assertTrue(ShadowOMIDBannerHTMLWebView.omidImpressionString.contains("if(window.omidBridge!==undefined){omidBridge.publishImpressionEvent()}"));
     }
 

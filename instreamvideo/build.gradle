@@ -8,7 +8,7 @@ android {
     buildToolsVersion '29.0.0'
 
     defaultConfig {
-        minSdkVersion 9
+        minSdkVersion 14
         targetSdkVersion 28
         versionCode 18 // An integer value that represents the version of the code, relative to other versions. Increase for each release.
         versionName version
