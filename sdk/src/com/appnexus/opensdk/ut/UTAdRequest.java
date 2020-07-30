@@ -27,7 +27,6 @@ import com.appnexus.opensdk.Ad;
 import com.appnexus.opensdk.AdViewRequestManager;
 import com.appnexus.opensdk.R;
 import com.appnexus.opensdk.ResultCode;
-import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.SharedNetworkManager;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.JsonUtil;
@@ -57,11 +56,10 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
 
     private WeakReference<UTAdRequester> requester; // The instance of AdRequester which is filing this request.
     private UTRequestParameters requestParams;
-    private ANMultiAdRequest anMultiAdRequest;
 
     public UTAdRequest(UTAdRequester adRequester) {
         this.requester = new WeakReference<UTAdRequester>(adRequester);
-        anMultiAdRequest = adRequester instanceof AdViewRequestManager ? ((AdViewRequestManager) adRequester).getMultiAdRequest() : null;
+        ANMultiAdRequest anMultiAdRequest = getMultiAdRequest();
         requestParams = anMultiAdRequest == null ? adRequester.getRequestParams() : anMultiAdRequest.getRequestParameters();
         if (requestParams != null) {
             SharedNetworkManager networkManager = SharedNetworkManager.getInstance(requestParams.getContext());
@@ -79,6 +77,7 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
     }
 
     private void fail(ResultCode code) {
+        ANMultiAdRequest anMultiAdRequest = getMultiAdRequest();
         if (anMultiAdRequest != null && anMultiAdRequest.isMARRequestInProgress()) {
             anMultiAdRequest.onRequestFailed(code);
             ArrayList<WeakReference<Ad>> adUnitList = anMultiAdRequest.getAdUnitList();
@@ -159,6 +158,7 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
                 if(ANGDPRSettings.canIAccessDeviceData(requestParams.getContext())) {
                     WebviewUtil.cookieSync(headers);
                 }
+                ANMultiAdRequest anMultiAdRequest = getMultiAdRequest();
                 if (anMultiAdRequest == null) {
                     adResponseMap.put(requestParams.getUUID(), new UTAdResponse(result, conn.getHeaderFields(), requestParams.getMediaType(), requestParams.getOrientation()));
                 } else {
@@ -206,6 +206,7 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
     @Override
     protected void onPostExecute(HashMap<String, UTAdResponse> adResponseMap) {
         // check for invalid responses
+        ANMultiAdRequest anMultiAdRequest = getMultiAdRequest();
         if (anMultiAdRequest == null) {
 
             if (adResponseMap == null) {
@@ -278,5 +279,13 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
     protected void onCancelled(HashMap<String, UTAdResponse> serverResponse) {
         super.onCancelled(serverResponse);
         Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.cancel_request));
+    }
+
+    private ANMultiAdRequest getMultiAdRequest() {
+        if (requester != null && requester.get() != null) {
+            UTAdRequester adRequester = requester.get();
+            return adRequester instanceof AdViewRequestManager ? ((AdViewRequestManager) adRequester).getMultiAdRequest() : null;
+        }
+        return null;
     }
 }
