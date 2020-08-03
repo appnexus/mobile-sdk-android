@@ -71,6 +71,27 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
     }
 
     @Test
+    public void testAuctionTimeout() throws JSONException, InterruptedException {
+        SDKSettings.setAuctionTimeout(200);
+        executionSteps();
+        JSONObject postData = inspectPostData();
+        assertTrue(doesAuctionTimeExist(postData));
+        assertEquals(postData.getInt("auction_timeout_ms"),200);
+        long auctionTimeout = SDKSettings.getAuctionTimeout();
+        assertEquals(auctionTimeout, 200);
+
+
+        SDKSettings.setAuctionTimeout(0);
+        executionSteps();
+        postData = inspectPostData();
+        assertFalse(doesAuctionTimeExist(postData));
+        auctionTimeout = SDKSettings.getAuctionTimeout();
+        assertEquals(auctionTimeout, 0);
+
+    }
+
+
+    @Test
     public void testFBBidderTokenAttached() throws JSONException, InterruptedException {
         UTRequestParameters.FB_SETTINGS_CLASS = "com.appnexus.opensdk.mocks.MockFBSettings";
         executionSteps();
@@ -685,6 +706,15 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
         return false;
     }
+
+    private boolean doesAuctionTimeExist(JSONObject postData) throws JSONException {
+        System.out.println("Checking if AuctionTimeout exists...");
+        if (postData.has("auction_timeout_ms")) {
+            return true;
+        }
+        return false;
+    }
+
 
     private JSONObject getTagsData(JSONObject postData) throws JSONException {
         JSONArray tags = postData.getJSONArray("tags");

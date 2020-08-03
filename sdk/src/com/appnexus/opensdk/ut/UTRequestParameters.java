@@ -73,6 +73,7 @@ public class UTRequestParameters {
     private boolean isBannerNativeEnabled = false;
     private float reserve = 0.00f;
     private String age;
+
     private AdView.GENDER gender = AdView.GENDER.UNKNOWN;
     private ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
     private int videoAdMinDuration;
@@ -108,6 +109,7 @@ public class UTRequestParameters {
     private static final String USER_EXTERNALUID = "external_uid";
     private static final String USER_LANGUAGE = "language";
     private static final String DEVICE = "device";
+    private static final String AUCTION_TIMEOUT_MS = "auction_timeout_ms";
     private static final String DEVICE_USERAGENT = "useragent";
     private static final String DEVICE_GEO = "geo";
     private static final String GEO_LAT = "lat";
@@ -474,6 +476,14 @@ public class UTRequestParameters {
             if (device != null && device.length() > 0) {
                 postData.put(DEVICE, device);
             }
+
+            // add auctionTimeout
+            long auctionTimeout = SDKSettings.getAuctionTimeout();
+            if (auctionTimeout > 0) {
+                postData.put(AUCTION_TIMEOUT_MS, auctionTimeout);
+            }
+
+
             // add app
             JSONObject app = getAppObject();
             if (device != null && device.length() > 0) {
@@ -505,6 +515,7 @@ public class UTRequestParameters {
                 if (keywordsArray != null && keywordsArray.length() > 0) {
                     postData.put(KEYWORDS, keywordsArray);
                 }
+
 
                 //add Member ID
                 if (memberID > 0) {
