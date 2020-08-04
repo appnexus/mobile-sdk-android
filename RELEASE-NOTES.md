@@ -1,5 +1,12 @@
+## 7.5
+### New Features
++ MS-4384 Added support for Auction timeout
+### Improvements/Bug Fixes
++ MS-4233: Updated Open Measurement SDK to v1.3.7
++ MS-4360: Ad ResultCode is now a class instead of enum - this fixes issue with result codes getting overridden for concurrent Ad requests
+
 ## 7.4.1
-## Improvements/Bug Fixes
+### Improvements/Bug Fixes
 + MS-4440 : Fixed issue with empty TCF 2.0 purpose consent string
 
 ## 7.4
