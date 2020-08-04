@@ -64,13 +64,13 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
         if (requestParams != null) {
             SharedNetworkManager networkManager = SharedNetworkManager.getInstance(requestParams.getContext());
             if (!networkManager.isConnected(requestParams.getContext())) {
-                fail(ResultCode.NETWORK_ERROR);
+                fail(ResultCode.getNewInstance(ResultCode.NETWORK_ERROR));
                 Clog.i(Clog.httpReqLogTag, "Connection Error");
                 this.cancel(true);
             }
         } else {
             Clog.i(Clog.httpReqLogTag, "Internal Error");
-            fail(ResultCode.INTERNAL_ERROR);
+            fail(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR));
             this.cancel(true);
         }
 
@@ -211,7 +211,7 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
 
             if (adResponseMap == null) {
                 Clog.i(Clog.httpRespLogTag, Clog.getString(R.string.no_response));
-                fail(ResultCode.INVALID_REQUEST);
+                fail(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST));
                 return;
             }
 
@@ -219,11 +219,11 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
                 UTAdResponse result = adResponseMap.get(requestParams.getUUID());
                 if (result == null) {
                     Clog.i(Clog.httpRespLogTag, Clog.getString(R.string.no_response));
-                    fail(ResultCode.NETWORK_ERROR);
+                    fail(ResultCode.getNewInstance(ResultCode.NETWORK_ERROR));
                     return; // http request failed
                 }
                 if (result.isHttpError()) {
-                    fail(ResultCode.NETWORK_ERROR);
+                    fail(ResultCode.getNewInstance(ResultCode.NETWORK_ERROR));
                     return;
                 }
 
@@ -235,8 +235,9 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
             }
         } else if (anMultiAdRequest != null) {
             if (adResponseMap == null) {
-                Clog.e(Clog.SRMLogTag, "FAILED: " + ResultCode.INVALID_REQUEST);
-                anMultiAdRequest.onRequestFailed(ResultCode.INVALID_REQUEST);
+                ResultCode code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
+                Clog.e(Clog.SRMLogTag, "FAILED: " + code.getMessage());
+                anMultiAdRequest.onRequestFailed(code);
             } else {
                 anMultiAdRequest.onMARLoadCompleted();
             }
@@ -248,8 +249,9 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
                     UTAdRequester requester = new AdViewRequestManager(ad);
                     ad.getMultiAd().setRequestManager(requester);
                     if (adResponseMap == null) {
-                        Clog.e(Clog.SRMLogTag, "FAILED: " + ResultCode.INVALID_REQUEST);
-                        requester.failed(ResultCode.INVALID_REQUEST, null);
+                        ResultCode code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
+                        Clog.e(Clog.SRMLogTag, "FAILED: " + code.getMessage());
+                        requester.failed(code, null);
                         continue;
                     }
                     UTAdResponse result = adResponseMap.get(ad.getRequestParameters().getUUID());
@@ -257,13 +259,15 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
 
                     if (requester != null) {
                         if (result == null) {
-                            Clog.e(Clog.SRMLogTag, "FAILED: " + ResultCode.NETWORK_ERROR);
-                            requester.failed(ResultCode.NETWORK_ERROR, null);
+                            ResultCode code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
+                            Clog.e(Clog.SRMLogTag, "FAILED: " + code.getMessage());
+                            requester.failed(code, null);
                             continue;
                         }
                         if (result.isHttpError()) {
-                            Clog.e(Clog.SRMLogTag, "FAILED: " + ResultCode.NETWORK_ERROR);
-                            requester.failed(ResultCode.NETWORK_ERROR, null);
+                            ResultCode code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
+                            Clog.e(Clog.SRMLogTag, "FAILED: " + code.getMessage());
+                            requester.failed(code, null);
                             continue;
                         }
                         Clog.e(Clog.SRMLogTag, "SUCCESS: " + ad);

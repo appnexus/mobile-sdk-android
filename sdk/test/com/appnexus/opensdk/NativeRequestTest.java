@@ -190,7 +190,7 @@ public class NativeRequestTest extends BaseNativeTest {
         Robolectric.flushForegroundThreadScheduler();
         assertNull(nativeAdResponse);
         assertAdFailed(true);
-        assertEquals(ResultCode.UNABLE_TO_FILL, failErrorCode);
+        assertEquals(ResultCode.UNABLE_TO_FILL, failErrorCode.getCode());
 //        verify(adListener).onAdFailed(ResultCode.UNABLE_TO_FILL);
     }
 

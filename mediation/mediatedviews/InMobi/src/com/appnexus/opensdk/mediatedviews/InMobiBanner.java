@@ -62,7 +62,7 @@ public class InMobiBanner implements MediatedBannerAdView {
         if (mBC != null) {
             if (StringUtil.isEmpty(InMobiSettings.INMOBI_APP_ID)) {
                 Clog.e(Clog.mediationLogTag, "InMobi mediation failed. Call InMobiSettings.setInMobiAppId(String key, Context context) to set the app id.");
-                mBC.onAdFailed(ResultCode.MEDIATED_SDK_UNAVAILABLE);
+                mBC.onAdFailed(ResultCode.getNewInstance(ResultCode.MEDIATED_SDK_UNAVAILABLE));
                 return null;
             }
             try {
@@ -78,7 +78,7 @@ public class InMobiBanner implements MediatedBannerAdView {
                 imBanner.load();
                 return imBanner;
             } catch (NumberFormatException e) {
-                mBC.onAdFailed(ResultCode.INVALID_REQUEST);
+                mBC.onAdFailed(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST));
             }
         }
 

@@ -79,21 +79,21 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
                 mediatedDisplayable.setView(viewFromMediatedAdaptor);
             }else{
                 Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_null_activity));
-                errorCode = ResultCode.INTERNAL_ERROR;
+                errorCode = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
             }
         } catch (Exception e) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
-            errorCode = ResultCode.INTERNAL_ERROR;
+            errorCode = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
         } catch (Error e) {
             // catch errors. exceptions will be caught above.
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_error), e);
-            errorCode = ResultCode.INTERNAL_ERROR;
+            errorCode = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
         }
 
         if ((errorCode == null) && (mediatedDisplayable.getView() == null)) {
             // To check that if by accident instantiated an interstitial ad
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_view_null));
-            errorCode = ResultCode.INTERNAL_ERROR;
+            errorCode = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
         }
 
         if (errorCode != null) {

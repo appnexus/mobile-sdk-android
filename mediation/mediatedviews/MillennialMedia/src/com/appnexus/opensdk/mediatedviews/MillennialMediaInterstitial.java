@@ -64,7 +64,7 @@ public class MillennialMediaInterstitial implements MediatedInterstitialAdView {
                 interstitialAd.load(activity, new InterstitialAd.InterstitialAdMetadata());
             } catch (MMException e) {
                 if (mIC != null) {
-                    mIC.onAdFailed(ResultCode.INTERNAL_ERROR);
+                    mIC.onAdFailed(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR));
                 }
             }
 

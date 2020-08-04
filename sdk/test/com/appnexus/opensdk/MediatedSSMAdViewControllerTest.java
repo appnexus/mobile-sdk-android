@@ -22,7 +22,6 @@ import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowCustomWebView;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.util.Lock;
-import com.appnexus.opensdk.utils.Settings;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
@@ -85,7 +84,7 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
 
                     int reasonVal = Integer.parseInt(sanitizer.getValue("reason").replace("_HTTP/1.1", ""));
 
-                    assertEquals(reasonVal, errorCode.ordinal());
+                    assertEquals(reasonVal, errorCode.getCode());
 
                     if(checkLatency) {
                         String str_latencyVal = sanitizer.getValue("latency").replace("_HTTP/1.1", "");
@@ -98,7 +97,7 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
                 Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
             }
         } catch (InterruptedException e) {
-            System.out.print("/InterruptedException" + errorCode.ordinal());
+            System.out.print("/InterruptedException" + errorCode.getCode());
             e.printStackTrace();
         } catch (Exception e) {
             fail(e.getMessage());
@@ -206,7 +205,7 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedSSMBanner()));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.DUMMY_BANNER_CONTENT).setBodyDelay(2, TimeUnit.MILLISECONDS));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        runBasicSSMMediationTest(SUCCESS, ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
+        runBasicSSMMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
     }
 
     // Verify that a response with a class that cannot be found,
@@ -222,7 +221,7 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
 
         executeSSMRequest();
 
-        executeAndAssertResponseURL(3, UNABLE_TO_FILL, CHECK_LATENCY_FALSE);
+        executeAndAssertResponseURL(3, ResultCode.getNewInstance(UNABLE_TO_FILL), CHECK_LATENCY_FALSE);
         //2 request are already taken out of queue current position of ResponseURL in queue is 1
 
         executeAndAssertNoAdURL(1);
@@ -249,7 +248,7 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
 
         executeSSMRequest();
 
-        executeAndAssertResponseURL(3, UNABLE_TO_FILL, CHECK_LATENCY_TRUE);
+        executeAndAssertResponseURL(3, ResultCode.getNewInstance(UNABLE_TO_FILL), CHECK_LATENCY_TRUE);
 
         executeAndAssertNoAdURL(1);
 
@@ -266,7 +265,7 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.waterfall_SSM_Banner_Interstitial(2)));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.DUMMY_BANNER_CONTENT).setBodyDelay(2, TimeUnit.MILLISECONDS)); // SSM Response
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // Response URL
-        runBasicSSMMediationTest(SUCCESS, ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
+        runBasicSSMMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
 
     }
 

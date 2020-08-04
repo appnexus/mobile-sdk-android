@@ -32,7 +32,7 @@ public class MediatedBannerNoFillView implements MediatedBannerAdView {
     public View requestAd(MediatedBannerAdViewController mBC, Activity activity, String parameter, String uid, int width, int height, TargetingParameters tp) {
         // ad request returned nothing!
         Lock.explicitSleep(2); // This is for generating latency and total latency in the response url
-        mBC.onAdFailed(ResultCode.UNABLE_TO_FILL);
+        mBC.onAdFailed(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
         return null;
     }
 

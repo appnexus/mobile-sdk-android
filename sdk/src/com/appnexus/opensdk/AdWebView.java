@@ -65,11 +65,9 @@ import com.appnexus.opensdk.viewability.ANOmidAdSession;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -671,7 +669,7 @@ class AdWebView extends WebView implements Displayable,
         if (caller_requester != null) {
             //Don't send fail back here, continueWaterfall will internally call fail.
             //is we send fail here then SSM waterfall case will not be handled.
-            caller_requester.continueWaterfall(ResultCode.INTERNAL_ERROR);
+            caller_requester.continueWaterfall(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR));
         }
     }
 

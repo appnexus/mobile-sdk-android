@@ -69,21 +69,21 @@ class AmazonListener implements AdListener {
     @Override
     public void onAdFailedToLoad(Ad adLayout, AdError adError) {
         printToClogError(" onAdFailedToLoad: " + adError.getMessage());
-        ResultCode code = ResultCode.INTERNAL_ERROR;
+        ResultCode code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
 
         if (adError != null) {
             switch (adError.getCode()) {
                 case INTERNAL_ERROR:
-                    code = ResultCode.INTERNAL_ERROR;
+                    code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
                     break;
                 case NETWORK_ERROR:
-                    code = ResultCode.NETWORK_ERROR;
+                    code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
                     break;
                 case NO_FILL:
-                    code = ResultCode.UNABLE_TO_FILL;
+                    code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
                     break;
                 case REQUEST_ERROR:
-                    code = ResultCode.INVALID_REQUEST;
+                    code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
                     break;
                 default:
                     break;

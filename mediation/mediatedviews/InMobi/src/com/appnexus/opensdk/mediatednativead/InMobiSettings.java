@@ -65,32 +65,32 @@ public class InMobiSettings {
     }
 
     public static ResultCode getResultCode(InMobiAdRequestStatus status) {
-        ResultCode code = ResultCode.INTERNAL_ERROR;
+        ResultCode code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
         switch (status.getStatusCode()) {
             case NETWORK_UNREACHABLE:
-                code = ResultCode.NETWORK_ERROR;
+                code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
                 break;
             case NO_FILL:
-                code = ResultCode.UNABLE_TO_FILL;
+                code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
                 break;
             case REQUEST_INVALID:
-                code = ResultCode.INVALID_REQUEST;
+                code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
                 break;
             case REQUEST_PENDING:
                 break;
             case REQUEST_TIMED_OUT:
-                code = ResultCode.NETWORK_ERROR;
+                code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
                 break;
             case INTERNAL_ERROR:
                 break;
             case SERVER_ERROR:
-                code = ResultCode.UNABLE_TO_FILL;
+                code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
                 break;
             case AD_ACTIVE:
-                code = ResultCode.INVALID_REQUEST;
+                code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
                 break;
             case EARLY_REFRESH_REQUEST:
-                code = ResultCode.INVALID_REQUEST;
+                code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
                 break;
         }
         return code;

@@ -93,7 +93,7 @@ public final class ResponseUrl {
             protected String getUrl() {
                 // create the responseurl request
                 StringBuilder sb = new StringBuilder(url);
-                sb.append("&reason=").append(resultCode.ordinal());
+                sb.append("&reason=").append(resultCode.getCode());
                 if (latency > 0) {
                     sb.append("&latency=").append(Uri.encode(String.valueOf(latency)));
                 }

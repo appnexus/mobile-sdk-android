@@ -210,7 +210,7 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements UTAdRequ
         if(response!=null && response.getAdList() != null && !response.getAdList().isEmpty()) {
             requesterReceivedServerResponse = true;
         }else{
-            failed(ResultCode.UNABLE_TO_FILL, response.getAdResponseInfo());
+            failed(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL), response.getAdResponseInfo());
         }
         this.response = response;
     }

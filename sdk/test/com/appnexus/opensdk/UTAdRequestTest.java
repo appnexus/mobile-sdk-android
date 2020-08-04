@@ -25,7 +25,6 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -831,7 +830,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         if (response != null && response.getAdList() != null && !response.getAdList().isEmpty()) {
             requesterReceivedServerResponse = true;
         }else{
-            failed(ResultCode.UNABLE_TO_FILL, response.getAdResponseInfo());
+            failed(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL), response.getAdResponseInfo());
         }
         this.response = response;
     }

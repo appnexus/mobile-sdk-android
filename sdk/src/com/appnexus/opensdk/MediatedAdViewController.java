@@ -64,11 +64,11 @@ public abstract class MediatedAdViewController {
 
         if (currentAd == null) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_no_ads));
-            errorCode = ResultCode.UNABLE_TO_FILL;
+            errorCode = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
         } else {
             boolean instantiateSuccessful = instantiateNewMediatedAd();
             if (!instantiateSuccessful)
-                errorCode = ResultCode.MEDIATED_SDK_UNAVAILABLE;
+                errorCode = ResultCode.getNewInstance(ResultCode.MEDIATED_SDK_UNAVAILABLE);
         }
 
         if (errorCode != null)
@@ -96,7 +96,7 @@ public abstract class MediatedAdViewController {
         if ((mAV == null) || (callerClass == null) || !callerClass.isInstance(mAV)) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.instance_exception,
                     callerClass != null ? callerClass.getCanonicalName() : "null"));
-            onAdFailed(ResultCode.MEDIATED_SDK_UNAVAILABLE);
+            onAdFailed(ResultCode.getNewInstance(ResultCode.MEDIATED_SDK_UNAVAILABLE));
             return false;
         }
 
@@ -202,7 +202,7 @@ public abstract class MediatedAdViewController {
         markLatencyStop();
         cancelTimeout();
         hasSucceeded = true;
-        fireResponseURL(currentAd.getResponseUrl(), ResultCode.SUCCESS);
+        fireResponseURL(currentAd.getResponseUrl(), ResultCode.getNewInstance(ResultCode.SUCCESS));
         UTAdRequester requester = this.caller_requester.get();
         if (requester != null) {
             requester.onReceiveAd(new AdResponse() {
@@ -342,7 +342,7 @@ public abstract class MediatedAdViewController {
             if (avc == null || avc.hasFailed) return;
             Clog.w(Clog.mediationLogTag, Clog.getString(R.string.mediation_timeout));
             try {
-                avc.onAdFailed(ResultCode.INTERNAL_ERROR);
+                avc.onAdFailed(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR));
             } catch (IllegalArgumentException e) {
                 // catch exception for unregisterReceiver() when destroying views
             } finally {

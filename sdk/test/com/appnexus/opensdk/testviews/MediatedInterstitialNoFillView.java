@@ -31,7 +31,7 @@ public class MediatedInterstitialNoFillView implements MediatedInterstitialAdVie
     public void requestAd(final MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid, TargetingParameters tp) {
         // ad request returned nothing!
         Lock.explicitSleep(2); // This is for generating latency and total latency in the response url
-        mIC.onAdFailed(ResultCode.UNABLE_TO_FILL);
+        mIC.onAdFailed(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
         return;
     }
 

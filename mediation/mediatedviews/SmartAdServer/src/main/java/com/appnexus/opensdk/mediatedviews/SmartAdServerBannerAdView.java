@@ -16,7 +16,6 @@
 package com.appnexus.opensdk.mediatedviews;
 
 import android.app.Activity;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -55,7 +54,7 @@ public class SmartAdServerBannerAdView extends SmartAdServerBaseAdapter implemen
         SASAdPlacement adPlacement = configureSDKAndGetAdPlacement(activity, uid, tp);
 
         if (adPlacement == null) {
-            mBC.onAdFailed(ResultCode.INTERNAL_ERROR);
+            mBC.onAdFailed(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR));
             return null;
         }
 
@@ -96,12 +95,12 @@ public class SmartAdServerBannerAdView extends SmartAdServerBaseAdapter implemen
                 final ResultCode code;
                 if (e instanceof SASNoAdToDeliverException) {
                     // no ad to deliver
-                    code = ResultCode.UNABLE_TO_FILL;
+                    code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
                 } else if (e instanceof SASAdTimeoutException) {
                     // ad request timeout translates to  network error
-                    code = ResultCode.NETWORK_ERROR;
+                    code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
                 } else {
-                    code = ResultCode.INTERNAL_ERROR;
+                    code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
                 }
                 if (mBC != null) {
                     handler.post(new Runnable() {

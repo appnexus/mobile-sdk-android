@@ -1073,7 +1073,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
                 handleNativeAd(ad);
             } else {
                 Clog.e(Clog.baseLogTag, "UNKNOWN media type::" + ad.getMediaType());
-                onAdFailed(ResultCode.INTERNAL_ERROR, null);
+                onAdFailed(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR), null);
             }
         }
 

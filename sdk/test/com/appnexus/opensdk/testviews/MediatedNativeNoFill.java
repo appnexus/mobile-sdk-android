@@ -29,7 +29,7 @@ public class MediatedNativeNoFill implements MediatedNativeAd{
     public void requestNativeAd(Context context, String parameterString, String uid, MediatedNativeAdController mNC, TargetingParameters tp) {
         Lock.explicitSleep(2); // This is for generating latency and total latency in the response url
         if (mNC != null) {
-            mNC.onAdFailed(ResultCode.UNABLE_TO_FILL);
+            mNC.onAdFailed(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
         }
 
     }

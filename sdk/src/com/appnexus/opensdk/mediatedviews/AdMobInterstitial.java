@@ -36,7 +36,7 @@ public class AdMobInterstitial implements MediatedInterstitialAdView {
                 ? GoogleBridge.GooglePlayInterstitial : GoogleBridge.AdMobInterstitial);
         if (adView == null) {
             if (mIC != null) {
-                mIC.onAdFailed(ResultCode.MEDIATED_SDK_UNAVAILABLE);
+                mIC.onAdFailed(ResultCode.getNewInstance(ResultCode.MEDIATED_SDK_UNAVAILABLE));
             }
             return;
         }

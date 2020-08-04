@@ -26,7 +26,6 @@ import com.appnexus.opensdk.testviews.MediatedInterstitialNoRequest;
 import com.appnexus.opensdk.testviews.MediatedInterstitialSuccessful;
 import com.appnexus.opensdk.testviews.MediatedInterstitialSuccessful2;
 import com.appnexus.opensdk.util.Lock;
-import com.appnexus.opensdk.utils.Settings;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
@@ -87,8 +86,8 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
                     response_url = request.getRequestLine();
                     System.out.print("response_URL::" + response_url + "\n");
                     assertTrue(response_url.startsWith("GET"));
-                    System.out.print("/response_url?&reason=" + errorCode.ordinal() + "\n");
-                    assertTrue(response_url.contains("/response_url?&reason=" + errorCode.ordinal()));
+                    System.out.print("/response_url?&reason=" + errorCode.getCode() + "\n");
+                    assertTrue(response_url.contains("/response_url?&reason=" + errorCode.getCode()));
 
                     UrlQuerySanitizer sanitizer = new UrlQuerySanitizer();
                     sanitizer.setAllowUnregisteredParamaters(true);
@@ -96,7 +95,7 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
 
                     int reasonVal = Integer.parseInt(sanitizer.getValue("reason").replace("_HTTP/1.1", ""));
 
-                    assertEquals(reasonVal, errorCode.ordinal());
+                    assertEquals(reasonVal, errorCode.getCode());
 
                     if(checkLatency) {
                         String str_latencyVal = sanitizer.getValue("latency");
@@ -108,7 +107,7 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
                 }
             }
         } catch (InterruptedException e) {
-            System.out.print("/InterruptedException" + errorCode.ordinal());
+            System.out.print("/InterruptedException" + errorCode.getCode());
             e.printStackTrace();
         } catch (Exception e) {
             fail();
@@ -149,7 +148,7 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
         executeAndAssertResponseURL(2, errorCode, checkLatency);
         assertCallbacks(success);
         assertEquals(success,interstitialAdView.isReady());
-        if(ResultCode.SUCCESS == errorCode){
+        if(ResultCode.SUCCESS == errorCode.getCode()){
             interstitialAdView.show();
             assertTrue(MediatedInterstitialSuccessful.showCalled);
         }
@@ -165,7 +164,7 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
     public void testSucceedingMediationCall() {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedSuccessfulInterstitial()));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        runBasicMediationTest(SUCCESS, ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
+        runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
     }
 
     // Verify that a response with a class that cannot be found,
@@ -175,7 +174,7 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedFakeClassBannerInterstitial()));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for NO_AD url
-        runBasicMediationTest(MEDIATED_SDK_UNAVAILABLE, ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_FALSE);
+        runBasicMediationTest(ResultCode.getNewInstance(MEDIATED_SDK_UNAVAILABLE), ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_FALSE);
         assertNoAdURL();
     }
 
@@ -186,7 +185,7 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedDummyClassBannerInterstitial()));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for NO_AD url
-        runBasicMediationTest(MEDIATED_SDK_UNAVAILABLE, ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_FALSE);
+        runBasicMediationTest(ResultCode.getNewInstance(MEDIATED_SDK_UNAVAILABLE), ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_FALSE);
         assertNoAdURL();
     }
 
@@ -214,7 +213,7 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
 
-        executeAndAssertResponseURL(2, INTERNAL_ERROR, CHECK_LATENCY_TRUE);
+        executeAndAssertResponseURL(2, ResultCode.getNewInstance(INTERNAL_ERROR), CHECK_LATENCY_TRUE);
         if (Robolectric.getBackgroundThreadScheduler().areAnyRunnable()) {
             Robolectric.flushBackgroundThreadScheduler();
         }
@@ -236,7 +235,7 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedOutOfMemoryInterstitial()));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for NO_AD url
-        runBasicMediationTest(INTERNAL_ERROR, ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_TRUE);
+        runBasicMediationTest(ResultCode.getNewInstance(INTERNAL_ERROR), ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_TRUE);
         assertNoAdURL();
     }
 
@@ -250,7 +249,7 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedNoFillInterstitial()));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for NO_AD url
-        runBasicMediationTest(UNABLE_TO_FILL, ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_TRUE);
+        runBasicMediationTest(ResultCode.getNewInstance(UNABLE_TO_FILL), ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_TRUE);
         assertNoAdURL();
     }
 
@@ -261,7 +260,7 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.noFillCSM_RTBInterstitial()));
         //server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        runBasicMediationTest(UNABLE_TO_FILL, ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
+        runBasicMediationTest(ResultCode.getNewInstance(UNABLE_TO_FILL), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
     }
 
     // Verify that a 404 responseURL is handled properly
@@ -306,7 +305,7 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
 
-        runBasicMediationTest(SUCCESS, ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
+        runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
         assertTrue("Interstitial " + MediatedInterstitialSuccessful.didPass, MediatedInterstitialSuccessful.didPass);
         assertFalse("Interstitial2 " + MediatedInterstitialSuccessful2.didPass, MediatedInterstitialSuccessful2.didPass);
     }
@@ -322,9 +321,9 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
 
         executeUTRequest();
-        executeAndAssertResponseURL(2, UNABLE_TO_FILL, CHECK_LATENCY_TRUE);
+        executeAndAssertResponseURL(2, ResultCode.getNewInstance(UNABLE_TO_FILL), CHECK_LATENCY_TRUE);
         //2 request are already taken out of queue current position of ResponseURL in queue is 1
-        executeAndAssertResponseURL(1, SUCCESS, CHECK_LATENCY_TRUE);
+        executeAndAssertResponseURL(1, ResultCode.getNewInstance(SUCCESS), CHECK_LATENCY_TRUE);
 
 
         assertCallbacks(true);
@@ -349,9 +348,9 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for NO_AD url
 
         executeUTRequest();
-        executeAndAssertResponseURL(2, UNABLE_TO_FILL, CHECK_LATENCY_TRUE);
+        executeAndAssertResponseURL(2, ResultCode.getNewInstance(UNABLE_TO_FILL), CHECK_LATENCY_TRUE);
         //2 request are already taken out of queue current position of ResponseURL in queue is 1
-        executeAndAssertResponseURL(1, UNABLE_TO_FILL, CHECK_LATENCY_TRUE);
+        executeAndAssertResponseURL(1, ResultCode.getNewInstance(UNABLE_TO_FILL), CHECK_LATENCY_TRUE);
 
         Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT + 1000);
 
@@ -368,7 +367,7 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
         String[] responseURLs = {"", null, TestResponsesUT.RESPONSE_URL};
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        runBasicMediationTest(SUCCESS, ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
+        runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
 
         assertTrue(MediatedInterstitialSuccessful.didPass);
     }
@@ -384,9 +383,9 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
 
         executeUTRequest();
-        executeAndAssertResponseURL(2, UNABLE_TO_FILL, CHECK_LATENCY_TRUE);
+        executeAndAssertResponseURL(2, ResultCode.getNewInstance(UNABLE_TO_FILL), CHECK_LATENCY_TRUE);
         //2 request are already taken out of queue current position of ResponseURL in queue is 1
-        executeAndAssertResponseURL(1, SUCCESS, CHECK_LATENCY_TRUE);
+        executeAndAssertResponseURL(1, ResultCode.getNewInstance(SUCCESS), CHECK_LATENCY_TRUE);
 
         Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT + 1000);
 
