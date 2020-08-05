@@ -1,6 +1,6 @@
 ## 7.5
 ### New Features
-+ MS-4384 Added support for Auction timeout
++ MS-4384 Added support for Auction timeout [https://wiki.xandr.com/x/sIS1Bg]
 ### Improvements/Bug Fixes
 + MS-4233: Updated Open Measurement SDK to v1.3.7
 + MS-4360: Ad ResultCode is now a class instead of enum - this fixes issue with result codes getting overridden for concurrent Ad requests
