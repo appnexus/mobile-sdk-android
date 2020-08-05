@@ -26,7 +26,6 @@ import com.appnexus.opensdk.ut.adresponse.SSMHTMLAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
-import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 
 import java.lang.ref.WeakReference;
@@ -56,7 +55,7 @@ public class MediatedSSMAdViewController {
 
         if (ssmHtmlAdResponse == null || !UTConstants.AD_TYPE_BANNER.equalsIgnoreCase(ssmHtmlAdResponse.getAdType())) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_no_ads));
-            onAdFailed(ResultCode.UNABLE_TO_FILL);
+            onAdFailed(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
         } else {
             startTimeout();
             markLatencyStart();
@@ -79,10 +78,10 @@ public class MediatedSSMAdViewController {
                     if (!StringUtil.isEmpty(ssmHtmlAdResponse.getAdContent())) {
                         handleSSMServerResponse();
                     } else {
-                        onAdFailed(ResultCode.UNABLE_TO_FILL);
+                        onAdFailed(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
                     }
                 } else {
-                    onAdFailed(ResultCode.UNABLE_TO_FILL);
+                    onAdFailed(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
                 }
 
             }
@@ -116,7 +115,7 @@ public class MediatedSSMAdViewController {
         if (hasSucceeded || hasFailed) return;
         cancelTimeout();
         hasSucceeded = true;
-        fireResponseURL(ssmHtmlAdResponse, ResultCode.SUCCESS);
+        fireResponseURL(ssmHtmlAdResponse, ResultCode.getNewInstance(ResultCode.SUCCESS));
         UTAdRequester requester = this.caller_requester.get();
         if (requester != null) {
             final AdWebView output = new AdWebView(owner, requester);
@@ -162,7 +161,7 @@ public class MediatedSSMAdViewController {
             if (avc == null || avc.hasFailed) return;
             Clog.w(Clog.mediationLogTag, Clog.getString(R.string.mediation_timeout));
             try {
-                avc.onAdFailed(ResultCode.INTERNAL_ERROR);
+                avc.onAdFailed(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR));
             } catch (IllegalArgumentException e) {
                 // catch exception for unregisterReceiver() when destroying views
             } finally {

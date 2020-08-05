@@ -26,6 +26,8 @@ import com.iab.omid.library.appnexus.adsession.AdEvents;
 import com.iab.omid.library.appnexus.adsession.AdSession;
 import com.iab.omid.library.appnexus.adsession.AdSessionConfiguration;
 import com.iab.omid.library.appnexus.adsession.AdSessionContext;
+import com.iab.omid.library.appnexus.adsession.CreativeType;
+import com.iab.omid.library.appnexus.adsession.ImpressionType;
 import com.iab.omid.library.appnexus.adsession.Owner;
 import com.iab.omid.library.appnexus.adsession.VerificationScriptResource;
 
@@ -62,13 +64,17 @@ public class ANOmidAdSession {
 
         try {
             String customReferenceData = "";
-            AdSessionContext adSessionContext = AdSessionContext.createHtmlAdSessionContext(ANOmidViewabilty.getInstance().getAppnexusPartner(), webView,
-                    customReferenceData);
+            AdSessionContext adSessionContext = AdSessionContext.createHtmlAdSessionContext(ANOmidViewabilty.getInstance().getAppnexusPartner(), webView, null, customReferenceData);
 
             Owner owner = isVideoAd?Owner.JAVASCRIPT:Owner.NATIVE;
 
+
+            CreativeType creativeType = (isVideoAd ? CreativeType.VIDEO : CreativeType.HTML_DISPLAY);
+            ImpressionType impressionType = (isVideoAd ? ImpressionType.DEFINED_BY_JAVASCRIPT : ImpressionType.VIEWABLE);
+            Owner eventsOwner = isVideoAd ? Owner.JAVASCRIPT : Owner.NONE;
+
             AdSessionConfiguration adSessionConfiguration =
-                    AdSessionConfiguration.createAdSessionConfiguration(owner, isVideoAd?owner:null, false);
+                    AdSessionConfiguration.createAdSessionConfiguration(creativeType, impressionType, owner, eventsOwner, false);
 
 
             omidAdSession = AdSession.createAdSession(adSessionConfiguration, adSessionContext);
@@ -85,12 +91,10 @@ public class ANOmidAdSession {
         if (!SDKSettings.getOMEnabled())
             return;
         try {
-            AdSessionContext adSessionContext = AdSessionContext.createNativeAdSessionContext(ANOmidViewabilty.getInstance().getAppnexusPartner(),
-                    ANOmidViewabilty.getInstance().getOmidJsServiceContent(), verificationScriptResources, null);
 
-
+            AdSessionContext adSessionContext = AdSessionContext.createNativeAdSessionContext(ANOmidViewabilty.getInstance().getAppnexusPartner(), ANOmidViewabilty.getInstance().getOmidJsServiceContent(), verificationScriptResources, null, null);
             AdSessionConfiguration adSessionConfiguration =
-                    AdSessionConfiguration.createAdSessionConfiguration(Owner.NATIVE, null , false);
+                    AdSessionConfiguration.createAdSessionConfiguration(CreativeType.NATIVE_DISPLAY, ImpressionType.VIEWABLE, Owner.NATIVE, null, false);
 
 
             omidAdSession = AdSession.createAdSession(adSessionConfiguration, adSessionContext);
@@ -122,6 +126,7 @@ public class ANOmidAdSession {
         if(omidAdSession !=null) {
             try {
                 AdEvents adEvents = AdEvents.createAdEvents(omidAdSession);
+                adEvents.loaded();
                 adEvents.impressionOccurred();
             } catch (IllegalArgumentException | IllegalStateException e) {
                 e.printStackTrace();
@@ -164,7 +169,7 @@ public class ANOmidAdSession {
 
     public void addFriendlyObstruction(View friendlyObstructionView) {
         if (friendlyObstructionView != null && omidAdSession != null) {
-            omidAdSession.addFriendlyObstruction(friendlyObstructionView);
+            omidAdSession.addFriendlyObstruction(friendlyObstructionView, null, null);
         }
     }
 }

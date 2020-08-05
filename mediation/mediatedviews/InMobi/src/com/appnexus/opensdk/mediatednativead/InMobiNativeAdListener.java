@@ -42,7 +42,7 @@ public class InMobiNativeAdListener extends com.inmobi.ads.listeners.NativeAdEve
                     weakReferenceInMobiNativeAdResponse = new WeakReference<InMobiNativeAdResponse>(response);
                     controller.onAdLoaded(response);
                 } else {
-                    controller.onAdFailed(ResultCode.UNABLE_TO_FILL);
+                    controller.onAdFailed(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
                 }
             }
 

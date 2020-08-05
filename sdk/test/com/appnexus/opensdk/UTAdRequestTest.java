@@ -25,7 +25,6 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -69,6 +68,27 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         Settings.getSettings().ua = "";
 
     }
+
+    @Test
+    public void testAuctionTimeout() throws JSONException, InterruptedException {
+        SDKSettings.setAuctionTimeout(200);
+        executionSteps();
+        JSONObject postData = inspectPostData();
+        assertTrue(doesAuctionTimeExist(postData));
+        assertEquals(postData.getInt("auction_timeout_ms"),200);
+        long auctionTimeout = SDKSettings.getAuctionTimeout();
+        assertEquals(auctionTimeout, 200);
+
+
+        SDKSettings.setAuctionTimeout(0);
+        executionSteps();
+        postData = inspectPostData();
+        assertFalse(doesAuctionTimeExist(postData));
+        auctionTimeout = SDKSettings.getAuctionTimeout();
+        assertEquals(auctionTimeout, 0);
+
+    }
+
 
     @Test
     public void testFBBidderTokenAttached() throws JSONException, InterruptedException {
@@ -686,6 +706,15 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         return false;
     }
 
+    private boolean doesAuctionTimeExist(JSONObject postData) throws JSONException {
+        System.out.println("Checking if AuctionTimeout exists...");
+        if (postData.has("auction_timeout_ms")) {
+            return true;
+        }
+        return false;
+    }
+
+
     private JSONObject getTagsData(JSONObject postData) throws JSONException {
         JSONArray tags = postData.getJSONArray("tags");
         assertNotNull(tags);
@@ -801,7 +830,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         if (response != null && response.getAdList() != null && !response.getAdList().isEmpty()) {
             requesterReceivedServerResponse = true;
         }else{
-            failed(ResultCode.UNABLE_TO_FILL, response.getAdResponseInfo());
+            failed(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL), response.getAdResponseInfo());
         }
         this.response = response;
     }

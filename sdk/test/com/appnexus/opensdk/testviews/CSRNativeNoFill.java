@@ -13,7 +13,7 @@ public class CSRNativeNoFill implements CSRAd {
     public void requestAd(Context context, String payload, CSRController mBC, TargetingParameters tp) {
         Lock.explicitSleep(2);
         if (mBC != null) {
-            mBC.onAdFailed(ResultCode.UNABLE_TO_FILL);
+            mBC.onAdFailed(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
         }
     }
 }

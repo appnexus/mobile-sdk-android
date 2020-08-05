@@ -99,7 +99,7 @@ public class AdViewRequestManager extends RequestManager {
     @Override
     public void failed(ResultCode code, ANAdResponseInfo responseInfo) {
         printMediatedClasses();
-        Clog.e("AdViewRequestManager", code.name());
+        Clog.e("AdViewRequestManager", code.getMessage());
 
         Ad owner = this.owner.get();
         fireTracker(noAdUrl, Clog.getString(R.string.no_ad_url));
@@ -176,7 +176,7 @@ public class AdViewRequestManager extends RequestManager {
             processNextAd();
         } else {
             Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.response_no_ads));
-            failed(ResultCode.UNABLE_TO_FILL, response.getAdResponseInfo());
+            failed(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL), response.getAdResponseInfo());
         }
     }
 
@@ -204,7 +204,7 @@ public class AdViewRequestManager extends RequestManager {
                 handleCSMVASTAdResponse(owner, (CSMVASTAdResponse) baseAdResponse);
             } else {
                 Clog.e(Clog.baseLogTag, "processNextAd failed:: invalid content source:: " + baseAdResponse.getContentSource());
-                continueWaterfall(ResultCode.INTERNAL_ERROR);
+                continueWaterfall(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR));
             }
         }
     }
@@ -268,10 +268,10 @@ public class AdViewRequestManager extends RequestManager {
                     // Vast ads
                     handleRTBVASTResponse(ownerAd, (RTBVASTAdResponse) rtbAdResponse);
                 } else {
-                    continueWaterfall(ResultCode.UNABLE_TO_FILL);
+                    continueWaterfall(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
                 }
             } else {
-                continueWaterfall(ResultCode.UNABLE_TO_FILL);
+                continueWaterfall(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
             }
         } else if (rtbAdResponse instanceof RTBNativeAdResponse) {
             handleNativeResponse(ownerAd, rtbAdResponse);
@@ -295,10 +295,10 @@ public class AdViewRequestManager extends RequestManager {
                     }
                 } else {
                     Clog.e(Clog.baseLogTag, "handleRTBResponse failed:: invalid adType::" + rtbAdResponse.getAdType());
-                    continueWaterfall(ResultCode.INTERNAL_ERROR);
+                    continueWaterfall(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR));
                 }
             } else {
-                continueWaterfall(ResultCode.UNABLE_TO_FILL);
+                continueWaterfall(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
             }
         }
     }
@@ -310,7 +310,7 @@ public class AdViewRequestManager extends RequestManager {
             if (rtbAdResponse != null && rtbAdResponse.getAdContent() != null) {
                 owner.getMultiAd().initiateVastAdView(rtbAdResponse, this);
             } else {
-                continueWaterfall(ResultCode.UNABLE_TO_FILL);
+                continueWaterfall(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
             }
         }
     }
@@ -322,10 +322,10 @@ public class AdViewRequestManager extends RequestManager {
 
                 owner.getMultiAd().initiateVastAdView(csmvastAdResponse, this);
             } else {
-                continueWaterfall(ResultCode.UNABLE_TO_FILL);
+                continueWaterfall(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
             }
         } else {
-            continueWaterfall(ResultCode.UNABLE_TO_FILL);
+            continueWaterfall(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
         }
     }
 
@@ -353,7 +353,7 @@ public class AdViewRequestManager extends RequestManager {
                         owner.getAdDispatcher());
             } else {
                 Clog.e(Clog.baseLogTag, "MediaType type can not be identified.");
-                continueWaterfall(ResultCode.INVALID_REQUEST);
+                continueWaterfall(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST));
             }
         }
     }
@@ -381,7 +381,7 @@ public class AdViewRequestManager extends RequestManager {
         Ad adOwner = owner.get();
 
         if (adOwner == null || currentAd == null) {
-            failed(ResultCode.INTERNAL_ERROR, null);
+            failed(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR), null);
             return;
         }
 

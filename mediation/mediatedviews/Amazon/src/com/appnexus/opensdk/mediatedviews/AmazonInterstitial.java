@@ -41,13 +41,11 @@ public class AmazonInterstitial implements MediatedInterstitialAdView {
     /**
      * Called by the AN SDK to request an Interstitial ad from the Amazon SDK. .
      *
-     * @param mBC       the object which will be called with events from the Amazon SDK
+     * @param mIC       the object which will be called with events from the Amazon SDK
      * @param activity  the activity from which this is launched
      * @param parameter String parameter received from the server for instantiation of this object
      *      optional server side parameters to control this call.
      * @param uid       The 3rd party placement , in adMob this is the adUnitID
-     * @param width     Width of the ad
-     * @param height    Height of the ad
      */
     @Override
     public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid, TargetingParameters tp) {
@@ -59,7 +57,7 @@ public class AmazonInterstitial implements MediatedInterstitialAdView {
 
         if (!this.iad.loadAd(targetingOptions)) {
             if (mIC != null) {
-                mIC.onAdFailed(ResultCode.UNABLE_TO_FILL);
+                mIC.onAdFailed(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
             }
             this.iad = null;
         }

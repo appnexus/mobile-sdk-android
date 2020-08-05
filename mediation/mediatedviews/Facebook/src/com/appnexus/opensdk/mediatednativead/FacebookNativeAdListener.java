@@ -42,15 +42,15 @@ public class FacebookNativeAdListener implements NativeAdListener {
         ResultCode code;
 
         if (adError.getErrorCode() == AdError.NO_FILL.getErrorCode()) {
-            code = ResultCode.UNABLE_TO_FILL;
+            code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
         } else if (adError.getErrorCode() == AdError.LOAD_TOO_FREQUENTLY.getErrorCode()) {
-            code = ResultCode.REQUEST_TOO_FREQUENT;
+            code = ResultCode.getNewInstance(ResultCode.REQUEST_TOO_FREQUENT);
         } else if (adError.getErrorCode() == AdError.INTERNAL_ERROR.getErrorCode()) {
-            code = ResultCode.INTERNAL_ERROR;
+            code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
         } else if (adError.getErrorCode() == AdError.MISSING_PROPERTIES.getErrorCode()) {
-            code = ResultCode.INVALID_REQUEST;
+            code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
         } else {
-            code = ResultCode.INTERNAL_ERROR;
+            code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
         }
 
         controller.onAdFailed(code);
@@ -63,7 +63,7 @@ public class FacebookNativeAdListener implements NativeAdListener {
             response.setResources();
             controller.onAdLoaded(response);
         } else {
-            controller.onAdFailed(ResultCode.UNABLE_TO_FILL);
+            controller.onAdFailed(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
         }
 
     }

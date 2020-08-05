@@ -55,7 +55,7 @@ public class InMobiInterstitial implements MediatedInterstitialAdView {
         if (mIC != null) {
             if (StringUtil.isEmpty(InMobiSettings.INMOBI_APP_ID)) {
                 Clog.e(Clog.mediationLogTag, "InMobi mediation failed. Call InMobiSettings.setInMobiAppId(String key, Context context) to set the app id.");
-                mIC.onAdFailed(ResultCode.MEDIATED_SDK_UNAVAILABLE);
+                mIC.onAdFailed(ResultCode.getNewInstance(ResultCode.MEDIATED_SDK_UNAVAILABLE));
                 return;
             }
             try {
@@ -65,7 +65,7 @@ public class InMobiInterstitial implements MediatedInterstitialAdView {
                 InMobiSettings.setTargetingParams(tp);
                 iad.load();
             } catch (NumberFormatException e) {
-                mIC.onAdFailed(ResultCode.INVALID_REQUEST);
+                mIC.onAdFailed(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST));
             }
         }
     }

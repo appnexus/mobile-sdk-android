@@ -36,7 +36,7 @@ public class DFPInterstitial implements MediatedInterstitialAdView {
                 ? GoogleBridge.GooglePlayDFPInterstitial : GoogleBridge.DFPInterstitial);
         if (adView == null) {
             if (mIC != null) {
-                mIC.onAdFailed(ResultCode.MEDIATED_SDK_UNAVAILABLE);
+                mIC.onAdFailed(ResultCode.getNewInstance(ResultCode.MEDIATED_SDK_UNAVAILABLE));
             }
             return;
         }

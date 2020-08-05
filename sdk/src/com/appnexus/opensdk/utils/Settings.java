@@ -46,7 +46,7 @@ public class Settings {
     public boolean debug_mode = false; // This should always be false here.
     public String ua = null;
 
-    public final String sdkVersion = "7.4.1";
+    public final String sdkVersion = "7.5";
 
     public String mcc;
     public String mnc;
@@ -55,6 +55,7 @@ public class Settings {
     public boolean omEnabled = true;
 
     public boolean locationEnabled = true;
+    public long auctionTimeout = 0;
     public Location location = null;
     public int locationDecimalDigits = -1;
 

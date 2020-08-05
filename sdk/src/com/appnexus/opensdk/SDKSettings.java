@@ -76,6 +76,23 @@ public class SDKSettings {
         return Settings.getSettings().locationEnabled;
     }
 
+
+    /**
+     * The amount of time, in milliseconds, to wait for a bidder to respond to a bid request.
+     *
+     * @param auctionTimeout in milliseconds,  default is zero
+     */
+    public static void setAuctionTimeout(long auctionTimeout) {
+        Settings.getSettings().auctionTimeout = auctionTimeout;
+    }
+
+    /**
+     * Returns auctionTimeout in milliseconds
+     */
+    public static long getAuctionTimeout() {
+        return Settings.getSettings().auctionTimeout;
+    }
+
     /**
      * Set true to allow Open-Measurement for viewability and verification measurement for ads served
      * The Android version needs to be KITKAT(4.4) or above for enabling the Open Measurement

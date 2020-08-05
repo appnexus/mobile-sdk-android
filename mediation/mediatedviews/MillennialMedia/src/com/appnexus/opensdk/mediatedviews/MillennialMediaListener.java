@@ -219,31 +219,31 @@ class MillennialMediaListener implements InlineAd.InlineListener, InterstitialAd
     }
 
     private ResultCode getResultCode(int error) {
-        ResultCode code = ResultCode.INTERNAL_ERROR;
+        ResultCode code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
 
         switch (error) {
             case 1: // ADAPTER_NOT_FOUND
                 break;
             case 2: // NO_NETWORK
-                code = ResultCode.NETWORK_ERROR;
+                code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
                 break;
             case 3: // INIT_FAILED
                 break;
             case 4: // DISPLAY_FAILED
                 break;
             case 5: // LOAD_FAILED
-                code = ResultCode.UNABLE_TO_FILL;
+                code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
                 break;
             case 6: // LOAD_TIMED_OUT
-                code = ResultCode.UNABLE_TO_FILL;
+                code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
                 break;
             case 7: // UNKNOWN
                 break;
             case 201: // EXPIRED
-                code = ResultCode.UNABLE_TO_FILL;
+                code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
                 break;
             case 202: // NOT_LOADED
-                code = ResultCode.UNABLE_TO_FILL;
+                code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
                 break;
             case 203: // ALREADY_LOADED
                 break;

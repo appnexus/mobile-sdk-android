@@ -18,7 +18,6 @@ package com.appnexus.opensdk.csr;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.appnexus.opensdk.CSRAd;
 import com.appnexus.opensdk.CSRController;
@@ -63,13 +62,13 @@ public class FBNativeBanner implements CSRAd {
                         Clog.e(Clog.csrLogTag, "FBNativeBanner - received adError " + adError.getErrorCode() + " with message: " + adError.getErrorMessage());
 
                         if (adError.getErrorCode() == AdError.NO_FILL.getErrorCode()) {
-                            code = ResultCode.UNABLE_TO_FILL;
+                            code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
                         } else if (adError.getErrorCode() == AdError.LOAD_TOO_FREQUENTLY.getErrorCode()) {
-                            code = ResultCode.REQUEST_TOO_FREQUENT;
+                            code = ResultCode.getNewInstance(ResultCode.REQUEST_TOO_FREQUENT);
                         } else if (adError.getErrorCode() == AdError.INTERNAL_ERROR.getErrorCode()) {
-                            code = ResultCode.INTERNAL_ERROR;
+                            code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
                         } else {
-                            code = ResultCode.CUSTOM_ADAPTER_ERROR;
+                            code = ResultCode.getNewInstance(ResultCode.CUSTOM_ADAPTER_ERROR);
                             code.setMessage("AdError: " + adError.getErrorCode() + " Message: " + adError.getErrorMessage());
                         }
 
@@ -81,7 +80,7 @@ public class FBNativeBanner implements CSRAd {
                         FBNativeBannerAdResponse response = FBNativeBannerAdResponse.createResponse(nativeBannerAd);
                         if (response == null) {
                             Clog.e(Clog.csrLogTag, "FBNativeBanner - Unable to create native response.");
-                            mBC.onAdFailed(ResultCode.INTERNAL_ERROR);
+                            mBC.onAdFailed(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR));
                         } else {
                             Clog.d(Clog.csrLogTag, "onAdLoaded called.");
                             mBC.onAdLoaded(response);
@@ -110,12 +109,12 @@ public class FBNativeBanner implements CSRAd {
                 }).build());
             } else {
                 Clog.e(Clog.csrLogTag, "FBNativeBanner - Unable to retrieve placement id.");
-                mBC.onAdFailed(ResultCode.INVALID_REQUEST);
+                mBC.onAdFailed(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST));
             }
 
         } else {
             Clog.e(Clog.csrLogTag, "FBNativeBanner - Payload is empty.");
-            mBC.onAdFailed(ResultCode.INVALID_REQUEST);
+            mBC.onAdFailed(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST));
         }
 
     }

@@ -473,7 +473,7 @@ public class NativeAdRequest implements Ad, MultiAd {
         @Override
         public void onAdLoaded(final AdResponse ad) {
             if (!ad.getMediaType().equals(MediaType.NATIVE)) {
-                onAdFailed(ResultCode.INTERNAL_ERROR, null);
+                onAdFailed(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR), null);
             } else {
                 final String IMAGE_URL = "image", ICON_URL = "icon";
                 final NativeAdResponse response = ad.getNativeAdResponse();

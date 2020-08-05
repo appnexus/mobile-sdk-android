@@ -47,7 +47,7 @@ public class InMobiNativeAd implements MediatedNativeAd {
         if (mBC != null) {
             if (StringUtil.isEmpty(InMobiSettings.INMOBI_APP_ID)) {
                 Clog.e(Clog.mediationLogTag, "InMobi mediation failed. Call InMobiSettings.setInMobiAppId(String key, Context context) to set the app id.");
-                mBC.onAdFailed(ResultCode.MEDIATED_SDK_UNAVAILABLE);
+                mBC.onAdFailed(ResultCode.getNewInstance(ResultCode.MEDIATED_SDK_UNAVAILABLE));
                 return;
             }
             try {
@@ -57,7 +57,7 @@ public class InMobiNativeAd implements MediatedNativeAd {
                 InMobiSettings.setTargetingParams(tp);
                 nativeAd.load();
             } catch (NumberFormatException e) {
-                mBC.onAdFailed(ResultCode.INVALID_REQUEST);
+                mBC.onAdFailed(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST));
             }
         }
 

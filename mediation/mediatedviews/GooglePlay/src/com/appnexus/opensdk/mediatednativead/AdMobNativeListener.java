@@ -37,19 +37,19 @@ public class AdMobNativeListener extends AdListener implements UnifiedNativeAd.O
     public void onAdFailedToLoad(int errorCode) {
         Clog.e(Clog.mediationLogTag, "AdMob - onAdFailedToLoad");
         if (mBC != null) {
-            ResultCode code = ResultCode.INTERNAL_ERROR;
+            ResultCode code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
             switch (errorCode) {
                 case AdRequest.ERROR_CODE_INTERNAL_ERROR:
-                    code = ResultCode.INTERNAL_ERROR;
+                    code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
                     break;
                 case AdRequest.ERROR_CODE_INVALID_REQUEST:
-                    code = ResultCode.INVALID_REQUEST;
+                    code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
                     break;
                 case AdRequest.ERROR_CODE_NETWORK_ERROR:
-                    code = ResultCode.NETWORK_ERROR;
+                    code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
                     break;
                 case AdRequest.ERROR_CODE_NO_FILL:
-                    code = ResultCode.UNABLE_TO_FILL;
+                    code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
                     break;
                 default:
                     break;

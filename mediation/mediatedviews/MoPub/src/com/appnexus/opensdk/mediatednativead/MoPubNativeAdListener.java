@@ -45,7 +45,7 @@ public class MoPubNativeAdListener implements MoPubNative.MoPubNativeNetworkList
             this.response = new WeakReference<MoPubNativeAdResponse>(response);
             controller.onAdLoaded(response);
         } else {
-            controller.onAdFailed(ResultCode.INTERNAL_ERROR);
+            controller.onAdFailed(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR));
         }
     }
 
@@ -53,11 +53,11 @@ public class MoPubNativeAdListener implements MoPubNative.MoPubNativeNetworkList
     public void onNativeFail(NativeErrorCode nativeErrorCode) {
         Clog.d(Clog.mediationLogTag, "MoPub: " + nativeErrorCode.toString());
 
-        ResultCode code = ResultCode.INTERNAL_ERROR;
+        ResultCode code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
 
         switch (nativeErrorCode) {
             case EMPTY_AD_RESPONSE:
-                code = ResultCode.UNABLE_TO_FILL;
+                code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
                 break;
             case IMAGE_DOWNLOAD_FAILURE:
                 break;
@@ -68,21 +68,21 @@ public class MoPubNativeAdListener implements MoPubNative.MoPubNativeNetworkList
             case SERVER_ERROR_RESPONSE_CODE:
                 break;
             case CONNECTION_ERROR:
-                code = ResultCode.NETWORK_ERROR;
+                code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
                 break;
             case UNSPECIFIED:
                 break;
             case NETWORK_INVALID_REQUEST:
-                code = ResultCode.NETWORK_ERROR;
+                code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
                 break;
             case NETWORK_TIMEOUT:
-                code = ResultCode.NETWORK_ERROR;
+                code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
                 break;
             case NETWORK_NO_FILL:
-                code = ResultCode.UNABLE_TO_FILL;
+                code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
                 break;
             case NETWORK_INVALID_STATE:
-                code = ResultCode.NETWORK_ERROR;
+                code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
                 break;
             case NATIVE_ADAPTER_CONFIGURATION_ERROR:
                 break;

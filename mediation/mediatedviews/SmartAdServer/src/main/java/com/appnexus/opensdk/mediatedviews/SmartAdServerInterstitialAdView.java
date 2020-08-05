@@ -51,7 +51,7 @@ public class SmartAdServerInterstitialAdView extends SmartAdServerBaseAdapter im
         SASAdPlacement adPlacement = configureSDKAndGetAdPlacement(activity, uid, tp);
 
         if (adPlacement == null) {
-            mIC.onAdFailed(ResultCode.INTERNAL_ERROR);
+            mIC.onAdFailed(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR));
             return;
         }
 
@@ -80,12 +80,12 @@ public class SmartAdServerInterstitialAdView extends SmartAdServerBaseAdapter im
                 final ResultCode code;
                 if (e instanceof SASNoAdToDeliverException) {
                     // no ad to deliver
-                    code = ResultCode.UNABLE_TO_FILL;
+                    code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
                 } else if (e instanceof SASAdTimeoutException) {
                     // ad request timeout translates to network error
-                    code = ResultCode.NETWORK_ERROR;
+                    code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
                 } else {
-                    code = ResultCode.INTERNAL_ERROR;
+                    code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
                 }
 
                 if (mIC != null) {

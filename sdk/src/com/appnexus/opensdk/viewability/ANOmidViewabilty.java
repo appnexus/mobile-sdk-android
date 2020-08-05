@@ -58,9 +58,9 @@ public class ANOmidViewabilty {
         if (!SDKSettings.getOMEnabled())
             return;
 
-            try {
+        try {
             if (!Omid.isActive()) {
-                Omid.activateWithOmidApiVersion(Omid.getVersion(), applicationContext);
+                Omid.activate(applicationContext);
             }
         } catch (IllegalArgumentException e) {
             e.printStackTrace();

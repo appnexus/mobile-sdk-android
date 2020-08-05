@@ -22,10 +22,10 @@ import android.view.View;
 
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
+import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.util.Lock;
-import com.appnexus.opensdk.utils.Settings;
 
 import static com.appnexus.opensdk.ResultCode.UNABLE_TO_FILL;
 
@@ -62,12 +62,12 @@ public class MediatedBannerCallbacksTestView implements MediatedBannerAdView {
             // load then fail
             case 20:
                 mBC.onAdLoaded();
-                mBC.onAdFailed(UNABLE_TO_FILL);
+                mBC.onAdFailed(ResultCode.getNewInstance(UNABLE_TO_FILL));
                 Lock.unpause();
                 break;
             // fail then load
             case 21:
-                mBC.onAdFailed(UNABLE_TO_FILL);
+                mBC.onAdFailed(ResultCode.getNewInstance(UNABLE_TO_FILL));
                 mBC.onAdLoaded();
                 Lock.unpause();
                 break;
@@ -86,7 +86,7 @@ public class MediatedBannerCallbacksTestView implements MediatedBannerAdView {
                 break;
             // fail then extra
             case 23:
-                mBC.onAdFailed(UNABLE_TO_FILL);
+                mBC.onAdFailed(ResultCode.getNewInstance(UNABLE_TO_FILL));
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -99,8 +99,8 @@ public class MediatedBannerCallbacksTestView implements MediatedBannerAdView {
                 break;
             // fail multiple
             case 24:
-                mBC.onAdFailed(UNABLE_TO_FILL);
-                mBC.onAdFailed(UNABLE_TO_FILL);
+                mBC.onAdFailed(ResultCode.getNewInstance(UNABLE_TO_FILL));
+                mBC.onAdFailed(ResultCode.getNewInstance(UNABLE_TO_FILL));
                 Lock.unpause();
                 break;
             // load, then call extras after delay

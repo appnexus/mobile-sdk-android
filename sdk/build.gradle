@@ -1,5 +1,5 @@
 // Project properties
-version = "7.4.1"
+version = "7.5"
 group='com.appnexus.opensdk'
 
 // Android build
@@ -9,10 +9,10 @@ android {
     compileSdkVersion 28
     buildToolsVersion '29.0.0'
     defaultConfig {
-        versionCode 70 // An integer value that represents the version of the code, relative to other versions. Increase for each release.
+        versionCode 71 // An integer value that represents the version of the code, relative to other versions. Increase for each release.
         versionName version
         consumerProguardFiles 'proguard-project.txt'
-        minSdkVersion 9
+        minSdkVersion 14
         targetSdkVersion 28
     }
 
@@ -37,7 +37,8 @@ android {
 }
 
 dependencies {
-    api fileTree(include: '*.jar', dir: 'libs')
+    api fileTree(include: ['*.aar'], dir: 'libs')
+
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.assertj:assertj-core:2.6.0'
     testImplementation 'org.robolectric:robolectric:4.3.1'

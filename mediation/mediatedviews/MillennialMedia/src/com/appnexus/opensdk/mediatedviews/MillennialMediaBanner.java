@@ -81,7 +81,7 @@ public class MillennialMediaBanner implements MediatedBannerAdView {
                 return adContainer;
             } catch (MMException e) {
                 if (mBC != null) {
-                    mBC.onAdFailed(ResultCode.INTERNAL_ERROR);
+                    mBC.onAdFailed(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR));
                 }
             }
 

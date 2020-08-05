@@ -150,7 +150,7 @@ public class ExecutorForBackgroundTasksTests extends BaseViewAdTest {
         SDKSettings.setExternalExecutor(MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
         assertNotSame(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
         try {
-            ResponseUrl.Builder builder = new ResponseUrl.Builder(url, ResultCode.SUCCESS);
+            ResponseUrl.Builder builder = new ResponseUrl.Builder(url, ResultCode.getNewInstance(ResultCode.SUCCESS));
             ResponseUrl responseUrl = builder.build();
             Class<?> aClass = Class.forName("com.appnexus.opensdk.ResponseUrl");
             Method met = aClass.getDeclaredMethod("execute", null);

@@ -66,7 +66,7 @@ public class AmazonBanner implements MediatedBannerAdView {
         if (!adView.loadAd(targetingOptions)) {
             this.amazonListener.printToClogError("loadAd() call rejected");
             if (mBC != null) {
-                mBC.onAdFailed(ResultCode.UNABLE_TO_FILL);
+                mBC.onAdFailed(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
             }
             adView = null;
         }

@@ -53,7 +53,7 @@ public class MediatedNativeAdController {
     private MediatedNativeAdController(CSMSDKAdResponse currentAd, UTAdRequester requester) {
         if (currentAd == null) {
             Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_no_ads));
-            errorCode = ResultCode.UNABLE_TO_FILL;
+            errorCode = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
         } else {
             Clog.d(Clog.mediationLogTag, Clog.getString(
                     R.string.instantiating_class, currentAd.getClassName()));
@@ -75,7 +75,7 @@ public class MediatedNativeAdController {
                             currentAd.getId(), this,
                             requester.getRequestParams().getTargetingParameters());
                 } else {
-                    errorCode = ResultCode.INVALID_REQUEST;
+                    errorCode = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
                 }
             } catch (ClassNotFoundException e) {
                 // exception in Class.forName
@@ -95,11 +95,11 @@ public class MediatedNativeAdController {
                 handleInstantiationFailure(e, currentAd.getClassName());
             } catch (Exception e) {
                 Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_exception), e);
-                errorCode = ResultCode.INTERNAL_ERROR;
+                errorCode = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
             } catch (Error e) {
                 // catch errors. exceptions will be caught above.
                 Clog.e(Clog.mediationLogTag, Clog.getString(R.string.mediated_request_error), e);
-                errorCode = ResultCode.INTERNAL_ERROR;
+                errorCode = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
             }
         }
         if (errorCode != null) {
@@ -115,7 +115,7 @@ public class MediatedNativeAdController {
             Clog.w(Clog.mediationLogTag, String.format("Adding %s to invalid networks list", className));
             Settings.getSettings().addInvalidNetwork(MediaType.NATIVE, className);
         }
-        errorCode = ResultCode.MEDIATED_SDK_UNAVAILABLE;
+        errorCode = ResultCode.getNewInstance(ResultCode.MEDIATED_SDK_UNAVAILABLE);
     }
 
     /**
@@ -130,7 +130,7 @@ public class MediatedNativeAdController {
         markLatencyStop();
         cancelTimeout();
         hasSucceeded = true;
-        fireResponseURL(currentAd.getResponseUrl(), ResultCode.SUCCESS);
+        fireResponseURL(currentAd.getResponseUrl(), ResultCode.getNewInstance(ResultCode.SUCCESS));
         UTAdRequester requester = this.requester.get();
 
 
@@ -259,7 +259,7 @@ public class MediatedNativeAdController {
             if (nac == null || nac.hasFailed) return;
             Clog.w(Clog.mediationLogTag, Clog.getString(R.string.mediation_timeout));
             try {
-                nac.onAdFailed(ResultCode.INTERNAL_ERROR);
+                nac.onAdFailed(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR));
             } catch (IllegalArgumentException e) {
                 // catch exception for unregisterReceiver() of destroy() call
             } finally {

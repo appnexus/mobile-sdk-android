@@ -40,7 +40,7 @@ public class DFPBanner implements MediatedBannerAdView {
                 ? GoogleBridge.GooglePlayDFPBanner : GoogleBridge.DFPBanner);
         if (mediatedAdView == null) {
             if (mBC != null) {
-                mBC.onAdFailed(ResultCode.MEDIATED_SDK_UNAVAILABLE);
+                mBC.onAdFailed(ResultCode.getNewInstance(ResultCode.MEDIATED_SDK_UNAVAILABLE));
             }
             return null;
         }

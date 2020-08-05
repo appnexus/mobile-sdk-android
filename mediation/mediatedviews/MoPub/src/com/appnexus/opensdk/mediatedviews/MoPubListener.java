@@ -105,47 +105,47 @@ public class MoPubListener implements MoPubView.BannerAdListener, MoPubInterstit
     }
 
     public void handleMPErrorCode(MoPubErrorCode mpError) {
-        ResultCode code = ResultCode.INTERNAL_ERROR;
+        ResultCode code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
 
         switch (mpError) {
             case INTERNAL_ERROR:
-                code = ResultCode.INTERNAL_ERROR;
+                code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
                 break;
             case NO_FILL:
-                code = ResultCode.UNABLE_TO_FILL;
+                code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
                 break;
             case SERVER_ERROR:
-                code = ResultCode.NETWORK_ERROR;
+                code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
                 break;
             case CANCELLED:
-                code = ResultCode.INTERNAL_ERROR;
+                code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
                 break;
             case ADAPTER_NOT_FOUND:
-                code = ResultCode.MEDIATED_SDK_UNAVAILABLE;
+                code = ResultCode.getNewInstance(ResultCode.MEDIATED_SDK_UNAVAILABLE);
                 break;
             case ADAPTER_CONFIGURATION_ERROR:
-                code = ResultCode.MEDIATED_SDK_UNAVAILABLE;
+                code = ResultCode.getNewInstance(ResultCode.MEDIATED_SDK_UNAVAILABLE);
                 break;
             case NETWORK_TIMEOUT:
-                code = ResultCode.NETWORK_ERROR;
+                code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
                 break;
             case NETWORK_NO_FILL:
-                code = ResultCode.UNABLE_TO_FILL;
+                code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
                 break;
             case NETWORK_INVALID_STATE:
-                code = ResultCode.NETWORK_ERROR;
+                code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
                 break;
             case MRAID_LOAD_ERROR:
-                code = ResultCode.INTERNAL_ERROR;
+                code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
                 break;
             case VIDEO_CACHE_ERROR:
-                code = ResultCode.INTERNAL_ERROR;
+                code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
                 break;
             case VIDEO_DOWNLOAD_ERROR:
-                code = ResultCode.NETWORK_ERROR;
+                code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
                 break;
             case UNSPECIFIED:
-                code = ResultCode.INTERNAL_ERROR;
+                code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
                 break;
         }
 
