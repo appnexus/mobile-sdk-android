@@ -1,3 +1,7 @@
+## 7.5.1
+### Improvements/Bug Fixes
+MS-4464 Fixed crashes with OMID in v7.5
+
 ## 7.5
 ### New Features
 + MS-4384 Added support for Auction timeout [https://wiki.xandr.com/x/sIS1Bg]
