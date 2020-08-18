@@ -74,7 +74,7 @@ class MARLoadAndDisplayActivity : Activity() {
                 }
 
                 override fun onMultiAdRequestFailed(code: ResultCode) {
-                    msg += code.name
+                    msg += code.message
                     toast()
                 }
             })

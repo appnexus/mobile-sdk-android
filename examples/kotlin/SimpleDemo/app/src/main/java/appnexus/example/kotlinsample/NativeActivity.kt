@@ -53,7 +53,7 @@ class NativeActivity : AppCompatActivity(),NativeAdRequestListener,NativeAdEvent
     }
 
     override fun onAdFailed(errorcode: ResultCode, adResponseinfo:ANAdResponseInfo) {
-        log("Native Ad Failed: " + errorcode.name)
+        log("Native Ad Failed: " + errorcode.message)
     }
     // NativeAdRequestListener - End
 
@@ -75,6 +75,11 @@ class NativeActivity : AppCompatActivity(),NativeAdRequestListener,NativeAdEvent
     private fun log(msg: String){
         Log.d("NativeActivity",msg)
         Toast.makeText(this.applicationContext, msg, Toast.LENGTH_LONG).show()
+    }
+
+    override fun onDestroy() {
+        NativeAdSDK.unRegisterTracking(nativeContainer)
+        super.onDestroy()
     }
 
 }

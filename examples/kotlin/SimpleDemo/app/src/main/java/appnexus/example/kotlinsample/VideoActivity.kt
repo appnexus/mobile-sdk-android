@@ -65,7 +65,7 @@ class VideoActivity : AppCompatActivity(), VideoAdLoadListener, VideoAdPlaybackL
     }
 
     override fun onAdRequestFailed(videoAd: VideoAd, errorCode: ResultCode) {
-        log("Video Ad Failed: " + errorCode.name)
+        log("Video Ad Failed: " + errorCode.message)
         playButon.setVisibility(View.VISIBLE)
     }
     // VideoAdLoadListener - End

@@ -183,7 +183,7 @@ public class MyActivity extends Activity {
 
             @Override
             public void onMultiAdRequestFailed(ResultCode code) {
-                msg += code.name();
+                msg += code.getMessage();
                 toast();
             }
         });
@@ -208,7 +208,7 @@ public class MyActivity extends Activity {
 
                     @Override
                     public void onMultiAdRequestFailed(ResultCode code) {
-                        msg += code.name();
+                        msg += code.getMessage();
                         toast();
                     }
                 });

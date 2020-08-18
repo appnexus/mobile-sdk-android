@@ -50,7 +50,11 @@ class InterstitialActivity : AppCompatActivity(), AdListener {
     }
 
     override fun onAdRequestFailed(adView: AdView?, resultCode: ResultCode?) {
-        log("Ad Failed: " + resultCode?.name)
+        log("Ad Failed: " + resultCode?.message)
+    }
+
+    override fun onLazyAdLoaded(adView: AdView?) {
+        log("Ad onLazyAdLoaded")
     }
 
     private fun log(msg: String){
