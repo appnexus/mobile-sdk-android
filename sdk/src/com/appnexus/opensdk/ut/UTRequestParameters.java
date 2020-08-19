@@ -53,7 +53,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.UUID;
-
+import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 
 public class UTRequestParameters {
 
@@ -146,6 +146,13 @@ public class UTRequestParameters {
     private static final String GDPR_CONSENT_STRING = "consent_string";
     private static final String GDPR_CONSENT_REQUIRED = "consent_required";
     private static final String FORCE_CREATIVE_ID = "force_creative_id";
+    private static final String IAB_SUPPORT = "iab_support";
+    private static final String OMIDPN = "omidpn";
+    private static final String OMIDPV = "omidpv";
+    private static final String BANNER_FRAMEWORKS = "banner_frameworks";
+    private static final String VIDEO_FRAMEWORKS = "video_frameworks";
+    private static final String NATIVE_FRAMEWORKS = "native_frameworks";
+    private static final String OMID_FRAMEWORK_SIGNAL = "[6]";
 
     private static final String US_PRIVACY = "us_privacy";
 
@@ -366,6 +373,9 @@ public class UTRequestParameters {
         isBannerEnabled = bannerEnabled;
     }
 
+    public boolean isBannerEnabled() {
+        return isBannerEnabled;
+    }
 
     public boolean isBannerNativeEnabled() {
         return isBannerNativeEnabled;
@@ -532,6 +542,15 @@ public class UTRequestParameters {
             if (gdprConsent != null && gdprConsent.length() > 0) {
                 postData.put(GDPR_CONSENT, gdprConsent);
             }
+
+            // add IAB Support Signal
+
+            if (SDKSettings.getOMEnabled()) {
+                JSONObject iabSupport = getIABSupportObject();
+                if (iabSupport != null && iabSupport.length() > 0) {
+                    postData.put(IAB_SUPPORT, iabSupport);
+                }
+            }
             // add Facebook bidder token if available
             appendFBToken(postData, context);
 
@@ -620,23 +639,43 @@ public class UTRequestParameters {
                 tag.put(TAG_ALLOW_SMALLER_SIZES, getAllowSmallerSizes());
 
                 JSONArray allowedMediaAdTypes = new JSONArray();
+                JSONArray omidFrameworksValue = new JSONArray(OMID_FRAMEWORK_SIGNAL);
+
                 if (utRequestParameters.getMediaType() == MediaType.BANNER) {
                     if (utRequestParameters.isBannerEnabled) {
                         allowedMediaAdTypes.put(ALLOWED_TYPE_BANNER);
+                        if(SDKSettings.getOMEnabled()) {
+                            tag.put(BANNER_FRAMEWORKS, omidFrameworksValue);
+                        }
                     }
                     if (utRequestParameters.isBannerVideoEnabled) {
                         allowedMediaAdTypes.put(ALLOWED_TYPE_VIDEO);
+                        if(SDKSettings.getOMEnabled()) {
+                            tag.put(VIDEO_FRAMEWORKS, omidFrameworksValue);
+                        }
                     }
                     if (utRequestParameters.isBannerNativeEnabled) {
                         allowedMediaAdTypes.put(ALLOWED_TYPE_NATIVE);
+                        if(SDKSettings.getOMEnabled()) {
+                            tag.put(NATIVE_FRAMEWORKS, omidFrameworksValue);
+                        }
                     }
                 } else if (utRequestParameters.getMediaType() == MediaType.INTERSTITIAL) {
                     allowedMediaAdTypes.put(ALLOWED_TYPE_BANNER);
                     allowedMediaAdTypes.put(ALLOWED_TYPE_INTERSTITIAL);
+                    if(SDKSettings.getOMEnabled()) {
+                        tag.put(BANNER_FRAMEWORKS, omidFrameworksValue);
+                    }
                 } else if (utRequestParameters.getMediaType() == MediaType.NATIVE) {
                     allowedMediaAdTypes.put(ALLOWED_TYPE_NATIVE);
+                    if(SDKSettings.getOMEnabled()) {
+                        tag.put(NATIVE_FRAMEWORKS, omidFrameworksValue);
+                    }
                 } else if (utRequestParameters.getMediaType() == MediaType.INSTREAM_VIDEO) {
                     allowedMediaAdTypes.put(ALLOWED_TYPE_VIDEO);
+                    if(SDKSettings.getOMEnabled()) {
+                        tag.put(VIDEO_FRAMEWORKS, omidFrameworksValue);
+                    }
                 }
 
                 tag.put(TAG_ALLOWED_MEDIA_AD_TYPES, allowedMediaAdTypes);
@@ -942,6 +981,18 @@ public class UTRequestParameters {
         }
         return sdk;
     }
+
+    private JSONObject getIABSupportObject() {
+        JSONObject iabSupport = new JSONObject();
+        try {
+            iabSupport.put(OMIDPN, ANOmidViewabilty.OMID_PARTNER_NAME);
+            iabSupport.put(OMIDPV, Settings.getSettings().sdkVersion);
+        } catch (JSONException e) {
+            Clog.e(Clog.httpReqLogTag, "IABSupportObject: " + e.getMessage());
+        }
+        return iabSupport;
+    }
+
 
     private JSONObject getGDPRConsentObject() {
         JSONObject gdprConsent = new JSONObject();
