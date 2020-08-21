@@ -89,6 +89,14 @@ public class InterstitialAdToRequestParametersTest extends BaseRoboTest {
         interstitialAdView.getRequestParameters().getCustomKeywords().contains("content_url");
     }
 
+    // Testing the force creative Id in the post data.
+    @Test
+    public void testForceCreativeId(){
+        interstitialAdView.setForceCreativeId(135482485);
+
+        String postData = getRequestParametersPostData();
+        assertTrue(postData.contains("\"force_creative_id\":135482485"));
+    }
 
 
     // https://github.com/robolectric/robolectric/blob/master/shadows/framework/src/main/java/org/robolectric/shadows/ShadowDisplay.java

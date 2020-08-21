@@ -612,7 +612,6 @@ public class UTRequestParameters {
                 primesize.put(SIZE_WIDTH, utRequestParameters.primarySize.width());
                 primesize.put(SIZE_HEIGHT, utRequestParameters.primarySize.height());
                 tag.put(TAG_PRIMARY_SIZE, primesize);
-
                 if (utRequestParameters.forceCreativeId > 0) {
                     tag.put(FORCE_CREATIVE_ID, utRequestParameters.forceCreativeId);
                 }
@@ -1045,7 +1044,8 @@ public class UTRequestParameters {
         return false;
     }
 
-    void setForceCreativeId(int forceCreativeId) {
+
+    public void setForceCreativeId(int forceCreativeId) {
         this.forceCreativeId = forceCreativeId;
     }
 

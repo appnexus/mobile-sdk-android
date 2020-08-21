@@ -764,6 +764,15 @@ public class VideoAd implements Ad, MultiAd {
         return "";
     }
 
+    /**
+     * Set AppNexus CreativeId that you want to display on this AdUnit for debugging/testing purpose.
+     *
+     * @param forceCreativeId of the creative.
+     */
+    public void setForceCreativeId(int forceCreativeId) {
+        requestParameters.setForceCreativeId(forceCreativeId);
+    }
+
     public String getVastXML() {
         if (videoAdView != null) {
             return videoAdView.getVastXML();

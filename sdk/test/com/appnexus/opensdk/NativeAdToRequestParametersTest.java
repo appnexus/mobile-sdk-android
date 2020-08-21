@@ -62,6 +62,14 @@ public class NativeAdToRequestParametersTest extends BaseRoboTest {
 
     }
 
+    // Tests the value of ForceCreativeId
+    @Test
+    public void testSetForceCreativeId(){
+        nativeAdRequest.setForceCreativeId(135482485);
+        String postData = getRequestParametersPostData();
+        assertTrue(postData.contains("\"force_creative_id\":135482485"));
+    }
+
     // Tests the value of RendererId
     @Test
     public void testSetRendererId(){

@@ -139,6 +139,15 @@ public class NativeAdRequest implements Ad, MultiAd {
     }
 
     /**
+     * Set AppNexus CreativeId that you want to display on this AdUnit for debugging/testing purpose.
+     *
+     * @param forceCreativeId of the creative.
+     */
+    public void setForceCreativeId(int forceCreativeId) {
+        requestParameters.setForceCreativeId(forceCreativeId);
+    }
+
+    /**
      * Sets whether or not to load landing pages in the background before displaying them.
      * This feature is on by default, but only works with the in-app browser (which is also enabled by default).
      * Disabling this feature may cause redirects, such as to the app store, to first open a blank web page.

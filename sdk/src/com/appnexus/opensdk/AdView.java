@@ -997,6 +997,15 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
         this.creativeId = creativeId;
     }
 
+    /**
+     * Set AppNexus CreativeId that you want to display on this AdUnit for debugging/testing purpose.
+     *
+     * @param forceCreativeId of the creative.
+     */
+    public void setForceCreativeId(int forceCreativeId) {
+        requestParameters.setForceCreativeId(forceCreativeId);
+    }
+
     void setCreativeHeight(int h) {
         creativeHeight = h;
     }
