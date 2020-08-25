@@ -31,23 +31,25 @@ class ImpressionTracker extends HTTPGet {
     private Context context;
     private ImpressionListener listener;
     private ANOmidAdSession anOmidAdSession;
+    private ImpressionTrackerListener impressionTrackerListener;
 
-    static ImpressionTracker create(String url, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession) {
+    static ImpressionTracker create(String url, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession, ImpressionTrackerListener impressionTrackerListener) {
         if (visibilityDetector == null) {
             return null;
         } else {
-            ImpressionTracker impressionTracker = new ImpressionTracker(url, visibilityDetector, context, anOmidAdSession);
+            ImpressionTracker impressionTracker = new ImpressionTracker(url, visibilityDetector, context, anOmidAdSession, impressionTrackerListener);
             visibilityDetector.addVisibilityListener(impressionTracker.listener);
             return impressionTracker;
         }
     }
 
-    private ImpressionTracker(String url, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession) {
+    private ImpressionTracker(String url, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession, ImpressionTrackerListener impressionTrackerListener) {
         this.url = url;
         this.visibilityDetector = visibilityDetector;
         this.listener = new ImpressionListener();
         this.context = context;
         this.anOmidAdSession = anOmidAdSession;
+        this.impressionTrackerListener = impressionTrackerListener;
     }
 
     private synchronized void fire() {
@@ -59,7 +61,14 @@ class ImpressionTracker extends HTTPGet {
                 visibilityDetector.removeVisibilityListener(listener);
                 listener = null;
             } else {
-                nm.addURL(url, context);
+                nm.addURL(url, context, new ImpressionTrackerListener() {
+                    @Override
+                    public void onImpressionTrackerFired() {
+                        if (impressionTrackerListener != null) {
+                            impressionTrackerListener.onImpressionTrackerFired();
+                        }
+                    }
+                });
             }
             if(anOmidAdSession !=null){
                 anOmidAdSession.fireImpression();
@@ -71,6 +80,9 @@ class ImpressionTracker extends HTTPGet {
     @Override
     protected void onPostExecute(HTTPResponse response) {
         Clog.d(Clog.nativeLogTag, "Impression tracked.");
+        if (impressionTrackerListener != null) {
+            impressionTrackerListener.onImpressionTrackerFired();
+        }
     }
 
     @Override

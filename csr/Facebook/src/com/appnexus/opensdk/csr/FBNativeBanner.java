@@ -21,6 +21,7 @@ import android.text.TextUtils;
 
 import com.appnexus.opensdk.CSRAd;
 import com.appnexus.opensdk.CSRController;
+import com.appnexus.opensdk.NativeAdEventListener;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.utils.Clog;
@@ -104,7 +105,14 @@ public class FBNativeBanner implements CSRAd {
                     @Override
                     public void onLoggingImpression(Ad ad) {
                         Clog.d(Clog.csrLogTag, "FBNativeBanner - onLoggingImpression called.");
-                        mBC.onAdImpression();
+                        NativeAdEventListener listener = null;
+                        if (responseWeakReference.get() != null) {
+                            FBNativeBannerAdResponse fbNativeBannerAdResponse = responseWeakReference.get();
+                            if (fbNativeBannerAdResponse != null && fbNativeBannerAdResponse.nativeAdEventListener != null) {
+                                listener = fbNativeBannerAdResponse.nativeAdEventListener;
+                            }
+                        }
+                        mBC.onAdImpression(listener);
                     }
                 }).build());
             } else {

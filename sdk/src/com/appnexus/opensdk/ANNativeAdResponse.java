@@ -318,7 +318,14 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
 
             impressionTrackers = new ArrayList<ImpressionTracker>(imp_trackers.size());
             for (String url : imp_trackers) {
-                ImpressionTracker impressionTracker = ImpressionTracker.create(url, visibilityDetector, view.getContext(), anOmidAdSession);
+                ImpressionTracker impressionTracker = ImpressionTracker.create(url, visibilityDetector, view.getContext(), anOmidAdSession, new ImpressionTrackerListener() {
+                    @Override
+                    public void onImpressionTrackerFired() {
+                        if (listener != null) {
+                            listener.onAdImpression();
+                        }
+                    }
+                });
                 impressionTrackers.add(impressionTracker);
             }
             this.registeredView = view;

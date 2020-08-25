@@ -124,6 +124,10 @@ public class MoPubNativeAdResponse extends BaseNativeAdResponse {
         return false;
     }
 
+    NativeAdEventListener getListener() {
+        return listener;
+    }
+
     @Override
     public Network getNetworkIdentifier() {
         return Network.MOPUB;

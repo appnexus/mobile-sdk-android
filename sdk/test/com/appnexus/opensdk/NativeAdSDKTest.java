@@ -99,6 +99,35 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     }
 
+//    @Test
+//    public void requestOnAdDidLogImpression() {
+//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+//        adRequest.loadAd();
+//        Lock.pause(1000);
+//        waitForTasks();
+//        Robolectric.flushForegroundThreadScheduler();
+//        Robolectric.flushBackgroundThreadScheduler();
+//
+//        waitForTasks();
+//        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+//        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+//        assertAdLoaded(true);
+//        nativeAdView = DummyView.getDummyView(activity);
+//        assertFalse(nativeAdView.isShown());
+//        NativeAdSDK.registerTracking(nativeAdResponse, nativeAdView, this);
+//        attachToWindow(nativeAdView);
+//        assertTrue(nativeAdView.isShown());
+//
+//        Shadows.shadowOf(nativeAdView).setViewFocus(true);
+//        assertTrue(nativeAdView.isShown());
+//        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+//        Lock.pause(2000);
+//        assertTrue(nativeAdView.getVisibility() == View.VISIBLE);
+//        assertTrue(impressionLogged);
+//        assertFalse(response.hasExpired());
+//
+//    }
+
 
     private void attachToWindow(View nativeAdView) {
         // Create a container (a parent view that holds all the

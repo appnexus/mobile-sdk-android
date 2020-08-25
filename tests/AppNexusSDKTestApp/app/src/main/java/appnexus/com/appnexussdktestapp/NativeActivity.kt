@@ -13,8 +13,9 @@ import com.appnexus.opensdk.*
 import com.appnexus.opensdk.utils.Settings
 import com.squareup.picasso.Picasso
 
-class NativeActivity : AppCompatActivity(), NativeAdRequestListener {
+class NativeActivity : AppCompatActivity(), NativeAdRequestListener, NativeAdEventListener {
 
+    var didLogImpression: Boolean = false
     lateinit var nativeAdRequest: NativeAdRequest
     var idlingResource: CountingIdlingResource = CountingIdlingResource("Native Load Count", true)
 
@@ -23,7 +24,7 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener {
         handleNativeResponse(nativeAdResponse)
     }
 
-    override fun onAdFailed(errorcode: ResultCode?, adResponseinfo:ANAdResponseInfo) {
+    override fun onAdFailed(errorcode: ResultCode?, adResponseinfo:ANAdResponseInfo?) {
         if (!idlingResource.isIdleNow)
             idlingResource.decrement()
     }
@@ -42,6 +43,7 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener {
     fun triggerAdLoad(placement: String?, useHttps: Boolean = true, creativeId: Int? = null) {
         Handler(Looper.getMainLooper()).post {
 
+            didLogImpression = false
             nativeAdRequest = NativeAdRequest(this, if (placement == null) "17982237" else placement)
             nativeAdRequest.placementID = if (placement == null) "17982237" else placement
             SDKSettings.useHttps(useHttps)
@@ -69,6 +71,20 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener {
         if (!idlingResource.isIdleNow)
             idlingResource.decrement()
 
+        NativeAdSDK.registerTracking(response, findViewById(R.id.main_native), this)
+    }
 
+    override fun onAdDidLogImpression() {
+        didLogImpression = true;
+    }
+
+    override fun onAdWasClicked() {
+
+    }
+
+    override fun onAdWasClicked(clickUrl: String?, fallbackURL: String?) {
+    }
+
+    override fun onAdWillLeaveApplication() {
     }
 }

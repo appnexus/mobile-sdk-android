@@ -92,8 +92,13 @@ public class InMobiNativeAdListener extends com.inmobi.ads.listeners.NativeAdEve
     @Override
     public void onAdImpressed(InMobiNative inMobiNative) {
         Clog.d(Clog.mediationLogTag, "InMobiNative - onAdImpressed");
+        NativeAdEventListener listener = null;
+        InMobiNativeAdResponse inMobiNativeAdResponse = this.weakReferenceInMobiNativeAdResponse.get();
+        if (inMobiNativeAdResponse != null && inMobiNativeAdResponse.getListener() != null) {
+            listener = inMobiNativeAdResponse.getListener();
+        }
         if(controller!=null) {
-            controller.onAdImpression();
+            controller.onAdImpression(listener);
         }
     }
 

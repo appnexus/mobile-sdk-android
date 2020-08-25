@@ -32,7 +32,7 @@ import com.appnexus.opensdk.util.Lock;
 import java.util.HashMap;
 import java.util.List;
 
-public class MediatedNativeSuccessful implements MediatedNativeAd {
+public class MediatedNativeSuccessful implements MediatedNativeAd, NativeAdEventListener {
     public static String TITLE = "test title";
     public static String DESCRIPTION = "test description";
     public static String ADDITIONAL_DESCRIPTION = "";
@@ -44,6 +44,7 @@ public class MediatedNativeSuccessful implements MediatedNativeAd {
     private NativeAdResponse.ImageSize mainImageSize = new NativeAdResponse.ImageSize(-1, -1);
     private NativeAdResponse.ImageSize iconSize = new NativeAdResponse.ImageSize(-1, -1);
     private ANAdResponseInfo adResponseInfo;
+    public static boolean impressionLogged = false;
 
     @Override
     public void requestNativeAd(Context context, String parameterString, String uid, MediatedNativeAdController mBC, TargetingParameters tp) {
@@ -188,7 +189,27 @@ public class MediatedNativeSuccessful implements MediatedNativeAd {
             });
 
             // Simulate Ad Impression
-            mBC.onAdImpression();
+            mBC.onAdImpression(this);
         }
+    }
+
+    @Override
+    public void onAdWasClicked() {
+
+    }
+
+    @Override
+    public void onAdWillLeaveApplication() {
+
+    }
+
+    @Override
+    public void onAdWasClicked(String clickUrl, String fallbackURL) {
+
+    }
+
+    @Override
+    public void onAdImpression() {
+        impressionLogged = true;
     }
 }
