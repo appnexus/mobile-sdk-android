@@ -165,7 +165,7 @@ class MARActivity : Activity() {
             }
 
             override fun onMultiAdRequestFailed(code: ResultCode) {
-                msg += code.name
+                msg += code.message
                 toast()
             }
         })
@@ -188,7 +188,7 @@ class MARActivity : Activity() {
                 }
 
                 override fun onMultiAdRequestFailed(code: ResultCode) {
-                    msg += code.name
+                    msg += code.message
                     toast()
                 }
             })
@@ -245,7 +245,7 @@ class MARActivity : Activity() {
         //        }, 0);
     }
 
-    internal fun load() {
+    internal fun load(bgTask: Boolean = false) {
         multiAdRequestCompleted = false
         Clog.e("MAR TESTING", "IDLING RESOURCE IDLE: " + idlingResource.isIdleNow)
         if (idlingResource.isIdleNow) {
@@ -254,7 +254,7 @@ class MARActivity : Activity() {
         anMultiAdRequest!!.load()
     }
 
-    internal fun load2() {
+    internal fun load2(bgTask: Boolean = false) {
         multiAdRequestCompleted2 = false
         Clog.e("MAR TESTING", "IDLING RESOURCE IDLE: " + idlingResource.isIdleNow)
         if (idlingResource.isIdleNow) {

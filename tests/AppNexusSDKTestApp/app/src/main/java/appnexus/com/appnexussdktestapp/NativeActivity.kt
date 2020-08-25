@@ -10,8 +10,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.test.espresso.idling.CountingIdlingResource
 import appnexus.com.appnexussdktestapp.utility.Utils
 import com.appnexus.opensdk.*
+import com.appnexus.opensdk.tasksmanager.TasksManager
 import com.appnexus.opensdk.utils.Settings
 import com.squareup.picasso.Picasso
+import java.util.concurrent.ExecutorService
 
 class NativeActivity : AppCompatActivity(), NativeAdRequestListener, NativeAdEventListener {
 
@@ -21,10 +23,12 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener, NativeAdEve
 
     override fun onAdLoaded(nativeAdResponse: NativeAdResponse?) {
         Toast.makeText(this, "Native Ad Loaded", Toast.LENGTH_LONG).show()
-        handleNativeResponse(nativeAdResponse)
+        TasksManager.getInstance().executeOnMainThread {
+            handleNativeResponse(nativeAdResponse)
+        }
     }
 
-    override fun onAdFailed(errorcode: ResultCode?, adResponseinfo:ANAdResponseInfo?) {
+    override fun onAdFailed(errorcode: ResultCode?, adResponseinfo: ANAdResponseInfo?) {
         if (!idlingResource.isIdleNow)
             idlingResource.decrement()
     }
@@ -40,7 +44,14 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener, NativeAdEve
 //        )
     }
 
-    fun triggerAdLoad(placement: String?, useHttps: Boolean = true, creativeId: Int? = null) {
+    fun triggerAdLoad(
+        placement: String?,
+        useHttps: Boolean = true,
+        creativeId: Int? = null,
+        bgTask: Boolean = false,
+        useExecutor: Boolean = false
+    ) {
+        SDKSettings.enableBackgroundThreading(bgTask)
         Handler(Looper.getMainLooper()).post {
 
             didLogImpression = false
@@ -48,11 +59,19 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener, NativeAdEve
             nativeAdRequest.placementID = if (placement == null) "17982237" else placement
             SDKSettings.useHttps(useHttps)
             nativeAdRequest.listener = this
-            if(creativeId != null) {
+            if (creativeId != null) {
                 val utils = Utils()
                 utils.setForceCreativeId(creativeId, nativeAdRequest = nativeAdRequest);
             }
-            nativeAdRequest.loadAd()
+
+
+            if (useExecutor) {
+                TasksManager.getInstance().executeOnBackgroundThread({
+                    nativeAdRequest.loadAd()
+                })
+            } else {
+                nativeAdRequest.loadAd()
+            }
             idlingResource.increment()
         }
     }

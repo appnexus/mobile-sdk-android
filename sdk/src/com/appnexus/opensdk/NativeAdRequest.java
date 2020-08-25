@@ -18,16 +18,13 @@ package com.appnexus.opensdk;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.webkit.WebView;
 
+import com.appnexus.opensdk.tasksmanager.TasksManager;
 import com.appnexus.opensdk.ut.UTAdRequester;
 import com.appnexus.opensdk.ut.UTRequestParameters;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
-import com.appnexus.opensdk.utils.AdvertisingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ImageService;
-import com.appnexus.opensdk.utils.Settings;
-import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,14 +35,15 @@ import java.util.HashMap;
 public class NativeAdRequest implements Ad, MultiAd {
     private NativeAdRequestListener listener;
     private final UTRequestParameters requestParameters;
-    private final AdFetcher mAdFetcher;
+    private AdFetcher mAdFetcher;
     private final NativeAdDispatcher dispatcher;
     private boolean loadImage;
     private boolean loadIcon;
 
     public NativeAdRequest(Context context, String placementID) {
-        AdvertisingIDUtil.retrieveAndSetAAID(context);
-        ANOmidViewabilty.getInstance().activateOmidAndCreatePartner(context.getApplicationContext());
+
+        SDKSettings.init(context, null);
+
         requestParameters = new UTRequestParameters(context);
         requestParameters.setPlacementID(placementID);
         requestParameters.setMediaType(MediaType.NATIVE);
@@ -53,23 +51,14 @@ public class NativeAdRequest implements Ad, MultiAd {
         mAdFetcher = new AdFetcher(this);
         mAdFetcher.setPeriod(-1);
         dispatcher = new NativeAdDispatcher();
-        Clog.setErrorContext(context.getApplicationContext());
-        // Store the UA in the settings
-        try {
-            Settings.getSettings().ua = new WebView(context).getSettings()
-                    .getUserAgentString();
-            Clog.v(Clog.baseLogTag,
-                    Clog.getString(R.string.ua, Settings.getSettings().ua));
-        } catch (Exception e) {
-            // Catches PackageManager$NameNotFoundException for webview
-            Settings.getSettings().ua = "";
-            Clog.e(Clog.baseLogTag, " Exception: " + e.getMessage());
-        }
+
+
     }
 
     public NativeAdRequest(Context context, String inventoryCode, int memberID) {
-        AdvertisingIDUtil.retrieveAndSetAAID(context);
-        ANOmidViewabilty.getInstance().activateOmidAndCreatePartner(context.getApplicationContext());
+
+        SDKSettings.init(context, null);
+
         requestParameters = new UTRequestParameters(context);
         requestParameters.setInventoryCodeAndMemberID(memberID, inventoryCode);
         requestParameters.setMediaType(MediaType.NATIVE);
@@ -77,17 +66,13 @@ public class NativeAdRequest implements Ad, MultiAd {
         mAdFetcher = new AdFetcher(this);
         mAdFetcher.setPeriod(-1);
         dispatcher = new NativeAdDispatcher();
-        Clog.setErrorContext(context.getApplicationContext());
-        // Store the UA in the settings
-        try {
-            Settings.getSettings().ua = new WebView(context).getSettings()
-                    .getUserAgentString();
-            Clog.v(Clog.baseLogTag,
-                    Clog.getString(R.string.ua, Settings.getSettings().ua));
-        } catch (Exception e) {
-            // Catches PackageManager$NameNotFoundException for webview
-            Settings.getSettings().ua = "";
-            Clog.e(Clog.baseLogTag, " Exception: " + e.getMessage());
+
+    }
+
+    public void destroy() {
+        if (mAdFetcher != null) {
+            mAdFetcher.destroy();
+            mAdFetcher = null;
         }
     }
 
@@ -188,8 +173,8 @@ public class NativeAdRequest implements Ad, MultiAd {
      * It is ASSUMED that the App will handle it appropriately.
      *
      * @param clickThroughAction ANClickThroughAction.OPEN_SDK_BROWSER which is default or
-     *             ANClickThroughAction.OPEN_DEVICE_BROWSER or
-     *             ANClickThroughAction.RETURN_URL
+     *                           ANClickThroughAction.OPEN_DEVICE_BROWSER or
+     *                           ANClickThroughAction.RETURN_URL
      */
     public void setClickThroughAction(ANClickThroughAction clickThroughAction) {
         requestParameters.setClickThroughAction(clickThroughAction);
@@ -205,12 +190,15 @@ public class NativeAdRequest implements Ad, MultiAd {
                 R.string.get_placement_id, requestParameters.getPlacementID()));
         return requestParameters.getPlacementID();
     }
+
     /**
      * Retrieve the externalUID that was previously set.
      *
      * @return externalUID.
      */
-    public String getExternalUid() { return requestParameters.getExternalUid(); }
+    public String getExternalUid() {
+        return requestParameters.getExternalUid();
+    }
 
     /**
      * Set the current user's externalUID
@@ -225,7 +213,7 @@ public class NativeAdRequest implements Ad, MultiAd {
     protected void setAllowedSizes() {
         Clog.d(Clog.nativeLogTag,
                 Clog.getString(R.string.set_allowed_sizes));
-        AdSize oneByOneSize = new AdSize(1,1);
+        AdSize oneByOneSize = new AdSize(1, 1);
         ArrayList<AdSize> allowed_sizes = new ArrayList<AdSize>();
         allowed_sizes.add(oneByOneSize);
         requestParameters.setSizes(allowed_sizes);
@@ -396,22 +384,20 @@ public class NativeAdRequest implements Ad, MultiAd {
     }
 
     /**
-     * @deprecated rendererId is not required anymore. Renderer to Placement mapping can now be done through Native Assembly in console.
-     *
-     * Get the RendererId of the request
-     *
      * @return Default int value 0, which indicates that renderer_id is not sent in the UT Request.
+     * @deprecated rendererId is not required anymore. Renderer to Placement mapping can now be done through Native Assembly in console.
+     * <p>
+     * Get the RendererId of the request
      */
     public int getRendererId() {
         return requestParameters.getRendererId();
     }
 
     /**
-     * @deprecated rendererId is not required anymore. Renderer to Placement mapping can now be done through Native Assembly in console.
-     *
-     * Set the rendererId associated with placement.
-     *
      * @param rendererId the Native Assembly renderer_id that is associated with this placement.
+     * @deprecated rendererId is not required anymore. Renderer to Placement mapping can now be done through Native Assembly in console.
+     * <p>
+     * Set the rendererId associated with placement.
      */
     public void setRendererId(int rendererId) {
         requestParameters.setRendererId(rendererId);
@@ -469,6 +455,19 @@ public class NativeAdRequest implements Ad, MultiAd {
 
         @Override
         public void onAllImageDownloadsFinish() {
+            if (SDKSettings.isBackgroundThreadingEnabled()) {
+                TasksManager.getInstance().executeOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        processAllImageDownloadsFinish();
+                    }
+                });
+            } else {
+                processAllImageDownloadsFinish();
+            }
+        }
+
+        private void processAllImageDownloadsFinish() {
             if (listener != null) {
                 listener.onAdLoaded(response);
             } else {
@@ -481,6 +480,10 @@ public class NativeAdRequest implements Ad, MultiAd {
 
         @Override
         public void onAdLoaded(final AdResponse ad) {
+            processAdLoaded(ad);
+        }
+
+        private void processAdLoaded(AdResponse ad) {
             if (!ad.getMediaType().equals(MediaType.NATIVE)) {
                 onAdFailed(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR), null);
             } else {
@@ -496,8 +499,8 @@ public class NativeAdRequest implements Ad, MultiAd {
                     }
                     isLoading = false;
                     return;
-                }
-                imageService = new ImageService();
+                } else
+                    imageService = new ImageService();
                 this.response = response;
                 ImageService.ImageReceiver imageReceiver = new ImageService.ImageReceiver() {
                     @Override
@@ -530,7 +533,11 @@ public class NativeAdRequest implements Ad, MultiAd {
         }
 
         @Override
-        public void onAdFailed(ResultCode resultCode, ANAdResponseInfo adResponseInfo) {
+        public void onAdFailed(final ResultCode resultCode, final ANAdResponseInfo adResponseInfo) {
+            processAdFailed(resultCode, adResponseInfo);
+        }
+
+        private void processAdFailed(ResultCode resultCode, ANAdResponseInfo adResponseInfo) {
             if (listener != null) {
                 listener.onAdFailed(resultCode, adResponseInfo);
             }

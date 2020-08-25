@@ -75,7 +75,17 @@ public final class ResponseUrl {
             Clog.w(Clog.mediationLogTag, Clog.getString(R.string.fire_responseurl_null));
             return;
         }
+        // create the responseurl request
+        StringBuilder sb = new StringBuilder(url);
+        sb.append("&reason=").append(resultCode.getCode());
+        if (latency > 0) {
+            sb.append("&latency=").append(Uri.encode(String.valueOf(latency)));
+        }
+        if (totalLatency > 0) {
+            sb.append("&total_latency=").append(Uri.encode(String.valueOf(totalLatency)));
+        }
 
+        final String responseUrl = sb.toString();
         HTTPGet fire = new HTTPGet() {
             @Override
             protected HTTPResponse doInBackground(Void... params) {
@@ -91,27 +101,9 @@ public final class ResponseUrl {
 
             @Override
             protected String getUrl() {
-                // create the responseurl request
-                StringBuilder sb = new StringBuilder(url);
-                sb.append("&reason=").append(resultCode.getCode());
-                if (latency > 0) {
-                    sb.append("&latency=").append(Uri.encode(String.valueOf(latency)));
-                }
-                if (totalLatency > 0) {
-                    sb.append("&total_latency=").append(Uri.encode(String.valueOf(totalLatency)));
-                }
-
-                return sb.toString();
+                return responseUrl;
             }
         };
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            fire.executeOnExecutor(SDKSettings.getExternalExecutor());
-        } else {
-            fire.execute();
-        }
-
-
+        fire.execute();
     }
-
-
 }

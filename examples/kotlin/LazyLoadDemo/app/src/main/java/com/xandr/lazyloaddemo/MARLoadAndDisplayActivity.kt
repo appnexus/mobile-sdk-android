@@ -128,7 +128,7 @@ class MARLoadAndDisplayActivity : Activity() {
             }
 
             override fun onAdFailed(errorcode: ResultCode, anAdResponseInfo: ANAdResponseInfo) {
-                msg += "Native Ad Failed:$errorcode\n"
+                msg += "Native Ad Failed:${errorcode.message}\n"
                 toast()
             }
         }
@@ -145,7 +145,7 @@ class MARLoadAndDisplayActivity : Activity() {
                 if (errorCode == null) {
                     msg += "Interstitial Ad Failed\n"
                 } else {
-                    msg += "Interstitial Ad Failed: $errorCode\n"
+                    msg += "Interstitial Ad Failed: ${errorCode.message}\n"
                 }
                 toast()
             }
@@ -223,7 +223,7 @@ class MARLoadAndDisplayActivity : Activity() {
                     Clog.v("LazyLoadDemo", "Call to loadAd failed")
                 } else {
                     Clog.v("LazyLoadDemo", "Ad request failed: $errorCode")
-                    msg += "Banner Ad Failed: $errorCode\n"
+                    msg += "Banner Ad Failed: ${errorCode.message}\n"
                     toast()
                 }
             }

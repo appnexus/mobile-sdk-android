@@ -62,8 +62,8 @@ class BannerOMIDActivity : AppCompatActivity(), AdListener, AppEventListener {
     }
 
     override fun onAdRequestFailed(p0: AdView?, p1: ResultCode?) {
-        Toast.makeText(this, "Ad Failed: " + p1?.name, Toast.LENGTH_LONG).show()
-        println(p1?.name)
+        Toast.makeText(this, "Ad Failed: " + p1?.message, Toast.LENGTH_LONG).show()
+        println(p1?.message)
         if (!idlingResource.isIdleNow)
             idlingResource.decrement()
     }

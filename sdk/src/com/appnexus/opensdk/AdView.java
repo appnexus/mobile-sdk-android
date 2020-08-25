@@ -32,22 +32,20 @@ import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.FrameLayout;
 
+import com.appnexus.opensdk.tasksmanager.TasksManager;
 import com.appnexus.opensdk.ut.UTAdRequester;
 import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.UTRequestParameters;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBHTMLAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
-import com.appnexus.opensdk.utils.AdvertisingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.ViewUtil;
-import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -120,25 +118,11 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
         dispatcher = new AdViewDispatcher(handler);
         requestParameters = new UTRequestParameters(context);
         adType = AdType.UNKNOWN;
-        AdvertisingIDUtil.retrieveAndSetAAID(context);
-        ANOmidViewabilty.getInstance().activateOmidAndCreatePartner(context.getApplicationContext());
 
-        // Store self.context in the settings for errors
-        Clog.setErrorContext(this.getContext());
+        SDKSettings.init(context, null);
 
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.new_adview));
 
-        // Store the UA in the settings
-        try {
-            Settings.getSettings().ua = new WebView(context).getSettings()
-                    .getUserAgentString();
-            Clog.v(Clog.baseLogTag,
-                    Clog.getString(R.string.ua, Settings.getSettings().ua));
-        } catch (Exception e) {
-            // Catches PackageManager$NameNotFoundException for webview
-            Settings.getSettings().ua = "";
-            Clog.e(Clog.baseLogTag, " Exception: " + e.getMessage());
-        }
 
         // Store the AppID in the settings
         Settings.getSettings().app_id = context.getApplicationContext()
@@ -258,7 +242,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
         // load an ad directly from VASTXML
         loadedOffscreen = true;
         AdWebView output = new AdWebView(this, null);
-        RTBVASTAdResponse response = new RTBVASTAdResponse(width,height,AdType.VIDEO.toString(), null,null,getAdResponseInfo());
+        RTBVASTAdResponse response = new RTBVASTAdResponse(width, height, AdType.VIDEO.toString(), null, null, getAdResponseInfo());
         response.setAdContent(VASTXML);
         response.setContentSource(UTConstants.RTB);
         response.addToExtras(UTConstants.EXTRAS_KEY_MRAID, true);
@@ -378,7 +362,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
         // Just in case, kill the adfetcher's service
         if (mAdFetcher != null) {
-            mAdFetcher.stop();
+            mAdFetcher.destroy();
         }
     }
 
@@ -1075,6 +1059,19 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
         @Override
         public void onAdLoaded(final AdResponse ad) {
+            if (SDKSettings.isBackgroundThreadingEnabled()) {
+                TasksManager.getInstance().executeOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        processAdLoaded(ad);
+                    }
+                });
+            } else {
+                processAdLoaded(ad);
+            }
+        }
+
+        private void processAdLoaded(AdResponse ad) {
             isFetching = false;
             if (ad.getMediaType().equals(MediaType.BANNER) || ad.getMediaType().equals(MediaType.INTERSTITIAL)) {
                 handleBannerOrInterstitialAd(ad);
@@ -1093,6 +1090,19 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
         @Override
         public void onAdFailed(final ResultCode code, final ANAdResponseInfo adResponseInfo) {
+            if (SDKSettings.isBackgroundThreadingEnabled()) {
+                TasksManager.getInstance().executeOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        processAdFailed(code, adResponseInfo);
+                    }
+                });
+            } else {
+                processAdFailed(code, adResponseInfo);
+            }
+        }
+
+        private void processAdFailed(final ResultCode code, final ANAdResponseInfo adResponseInfo) {
             isFetching = false;
             handler.post(new Runnable() {
                 @Override
@@ -1103,7 +1113,6 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
                     }
                 }
             });
-
         }
 
         @Override
@@ -1182,7 +1191,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
             response.setAdResponseInfo(ad.getResponseData().getAdResponseInfo());
 //            setAdResponseInfo(ad.getResponseData().getAdResponseInfo());
             response.setCreativeId(ad.getResponseData().getAdResponseInfo().getCreativeId());
-            if(adListener != null) {
+            if (adListener != null) {
                 adListener.onAdLoaded(response);
             }
         }
@@ -1287,7 +1296,6 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
 
     void fireImpressionTracker(final String trackerUrl) {
-
         HTTPGet impTracker = new HTTPGet() {
             @Override
             protected void onPostExecute(HTTPResponse response) {
@@ -1301,11 +1309,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
                 return trackerUrl;
             }
         };
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            impTracker.executeOnExecutor(SDKSettings.getExternalExecutor());
-        } else {
-            impTracker.execute();
-        }
+        impTracker.execute();
     }
 
     boolean isAdViewAttachedToWindow() {
@@ -1379,6 +1383,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
     /**
      * For adding Friendly Obstruction View
+     *
      * @param view to be added
      */
     public void addFriendlyObstruction(View view) {
@@ -1396,6 +1401,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
     /**
      * For removing Friendly Obstruction View
+     *
      * @param friendlyObstructionView to be removed
      */
     public void removeFriendlyObstruction(View friendlyObstructionView) {
@@ -1433,7 +1439,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     }
 
     private boolean alreadyAddedToFriendlyObstruction(View view) {
-        for (WeakReference<View> viewWeakReference: friendlyObstructionList) {
+        for (WeakReference<View> viewWeakReference : friendlyObstructionList) {
             if (viewWeakReference.get() != null && viewWeakReference.get() == view) {
                 return true;
             }

@@ -355,7 +355,6 @@ public class MediatedNativeAdController {
 
 
     void fireTracker(final String trackerUrl) {
-
         HTTPGet tracker = new HTTPGet() {
             @Override
             protected void onPostExecute(HTTPResponse response) {
@@ -372,11 +371,8 @@ public class MediatedNativeAdController {
                 return trackerUrl;
             }
         };
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            tracker.executeOnExecutor(SDKSettings.getExternalExecutor());
-        } else {
-            tracker.execute();
-        }
+        tracker.execute();
+
     }
 
 }

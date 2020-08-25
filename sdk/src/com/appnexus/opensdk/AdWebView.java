@@ -341,11 +341,7 @@ class AdWebView extends WebView implements Displayable,
                 return url;
             }
         };
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            load.executeOnExecutor(SDKSettings.getExternalExecutor());
-        } else {
-            load.execute();
-        }
+        load.execute();
     }
 
     protected MRAIDImplementation getMRAIDImplementation() {

@@ -22,6 +22,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 
 import com.appnexus.opensdk.SDKSettings;
+import com.appnexus.opensdk.tasksmanager.TasksManager;
 
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
@@ -76,11 +77,7 @@ public class ImageService {
             for (Map.Entry pairs : imageUrlMap.entrySet()) {
                 ImageDownloader downloader = new ImageDownloader(imageReceiver, (String) pairs.getKey(), (String) pairs.getValue(), this);
                 Clog.d(Clog.baseLogTag, "Downloading " + pairs.getKey() + " from url: " + pairs.getValue());
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    downloader.executeOnExecutor(SDKSettings.getExternalExecutor());
-                } else {
-                    downloader.execute();
-                }
+                downloader.execute();
             }
         } else {
             imageServiceListener.onAllImageDownloadsFinish();
@@ -88,11 +85,13 @@ public class ImageService {
         }
     }
 
-    class ImageDownloader extends AsyncTask<Void, Void, Bitmap> {
+    private class ImageDownloader {
         private final String key;
         WeakReference<ImageService> caller;
         WeakReference<ImageReceiver> imageReceiver;
         String url;
+        private boolean isCancelled;
+        ImageDownloaderAsync downloaderAsync;
 
         ImageDownloader(ImageReceiver imageReceiver, String key, String url, ImageService caller) {
             this.caller = new WeakReference<ImageService>(caller);
@@ -101,16 +100,57 @@ public class ImageService {
             this.key = key;
         }
 
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-            imageReceiver.clear();
-            caller.clear();
+        public void execute() {
+            if (SDKSettings.isBackgroundThreadingEnabled()) {
+                TasksManager.getInstance().executeOnBackgroundThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Bitmap bitmap = getBitmap();
+                        consumeBitmap(bitmap);
+                    }
+                });
+            } else {
+                downloaderAsync = new ImageDownloaderAsync();
+                Clog.d(Clog.baseLogTag, "Downloading " + key + " from url: " + url);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    downloaderAsync.executeOnExecutor(SDKSettings.getExternalExecutor());
+                } else {
+                    downloaderAsync.execute();
+                }
+            }
         }
 
-        @Override
-        protected Bitmap doInBackground(Void... params) {
-            if (isCancelled() || StringUtil.isEmpty(url)) {
+        private void cancel() {
+            isCancelled = true;
+            imageReceiver.clear();
+            caller.clear();
+            if (downloaderAsync != null) {
+                downloaderAsync.onCancelled();
+            }
+        }
+
+        private class ImageDownloaderAsync extends AsyncTask<Void, Void, Bitmap> {
+
+            @Override
+            protected void onCancelled() {
+                super.onCancelled();
+                imageReceiver.clear();
+                caller.clear();
+            }
+
+            @Override
+            protected Bitmap doInBackground(Void... params) {
+                return getBitmap();
+            }
+
+            @Override
+            protected void onPostExecute(Bitmap image) {
+                consumeBitmap(image);
+            }
+        }
+
+        private Bitmap getBitmap() {
+            if (isCancelled || StringUtil.isEmpty(url)) {
                 return null;
             }
             try {
@@ -126,8 +166,7 @@ public class ImageService {
             return null;
         }
 
-        @Override
-        protected void onPostExecute(Bitmap image) {
+        private void consumeBitmap(Bitmap image) {
             ImageReceiver receiver = imageReceiver.get();
             ImageService service = caller.get();
             if (receiver != null) {

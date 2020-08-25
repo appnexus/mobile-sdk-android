@@ -212,7 +212,7 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedSuccessfulNative()));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        runBasicMediationTest(SUCCESS, ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
+        runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
         assertTrue(MediatedNativeSuccessful.impressionLogged);
     }
 

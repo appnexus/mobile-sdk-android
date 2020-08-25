@@ -96,7 +96,6 @@ public class SharedNetworkManager {
                                 final UrlObject urlObject = urls.remove(0);
                                 if (urlObject.retryTimes < TOTAL_RETRY_TIMES) {
                                     {
-
                                         HTTPGet fire = new HTTPGet() {
                                             @Override
                                             protected void onPostExecute(HTTPResponse response) {
@@ -119,11 +118,8 @@ public class SharedNetworkManager {
                                                 return urlObject.url;
                                             }
                                         };
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                                            fire.executeOnExecutor(SDKSettings.getExternalExecutor());
-                                        } else {
-                                            fire.execute();
-                                        }
+                                        fire.execute();
+
                                     }
                                 }
                             } else {

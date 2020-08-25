@@ -17,7 +17,6 @@ package com.appnexus.opensdk.instreamvideo;
 
 import android.content.Context;
 import android.content.MutableContextWrapper;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +24,7 @@ import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.VideoOrientation;
 import com.appnexus.opensdk.utils.AdvertisingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
@@ -58,24 +58,9 @@ class InstreamVideoView extends FrameLayout {
 
     void setup(Context context) {
 
-        AdvertisingIDUtil.retrieveAndSetAAID(context);
-
-        // Store self.context in the settings for errors
-        Clog.setErrorContext(this.getContext());
+        SDKSettings.init(context, null);
 
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.new_adview));
-
-        // Store the UA in the settings
-        try {
-            Settings.getSettings().ua = new WebView(context).getSettings()
-                    .getUserAgentString();
-            Clog.v(Clog.baseLogTag,
-                    Clog.getString(R.string.ua, Settings.getSettings().ua));
-        } catch (Exception e) {
-            // Catches PackageManager$NameNotFoundException for webview
-            Settings.getSettings().ua = "";
-            Clog.e(Clog.baseLogTag, " Exception: " + e.getMessage());
-        }
 
         // Store the AppID in the settings
         Settings.getSettings().app_id = context.getApplicationContext()

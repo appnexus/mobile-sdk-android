@@ -75,7 +75,29 @@ class InterstitialTest {
     @Test
     fun interstitialActivityTest() {
 
-        interstitialActivity.triggerAdLoad("14757583", autoDismiss = -1, closeButtonDelay = 2, creativeId = 166843825)
+        interstitialActivity.triggerAdLoad("17058950", autoDismiss = -1, closeButtonDelay = 2, creativeId = 166843001)
+
+        //check if the triggered intent is pointing to the AdActivity
+        intended(IntentMatchers.hasComponent(AdActivity::class.java.name))
+
+        val closeButtonId = android.R.id.closeButton
+
+        Espresso.onView(ViewMatchers.withId(closeButtonId)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+
+        Espresso.onView(ViewMatchers.withId(closeButtonId)).perform(ViewActions.click())
+
+        assertTrue(interstitialActivity.isAdCollapsed)
+    }
+    
+    // BG Testing
+
+    /*
+    * Sanity Test for the Interstitial Ad along with autoDismissDelay of 5 sec
+    * */
+    @Test
+    fun interstitialActivityBGTest() {
+
+        interstitialActivity.triggerAdLoad("17058950", autoDismiss = -1, closeButtonDelay = 2, creativeId = 166843001, bgTask = true)
 
         //check if the triggered intent is pointing to the AdActivity
         intended(IntentMatchers.hasComponent(AdActivity::class.java.name))

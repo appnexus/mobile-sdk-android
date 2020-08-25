@@ -415,11 +415,7 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
                 // fire click tracker first
                 if (click_trackers != null) {
                     for (String url : click_trackers) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                            new ClickTracker(url).executeOnExecutor(SDKSettings.getExternalExecutor());
-                        } else {
-                            new ClickTracker(url).execute();
-                        }
+                        new ClickTracker(url).execute();
                     }
                 }
                 if (getClickThroughAction() == ANClickThroughAction.RETURN_URL) {

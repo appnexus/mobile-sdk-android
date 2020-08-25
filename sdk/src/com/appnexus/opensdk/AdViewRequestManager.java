@@ -17,6 +17,7 @@ package com.appnexus.opensdk;
 
 import android.app.Activity;
 
+import com.appnexus.opensdk.tasksmanager.TasksManager;
 import com.appnexus.opensdk.ut.UTAdResponse;
 import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.UTRequestParameters;
@@ -97,7 +98,11 @@ public class AdViewRequestManager extends RequestManager {
     }
 
     @Override
-    public void failed(ResultCode code, ANAdResponseInfo responseInfo) {
+    public void failed(final ResultCode code, final ANAdResponseInfo responseInfo) {
+        processFailure(code, responseInfo);
+    }
+
+    private void processFailure(ResultCode code, ANAdResponseInfo responseInfo) {
         printMediatedClasses();
         Clog.e("AdViewRequestManager", code.getMessage());
 
@@ -170,6 +175,10 @@ public class AdViewRequestManager extends RequestManager {
     public void onReceiveUTResponse(UTAdResponse response) {
         super.onReceiveUTResponse(response);
         Clog.e("AdViewRequestManager", "onReceiveUTResponse");
+        processUTResponse(response);
+    }
+
+    private void processUTResponse(UTAdResponse response) {
         final Ad owner = this.owner.get();
         if ((owner != null) && doesAdListExists(response)) {
             setAdList(response.getAdList());
@@ -187,7 +196,7 @@ public class AdViewRequestManager extends RequestManager {
     private void processNextAd() {
         // If we're about to dispatch a creative to a banner
         // that has been resized by ad stretching, reset its size
-        Ad owner = this.owner.get();
+        final Ad owner = this.owner.get();
         if ((owner != null) && getAdList() != null && !getAdList().isEmpty()) {
             final BaseAdResponse baseAdResponse = popAd();
             this.currentAd = baseAdResponse;
@@ -195,7 +204,16 @@ public class AdViewRequestManager extends RequestManager {
             if (UTConstants.RTB.equalsIgnoreCase(baseAdResponse.getContentSource())) {
                 handleRTBResponse(owner, baseAdResponse);
             } else if (UTConstants.CSM.equalsIgnoreCase(baseAdResponse.getContentSource())) {
-                handleCSMResponse(owner, (CSMSDKAdResponse) baseAdResponse);
+                if (SDKSettings.isBackgroundThreadingEnabled()) {
+                    TasksManager.getInstance().executeOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            handleCSMResponse(owner, (CSMSDKAdResponse) baseAdResponse);
+                        }
+                    });
+                } else {
+                    handleCSMResponse(owner, (CSMSDKAdResponse) baseAdResponse);
+                }
             } else if (UTConstants.SSM.equalsIgnoreCase(baseAdResponse.getContentSource())) {
                 handleSSMResponse((AdView) owner, (SSMHTMLAdResponse) baseAdResponse);
             } else if (UTConstants.CSR.equalsIgnoreCase(baseAdResponse.getContentSource())) {
@@ -319,7 +337,6 @@ public class AdViewRequestManager extends RequestManager {
         if (csmvastAdResponse != null && csmvastAdResponse.getAdJSONContent() != null) {
             if (UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(csmvastAdResponse.getAdType())) {
                 // @NOTE no need to fire notify URL here it is taken care by ASTMediationManager.js
-
                 owner.getMultiAd().initiateVastAdView(csmvastAdResponse, this);
             } else {
                 continueWaterfall(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
@@ -330,7 +347,7 @@ public class AdViewRequestManager extends RequestManager {
     }
 
 
-    private void handleCSMResponse(Ad ownerAd, CSMSDKAdResponse csmSdkAdResponse) {
+    private void handleCSMResponse(Ad ownerAd, final CSMSDKAdResponse csmSdkAdResponse) {
         Clog.i(Clog.baseLogTag, "Mediation type is CSM, passing it to MediatedAdViewController.");
         if (csmSdkAdResponse.getAdType().equals(UTConstants.AD_TYPE_NATIVE)) {
             mediatedNativeAdController = MediatedNativeAdController.create(csmSdkAdResponse,
@@ -369,8 +386,18 @@ public class AdViewRequestManager extends RequestManager {
     }
 
     private void initiateWebview(final Ad owner, final BaseAdResponse response) {
-        adWebview = new AdWebView((AdView) owner, AdViewRequestManager.this);
-        adWebview.loadAd(response);
+        if (SDKSettings.isBackgroundThreadingEnabled()) {
+            TasksManager.getInstance().executeOnMainThread(new Runnable() {
+                @Override
+                public void run() {
+                    adWebview = new AdWebView((AdView) owner, AdViewRequestManager.this);
+                    adWebview.loadAd(response);
+                }
+            });
+        } else {
+            adWebview = new AdWebView((AdView) owner, AdViewRequestManager.this);
+            adWebview.loadAd(response);
+        }
     }
 
     public ANMultiAdRequest getMultiAdRequest() {

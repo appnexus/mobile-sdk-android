@@ -38,8 +38,8 @@ class VideoActivity : AppCompatActivity(), VideoAdLoadListener {
     }
 
     override fun onAdRequestFailed(videoAd: VideoAd?, errorCode: ResultCode?) {
-        Toast.makeText(this, "Ad Failed: " + errorCode?.name, Toast.LENGTH_LONG).show()
-        println(errorCode?.name)
+        Toast.makeText(this, "Ad Failed: " + errorCode?.message, Toast.LENGTH_LONG).show()
+        println(errorCode?.message)
         idlingResource.decrement()
     }
 
@@ -64,9 +64,9 @@ class VideoActivity : AppCompatActivity(), VideoAdLoadListener {
 //        )
     }
 
-    fun triggerAdLoad(placement: String?, useHttps: Boolean = true, creativeId: Int? = null) {
+    fun triggerAdLoad(placement: String?, useHttps: Boolean = true, creativeId: Int? = null, bgTask: Boolean = false) {
         Handler(Looper.getMainLooper()).post {
-            
+            SDKSettings.enableBackgroundThreading(bgTask)
             video = VideoAd(this, if (placement == null) "13989299" else placement)
             video.adLoadListener = this
             SDKSettings.useHttps(useHttps)

@@ -380,11 +380,6 @@ public class CSRNativeBannerController implements CSRController {
                 return trackerUrl;
             }
         };
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            tracker.executeOnExecutor(SDKSettings.getExternalExecutor());
-        } else {
-            tracker.execute();
-        }
-
+        tracker.execute();
     }
 }

@@ -135,4 +135,81 @@ class MARTest {
         )
     }
 
+
+    // BG Testing
+
+    @Test
+    fun testMARWeakReferenceBG() {
+        Assert.assertFalse(myActivity.multiAdRequestCompleted)
+        myActivity.load(bgTask = true)
+        //        Assert.assertTrue(myActivity.multiAdRequestCompleted);
+        myActivity.adRequest = null
+        myActivity.load(bgTask = true)
+        onView(isRoot()).check(matches(anything()))
+        Assert.assertTrue(
+            "MultiAdRequest is still in progress, Idling Resource isn't working properly",
+            myActivity.multiAdRequestCompleted
+        )
+    }
+
+    @Test
+    fun testConcurrentMARLoadBG() {
+        Assert.assertFalse(myActivity.multiAdRequestCompleted)
+        myActivity.load(bgTask = true)
+        //        Assert.assertTrue(myActivity.multiAdRequestCompleted);
+        myActivity.adRequest = null
+        myActivity.load(bgTask = true)
+        myActivity.load2(bgTask = true)
+        onView(isRoot()).check(matches(anything()))
+        Assert.assertTrue(
+            "MultiAdRequest is still in progress, Idling Resource isn't working properly",
+            myActivity.multiAdRequestCompleted
+        )
+        Assert.assertTrue(
+            "MultiAdRequest2 is still in progress, Idling Resource isn't working properly",
+            myActivity.multiAdRequestCompleted2
+        )
+    }
+
+    @Test
+    fun testMARDeallocatedAdUnitBG() {
+        Assert.assertFalse(myActivity.multiAdRequestCompleted)
+        myActivity.load(bgTask = true)
+        //        Assert.assertTrue(myActivity.multiAdRequestCompleted);
+        myActivity.adRequest = null
+        myActivity.load(bgTask = true)
+        onView(isRoot()).check(matches(anything()))
+        val adUnitList = myActivity.anMultiAdRequest!!.getAdUnitList()
+        for (adWeakReference in adUnitList) {
+            val ad = adWeakReference.get()
+            if (ad != null) {
+                Assert.assertFalse(adWeakReference.get() === myActivity.adRequest)
+            }
+        }
+        Assert.assertTrue(
+            "MultiAdRequest is still in progress, Idling Resource isn't working properly",
+            myActivity.multiAdRequestCompleted
+        )
+    }
+
+    @Test
+    fun testMARDeallocateAdUnitWhileTheLoadIsActiveBG() {
+        Assert.assertFalse(myActivity.multiAdRequestCompleted)
+        myActivity.load(bgTask = true)
+        //        Assert.assertTrue(myActivity.multiAdRequestCompleted);
+        myActivity.adRequest = null
+        onView(isRoot()).check(matches(anything()))
+        val adUnitList = myActivity.anMultiAdRequest!!.getAdUnitList()
+        for (adWeakReference in adUnitList) {
+            val ad = adWeakReference.get()
+            if (ad != null) {
+                Assert.assertFalse(adWeakReference.get() === myActivity.adRequest)
+            }
+        }
+        Assert.assertTrue(
+            "MultiAdRequest is still in progress, Idling Resource isn't working properly",
+            myActivity.multiAdRequestCompleted
+        )
+    }
+
 }

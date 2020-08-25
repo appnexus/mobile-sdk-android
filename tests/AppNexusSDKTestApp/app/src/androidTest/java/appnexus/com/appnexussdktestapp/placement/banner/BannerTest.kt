@@ -126,4 +126,64 @@ class BannerTest {
         )
 
     }
+
+
+    // BG Testing
+
+    /*
+    * Sanity Test for the Banner Ad of size 320x50
+    * */
+    @Test
+    fun bannerLoadSize320x50BGTest() {
+
+
+        Thread.sleep(2000)
+
+        bannerActivity.triggerAdLoad("14757567", 320, 50, creativeId = 166843001, bgTask = true)
+
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
+        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Assert.assertTrue(
+            "Wrong Ad Width",
+            bannerActivity.banner.getChildAt(0).width.dp >= (bannerActivity.banner.adWidth - 1) ||
+                    bannerActivity.banner.getChildAt(0).width.dp <= (bannerActivity.banner.adWidth + 1)
+        )
+        Assert.assertTrue(
+            "Wrong Ad Height",
+            bannerActivity.banner.getChildAt(0).height.dp >= (bannerActivity.banner.adHeight - 1) ||
+                    bannerActivity.banner.getChildAt(0).height.dp <= (bannerActivity.banner.adHeight + 1)
+        )
+
+    }
+
+    /*
+    * Sanity Test for the Banner Ad of size 300x250
+    * */
+    @Test
+    fun bannerLoadSize300x250BGTest() {
+
+        bannerActivity.triggerAdLoad("14847003", 300, 250, creativeId = 166843311, bgTask = true)
+
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
+        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Assert.assertTrue(
+            "Wrong Ad Width",
+            bannerActivity.banner.getChildAt(0).width.dp >= (bannerActivity.banner.adWidth - 1) ||
+                    bannerActivity.banner.getChildAt(0).width.dp <= (bannerActivity.banner.adWidth + 1)
+        )
+        Assert.assertTrue(
+            "Wrong Ad Height",
+            bannerActivity.banner.getChildAt(0).height.dp >= (bannerActivity.banner.adHeight - 1) ||
+                    bannerActivity.banner.getChildAt(0).height.dp <= (bannerActivity.banner.adHeight + 1)
+        )
+
+    }
 }

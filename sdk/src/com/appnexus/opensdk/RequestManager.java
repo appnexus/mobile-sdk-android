@@ -28,11 +28,9 @@ import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
-import com.appnexus.opensdk.utils.Settings;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.concurrent.RejectedExecutionException;
 
 public abstract class RequestManager implements UTAdRequester {
     UTAdRequest utAdRequest;
@@ -65,21 +63,7 @@ public abstract class RequestManager implements UTAdRequester {
     @Override
     public void execute() {
         utAdRequest = new UTAdRequest(this);
-
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                utAdRequest.executeOnExecutor(SDKSettings.getExternalExecutor());
-            } else {
-                utAdRequest.execute();
-            }
-
-        } catch (RejectedExecutionException rejectedExecutionException) {
-            Clog.e(Clog.baseLogTag, "Concurrent Thread Exception while firing new ad request: "
-                    + rejectedExecutionException.getMessage());
-        } catch (Exception exception) {
-            Clog.e(Clog.baseLogTag, "Exception while firing new ad request: " + exception.getMessage());
-        }
-
+        utAdRequest.execute();
     }
 
     public abstract UTRequestParameters getRequestParams();
@@ -99,7 +83,6 @@ public abstract class RequestManager implements UTAdRequester {
 
     protected void fireTracker(final String trackerUrl, final String trackerType) {
         if ((trackerUrl == null) || trackerUrl == "") return;
-
         HTTPGet fireTracker = new HTTPGet() {
             @Override
             protected void onPostExecute(HTTPResponse response) {
@@ -118,11 +101,8 @@ public abstract class RequestManager implements UTAdRequester {
                 return trackerUrl;
             }
         };
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            fireTracker.executeOnExecutor(SDKSettings.getExternalExecutor());
-        } else {
-            fireTracker.execute();
-        }
+
+        fireTracker.execute();
     }
 
     protected void fireNotifyUrlForVideo(RTBVASTAdResponse adResponse) {

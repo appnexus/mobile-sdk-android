@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package appnexus.com.appnexussdktestapp.placement.native
+package appnexus.com.appnexussdktestapp.functional.bg
 
 import android.content.Intent
 import androidx.test.espresso.Espresso
@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-class NativeTest {
+class NativeBGTest {
 
     @get:Rule
     var reportHelper = Factory.getReportHelper()
@@ -69,61 +69,31 @@ class NativeTest {
     * Sanity Test for the Native Ad
     * */
     @Test
-    fun nativeAdLoadTest() {
-
-        nativeActivity.triggerAdLoad("17982237", creativeId = 182426521)
-        Espresso.onView(ViewMatchers.withId(R.id.title))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.description))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-//        Espresso.onView(ViewMatchers.withText("What is in the Name...."))
-//            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
-//        Espresso.onView(ViewMatchers.withText("The person who said \"What is in the Name\" wrote his name below the quote..."))
-//            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
-        Thread.sleep(5000)
-        Espresso.onView(ViewMatchers.withId(R.id.icon))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.image))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-    }
-
-    /*
-    * Sanity Test for the Native Ad
-    * */
-    @Test
-    fun nativeAdLoadBGTest() {
-
-        nativeActivity.triggerAdLoad("17982237", creativeId = 182426521, bgTask = true)
-        Espresso.onView(ViewMatchers.withId(R.id.title))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.description))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-//        Espresso.onView(ViewMatchers.withText("What is in the Name...."))
-//            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
-//        Espresso.onView(ViewMatchers.withText("The person who said \"What is in the Name\" wrote his name below the quote..."))
-//            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
-        Thread.sleep(5000)
-        Espresso.onView(ViewMatchers.withId(R.id.icon))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.image))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-    }
-
-    /*
-    * Sanity Test for the Native Ad
-    * */
-    @Test
-    fun nativeAdLoadBGExecutorTest() {
+    fun nativeAdLoadTestBGTaskOnExecutor() {
 
         nativeActivity.triggerAdLoad("17982237", creativeId = 182426521, bgTask = true, useExecutor = true)
         Espresso.onView(ViewMatchers.withId(R.id.title))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.description))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-//        Espresso.onView(ViewMatchers.withText("What is in the Name...."))
-//            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
-//        Espresso.onView(ViewMatchers.withText("The person who said \"What is in the Name\" wrote his name below the quote..."))
-//            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
+        Thread.sleep(5000)
+        Espresso.onView(ViewMatchers.withId(R.id.icon))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.image))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+    }
+
+    /*
+    * Sanity Test for the Native Ad
+    * */
+    @Test
+    fun nativeAdLoadTestBGTaskOnMainThread() {
+
+        nativeActivity.triggerAdLoad("17982237", creativeId = 182426521, bgTask = true)
+        Espresso.onView(ViewMatchers.withId(R.id.title))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.description))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Thread.sleep(5000)
         Espresso.onView(ViewMatchers.withId(R.id.icon))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
