@@ -2,8 +2,8 @@
 ### New Feature
 + MS-4232 Added support for executing the Ad request on background thread [https://wiki.xandr.com/x/w4e1Bg]
 + MS-4361 Added onAdImpression callback for the Native Ads [https://wiki.xandr.com/x/x4e1Bg]
-+ MS-4463 Added support for OMID signal in Ad request
-+ MS-4473 Added support for forcing the creative Id in Ad request for test/debug purposes
++ MS-4463 Support for Open Measurement SDK Open RTB Signals
++ MS-4473: Added support for forcing creative Ids in Ad request for test/debug purposes
 ### Mediation partner upgrade
 + MS-4499 Google AdMob SDK v19.3.0
 
