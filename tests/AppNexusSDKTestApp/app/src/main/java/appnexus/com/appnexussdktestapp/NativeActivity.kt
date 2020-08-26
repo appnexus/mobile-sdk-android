@@ -93,8 +93,8 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener, NativeAdEve
         NativeAdSDK.registerTracking(response, findViewById(R.id.main_native), this)
     }
 
-    override fun onAdDidLogImpression() {
-        didLogImpression = true;
+    override fun onAdImpression() {
+        didLogImpression = true
     }
 
     override fun onAdWasClicked() {

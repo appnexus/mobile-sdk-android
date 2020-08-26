@@ -55,6 +55,10 @@ class NativeActivity : AppCompatActivity(),NativeAdRequestListener,NativeAdEvent
     override fun onAdFailed(errorcode: ResultCode, adResponseinfo:ANAdResponseInfo) {
         log("Native Ad Failed: " + errorcode.message)
     }
+
+    override fun onAdImpression() {
+        
+    }
     // NativeAdRequestListener - End
 
 
