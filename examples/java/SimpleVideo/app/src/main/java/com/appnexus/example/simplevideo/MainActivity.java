@@ -32,11 +32,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.appnexus.opensdk.ANAdResponseInfo;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.SDKSettings;
-import com.appnexus.opensdk.instreamvideo.ResultCallback;
 import com.appnexus.opensdk.instreamvideo.Quartile;
+import com.appnexus.opensdk.instreamvideo.ResultCallback;
 import com.appnexus.opensdk.instreamvideo.VideoAd;
 import com.appnexus.opensdk.instreamvideo.VideoAdLoadListener;
 import com.appnexus.opensdk.instreamvideo.VideoAdPlaybackListener;
@@ -63,102 +62,105 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SDKSettings.useHttps(true);
-        infoText = (TextView) findViewById(R.id.infotTextView);
-        playButon = (ImageButton) findViewById(R.id.play_button);
-        videoPlayer = (VideoView) findViewById(R.id.video_player);
-        baseContainer = (RelativeLayout) findViewById(R.id.container_layout);
-        videoPlayer.setVideoURI(Uri.parse(getString(R.string.content_url_1)));
-
-        // Initialize VideoAd
-        videoAd = new VideoAd(this, "17058950");
-
-        // Set the Ad-Load Listener
-        videoAd.setAdLoadListener(new VideoAdLoadListener() {
+        SDKSettings.init(this, new SDKSettings.InitListener() {
             @Override
-            public void onAdLoaded(VideoAd videoAd) {
-                Log.d(TAG, "onAdLoaded");
-                Toast.makeText(getApplicationContext(), "onAdLoaded", Toast.LENGTH_SHORT).show();
-            }
+            public void onInitFinished() {
+                infoText = (TextView) findViewById(R.id.infotTextView);
+                playButon = (ImageButton) findViewById(R.id.play_button);
+                videoPlayer = (VideoView) findViewById(R.id.video_player);
+                baseContainer = (RelativeLayout) findViewById(R.id.container_layout);
+                videoPlayer.setVideoURI(Uri.parse(getString(R.string.content_url_1)));
 
-            @Override
-            public void onAdRequestFailed(VideoAd videoAd, ResultCode errorCode) {
-                Log.d(TAG, "onAdRequestFailed::" + errorCode);
-                Toast.makeText(getApplicationContext(), "onAdRequestFailed", Toast.LENGTH_SHORT).show();
-            }
-        });
+                // Initialize VideoAd
+                videoAd = new VideoAd(MainActivity.this, "17058950");
 
-        //Load the Ad.
-        videoAd.loadAd();
+                // Set the Ad-Load Listener
+                videoAd.setAdLoadListener(new VideoAdLoadListener() {
+                    @Override
+                    public void onAdLoaded(VideoAd videoAd) {
+                        Log.d(TAG, "onAdLoaded");
+                        Toast.makeText(getApplicationContext(), "onAdLoaded", Toast.LENGTH_SHORT).show();
+                    }
 
+                    @Override
+                    public void onAdRequestFailed(VideoAd videoAd, ResultCode errorCode) {
+                        Log.d(TAG, "onAdRequestFailed::" + errorCode);
+                        Toast.makeText(getApplicationContext(), "onAdRequestFailed", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
-        // Set PlayBack Listener.
-        videoAd.setVideoPlaybackListener(new VideoAdPlaybackListener() {
-
-            @Override
-            public void onAdPlaying(final VideoAd videoAd) {
-                Log.d(TAG, "onAdPlaying::");
-            }
-
-            @Override
-            public void onQuartile(VideoAd view, Quartile quartile) {
-                Log.d(TAG, "onQuartile::" + quartile);
-            }
-
-            @Override
-            public void onAdCompleted(VideoAd view, PlaybackCompletionState playbackState) {
-                Log.d(TAG, "onAdCompleted::playbackState" + playbackState);
-                videoPlayer.start();
-            }
-
-            @Override
-            public void onAdMuted(VideoAd view, boolean isMute) {
-                Log.d(TAG, "isAudioMute::" + isMute);
-            }
-
-            @Override
-            public void onAdClicked(VideoAd adView) {
-                Log.d(TAG, "onAdClicked");
-            }
-
-            @Override
-            public void onAdClicked(VideoAd videoAd, String clickUrl) {
-                Log.d(TAG, "onAdClicked");
-            }
-        });
+                //Load the Ad.
+                videoAd.loadAd();
 
 
-        playButon.setOnClickListener(new View.OnClickListener() {
+                // Set PlayBack Listener.
+                videoAd.setVideoPlaybackListener(new VideoAdPlaybackListener() {
 
-            @Override
-            public void onClick(View v) {
-                if (videoAd.isReady()) {
-                    // Play the VideoAd by passing the container.
-                    videoAd.playAd(baseContainer);
+                    @Override
+                    public void onAdPlaying(final VideoAd videoAd) {
+                        Log.d(TAG, "onAdPlaying::");
+                    }
 
-                    // Continue to main content video if the ad doesnot start in 2 seconds.
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.d(TAG, "getAdPlayElapsedTime");
-                            videoAd.getAdPlayElapsedTime(new ResultCallback() {
+                    @Override
+                    public void onQuartile(VideoAd view, Quartile quartile) {
+                        Log.d(TAG, "onQuartile::" + quartile);
+                    }
+
+                    @Override
+                    public void onAdCompleted(VideoAd view, PlaybackCompletionState playbackState) {
+                        Log.d(TAG, "onAdCompleted::playbackState" + playbackState);
+                        videoPlayer.start();
+                    }
+
+                    @Override
+                    public void onAdMuted(VideoAd view, boolean isMute) {
+                        Log.d(TAG, "isAudioMute::" + isMute);
+                    }
+
+                    @Override
+                    public void onAdClicked(VideoAd adView) {
+                        Log.d(TAG, "onAdClicked");
+                    }
+
+                    @Override
+                    public void onAdClicked(VideoAd videoAd, String clickUrl) {
+                        Log.d(TAG, "onAdClicked");
+                    }
+                });
+
+
+                playButon.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        if (videoAd.isReady()) {
+                            // Play the VideoAd by passing the container.
+                            videoAd.playAd(baseContainer);
+
+                            // Continue to main content video if the ad doesnot start in 2 seconds.
+                            new Handler().postDelayed(new Runnable() {
                                 @Override
-                                public void onResult(int result) {
-                                    Log.d(TAG, "getAdPlayElapsedTime::onResult::" + result);
-                                    if( result <=0){
-                                        videoPlayer.start();
-                                    }
+                                public void run() {
+                                    Log.d(TAG, "getAdPlayElapsedTime");
+                                    videoAd.getAdPlayElapsedTime(new ResultCallback() {
+                                        @Override
+                                        public void onResult(int result) {
+                                            Log.d(TAG, "getAdPlayElapsedTime::onResult::" + result);
+                                            if (result <= 0) {
+                                                videoPlayer.start();
+                                            }
+                                        }
+                                    });
                                 }
-                            });
+                            }, 2000);
+                        } else {
+                            videoPlayer.start();
                         }
-                    }, 2000);
-                } else {
-                    videoPlayer.start();
-                }
-                playButon.setVisibility(View.GONE);
+                        playButon.setVisibility(View.GONE);
+                    }
+                });
             }
         });
-
     }
 
 
@@ -166,19 +168,25 @@ public class MainActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        videoAd.activityOnResume();
+        if (videoAd != null) {
+            videoAd.activityOnResume();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        videoAd.activityOnPause();
+        if (videoAd != null) {
+            videoAd.activityOnPause();
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        videoAd.activityOnDestroy();
+        if (videoAd != null) {
+            videoAd.activityOnDestroy();
+        }
     }
 
 

@@ -19,10 +19,13 @@ package com.appnexus.opensdk.utils;
 import android.annotation.TargetApi;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Looper;
 import android.text.TextUtils;
 
 
 import com.appnexus.opensdk.R;
+import com.appnexus.opensdk.SDKSettings;
+import com.appnexus.opensdk.tasksmanager.TasksManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,17 +35,66 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.concurrent.Executor;
+
+public abstract class HTTPGet {
 
 
-public abstract class HTTPGet extends AsyncTask<Void, Void, HTTPResponse> {
-
+    private HTTPGetAsync httpGetAsync;
+    private boolean isCancelled = false;
 
     public HTTPGet() {
         super();
     }
 
-    @Override
-    protected HTTPResponse doInBackground(Void... params) {
+    abstract protected void onPostExecute(HTTPResponse response);
+
+    public void execute() {
+        if (SDKSettings.isBackgroundThreadingEnabled()) {
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                TasksManager.getInstance().executeOnBackgroundThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        HTTPResponse response = makeHttpRequest();
+                        onPostExecute(response);
+                    }
+                });
+            } else {
+                HTTPResponse response = makeHttpRequest();
+                onPostExecute(response);
+            }
+        } else {
+            httpGetAsync = new HTTPGetAsync();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                httpGetAsync.executeOnExecutor(SDKSettings.getExternalExecutor());
+            } else {
+                httpGetAsync.execute();
+            }
+        }
+    }
+
+    protected abstract String getUrl();
+
+    private HttpURLConnection createConnection(URL url) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setDoOutput(false);
+        connection.setDoInput(true);
+        connection.setUseCaches(false);
+        connection.setRequestMethod("GET");
+        return connection;
+    }
+
+    private void setConnectionParams(HttpURLConnection connection) throws ProtocolException {
+        connection.setRequestProperty("User-Agent", Settings.getSettings().ua);
+        String cookieString = WebviewUtil.getCookie();
+        if (!TextUtils.isEmpty(cookieString)) {
+            connection.setRequestProperty("Cookie",cookieString);
+        }
+        connection.setConnectTimeout(Settings.HTTP_CONNECTION_TIMEOUT);
+        connection.setReadTimeout(Settings.HTTP_SOCKET_TIMEOUT);
+    }
+
+    protected HTTPResponse makeHttpRequest() {
         HTTPResponse out = new HTTPResponse();
         HttpURLConnection connection = null;
         try {
@@ -95,35 +147,49 @@ public abstract class HTTPGet extends AsyncTask<Void, Void, HTTPResponse> {
         return out;
     }
 
-    @Override
-    abstract protected void onPostExecute(HTTPResponse response);
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    @Override
-    protected void onCancelled(HTTPResponse response) {
-        super.onCancelled(null);
-    }
-
-
-    protected abstract String getUrl();
-
-    private HttpURLConnection createConnection(URL url) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setDoOutput(false);
-        connection.setDoInput(true);
-        connection.setUseCaches(false);
-        connection.setRequestMethod("GET");
-        return connection;
-    }
-
-    private void setConnectionParams(HttpURLConnection connection) throws ProtocolException {
-        connection.setRequestProperty("User-Agent", Settings.getSettings().ua);
-        String cookieString = WebviewUtil.getCookie();
-        if (!TextUtils.isEmpty(cookieString)) {
-            connection.setRequestProperty("Cookie",cookieString);
+    public void cancel(boolean b) {
+        if (httpGetAsync != null) {
+            httpGetAsync.cancel(true);
+            isCancelled = true;
         }
-        connection.setConnectTimeout(Settings.HTTP_CONNECTION_TIMEOUT);
-        connection.setReadTimeout(Settings.HTTP_SOCKET_TIMEOUT);
     }
 
+    protected HTTPResponse doInBackground(Void[] params) {
+        return makeHttpRequest();
+    }
+
+    public boolean isCancelled() {
+        return isCancelled;
+    }
+
+    private class HTTPGetAsync extends AsyncTask<Void, Void, HTTPResponse> {
+
+
+        public HTTPGetAsync() {
+            super();
+        }
+
+        @Override
+        protected HTTPResponse doInBackground(Void... params) {
+            return makeHttpRequest();
+        }
+
+        @Override
+        protected void onPostExecute(HTTPResponse response) {
+            HTTPGet.this.onPostExecute(response);
+        }
+
+        @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+        @Override
+        protected void onCancelled(HTTPResponse response) {
+            super.onCancelled(null);
+        }
+
+
+        protected String getUrl() {
+            return HTTPGet.this.getUrl();
+        }
+
+    }
 }
+

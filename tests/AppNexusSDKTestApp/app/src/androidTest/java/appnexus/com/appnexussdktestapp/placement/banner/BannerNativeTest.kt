@@ -80,7 +80,7 @@ class BannerNativeTest {
     @Test
     fun bannerNativeLoadTest() {
 
-        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, creativeId = 162039377)
+        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, creativeId = 182426521)
         onView(ViewMatchers.withId(R.id.linearLayout))
             .check(matches(isDisplayed()))
         onView(ViewMatchers.withId(R.id.linearLayout))
@@ -89,10 +89,10 @@ class BannerNativeTest {
             .check(matches(isDisplayed()))
         onView(ViewMatchers.withId(R.id.description))
             .check(matches(isDisplayed()))
-        onView(withText("What is in the Name...."))
-            .check(matches(isDisplayed()));
-        onView(withText("The person who said \"What is in the Name\" wrote his name below the quote..."))
-            .check(matches(isDisplayed()));
+//        onView(withText("What is in the Name...."))
+//            .check(matches(isDisplayed()));
+//        onView(withText("The person who said \"What is in the Name\" wrote his name below the quote..."))
+//            .check(matches(isDisplayed()));
         Thread.sleep(5000)
         onView(ViewMatchers.withId(R.id.icon))
             .check(matches(isDisplayed()))
@@ -106,6 +106,49 @@ class BannerNativeTest {
     @Test
     fun bannerNativeAssemblyRendererLoadTest() {
         bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, creativeId = 162039377)
+        onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(matches(isDisplayed()))
+        onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(matches(ViewMatchers.hasChildCount(1)))
+        bannerActivity.layout.getChildAt(0)
+        onView(ViewMatchers.withId(bannerActivity.banner.id))
+            .check(matches(isDisplayed()))
+    }
+    
+    // BG Testing
+
+    /*
+* Sanity Test for the Banner Native Ad
+* */
+    @Test
+    fun bannerNativeLoadBGTest() {
+
+        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, creativeId = 182426521, bgTask = true)
+        onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(matches(isDisplayed()))
+        onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(matches(ViewMatchers.hasChildCount(1)))
+        onView(ViewMatchers.withId(R.id.title))
+            .check(matches(isDisplayed()))
+        onView(ViewMatchers.withId(R.id.description))
+            .check(matches(isDisplayed()))
+//        onView(withText("What is in the Name...."))
+//            .check(matches(isDisplayed()));
+//        onView(withText("The person who said \"What is in the Name\" wrote his name below the quote..."))
+//            .check(matches(isDisplayed()));
+        Thread.sleep(5000)
+        onView(ViewMatchers.withId(R.id.icon))
+            .check(matches(isDisplayed()))
+        onView(ViewMatchers.withId(R.id.image))
+            .check(matches(isDisplayed()))
+    }
+
+    /*
+    * Sanity Test for the Banner Native Assembly Renderer Ad
+    * */
+    @Test
+    fun bannerNativeAssemblyRendererLoadBGTest() {
+        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, creativeId = 162039377, bgTask = true)
         onView(ViewMatchers.withId(R.id.linearLayout))
             .check(matches(isDisplayed()))
         onView(ViewMatchers.withId(R.id.linearLayout))

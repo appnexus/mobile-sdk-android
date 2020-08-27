@@ -73,8 +73,13 @@ public class AdMobNativeListener extends AdListener implements UnifiedNativeAd.O
     @Override
     public void onAdImpression() {
         Clog.e(Clog.mediationLogTag, "AdMob - onAdImpression");
+        NativeAdEventListener listener = null;
+        AdMobNativeAdResponse adMobNativeAdResponse = this.weakReferenceAdMobNativeAdResponse.get();
+        if (adMobNativeAdResponse != null && adMobNativeAdResponse.getListener() != null) {
+            listener = adMobNativeAdResponse.getListener();
+        }
         if(mBC!=null) {
-            mBC.onAdImpression();
+            mBC.onAdImpression(listener);
         }
     }
 

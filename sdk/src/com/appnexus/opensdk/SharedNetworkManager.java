@@ -50,6 +50,7 @@ public class SharedNetworkManager {
     private static final int TOTAL_RETRY_WAIT_INTERVAL_MILLISECONDS = 10 * 1000;
     private static final String permission = "android.permission.ACCESS_NETWORK_STATE";
     private boolean permitted;
+    private ImpressionTrackerListener impressionTrackerListener;
 
     private SharedNetworkManager(Context context) {
         int permissionStatus = context.getPackageManager().checkPermission(
@@ -70,7 +71,12 @@ public class SharedNetworkManager {
     }
 
     synchronized void addURL(String url, Context context) {
+        addURL(url, context, null);
+    }
+
+    synchronized void addURL(String url, Context context, ImpressionTrackerListener impressionTrackerListener) {
         Clog.d(Clog.baseLogTag, "SharedNetworkManager adding URL for Network Retry");
+        this.impressionTrackerListener = impressionTrackerListener;
         urls.add(new UrlObject(url));
         startTimer(context);
     }
@@ -90,7 +96,6 @@ public class SharedNetworkManager {
                                 final UrlObject urlObject = urls.remove(0);
                                 if (urlObject.retryTimes < TOTAL_RETRY_TIMES) {
                                     {
-
                                         HTTPGet fire = new HTTPGet() {
                                             @Override
                                             protected void onPostExecute(HTTPResponse response) {
@@ -101,6 +106,9 @@ public class SharedNetworkManager {
                                                 } else {
                                                     // Nothing more to do just print logs and exit.
                                                     Clog.d(Clog.baseLogTag, "SharedNetworkManager Retry Successful");
+                                                    if (impressionTrackerListener != null) {
+                                                        impressionTrackerListener.onImpressionTrackerFired();
+                                                    }
                                                 }
 
                                             }
@@ -110,11 +118,8 @@ public class SharedNetworkManager {
                                                 return urlObject.url;
                                             }
                                         };
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                                            fire.executeOnExecutor(SDKSettings.getExternalExecutor());
-                                        } else {
-                                            fire.execute();
-                                        }
+                                        fire.execute();
+
                                     }
                                 }
                             } else {

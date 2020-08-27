@@ -65,11 +65,11 @@ public class MyActivity extends Activity {
     TextView tv;
     LinearLayout layout;
     LinearLayout layoutBanner, layoutVideo, layoutNative;
-    String placementID = "16150452";
+    String placementID = "17058950";
     String bannerPlacementId = "17982237";
     String interstitialPlacementId = "7067108";
     String nativePlacementId = "9505207";
-    String videoPlacementId = placementID;
+    String videoPlacementId = nativePlacementId = bannerPlacementId = interstitialPlacementId = placementID;
     int count = 1;
     InterstitialAdView iav;
     BannerAdView bav;
@@ -80,6 +80,7 @@ public class MyActivity extends Activity {
     CountingIdlingResource idlingResource = new CountingIdlingResource("MAR Load Count", true);
     boolean multiAdRequestCompleted = false;
     boolean multiAdRequestCompleted2 = false;
+    private VideoAd videoAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +98,7 @@ public class MyActivity extends Activity {
 
         iav = setupInterstitialAd();
 
-        final VideoAd videoAd = setupVideoAd();
+        videoAd = setupVideoAd();
 
         bav = setupBannerAd();
 
@@ -183,7 +184,7 @@ public class MyActivity extends Activity {
 
             @Override
             public void onMultiAdRequestFailed(ResultCode code) {
-                msg += code.name();
+                msg += code.getMessage();
                 toast();
             }
         });
@@ -208,14 +209,14 @@ public class MyActivity extends Activity {
 
                     @Override
                     public void onMultiAdRequestFailed(ResultCode code) {
-                        msg += code.name();
+                        msg += code.getMessage();
                         toast();
                     }
                 });
         anMultiAdRequest.addAdUnit(bav);
-//        anMultiAdRequest.addAdUnit(iav);
-//        anMultiAdRequest.addAdUnit(adRequest);
-//        anMultiAdRequest.addAdUnit(videoAd);
+        anMultiAdRequest.addAdUnit(iav);
+        anMultiAdRequest.addAdUnit(adRequest);
+        anMultiAdRequest.addAdUnit(videoAd);
 //        anMultiAdRequest.addAdUnit(setupVideoAd());
 //        bav = null;
 //        System.gc();

@@ -38,6 +38,7 @@ public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListe
     NativeAdResponse nativeAdResponse;
     ResultCode failErrorCode;
     protected ANAdResponseInfo adResponseInfo;
+    boolean impressionLogged = false;
 
 
     @Override
@@ -46,6 +47,7 @@ public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListe
 
         adLoaded = false;
         adFailed = false;
+        impressionLogged = false;
         nativeAdResponse = null;
         failErrorCode = null;
 
@@ -103,6 +105,11 @@ public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListe
     @Override
     public void onAdWasClicked(String clickUrl, String fallbackURL) {
 
+    }
+
+    @Override
+    public void onAdImpression() {
+        impressionLogged = true;
     }
 
     public ANOmidAdSession getOMIDAdSession() {

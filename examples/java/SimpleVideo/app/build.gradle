@@ -32,6 +32,6 @@ android {
 dependencies {
     api project(':instreamvideo')
     // For setting AAID in ad request
-    implementation("com.google.android.gms:play-services-base:10.0.1")
-    implementation("com.google.android.gms:play-services-ads:10.0.1")
+    implementation "com.google.android.gms:play-services-base:17.3.0"
+    implementation "com.google.android.gms:play-services-ads:19.2.0"
 }

@@ -39,7 +39,7 @@ public class CSRNativeBannerController implements CSRController {
     WeakReference<Context> contextWeakReference;
     private WeakReference<BaseNativeAdResponse> response;
     CSRAdResponse currentAd;
-
+    NativeAdEventListener listener;
     boolean hasSucceeded = false;
     boolean hasFailed = false;
     private boolean hasCancelled = false;
@@ -160,7 +160,8 @@ public class CSRNativeBannerController implements CSRController {
     }
 
     @Override
-    public void onAdImpression() {
+    public void onAdImpression(NativeAdEventListener listener) {
+        this.listener = listener;
         fireImpressionTracker();
 
         // Fire the impression event to OMID
@@ -314,7 +315,14 @@ public class CSRNativeBannerController implements CSRController {
                 if (context != null && !SharedNetworkManager.getInstance(context).isConnected(context) && impressionTrackers.size() > 0) {
                     SharedNetworkManager nm = SharedNetworkManager.getInstance(context);
                     for (String url : impressionTrackers) {
-                        nm.addURL(url, context);
+                        nm.addURL(url, context, new ImpressionTrackerListener() {
+                            @Override
+                            public void onImpressionTrackerFired() {
+                                if (listener != null) {
+                                    listener.onAdImpression();
+                                }
+                            }
+                        });
                     }
                 }
                 // else for all other cases when impression trackerlist size in non zero fire the trackers
@@ -361,6 +369,9 @@ public class CSRNativeBannerController implements CSRController {
             protected void onPostExecute(HTTPResponse response) {
                 if (response != null && response.getSucceeded()) {
                     Clog.d(Clog.baseLogTag, "CSR Native Event Tracked successfully");
+                    if (listener != null) {
+                        listener.onAdImpression();
+                    }
                 }
             }
 
@@ -369,11 +380,6 @@ public class CSRNativeBannerController implements CSRController {
                 return trackerUrl;
             }
         };
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            tracker.executeOnExecutor(SDKSettings.getExternalExecutor());
-        } else {
-            tracker.execute();
-        }
-
+        tracker.execute();
     }
 }

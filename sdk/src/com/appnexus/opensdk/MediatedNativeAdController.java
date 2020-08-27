@@ -34,6 +34,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 public class MediatedNativeAdController {
+    NativeAdEventListener listener;
     WeakReference<UTAdRequester> requester;
     WeakReference<Context> contextWeakReference;
     private WeakReference<BaseNativeAdResponse> response;
@@ -207,7 +208,8 @@ public class MediatedNativeAdController {
      * Call this method to inform the AppNexus SDK that an impression has been recorded on the Mediated Native Ad.
      * This is essential for AppNexus SDK to fire impression tracker correctly.
      */
-    public void onAdImpression() {
+    public void onAdImpression(NativeAdEventListener listener) {
+        this.listener = listener;
         fireImpressionTracker();
 
         // Fire the impression event to OMID
@@ -329,7 +331,14 @@ public class MediatedNativeAdController {
                 if (context != null && !SharedNetworkManager.getInstance(context).isConnected(context) && impressionTrackers.size() > 0) {
                     SharedNetworkManager nm = SharedNetworkManager.getInstance(context);
                     for (String url : impressionTrackers) {
-                        nm.addURL(url, context);
+                        nm.addURL(url, context, new ImpressionTrackerListener() {
+                            @Override
+                            public void onImpressionTrackerFired() {
+                                if (listener != null) {
+                                    listener.onAdImpression();
+                                }
+                            }
+                        });
                     }
                 }
                 // else for all other cases when impression trackerlist size in non zero fire the trackers
@@ -346,12 +355,14 @@ public class MediatedNativeAdController {
 
 
     void fireTracker(final String trackerUrl) {
-
         HTTPGet tracker = new HTTPGet() {
             @Override
             protected void onPostExecute(HTTPResponse response) {
                 if (response != null && response.getSucceeded()) {
                     Clog.d(Clog.baseLogTag, "Mediated Native Impression Tracked successfully");
+                    if (listener != null) {
+                        listener.onAdImpression();
+                    }
                 }
             }
 
@@ -360,11 +371,8 @@ public class MediatedNativeAdController {
                 return trackerUrl;
             }
         };
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            tracker.executeOnExecutor(SDKSettings.getExternalExecutor());
-        } else {
-            tracker.execute();
-        }
+        tracker.execute();
+
     }
 
 }

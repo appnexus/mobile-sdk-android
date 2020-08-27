@@ -82,8 +82,13 @@ public class FacebookNativeAdListener implements NativeAdListener {
     @Override
     public void onLoggingImpression(Ad ad) {
         Clog.e(Clog.mediationLogTag, "Facebook - onLoggingImpression");
+        NativeAdEventListener listener = null;
+        FBNativeAdResponse fbNativeAdResponse = this.response.get();
+        if (fbNativeAdResponse != null && fbNativeAdResponse.getListener() != null) {
+            listener = fbNativeAdResponse.getListener();
+        }
         if(controller!=null) {
-            controller.onAdImpression();
+            controller.onAdImpression(listener);
         }
     }
 

@@ -66,7 +66,7 @@ public class ExecutorForBackgroundTasksTests extends BaseViewAdTest {
     public void testClickTrackerExecutorForBackgroundTasks() {
         SDKSettings.setExternalExecutor(MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
         assertNotSame(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
-        new ClickTracker(url).executeOnExecutor(SDKSettings.getExternalExecutor());
+        new ClickTracker(url).execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         assertEquals(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());

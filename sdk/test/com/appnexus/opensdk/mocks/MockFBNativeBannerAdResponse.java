@@ -21,7 +21,7 @@ public class MockFBNativeBannerAdResponse extends BaseNativeAdResponse {
 
     public void logImpression() {
         if (this.callback != null) {
-            this.callback.onAdImpression();
+            this.callback.onAdImpression(null);
         }
     }
 

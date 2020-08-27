@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package appnexus.com.appnexussdktestapp.placement.native
+package appnexus.com.appnexussdktestapp.functional.native
 
 import android.content.Intent
 import androidx.test.espresso.Espresso
@@ -66,68 +66,21 @@ class NativeTest {
     }
 
     /*
-    * Sanity Test for the Native Ad
-    * */
+   * Sanity Test for the Native Ad
+   * */
     @Test
     fun nativeAdLoadTest() {
-
+        Assert.assertFalse(nativeActivity.didLogImpression)
         nativeActivity.triggerAdLoad("17982237", creativeId = 182426521)
         Espresso.onView(ViewMatchers.withId(R.id.title))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.description))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-//        Espresso.onView(ViewMatchers.withText("What is in the Name...."))
-//            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
-//        Espresso.onView(ViewMatchers.withText("The person who said \"What is in the Name\" wrote his name below the quote..."))
-//            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
         Thread.sleep(5000)
         Espresso.onView(ViewMatchers.withId(R.id.icon))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.image))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-    }
-
-    /*
-    * Sanity Test for the Native Ad
-    * */
-    @Test
-    fun nativeAdLoadBGTest() {
-
-        nativeActivity.triggerAdLoad("17982237", creativeId = 182426521, bgTask = true)
-        Espresso.onView(ViewMatchers.withId(R.id.title))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.description))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-//        Espresso.onView(ViewMatchers.withText("What is in the Name...."))
-//            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
-//        Espresso.onView(ViewMatchers.withText("The person who said \"What is in the Name\" wrote his name below the quote..."))
-//            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
-        Thread.sleep(5000)
-        Espresso.onView(ViewMatchers.withId(R.id.icon))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.image))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-    }
-
-    /*
-    * Sanity Test for the Native Ad
-    * */
-    @Test
-    fun nativeAdLoadBGExecutorTest() {
-
-        nativeActivity.triggerAdLoad("17982237", creativeId = 182426521, bgTask = true, useExecutor = true)
-        Espresso.onView(ViewMatchers.withId(R.id.title))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.description))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-//        Espresso.onView(ViewMatchers.withText("What is in the Name...."))
-//            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
-//        Espresso.onView(ViewMatchers.withText("The person who said \"What is in the Name\" wrote his name below the quote..."))
-//            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
-        Thread.sleep(5000)
-        Espresso.onView(ViewMatchers.withId(R.id.icon))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.image))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Assert.assertTrue(nativeActivity.didLogImpression)
     }
 }

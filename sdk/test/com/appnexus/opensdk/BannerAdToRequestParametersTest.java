@@ -216,6 +216,15 @@ public class BannerAdToRequestParametersTest extends BaseRoboTest {
         bannerAdView.getRequestParameters().getCustomKeywords().contains("content_url");
     }
 
+    // Testing the force creative Id in the post data.
+    @Test
+    public void testForceCreativeId(){
+        bannerAdView.setForceCreativeId(135482485);
+
+        String postData = getRequestParametersPostData();
+        assertTrue(postData.contains("\"force_creative_id\":135482485"));
+    }
+
     @Test
     public void testIsNativeAssemblyRendererEnabled(){
         useNativeRenderer(true);

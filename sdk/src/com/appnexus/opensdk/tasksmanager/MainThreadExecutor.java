@@ -14,11 +14,22 @@
  *    limitations under the License.
  */
 
-package com.appnexus.opensdk;
+package com.appnexus.opensdk.tasksmanager;
 
-public interface CSRController {
-    void onAdLoaded(NativeAdResponse nativeAdResponse);
-    void onAdImpression(NativeAdEventListener listener);
-    void onAdClicked();
-    void onAdFailed(ResultCode code);
+import android.os.Handler;
+import android.os.Looper;
+
+class MainThreadExecutor implements CancellableExecutor {
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+
+    @Override
+    public void execute(Runnable runnable) {
+        mHandler.post(runnable);
+    }
+
+    @Override
+    public boolean cancel(Runnable runnable) {
+        mHandler.removeCallbacks(runnable);
+        return true;
+    }
 }

@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
 import com.appnexus.opensdk.utils.Clog;
@@ -24,30 +25,32 @@ import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.viewability.ANOmidAdSession;
 
-class ImpressionTracker extends HTTPGet {
+class ImpressionTracker {
     private String url;
     private VisibilityDetector visibilityDetector;
     private boolean fired = false;
     private Context context;
     private ImpressionListener listener;
     private ANOmidAdSession anOmidAdSession;
+    private ImpressionTrackerListener impressionTrackerListener;
 
-    static ImpressionTracker create(String url, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession) {
+    static ImpressionTracker create(String url, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession, ImpressionTrackerListener impressionTrackerListener) {
         if (visibilityDetector == null) {
             return null;
         } else {
-            ImpressionTracker impressionTracker = new ImpressionTracker(url, visibilityDetector, context, anOmidAdSession);
+            ImpressionTracker impressionTracker = new ImpressionTracker(url, visibilityDetector, context, anOmidAdSession, impressionTrackerListener);
             visibilityDetector.addVisibilityListener(impressionTracker.listener);
             return impressionTracker;
         }
     }
 
-    private ImpressionTracker(String url, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession) {
+    private ImpressionTracker(String url, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession, ImpressionTrackerListener impressionTrackerListener) {
         this.url = url;
         this.visibilityDetector = visibilityDetector;
         this.listener = new ImpressionListener();
         this.context = context;
         this.anOmidAdSession = anOmidAdSession;
+        this.impressionTrackerListener = impressionTrackerListener;
     }
 
     private synchronized void fire() {
@@ -55,31 +58,43 @@ class ImpressionTracker extends HTTPGet {
         if (!fired) {
             SharedNetworkManager nm = SharedNetworkManager.getInstance(context);
             if (nm.isConnected(context)) {
-                execute();
+                @SuppressLint("StaticFieldLeak") HTTPGet asyncTask = new HTTPGet() {
+                    @Override
+                    protected void onPostExecute(HTTPResponse response) {
+                        Clog.d(Clog.nativeLogTag, "Impression tracked.");
+                        if (impressionTrackerListener != null) {
+                            impressionTrackerListener.onImpressionTrackerFired();
+                        }
+                    }
+
+                    @Override
+                    protected String getUrl() {
+                        return url;
+                    }
+                };
+                asyncTask.execute();
                 visibilityDetector.removeVisibilityListener(listener);
                 listener = null;
             } else {
-                nm.addURL(url, context);
+                nm.addURL(url, context, new ImpressionTrackerListener() {
+                    @Override
+                    public void onImpressionTrackerFired() {
+                        if (impressionTrackerListener != null) {
+                            impressionTrackerListener.onImpressionTrackerFired();
+                        }
+                    }
+                });
             }
-            if(anOmidAdSession !=null){
+            if (anOmidAdSession != null) {
                 anOmidAdSession.fireImpression();
             }
             fired = true;
         }
     }
 
-    @Override
-    protected void onPostExecute(HTTPResponse response) {
-        Clog.d(Clog.nativeLogTag, "Impression tracked.");
-    }
-
-    @Override
-    protected String getUrl() {
-        return url;
-    }
-
     class ImpressionListener implements VisibilityDetector.VisibilityListener {
         long elapsedTime = 0;
+
         @Override
         public void onVisibilityChanged(boolean visible) {
             if (visible) {

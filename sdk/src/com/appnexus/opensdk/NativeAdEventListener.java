@@ -36,4 +36,9 @@ public interface NativeAdEventListener {
      * @param fallbackURL the fallback url
      */
     public void onAdWasClicked(String clickUrl,String fallbackURL);
+
+    /**
+     * Called when an impression is recorded for an native ad
+     */
+    public void onAdImpression();
 }

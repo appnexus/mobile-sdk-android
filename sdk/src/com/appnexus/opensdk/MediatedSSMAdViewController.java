@@ -91,11 +91,9 @@ public class MediatedSSMAdViewController {
                 return ssmHtmlAdResponse.getAdUrl();
             }
         };
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            loadUrl.executeOnExecutor(SDKSettings.getExternalExecutor());
-        } else {
-            loadUrl.execute();
-        }
+
+        loadUrl.execute();
+
     }
 
     public void onAdFailed(ResultCode reason) {

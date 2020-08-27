@@ -83,13 +83,13 @@ class VideoTest {
 
         onView(withId(R.id.play_button)).perform(ViewActions.click())
 
-        onWebView().forceJavascriptEnabled()
-        onWebView().inWindow(selectFrameByIndex(1))
-            .check(WebViewAssertions.webContent(DomMatchers.hasElementWithId("ad_indicator_text")))
-        onWebView().inWindow(selectFrameByIndex(1))
-            .check(WebViewAssertions.webContent(DomMatchers.hasElementWithId("ad_skip_text")))
-        onWebView().inWindow(selectFrameByIndex(1))
-            .check(WebViewAssertions.webContent(DomMatchers.hasElementWithId("skip_button")))
+//        onWebView().forceJavascriptEnabled()
+//        onWebView().inWindow(selectFrameByIndex(1))
+//            .check(WebViewAssertions.webContent(DomMatchers.hasElementWithId("ad_indicator_text")))
+//        onWebView().inWindow(selectFrameByIndex(1))
+//            .check(WebViewAssertions.webContent(DomMatchers.hasElementWithId("ad_skip_text")))
+//        onWebView().inWindow(selectFrameByIndex(1))
+//            .check(WebViewAssertions.webContent(DomMatchers.hasElementWithId("skip_button")))
 //        For functional test -> Clickthrough
 //        onWebView().inWindow(selectFrameByIndex(1)).withElement(findElement(Locator.ID, "ad_indicator_text"))
 //            .perform(webClick())
@@ -103,6 +103,61 @@ class VideoTest {
     fun videoVPAIDTest() {
 
         videoActivity.triggerAdLoad("14768519", creativeId = 162056795)
+
+        onView(withId(R.id.play_button)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.play_button)).perform(ViewActions.click())
+
+        onWebView().forceJavascriptEnabled()
+        onWebView().inWindow(selectFrameByIndex(1))
+            .check(WebViewAssertions.webContent(DomMatchers.hasElementWithId("ad_indicator_text")))
+        onWebView().inWindow(selectFrameByIndex(1))
+            .check(WebViewAssertions.webContent(DomMatchers.hasElementWithId("ad_skip_text")))
+        onWebView().inWindow(selectFrameByIndex(1))
+            .check(WebViewAssertions.webContent(DomMatchers.hasElementWithId("skip_button")))
+
+        //The timer divs and span are based on class and does not have any id, thus it can't be checked
+
+//        For functional test -> Clickthrough
+//        onWebView().inWindow(selectFrameByIndex(1)).withElement(findElement(Locator.ID, "ad_indicator_text"))
+//            .perform(webClick())
+
+    }
+    
+    // BG Testing
+
+    /*
+    * Sanity Test for the Video Ad (Instream Video)
+    * */
+    @Test
+    fun videoBGTest() {
+
+        videoActivity.triggerAdLoad("14757590", creativeId = 162035356, bgTask = true)
+
+        onView(withId(R.id.play_button)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.play_button)).perform(ViewActions.click())
+
+//        onWebView().forceJavascriptEnabled()
+//        onWebView().inWindow(selectFrameByIndex(1))
+//            .check(WebViewAssertions.webContent(DomMatchers.hasElementWithId("ad_indicator_text")))
+//        onWebView().inWindow(selectFrameByIndex(1))
+//            .check(WebViewAssertions.webContent(DomMatchers.hasElementWithId("ad_skip_text")))
+//        onWebView().inWindow(selectFrameByIndex(1))
+//            .check(WebViewAssertions.webContent(DomMatchers.hasElementWithId("skip_button")))
+//        For functional test -> Clickthrough
+//        onWebView().inWindow(selectFrameByIndex(1)).withElement(findElement(Locator.ID, "ad_indicator_text"))
+//            .perform(webClick())
+
+    }
+
+    /*
+    * Sanity Test for the VPAID Video Ad (Instream Video)
+    * */
+    @Test
+    fun videoVPAIDBGTest() {
+
+        videoActivity.triggerAdLoad("14768519", creativeId = 162056795, bgTask = true)
 
         onView(withId(R.id.play_button)).check(matches(isDisplayed()))
 

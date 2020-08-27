@@ -27,6 +27,7 @@ import com.appnexus.opensdk.Ad;
 import com.appnexus.opensdk.AdViewRequestManager;
 import com.appnexus.opensdk.R;
 import com.appnexus.opensdk.ResultCode;
+import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.SharedNetworkManager;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.JsonUtil;
@@ -51,11 +52,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdResponse>> {
+public class UTAdRequest {
 
 
     private WeakReference<UTAdRequester> requester; // The instance of AdRequester which is filing this request.
     private UTRequestParameters requestParams;
+    private AsyncRequest request = null;
 
     public UTAdRequest(UTAdRequester adRequester) {
         this.requester = new WeakReference<UTAdRequester>(adRequester);
@@ -66,14 +68,38 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
             if (!networkManager.isConnected(requestParams.getContext())) {
                 fail(ResultCode.getNewInstance(ResultCode.NETWORK_ERROR));
                 Clog.i(Clog.httpReqLogTag, "Connection Error");
-                this.cancel(true);
+                if (request != null) {
+                    request.cancel(true);
+                }
             }
         } else {
             Clog.i(Clog.httpReqLogTag, "Internal Error");
             fail(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR));
-            this.cancel(true);
+            fail(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR));
+            if (request != null) {
+                request.cancel(true);
+            }
         }
+    }
 
+    public void execute() {
+        if (SDKSettings.isBackgroundThreadingEnabled()) {
+            HashMap<String, UTAdResponse> adResponseMap = makeRequest();
+            processResponse(adResponseMap);
+        } else {
+            request = new AsyncRequest();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                request.executeOnExecutor(SDKSettings.getExternalExecutor());
+            } else {
+                request.execute();
+            }
+        }
+    }
+
+    public void cancel(boolean cancel) {
+        if (request != null) {
+            request.cancel(cancel);
+        }
     }
 
     private void fail(ResultCode code) {
@@ -99,10 +125,7 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
         Clog.clearLastResponse();
     }
 
-
-    @Override
-    protected HashMap<String, UTAdResponse> doInBackground(Void... params) {
-
+    HashMap<String, UTAdResponse> makeRequest() {
         try {
 
             String baseUrl = UTConstants.REQUEST_BASE_URL_UT;
@@ -113,7 +136,7 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("User-Agent", Settings.getSettings().ua);
-            if(ANGDPRSettings.canIAccessDeviceData(requestParams.getContext())){
+            if (ANGDPRSettings.canIAccessDeviceData(requestParams.getContext())) {
                 String cookieString = WebviewUtil.getCookie();
                 if (!TextUtils.isEmpty(cookieString)) {
                     conn.setRequestProperty("Cookie", cookieString);
@@ -155,7 +178,7 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
 
                 Clog.i(Clog.httpRespLogTag, "RESPONSE - " + result);
                 Map<String, List<String>> headers = conn.getHeaderFields();
-                if(ANGDPRSettings.canIAccessDeviceData(requestParams.getContext())) {
+                if (ANGDPRSettings.canIAccessDeviceData(requestParams.getContext())) {
                     WebviewUtil.cookieSync(headers);
                 }
                 ANMultiAdRequest anMultiAdRequest = getMultiAdRequest();
@@ -202,9 +225,29 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
         return null;
     }
 
+    private class AsyncRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdResponse>> {
 
-    @Override
-    protected void onPostExecute(HashMap<String, UTAdResponse> adResponseMap) {
+        @Override
+        protected HashMap<String, UTAdResponse> doInBackground(Void... voids) {
+            return makeRequest();
+        }
+
+        @Override
+        protected void onPostExecute(HashMap<String, UTAdResponse> adResponseHashMap) {
+            processResponse(adResponseHashMap);
+        }
+
+
+        @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+        @Override
+        protected void onCancelled(HashMap<String, UTAdResponse> serverResponse) {
+            super.onCancelled(serverResponse);
+            Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.cancel_request));
+        }
+    }
+
+
+    void processResponse(HashMap<String, UTAdResponse> adResponseMap) {
         // check for invalid responses
         ANMultiAdRequest anMultiAdRequest = getMultiAdRequest();
         if (anMultiAdRequest == null) {
@@ -276,13 +319,6 @@ public class UTAdRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdRe
                 }
             }
         }
-    }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    @Override
-    protected void onCancelled(HashMap<String, UTAdResponse> serverResponse) {
-        super.onCancelled(serverResponse);
-        Clog.w(Clog.httpRespLogTag, Clog.getString(R.string.cancel_request));
     }
 
     private ANMultiAdRequest getMultiAdRequest() {

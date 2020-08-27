@@ -33,7 +33,9 @@ import com.appnexus.opensdk.AdViewRequestManager;
 import com.appnexus.opensdk.MediaType;
 import com.appnexus.opensdk.MultiAd;
 import com.appnexus.opensdk.ResultCode;
+import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.VideoOrientation;
+import com.appnexus.opensdk.tasksmanager.TasksManager;
 import com.appnexus.opensdk.ut.UTAdRequester;
 import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.ut.UTRequestParameters;
@@ -414,11 +416,10 @@ public class VideoAd implements Ad, MultiAd {
     }
 
 
-
-    protected void loadAdFromVAST(String VASTXML,int width,int height) {
+    protected void loadAdFromVAST(String VASTXML, int width, int height) {
         // load an ad directly from VASTXML
-        VideoWebView output = new VideoWebView(this.getContext(),this, null);
-        RTBVASTAdResponse response = new RTBVASTAdResponse(width,height, AdType.VIDEO.toString(), null,null, getAdResponseInfo());
+        VideoWebView output = new VideoWebView(this.getContext(), this, null);
+        RTBVASTAdResponse response = new RTBVASTAdResponse(width, height, AdType.VIDEO.toString(), null, null, getAdResponseInfo());
         response.setAdContent(VASTXML);
         response.setContentSource(UTConstants.RTB);
         response.addToExtras(UTConstants.EXTRAS_KEY_MRAID, true);
@@ -509,6 +510,19 @@ public class VideoAd implements Ad, MultiAd {
 
         @Override
         public void onAdLoaded() {
+            if (SDKSettings.isBackgroundThreadingEnabled()) {
+                TasksManager.getInstance().executeOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        processAdLoaded();
+                    }
+                });
+            } else {
+                processAdLoaded();
+            }
+        }
+
+        private void processAdLoaded() {
             isLoading = false;
             validAdExists = true;
             addFriendlyObstructions();
@@ -518,7 +532,20 @@ public class VideoAd implements Ad, MultiAd {
         }
 
         @Override
-        public void onAdFailed(ResultCode errorCode, ANAdResponseInfo adResponseInfo) {
+        public void onAdFailed(final ResultCode errorCode, final ANAdResponseInfo adResponseInfo) {
+            if (SDKSettings.isBackgroundThreadingEnabled()) {
+                TasksManager.getInstance().executeOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        processAdFailed(errorCode, adResponseInfo);
+                    }
+                });
+            } else {
+                processAdFailed(errorCode, adResponseInfo);
+            }
+        }
+
+        private void processAdFailed(ResultCode errorCode, ANAdResponseInfo adResponseInfo) {
             isLoading = false;
             validAdExists = false;
             setAdResponseInfo(adResponseInfo);
@@ -706,14 +733,14 @@ public class VideoAd implements Ad, MultiAd {
     }
 
 
-    public void pauseAd(){
+    public void pauseAd() {
         if (videoAdView != null) {
             videoAdView.pauseAd();
         }
     }
 
 
-    public void resumeAd(){
+    public void resumeAd() {
         if (videoAdView != null) {
             videoAdView.resumeAd();
         }
@@ -764,6 +791,15 @@ public class VideoAd implements Ad, MultiAd {
         return "";
     }
 
+    /**
+     * Set AppNexus CreativeId that you want to display on this AdUnit for debugging/testing purpose.
+     *
+     * @param forceCreativeId of the creative.
+     */
+    public void setForceCreativeId(int forceCreativeId) {
+        requestParameters.setForceCreativeId(forceCreativeId);
+    }
+
     public String getVastXML() {
         if (videoAdView != null) {
             return videoAdView.getVastXML();
@@ -797,7 +833,21 @@ public class VideoAd implements Ad, MultiAd {
     }
 
     @Override
-    public void initiateVastAdView(BaseAdResponse response, AdViewRequestManager adViewRequestManager) {
+    public void initiateVastAdView(final BaseAdResponse response, final AdViewRequestManager adViewRequestManager) {
+        if (SDKSettings.isBackgroundThreadingEnabled()) {
+            TasksManager.getInstance().executeOnMainThread(new Runnable() {
+                @Override
+                public void run() {
+                    initWebView(response, adViewRequestManager);
+                }
+            });
+        } else {
+            initWebView(response, adViewRequestManager);
+        }
+
+    }
+
+    private void initWebView(BaseAdResponse response, AdViewRequestManager adViewRequestManager) {
         Clog.d(Clog.videoLogTag, "Creating WebView for::" + response.getContentSource());
         setAdResponseInfo(response.getAdResponseInfo());
         VideoWebView adVideoView = new VideoWebView(getContext(), this, adViewRequestManager);
@@ -833,6 +883,7 @@ public class VideoAd implements Ad, MultiAd {
 
     /**
      * For adding Friendly Obstruction View
+     *
      * @param view to be added
      */
     public void addFriendlyObstruction(View view) {
@@ -843,6 +894,7 @@ public class VideoAd implements Ad, MultiAd {
 
     /**
      * For removing Friendly Obstruction View
+     *
      * @param view to be removed
      */
     public void removeFriendlyObstruction(View view) {
@@ -871,7 +923,7 @@ public class VideoAd implements Ad, MultiAd {
         if (getFriendlyObstructionList() == null || videoAdView == null) {
             return;
         }
-        for (WeakReference<View> viewWeakReference: getFriendlyObstructionList()) {
+        for (WeakReference<View> viewWeakReference : getFriendlyObstructionList()) {
             if (viewWeakReference.get() != null) {
                 videoAdView.addFriendlyObstruction(viewWeakReference.get());
             }

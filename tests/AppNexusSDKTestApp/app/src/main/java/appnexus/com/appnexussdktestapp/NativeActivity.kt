@@ -10,20 +10,25 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.test.espresso.idling.CountingIdlingResource
 import appnexus.com.appnexussdktestapp.utility.Utils
 import com.appnexus.opensdk.*
+import com.appnexus.opensdk.tasksmanager.TasksManager
 import com.appnexus.opensdk.utils.Settings
 import com.squareup.picasso.Picasso
+import java.util.concurrent.ExecutorService
 
-class NativeActivity : AppCompatActivity(), NativeAdRequestListener {
+class NativeActivity : AppCompatActivity(), NativeAdRequestListener, NativeAdEventListener {
 
+    var didLogImpression: Boolean = false
     lateinit var nativeAdRequest: NativeAdRequest
     var idlingResource: CountingIdlingResource = CountingIdlingResource("Native Load Count", true)
 
     override fun onAdLoaded(nativeAdResponse: NativeAdResponse?) {
         Toast.makeText(this, "Native Ad Loaded", Toast.LENGTH_LONG).show()
-        handleNativeResponse(nativeAdResponse)
+        TasksManager.getInstance().executeOnMainThread {
+            handleNativeResponse(nativeAdResponse)
+        }
     }
 
-    override fun onAdFailed(errorcode: ResultCode?, adResponseinfo:ANAdResponseInfo) {
+    override fun onAdFailed(errorcode: ResultCode?, adResponseinfo: ANAdResponseInfo?) {
         if (!idlingResource.isIdleNow)
             idlingResource.decrement()
     }
@@ -39,18 +44,34 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener {
 //        )
     }
 
-    fun triggerAdLoad(placement: String?, useHttps: Boolean = true, creativeId: Int? = null) {
+    fun triggerAdLoad(
+        placement: String?,
+        useHttps: Boolean = true,
+        creativeId: Int? = null,
+        bgTask: Boolean = false,
+        useExecutor: Boolean = false
+    ) {
+        SDKSettings.enableBackgroundThreading(bgTask)
         Handler(Looper.getMainLooper()).post {
 
+            didLogImpression = false
             nativeAdRequest = NativeAdRequest(this, if (placement == null) "17982237" else placement)
             nativeAdRequest.placementID = if (placement == null) "17982237" else placement
             SDKSettings.useHttps(useHttps)
             nativeAdRequest.listener = this
-            if(creativeId != null) {
+            if (creativeId != null) {
                 val utils = Utils()
                 utils.setForceCreativeId(creativeId, nativeAdRequest = nativeAdRequest);
             }
-            nativeAdRequest.loadAd()
+
+
+            if (useExecutor) {
+                TasksManager.getInstance().executeOnBackgroundThread({
+                    nativeAdRequest.loadAd()
+                })
+            } else {
+                nativeAdRequest.loadAd()
+            }
             idlingResource.increment()
         }
     }
@@ -69,6 +90,20 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener {
         if (!idlingResource.isIdleNow)
             idlingResource.decrement()
 
+        NativeAdSDK.registerTracking(response, findViewById(R.id.main_native), this)
+    }
 
+    override fun onAdImpression() {
+        didLogImpression = true
+    }
+
+    override fun onAdWasClicked() {
+
+    }
+
+    override fun onAdWasClicked(clickUrl: String?, fallbackURL: String?) {
+    }
+
+    override fun onAdWillLeaveApplication() {
     }
 }

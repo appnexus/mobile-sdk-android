@@ -18,6 +18,8 @@ package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
 import android.os.Message;
 
 import com.appnexus.opensdk.ut.UTAdRequester;
@@ -37,12 +39,13 @@ public class AdFetcher {
     private final ANMultiAdRequest anMultiAdRequest;
     private ScheduledExecutorService tasker;
     private int period = -1;
-    private final RequestHandler handler;
+    private RequestHandler handler;
     private long lastFetchTime = -1;
     private long timePausedAt = -1;
     private final Ad owner;
     private UTAdRequester requestManager;
     private STATE state = STATE.STOPPED;
+    private static final String ANBACKGROUND = "ANBackgroundThread";
 
     public void setRequestManager(UTAdRequester requester) {
         requestManager = requester;
@@ -57,15 +60,43 @@ public class AdFetcher {
     // Fires requests whenever it receives a message
     public AdFetcher(Ad owner) {
         this.owner = owner;
-        handler = new RequestHandler(this);
+        if (SDKSettings.isBackgroundThreadingEnabled()) {
+            HandlerThread backgroundThread = new HandlerThread(ANBACKGROUND);
+            backgroundThread.start();
+            handler = new RequestHandler(this, backgroundThread.getLooper());
+        } else {
+            handler = new RequestHandler(this, Looper.myLooper());
+        }
+
         requestManager = new AdViewRequestManager(owner);
         anMultiAdRequest = null;
     }
 
-    AdFetcher(ANMultiAdRequest anMultiAdRequest) {
+    public AdFetcher(ANMultiAdRequest anMultiAdRequest) {
         this.owner = null;
-        handler = new RequestHandler(this);
+        if (SDKSettings.isBackgroundThreadingEnabled()) {
+            HandlerThread backgroundThread = new HandlerThread(ANBACKGROUND);
+            backgroundThread.start();
+            handler = new RequestHandler(this, backgroundThread.getLooper());
+        } else {
+            handler = new RequestHandler(this, Looper.myLooper());
+        }
         this.anMultiAdRequest = anMultiAdRequest;
+    }
+
+    public void destroy() {
+        String threadName = handler.getLooper().getThread().getName();
+        if (threadName.contains(ANBACKGROUND)) {
+            Clog.i(Clog.baseLogTag, "Quitting background " + threadName);
+            handler.getLooper().quit();
+            handler = null;
+        }
+        if (requestManager != null) {
+            requestManager.cancel();
+            requestManager = null;
+        }
+
+        clearTasker();
     }
 
     public void setPeriod(int period) {
@@ -182,7 +213,8 @@ public class AdFetcher {
     private static class RequestHandler extends Handler {
         private final WeakReference<AdFetcher> mFetcher;
 
-        RequestHandler(AdFetcher f) {
+        RequestHandler(AdFetcher f, Looper looper) {
+            super(looper);
             mFetcher = new WeakReference<AdFetcher>(f);
         }
 

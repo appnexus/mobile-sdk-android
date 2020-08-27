@@ -12,6 +12,7 @@ import com.appnexus.opensdk.ut.UTAdResponse;
 import com.appnexus.opensdk.ut.UTRequestParameters;
 import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
@@ -32,6 +33,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 
 @RunWith(RobolectricTestRunner.class)
@@ -59,14 +61,151 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
     private static final String IAB_USPRIVACY_STRING = "IABUSPrivacy_String";
     private static final String US_PRIVACY = "us_privacy";
 
-
     @Override
     public void setup() {
         super.setup();
         utRequestParameters = new UTRequestParameters(activity);
         utRequestParameters.setPrimarySize(new AdSize(1, 1));
         Settings.getSettings().ua = "";
+    }
 
+    @Test
+    public void testUTRequestForOMIDEnableBannerAd() throws JSONException, InterruptedException {
+        utRequestParameters.setMediaType(MediaType.BANNER);
+        verifyOMIDSignalEnable("banner_frameworks");
+        verifyOMIDSignalDisableForFramework("native_frameworks");
+        verifyOMIDSignalDisableForFramework("video_frameworks");
+
+    }
+
+    @Test
+    public void testUTRequestForOMIDEnableBannerNativeVideoAd() throws JSONException, InterruptedException {
+        utRequestParameters.setMediaType(MediaType.BANNER);
+        utRequestParameters.setBannerEnabled(true);
+        utRequestParameters.setBannerVideoEnabled(true);
+        utRequestParameters.setBannerNativeEnabled(true);
+        verifyOMIDSignalEnable("banner_frameworks");
+        verifyOMIDSignalEnable("native_frameworks");
+        verifyOMIDSignalEnable("video_frameworks");
+    }
+
+
+    @Test
+    public void testUTRequestForOMIDEnableVideoNativeVideoAd() throws JSONException, InterruptedException {
+        utRequestParameters.setMediaType(MediaType.BANNER);
+        utRequestParameters.setBannerNativeEnabled(true);
+        utRequestParameters.setBannerVideoEnabled(true);
+        utRequestParameters.setBannerEnabled(false);
+        verifyOMIDSignalDisableForFramework("banner_frameworks");
+        verifyOMIDSignalEnable("native_frameworks");
+        verifyOMIDSignalEnable("video_frameworks");
+    }
+
+    @Test
+    public void testUTRequestForOMIDEnableBannerVideoAd() throws JSONException, InterruptedException {
+        utRequestParameters.setMediaType(MediaType.BANNER);
+        utRequestParameters.setBannerEnabled(true);
+        utRequestParameters.setBannerVideoEnabled(true);
+        verifyOMIDSignalEnable("banner_frameworks");
+        verifyOMIDSignalEnable("video_frameworks");
+        verifyOMIDSignalDisableForFramework("native_frameworks");
+    }
+    @Test
+    public void testUTRequestForOMIDEnableNativeAd()throws JSONException, InterruptedException {
+        utRequestParameters.setMediaType(MediaType.NATIVE);
+        verifyOMIDSignalEnable("native_frameworks");
+    }
+
+    @Test
+    public void testUTRequestForOMIDEnableInterstitialAd()throws JSONException, InterruptedException {
+        utRequestParameters.setMediaType(MediaType.INTERSTITIAL);
+        verifyOMIDSignalEnable("banner_frameworks");
+    }
+
+    @Test
+    public void testUTRequestForOMIDEnableVideoAd()throws JSONException, InterruptedException {
+        utRequestParameters.setMediaType(MediaType.INSTREAM_VIDEO);
+        verifyOMIDSignalEnable("video_frameworks");
+    }
+
+    private void verifyOMIDSignalEnable(String framework)throws JSONException, InterruptedException {
+        executionSteps();
+        JSONObject postData = inspectPostData();
+        assertTrue(doesIABSupportExist(postData));
+        assertNotNull(postData.getJSONObject("iab_support"));
+        assertEquals(postData.getJSONObject("iab_support").getString("omidpn"), ANOmidViewabilty.OMID_PARTNER_NAME);
+        assertEquals(postData.getJSONObject("iab_support").getString("omidpv"), Settings.getSettings().sdkVersion);
+
+        JSONObject tag = getTagsData(postData);
+        assertTrue(doesOMIDFrameworkExist(tag, framework));
+        JSONArray omid_frameworks = tag.getJSONArray(framework);
+        assertNotNull(omid_frameworks);
+        assertEquals(1, omid_frameworks.length());
+        assertEquals(6, omid_frameworks.getInt(0));
+    }
+
+    private void verifyOMIDSignalDisableForFramework(String framework)throws JSONException, InterruptedException {
+        executionSteps();
+        JSONObject postData = inspectPostData();
+        JSONObject tag = getTagsData(postData);
+        assertFalse(doesOMIDFrameworkExist(tag,framework));
+    }
+
+    private void verifyOMIDSignalDisable(String framework)throws JSONException, InterruptedException {
+        executionSteps();
+        JSONObject postData = inspectPostData();
+        assertFalse(doesIABSupportExist(postData));
+        JSONObject tag = getTagsData(postData);
+        assertFalse(doesOMIDFrameworkExist(tag,framework));
+    }
+    @Test
+    public void testUTRequestForOMIDDisableBannerAd() throws JSONException, InterruptedException {
+        SDKSettings.setOMEnabled(false);
+        utRequestParameters.setMediaType(MediaType.BANNER);
+        verifyOMIDSignalDisable("banner_frameworks");
+    }
+
+    @Test
+    public void testUTRequestForOMIDDisableBannerNativeVideoAd() throws JSONException, InterruptedException {
+        SDKSettings.setOMEnabled(false);
+        utRequestParameters.setMediaType(MediaType.BANNER);
+        utRequestParameters.setBannerEnabled(true);
+        utRequestParameters.setBannerVideoEnabled(true);
+        utRequestParameters.setBannerNativeEnabled(true);
+        verifyOMIDSignalDisable("banner_frameworks");
+        verifyOMIDSignalDisable("native_frameworks");
+        verifyOMIDSignalDisable("video_frameworks");
+    }
+
+
+    @Test
+    public void testUTRequestForOMIDDisableBannerVideoAd() throws JSONException, InterruptedException {
+        SDKSettings.setOMEnabled(false);
+        utRequestParameters.setMediaType(MediaType.BANNER);
+        utRequestParameters.setBannerEnabled(true);
+        utRequestParameters.setBannerVideoEnabled(true);
+        verifyOMIDSignalDisable("banner_frameworks");
+        verifyOMIDSignalDisable("video_frameworks");
+    }
+    @Test
+    public void testUTRequestForOMIDDisableNativeAd()throws JSONException, InterruptedException {
+        SDKSettings.setOMEnabled(false);
+        utRequestParameters.setMediaType(MediaType.NATIVE);
+        verifyOMIDSignalDisable("native_frameworks");
+    }
+
+    @Test
+    public void testUTRequestForOMIDDisableInterstitialAd()throws JSONException, InterruptedException {
+        SDKSettings.setOMEnabled(false);
+        utRequestParameters.setMediaType(MediaType.INTERSTITIAL);
+        verifyOMIDSignalDisable("banner_frameworks");
+    }
+
+    @Test
+    public void testUTRequestForOMIDDisableVideoAd()throws JSONException, InterruptedException {
+        SDKSettings.setOMEnabled(false);
+        utRequestParameters.setMediaType(MediaType.INSTREAM_VIDEO);
+        verifyOMIDSignalDisable("video_frameworks");
     }
 
     @Test
@@ -556,6 +695,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
     @Override
     public void tearDown() {
         super.tearDown();
+        SDKSettings.setOMEnabled(true);
 //        try {
 //            if (server != null) {
 //                server.shutdown();
@@ -709,6 +849,22 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
     private boolean doesAuctionTimeExist(JSONObject postData) throws JSONException {
         System.out.println("Checking if AuctionTimeout exists...");
         if (postData.has("auction_timeout_ms")) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean doesIABSupportExist(JSONObject postData) throws JSONException {
+        System.out.println("Checking if iab_support exists...");
+        if (postData.has("iab_support")) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean doesOMIDFrameworkExist(JSONObject postData, String omidFramework) throws JSONException {
+        System.out.println("Checking if "+omidFramework+" exists...");
+        if (postData.has(omidFramework)) {
             return true;
         }
         return false;

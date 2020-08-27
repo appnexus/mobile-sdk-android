@@ -97,7 +97,7 @@ class MARLoadAndDisplayActivity : Activity() {
                 override fun onMultiAdRequestFailed(code: ResultCode) {
                     if (!idlingResource.isIdleNow)
                         idlingResource.decrement()
-                    msg += code.name
+                    msg += code.message
                     toast()
                 }
             })

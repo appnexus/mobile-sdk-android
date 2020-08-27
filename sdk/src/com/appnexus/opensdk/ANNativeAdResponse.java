@@ -318,7 +318,14 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
 
             impressionTrackers = new ArrayList<ImpressionTracker>(imp_trackers.size());
             for (String url : imp_trackers) {
-                ImpressionTracker impressionTracker = ImpressionTracker.create(url, visibilityDetector, view.getContext(), anOmidAdSession);
+                ImpressionTracker impressionTracker = ImpressionTracker.create(url, visibilityDetector, view.getContext(), anOmidAdSession, new ImpressionTrackerListener() {
+                    @Override
+                    public void onImpressionTrackerFired() {
+                        if (listener != null) {
+                            listener.onAdImpression();
+                        }
+                    }
+                });
                 impressionTrackers.add(impressionTracker);
             }
             this.registeredView = view;
@@ -408,11 +415,7 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
                 // fire click tracker first
                 if (click_trackers != null) {
                     for (String url : click_trackers) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                            new ClickTracker(url).executeOnExecutor(SDKSettings.getExternalExecutor());
-                        } else {
-                            new ClickTracker(url).execute();
-                        }
+                        new ClickTracker(url).execute();
                     }
                 }
                 if (getClickThroughAction() == ANClickThroughAction.RETURN_URL) {

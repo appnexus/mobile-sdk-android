@@ -16,12 +16,19 @@
 
 package com.appnexus.opensdk;
 
+import android.content.Context;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.webkit.WebView;
 
+import com.appnexus.opensdk.tasksmanager.TasksManager;
+import com.appnexus.opensdk.utils.AdvertisingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.StringUtil;
+import com.appnexus.opensdk.viewability.ANOmidViewabilty;
+import com.iab.omid.library.appnexus.Omid;
 
 import java.util.concurrent.Executor;
 
@@ -29,6 +36,14 @@ import java.util.concurrent.Executor;
  * Global static functions that apply to all SDK views and calls.
  */
 public class SDKSettings {
+
+    /**
+     * This boolean is responsible for the execution of Ad request on the BGThread,
+     * based on its value,
+     * true - AdRequest is processed on BGThread
+     * false - AdRequest is processed using AsyncTask
+     * */
+    private static Boolean useBackgroundThreads = false;
 
     // hide the constructor from javadocs
     private SDKSettings() {
@@ -202,10 +217,9 @@ public class SDKSettings {
     }
 
     /**
+     * @param useHttps whether to enable Https or not.
      * @deprecated The SDK uses Https by default.
      * This API does not bring any change.
-     *
-     * @param useHttps whether to enable Https or not.
      */
     @Deprecated
     public static void useHttps(boolean useHttps) {
@@ -259,5 +273,59 @@ public class SDKSettings {
         }
         return clientExecutor;
     }
+
+    /**
+     * @return boolean which states if the BackgroundThreading is enabled or not
+     * */
+    public static boolean isBackgroundThreadingEnabled() {
+        return useBackgroundThreads;
+    }
+
+    /**
+     * This API can be used to process Ad request on the BGThread,
+     * @param enable
+     * true - For processing the AdRequest on BGThread
+     * false - For processing the AdRequest using AsyncTask
+     * default is set to false.
+     * */
+    public static void enableBackgroundThreading(boolean enable) {
+        useBackgroundThreads = enable;
+    }
+
+    public static void init(final Context context, final InitListener listener) {
+        // Store the UA in the settings
+        if (StringUtil.isEmpty(Settings.getSettings().ua) || !Omid.isActive()) {
+            TasksManager.getInstance().executeOnMainThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (!Omid.isActive()) {
+                        ANOmidViewabilty.getInstance().activateOmidAndCreatePartner(context.getApplicationContext());
+                    }
+
+                    if (StringUtil.isEmpty(Settings.getSettings().ua)) {
+                        try {
+                            Settings.getSettings().ua = new WebView(context).getSettings()
+                                    .getUserAgentString();
+                            Clog.v(Clog.baseLogTag,
+                                    Clog.getString(R.string.ua, Settings.getSettings().ua));
+                        } catch (Exception e) {
+                            // Catches PackageManager$NameNotFoundException for webview
+                            Settings.getSettings().ua = "";
+                            Clog.e(Clog.baseLogTag, " Exception: " + e.getMessage());
+                        }
+                    }
+                }
+            });
+        }
+        Clog.setErrorContext(context.getApplicationContext());
+        if (StringUtil.isEmpty(getAAID())) {
+            AdvertisingIDUtil.retrieveAndSetAAID(context, listener);
+        }
+    }
+
+    public interface InitListener {
+        void onInitFinished();
+    }
+
 
 }

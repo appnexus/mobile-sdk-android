@@ -207,6 +207,15 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
 
     }
 
+    @Test
+    public void testMediatedOnAdImpressionLogged() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedSuccessfulNative()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
+        assertTrue(MediatedNativeSuccessful.impressionLogged);
+    }
+
     // Verify that a response with a class that cannot be found,
     // makes the responseURL call with MEDIATED_SDK_UNAVAILABLE code
     @Test

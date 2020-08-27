@@ -14,11 +14,10 @@
  *    limitations under the License.
  */
 
+
 package com.appnexus.opensdk;
 
-public interface CSRController {
-    void onAdLoaded(NativeAdResponse nativeAdResponse);
-    void onAdImpression(NativeAdEventListener listener);
-    void onAdClicked();
-    void onAdFailed(ResultCode code);
+public interface ImpressionTrackerListener {
+    public void onImpressionTrackerFired();
+
 }

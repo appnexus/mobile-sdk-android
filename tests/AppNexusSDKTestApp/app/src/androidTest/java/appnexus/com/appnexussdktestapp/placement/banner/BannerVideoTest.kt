@@ -103,4 +103,38 @@ class BannerVideoTest {
         Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
+
+    // BG Testing
+
+    /*
+    * Sanity Test for the Banner Video (Outstream Video)
+    * */
+    @Test
+    fun bannerVideoLoadBGTest() {
+
+        bannerActivity.triggerAdLoad("14757590", allowVideoDemand = true, creativeId = 162035356, bgTask = true)
+
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
+        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+    }
+
+    /*
+    * Sanity Test for the Banner Video (Outstream Video)
+    * */
+    @Test
+    fun bannerVPAIDVideoLoadBGTest() {
+
+        bannerActivity.triggerAdLoad("14768519", allowVideoDemand = true, creativeId = 162056795, bgTask = true)
+
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
+        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+    }
 }

@@ -46,7 +46,7 @@ public class ANOmidAdSession {
 
         try {
             String htmlString = html;
-            if(!StringUtil.isEmpty(ANOmidViewabilty.getInstance().getOmidJsServiceContent())) {
+            if (!StringUtil.isEmpty(ANOmidViewabilty.getInstance().getOmidJsServiceContent())) {
                 htmlString = ScriptInjector.injectScriptContentIntoHtml(ANOmidViewabilty.getInstance().getOmidJsServiceContent(),
                         html);
             }
@@ -58,7 +58,7 @@ public class ANOmidAdSession {
         }
     }
 
-    public  void initAdSession(WebView webView, boolean isVideoAd) {
+    public void initAdSession(WebView webView, boolean isVideoAd) {
         if (!SDKSettings.getOMEnabled())
             return;
 
@@ -66,7 +66,7 @@ public class ANOmidAdSession {
             String customReferenceData = "";
             AdSessionContext adSessionContext = AdSessionContext.createHtmlAdSessionContext(ANOmidViewabilty.getInstance().getAppnexusPartner(), webView, null, customReferenceData);
 
-            Owner owner = isVideoAd?Owner.JAVASCRIPT:Owner.NATIVE;
+            Owner owner = isVideoAd ? Owner.JAVASCRIPT : Owner.NATIVE;
 
 
             CreativeType creativeType = (isVideoAd ? CreativeType.VIDEO : CreativeType.HTML_DISPLAY);
@@ -82,7 +82,7 @@ public class ANOmidAdSession {
             omidAdSession.start();
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
-        } catch (NullPointerException exception){
+        } catch (NullPointerException exception) {
             Clog.e(Clog.baseLogTag, "OMID Ad Session - Exception", exception);
         }
     }
@@ -107,23 +107,23 @@ public class ANOmidAdSession {
         }
     }
 
-    public void addToVerificationScriptResources(VerificationScriptResource verificationScriptResource){
+    public void addToVerificationScriptResources(VerificationScriptResource verificationScriptResource) {
         verificationScriptResources.add(verificationScriptResource);
 
     }
 
-    public boolean isVerificationResourcesPresent(){
-        if(verificationScriptResources!=null && !verificationScriptResources.isEmpty()){
+    public boolean isVerificationResourcesPresent() {
+        if (verificationScriptResources != null && !verificationScriptResources.isEmpty()) {
             return true;
         }
         return false;
     }
 
-    public void fireImpression(){
+    public void fireImpression() {
         if (!SDKSettings.getOMEnabled())
             return;
 
-        if(omidAdSession !=null) {
+        if (omidAdSession != null) {
             try {
                 AdEvents adEvents = AdEvents.createAdEvents(omidAdSession);
                 adEvents.loaded();
@@ -134,7 +134,7 @@ public class ANOmidAdSession {
         }
     }
 
-    public  void stopAdSession() {
+    public void stopAdSession() {
         if (!SDKSettings.getOMEnabled())
             return;
 
@@ -146,6 +146,7 @@ public class ANOmidAdSession {
 
     /**
      * For removing Friendly Obstruction View
+     *
      * @param view to be removed
      */
     public void removeFriendlyObstruction(View view) {
