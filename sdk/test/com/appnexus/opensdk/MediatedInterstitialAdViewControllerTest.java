@@ -128,6 +128,8 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
     }
 
     private void executeUTRequest() {
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
         requestManager.execute();
         // execute main ad request
         Robolectric.flushBackgroundThreadScheduler();
