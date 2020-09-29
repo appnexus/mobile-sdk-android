@@ -73,6 +73,8 @@ public class ANAdResponseInfoNativeTest extends BaseNativeTest {
         assertEquals(response.getAdResponseInfo().getBuyMemberId(), 958);
         assertEquals(response.getAdResponseInfo().getContentSource(), UTConstants.RTB);
         assertEquals(response.getAdResponseInfo().getNetworkName(), "");
+        assertEquals(response.getAdResponseInfo().getAuctionId(), "123456789");
+
     }
 
     @Test
@@ -87,6 +89,7 @@ public class ANAdResponseInfoNativeTest extends BaseNativeTest {
         assertEquals(adResponseInfo.getBuyMemberId(), 0);
         assertEquals(adResponseInfo.getContentSource(), "");
         assertEquals(adResponseInfo.getNetworkName(), "");
+        assertEquals(adResponseInfo.getAuctionId(), "3552547938089377051000000");
     }
 
     @Test
