@@ -91,6 +91,26 @@ public class SDKSettings {
         return Settings.getSettings().locationEnabled;
     }
 
+    /**
+     * Sets whether or not AdRequests should be executed in Test Mode.
+     * Setting this to true will execute AdRequests in Test Mode.
+     * This should be set to true only during development/testing.
+     * Enabling Test Mode in production will result in unintended consequences and will impact Monetization of your app. Use with caution.
+     *
+     * default is false.
+     * */
+    public static void enableTestMode(boolean enabled) {
+        Settings.getSettings().test_mode = enabled;
+    }
+
+    /**
+     * Returns true if Test Mode is enabled
+     * or false otherwise.
+     */
+    public static boolean isTestModeEnabled() {
+        return Settings.getSettings().test_mode;
+    }
+
 
     /**
      * The amount of time, in milliseconds, to wait for a bidder to respond to a bid request.

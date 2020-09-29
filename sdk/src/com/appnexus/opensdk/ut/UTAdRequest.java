@@ -143,6 +143,10 @@ public class UTAdRequest {
                 }
             }
 
+            if(Settings.getSettings().test_mode){
+                conn.setRequestProperty("X-Is-Test", "1");
+            }
+
 
             conn.setRequestMethod("POST");
 
