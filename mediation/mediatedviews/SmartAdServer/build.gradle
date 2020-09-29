@@ -1,5 +1,5 @@
 // Project Properties
-version = "7.2.0"  // supported SmartAdServer version
+version = "7.6.1"  // supported SmartAdServer version
 apply plugin: 'com.android.library'
 
 android {
@@ -7,7 +7,7 @@ android {
     buildToolsVersion "29.0.0"
 
     defaultConfig {
-        minSdkVersion 18
+        minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
         versionName version
