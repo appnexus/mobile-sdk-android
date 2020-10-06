@@ -45,8 +45,6 @@ public class FacebookListener implements AdListener, InterstitialAdListener {
             code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
         } else if (adError.getErrorCode() == AdError.INTERNAL_ERROR.getErrorCode()) {
             code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
-        } else if (adError.getErrorCode() == AdError.MISSING_PROPERTIES.getErrorCode()) {
-            code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
         } else {
             code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
         }

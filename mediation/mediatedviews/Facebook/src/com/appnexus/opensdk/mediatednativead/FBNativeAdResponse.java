@@ -21,13 +21,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.appnexus.opensdk.BaseNativeAdResponse;
 import com.appnexus.opensdk.NativeAdEventListener;
 import com.appnexus.opensdk.ut.UTConstants;
-import com.facebook.ads.AdIconView;
 import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeAd;
-
 
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +55,7 @@ public class FBNativeAdResponse extends BaseNativeAdResponse {
     private String privacyLink = "";
 
     private MediaView adMediaView = null;
-    private AdIconView adIconView = null;
+    private MediaView adIconView = null;
 
     public FBNativeAdResponse(NativeAd ad) {
         this.nativeAd = ad;
@@ -78,7 +77,6 @@ public class FBNativeAdResponse extends BaseNativeAdResponse {
                 listener = null;
                 expired = true;
                 if (nativeAd != null) {
-                    nativeAd.setAdListener(null);
                     nativeAd.destroy();
                     nativeAd = null;
                 }
@@ -212,10 +210,12 @@ public class FBNativeAdResponse extends BaseNativeAdResponse {
             ViewGroup subViews =  (ViewGroup)view;
             for (int i = 0; i < subViews.getChildCount(); i++) {
                 final View subview = subViews.getChildAt(i);
-                if (subview instanceof AdIconView) {
-                    adIconView = (AdIconView )subview;
-                }else if (subview instanceof MediaView) {
-                    adMediaView = (MediaView )subview;
+                if (subview instanceof MediaView) {
+                    if (subview.getTag() != null) {
+                        adIconView = (MediaView) subview;
+                    } else {
+                        adMediaView = (MediaView) subview;
+                    }
                 }else if(subview instanceof ViewGroup){
                     getMediaViewsForRegisterView(subview);
                 }

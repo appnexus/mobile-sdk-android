@@ -58,8 +58,7 @@ public class FacebookBanner implements MediatedBannerAdView {
             return null;
         }
         adView = new AdView(activity, uid, adSize);
-        adView.setAdListener(fbListener);
-        adView.loadAd();
+        adView.loadAd(adView.buildLoadAdConfig().withAdListener(fbListener).build());
         return adView;
     }
 
@@ -67,12 +66,6 @@ public class FacebookBanner implements MediatedBannerAdView {
     public void destroy() {
         if (adView != null) {
             adView.destroy();
-            try {
-                adView.setAdListener(null);
-            } catch (NullPointerException npe) {
-                //Facebook's rate limiting makes this hard to test
-                //catch npe to be safe
-            }
             adView = null;
         }
     }
