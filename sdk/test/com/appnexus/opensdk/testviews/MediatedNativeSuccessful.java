@@ -212,4 +212,14 @@ public class MediatedNativeSuccessful implements MediatedNativeAd, NativeAdEvent
     public void onAdImpression() {
         impressionLogged = true;
     }
+
+    @Override
+    public void onAdAboutToExpire() {
+
+    }
+
+    @Override
+    public void onAdExpired() {
+
+    }
 }

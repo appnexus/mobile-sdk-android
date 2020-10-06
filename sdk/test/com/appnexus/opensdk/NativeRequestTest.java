@@ -17,10 +17,14 @@
 package com.appnexus.opensdk;
 
 
+import android.util.Log;
+import android.view.View;
+
 import com.appnexus.opensdk.mocks.MockFBNativeBannerAdResponse;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
+import com.appnexus.opensdk.testviews.DummyView;
 import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.util.Lock;
 import com.appnexus.opensdk.utils.Settings;
@@ -35,9 +39,11 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
+import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowWebView;
 
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -210,6 +216,43 @@ public class NativeRequestTest extends BaseNativeTest {
         assertTrue(nativeAdResponse instanceof MockFBNativeBannerAdResponse);
 //        verify(adListener).onAdLoaded(any(MockFBNativeBannerAdResponse.class));
     }
+
+//    @Test
+//    public void requestNativeCSRSuccessfulAdExpiry() {
+//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.csrNativeSuccessful()));
+////        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
+//        adRequest.setListener(this);
+//        adRequest.loadAd();
+//        waitForTasks();
+//        Robolectric.flushBackgroundThreadScheduler();
+//        Robolectric.flushForegroundThreadScheduler();
+//        waitForTasks();
+//        Robolectric.flushBackgroundThreadScheduler();
+//        Robolectric.flushForegroundThreadScheduler();
+//        assertNotNull(nativeAdResponse);
+//        assertTrue(nativeAdResponse instanceof MockFBNativeBannerAdResponse);
+//        View nativeAdView = DummyView.getDummyView(activity);
+//
+//        NativeAdSDK.registerTracking(response, nativeAdView, this);
+//        long aboutToExpireTime = getAboutToExpireTime(UTConstants.CSR, 0);
+//        long expiryInterval = getExpiryInterval(UTConstants.CSR, 0);
+//        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+//        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_FB - Settings.NATIVE_AD_RESPONSE_ON_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+//        assertEquals(expiryInterval, Settings.NATIVE_AD_RESPONSE_ON_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+//
+//        ShadowLooper.pauseMainLooper();
+//        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+//        ShadowLooper.unPauseMainLooper();
+//
+//        assertTrue(aboutToExpire);
+//        ShadowLooper.pauseMainLooper();
+//        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+//        ShadowLooper.unPauseMainLooper();
+//        assertTrue(expired);
+//
+//
+////        verify(adListener).onAdLoaded(any(MockFBNativeBannerAdResponse.class));
+//    }
 
     @Test
     public void requestNativeSuccess() {

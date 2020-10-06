@@ -49,7 +49,7 @@ public class DefaultSettingsTest {
         assertEquals(15000, Settings.MIN_REFRESH_MILLISECONDS);
         assertEquals(10000, Settings.DEFAULT_INTERSTITIAL_CLOSE_BUTTON_DELAY);
         assertEquals(15000, Settings.MEDIATED_NETWORK_TIMEOUT);
-        assertEquals(3600000, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
+        assertEquals(21600000, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
         assertEquals(1000, Settings.NATIVE_AD_VISIBLE_PERIOD_MILLIS);
         assertEquals(50, Settings.MIN_PERCENTAGE_VIEWED);
         assertEquals("https://mediation.adnxs.com", Settings.getCookieDomain());

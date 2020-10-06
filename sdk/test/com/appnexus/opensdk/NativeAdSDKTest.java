@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -26,6 +27,7 @@ import com.appnexus.opensdk.shadows.ShadowCustomWebView;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.testviews.DummyView;
+import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.util.Lock;
 import com.appnexus.opensdk.utils.Settings;
 import com.squareup.okhttp.mockwebserver.MockResponse;
@@ -36,7 +38,11 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
+import org.robolectric.shadows.ShadowLooper;
 
+import java.util.concurrent.TimeUnit;
+
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
@@ -68,6 +74,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
         Settings.getSettings().ua = "";
         adWasClicked = false;
         adWillLeaveApplication = false;
+        Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT;
     }
 
     @Test
@@ -99,34 +106,788 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     }
 
-//    @Test
-//    public void requestOnAdDidLogImpression() {
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
-//        adRequest.loadAd();
-//        Lock.pause(1000);
-//        waitForTasks();
-//        Robolectric.flushForegroundThreadScheduler();
-//        Robolectric.flushBackgroundThreadScheduler();
-//
-//        waitForTasks();
-//        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
-//        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
-//        assertAdLoaded(true);
-//        nativeAdView = DummyView.getDummyView(activity);
-//        assertFalse(nativeAdView.isShown());
-//        NativeAdSDK.registerTracking(nativeAdResponse, nativeAdView, this);
-//        attachToWindow(nativeAdView);
-//        assertTrue(nativeAdView.isShown());
-//
-//        Shadows.shadowOf(nativeAdView).setViewFocus(true);
-//        assertTrue(nativeAdView.isShown());
-//        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
-//        Lock.pause(2000);
-//        assertTrue(nativeAdView.getVisibility() == View.VISIBLE);
-//        assertTrue(impressionLogged);
-//        assertFalse(response.hasExpired());
-//
-//    }
+    @Test
+    public void requestNativeSuccessTestExpiry() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        nativeAdView = DummyView.getDummyView(activity);
+
+        NativeAdSDK.registerTracking(response, nativeAdView, this);
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 0);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 0);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(aboutToExpire);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(expired);
+
+    }
+
+    @Test
+    public void requestNativeSuccessTestExpiryModifiedValidInterval() {
+        Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = 120 * 1000;
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        nativeAdView = DummyView.getDummyView(activity);
+
+        NativeAdSDK.registerTracking(response, nativeAdView, this);
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 0);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 0);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(aboutToExpire);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(expired);
+
+    }
+
+    @Test
+    public void requestNativeSuccessTestExpiryModifiedInvalidInterval() {
+        Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME;
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        nativeAdView = DummyView.getDummyView(activity);
+
+        NativeAdSDK.registerTracking(response, nativeAdView, this);
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 0);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 0);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(aboutToExpire);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(expired);
+
+    }
+
+    @Test
+    public void requestNativeSuccessTestExpiryNotCalledWhenViewAttachedToWindow() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        nativeAdView = DummyView.getDummyView(activity);
+        attachToWindow(nativeAdView);
+        nativeAdView.setVisibility(View.VISIBLE);
+
+        NativeAdSDK.registerTracking(response, nativeAdView, this);
+
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 0);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 0);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+
+        while (!impressionLogged) {
+            waitForTasks();
+            Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+            Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        }
+
+        assertTrue(impressionLogged);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+
+        assertFalse(aboutToExpire);
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertFalse(expired);
+
+    }
+
+    @Test
+    public void requestNativeSuccessTestExpiryNotCalledAfterOnAdAboutToExpiryAlreadyCalledWhenViewAttachedToWindow() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        nativeAdView = DummyView.getDummyView(activity);
+
+        NativeAdSDK.registerTracking(response, nativeAdView, this);
+
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 0);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 0);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+
+        assertTrue(aboutToExpire);
+
+        attachToWindow(nativeAdView);
+        nativeAdView.setVisibility(View.VISIBLE);
+
+        while (!impressionLogged) {
+            waitForTasks();
+            Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+            Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        }
+        assertTrue(impressionLogged);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertFalse(expired);
+
+    }
+
+    @Test
+    public void requestNativeSuccessTestExpiryTripleLift() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        nativeAdView = DummyView.getDummyView(activity);
+
+        NativeAdSDK.registerTracking(response, nativeAdView, this);
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 11217);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 11217);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+
+        assertTrue(aboutToExpire);
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(expired);
+
+    }
+
+    @Test
+    public void requestNativeSuccessTestExpiryTripleLiftModifiedValidInterval() {
+        Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = 120 * 1000;
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        nativeAdView = DummyView.getDummyView(activity);
+
+        NativeAdSDK.registerTracking(response, nativeAdView, this);
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 11217);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 11217);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+
+        assertTrue(aboutToExpire);
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(expired);
+
+    }
+
+    @Test
+    public void requestNativeSuccessTestExpiryTripleLiftModifiedInvalidInterval() {
+        Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT;
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        nativeAdView = DummyView.getDummyView(activity);
+
+        NativeAdSDK.registerTracking(response, nativeAdView, this);
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 11217);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 11217);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+
+        assertTrue(aboutToExpire);
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(expired);
+
+    }
+
+    @Test
+    public void requestNativeSuccessTripleLiftTestExpiryNotCalledWhenViewAttachedToWindow() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        nativeAdView = DummyView.getDummyView(activity);
+        attachToWindow(nativeAdView);
+        nativeAdView.setVisibility(View.VISIBLE);
+
+        NativeAdSDK.registerTracking(response, nativeAdView, this);
+
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 11217);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 11217);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+
+        while (!impressionLogged) {
+            waitForTasks();
+            Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+            Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        }
+
+        assertTrue(impressionLogged);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+
+        assertFalse(aboutToExpire);
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertFalse(expired);
+
+    }
+
+    @Test
+    public void requestNativeSuccessTripleLiftTestExpiryNotCalledAfterOnAdAboutToExpireWhenViewAttachedToWindow() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        nativeAdView = DummyView.getDummyView(activity);
+
+        NativeAdSDK.registerTracking(response, nativeAdView, this);
+
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 11217);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 11217);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(aboutToExpire);
+
+        attachToWindow(nativeAdView);
+        nativeAdView.setVisibility(View.VISIBLE);
+
+        Lock.pause(1000);
+
+        while (!impressionLogged) {
+            waitForTasks();
+            Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+            Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        }
+
+        assertTrue(impressionLogged);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertFalse(expired);
+
+    }
+
+    // ========= Testing with registerExpiryListener ========
+
+    @Test
+    public void requestNativeSuccessTestExpiryRegisterExpiryListener() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+
+        NativeAdSDK.registerNativeAdEventListener(response, this);
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 0);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 0);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(aboutToExpire);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(expired);
+
+    }
+
+    @Test
+    public void requestNativeSuccessTestExpiryModifiedValidIntervalRegisterExpiryListener() {
+        Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = 120 * 1000;
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+
+        NativeAdSDK.registerNativeAdEventListener(response, this);
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 0);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 0);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(aboutToExpire);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(expired);
+
+    }
+
+    @Test
+    public void requestNativeSuccessTestExpiryModifiedInvalidIntervalRegisterExpiryListener() {
+        Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME;
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+
+        NativeAdSDK.registerNativeAdEventListener(response, this);
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 0);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 0);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(aboutToExpire);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(expired);
+
+    }
+
+    @Test
+    public void requestNativeSuccessTestExpiryCalledWhenViewAttachedToWindowRegisterExpiryListener() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        nativeAdView = DummyView.getDummyView(activity);
+        attachToWindow(nativeAdView);
+        nativeAdView.setVisibility(View.VISIBLE);
+
+        NativeAdSDK.registerNativeAdEventListener(response, this);
+
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 0);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 0);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(aboutToExpire);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(expired);
+
+    }
+
+    @Test
+    public void requestNativeSuccessTestExpiryCalledAfterOnAdAboutToExpiryAlreadyCalledWhenViewAttachedToWindowRegisterExpiryListener() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        nativeAdView = DummyView.getDummyView(activity);
+
+        NativeAdSDK.registerNativeAdEventListener(response, this);
+
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 0);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 0);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+
+        assertTrue(aboutToExpire);
+
+        attachToWindow(nativeAdView);
+        nativeAdView.setVisibility(View.VISIBLE);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(expired);
+
+    }
+
+    @Test
+    public void requestNativeSuccessTestExpiryTripleLiftRegisterExpiryListener() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        nativeAdView = DummyView.getDummyView(activity);
+
+        NativeAdSDK.registerNativeAdEventListener(response, this);
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 11217);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 11217);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+
+        assertTrue(aboutToExpire);
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(expired);
+
+    }
+
+    @Test
+    public void requestNativeSuccessTestExpiryTripleLiftModifiedValidIntervalRegisterExpiryListener() {
+        Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = 120 * 1000;
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        nativeAdView = DummyView.getDummyView(activity);
+
+        NativeAdSDK.registerNativeAdEventListener(response, this);
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 11217);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 11217);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+
+        assertTrue(aboutToExpire);
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(expired);
+
+    }
+
+    @Test
+    public void requestNativeSuccessTestExpiryTripleLiftModifiedInvalidIntervalRegisterExpiryListener() {
+        Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT;
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        nativeAdView = DummyView.getDummyView(activity);
+
+        NativeAdSDK.registerNativeAdEventListener(response, this);
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 11217);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 11217);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+
+        assertTrue(aboutToExpire);
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(expired);
+
+    }
+
+    @Test
+    public void requestNativeSuccessTripleLiftTestExpiryCalledWhenViewAttachedToWindowRegisterExpiryListener() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        nativeAdView = DummyView.getDummyView(activity);
+        attachToWindow(nativeAdView);
+        nativeAdView.setVisibility(View.VISIBLE);
+
+        NativeAdSDK.registerNativeAdEventListener(response, this);
+
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 11217);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 11217);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+
+        assertTrue(aboutToExpire);
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(expired);
+
+    }
+
+    @Test
+    public void requestNativeSuccessTripleLiftTestExpiryCalledAfterOnAdAboutToExpireWhenViewAttachedToWindowRegisterExpiryListener() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        nativeAdView = DummyView.getDummyView(activity);
+
+        NativeAdSDK.registerNativeAdEventListener(response, this);
+
+        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 11217);
+        long expiryInterval = getExpiryInterval(UTConstants.RTB, 11217);
+        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
+        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(aboutToExpire);
+
+        attachToWindow(nativeAdView);
+        nativeAdView.setVisibility(View.VISIBLE);
+
+        ShadowLooper.pauseMainLooper();
+        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
+        ShadowLooper.unPauseMainLooper();
+        assertTrue(expired);
+
+    }
+
+    // ========= End testing with registerExpiryListener ========
+
+    @Test
+    public void requestOnAdDidLogImpression() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+
+        waitForTasks();
+        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertAdLoaded(true);
+        nativeAdView = DummyView.getDummyView(activity);
+        assertFalse(nativeAdView.isShown());
+        NativeAdSDK.registerTracking(nativeAdResponse, nativeAdView, this);
+        attachToWindow(nativeAdView);
+        nativeAdView.setVisibility(View.VISIBLE);
+
+        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+        assertTrue(nativeAdView.getVisibility() == View.VISIBLE);
+        while (!impressionLogged) {
+            waitForTasks();
+            Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
+            Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
+        }
+        assertTrue(impressionLogged);
+        assertFalse(response.hasExpired());
+
+    }
 
 
     private void attachToWindow(View nativeAdView) {

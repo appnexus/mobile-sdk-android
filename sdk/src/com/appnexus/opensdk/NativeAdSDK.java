@@ -169,6 +169,26 @@ public class NativeAdSDK {
         });
     }
 
+    /**
+     * Register the NativeAdResponse to listen to Native Ad events
+     *
+     * @param response  that contains the meta data of native ad
+     * @param listener  called when Ad event happens, can be null
+     */
+    public static void registerNativeAdEventListener(final NativeAdResponse response, final NativeAdEventListener listener) {
+        if (isValid(response)) {
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (!((BaseNativeAdResponse)response).registerNativeAdEventListener(listener)) {
+                        Clog.e(Clog.nativeLogTag, "failed at registering the Listener. Already registered.");
+                    }
+                }
+            });
+        }
+    }
+
     static boolean isValid(NativeAdResponse response) {
         if (response != null && !response.hasExpired()) {
             return true;

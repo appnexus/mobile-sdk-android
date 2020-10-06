@@ -16,8 +16,13 @@
 
 package com.appnexus.opensdk;
 
+import android.util.Log;
+
+import com.appnexus.opensdk.ut.UTConstants;
+import com.appnexus.opensdk.ut.adresponse.BaseAdResponse;
 import com.appnexus.opensdk.util.TestUtil;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.viewability.ANOmidAdSession;
 
 import org.junit.Test;
@@ -25,12 +30,15 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 21)
-public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListener,NativeAdEventListener {
+public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListener, NativeAdEventListener {
     protected NativeAdRequest adRequest;
     protected NativeAdResponse     response;
 
@@ -39,6 +47,7 @@ public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListe
     ResultCode failErrorCode;
     protected ANAdResponseInfo adResponseInfo;
     boolean impressionLogged = false;
+    boolean aboutToExpire, expired;
 
 
     @Override
@@ -48,6 +57,8 @@ public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListe
         adLoaded = false;
         adFailed = false;
         impressionLogged = false;
+        aboutToExpire = false;
+        expired = false;
         nativeAdResponse = null;
         failErrorCode = null;
 
@@ -112,7 +123,28 @@ public class BaseNativeTest extends BaseRoboTest implements NativeAdRequestListe
         impressionLogged = true;
     }
 
+    @Override
+    public void onAdAboutToExpire() {
+        Log.e("AD EXPIRY", "onAdAboutToExpire");
+        aboutToExpire = true;
+    }
+
+    @Override
+    public void onAdExpired() {
+        Log.e("AD EXPIRY", "onAdExpired");
+        expired = true;
+    }
+
     public ANOmidAdSession getOMIDAdSession() {
         return ((BaseNativeAdResponse)response).anOmidAdSession;
     }
+
+    protected long getAboutToExpireTime(String contentSource, int memberId) {
+        return ((BaseNativeAdResponse)response).getAboutToExpireTime(contentSource, memberId);
+    }
+
+    protected long getExpiryInterval(String contentSource, int memberId) {
+        return ((BaseNativeAdResponse)response).getExpiryInterval(contentSource, memberId);
+    }
+
 }

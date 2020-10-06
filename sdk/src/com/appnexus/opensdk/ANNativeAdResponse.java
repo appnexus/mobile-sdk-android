@@ -25,7 +25,6 @@ import android.content.Intent;
 import android.content.MutableContextWrapper;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -35,7 +34,6 @@ import android.webkit.WebViewClient;
 import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.JsonUtil;
-import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
@@ -49,6 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ANNativeAdResponse extends BaseNativeAdResponse {
+    private int memberId;
     private String title;
     private String description;
     private String imageUrl;
@@ -94,10 +93,12 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
     private static final String KEY_PRIVACY_LINK = "privacy_link";
     private static final String RENDERER_URL = "renderer_url";
 
-
     private Runnable expireRunnable = new Runnable() {
         @Override
         public void run() {
+            if (listener != null) {
+                listener.onAdExpired();
+            }
             expired = true;
             registeredView = null;
             clickables = null;
@@ -115,6 +116,18 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
             if (image != null) {
                 image.recycle();
                 image = null;
+            }
+        }
+    };
+
+    private Runnable aboutToExpireRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (listener != null) {
+                listener.onAdAboutToExpire();
+            }
+            if (anNativeExpireHandler != null) {
+                anNativeExpireHandler.postDelayed(expireRunnable, getExpiryInterval(UTConstants.RTB, memberId));
             }
         }
     };
@@ -150,10 +163,9 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
         if (imp_trackers == null) {
             return null;
         }
-        ANNativeAdResponse response = new ANNativeAdResponse();
+        ANNativeAdResponse response = new ANNativeAdResponse(adObject);
         response.imp_trackers = imp_trackers;
         response.rendererUrl = JsonUtil.getJSONString(adObject, RENDERER_URL);
-        ;
         response.title = JsonUtil.getJSONString(metaData, KEY_TITLE);
         response.description = JsonUtil.getJSONString(metaData, KEY_DESCRIPTION);
         JSONObject media = JsonUtil.getJSONObject(metaData, KEY_MAIN_MEDIA);
@@ -178,7 +190,6 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
         response.sponsoredBy = JsonUtil.getJSONString(metaData, KEY_SPONSORED_BY);
         response.additionalDescription = JsonUtil.getJSONString(metaData, KEY_ADDITIONAL_DESCRIPTION);
 
-
         response.rating = new Rating(
                 JsonUtil.getJSONDouble(metaData, KEY_RATING),
                 -1);
@@ -187,8 +198,6 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
         JSONObject video = JsonUtil.getJSONObject(metaData, KEY_VIDEO);
         response.videoVastXML = JsonUtil.getJSONString(video, KEY_VIDEO_CONTENT);
         response.privacyLink = JsonUtil.getJSONString(metaData, KEY_PRIVACY_LINK);
-        response.anNativeExpireHandler = new Handler(Looper.getMainLooper());
-        response.anNativeExpireHandler.postDelayed(response.expireRunnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
 
         JSONObject nativeRendererObject = metaData;
         nativeRendererObject.remove("impression_trackers");
@@ -215,6 +224,12 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
     }
 
     private ANNativeAdResponse() {
+    }
+
+    private ANNativeAdResponse(JSONObject adObject) {
+        memberId = JsonUtil.getJSONInt(adObject, "buyer_member_id");
+        anNativeExpireHandler = new Handler(Looper.getMainLooper());
+        anNativeExpireHandler.postDelayed(aboutToExpireRunnable, getAboutToExpireTime(UTConstants.RTB, memberId));
     }
 
     @Override
@@ -324,6 +339,10 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
                         if (listener != null) {
                             listener.onAdImpression();
                         }
+                        if (anNativeExpireHandler != null) {
+                            anNativeExpireHandler.removeCallbacks(expireRunnable);
+                            anNativeExpireHandler.removeCallbacks(aboutToExpireRunnable);
+                        }
                     }
                 });
                 impressionTrackers.add(impressionTracker);
@@ -331,9 +350,6 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
             this.registeredView = view;
             setClickListener();
             view.setOnClickListener(clickListener);
-            if (anNativeExpireHandler != null) {
-                anNativeExpireHandler.removeCallbacks(expireRunnable);
-            }
             return true;
         }
         return false;
@@ -350,6 +366,12 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected boolean registerNativeAdEventListener(NativeAdEventListener listener) {
+        this.listener = listener;
+        return true;
     }
 
     @Override
@@ -370,6 +392,7 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
         super.destroy();
         if (anNativeExpireHandler != null) {
             anNativeExpireHandler.removeCallbacks(expireRunnable);
+            anNativeExpireHandler.removeCallbacks(aboutToExpireRunnable);
             anNativeExpireHandler.post(expireRunnable);
         }
     }

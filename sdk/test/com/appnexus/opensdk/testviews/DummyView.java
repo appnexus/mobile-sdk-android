@@ -21,6 +21,8 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.appnexus.opensdk.R;
+
 public class DummyView {
     @SuppressLint("StaticFieldLeak")
     public static View dummyView;
@@ -29,6 +31,7 @@ public class DummyView {
         if (dummyView == null) {
             dummyView = new View(context);
         }
+        dummyView.setTag(R.string.native_tag, null);
         if (dummyView.getParent() != null) {
             ((ViewGroup) dummyView.getParent()).removeView(dummyView);
         }

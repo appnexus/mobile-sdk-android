@@ -23,6 +23,7 @@ import android.view.View;
 
 import com.appnexus.opensdk.BaseNativeAdResponse;
 import com.appnexus.opensdk.NativeAdEventListener;
+import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.google.android.gms.ads.formats.NativeAd;
@@ -53,16 +54,20 @@ public class AdMobNativeAdResponse extends BaseNativeAdResponse {
     private boolean expired = false;
     private boolean registered = false;
     private NativeAdEventListener listener;
-    private Runnable runnable;
+    private Runnable expireRunnable;
+    private Runnable aboutToExpireRunnable;
 
     private final UnifiedNativeAd nativeAd;
     private Handler nativeExpireHandler;
 
     AdMobNativeAdResponse(final UnifiedNativeAd ad) {
         this.nativeAd = ad;
-        runnable = new Runnable() {
+        expireRunnable = new Runnable() {
             @Override
             public void run() {
+                if (listener != null) {
+                    listener.onAdExpired();
+                }
                 if (coverImage != null) {
                     coverImage.recycle();
                     coverImage = null;
@@ -78,8 +83,20 @@ public class AdMobNativeAdResponse extends BaseNativeAdResponse {
                 }
             }
         };
+
+        aboutToExpireRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (listener != null) {
+                    listener.onAdAboutToExpire();
+                }
+                if (nativeExpireHandler != null) {
+                    nativeExpireHandler.postDelayed(expireRunnable, getExpiryInterval(UTConstants.CSM, 0));
+                }
+            }
+        };
         nativeExpireHandler = new Handler(Looper.getMainLooper());
-        nativeExpireHandler.postDelayed(runnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
+        nativeExpireHandler.postDelayed(aboutToExpireRunnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_CSM_CSR);
         loadAssets();
     }
 
@@ -225,9 +242,6 @@ public class AdMobNativeAdResponse extends BaseNativeAdResponse {
                 // no way to pass on click action to listener
                 this.listener = listener;
                 registered = true;
-                if(nativeExpireHandler !=null) {
-                    nativeExpireHandler.removeCallbacks(runnable);
-                }
                 return true;
             }
         }
@@ -256,11 +270,17 @@ public class AdMobNativeAdResponse extends BaseNativeAdResponse {
     }
 
     @Override
+    protected boolean registerNativeAdEventListener(NativeAdEventListener listener) {
+        this.listener = listener;
+        return true;
+    }
+
+    @Override
     public void destroy() {
         super.destroy();
         if(nativeExpireHandler!=null) {
-            nativeExpireHandler.removeCallbacks(runnable);
-            nativeExpireHandler.post(runnable);
+            removeExpiryCallbacks();
+            nativeExpireHandler.post(expireRunnable);
         }
     }
 
@@ -287,5 +307,12 @@ public class AdMobNativeAdResponse extends BaseNativeAdResponse {
     @Override
     public String getPrivacyLink() {
         return privacyLink;
+    }
+
+    protected void removeExpiryCallbacks() {
+        if (nativeExpireHandler != null) {
+            nativeExpireHandler.removeCallbacks(aboutToExpireRunnable);
+            nativeExpireHandler.removeCallbacks(expireRunnable);
+        }
     }
 }

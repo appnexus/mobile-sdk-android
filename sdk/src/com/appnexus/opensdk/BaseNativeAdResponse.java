@@ -18,6 +18,8 @@ package com.appnexus.opensdk;
 
 import android.view.View;
 
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.viewability.ANOmidAdSession;
 import com.appnexus.opensdk.viewability.ANOmidVerificationScriptParseUtil;
 import com.iab.omid.library.appnexus.adsession.VerificationScriptResource;
@@ -36,6 +38,8 @@ public abstract class BaseNativeAdResponse implements NativeAdResponse {
     protected abstract boolean registerViewList(View view, List<View> clickables, NativeAdEventListener listener);
 
     protected abstract void unregisterViews();
+
+    protected abstract boolean registerNativeAdEventListener(NativeAdEventListener listener);
 
     @Override
     public ANAdResponseInfo getAdResponseInfo() {
@@ -82,6 +86,36 @@ public abstract class BaseNativeAdResponse implements NativeAdResponse {
                 anOmidAdSession.addFriendlyObstruction(view);
             }
         }
+    }
+
+    protected long getAboutToExpireTime(String contentSource, int memberId) {
+        long aboutToExpireTime = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME;
+        if (contentSource.equalsIgnoreCase("csm") || contentSource.equalsIgnoreCase("csr")) {
+            aboutToExpireTime = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_CSM_CSR;
+        } else if (contentSource.equalsIgnoreCase("rtb") && memberId == 11217) {
+            aboutToExpireTime = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT;
+        }
+
+        return aboutToExpireTime - getExpiryInterval(contentSource, memberId);
+    }
+
+    protected long getExpiryInterval(String contentSource, int memberId) {
+        long interval = Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT;
+        long expiryInterval = Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL;
+        if (expiryInterval <= 0) {
+            Clog.e(Clog.baseLogTag, "expiryInterval can not be set less then zero, default interval will be used.");
+        } else if((contentSource.equalsIgnoreCase("csm") || contentSource.equalsIgnoreCase("csr")) && expiryInterval >= Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_CSM_CSR) {
+            Clog.e(Clog.baseLogTag, "facebook expiryInterval can not be greater than 60 minutes, default interval will be used.");
+        } else if (contentSource.equalsIgnoreCase("rtb") && memberId == 11217 && expiryInterval >= Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT){
+            Clog.e(Clog.baseLogTag, "for RTB & member 11217 expiryInterval can not be greater than 5 minutes, default interval will be used.");
+        } else if(expiryInterval >= Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME){
+            Clog.e(Clog.baseLogTag, "for RTB  expiryInterval can not be greater than 6 hours, default interval will be used.");
+        } else {
+            interval  = expiryInterval;
+        }
+
+        Clog.d(Clog.baseLogTag, "onAdAboutToExpire() will be called " + interval + "ms prior to expiry.");
+        return interval;
     }
 
 }
