@@ -158,6 +158,11 @@ public class MediatedNativeSuccessful implements MediatedNativeAd, NativeAdEvent
                 }
 
                 @Override
+                protected boolean registerNativeAdEventListener(NativeAdEventListener listener) {
+                    return false;
+                }
+
+                @Override
                 public void destroy() {
                     super.destroy();
                 }

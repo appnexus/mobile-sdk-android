@@ -48,6 +48,11 @@ public class MockFBNativeBannerAdResponse extends BaseNativeAdResponse {
     }
 
     @Override
+    protected boolean registerNativeAdEventListener(NativeAdEventListener listener) {
+        return false;
+    }
+
+    @Override
     public Network getNetworkIdentifier() {
         return Network.FACEBOOK;
     }
