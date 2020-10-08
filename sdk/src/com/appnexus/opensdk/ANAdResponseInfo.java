@@ -24,6 +24,7 @@ public class ANAdResponseInfo {
     int memberID;
     String contentSource = "";
     String networkName = "";
+    String auctionId = "";
 
 
     /**
@@ -102,6 +103,19 @@ public class ANAdResponseInfo {
 
     public void setNetworkName(String networkName) {
         this.networkName = networkName;
+    }
+
+    /**
+     * Retrieve the auctionId
+     *
+     * @return auctionId, the auction identifier is unique id generated for the ad request.
+     */
+    public String getAuctionId() {
+        return auctionId;
+    }
+
+    public void setAuctionId(String auctionId) {
+        this.auctionId = auctionId;
     }
 
 }

@@ -25,7 +25,6 @@ import com.appnexus.opensdk.R;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.TimeZone;
 
 public class Settings {
     public String hidmd5 = null;
@@ -46,7 +45,7 @@ public class Settings {
     public boolean debug_mode = false; // This should always be false here.
     public String ua = null;
 
-    public final String sdkVersion = "7.6";
+    public final String sdkVersion = "7.7";
 
     public String mcc;
     public String mnc;
@@ -76,7 +75,18 @@ public class Settings {
 
     public static final long MEDIATED_NETWORK_TIMEOUT = 15000;
 
-    public static final long NATIVE_AD_RESPONSE_EXPIRATION_TIME = 3600000; // an hour
+    public static final long NATIVE_AD_RESPONSE_EXPIRATION_TIME = 6 * 60 * 60 * 1000; // 6 hours
+    public static final long NATIVE_AD_RESPONSE_EXPIRATION_TIME_CSM_CSR = 60 * 60 * 1000; // an hour
+    public static final long NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT = 5 * 60 * 1000; // 5 minutes
+
+    public static final long NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT = 60 * 1000; // 1 minute
+
+    /**
+     * This variable can be modified to alter the interval in ms,
+     * which will denote the time (in ms) that the user will be notified (with onAdAboutToExpire()) before the Ad is expired.
+     * Default value is set to 60 seconds.
+     */
+    public static long NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT;
 
     public static final int NATIVE_AD_VISIBLE_PERIOD_MILLIS = 1000;
 

@@ -22,6 +22,7 @@ import com.appnexus.opensdk.MediatedNativeAd;
 import com.appnexus.opensdk.MediatedNativeAdController;
 import com.appnexus.opensdk.NativeAdResponse;
 import com.appnexus.opensdk.TargetingParameters;
+import com.facebook.ads.AdSettings;
 import com.facebook.ads.NativeAd;
 
 /**
@@ -45,7 +46,6 @@ public class FacebookNativeAd implements MediatedNativeAd {
     public void requestNativeAd(Context context, String parameterString, String uid, final MediatedNativeAdController mBC, TargetingParameters tp) {
         NativeAd nativeAd = new NativeAd(context, uid);
         FBNativeAdResponse response = new FBNativeAdResponse(nativeAd);
-        nativeAd.setAdListener(new FacebookNativeAdListener(mBC, response));
-        nativeAd.loadAd();
+        nativeAd.loadAd(nativeAd.buildLoadAdConfig().withAdListener(new FacebookNativeAdListener(mBC, response)).build());
     }
 }

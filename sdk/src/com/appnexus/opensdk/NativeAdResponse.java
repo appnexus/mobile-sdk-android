@@ -30,10 +30,7 @@ public interface NativeAdResponse {
 
     public enum Network{
         FACEBOOK,
-        MOPUB,
         APPNEXUS,
-        INMOBI,
-        YAHOO,
         ADMOB,
         CUSTOM
     }

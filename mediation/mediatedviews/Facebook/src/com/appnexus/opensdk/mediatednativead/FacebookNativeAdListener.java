@@ -47,8 +47,6 @@ public class FacebookNativeAdListener implements NativeAdListener {
             code = ResultCode.getNewInstance(ResultCode.REQUEST_TOO_FREQUENT);
         } else if (adError.getErrorCode() == AdError.INTERNAL_ERROR.getErrorCode()) {
             code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
-        } else if (adError.getErrorCode() == AdError.MISSING_PROPERTIES.getErrorCode()) {
-            code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
         } else {
             code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
         }
@@ -84,10 +82,13 @@ public class FacebookNativeAdListener implements NativeAdListener {
         Clog.e(Clog.mediationLogTag, "Facebook - onLoggingImpression");
         NativeAdEventListener listener = null;
         FBNativeAdResponse fbNativeAdResponse = this.response.get();
-        if (fbNativeAdResponse != null && fbNativeAdResponse.getListener() != null) {
-            listener = fbNativeAdResponse.getListener();
+        if (fbNativeAdResponse != null) {
+            fbNativeAdResponse.removeExpiryCallbacks();
+            if (fbNativeAdResponse.getListener() != null) {
+                listener = fbNativeAdResponse.getListener();
+            }
         }
-        if(controller!=null) {
+        if (controller != null) {
             controller.onAdImpression(listener);
         }
     }

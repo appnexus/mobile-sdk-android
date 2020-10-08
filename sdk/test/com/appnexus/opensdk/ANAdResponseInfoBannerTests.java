@@ -69,6 +69,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
         assertEquals(bannerAdView.getAdResponseInfo().getBuyMemberId(), 123);
         assertEquals(bannerAdView.getAdResponseInfo().getContentSource(), UTConstants.RTB);
         assertEquals(bannerAdView.getAdResponseInfo().getNetworkName(), "");
+        assertEquals(bannerAdView.getAdResponseInfo().getAuctionId(), "123456789");
     }
 
     @Test
@@ -85,6 +86,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
         assertEquals(bannerAdView.getAdResponseInfo().getBuyMemberId(), 123);
         assertEquals(bannerAdView.getAdResponseInfo().getContentSource(), UTConstants.RTB);
         assertEquals(bannerAdView.getAdResponseInfo().getNetworkName(), "");
+        assertEquals(bannerAdView.getAdResponseInfo().getAuctionId(), "123456789");
     }
 
     // This proves that the second loadAd() behaves as a Lazy load even after the Lazy Ad has already been loaded once (after calling loadLazyAd())
@@ -107,6 +109,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
         assertEquals(bannerAdView.getAdResponseInfo().getBuyMemberId(), 123);
         assertEquals(bannerAdView.getAdResponseInfo().getContentSource(), UTConstants.RTB);
         assertEquals(bannerAdView.getAdResponseInfo().getNetworkName(), "");
+        assertEquals(bannerAdView.getAdResponseInfo().getAuctionId(), "123456789");
         adLoaded = false;
         adLazyLoaded = false;
         adFailed = false;
@@ -161,6 +164,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
         assertEquals(nativeAdResponse.getAdResponseInfo().getBuyMemberId(), 958);
         assertEquals(nativeAdResponse.getAdResponseInfo().getContentSource(), UTConstants.RTB);
         assertEquals(nativeAdResponse.getAdResponseInfo().getNetworkName(), "");
+        assertEquals(nativeAdResponse.getAdResponseInfo().getAuctionId(), "123456789");
     }
 
     public void testAdResponseInfoRTBBannerNativeRenderer() {
@@ -176,6 +180,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
         assertEquals(bannerAdView.getAdResponseInfo().getBuyMemberId(), 958);
         assertEquals(bannerAdView.getAdResponseInfo().getContentSource(), UTConstants.RTB);
         assertEquals(bannerAdView.getAdResponseInfo().getNetworkName(), "");
+        assertEquals(bannerAdView.getAdResponseInfo().getAuctionId(), "123456789");
         assertNull(nativeAdResponse);
     }
 
@@ -191,6 +196,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
         assertEquals(bannerAdView.getAdResponseInfo().getBuyMemberId(), 0);
         assertEquals(bannerAdView.getAdResponseInfo().getContentSource(), "");
         assertEquals(bannerAdView.getAdResponseInfo().getNetworkName(), "");
+        assertEquals(bannerAdView.getAdResponseInfo().getAuctionId(), "3552547938089377051000000");
     }
 
     @Test
@@ -207,6 +213,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
         assertEquals(bannerAdView.getAdResponseInfo().getBuyMemberId(), 0);
         assertEquals(bannerAdView.getAdResponseInfo().getContentSource(), "");
         assertEquals(bannerAdView.getAdResponseInfo().getNetworkName(), "");
+        assertEquals(bannerAdView.getAdResponseInfo().getAuctionId(), "3552547938089377051000000");
     }
 
     @Test

@@ -394,6 +394,9 @@ public class TestResponsesUT {
         return templateSingleCSMAdResponseBannerInterstitial(createClassName("MediatedBannerCallbacksTestView"), RESPONSE_URL, String.valueOf(testNumber));
     }
 
+    public static String anNativeTripleLift() {
+        return anNative().replace("\"buyer_member_id\":958", "\"buyer_member_id\":11217");
+    }
 
     public static String anNative() {
         String nativeResponse = templateNativeResponse("test title", "test description", "additional test description", "sponsored", "cta",

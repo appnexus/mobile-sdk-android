@@ -41,4 +41,16 @@ public interface NativeAdEventListener {
      * Called when an impression is recorded for an native ad
      */
     public void onAdImpression();
+
+    /**
+     * Called when the native ad is 60 seconds to expire.
+     * The 60 seconds here, can be modified using NATIVE_AD_RESPONSE_ON_AD_ABOUT_TO_EXPIRE_INTERVAL variable
+     * in Settings class {@link com.appnexus.opensdk.utils.Settings}
+     */
+    public void onAdAboutToExpire();
+
+    /**
+     * Called when the native ad is expired.
+     */
+    public void onAdExpired();
 }

@@ -103,10 +103,10 @@ public class ANGDPRSettings {
     public static String getConsentString(Context context) {
         if (context != null) {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-            if (pref.contains(ANGDPR_CONSENT_STRING)) {
-                return pref.getString(ANGDPR_CONSENT_STRING, "");
-            } else if (pref.contains(IABTCF_CONSENT_STRING)) {
+            if (pref.contains(IABTCF_CONSENT_STRING)) {
                 return pref.getString(IABTCF_CONSENT_STRING, "");
+            }else if (pref.contains(ANGDPR_CONSENT_STRING)) {
+                return pref.getString(ANGDPR_CONSENT_STRING, "");
             } else if (pref.contains(IAB_CONSENT_STRING)) {
                 return pref.getString(IAB_CONSENT_STRING, "");
             }
@@ -126,11 +126,11 @@ public class ANGDPRSettings {
         String subjectToGdprValue = "";
         if (context != null) {
             SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-            if (pref.contains(ANGDPR_CONSENT_REQUIRED)) {
-                subjectToGdprValue = pref.getString(ANGDPR_CONSENT_REQUIRED, "");
-            } else if (pref.contains(IABTCF_SUBJECT_TO_GDPR)) {
+            if (pref.contains(IABTCF_SUBJECT_TO_GDPR)) {
                 int iabTcfSubjectToGdpr = pref.getInt(IABTCF_SUBJECT_TO_GDPR, -1);
                 subjectToGdprValue = iabTcfSubjectToGdpr == -1 ? "" : String.valueOf(iabTcfSubjectToGdpr);
+            }else if (pref.contains(ANGDPR_CONSENT_REQUIRED)) {
+                subjectToGdprValue = pref.getString(ANGDPR_CONSENT_REQUIRED, "");
             } else if (pref.contains(IAB_SUBJECT_TO_GDPR)) {
                 subjectToGdprValue = pref.getString(IAB_SUBJECT_TO_GDPR, "");
             }
@@ -165,10 +165,10 @@ public class ANGDPRSettings {
         String deviceConsent = null;
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        if (pref.contains(ANGDPR_PurposeConsents)) {
+        if (pref.contains(IABTCF_PurposeConsents)){
+            deviceConsent = pref.getString(IABTCF_PurposeConsents, null);
+        }else if (pref.contains(ANGDPR_PurposeConsents)) {
                 deviceConsent = pref.getString(ANGDPR_PurposeConsents, null);
-        } else if (pref.contains(IABTCF_PurposeConsents)){
-                deviceConsent = pref.getString(IABTCF_PurposeConsents, null);
         }
 
         return !StringUtil.isEmpty(deviceConsent) ? deviceConsent.substring(0, 1) : null;

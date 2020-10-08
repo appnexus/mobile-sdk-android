@@ -21,13 +21,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.appnexus.opensdk.BaseNativeAdResponse;
 import com.appnexus.opensdk.NativeAdEventListener;
-import com.appnexus.opensdk.utils.Settings;
-import com.facebook.ads.AdIconView;
+import com.appnexus.opensdk.ut.UTConstants;
 import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeAd;
-
 
 import java.util.HashMap;
 import java.util.List;
@@ -45,8 +44,9 @@ public class FBNativeAdResponse extends BaseNativeAdResponse {
     private boolean expired = false;
     private boolean registered = false;
     private NativeAdEventListener listener;
-    private Runnable runnable;
+    private Runnable expireRunnable;
     private Handler fbNativeExpireHandler;
+    private Runnable aboutToExpireRunnable;
     private String creativeId = "";
     private ImageSize mainImageSize = new ImageSize(-1, -1);
     private ImageSize iconSize = new ImageSize(-1, -1);
@@ -55,13 +55,17 @@ public class FBNativeAdResponse extends BaseNativeAdResponse {
     private String privacyLink = "";
 
     private MediaView adMediaView = null;
-    private AdIconView adIconView = null;
+    private MediaView adIconView = null;
 
     public FBNativeAdResponse(NativeAd ad) {
         this.nativeAd = ad;
-        runnable = new Runnable() {
+        expireRunnable = new Runnable() {
             @Override
             public void run() {
+                if (listener != null) {
+                    listener.onAdExpired();
+                }
+
                 if (coverImage != null) {
                     coverImage.recycle();
                     coverImage = null;
@@ -73,7 +77,6 @@ public class FBNativeAdResponse extends BaseNativeAdResponse {
                 listener = null;
                 expired = true;
                 if (nativeAd != null) {
-                    nativeAd.setAdListener(null);
                     nativeAd.destroy();
                     nativeAd = null;
                 }
@@ -82,8 +85,21 @@ public class FBNativeAdResponse extends BaseNativeAdResponse {
                 }
             }
         };
+
+        aboutToExpireRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (listener != null) {
+                    listener.onAdAboutToExpire();
+                }
+                if (fbNativeExpireHandler != null) {
+                    fbNativeExpireHandler.postDelayed(expireRunnable, getExpiryInterval(UTConstants.CSM, 0));
+                }
+            }
+        };
+
         fbNativeExpireHandler = new Handler(Looper.getMainLooper());
-        fbNativeExpireHandler.postDelayed(runnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
+        fbNativeExpireHandler.postDelayed(aboutToExpireRunnable, getAboutToExpireTime(UTConstants.CSM, 0));
     }
 
     @Override
@@ -194,10 +210,12 @@ public class FBNativeAdResponse extends BaseNativeAdResponse {
             ViewGroup subViews =  (ViewGroup)view;
             for (int i = 0; i < subViews.getChildCount(); i++) {
                 final View subview = subViews.getChildAt(i);
-                if (subview instanceof AdIconView) {
-                    adIconView = (AdIconView )subview;
-                }else if (subview instanceof MediaView) {
-                    adMediaView = (MediaView )subview;
+                if (subview instanceof MediaView) {
+                    if (subview.getTag() != null) {
+                        adIconView = (MediaView) subview;
+                    } else {
+                        adMediaView = (MediaView) subview;
+                    }
                 }else if(subview instanceof ViewGroup){
                     getMediaViewsForRegisterView(subview);
                 }
@@ -222,9 +240,6 @@ public class FBNativeAdResponse extends BaseNativeAdResponse {
                     nativeAd.registerViewForInteraction(view, adMediaView);
                 }
                 registered = true;
-                if (fbNativeExpireHandler != null) {
-                    fbNativeExpireHandler.removeCallbacks(runnable);
-                }
             }
         }
         this.listener = listener;
@@ -241,9 +256,6 @@ public class FBNativeAdResponse extends BaseNativeAdResponse {
                     nativeAd.registerViewForInteraction(view, adMediaView , clickables);
                 }
                 registered = true;
-                if(fbNativeExpireHandler!=null) {
-                    fbNativeExpireHandler.removeCallbacks(runnable);
-                }
             }
         }
         this.listener = listener;
@@ -267,8 +279,8 @@ public class FBNativeAdResponse extends BaseNativeAdResponse {
     public void destroy() {
         super.destroy();
         if(fbNativeExpireHandler!=null) {
-            fbNativeExpireHandler.removeCallbacks(runnable);
-            fbNativeExpireHandler.post(runnable);
+            removeExpiryCallbacks();
+            fbNativeExpireHandler.post(expireRunnable);
         }
     }
 
@@ -295,5 +307,18 @@ public class FBNativeAdResponse extends BaseNativeAdResponse {
     @Override
     public String getPrivacyLink() {
         return privacyLink;
+    }
+
+    protected void removeExpiryCallbacks() {
+        if(fbNativeExpireHandler!=null) {
+            fbNativeExpireHandler.removeCallbacks(expireRunnable);
+            fbNativeExpireHandler.removeCallbacks(aboutToExpireRunnable);
+        }
+    }
+
+    @Override
+    protected boolean registerNativeAdEventListener(NativeAdEventListener listener) {
+        this.listener = listener;
+        return true;
     }
 }

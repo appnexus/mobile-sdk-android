@@ -97,11 +97,18 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener, NativeAdEve
         didLogImpression = true
     }
 
+    override fun onAdAboutToExpire() {
+
+    }
+
     override fun onAdWasClicked() {
 
     }
 
     override fun onAdWasClicked(clickUrl: String?, fallbackURL: String?) {
+    }
+
+    override fun onAdExpired() {
     }
 
     override fun onAdWillLeaveApplication() {

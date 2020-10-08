@@ -108,8 +108,11 @@ public class FBNativeBanner implements CSRAd {
                         NativeAdEventListener listener = null;
                         if (responseWeakReference.get() != null) {
                             FBNativeBannerAdResponse fbNativeBannerAdResponse = responseWeakReference.get();
-                            if (fbNativeBannerAdResponse != null && fbNativeBannerAdResponse.nativeAdEventListener != null) {
-                                listener = fbNativeBannerAdResponse.nativeAdEventListener;
+                            if (fbNativeBannerAdResponse != null) {
+                                fbNativeBannerAdResponse.removeExpiryCallbacks();
+                                if (fbNativeBannerAdResponse.nativeAdEventListener != null) {
+                                    listener = fbNativeBannerAdResponse.nativeAdEventListener;
+                                }
                             }
                         }
                         mBC.onAdImpression(listener);

@@ -24,7 +24,7 @@ import android.widget.ImageView;
 
 import com.appnexus.opensdk.BaseNativeAdResponse;
 import com.appnexus.opensdk.NativeAdEventListener;
-import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.ut.UTConstants;
 import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeBannerAd;
 
@@ -43,8 +43,8 @@ public class FBNativeBannerAdResponse extends BaseNativeAdResponse {
     private HashMap<String, Object> nativeElements = new HashMap<String, Object>();
     private boolean expired = false;
     private boolean registered = false;
-    private NativeAdEventListener listener;
-    private Runnable runnable;
+    NativeAdEventListener nativeAdEventListener = null;
+    private Runnable expireRunnable;
     private Handler fbNativeExpireHandler;
     private String creativeId = "";
     private ImageSize mainImageSize = new ImageSize(-1, -1);
@@ -52,6 +52,7 @@ public class FBNativeBannerAdResponse extends BaseNativeAdResponse {
     private String additionalDescription = "";
     private String vastXML = "";
     private String privacyLink = "";
+    private Runnable aboutToExpireRunnable;
 
     static FBNativeBannerAdResponse createResponse(NativeBannerAd ad) {
         if (ad != null && ad.isAdLoaded()) {
@@ -75,9 +76,12 @@ public class FBNativeBannerAdResponse extends BaseNativeAdResponse {
             nativeElements.put(FBSettings.KEY_ADCHOICES_LINKURL, nativeBannerAd.getAdChoicesLinkUrl());
         }
         callToAction = nativeBannerAd.getAdCallToAction();
-        runnable = new Runnable() {
+        expireRunnable = new Runnable() {
             @Override
             public void run() {
+                if (nativeAdEventListener != null) {
+                    nativeAdEventListener.onAdExpired();
+                }
                 if (coverImage != null) {
                     coverImage.recycle();
                     coverImage = null;
@@ -86,7 +90,7 @@ public class FBNativeBannerAdResponse extends BaseNativeAdResponse {
                     icon.recycle();
                     icon = null;
                 }
-                listener = null;
+                nativeAdEventListener = null;
                 expired = true;
                 if (nativeBannerAd != null) {
                     nativeBannerAd.destroy();
@@ -97,8 +101,21 @@ public class FBNativeBannerAdResponse extends BaseNativeAdResponse {
                 }
             }
         };
+
+        aboutToExpireRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (nativeAdEventListener != null) {
+                    nativeAdEventListener.onAdAboutToExpire();
+                }
+                if (fbNativeExpireHandler != null) {
+                    fbNativeExpireHandler.postDelayed(expireRunnable, getExpiryInterval(UTConstants.CSR, 0));
+                }
+            }
+        };
+
         fbNativeExpireHandler = new Handler(Looper.getMainLooper());
-        fbNativeExpireHandler.postDelayed(runnable, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME);
+        fbNativeExpireHandler.postDelayed(aboutToExpireRunnable, getAboutToExpireTime(UTConstants.CSR, 0));
     }
 
     @Override
@@ -125,9 +142,11 @@ public class FBNativeBannerAdResponse extends BaseNativeAdResponse {
     public void destroy() {
         super.destroy();
         nativeAdEventListener = null;
+        if (fbNativeExpireHandler != null) {
+            removeExpiryCallbacks();
+            fbNativeExpireHandler.post(expireRunnable);
+        }
     }
-
-    NativeAdEventListener nativeAdEventListener = null;
 
     public void unregisterView() {
         unregisterViews();
@@ -277,5 +296,18 @@ public class FBNativeBannerAdResponse extends BaseNativeAdResponse {
     @Override
     public String getPrivacyLink() {
         return privacyLink;
+    }
+
+    protected void removeExpiryCallbacks() {
+        if (fbNativeExpireHandler != null) {
+            fbNativeExpireHandler.removeCallbacks(expireRunnable);
+            fbNativeExpireHandler.removeCallbacks(aboutToExpireRunnable);
+        }
+    }
+
+    @Override
+    protected boolean registerNativeAdEventListener(NativeAdEventListener listener) {
+        this.nativeAdEventListener = listener;
+        return true;
     }
 }

@@ -92,7 +92,7 @@ public class UTAdResponse {
     private String noAdUrl;
     private int tagId;
     private String uuid;
-    private int auctionID;
+    private String auctionID;
     private int timeout;
     private MediaType mediaType;
     private String orientation;
@@ -169,7 +169,10 @@ public class UTAdResponse {
                 if (JsonUtil.getJSONBoolean(tagObject, RESPONSE_KEY_NO_BID)) {
                     adResponseInfo = new ANAdResponseInfo();
                     tagId = JsonUtil.getJSONInt(tagObject, RESPONSE_KEY_TAG_ID);
+                    auctionID = JsonUtil.getJSONString(tagObject, RESPONSE_KEY_AUCTION_ID);
                     adResponseInfo.setTagId(String.valueOf(tagId));
+                    adResponseInfo.setAuctionId(auctionID);
+
                     return;
                 }
 
@@ -191,7 +194,7 @@ public class UTAdResponse {
 
         noAdUrl = JsonUtil.getJSONString(response, RESPONSE_KEY_NO_AD_URL);
         tagId = JsonUtil.getJSONInt(response, RESPONSE_KEY_TAG_ID);
-        auctionID = JsonUtil.getJSONInt(response, RESPONSE_KEY_AUCTION_ID);
+        auctionID = JsonUtil.getJSONString(response, RESPONSE_KEY_AUCTION_ID);
         timeout = JsonUtil.getJSONInt(response, RESPONSE_KEY_TIMEOUT);
         uuid = JsonUtil.getJSONString(response, RESPONSE_KEY_UUID);
         JSONArray ads = JsonUtil.getJSONArray(response, RESPONSE_KEY_ADS);
@@ -210,6 +213,7 @@ public class UTAdResponse {
                 adResponseInfo.setAdType(getAdType(adType));
                 adResponseInfo.setTagId(String.valueOf(tagId));
                 adResponseInfo.setCreativeId(creativeId);
+                adResponseInfo.setAuctionId(auctionID);
                 adResponseInfo.setContentSource(contentSource);
                 adResponseInfo.setBuyMemberId(memberId);
 

@@ -59,6 +59,10 @@ class NativeActivity : AppCompatActivity(),NativeAdRequestListener,NativeAdEvent
     override fun onAdImpression() {
         
     }
+
+    override fun onAdAboutToExpire() {
+
+    }
     // NativeAdRequestListener - End
 
 
@@ -73,6 +77,9 @@ class NativeActivity : AppCompatActivity(),NativeAdRequestListener,NativeAdEvent
 
     override fun onAdWasClicked(clickUrl: String, fallbackURL: String) {
         log("Native Ad Clicked with URL: $clickUrl ::: fallbackURL: $fallbackURL")
+    }
+
+    override fun onAdExpired() {
     }
     // NativeAdEventListener - End
 

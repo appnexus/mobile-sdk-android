@@ -41,8 +41,7 @@ public class FacebookInterstitial implements MediatedInterstitialAdView {
     public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity, String parameter, String uid, TargetingParameters tp) {
         FacebookListener fbListener = new FacebookListener(mIC, this.getClass().getSimpleName());
         interstitialAd = new InterstitialAd(activity, uid);
-        interstitialAd.setAdListener(fbListener);
-        interstitialAd.loadAd();
+        interstitialAd.loadAd(interstitialAd.buildLoadAdConfig().withAdListener(fbListener).build());
     }
 
     @Override
@@ -70,12 +69,6 @@ public class FacebookInterstitial implements MediatedInterstitialAdView {
     public void destroy() {
         if (interstitialAd != null) {
             interstitialAd.destroy();
-            try {
-                interstitialAd.setAdListener(null);
-            }catch(NullPointerException npe){
-                //Facebook's rate limiting makes this hard to test
-                //catch npe to be safe
-            }
             interstitialAd=null;
         }
     }

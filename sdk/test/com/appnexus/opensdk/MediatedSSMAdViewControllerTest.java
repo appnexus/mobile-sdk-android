@@ -123,6 +123,8 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
     }
 
     private void executeUTRequest() {
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
         requestManager.execute();
         // execute main ad request
         waitForTasks();
