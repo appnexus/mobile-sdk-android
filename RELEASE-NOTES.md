@@ -1,3 +1,16 @@
+## 7.7
+### New Feature
++ MS-4412 Added support for listening to Ad Expiry events for Native Ads [https://wiki.xandr.com/x/vQPyBg]
++ MS-4449 Added support for setting test flags to bypass request filtering (for testing purposes only) [https://wiki.xandr.com/x/LwPyBg]
++ MS-4459 AuctionId information is now available through AdResponseInfo class
+### Mediation partner updates
++ MS-4418 Discontinued support for Amazon, inMobi, Millennial Media and Mopub adapters.(Github Intent to Implement #52)
++ MS-4419 Facebook SDK v6.1.0
++ MS-4423 SmartAd Server SDK v7.6.1
++ MS-4499 Google AdMob SDK v19.4.0
+### Improvements/Bug Fixes
++ MS-4550 Updated GDPR logic. Now priority will be given to IAB TCF2.0 strings
+
 ## 7.6
 ### New Feature
 + MS-4232 Added support for executing the Ad request on background thread [https://wiki.xandr.com/x/w4e1Bg]
