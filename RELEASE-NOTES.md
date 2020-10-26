@@ -1,3 +1,7 @@
+## 7.7.1
+### Improvements/Bug Fixes
++ MS-4575 Updated getCreativeHeight() and getCreativeWidth() to return mediation creative ad size
+
 ## 7.7
 ### New Feature
 + MS-4412 Added support for listening to Ad Expiry events for Native Ads [https://wiki.xandr.com/x/vQPyBg]
