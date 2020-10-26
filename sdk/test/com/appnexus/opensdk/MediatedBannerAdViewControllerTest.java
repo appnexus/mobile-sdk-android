@@ -402,6 +402,15 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
         assertTrue(MediatedBannerSuccessful.didPass);
     }
 
+    @Test
+    public void test17SucceedingMediationCallGetCreativeSize() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedSuccessfulBanner()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
+        assertEquals(50, bannerAdView.getCreativeHeight());
+        assertEquals(320, bannerAdView.getCreativeWidth());
+    }
+
     // Verify that the destroy() function gets called on a mediatedBanner
     // when a new banner is being created
     @Test

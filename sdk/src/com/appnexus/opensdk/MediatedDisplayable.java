@@ -46,20 +46,12 @@ class MediatedDisplayable implements Displayable {
 
     @Override
     public int getCreativeWidth() {
-        if (view != null) {
-            return view.getWidth();
-        }
-        // 'view' is null for interstitials, return -1
-        return -1;
+        return mAVC.currentAd.getWidth();
     }
 
     @Override
     public int getCreativeHeight() {
-        if (view != null) {
-            return view.getHeight();
-        }
-        // 'view' is null for interstitials, return -1
-        return -1;
+        return mAVC.currentAd.getHeight();
     }
 
     @Override
