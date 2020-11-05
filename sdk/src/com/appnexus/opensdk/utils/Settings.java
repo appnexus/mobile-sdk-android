@@ -59,6 +59,8 @@ public class Settings {
     public int locationDecimalDigits = -1;
 
     public HashMap<String, String> externalMediationClasses = new HashMap<String, String>();
+    public String countryCode;
+    public String zip;
     private HashSet<String> invalidBannerNetworks = new HashSet<String>();
     private HashSet<String> invalidInterstitialNetworks = new HashSet<String>();
     private HashSet<String> invalidNativeNetworks = new HashSet<String>();

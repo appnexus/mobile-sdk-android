@@ -109,6 +109,9 @@ public class UTRequestParameters {
     private static final String USER_EXTERNALUID = "external_uid";
     private static final String USER_LANGUAGE = "language";
     private static final String DEVICE = "device";
+    private static final String GEO_OVERRIDE = "geoOverride";
+    private static final String COUNTRY_CODE = "countryCode";
+    private static final String ZIP = "zip";
     private static final String AUCTION_TIMEOUT_MS = "auction_timeout_ms";
     private static final String DEVICE_USERAGENT = "useragent";
     private static final String DEVICE_GEO = "geo";
@@ -487,6 +490,12 @@ public class UTRequestParameters {
                 postData.put(DEVICE, device);
             }
 
+            // add geoOverride
+            JSONObject geoOverride = getGeoOverride();
+            if (geoOverride != null && geoOverride.length() > 0) {
+                postData.put(GEO_OVERRIDE, geoOverride);
+            }
+
             // add auctionTimeout
             long auctionTimeout = SDKSettings.getAuctionTimeout();
             if (auctionTimeout > 0) {
@@ -566,6 +575,22 @@ public class UTRequestParameters {
         }
         Clog.i(Clog.httpReqLogTag, "POST data: " + postData.toString());
         return postData.toString();
+    }
+
+    private JSONObject getGeoOverride() {
+        try {
+            JSONObject geoOverride = new JSONObject();
+            if (!StringUtil.isEmpty(SDKSettings.getGeoOverrideCountryCode())) {
+                geoOverride.put(COUNTRY_CODE, SDKSettings.getGeoOverrideCountryCode());
+            }
+            if (!StringUtil.isEmpty(SDKSettings.getGeoOverrideZipCode())) {
+                geoOverride.put(ZIP, SDKSettings.getGeoOverrideZipCode());
+            }
+            return geoOverride;
+        }catch (JSONException e) {
+            Clog.e(Clog.httpReqLogTag, "JSONException: " + e.getMessage());
+        }
+        return null;
     }
 
     private String orientation;

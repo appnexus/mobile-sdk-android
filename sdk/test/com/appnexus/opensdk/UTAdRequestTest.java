@@ -61,6 +61,10 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
     private static final String IAB_USPRIVACY_STRING = "IABUSPrivacy_String";
     private static final String US_PRIVACY = "us_privacy";
 
+    private String GEO_OVERRIDE = "geoOverride";
+    private String COUNTRY_CODE = "countryCode";
+    private String ZIP = "zip";
+
     @Override
     public void setup() {
         super.setup();
@@ -689,6 +693,40 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         JSONObject postDataEmptyUSPrivacyValueSet = inspectPostData();
         assertFalse(postDataEmptyUSPrivacyValueSet.has(US_PRIVACY));
 
+    }
+
+    /**
+     * Test GeoOverride parameters in /ut request body
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGeoOverrideParams() throws Exception {
+
+        // Default params
+        executionSteps();
+        JSONObject postDataBefore = inspectPostData();
+        assertFalse(postDataBefore.has(GEO_OVERRIDE));
+
+
+        // Set the params
+        SDKSettings.setGeoOverrideCountryCode("US");
+        SDKSettings.setGeoOverrideZipCode("123456");
+        executionSteps();
+        JSONObject postData = inspectPostData();
+        assertTrue(postData.has(GEO_OVERRIDE));
+        JSONObject geoOverride = postData.getJSONObject(GEO_OVERRIDE);
+        assertTrue(geoOverride.has(COUNTRY_CODE));
+        assertTrue(geoOverride.has(ZIP));
+        assertTrue(geoOverride.getString(COUNTRY_CODE).equals("US"));
+        assertTrue(geoOverride.getString(ZIP).equals("123456"));
+
+        // Reset the params
+        SDKSettings.setGeoOverrideCountryCode("");
+        SDKSettings.setGeoOverrideZipCode("");
+        executionSteps();
+        JSONObject postDataReset = inspectPostData();
+        assertFalse(postDataReset.has(GEO_OVERRIDE));
     }
 
 
