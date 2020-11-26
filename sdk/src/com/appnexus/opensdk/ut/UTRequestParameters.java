@@ -71,8 +71,10 @@ public class UTRequestParameters {
     private boolean isBannerVideoEnabled = false;
     private boolean isBannerEnabled = true;
     private boolean isBannerNativeEnabled = false;
+    private String extInvCode;
     private float reserve = 0.00f;
     private String age;
+    private String trafficSourceCode;
 
     private AdView.GENDER gender = AdView.GENDER.UNKNOWN;
     private ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
@@ -156,6 +158,8 @@ public class UTRequestParameters {
     private static final String VIDEO_FRAMEWORKS = "video_frameworks";
     private static final String NATIVE_FRAMEWORKS = "native_frameworks";
     private static final String OMID_FRAMEWORK_SIGNAL = "[6]";
+    private static final String EXT_INV_CODE = "ext_inv_code";
+    private static final String TRAFFICE_SOURCE_CODE = "traffic_source_code";
 
     private static final String US_PRIVACY = "us_privacy";
 
@@ -192,6 +196,22 @@ public class UTRequestParameters {
     public void setInventoryCodeAndMemberID(int memberId, String invCode) {
         this.memberID = memberId;
         this.invCode = invCode;
+    }
+
+    public void setExtInvCode(String extInvCode) {
+        this.extInvCode = extInvCode;
+    }
+
+    public String getExtInvCode() {
+        return this.extInvCode;
+    }
+
+    public void setTrafficSourceCode(String trafficSourceCode) {
+        this.trafficSourceCode = trafficSourceCode;
+    }
+
+    public String getTrafficSourceCode() {
+        return this.trafficSourceCode;
     }
 
     public void setMemberID(int memberID) {
@@ -372,6 +392,7 @@ public class UTRequestParameters {
     public void setBannerVideoEnabled(boolean bannerVideoEnabled) {
         isBannerVideoEnabled = bannerVideoEnabled;
     }
+
     public void setBannerEnabled(boolean bannerEnabled) {
         isBannerEnabled = bannerEnabled;
     }
@@ -633,10 +654,18 @@ public class UTRequestParameters {
                     postData.put(PUBLISHER_ID, utRequestParameters.getPublisherId());
                 }
 
+                if (!StringUtil.isEmpty(getExtInvCode())) {
+                    tag.put(EXT_INV_CODE, getExtInvCode());
+                }
+                if (!StringUtil.isEmpty(getTrafficSourceCode())) {
+                    tag.put(TRAFFICE_SOURCE_CODE, getTrafficSourceCode());
+                }
+
                 JSONObject primesize = new JSONObject();
                 primesize.put(SIZE_WIDTH, utRequestParameters.primarySize.width());
                 primesize.put(SIZE_HEIGHT, utRequestParameters.primarySize.height());
                 tag.put(TAG_PRIMARY_SIZE, primesize);
+
                 if (utRequestParameters.forceCreativeId > 0) {
                     tag.put(FORCE_CREATIVE_ID, utRequestParameters.forceCreativeId);
                 }
@@ -942,7 +971,7 @@ public class UTRequestParameters {
             // limited ad tracking
             device.put(DEVICE_LMT, Settings.getSettings().limitTrackingEnabled);
 
-            if(ANGDPRSettings.canIAccessDeviceData(context)){
+            if (ANGDPRSettings.canIAccessDeviceData(context)) {
                 if (!StringUtil.isEmpty(Settings.getSettings().aaid)) {
                     // device id
                     JSONObject device_id = new JSONObject();

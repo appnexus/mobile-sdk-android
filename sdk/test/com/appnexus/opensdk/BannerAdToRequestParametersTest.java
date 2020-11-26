@@ -32,7 +32,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 
@@ -232,6 +232,36 @@ public class BannerAdToRequestParametersTest extends BaseRoboTest {
 
         useNativeRenderer(false);
         assertIsNativeAssemblyRendererEnabled(false);
+    }
+
+    /**
+     * Validates the Traffic Source in the request
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testTrafficSourceCode() {
+        assertNull(bannerAdView.getTrafficSourceCode());
+        bannerAdView.setTrafficSourceCode("Xandr");
+        assertEquals("Xandr", bannerAdView.getTrafficSourceCode());
+
+        String postData = getRequestParametersPostData();
+        assertTrue(postData.contains("\"traffic_source_code\":\"Xandr\""));
+    }
+
+    /**
+     * Validates the Ext Inv Code in the request
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testExtInvCode() {
+        assertNull(bannerAdView.getExtInvCode());
+        bannerAdView.setExtInvCode("Xandr");
+        assertEquals("Xandr", bannerAdView.getExtInvCode());
+
+        String postData = getRequestParametersPostData();
+        assertTrue(postData.contains("\"ext_inv_code\":\"Xandr\""));
     }
 
     private void useNativeRenderer(boolean isNativeAssemblyRendererEnabled) {

@@ -444,6 +444,64 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         inspectUserGender(genderInt, postData);
     }
 
+    /**
+     * Validates the Default Traffic Source in the request
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testDefaultTrafficSourceCode() throws Exception {
+        executionSteps();
+
+        JSONObject postData = inspectPostData();
+        JSONObject tags = getTagsData(postData);
+        assertFalse(tags.has("traffic_source_code"));
+    }
+
+    /**
+     * Validates the Traffic Source in the request
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testTrafficSourceCode() throws Exception {
+        utRequestParameters.setTrafficSourceCode("Xandr");
+        executionSteps();
+
+        JSONObject postData = inspectPostData();
+        JSONObject tags = getTagsData(postData);
+        String trafficSourceCode = tags.getString("traffic_source_code");
+        assertEquals("Xandr", trafficSourceCode);
+    }
+
+    /**
+     * Validates the Default Eternal Inventory Code in the request
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testDefaultExtInvCode() throws Exception {
+        executionSteps();
+        JSONObject postData = inspectPostData();
+        JSONObject tags = getTagsData(postData);
+        assertFalse(tags.has("ext_inv_code"));
+    }
+
+    /**
+     * Validates the External Inventory Code in the request
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testExtInvCode() throws Exception {
+        utRequestParameters.setExtInvCode("Xandr");
+        executionSteps();
+
+        JSONObject postData = inspectPostData();
+        JSONObject tags = getTagsData(postData);
+        String extInvCode = tags.getString("ext_inv_code");
+        assertEquals("Xandr", extInvCode);
+    }
 
     /**
      * Tests whether allowed sizes data is passed correctly in the request

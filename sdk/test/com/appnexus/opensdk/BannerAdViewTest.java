@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 
@@ -149,6 +150,30 @@ public class BannerAdViewTest extends BaseRoboTest {
         // Does not enable the Lazy Load as the AdRequest is alredy in progress
         assertFalse(bannerAdView.enableLazyLoad());
         assertFalse(bannerAdView.isLazyLoadEnabled());
+    }
+
+    /**
+     * Validates the Traffic Source in the request
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testTrafficSourceCode() {
+        assertNull(bannerAdView.getTrafficSourceCode());
+        bannerAdView.setTrafficSourceCode("Xandr");
+        assertEquals("Xandr", bannerAdView.getTrafficSourceCode());
+    }
+
+    /**
+     * Validates the Ext Inv Code in the request
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testExtInvCode() {
+        assertNull(bannerAdView.getExtInvCode());
+        bannerAdView.setExtInvCode("Xandr");
+        assertEquals("Xandr", bannerAdView.getExtInvCode());
     }
 
     private void setExternalUId(){

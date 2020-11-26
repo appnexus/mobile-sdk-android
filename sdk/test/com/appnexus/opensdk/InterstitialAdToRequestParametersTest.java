@@ -31,6 +31,8 @@ import org.robolectric.shadows.ShadowWebView;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 
@@ -113,6 +115,36 @@ public class InterstitialAdToRequestParametersTest extends BaseRoboTest {
         assertTrue(postData.contains("\"primary_size\":{\"width\":320,\"height\":414},"));
         assertTrue(postData.contains("\"sizes\":[{\"width\":1,\"height\":1},{\"width\":320,\"height\":414},{\"width\":300,\"height\":250}],"));
         assertTrue(postData.contains("\"allow_smaller_sizes\":false,"));
+    }
+
+    /**
+     * Validates the Traffic Source in the request
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testTrafficSourceCode() {
+        assertNull(interstitialAdView.getTrafficSourceCode());
+        interstitialAdView.setTrafficSourceCode("Xandr");
+        assertEquals("Xandr", interstitialAdView.getTrafficSourceCode());
+
+        String postData = getRequestParametersPostData();
+        assertTrue(postData.contains("\"traffic_source_code\":\"Xandr\""));
+    }
+
+    /**
+     * Validates the Ext Inv Code in the request
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testExtInvCode() {
+        assertNull(interstitialAdView.getExtInvCode());
+        interstitialAdView.setExtInvCode("Xandr");
+        assertEquals("Xandr", interstitialAdView.getExtInvCode());
+
+        String postData = getRequestParametersPostData();
+        assertTrue(postData.contains("\"ext_inv_code\":\"Xandr\""));
     }
 
 

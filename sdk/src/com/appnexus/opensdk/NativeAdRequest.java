@@ -419,6 +419,38 @@ public class NativeAdRequest implements Ad, MultiAd {
     }
 
     /**
+     * Passes the external inventory code to the Ad Request
+     * @param extInvCode passed as String, specifies predefined value passed on the query string that can be used in reporting.
+     * */
+    public void setExtInvCode(String extInvCode) {
+        requestParameters.setExtInvCode(extInvCode);
+    }
+
+    /**
+     * Returns the external inventory code, initially added using {@link #setExtInvCode(String)}
+     * @@return extInvCode as String, specifies predefined value passed on the query string that can be used in reporting.
+     * */
+    public String getExtInvCode() {
+        return requestParameters.getExtInvCode();
+    }
+
+    /**
+     * Passes the traffic source code to the Ad Request
+     * @param trafficSourceCode passed as String, specifies the third-party source of this impression.
+     * */
+    public void setTrafficSourceCode(String trafficSourceCode) {
+        requestParameters.setTrafficSourceCode(trafficSourceCode);
+    }
+
+    /**
+     * Returns the traffic source code, initially added using {@link #setTrafficSourceCode(String)}
+     * @return trafficSourceCode as String, specifies the third-party source of this impression.
+     * */
+    public String getTrafficSourceCode() {
+        return requestParameters.getTrafficSourceCode();
+    }
+
+    /**
      * Call this to request a native ad for parameters described by this object.
      */
     @Override
