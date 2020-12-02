@@ -860,7 +860,11 @@ class AdWebView extends WebView implements Displayable,
 
     @Override
     public void scrollTo(int x, int y) {
-        super.scrollTo(0, 0);
+        if (Settings.getSettings().preventWebViewScrolling) {
+            super.scrollTo(0, 0);
+        } else {
+            super.scrollTo(x, y);
+        }
     }
 
     public void fireMRAIDEnabled() {
