@@ -34,6 +34,7 @@ import java.lang.reflect.Method;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -114,6 +115,36 @@ public class NativeAdToRequestParametersTest extends BaseRoboTest {
         String postData = getRequestParametersPostData();
         assertTrue(postData.contains("\"key\":\"content_url\",\"value\":[\"www.appnexus.com\"]"));
         nativeAdRequest.getRequestParameters().getCustomKeywords().contains("content_url");
+    }
+
+    /**
+     * Validates the Traffic Source in the request
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testTrafficSourceCode() {
+        assertNull(nativeAdRequest.getTrafficSourceCode());
+        nativeAdRequest.setTrafficSourceCode("Xandr");
+        assertEquals("Xandr", nativeAdRequest.getTrafficSourceCode());
+
+        String postData = getRequestParametersPostData();
+        assertTrue(postData.contains("\"traffic_source_code\":\"Xandr\""));
+    }
+
+    /**
+     * Validates the Ext Inv Code in the request
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testExtInvCode() {
+        assertNull(nativeAdRequest.getExtInvCode());
+        nativeAdRequest.setExtInvCode("Xandr");
+        assertEquals("Xandr", nativeAdRequest.getExtInvCode());
+
+        String postData = getRequestParametersPostData();
+        assertTrue(postData.contains("\"ext_inv_code\":\"Xandr\""));
     }
 
     /**

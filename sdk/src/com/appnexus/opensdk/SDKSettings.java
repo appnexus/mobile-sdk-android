@@ -216,6 +216,41 @@ public class SDKSettings {
     }
 
     /**
+     * Overrides the SDKs automatic location retrieval.
+     * The countryCode will be passed to request parameters only if it is 2 characters long
+     *
+     * @param countryCode The countryCode value to use in the ad call. To reset, pass null.
+     */
+    public static void setGeoOverrideCountryCode(String countryCode) {
+        Settings.getSettings().countryCode = countryCode;
+    }
+
+    /**
+     * Overrides the SDKs automatic location retrieval.
+     * The zipCode will be passed to request parameters only if it isn't empty
+     *
+     * @param zipCode The zipCode value to use in the ad call. To reset, pass null.
+     */
+    public static void setGeoOverrideZipCode(String zipCode) {
+        Settings.getSettings().zip = zipCode;
+    }
+
+    /**
+     * Returns the countryCode value that is set using {setGeoOverrideCountryCode}
+     * */
+    public static String getGeoOverrideCountryCode() {
+        return Settings.getSettings().countryCode;
+    }
+
+    /**
+     * Returns the zipCode value that is set using {setGeoOverrideZipCode}
+     * */
+    public static String getGeoOverrideZipCode() {
+        return Settings.getSettings().zip;
+    }
+
+
+    /**
      * Register a mapping for an external mediation class.
      *
      * @param className         the end class name.

@@ -93,7 +93,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
      * initial value is false
      * the value is set to true while initialising and AdRequest (eg banner.loadAd() / mar.load())
      * the value is set to false while sending back these callbacks: onAdLoaded(), onAdFailed() or onLazyAdLoaded()
-     * */
+     */
     private boolean isFetching = false;
 
     private ArrayList<WeakReference<View>> friendlyObstructionList = new ArrayList<>();
@@ -184,6 +184,38 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     @Override
     public UTRequestParameters getRequestParameters() {
         return requestParameters;
+    }
+
+    /**
+     * Passes the external inventory code to the Ad Request
+     * @param extInvCode passed as String, specifies predefined value passed on the query string that can be used in reporting.
+     * */
+    public void setExtInvCode(String extInvCode) {
+        requestParameters.setExtInvCode(extInvCode);
+    }
+
+    /**
+     * Returns the external inventory code, initially added using {@link #setExtInvCode(String)}
+     * @@return extInvCode as String, specifies predefined value passed on the query string that can be used in reporting.
+     * */
+    public String getExtInvCode() {
+        return requestParameters.getExtInvCode();
+    }
+
+    /**
+     * Passes the traffic source code to the Ad Request
+     * @param trafficSourceCode passed as String, specifies the third-party source of this impression.
+     * */
+    public void setTrafficSourceCode(String trafficSourceCode) {
+        requestParameters.setTrafficSourceCode(trafficSourceCode);
+    }
+
+    /**
+     * Returns the traffic source code, initially added using {@link #setTrafficSourceCode(String)}
+     * @return trafficSourceCode as String, specifies the third-party source of this impression.
+     * */
+    public String getTrafficSourceCode() {
+        return requestParameters.getTrafficSourceCode();
     }
 
     /**
@@ -1457,6 +1489,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
     /**
      * This is called to enable the Lazy Load
+     *
      * @return true if the call to enableLazyLoad() is successful
      */
     protected boolean enableLazyLoad() {
@@ -1486,6 +1519,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
     /**
      * Tells the status of the Lazy Load in conjunction with Webview activation
+     *
      * @return true only if the lazy load enabled but the lazyLoadAd() has not been called yet.
      */
     protected boolean isLazyWebviewInactive() {
@@ -1494,6 +1528,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
     /**
      * This method is called to load the content of a Lazy loaded Ad to the Webview (only if the Lazy Load is enabled)
+     *
      * @return true if the call to loadLazyAd() is successful
      */
     protected boolean loadLazyAd() {
@@ -1532,7 +1567,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     /**
      * This returns if the Webview for the Lazy Load has been activated or not
      * The webview once activated is de-activated by calling the deactivateWebviewForNextCall() {basically for AutoRefresh }
-     * */
+     */
     private boolean isWebviewActivated() {
         return activateWebview;
     }
@@ -1540,7 +1575,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     /**
      * This method deactivated the Webview - which means that, to load the Webview we need to call loadLazyAd()
      * This is make AutoRefresh work for Laay Load
-     * */
+     */
     protected void deactivateWebviewForNextCall() {
         activateWebview = false;
     }
@@ -1548,7 +1583,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     /**
      * This is used to know if the last response was successful, based on the content of the AdResponseInfo
      * see {@link ANAdResponseInfo}
-     * */
+     */
     protected boolean isLastResponseSuccessful() {
         return getAdResponseInfo() != null && getAdResponseInfo().getAdType() == AdType.BANNER;
     }

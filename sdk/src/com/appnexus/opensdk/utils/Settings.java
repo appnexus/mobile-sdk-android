@@ -45,7 +45,7 @@ public class Settings {
     public boolean debug_mode = false; // This should always be false here.
     public String ua = null;
 
-    public final String sdkVersion = "7.7.1";
+    public final String sdkVersion = "7.8";
 
     public String mcc;
     public String mnc;
@@ -59,6 +59,8 @@ public class Settings {
     public int locationDecimalDigits = -1;
 
     public HashMap<String, String> externalMediationClasses = new HashMap<String, String>();
+    public String countryCode;
+    public String zip;
     private HashSet<String> invalidBannerNetworks = new HashSet<String>();
     private HashSet<String> invalidInterstitialNetworks = new HashSet<String>();
     private HashSet<String> invalidNativeNetworks = new HashSet<String>();
