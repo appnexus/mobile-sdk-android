@@ -1,3 +1,13 @@
+## 7.8
+### New Feature
++ MS-4387 Added support to pass traffic source and external inventory codes in Ad Request [https://wiki.xandr.com/x/5wEYBw]
++ MS-4567 Added support for overriding Country and Zip Codes  [https://wiki.xandr.com/x/-AEYBw]
+### Mediation partner updates
++ MS-4591 Upgraded Facebook SDK to v6.2.0
++ MS-4493 Upgraded Google AdMob SDK to v19.5.0
+### Improvements/Bug Fixes
++ MS-4598 Fixed issue for BannerAdView with ReactNative FlatList
+
 ## 7.7.1
 ### Improvements/Bug Fixes
 + MS-4575 Updated getCreativeHeight() and getCreativeWidth() to return mediation creative ad size
