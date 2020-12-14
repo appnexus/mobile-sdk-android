@@ -530,7 +530,6 @@ public class BannerAdView extends AdView {
     void stop() {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.stop));
         mAdFetcher.stop();
-        loadAdHasBeenCalled = false;
     }
 
     @Override
