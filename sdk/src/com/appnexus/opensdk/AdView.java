@@ -1284,7 +1284,9 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
         public void onLazyAdLoaded(ANAdResponseInfo adResponseInfo) {
             isFetching = false;
             setAdResponseInfo(adResponseInfo);
-            adListener.onLazyAdLoaded(AdView.this);
+            if (adListener != null) {
+                adListener.onLazyAdLoaded(AdView.this);
+            }
         }
     }
 

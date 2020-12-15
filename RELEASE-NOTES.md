@@ -1,3 +1,8 @@
+## 7.8.1
+### Improvements/Bug Fixes
++ MS-4598 Fixed an issue with BannerAdView that was causing Ads to be reloaded when BannerAdView was toggled on and off screen
++ MS-4620 Added null check for adListener for LazyLoad (Github #55)
+
 ## 7.8
 ### New Feature
 + MS-4387 Added support to pass traffic source and external inventory codes in Ad Request [https://wiki.xandr.com/x/5wEYBw]
