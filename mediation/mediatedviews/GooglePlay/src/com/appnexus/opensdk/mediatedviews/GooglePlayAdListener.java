@@ -16,6 +16,8 @@
 
 package com.appnexus.opensdk.mediatedviews;
 
+import android.os.Handler;
+
 import com.appnexus.opensdk.MediatedAdViewController;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.ResultCode;
@@ -28,6 +30,15 @@ public class GooglePlayAdListener extends AdListener implements AppEventListener
     MediatedAdViewController mediatedAdViewController;
     String className;
     private boolean secondPriceIsHigher = false;
+    boolean isSecondPriceAvailable = false;
+    private Handler secondPriceHandler;
+    private int retryCount = 0;
+    private Runnable secondPriceRunnable = new Runnable() {
+        @Override
+        public void run() {
+            processAdLoad();
+        }
+    };
 
     public GooglePlayAdListener(MediatedAdViewController mediatedAdViewController, String className) {
         this.mediatedAdViewController = mediatedAdViewController;
@@ -98,13 +109,37 @@ public class GooglePlayAdListener extends AdListener implements AppEventListener
         super.onAdLoaded();
         printToClog("onAdLoaded");
         if (mediatedAdViewController != null) {
-            if (secondPriceIsHigher) {
-                mediatedAdViewController.onAdFailed(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
-            } else {
+            if (!isSecondPriceAvailable) {
                 mediatedAdViewController.onAdLoaded();
+            } else {
+                processAdLoad();
             }
         }
 
+    }
+
+    private void processAdLoad() {
+        Clog.e("GoogleEvent", retryCount +"");
+        if (retryCount < GooglePlayAdsSettings.getTotalRetries()) {
+            if (secondPriceIsHigher) {
+                mediatedAdViewController.onAdFailed(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
+                deallocateHandlerAndRunnable();
+            } else {
+                if (secondPriceHandler == null) {
+                    secondPriceHandler = new Handler();
+                }
+                secondPriceHandler.postDelayed(secondPriceRunnable, GooglePlayAdsSettings.getSecondPriceWaitInterval());
+            }
+        }else {
+            mediatedAdViewController.onAdLoaded();
+            deallocateHandlerAndRunnable();
+        }
+        retryCount++;
+    }
+
+    private void deallocateHandlerAndRunnable() {
+        secondPriceHandler = null;
+        secondPriceRunnable = null;
     }
 
     void printToClog(String s) {

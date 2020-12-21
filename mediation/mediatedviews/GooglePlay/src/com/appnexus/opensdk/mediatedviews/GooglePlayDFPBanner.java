@@ -131,6 +131,7 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
                     String secondPriceString = "anhb_" + Math.round(secondPriceCents);
                     builder.addCustomTargeting(SECOND_PRICE_KEY, secondPriceString);
                     adListener.printToClog("second price " + secondPriceString);
+                    adListener.isSecondPriceAvailable = true;
                 }
             } catch (NumberFormatException e) {
                 adListener.printToClogError("While parsing secondPrice value: " + e.getMessage());
