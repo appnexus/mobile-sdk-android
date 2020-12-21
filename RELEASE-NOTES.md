@@ -1,3 +1,7 @@
+## 7.8.2
+### Improvements/Bug Fixes
++ MS-4622 Fixed an Ad load issue with Last Look (Second Price)
+
 ## 7.8.1
 ### Improvements/Bug Fixes
 + MS-4598 Fixed an issue with BannerAdView that was causing Ads to be reloaded when BannerAdView was toggled on and off screen
