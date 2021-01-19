@@ -310,6 +310,15 @@ public class AdViewRequestManager extends RequestManager {
                         ((AdDispatcher)ownerAd.getAdDispatcher()).onLazyAdLoaded(currentAd.getAdResponseInfo());
                     } else {
                         initiateWebview(ownerAd, rtbAdResponse);
+                        AdView owner = (AdView) ownerAd;
+                        if(owner.countBannerImpressionOnAdLoad){
+                            if(rtbAdResponse.getImpressionURLs() != null && rtbAdResponse.getImpressionURLs().size() > 0){
+                                owner.impressionTrackers = rtbAdResponse.getImpressionURLs();
+                                owner.fireImpressionTracker();
+                                //remove the impression trackers else will fire again in the AdView logic
+                                rtbAdResponse.setImpressionURLs(null);
+                            }
+                        }
                     }
                 } else {
                     Clog.e(Clog.baseLogTag, "handleRTBResponse failed:: invalid adType::" + rtbAdResponse.getAdType());
