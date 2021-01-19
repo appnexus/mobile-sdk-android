@@ -1288,7 +1288,7 @@ public class BannerAdView extends AdView {
     public void setCountImpressionOnAdLoad(boolean enabled) {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
                 R.string.set_count_on_ad_load, enabled));
-        countBannerImpressionOnAdLoad = true;
+        countBannerImpressionOnAdLoad = enabled;
     }
 
 

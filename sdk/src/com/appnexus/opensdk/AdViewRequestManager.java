@@ -164,6 +164,7 @@ public class AdViewRequestManager extends RequestManager {
                         bav.resizeViewToFitContainer(width, height, ad.getDisplayable().getView());
                     }
                 }
+                fireImpressionTrackerEarly (bav, ad.getResponseData());
             }
             ((AdDispatcher) owner.getAdDispatcher()).onAdLoaded(ad);
         } else {
@@ -176,6 +177,17 @@ public class AdViewRequestManager extends RequestManager {
         super.onReceiveUTResponse(response);
         Clog.e("AdViewRequestManager", "onReceiveUTResponse");
         processUTResponse(response);
+    }
+
+    private void fireImpressionTrackerEarly (AdView adView, BaseAdResponse response) {
+        if(adView.countBannerImpressionOnAdLoad){
+            if(response.getImpressionURLs() != null && response.getImpressionURLs().size() > 0){
+                adView.impressionTrackers = response.getImpressionURLs();
+                adView.fireImpressionTracker();
+                //remove the impression trackers else will fire again in the AdView logic
+                response.setImpressionURLs(null);
+            }
+        }
     }
 
     private void processUTResponse(UTAdResponse response) {
@@ -311,14 +323,7 @@ public class AdViewRequestManager extends RequestManager {
                     } else {
                         initiateWebview(ownerAd, rtbAdResponse);
                         AdView owner = (AdView) ownerAd;
-                        if(owner.countBannerImpressionOnAdLoad){
-                            if(rtbAdResponse.getImpressionURLs() != null && rtbAdResponse.getImpressionURLs().size() > 0){
-                                owner.impressionTrackers = rtbAdResponse.getImpressionURLs();
-                                owner.fireImpressionTracker();
-                                //remove the impression trackers else will fire again in the AdView logic
-                                rtbAdResponse.setImpressionURLs(null);
-                            }
-                        }
+                        fireImpressionTrackerEarly(owner, rtbAdResponse);
                     }
                 } else {
                     Clog.e(Clog.baseLogTag, "handleRTBResponse failed:: invalid adType::" + rtbAdResponse.getAdType());
