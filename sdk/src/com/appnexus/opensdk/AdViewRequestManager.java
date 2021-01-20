@@ -184,6 +184,7 @@ public class AdViewRequestManager extends RequestManager {
             if(response.getImpressionURLs() != null && response.getImpressionURLs().size() > 0){
                 adView.impressionTrackers = response.getImpressionURLs();
                 adView.fireImpressionTracker();
+                Clog.e(Clog.httpRespLogTag, "Impression URL fired when we have a valid ad & the view is created");
                 //remove the impression trackers else will fire again in the AdView logic
                 response.setImpressionURLs(null);
             }
