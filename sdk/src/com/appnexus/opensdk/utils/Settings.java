@@ -58,6 +58,8 @@ public class Settings {
     public Location location = null;
     public int locationDecimalDigits = -1;
 
+    public boolean preventWebViewScrolling = true;
+
     public HashMap<String, String> externalMediationClasses = new HashMap<String, String>();
     public String countryCode;
     public String zip;
