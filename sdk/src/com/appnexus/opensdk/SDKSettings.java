@@ -330,6 +330,26 @@ public class SDKSettings {
     }
 
     /**
+     * Enables or disables the scroll protection of the web view of the advertisement.
+     *
+     * It is enabled by default.
+     *
+     * @param preventWebViewScrolling
+     * true - Default value, the web view will stay at the top of the page (0, 0) when the scroll position is set.
+     * false - The web view will use the default behaviour and allow scrolling.
+     */
+    public static void setPreventWebViewScrolling(boolean preventWebViewScrolling) {
+        Settings.getSettings().preventWebViewScrolling = preventWebViewScrolling;
+    }
+
+    /**
+     * @return boolean which states if the scrolling of the advertisement web view is prevented or not.
+     */
+    public static boolean getPreventWebViewScrolling() {
+        return Settings.getSettings().preventWebViewScrolling;
+    }
+
+    /**
      * @return boolean which states if the BackgroundThreading is enabled or not
      * */
     public static boolean isBackgroundThreadingEnabled() {
