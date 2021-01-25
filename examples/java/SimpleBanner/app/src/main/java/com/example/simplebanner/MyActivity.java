@@ -59,7 +59,6 @@ public class MyActivity extends Activity {
 
         // Resizes the container size to fit the banner ad
         bav.setResizeAdToFitContainer(true);
-        bav.setCountImpressionOnAdLoad(true);
 
         // Set up a listener on this ad view that logs events.
         AdListener adListener = new AdListener() {
