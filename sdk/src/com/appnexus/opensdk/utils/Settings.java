@@ -62,6 +62,8 @@ public class Settings {
 
     public boolean preventWebViewScrolling = true;
 
+    public boolean disableAAIDUsage = false;
+
     public HashMap<String, String> externalMediationClasses = new HashMap<String, String>();
     public String countryCode;
     public String zip;

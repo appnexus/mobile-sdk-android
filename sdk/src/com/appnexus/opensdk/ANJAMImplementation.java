@@ -226,7 +226,7 @@ class ANJAMImplementation {
         String idNameValue;
 
         if (!StringUtil.isEmpty(Settings.getSettings().aaid)) {
-            idValue = Settings.getSettings().aaid;
+            idValue = SDKSettings.isAAIDUsageDisabled() ? "" :  Settings.getSettings().aaid;
             idNameValue = "aaid";
         } else {
             idValue = Settings.getSettings().hidsha1;

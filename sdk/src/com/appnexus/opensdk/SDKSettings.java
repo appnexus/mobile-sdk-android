@@ -84,6 +84,22 @@ public class SDKSettings {
     }
 
     /**
+     *  An AppNexus disableAAIDUsage is a boolean value, which exclude the AAID field in ad request.
+     *  Default value of disableAAIDUsage is set to false
+     */
+    public static boolean isAAIDUsageDisabled() {
+        return Settings.getSettings().disableAAIDUsage;
+    }
+
+    /**
+     * Sets true to exclude the AAID field in ad request else false.
+     * @param disable whether to disable AAIDUsage or not. default is false
+     */
+    public static void disableAAIDUsage(boolean disable) {
+        Settings.getSettings().disableAAIDUsage = disable;
+    }
+
+    /**
      * Returns true if the ad server calls will include location information
      * or false otherwise.
      */

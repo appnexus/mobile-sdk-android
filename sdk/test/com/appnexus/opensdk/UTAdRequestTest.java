@@ -71,6 +71,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         utRequestParameters = new UTRequestParameters(activity);
         utRequestParameters.setPrimarySize(new AdSize(1, 1));
         Settings.getSettings().ua = "";
+        SDKSettings.disableAAIDUsage(false);
     }
 
     @Test
@@ -706,6 +707,72 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
         assertEquals("1234", aaid);
         assertEquals(true, postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getBoolean("consent_required"));
+    }
+
+    /**
+     API To verify : disableAAIDUsage
+     If disableAAIDUsage is set to default value(false) then the device_id should not be nil
+     */
+    @Test
+    public void testUTRequestDisableAAIDsageDefault() throws Exception {
+        executionSteps();
+        JSONObject postDataBeforeGDPRValueSet = inspectPostData();
+        assertFalse(postDataBeforeGDPRValueSet.has("gdpr_consent"));
+        SDKSettings.setAAID("1234", true);
+        ANGDPRSettings.setConsentRequired(activity,true);
+        ANGDPRSettings.setPurposeConsents(activity,"1");
+        executionSteps();
+        JSONObject postDataWithGDPRValueSet = inspectPostData();
+        System.out.println("POST DATA: " + postDataWithGDPRValueSet);
+        JSONObject device = postDataWithGDPRValueSet.getJSONObject("device");
+        JSONObject device_id = device.getJSONObject("device_id");
+        assertNotNull(device_id);
+        String aaid = device_id.getString("aaid");
+        assertNotNull(aaid);
+    }
+
+    /**
+     API To verify : disableAAIDUsage
+     If disableAAIDUsage is set to false value then the device_id should not be nil
+     */
+    @Test
+    public void testUTRequestDisableAAIDsageSetTofalse() throws Exception {
+        executionSteps();
+        JSONObject postDataBeforeGDPRValueSet = inspectPostData();
+        assertFalse(postDataBeforeGDPRValueSet.has("gdpr_consent"));
+        SDKSettings.setAAID("1234", true);
+        SDKSettings.disableAAIDUsage(false);
+        ANGDPRSettings.setConsentRequired(activity,true);
+        ANGDPRSettings.setPurposeConsents(activity,"1");
+        executionSteps();
+        JSONObject postDataWithGDPRValueSet = inspectPostData();
+        System.out.println("POST DATA: " + postDataWithGDPRValueSet);
+        JSONObject device = postDataWithGDPRValueSet.getJSONObject("device");
+        JSONObject device_id = device.getJSONObject("device_id");
+        assertNotNull(device_id);
+        String aaid = device_id.getString("aaid");
+        assertNotNull(aaid);
+    }
+
+
+    /**
+     API To verify : disableAAIDUsage
+     If disableAAIDUsage is set to true value then the device_id should not be nil
+     */
+    @Test
+    public void testUTRequestDisableAAIDsageSetTotrue() throws Exception {
+        executionSteps();
+        JSONObject postDataBeforeGDPRValueSet = inspectPostData();
+        assertFalse(postDataBeforeGDPRValueSet.has("gdpr_consent"));
+        SDKSettings.setAAID("1234", true);
+        SDKSettings.disableAAIDUsage(true);
+        ANGDPRSettings.setConsentRequired(activity,true);
+        ANGDPRSettings.setPurposeConsents(activity,"1");
+        executionSteps();
+        JSONObject postDataWithGDPRValueSet = inspectPostData();
+        System.out.println("POST DATA: " + postDataWithGDPRValueSet);
+        JSONObject device = postDataWithGDPRValueSet.getJSONObject("device");
+        assertFalse(device.has("device_id"));
     }
 
     /**
