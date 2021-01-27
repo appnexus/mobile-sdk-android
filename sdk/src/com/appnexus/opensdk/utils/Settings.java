@@ -19,6 +19,7 @@ package com.appnexus.opensdk.utils;
 import android.location.Location;
 import android.os.Build;
 
+import com.appnexus.opensdk.BuildConfig;
 import com.appnexus.opensdk.MediaType;
 import com.appnexus.opensdk.R;
 
@@ -45,7 +46,8 @@ public class Settings {
     public boolean debug_mode = false; // This should always be false here.
     public String ua = null;
 
-    public final String sdkVersion = "7.8.2";
+    public final String sdkVersion = BuildConfig.VERSION_NAME;
+
 
     public String mcc;
     public String mnc;
