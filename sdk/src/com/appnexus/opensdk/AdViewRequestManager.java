@@ -164,6 +164,7 @@ public class AdViewRequestManager extends RequestManager {
                         bav.resizeViewToFitContainer(width, height, ad.getDisplayable().getView());
                     }
                 }
+                fireImpressionTrackerEarly (bav, ad.getResponseData());
             }
             ((AdDispatcher) owner.getAdDispatcher()).onAdLoaded(ad);
         } else {
@@ -176,6 +177,18 @@ public class AdViewRequestManager extends RequestManager {
         super.onReceiveUTResponse(response);
         Clog.e("AdViewRequestManager", "onReceiveUTResponse");
         processUTResponse(response);
+    }
+
+    private void fireImpressionTrackerEarly (AdView adView, BaseAdResponse response) {
+        if(adView.countBannerImpressionOnAdLoad){
+            if(response.getImpressionURLs() != null && response.getImpressionURLs().size() > 0){
+                adView.impressionTrackers = response.getImpressionURLs();
+                adView.fireImpressionTracker();
+                Clog.e(Clog.httpRespLogTag, "Impression URL fired when we have a valid ad & the view is created");
+                //remove the impression trackers else will fire again in the AdView logic
+                response.setImpressionURLs(null);
+            }
+        }
     }
 
     private void processUTResponse(UTAdResponse response) {
@@ -310,6 +323,8 @@ public class AdViewRequestManager extends RequestManager {
                         ((AdDispatcher)ownerAd.getAdDispatcher()).onLazyAdLoaded(currentAd.getAdResponseInfo());
                     } else {
                         initiateWebview(ownerAd, rtbAdResponse);
+                        AdView owner = (AdView) ownerAd;
+                        fireImpressionTrackerEarly(owner, rtbAdResponse);
                     }
                 } else {
                     Clog.e(Clog.baseLogTag, "handleRTBResponse failed:: invalid adType::" + rtbAdResponse.getAdType());

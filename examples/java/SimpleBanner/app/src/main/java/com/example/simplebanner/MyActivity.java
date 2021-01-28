@@ -33,6 +33,7 @@ import com.appnexus.opensdk.NativeAdResponse;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Settings;
 
 public class MyActivity extends Activity {
 
@@ -45,6 +46,8 @@ public class MyActivity extends Activity {
 
         SDKSettings.useHttps(true);
 
+
+        Log.d("sdkVersion", "sdkVersion: "+ SDKSettings.getSDKVersion());
         // This is your AppNexus placement ID.
         bav.setPlacementID("17058950");
 

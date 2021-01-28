@@ -1,3 +1,11 @@
+## 7.9
+### New Feature
++ MS-4388 Support to disable passing device IDs in bid requests
+### Mediation partner updates
++ MS-4663 Upgraded Google AdMob SDK from 19.5.0 to v19.7.0
+### Improvements/Bug Fixes
++ MS-3911 Fetch SDK Version Dynamically in ad request
+
 ## 7.8.2
 ### Improvements/Bug Fixes
 + MS-4622 Fixed an Ad load issue with Last Look (Second Price)

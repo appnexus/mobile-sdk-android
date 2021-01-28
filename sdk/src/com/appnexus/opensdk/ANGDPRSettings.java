@@ -179,9 +179,9 @@ public class ANGDPRSettings {
         //truth table
             /*
                                     deviceAccessConsent=true   deviceAccessConsent=false  deviceAccessConsent undefined
-            consentRequired=false        Yes, read IDFA             No, don’t read IDFA           Yes, read IDFA
-            consentRequired=true         Yes, read IDFA             No, don’t read IDFA           No, don’t read IDFA
-            consentRequired=undefined    Yes, read IDFA             No, don’t read IDFA           Yes, read IDFA
+            consentRequired=false        Yes, read AAID             No, don’t read AAID           Yes, read AAID
+            consentRequired=true         Yes, read AAID             No, don’t read AAID           No, don’t read AAID
+            consentRequired=undefined    Yes, read AAID             No, don’t read AAID           Yes, read AAID
             */
 
         if(((ANGDPRSettings.getDeviceAccessConsent(context) == null) && (ANGDPRSettings.getConsentRequired(context) == null || ANGDPRSettings.getConsentRequired(context) == false)) ||
