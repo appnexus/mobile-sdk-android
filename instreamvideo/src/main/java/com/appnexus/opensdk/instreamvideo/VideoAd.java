@@ -248,15 +248,18 @@ public class VideoAd implements Ad, MultiAd {
         return requestParameters.getAge();
     }
 
+    @Deprecated
     /**
      * Set the current user's externalUID
      *
      * @param externalUid .
+     * @deprecated  Use ({@link SDKSettings}.setPublisherUserId)
      */
     public void setExternalUid(String externalUid) {
         requestParameters.setExternalUid(externalUid);
     }
 
+    @Deprecated
     /**
      * Retrieve the externalUID that was previously set.
      *

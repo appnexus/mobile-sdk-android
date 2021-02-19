@@ -28,6 +28,7 @@ import java.util.ArrayList;
  */
 public class TargetingParameters {
     private String age = null;
+    @Deprecated
     private String externalUid = null;
     private ArrayList<Pair<String, String>> customKeywords = new ArrayList<Pair<String, String>>();
     private AdView.GENDER gender = AdView.GENDER.UNKNOWN;

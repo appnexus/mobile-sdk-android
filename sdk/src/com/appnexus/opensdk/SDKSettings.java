@@ -30,6 +30,7 @@ import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 import com.iab.omid.library.appnexus.Omid;
 
+import java.util.Map;
 import java.util.concurrent.Executor;
 
 /**
@@ -322,6 +323,39 @@ public class SDKSettings {
      */
     public static boolean isLocationEnabledForCreative() {
         return Settings.getSettings().locationEnabledForCreative;
+    }
+
+
+    /**
+     * Specifies a string that corresponds to the Publisher(First Party) User ID for the current application user.
+     * @param publisherUserId
+     */
+    public static void setPublisherUserId(String publisherUserId){
+        Settings.getSettings().publisherUserId = publisherUserId;
+    }
+
+    /**
+     * Returns the Publisher User Id for the current application user, initially added using {@link #setPublisherUserId(String)}
+     * @@return publisherUserId as String.
+     */
+    public static String getPublisherUserId() {
+        return Settings.getSettings().publisherUserId;
+    }
+
+    /**
+     * A Map containing objects that hold External UserId parameters for the current application user.
+     * @param externalUserIds
+     */
+    public static void setExternalUserIds(Map<ANExternalUserIdSource,String> externalUserIds){
+         Settings.getSettings().externalUserIds = externalUserIds;
+    }
+
+    /**
+     * Returns the Map that hold External UserId parameters for the current application user, initially added using {@link #setExternalUserIds(Map<ANExternalUserIdSource,String>)}
+     * @@return externalUserIds as Map.
+     */
+    public static Map<ANExternalUserIdSource,String> getExternalUserIds() {
+        return Settings.getSettings().externalUserIds;
     }
 
 

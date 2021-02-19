@@ -27,7 +27,9 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -852,6 +854,101 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         executionSteps();
         JSONObject postDataReset = inspectPostData();
         assertFalse(postDataReset.has(GEO_OVERRIDE));
+    }
+
+
+
+    /**
+     * Test Publisher User Id parameters in /ut request body
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testPublisherUserID() throws Exception {
+
+        // Default params, External_uid will not be present in the POST DATA
+        executionSteps();
+        JSONObject postDataBefore = inspectPostData();
+        JSONObject userBefore = postDataBefore.getJSONObject("user");
+        assertFalse(userBefore.has("external_uid"));
+
+        // setPublisherUserId and make sure  external_uid is present in the POST DATA
+        SDKSettings.setPublisherUserId("test-publisheruserid");
+        executionSteps();
+        JSONObject postDataAfter = inspectPostData();
+        JSONObject userAfter = postDataAfter.getJSONObject("user");
+        assertTrue(userAfter.has("external_uid"));
+        assertTrue(userAfter.getString("external_uid").equals("test-publisheruserid"));
+
+        // Set and Clear the setPublisherUserId and make sure  external_uid is is not present in POST DATA
+        SDKSettings.setPublisherUserId("test-publisheruserid-foo");
+        SDKSettings.setPublisherUserId("");
+        executionSteps();
+        JSONObject postDataClear = inspectPostData();
+        JSONObject userClear = postDataClear.getJSONObject("user");
+        assertFalse(userClear.has("external_uid"));
+
+
+        // Do both setExternalUid  and make sure  setExternalUid is present in the POST DATA
+        utRequestParameters.setExternalUid("test-setExternaluid-xyz");
+        executionSteps();
+        JSONObject postDataSetExternalUID = inspectPostData();
+        JSONObject userSetExternalUID = postDataSetExternalUID.getJSONObject("user");
+        assertTrue(userSetExternalUID.has("external_uid"));
+        assertTrue(userSetExternalUID.getString("external_uid").equals("test-setExternaluid-xyz"));
+
+
+
+        // Set both setExternalUid and setPublisherUserId and make sure  setPublisherUserId overrides setExternalUid in the POST DATA
+        SDKSettings.setPublisherUserId("test-publisheruserid-bar-xyz");
+        utRequestParameters.setExternalUid("test-setExternaluid-xyz");
+        executionSteps();
+        JSONObject postDataDoBoth = inspectPostData();
+        JSONObject userDoBoth = postDataDoBoth.getJSONObject("user");
+        assertTrue(userDoBoth.has("external_uid"));
+        assertTrue(userDoBoth.getString("external_uid").equals("test-publisheruserid-bar-xyz"));
+    }
+
+    /**
+     * Test External User Id parameters in /ut request body
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testExternalUserIds() throws Exception {
+        Map<ANExternalUserIdSource,String> externalIdsMap = new HashMap<>();
+        externalIdsMap.put(ANExternalUserIdSource.LIVERAMP, "sdksettings-externalid-liveramp-foobar");
+        externalIdsMap.put(ANExternalUserIdSource.CRITEO, "sdksettings-externalid-Criteo-foobar");
+        externalIdsMap.put(ANExternalUserIdSource.THE_TRADE_DESK, "sdksettings-externalid-ttd-foobar");
+        externalIdsMap.put(ANExternalUserIdSource.NETID, "sdksettings-externalid-netid-foobar");
+
+
+        // Default params, euid node will not be present in the POST DATA
+        executionSteps();
+        JSONObject postDataBefore = inspectPostData();
+        assertFalse(postDataBefore.has("eids"));
+
+
+        // setExternalIds Map and make sure  euid is present in the POST DATA
+        SDKSettings.setExternalUserIds(externalIdsMap);
+        executionSteps();
+        JSONObject postDataAftersetExternalIds = inspectPostData();
+        JSONArray euidArrayAftersetExternalIds = postDataAftersetExternalIds.getJSONArray("eids");
+        assertNotNull(euidArrayAftersetExternalIds);
+        assertEquals(externalIdsMap.size(), euidArrayAftersetExternalIds.length());
+        assertTrue(euidArrayAftersetExternalIds.toString().contains("{\"source\":\"criteo.com\",\"id\":\"sdksettings-externalid-Criteo-foobar\"}"));
+        assertTrue(euidArrayAftersetExternalIds.toString().contains("{\"source\":\"netid.de\",\"id\":\"sdksettings-externalid-netid-foobar\"}"));
+        assertTrue(euidArrayAftersetExternalIds.toString().contains("{\"source\":\"liveramp.com\",\"id\":\"sdksettings-externalid-liveramp-foobar\"}"));
+        assertTrue(euidArrayAftersetExternalIds.toString().contains("{\"source\":\"adserver.org\",\"id\":\"sdksettings-externalid-ttd-foobar\",\"rti_partner\":\"TDID\"}"));
+
+
+        // setExternalIds Map and later reset it and make sure  euid is not present in the POST DATA
+        SDKSettings.setExternalUserIds(externalIdsMap);
+        SDKSettings.setExternalUserIds(null);
+        executionSteps();
+        JSONObject postDataReset = inspectPostData();
+        assertFalse(postDataReset.has("eids"));
+
     }
 
 
