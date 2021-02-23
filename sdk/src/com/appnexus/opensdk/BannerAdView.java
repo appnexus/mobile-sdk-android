@@ -905,7 +905,7 @@ public class BannerAdView extends AdView {
             //The only time we want to request on visibility changes is if an ad hasn't been loaded yet (loadAdHasBeenCalled)
             // shouldReloadOnResume is true
             // OR auto_refresh is enabled
-            if (!loadAdHasBeenCalled || shouldReloadOnResume || (period > 0)) {
+            if (loadAdHasBeenCalled && (shouldReloadOnResume || (period > 0))) {
 
                 //If we're MRAID mraid_is_closing or expanding, don't load.
                 if (!mraid_is_closing && !mraid_changing_size_or_visibility

@@ -17,14 +17,11 @@
 package com.example.simplebanner;
 
 import android.app.Activity;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.RelativeLayout;
 
-import com.appnexus.opensdk.ANAdResponseInfo;
 import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.AdListener;
 import com.appnexus.opensdk.AdView;
@@ -33,7 +30,6 @@ import com.appnexus.opensdk.NativeAdResponse;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.Settings;
 
 public class MyActivity extends Activity {
 

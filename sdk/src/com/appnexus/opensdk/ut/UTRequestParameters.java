@@ -30,6 +30,7 @@ import android.util.Pair;
 import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.ANGDPRSettings;
 import com.appnexus.opensdk.ANMultiAdRequest;
+import com.appnexus.opensdk.ANExternalUserIdSource;
 import com.appnexus.opensdk.ANUSPrivacySettings;
 import com.appnexus.opensdk.Ad;
 import com.appnexus.opensdk.AdSize;
@@ -52,6 +53,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 
@@ -59,6 +61,7 @@ public class UTRequestParameters {
 
     private MediaType mediaType;
     private String placementID;
+    @Deprecated
     private String externalUid;
     private int memberID;
     private int publisherId;
@@ -105,10 +108,18 @@ public class UTRequestParameters {
     private static final boolean TAG_ASSET_URL_VALUE = false;
     private static final String TAG_CODE = "code";
     private static final String TAG_UUID = "uuid";
+    private static final String EXTERNAL_IDS = "eids";
+    private static final String EXTERNALID_SOURCE = "source";
+    private static final String EXTERNALID_ID = "id";
+    private static final String EXTERNALID_RTI_PARTNER = "rti_partner";
+    private static final String EXTERNALID_SOURCE_LIVERAMP = "liveramp.com";
+    private static final String EXTERNALID_SOURCE_NETID = "netid.de";
+    private static final String EXTERNALID_SOURCE_CRITEO = "criteo.com";
+    private static final String EXTERNALID_SOURCE_THETRADEDESK = "adserver.org";
     private static final String USER = "user";
     private static final String USER_AGE = "age";
     private static final String USER_GENDER = "gender";
-    private static final String USER_EXTERNALUID = "external_uid";
+    private static final String USER_EXTERNALUID = "external_uid"; // publisher first party id
     private static final String USER_LANGUAGE = "language";
     private static final String DEVICE = "device";
     private static final String GEO_OVERRIDE = "geoOverride";
@@ -315,10 +326,12 @@ public class UTRequestParameters {
         return gender;
     }
 
+    @Deprecated
     public String getExternalUid() {
         return externalUid;
     }
 
+    @Deprecated
     public void setExternalUid(String externalUid) {
         this.externalUid = externalUid;
     }
@@ -505,6 +518,12 @@ public class UTRequestParameters {
             if (user != null && user.length() > 0) {
                 postData.put(USER, user);
             }
+
+            JSONArray eidArray = getExternalUserIdArray();
+            if (eidArray != null && eidArray.length() > 0) {
+                postData.put(EXTERNAL_IDS, eidArray);
+            }
+
             // add device
             JSONObject device = getDeviceObject();
             if (device != null && device.length() > 0) {
@@ -814,7 +833,9 @@ public class UTRequestParameters {
                 user.put(USER_LANGUAGE, Settings.getSettings().language);
             }
 
-            if (!StringUtil.isEmpty(utRequestParameters.getExternalUid())) {
+            if(!StringUtil.isEmpty(Settings.getSettings().publisherUserId)){
+                user.put(USER_EXTERNALUID, Settings.getSettings().publisherUserId);
+            } else if (!StringUtil.isEmpty(utRequestParameters.getExternalUid())) {
                 user.put(USER_EXTERNALUID, utRequestParameters.getExternalUid());
             }
 
@@ -823,6 +844,41 @@ public class UTRequestParameters {
         }
         return user;
     }
+
+    private JSONArray getExternalUserIdArray() {
+        JSONArray idArray = new JSONArray();
+        try {
+            if (Settings.getSettings().externalUserIds != null) {
+                for (Map.Entry<ANExternalUserIdSource, String> entry : Settings.getSettings().externalUserIds.entrySet()) {
+                    JSONObject idObject = new JSONObject();
+                    switch (entry.getKey()) {
+                        case THE_TRADE_DESK:
+                            idObject.put(EXTERNALID_SOURCE, EXTERNALID_SOURCE_THETRADEDESK);
+                            idObject.put(EXTERNALID_ID, entry.getValue());
+                            idObject.put(EXTERNALID_RTI_PARTNER, "TDID");
+                            break;
+                        case CRITEO:
+                            idObject.put(EXTERNALID_SOURCE, EXTERNALID_SOURCE_CRITEO);
+                            idObject.put(EXTERNALID_ID, entry.getValue());
+                            break;
+                        case NETID:
+                            idObject.put(EXTERNALID_SOURCE, EXTERNALID_SOURCE_NETID);
+                            idObject.put(EXTERNALID_ID, entry.getValue());
+                            break;
+                        case LIVERAMP:
+                            idObject.put(EXTERNALID_SOURCE, EXTERNALID_SOURCE_LIVERAMP);
+                            idObject.put(EXTERNALID_ID, entry.getValue());
+                            break;
+                    }
+                    idArray.put(idObject);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return idArray;
+    }
+
 
     private JSONObject getDeviceObject() {
         JSONObject device = new JSONObject();

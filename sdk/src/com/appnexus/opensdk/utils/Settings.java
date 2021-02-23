@@ -19,6 +19,7 @@ package com.appnexus.opensdk.utils;
 import android.location.Location;
 import android.os.Build;
 
+import com.appnexus.opensdk.ANExternalUserIdSource;
 import com.appnexus.opensdk.BuildConfig;
 import com.appnexus.opensdk.MediaType;
 import com.appnexus.opensdk.R;
@@ -26,6 +27,7 @@ import com.appnexus.opensdk.R;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 
 public class Settings {
     public String hidmd5 = null;
@@ -70,6 +72,9 @@ public class Settings {
     private HashSet<String> invalidBannerNetworks = new HashSet<String>();
     private HashSet<String> invalidInterstitialNetworks = new HashSet<String>();
     private HashSet<String> invalidNativeNetworks = new HashSet<String>();
+
+    public String publisherUserId = "";
+    public Map<ANExternalUserIdSource,String> externalUserIds = new HashMap<>();
 
     // STATICS
     public static final int HTTP_CONNECTION_TIMEOUT = 15000;

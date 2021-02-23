@@ -46,6 +46,7 @@ class ANJAMImplementation {
     private static final String CALL_GETCUSTOMKEYWORDS = "GetCustomKeywords";
 
     private static final String KEY_CALLER = "caller";
+    private static final int MIN_MRAID_REFRESH_MILLISECONDS = 100; // Minimum MRAID Refresh frequency set via ANJAM
 
     static void handleUrl(AdWebView webView, String url) {
         Uri uri = Uri.parse(url);
@@ -241,8 +242,15 @@ class ANJAMImplementation {
     }
 
     private static void callSetMraidRefreshFrequency(AdWebView webView, Uri uri) {
-        String milliseconds = uri.getQueryParameter("ms");
-        webView.setCheckPositionTimeInterval(Integer.parseInt(milliseconds));
+        int refreshFrequencyMS = Integer.parseInt(uri.getQueryParameter("ms"));
+        if(refreshFrequencyMS < MIN_MRAID_REFRESH_MILLISECONDS){
+            webView.setCheckPositionTimeInterval(MIN_MRAID_REFRESH_MILLISECONDS);
+            Clog.w(Clog.jsLogTag, String.format("SetMraidRefreshFrequency called with %d ms. SetMraidRefreshFrequency set to minimum allowed value %d ms. ",refreshFrequencyMS,MIN_MRAID_REFRESH_MILLISECONDS));
+        }else{
+            webView.setCheckPositionTimeInterval(refreshFrequencyMS);
+        }
+
+
     }
 
     private static void callGetcustomkeywords(AdWebView webView, Uri uri) {
