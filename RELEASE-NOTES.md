@@ -1,3 +1,10 @@
+## 7.10
+### New Feature
++ MS-4659, MS-4674 Added support for External UserId parameters [https://wiki.xandr.com/x/DAkYBg]
+### Improvements/Bug Fixes
++ MS-4671 Added minimum threshold of 100ms for callSetMraidRefreshFrequency
++ MS-4679 Fixed ad load issue (Github #59)
+
 ## 7.9
 ### New Feature
 + MS-4388 Support to disable passing device IDs in bid requests
