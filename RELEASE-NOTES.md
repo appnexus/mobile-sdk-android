@@ -1,9 +1,11 @@
 ## 7.10
 ### New Feature
-+ MS-4659, MS-4674 Added support for External UserId parameters [https://wiki.xandr.com/x/DAkYBg]
++ MS-4659, MS-4674 Added support for User Id from external sources(Criteo, NetID, LiverRamp, The Trade Desk) [https://wiki.xandr.com/x/DAkYBg]
 ### Improvements/Bug Fixes
 + MS-4671 Added minimum threshold of 100ms for callSetMraidRefreshFrequency
 + MS-4679 Fixed ad load issue (Github #59)
+### Deprecated APIs
++ setExternalUid and getExternalUid methods in NativeAdRequest, VideoAd, BannerAdView, and InterstitialAdView classes are deprecated, use setPublisherUserId and getPublisherUserId in SDKSettings instead [https://wiki.xandr.com/x/DAkYBg]
 
 ## 7.9
 ### New Feature
