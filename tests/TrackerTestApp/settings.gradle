@@ -1,0 +1,8 @@
+include ':app'
+
+include ':sdk'
+project(':sdk').projectDir = new File(settingsDir, '../../sdk')
+
+include ':instreamvideo'
+project(':instreamvideo').projectDir = new File(settingsDir, '../../instreamvideo')
+rootProject.name = "TrackerTestApp"
