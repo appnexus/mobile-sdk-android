@@ -101,6 +101,24 @@ public class SDKSettings {
     }
 
     /**
+     Do not track flag. Set this to true/false if you have information in the app about user opt-out.
+     If set to true, tracking cookies and AAID will be disabled for all future auctions.
+     Default value is false.
+     */
+    public static void setDoNotTrack(boolean dnt) {
+        Settings.getSettings().doNotTrack = dnt;
+    }
+
+    /**
+     * Returns true if Do not track is enabled.
+     * False otherwise.
+     */
+    public static boolean getDoNotTrack() {
+        return Settings.getSettings().doNotTrack;
+    }
+
+
+    /**
      * Returns true if the ad server calls will include location information
      * or false otherwise.
      */

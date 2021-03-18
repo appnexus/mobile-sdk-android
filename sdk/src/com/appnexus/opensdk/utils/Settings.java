@@ -66,6 +66,8 @@ public class Settings {
 
     public boolean disableAAIDUsage = false;
 
+    public boolean doNotTrack = false;
+
     public HashMap<String, String> externalMediationClasses = new HashMap<String, String>();
     public String countryCode;
     public String zip;
