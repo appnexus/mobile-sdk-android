@@ -135,6 +135,7 @@ public class UTAdRequest {
             conn.setDoInput(true);
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("Accept-Language", Settings.getSettings().language);
             conn.setRequestProperty("User-Agent", Settings.getSettings().ua);
             if (ANGDPRSettings.canIAccessDeviceData(requestParams.getContext())) {
                 String cookieString = WebviewUtil.getCookie();
