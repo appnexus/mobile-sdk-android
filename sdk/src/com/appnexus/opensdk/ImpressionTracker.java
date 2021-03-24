@@ -18,12 +18,15 @@ package com.appnexus.opensdk;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.view.View;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.viewability.ANOmidAdSession;
+
+import java.lang.ref.WeakReference;
 
 class ImpressionTracker {
     private String url;
@@ -33,18 +36,20 @@ class ImpressionTracker {
     private ImpressionListener listener;
     private ANOmidAdSession anOmidAdSession;
     private ImpressionTrackerListener impressionTrackerListener;
+    private WeakReference<View> viewWeakReference;
 
-    static ImpressionTracker create(String url, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession, ImpressionTrackerListener impressionTrackerListener) {
+    static ImpressionTracker create(WeakReference<View> viewWeakReference, String url, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession, ImpressionTrackerListener impressionTrackerListener) {
         if (visibilityDetector == null) {
             return null;
         } else {
-            ImpressionTracker impressionTracker = new ImpressionTracker(url, visibilityDetector, context, anOmidAdSession, impressionTrackerListener);
-            visibilityDetector.addVisibilityListener(impressionTracker.listener);
+            ImpressionTracker impressionTracker = new ImpressionTracker(viewWeakReference, url, visibilityDetector, context, anOmidAdSession, impressionTrackerListener);
+            visibilityDetector.addVisibilityListener(viewWeakReference, impressionTracker.listener);
             return impressionTracker;
         }
     }
 
-    private ImpressionTracker(String url, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession, ImpressionTrackerListener impressionTrackerListener) {
+    private ImpressionTracker(WeakReference<View> viewWeakReference, String url, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession, ImpressionTrackerListener impressionTrackerListener) {
+        this.viewWeakReference = viewWeakReference;
         this.url = url;
         this.visibilityDetector = visibilityDetector;
         this.listener = new ImpressionListener();
@@ -73,7 +78,7 @@ class ImpressionTracker {
                     }
                 };
                 asyncTask.execute();
-                visibilityDetector.removeVisibilityListener(listener);
+                visibilityDetector.destroy(viewWeakReference);
                 listener = null;
             } else {
                 nm.addURL(url, context, new ImpressionTrackerListener() {
@@ -97,13 +102,17 @@ class ImpressionTracker {
 
         @Override
         public void onVisibilityChanged(boolean visible) {
-            if (visible) {
-                elapsedTime += VisibilityDetector.VISIBILITY_THROTTLE_MILLIS;
-            } else {
-                elapsedTime = 0;
-            }
-            if (elapsedTime >= Settings.NATIVE_AD_VISIBLE_PERIOD_MILLIS) {
+            if (visible && SDKSettings.getCountImpressionOn1pxRendering()) {
                 ImpressionTracker.this.fire();
+            } else {
+                if (visible) {
+                    elapsedTime += VisibilityDetector.VISIBILITY_THROTTLE_MILLIS;
+                } else {
+                    elapsedTime = 0;
+                }
+                if (elapsedTime >= Settings.NATIVE_AD_VISIBLE_PERIOD_MILLIS) {
+                    ImpressionTracker.this.fire();
+                }
             }
         }
     }

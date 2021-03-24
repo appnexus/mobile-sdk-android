@@ -29,6 +29,8 @@ import com.appnexus.opensdk.ut.adresponse.RTBNativeAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.SSMHTMLAdResponse;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.Settings.CountImpression;
 import com.appnexus.opensdk.utils.StringUtil;
 
 import java.lang.ref.WeakReference;
@@ -180,7 +182,9 @@ public class AdViewRequestManager extends RequestManager {
     }
 
     private void fireImpressionTrackerEarly (AdView adView, BaseAdResponse response) {
-        if(adView.countBannerImpressionOnAdLoad){
+        if(adView.getEffectiveImpressionCountingMethod() == CountImpression.ON_LOAD ||
+                (adView.getEffectiveImpressionCountingMethod() == CountImpression.LAZY_LOAD &&
+                        adView.isWebviewActivated() && response.getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER))){
             if(response.getImpressionURLs() != null && response.getImpressionURLs().size() > 0){
                 adView.impressionTrackers = response.getImpressionURLs();
                 adView.fireImpressionTracker();
@@ -428,6 +432,9 @@ public class AdViewRequestManager extends RequestManager {
         }
 
         initiateWebview(adOwner, currentAd);
+        if (adOwner instanceof AdView) {
+            fireImpressionTrackerEarly((AdView) adOwner, currentAd);
+        }
     }
 
 }

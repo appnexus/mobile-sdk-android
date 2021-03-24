@@ -4,17 +4,13 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import appnexus.com.appnexussdktestapp.R
-import com.appnexus.opensdk.AdView
-import com.appnexus.opensdk.BannerAdView
-import com.appnexus.opensdk.InterstitialAdView
-import com.appnexus.opensdk.NativeAdResponse
+import com.appnexus.opensdk.*
 import com.appnexus.opensdk.instreamvideo.Quartile
 import com.appnexus.opensdk.instreamvideo.VideoAd
 import com.appnexus.opensdk.instreamvideo.VideoAdPlaybackListener
@@ -22,15 +18,30 @@ import com.appnexus.opensdk.utils.Clog
 import com.appnexus.opensdk.utils.ViewUtil
 import kotlinx.android.synthetic.main.layout_ad_view.view.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 class AdViewRecyclerAdapter(val items: ArrayList<Any?>, val context: Context) :
     RecyclerView.Adapter<AdViewRecyclerAdapter.ViewHolder>() {
+    private var shouldDisplay: Boolean = true
+
+    private var list: ArrayList<View> = ArrayList()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             LayoutInflater.from(context).inflate(
                 R.layout.layout_ad_view, parent, false
             )
         )
+    }
+
+    fun setShouldDisplay(display: Boolean) {
+        this.shouldDisplay = display
+        if (display) {
+            for (view in list) {
+                view.visibility = View.VISIBLE
+            }
+            list.clear()
+        }
     }
 
     override fun getItemCount(): Int {
@@ -184,10 +195,39 @@ class AdViewRecyclerAdapter(val items: ArrayList<Any?>, val context: Context) :
             (builder.container!!.parent as ViewGroup).removeAllViews()
 
         val nativeContainer = builder.container
-        Handler().post {
-            layoutNative.removeAllViews()
-            layoutNative.addView(nativeContainer)
+        if (!shouldDisplay) {
+            nativeContainer!!.visibility = View.GONE
+            list.add(nativeContainer)
+        } else {
+            nativeContainer!!.visibility = View.VISIBLE
         }
+        NativeAdSDK.registerTracking(response, nativeContainer, object : NativeAdEventListener {
+            override fun onAdImpression() {
+
+            }
+
+            override fun onAdAboutToExpire() {
+
+            }
+
+            override fun onAdExpired() {
+
+            }
+
+            override fun onAdWasClicked() {
+
+            }
+
+            override fun onAdWasClicked(clickUrl: String?, fallbackURL: String?) {
+
+            }
+
+            override fun onAdWillLeaveApplication() {
+
+            }
+        })
+        layoutNative.removeAllViews()
+        layoutNative.addView(nativeContainer)
     }
 
     internal inner class NativeAdBuilder @SuppressLint("NewApi")

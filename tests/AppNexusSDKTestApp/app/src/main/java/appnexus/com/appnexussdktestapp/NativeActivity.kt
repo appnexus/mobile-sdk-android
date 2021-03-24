@@ -3,6 +3,7 @@ package appnexus.com.appnexussdktestapp
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -13,10 +14,11 @@ import com.appnexus.opensdk.*
 import com.appnexus.opensdk.tasksmanager.TasksManager
 import com.appnexus.opensdk.utils.Settings
 import com.squareup.picasso.Picasso
-import java.util.concurrent.ExecutorService
+import kotlinx.android.synthetic.main.layout_native.*
 
 class NativeActivity : AppCompatActivity(), NativeAdRequestListener, NativeAdEventListener {
 
+    var shouldDisplay: Boolean = true
     var didLogImpression: Boolean = false
     lateinit var nativeAdRequest: NativeAdRequest
     var idlingResource: CountingIdlingResource = CountingIdlingResource("Native Load Count", true)
@@ -51,6 +53,11 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener, NativeAdEve
         bgTask: Boolean = false,
         useExecutor: Boolean = false
     ) {
+        if (!shouldDisplay) {
+            Handler(Looper.getMainLooper()).post({
+                main_native.visibility = View.GONE
+            })
+        }
         SDKSettings.enableBackgroundThreading(bgTask)
         Handler(Looper.getMainLooper()).post {
 

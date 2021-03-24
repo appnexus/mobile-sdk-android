@@ -22,6 +22,7 @@ class BannerActivity : AppCompatActivity(), AdListener, AppEventListener, Native
     val banner_id: Int = 1234
     lateinit var banner: BannerAdView
     var clickUrl: String? = ""
+    var shouldDisplay = true
     var idlingResource: CountingIdlingResource = CountingIdlingResource("Banner Load Count", true)
 
     override fun onAdClicked(p0: AdView?) {
@@ -47,12 +48,17 @@ class BannerActivity : AppCompatActivity(), AdListener, AppEventListener, Native
     }
 
     override fun onLazyAdLoaded(adView: AdView?) {
+        if (!idlingResource.isIdleNow)
+            idlingResource.decrement()
     }
 
     override fun onAdLoaded(ad: AdView?) {
         Toast.makeText(this, "AdLoaded", Toast.LENGTH_LONG).show()
         if (layout.childCount > 0)
             layout.removeAllViews()
+        if (!shouldDisplay) {
+            banner.visibility = View.GONE
+        }
         layout.addView(ad)
         if (!idlingResource.isIdleNow)
             idlingResource.decrement()
@@ -77,13 +83,17 @@ class BannerActivity : AppCompatActivity(), AdListener, AppEventListener, Native
         }
     }
 
-    fun triggerAdLoad(placement: String?, width: Int = 300, height: Int = 250, useHttps: Boolean = true, allowNativeDemand: Boolean = false, allowVideoDemand: Boolean = false, rendererId: Int = -1, useNativeRenderer: Boolean = false, clickThroughAction: ANClickThroughAction = ANClickThroughAction.OPEN_SDK_BROWSER, resizeToFitContainer: Boolean = false, expandsToFitScreenWidth: Boolean = false, creativeId: Int? = null, bgTask: Boolean = false) {
+    fun triggerAdLoad(placement: String?, width: Int = 300, height: Int = 250, useHttps: Boolean = true, allowNativeDemand: Boolean = false, allowVideoDemand: Boolean = false, rendererId: Int = -1, useNativeRenderer: Boolean = false, clickThroughAction: ANClickThroughAction = ANClickThroughAction.OPEN_SDK_BROWSER, resizeToFitContainer: Boolean = false, expandsToFitScreenWidth: Boolean = false, creativeId: Int? = null, bgTask: Boolean = false, countImpressionOnAdLoad: Boolean = false, onePx: Boolean = false, lazyLoad: Boolean = false) {
 
         SDKSettings.enableBackgroundThreading(bgTask)
         Handler(Looper.getMainLooper()).post {
 
             idlingResource.increment()
             banner = BannerAdView(this)
+            banner.countImpressionOnAdLoad = countImpressionOnAdLoad
+            if (lazyLoad) {
+                banner.enableLazyLoad()
+            }
             banner.appEventListener = this
             banner.id = banner_id
             banner.placementID = if (placement == null) "17982237" else placement
@@ -115,6 +125,13 @@ class BannerActivity : AppCompatActivity(), AdListener, AppEventListener, Native
         super.onDestroy()
         if (banner != null){
             banner.destroy()
+        }
+    }
+
+    fun loadLazyAd() {
+        if (banner.isLazyLoadEnabled) {
+            banner.loadLazyAd()
+            idlingResource.increment()
         }
     }
 

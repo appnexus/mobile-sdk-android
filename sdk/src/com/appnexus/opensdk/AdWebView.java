@@ -193,6 +193,12 @@ class AdWebView extends WebView implements Displayable,
             isVideoAd = (UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(ad.getAdType()));
             isNativeAd = (UTConstants.AD_TYPE_NATIVE.equalsIgnoreCase(ad.getAdType()));
 
+            if(adView.getEffectiveImpressionCountingMethod() == Settings.CountImpression.ON_LOAD ||
+                    (adView.getEffectiveImpressionCountingMethod() == Settings.CountImpression.LAZY_LOAD &&
+                            adView.isWebviewActivated() && ad.getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER))) {
+                onAdImpression();
+            }
+
             if (isNativeAd) {
                 isMRAIDEnabled = false;
                 html = getNativeRendererContent(ad);

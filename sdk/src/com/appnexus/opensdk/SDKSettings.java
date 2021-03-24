@@ -33,6 +33,8 @@ import com.iab.omid.library.appnexus.Omid;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
+import static com.appnexus.opensdk.utils.Settings.countImpressionOn1pxRendering;
+
 /**
  * Global static functions that apply to all SDK views and calls.
  */
@@ -470,5 +472,20 @@ public class SDKSettings {
         void onInitFinished();
     }
 
+    /**
+     * @return boolean that states the value of countImpressionOn1pxRendering
+     * set by using {@link #setCountImpressionOn1pxRendering(boolean)}. Default is false.
+     * */
+    public static boolean getCountImpressionOn1pxRendering() {
+        return countImpressionOn1pxRendering;
+    }
+
+    /**
+     * To enable the Impression counting on 1px display
+     * @param enable set true to enable, false to disable. Default is false.
+     * */
+    public static void setCountImpressionOn1pxRendering(boolean enable) {
+        countImpressionOn1pxRendering = enable;
+    }
 
 }
