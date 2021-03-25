@@ -70,6 +70,11 @@ public class BannerImpressionTests extends BaseViewAdTest {
         shadowConnectivityManager = (ShadowConnectivityManager) Shadow.extract(connectivityManager);
     }
 
+    @Override
+    public void tearDown() {
+        super.tearDown();
+        SDKSettings.setCountImpressionOn1pxRendering(false);
+    }
 
     // 1. Loads the banner off screen
     // 2. Attaches banner to a screen
@@ -135,6 +140,42 @@ public class BannerImpressionTests extends BaseViewAdTest {
         assertImpressionURL(2);
     }
 
+    // ============= ONE PX test cases ==============
+
+    // 1. Loads the banner off screen
+    // 2. Attaches banner to a screen
+    // 3. Checks if impression_url is fired succesfully
+    @Test
+    public void test_1BannerImpressionFiringOnePx() {
+        SDKSettings.setCountImpressionOn1pxRendering(true);
+
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // This is for UT Request
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for Impression
+
+        runBasicBannerTest();
+
+        attachBannerToView();
+
+        confirmNoImpressionULRinQueue();
+    }
+
+    // 1. Loads the banner off screen
+    // 2. Attaches banner to a screen
+    // 3. Checks if impression_url is fired succesfully
+    @Test
+    public void test_1BannerImpressionFiringPreferCountImpressionOnAdLoadOverOnePx() {
+        bannerAdView.setCountImpressionOnAdLoad(true);
+        SDKSettings.setCountImpressionOn1pxRendering(true);
+
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // This is for UT Request
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for Impression
+
+        runBasicBannerTest();
+
+        attachBannerToView();
+
+        assertImpressionURL(2);
+    }
 
     //////////////// END TESTS ////////////////////////
 

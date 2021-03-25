@@ -45,6 +45,7 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.Settings.CountImpression;
 import com.appnexus.opensdk.utils.ViewUtil;
 
 import java.lang.ref.WeakReference;
@@ -166,6 +167,19 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
     boolean isMRAIDExpanded() {
         return isMRAIDExpanded;
+    }
+
+    private void addVisibilityDetector(final WeakReference<View> view) {
+        final VisibilityDetector visibilityDetector = VisibilityDetector.create(view);
+        visibilityDetector.addVisibilityListener(view, new VisibilityDetector.VisibilityListener() {
+            @Override
+            public void onVisibilityChanged(boolean visible) {
+                if (visible && impressionTrackers != null && impressionTrackers.size() > 0) {
+                    fireImpressionTracker();
+                    visibilityDetector.destroy(view);
+                }
+            }
+        });
     }
 
     @Override
@@ -1235,6 +1249,15 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    if (ad.getResponseData() != null && ad.getResponseData().getImpressionURLs() != null && ad.getResponseData().getImpressionURLs().size() > 0) {
+                        impressionTrackers = ad.getResponseData().getImpressionURLs();
+                    }
+                    if (ad.getDisplayable() != null && ad.getMediaType().equals(MediaType.BANNER) && ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER)) {
+                        if (getEffectiveImpressionCountingMethod() == CountImpression.ONE_PX) {
+                            WeakReference<View> weakReferenceView = new WeakReference<View>(ad.getDisplayable().getView());
+                            addVisibilityDetector(weakReferenceView);
+                        }
+                    }
                     setCreativeWidth(ad.getDisplayable().getCreativeWidth());
                     setCreativeHeight(ad.getDisplayable().getCreativeHeight());
                     setCreativeId(ad.getResponseData().getAdResponseInfo().getCreativeId());
@@ -1250,14 +1273,12 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
                         display(ad.getDisplayable());
                     }
 
-                    if (ad.getResponseData() != null && ad.getResponseData().getImpressionURLs() != null && ad.getResponseData().getImpressionURLs().size() > 0) {
-                        impressionTrackers = ad.getResponseData().getImpressionURLs();
-                    }
-
 
                     // Banner OnAdLoaded and if View is attached to window, or if the LazyLoad is enabled Impression is counted.
                     if (getMediaType().equals(MediaType.BANNER)) {
-                        if (isAdViewAttachedToWindow() || countBannerImpressionOnAdLoad || (isLazyLoadEnabled() && isWebviewActivated() && ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER))) {
+                        if (getEffectiveImpressionCountingMethod() == CountImpression.ON_LOAD  ||
+                                (getEffectiveImpressionCountingMethod() == CountImpression.LAZY_LOAD && isWebviewActivated() && ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER)) ||
+                                (getEffectiveImpressionCountingMethod() == CountImpression.DEFAULT && isAdViewAttachedToWindow())) {
                             if (impressionTrackers != null && impressionTrackers.size() > 0) {
                                 fireImpressionTracker();
                             }
@@ -1298,7 +1319,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
         super.onAttachedToWindow();
         isAttachedToWindow = true;
         // OnAttaced to Window and Impresion tracker is non null then fire impression.
-        if (getMediaType().equals(MediaType.BANNER) && impressionTrackers != null && impressionTrackers.size() > 0) {
+        if (getEffectiveImpressionCountingMethod() == CountImpression.DEFAULT && getMediaType().equals(MediaType.BANNER) && impressionTrackers != null && impressionTrackers.size() > 0) {
             fireImpressionTracker();
         }
 
@@ -1333,6 +1354,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
 
     void fireImpressionTracker(final String trackerUrl) {
+        Clog.d("FIRE_IMPRESSION", getEffectiveImpressionCountingMethod().name());
         HTTPGet impTracker = new HTTPGet() {
             @Override
             protected void onPostExecute(HTTPResponse response) {
@@ -1573,7 +1595,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
      * This returns if the Webview for the Lazy Load has been activated or not
      * The webview once activated is de-activated by calling the deactivateWebviewForNextCall() {basically for AutoRefresh }
      */
-    private boolean isWebviewActivated() {
+    protected boolean isWebviewActivated() {
         return activateWebview;
     }
 
@@ -1591,5 +1613,20 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
      */
     protected boolean isLastResponseSuccessful() {
         return getAdResponseInfo() != null && getAdResponseInfo().getAdType() == AdType.BANNER;
+    }
+
+    /**
+     * @return {@link CountImpression} Based on the boolean values set for the Impression Tracking
+     * */
+    public CountImpression getEffectiveImpressionCountingMethod() {
+        if (countBannerImpressionOnAdLoad) {
+            return CountImpression.ON_LOAD;
+        } else if (SDKSettings.getCountImpressionOn1pxRendering()) {
+            return CountImpression.ONE_PX;
+        } else if (isLazyLoadEnabled()) {
+            return CountImpression.LAZY_LOAD;
+        } else {
+            return CountImpression.DEFAULT;
+        }
     }
 }

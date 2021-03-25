@@ -94,6 +94,8 @@ public abstract class BaseNativeAdResponse implements NativeAdResponse {
             aboutToExpireTime = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_CSM_CSR;
         } else if (contentSource.equalsIgnoreCase("rtb") && memberId == 11217) {
             aboutToExpireTime = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT;
+        } else if (contentSource.equalsIgnoreCase("rtb") && memberId == 12085) {
+            aboutToExpireTime = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_MSAN;
         }
 
         return aboutToExpireTime - getExpiryInterval(contentSource, memberId);
@@ -106,6 +108,8 @@ public abstract class BaseNativeAdResponse implements NativeAdResponse {
             Clog.e(Clog.baseLogTag, "expiryInterval can not be set less then zero, default interval will be used.");
         } else if((contentSource.equalsIgnoreCase("csm") || contentSource.equalsIgnoreCase("csr")) && expiryInterval >= Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_CSM_CSR) {
             Clog.e(Clog.baseLogTag, "facebook expiryInterval can not be greater than 60 minutes, default interval will be used.");
+        } else if (contentSource.equalsIgnoreCase("rtb") && memberId == 12085 && expiryInterval >= Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_MSAN){
+            Clog.e(Clog.baseLogTag, "for RTB & member 12085 expiryInterval can not be greater than 10 minutes, default interval will be used.");
         } else if (contentSource.equalsIgnoreCase("rtb") && memberId == 11217 && expiryInterval >= Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT){
             Clog.e(Clog.baseLogTag, "for RTB & member 11217 expiryInterval can not be greater than 5 minutes, default interval will be used.");
         } else if(expiryInterval >= Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME){

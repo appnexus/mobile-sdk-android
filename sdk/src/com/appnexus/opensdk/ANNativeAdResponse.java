@@ -42,6 +42,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -103,8 +104,7 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
             registeredView = null;
             clickables = null;
             if (visibilityDetector != null) {
-                visibilityDetector.destroy();
-                visibilityDetector = null;
+                visibilityDetector.destroy(viewWeakReference);
             }
             impressionTrackers = null;
             listener = null;
@@ -140,6 +140,7 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
     private ArrayList<ImpressionTracker> impressionTrackers;
     private ProgressDialog progressDialog;
     private ANClickThroughAction clickThroughAction = ANClickThroughAction.OPEN_SDK_BROWSER;
+    private WeakReference<View> viewWeakReference;
 
     /**
      * Process the metadata of native response from ad server
@@ -326,14 +327,15 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
     protected boolean registerView(final View view, final NativeAdEventListener listener) {
         if (!expired && view != null) {
             this.listener = listener;
-            visibilityDetector = VisibilityDetector.create(view);
+            viewWeakReference = new WeakReference<>(view);
+            visibilityDetector = VisibilityDetector.create(viewWeakReference);
             if (visibilityDetector == null) {
                 return false;
             }
 
             impressionTrackers = new ArrayList<ImpressionTracker>(imp_trackers.size());
             for (String url : imp_trackers) {
-                ImpressionTracker impressionTracker = ImpressionTracker.create(url, visibilityDetector, view.getContext(), anOmidAdSession, new ImpressionTrackerListener() {
+                ImpressionTracker impressionTracker = ImpressionTracker.create(viewWeakReference, url, visibilityDetector, view.getContext(), anOmidAdSession, new ImpressionTrackerListener() {
                     @Override
                     public void onImpressionTrackerFired() {
                         if (listener != null) {

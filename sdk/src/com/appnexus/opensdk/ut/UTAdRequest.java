@@ -135,8 +135,9 @@ public class UTAdRequest {
             conn.setDoInput(true);
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("Accept-Language", Settings.getSettings().language);
             conn.setRequestProperty("User-Agent", Settings.getSettings().ua);
-            if (ANGDPRSettings.canIAccessDeviceData(requestParams.getContext())) {
+            if (ANGDPRSettings.canIAccessDeviceData(requestParams.getContext()) && !Settings.getSettings().doNotTrack) {
                 String cookieString = WebviewUtil.getCookie();
                 if (!TextUtils.isEmpty(cookieString)) {
                     conn.setRequestProperty("Cookie", cookieString);
@@ -182,7 +183,7 @@ public class UTAdRequest {
 
                 Clog.i(Clog.httpRespLogTag, "RESPONSE - " + result);
                 Map<String, List<String>> headers = conn.getHeaderFields();
-                if (ANGDPRSettings.canIAccessDeviceData(requestParams.getContext())) {
+                if (ANGDPRSettings.canIAccessDeviceData(requestParams.getContext()) && !Settings.getSettings().doNotTrack) {
                     WebviewUtil.cookieSync(headers);
                 }
                 ANMultiAdRequest anMultiAdRequest = getMultiAdRequest();

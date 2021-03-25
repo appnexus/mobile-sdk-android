@@ -910,6 +910,37 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
     }
 
     /**
+     * Test Do Not Track parameters in /ut request body
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testDoNotTrack() throws Exception {
+
+        // Default params, dnt will not be present in the POST DATA
+        executionSteps();
+        JSONObject postDataBefore = inspectPostData();
+        JSONObject userBefore = postDataBefore.getJSONObject("user");
+        assertFalse(userBefore.has("dnt"));
+
+        // setDoNotTrack to false and make sure  dnt  is not present in the POST DATA
+        SDKSettings.setDoNotTrack(false);
+        executionSteps();
+        JSONObject postDataAfterSetToFalse = inspectPostData();
+        JSONObject userAfterSetToFalse = postDataAfterSetToFalse.getJSONObject("user");
+        assertFalse(userAfterSetToFalse.has("dnt"));
+
+        // setDoNotTrack to true and make sure  dnt  is  present in the POST DATA
+        SDKSettings.setDoNotTrack(true);
+        executionSteps();
+        JSONObject postDataAfterSetToTrue = inspectPostData();
+        JSONObject userAfterSetToTrue = postDataAfterSetToTrue.getJSONObject("user");
+        assertTrue(userAfterSetToTrue.has("dnt"));
+        assertTrue(userAfterSetToTrue.getBoolean("dnt"));
+
+    }
+
+    /**
      * Test External User Id parameters in /ut request body
      *
      * @throws Exception

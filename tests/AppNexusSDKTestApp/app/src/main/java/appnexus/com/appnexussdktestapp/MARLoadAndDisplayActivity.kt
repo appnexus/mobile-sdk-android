@@ -19,6 +19,8 @@ package appnexus.com.appnexussdktestapp
 import android.app.Activity
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.webkit.WebView
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -40,9 +42,11 @@ class MARLoadAndDisplayActivity : Activity() {
         val BID_TYPE = "BID_TYPE"
     }
 
+    private lateinit var layoutManager: LinearLayoutManager
     var onLazyLoadAdLoaded: Boolean = false
     var onLazyAdLoaded: Boolean = false
     private var displayAd = true
+    var shouldDisplayNativeAd = true
     private val arrayListAd = ArrayList<Any?>()
     private val arrayListAdUnits = ArrayList<Ad>()
     internal var msg = ""
@@ -57,7 +61,7 @@ class MARLoadAndDisplayActivity : Activity() {
     internal var nativePlacementId = placementID
 
     internal var videoCreativeId = 162035356
-    internal var bannerCreativeId = 166843311
+    internal var bannerCreativeId = 182424585 //166843311
     internal var nativeCreativeId = 162039377
     internal var interstitialCreativeId = 166843825
 
@@ -78,7 +82,7 @@ class MARLoadAndDisplayActivity : Activity() {
         }
         SDKSettings.useHttps(true)
 
-        var layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         recyclerListAdView.layoutManager = layoutManager
         recyclerListAdView.adapter = AdViewRecyclerAdapter(arrayListAd, this)
 
@@ -166,6 +170,9 @@ class MARLoadAndDisplayActivity : Activity() {
                 msg += "Native Ad Loaded\n"
                 toast()
                 arrayListAd.add(response)
+                (recyclerListAdView.adapter as AdViewRecyclerAdapter).setShouldDisplay(
+                    shouldDisplayNativeAd
+                )
                 if (displayAd)
                     recyclerListAdView.adapter!!.notifyDataSetChanged()
                 if (!idlingResource.isIdleNow)
@@ -409,6 +416,12 @@ class MARLoadAndDisplayActivity : Activity() {
         }
 
         return videoAd
+    }
+
+    fun refreshForVisibility() {
+        Handler(Looper.getMainLooper()).post({
+            (recyclerListAdView.adapter as AdViewRecyclerAdapter).setShouldDisplay(shouldDisplayNativeAd)
+        })
     }
 
     private fun toast() {

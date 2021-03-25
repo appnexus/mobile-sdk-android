@@ -30,6 +30,21 @@ import java.util.Locale;
 import java.util.Map;
 
 public class Settings {
+
+    /**
+     * Fire Impression
+     * DEFAULT - When the Ad is displayed
+     * ON_LOAD - When content is loaded on the WebView
+     * ONE_PX - When 1px of content is displayed
+     * LAZY_LOAD - When the content is loaded on the Webview (LazyLoad is enabled)
+     * */
+    public enum CountImpression {
+        DEFAULT, // When the Ad is displayed
+        ON_LOAD, // When content is loaded on the WebView
+        ONE_PX,  // When 1px of content is displayed
+        LAZY_LOAD // When the content is loaded on the Webview (LazyLoad is enabled)
+    }
+
     public String hidmd5 = null;
     public String hidsha1 = null;
     public String carrierName = null;
@@ -66,6 +81,8 @@ public class Settings {
 
     public boolean disableAAIDUsage = false;
 
+    public boolean doNotTrack = false;
+
     public HashMap<String, String> externalMediationClasses = new HashMap<String, String>();
     public String countryCode;
     public String zip;
@@ -75,6 +92,13 @@ public class Settings {
 
     public String publisherUserId = "";
     public Map<ANExternalUserIdSource,String> externalUserIds = new HashMap<>();
+
+    /**
+     * This boolean is responsible for firing the Impression tracker on 1px visibility of the Ad View
+     * true - follow the 1px constraint to fire the Impression
+     * false - do not follow the 1px constraint to fire the Impression
+     * */
+    public static boolean countImpressionOn1pxRendering = false;
 
     // STATICS
     public static final int HTTP_CONNECTION_TIMEOUT = 15000;
@@ -91,6 +115,7 @@ public class Settings {
     public static final long NATIVE_AD_RESPONSE_EXPIRATION_TIME = 6 * 60 * 60 * 1000; // 6 hours
     public static final long NATIVE_AD_RESPONSE_EXPIRATION_TIME_CSM_CSR = 60 * 60 * 1000; // an hour
     public static final long NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT = 5 * 60 * 1000; // 5 minutes
+    public static final long NATIVE_AD_RESPONSE_EXPIRATION_TIME_MSAN = 10 * 60 * 1000; // 10 minutes
 
     public static final long NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT = 60 * 1000; // 1 minute
 
@@ -104,6 +129,8 @@ public class Settings {
     public static final int NATIVE_AD_VISIBLE_PERIOD_MILLIS = 1000;
 
     public static final int MIN_PERCENTAGE_VIEWED = 50;
+
+    public static final int MIN_AREA_VIEWED_FOR_1PX = 1;
 
     public static final int VIDEO_AUTOPLAY_PERCENTAGE = 50;
 

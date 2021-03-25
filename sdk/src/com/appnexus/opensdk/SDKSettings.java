@@ -33,6 +33,8 @@ import com.iab.omid.library.appnexus.Omid;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
+import static com.appnexus.opensdk.utils.Settings.countImpressionOn1pxRendering;
+
 /**
  * Global static functions that apply to all SDK views and calls.
  */
@@ -99,6 +101,24 @@ public class SDKSettings {
     public static void disableAAIDUsage(boolean disable) {
         Settings.getSettings().disableAAIDUsage = disable;
     }
+
+    /**
+     Do not track flag. Set this to true/false if you have information in the app about user opt-out.
+     If set to true, tracking cookies and AAID will be disabled for all future auctions.
+     Default value is false.
+     */
+    public static void setDoNotTrack(boolean dnt) {
+        Settings.getSettings().doNotTrack = dnt;
+    }
+
+    /**
+     * Returns true if Do not track is enabled.
+     * False otherwise.
+     */
+    public static boolean getDoNotTrack() {
+        return Settings.getSettings().doNotTrack;
+    }
+
 
     /**
      * Returns true if the ad server calls will include location information
@@ -452,5 +472,20 @@ public class SDKSettings {
         void onInitFinished();
     }
 
+    /**
+     * @return boolean that states the value of countImpressionOn1pxRendering
+     * set by using {@link #setCountImpressionOn1pxRendering(boolean)}. Default is false.
+     * */
+    public static boolean getCountImpressionOn1pxRendering() {
+        return countImpressionOn1pxRendering;
+    }
+
+    /**
+     * To enable the Impression counting on 1px display
+     * @param enable set true to enable, false to disable. Default is false.
+     * */
+    public static void setCountImpressionOn1pxRendering(boolean enable) {
+        countImpressionOn1pxRendering = enable;
+    }
 
 }

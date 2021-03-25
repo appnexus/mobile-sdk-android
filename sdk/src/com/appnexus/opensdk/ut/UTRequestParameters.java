@@ -121,6 +121,7 @@ public class UTRequestParameters {
     private static final String USER_GENDER = "gender";
     private static final String USER_EXTERNALUID = "external_uid"; // publisher first party id
     private static final String USER_LANGUAGE = "language";
+    private static final String USER_DNT = "dnt";
     private static final String DEVICE = "device";
     private static final String GEO_OVERRIDE = "geoOverride";
     private static final String COUNTRY_CODE = "countryCode";
@@ -839,6 +840,9 @@ public class UTRequestParameters {
                 user.put(USER_EXTERNALUID, utRequestParameters.getExternalUid());
             }
 
+            if(Settings.getSettings().doNotTrack){
+                user.put(USER_DNT, true);
+            }
 
         } catch (JSONException e) {
         }
@@ -1027,14 +1031,11 @@ public class UTRequestParameters {
             // limited ad tracking
             device.put(DEVICE_LMT, Settings.getSettings().limitTrackingEnabled);
 
-            if (ANGDPRSettings.canIAccessDeviceData(context)) {
+            if (ANGDPRSettings.canIAccessDeviceData(context) && !SDKSettings.isAAIDUsageDisabled() && !Settings.getSettings().doNotTrack) {
                 if (!StringUtil.isEmpty(Settings.getSettings().aaid)) {
-                    // device id
-                    if(!SDKSettings.isAAIDUsageDisabled()) {
-                        JSONObject device_id = new JSONObject();
-                        device_id.put(DEVICE_ID_AAID, Settings.getSettings().aaid);
-                        device.put(DEVICE_DEVICE_ID, device_id);
-                    }
+                    JSONObject device_id = new JSONObject();
+                    device_id.put(DEVICE_ID_AAID, Settings.getSettings().aaid);
+                    device.put(DEVICE_DEVICE_ID, device_id);
                 }
             }
             // os

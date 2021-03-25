@@ -19,6 +19,7 @@ import com.squareup.picasso.Picasso
 
 class BannerActivity : AppCompatActivity(), AdListener {
 
+    var shouldDisplay: Boolean = true
     val banner_id: Int = 1234
     lateinit var banner: BannerAdView
     var clickUrl: String? = ""
@@ -56,6 +57,9 @@ class BannerActivity : AppCompatActivity(), AdListener {
         Toast.makeText(this, "AdLoaded", Toast.LENGTH_LONG).show()
         if (layout.childCount > 0)
             layout.removeAllViews()
+        if (!shouldDisplay) {
+            ad!!.visibility = View.GONE
+        }
         layout.addView(ad)
         if (!idlingResource.isIdleNow)
             idlingResource.decrement()
