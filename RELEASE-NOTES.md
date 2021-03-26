@@ -1,3 +1,9 @@
+## 7.11
+### Improvements/Bug Fixes
++ MS-4685 Added  API to disable tracking cookies during auction.
++ MS-4714 Added improvements to Ad Expiry events for Native Ads.
++ MS-4699 Added Accept-Language parameter in the HTTP header for Ad Request.
+
 ## 7.10
 ### New Feature
 + MS-4659, MS-4674 Added support for User Id from external sources(Criteo, NetID, LiverRamp, The Trade Desk) [https://wiki.xandr.com/x/DAkYBg]
