@@ -249,7 +249,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
     }
 
     private void executeBannerRequest() {
-        bannerAdView.setAutoRefreshInterval(15000);
+        bannerAdView.setAutoRefreshInterval(0);
         bannerAdView.loadAd();
 
         waitForTasks();
