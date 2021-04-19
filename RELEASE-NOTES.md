@@ -1,3 +1,8 @@
+## 7.12
+### Improvements/Bug Fixes
++ MS-4704 Added support for OMID containerGeometry and onScreenContainerGeometry for Instream & OutStream Video Ads
++ MS-4727 Added support for custom assets in Native Assembly Renderer
+
 ## 7.11
 ### Improvements/Bug Fixes
 + MS-4685 Added  API to disable tracking cookies during auction.
