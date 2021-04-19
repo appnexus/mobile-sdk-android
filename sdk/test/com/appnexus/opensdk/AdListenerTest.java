@@ -423,7 +423,7 @@ public class AdListenerTest extends BaseViewAdTest {
     }
 
     private void executeBannerRequest() {
-        bannerAdView.setAutoRefreshInterval(15000);
+        bannerAdView.setAutoRefreshInterval(0);
         bannerAdView.loadAdOffscreen();
 
         waitForTasks();
