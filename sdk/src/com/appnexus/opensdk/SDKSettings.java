@@ -488,4 +488,14 @@ public class SDKSettings {
         countImpressionOn1pxRendering = enable;
     }
 
+
+    /**
+     * @deprecated This will be removed in future releases. This is introduced just a fail safe kill switch for initial rollout. No Alternative.
+     * To allow/disallow using ib.adnxs-simple.com domain for Ad Requests.
+     * @param allow set true to enable, false to disable. Default is true.
+     * */
+    public static void setAllowUsingSimpleDomain(boolean allow) {
+        Settings.getSettings().simpleDomainUsageAllowed = allow;
+    }
+
 }

@@ -249,7 +249,7 @@ class AdWebView extends WebView implements Displayable,
                     html = prependViewPort(html);
                     html = omidAdSession.prependOMIDJSToHTML(html);
                 }
-                this.loadDataWithBaseURL(Settings.getBaseUrl(), html, "text/html", "UTF-8", null);
+                this.loadDataWithBaseURL(Settings.getWebViewBaseUrl(), html, "text/html", "UTF-8", null);
             }
         } catch (OutOfMemoryError exception) {
             // System is running low in memory and cannot process loadAd just return a failure.
@@ -337,7 +337,7 @@ class AdWebView extends WebView implements Displayable,
                     html = prependRawResources(html);
                     html = prependViewPort(html);
 
-                    loadDataWithBaseURL(Settings.getBaseUrl(), html, "text/html", "UTF-8", null);
+                    loadDataWithBaseURL(Settings.getWebViewBaseUrl(), html, "text/html", "UTF-8", null);
                     fireMRAIDEnabled();
                 }
             }

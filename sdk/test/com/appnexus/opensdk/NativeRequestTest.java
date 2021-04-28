@@ -111,6 +111,7 @@ public class NativeRequestTest extends BaseNativeTest {
         server.setDispatcher(dispatcher);
         HttpUrl impbus = server.url("/");
         UTConstants.REQUEST_BASE_URL_UT = impbus.toString();
+        UTConstants.REQUEST_BASE_URL_SIMPLE = impbus.toString();
         NativeAdRequestListener listener = new NativeAdRequestListener() {
 
             @Override

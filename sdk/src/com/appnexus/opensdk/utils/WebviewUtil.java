@@ -188,7 +188,7 @@ public class WebviewUtil {
                 Clog.i(Clog.httpRespLogTag, "Unable to find a CookieManager");
                 return null;
             }
-            return cm.getCookie(Settings.getBaseUrl());
+            return cm.getCookie(Settings.getCookieDomain());
         }catch (Exception e){
             // Catches PackageManager$NameNotFoundException for webview
             Clog.e(Clog.httpRespLogTag, "Unable to find a CookieManager - Exception: "+e.getMessage());

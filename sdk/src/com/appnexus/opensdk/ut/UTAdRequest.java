@@ -128,7 +128,8 @@ public class UTAdRequest {
     HashMap<String, UTAdResponse> makeRequest() {
         try {
 
-            String baseUrl = UTConstants.REQUEST_BASE_URL_UT;
+            Settings.getSettings().deviceAccessAllowed = ANGDPRSettings.canIAccessDeviceData(requestParams.getContext()); // Make sure GDPR device access is allowed.
+            String baseUrl = Settings.getAdRequestUrl();
             URL url = new URL(baseUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
@@ -137,7 +138,7 @@ public class UTAdRequest {
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestProperty("Accept-Language", Settings.getSettings().language);
             conn.setRequestProperty("User-Agent", Settings.getSettings().ua);
-            if (ANGDPRSettings.canIAccessDeviceData(requestParams.getContext()) && !Settings.getSettings().doNotTrack) {
+            if (Settings.getSettings().deviceAccessAllowed && !Settings.getSettings().doNotTrack) {
                 String cookieString = WebviewUtil.getCookie();
                 if (!TextUtils.isEmpty(cookieString)) {
                     conn.setRequestProperty("Cookie", cookieString);
@@ -183,7 +184,7 @@ public class UTAdRequest {
 
                 Clog.i(Clog.httpRespLogTag, "RESPONSE - " + result);
                 Map<String, List<String>> headers = conn.getHeaderFields();
-                if (ANGDPRSettings.canIAccessDeviceData(requestParams.getContext()) && !Settings.getSettings().doNotTrack) {
+                if (Settings.getSettings().deviceAccessAllowed && !Settings.getSettings().doNotTrack) {
                     WebviewUtil.cookieSync(headers);
                 }
                 ANMultiAdRequest anMultiAdRequest = getMultiAdRequest();
