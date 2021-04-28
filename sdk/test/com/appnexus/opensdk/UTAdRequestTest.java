@@ -74,6 +74,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         utRequestParameters.setPrimarySize(new AdSize(1, 1));
         Settings.getSettings().ua = "";
         SDKSettings.disableAAIDUsage(false);
+        SDKSettings.setDoNotTrack(false);
     }
 
     @Test
@@ -615,6 +616,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         executionSteps();
         JSONObject postDataBeforeGDPRValueSet = inspectPostData();
         assertFalse(postDataBeforeGDPRValueSet.has("gdpr_consent"));
+        assertTrue(Settings.getSettings().deviceAccessAllowed); // Default case with no GDPR settings device access should be allowed
 
         ANGDPRSettings.setConsentRequired(activity, true);
         ANGDPRSettings.setConsentString(activity, "fooBar");
@@ -622,6 +624,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         JSONObject postDataWithGDPRValueSet = inspectPostData();
         assertEquals(true, postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getBoolean("consent_required"));
         assertEquals("fooBar", postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getString("consent_string"));
+        assertFalse(Settings.getSettings().deviceAccessAllowed); // When consent required set to true and no purpose consent string deviceAccess is not allowed
     }
 
     /**

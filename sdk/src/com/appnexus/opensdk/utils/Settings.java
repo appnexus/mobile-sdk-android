@@ -18,12 +18,16 @@ package com.appnexus.opensdk.utils;
 
 import android.location.Location;
 import android.os.Build;
+import android.text.TextUtils;
 
 import com.appnexus.opensdk.ANExternalUserIdSource;
+import com.appnexus.opensdk.ANGDPRSettings;
 import com.appnexus.opensdk.BuildConfig;
 import com.appnexus.opensdk.MediaType;
 import com.appnexus.opensdk.R;
+import com.appnexus.opensdk.ut.UTConstants;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -50,6 +54,10 @@ public class Settings {
     public String carrierName = null;
     public String aaid = null;
     public boolean limitTrackingEnabled = false;
+    // Caches the value of DeviceAccessConsent for each request and is updated every time a request is made.
+    // Use this value instead of calling and fetching from shared preference each time.
+    public boolean deviceAccessAllowed = true;
+
     @Deprecated
     public boolean useHttps=true;
 
@@ -100,6 +108,13 @@ public class Settings {
      * */
     public static boolean countImpressionOn1pxRendering = false;
 
+    /**
+     * @deprecated
+     * This feature flag is responsible for turning on/off  ib.adnxs-simple.com domain usage.
+     * By default this is true. This feature flag will be removed in future releases. This is introduced just as a failsafe kill switch.
+     * */
+    public static boolean simpleDomainUsageAllowed = true;
+
     // STATICS
     public static final int HTTP_CONNECTION_TIMEOUT = 15000;
     public static final int HTTP_SOCKET_TIMEOUT = 20000;
@@ -134,11 +149,7 @@ public class Settings {
 
     public static final int VIDEO_AUTOPLAY_PERCENTAGE = 50;
 
-    private static String COOKIE_DOMAIN = "https://mediation.adnxs.com";
     public static final String AN_UUID = "uuid2";
-    private static String BASE_URL = "https://mediation.adnxs.com/";
-    private static String REQUEST_BASE_URL = "https://mediation.adnxs.com/mob?";
-    private static String INSTALL_BASE_URL = "https://mediation.adnxs.com/install?";
 
     private static String VIDEO_HTML = "file:///android_asset/apn_vastvideo.html";
 
@@ -185,26 +196,29 @@ public class Settings {
         return null;
     }
 
-    public static String getBaseUrl() {
-        return BASE_URL;
+    // Returns ib.adnxs-simple.com if we do not have deviceAccessConsent as per GDPR or when doNotTrack is turned on by publisher
+    public static String getWebViewBaseUrl() {
+        if ((!Settings.getSettings().deviceAccessAllowed || Settings.getSettings().doNotTrack) && Settings.getSettings().simpleDomainUsageAllowed) {
+            return UTConstants.WEBVIEW_BASE_URL_SIMPLE;
+        }
+        return UTConstants.WEBVIEW_BASE_URL_UT;
     }
 
-    public static String getRequestBaseUrl() {
-        return REQUEST_BASE_URL;
+    // Returns ib.adnxs-simple.com if we do not have deviceAccessConsent as per GDPR or when doNotTrack is turned on by publisher
+    public static String getAdRequestUrl() {
+        if ((!Settings.getSettings().deviceAccessAllowed || Settings.getSettings().doNotTrack) && Settings.getSettings().simpleDomainUsageAllowed) {
+            return UTConstants.REQUEST_BASE_URL_SIMPLE;
+        }
+        return UTConstants.REQUEST_BASE_URL_UT;
     }
-
-    public static String getInstallBaseUrl() {
-        return INSTALL_BASE_URL;
-    }
-
 
     public static String getVideoHtmlPage() {
         return Settings.getSettings().debug_mode ? VIDEO_HTML.replace("apn_vastvideo.html", "apn_vastvideo.html?ast_debug=true") : VIDEO_HTML;
     }
 
-
+    // There is only one cookie domain
     public static String getCookieDomain(){
-        return COOKIE_DOMAIN;
+        return UTConstants.COOKIE_DOMAIN;
     }
 
 }

@@ -29,7 +29,7 @@ import static junit.framework.Assert.assertEquals;
 
 @Config(sdk = 21)
 @RunWith(RobolectricTestRunner.class)
-public class DefaultSettingsTest {
+public class DefaultSettingsTest extends BaseRoboTest {
 
     @Before
     public void setup() {
@@ -38,6 +38,7 @@ public class DefaultSettingsTest {
 
     @After
     public void tearDown() {
+        Settings.getSettings().deviceAccessAllowed = true; // Reset to defaultduring setup
     }
 
     @Test
@@ -54,8 +55,17 @@ public class DefaultSettingsTest {
         assertEquals(50, Settings.MIN_PERCENTAGE_VIEWED);
         assertEquals("https://mediation.adnxs.com", Settings.getCookieDomain());
         assertEquals("uuid2", Settings.AN_UUID);
-        assertEquals("https://mediation.adnxs.com/", Settings.getBaseUrl());
-        assertEquals("https://mediation.adnxs.com/mob?", Settings.getRequestBaseUrl());
-        assertEquals("https://mediation.adnxs.com/install?", Settings.getInstallBaseUrl());
+        assertEquals("https://mediation.adnxs.com/", Settings.getWebViewBaseUrl());
+        assertEquals("https://mediation.adnxs.com/ut/v3", Settings.getAdRequestUrl());
+    }
+
+    @Test
+    public void testDeviceAccessConsentFalseStaticValues() {
+        Settings.getSettings().deviceAccessAllowed = false;
+        assertEquals("https://mediation.adnxs.com", Settings.getCookieDomain()); // No seperate cookie domain
+        assertEquals("https://ib.adnxs-simple.com/", Settings.getWebViewBaseUrl());
+        System.out.println("Setting WebView Base URL"+Settings.getWebViewBaseUrl());
+        assertEquals("https://ib.adnxs-simple.com/ut/v3", Settings.getAdRequestUrl());
+        System.out.println("REQUEST Request URL"+Settings.getAdRequestUrl());
     }
 }

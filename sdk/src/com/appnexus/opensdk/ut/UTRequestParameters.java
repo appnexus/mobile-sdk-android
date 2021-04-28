@@ -1031,7 +1031,10 @@ public class UTRequestParameters {
             // limited ad tracking
             device.put(DEVICE_LMT, Settings.getSettings().limitTrackingEnabled);
 
-            if (ANGDPRSettings.canIAccessDeviceData(context) && !SDKSettings.isAAIDUsageDisabled() && !Settings.getSettings().doNotTrack) {
+            // Update the value of device access consent in setting each time a request is made.
+            Settings.getSettings().deviceAccessAllowed = ANGDPRSettings.canIAccessDeviceData(context);
+
+            if (Settings.getSettings().deviceAccessAllowed && !SDKSettings.isAAIDUsageDisabled() && !Settings.getSettings().doNotTrack) {
                 if (!StringUtil.isEmpty(Settings.getSettings().aaid)) {
                     JSONObject device_id = new JSONObject();
                     device_id.put(DEVICE_ID_AAID, Settings.getSettings().aaid);

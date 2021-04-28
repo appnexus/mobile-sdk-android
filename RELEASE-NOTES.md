@@ -1,3 +1,7 @@
+## 7.13
+### New Feature
++ MS-4693 Added support for Cookieless domain requests
+
 ## 7.12
 ### Improvements/Bug Fixes
 + MS-4704 Added support for OMID containerGeometry and onScreenContainerGeometry for Instream & OutStream Video Ads

@@ -44,6 +44,7 @@ public class BaseRoboTest {
             server.start();
             HttpUrl url= server.url("/");
             UTConstants.REQUEST_BASE_URL_UT = url.toString();
+            UTConstants.REQUEST_BASE_URL_SIMPLE = url.toString();
             System.out.println(UTConstants.REQUEST_BASE_URL_UT);
             ShadowSettings.setTestURL(url.toString());
             TestResponsesUT.setTestURL(url.toString());
@@ -106,6 +107,7 @@ public class BaseRoboTest {
             server.start();
             HttpUrl url= server.url("/");
             UTConstants.REQUEST_BASE_URL_UT = url.toString();
+            UTConstants.REQUEST_BASE_URL_SIMPLE = url.toString();
             System.out.println(UTConstants.REQUEST_BASE_URL_UT);
             ShadowSettings.setTestURL(url.toString());
             TestResponsesUT.setTestURL(url.toString());

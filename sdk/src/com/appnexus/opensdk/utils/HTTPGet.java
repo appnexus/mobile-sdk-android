@@ -86,9 +86,11 @@ public abstract class HTTPGet {
 
     private void setConnectionParams(HttpURLConnection connection) throws ProtocolException {
         connection.setRequestProperty("User-Agent", Settings.getSettings().ua);
-        String cookieString = WebviewUtil.getCookie();
-        if (!TextUtils.isEmpty(cookieString)) {
-            connection.setRequestProperty("Cookie",cookieString);
+        if (Settings.getSettings().deviceAccessAllowed && !Settings.getSettings().doNotTrack) {
+            String cookieString = WebviewUtil.getCookie();
+            if (!TextUtils.isEmpty(cookieString)) {
+                connection.setRequestProperty("Cookie", cookieString);
+            }
         }
         connection.setConnectTimeout(Settings.HTTP_CONNECTION_TIMEOUT);
         connection.setReadTimeout(Settings.HTTP_SOCKET_TIMEOUT);

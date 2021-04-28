@@ -28,6 +28,14 @@ public class UTConstants {
     public static final String MRAID_JS_FILENAME = "mraid.js";
     public static final String EXTRAS_KEY_MRAID = "MRAID";
     public static final String EXTRAS_KEY_ORIENTATION = "ORIENTATION";
+
+    // URL Constants below should never be directly accessed inside SDK.
+    // Always use Settings.getWebViewBaseUrl() / Settings.getAdRequestUrl() / Settings.getCookieDomain()
     public static String REQUEST_BASE_URL_UT = "https://mediation.adnxs.com/ut/v3";
+    public static String WEBVIEW_BASE_URL_UT = "https://mediation.adnxs.com/";
+    public static String COOKIE_DOMAIN = "https://mediation.adnxs.com"; // There is only one cookie domain. No cookies for ib.adnxs-simple
+
+    public static String REQUEST_BASE_URL_SIMPLE = "https://ib.adnxs-simple.com/ut/v3";
+    public static String WEBVIEW_BASE_URL_SIMPLE = "https://ib.adnxs-simple.com/";
 
 }
