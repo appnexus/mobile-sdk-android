@@ -62,6 +62,8 @@ public class BaseRoboTest {
 
     @After
     public void tearDown() {
+        UTConstants.REQUEST_BASE_URL_UT = "https://mediation.adnxs.com/ut/v3";
+        UTConstants.REQUEST_BASE_URL_SIMPLE = "https://ib.adnxs-simple.com/ut/v3";
         activity.finish();
         System.out.println("REQUEST COUNT"+server.getRequestCount());
         shadowOf(getMainLooper()).quitUnchecked();
