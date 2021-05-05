@@ -634,7 +634,7 @@ class VideoWebView extends WebView {
                     Clog.e(Clog.baseLogTag, Clog.getString(com.appnexus.opensdk.R.string.apn_webview_failed_to_destroy), e);
                 }
             }
-        }, 300);
+        }, 1500);
     }
 
     @Override
