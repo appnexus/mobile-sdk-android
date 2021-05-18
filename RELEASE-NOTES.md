@@ -1,3 +1,7 @@
+## 7.13.1
+### Improvements/Bug Fixes
++ MS-4716 Blocked selection of non-supported 3GPP video type for rendering
+
 ## 7.13
 ### New Feature
 + MS-4693 Added support for Cookieless domain requests
