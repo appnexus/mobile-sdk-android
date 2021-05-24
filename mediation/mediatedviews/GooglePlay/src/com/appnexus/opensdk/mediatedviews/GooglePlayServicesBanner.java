@@ -25,11 +25,14 @@ import android.view.View;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
+import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+
+import java.util.ArrayList;
 
 /**
  * This class is the Google Play Services banner adaptor it provides the functionality needed to allow
@@ -116,7 +119,7 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
             }
             Bundle bundle = new Bundle();
 
-            if (targetingParameters.getAge() != null) {
+            if (!StringUtil.isEmpty(targetingParameters.getAge())) {
                 bundle.putString("Age", targetingParameters.getAge());
             }
 
@@ -126,10 +129,21 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
                         builder.setContentUrl(p.second);
                     }
                 } else {
-                    bundle.putString(p.first, p.second);
+                    if (bundle.containsKey(p.first)) {
+                        ArrayList<String> listValues = new ArrayList<>();
+                        Object value = bundle.get(p.first);
+                        if (value instanceof String) {
+                            listValues.add((String) value);
+                        } else if (value instanceof ArrayList) {
+                            listValues.addAll((ArrayList<String>) value);
+                        }
+                        listValues.add(p.second);
+                        bundle.putStringArrayList(p.first, listValues);
+                    } else {
+                        bundle.putString(p.first, p.second);
+                    }
                 }
             }
-
             builder.addNetworkExtrasBundle(AdMobAdapter.class, bundle);
         }
 
