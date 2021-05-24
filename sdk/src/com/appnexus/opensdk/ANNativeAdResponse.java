@@ -212,7 +212,18 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
         JSONObject nativeObject = null;
         try {
             nativeObject = new JSONObject(nativeRendererObject.toString());
-            nativeObject.remove("link");
+            if (nativeObject!= null && nativeObject.has(KEY_LINK)) {
+                // Convert nativeLinkObject as JSONObject
+                JSONObject nativeLinkObject = nativeObject.getJSONObject(KEY_LINK);
+                if (nativeLinkObject != null && nativeLinkObject.has(KEY_CLICK_TRACK)) {
+                    // Remove click Trackers from nativeAd's Link
+                    nativeLinkObject.remove(KEY_CLICK_TRACK);
+                }
+                // Remove link from nativeObject
+                nativeObject.remove(KEY_LINK);
+                // Re-add nativeLinkObject into nativeObject without tracker
+                nativeObject.put(KEY_LINK,nativeLinkObject);
+            }
             response.nativeElements.put(NATIVE_ELEMENT_OBJECT, nativeObject);
         } catch (JSONException e) {
             e.printStackTrace();

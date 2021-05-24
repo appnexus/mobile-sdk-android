@@ -33,6 +33,8 @@ import com.squareup.okhttp.mockwebserver.Dispatcher;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -270,6 +272,35 @@ public class NativeRequestTest extends BaseNativeTest {
         assertAdLoaded(true);
     }
 
+    @Test
+    public void requestNativeSuccessNativeElement() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeVideo()));
+        adRequest.loadAd();
+        Lock.pause(1000);
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+
+        assertAdLoaded(true);
+
+        System.out.println("NATIVE: " + nativeAdResponse.getNativeElements());
+
+        JSONObject json = (JSONObject) nativeAdResponse.getNativeElements().get(NativeAdResponse.NATIVE_ELEMENT_OBJECT);
+        assertTrue(json.has("link"));
+        try {
+            JSONObject linkJson = json.getJSONObject("link");
+            assertTrue(linkJson.has("url"));
+            assertTrue(linkJson.getString("url").equals("http://www.appnexus.com"));
+            assertTrue(linkJson.has("fallback_url"));
+            assertTrue(linkJson.getString("fallback_url").equals("http://ib.adnxs.com/fallback"));
+            assertNull(linkJson.getString("click_trackers"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Test
     public void requestNativeFailure() {
