@@ -20,6 +20,7 @@ import android.content.Context;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.appnexus.opensdk.tasksmanager.TasksManager;
@@ -47,6 +48,11 @@ public class SDKSettings {
      * false - AdRequest is processed using AsyncTask
      * */
     private static Boolean useBackgroundThreads = false;
+
+    /**
+     * For internal use only
+     * */
+    private static boolean isOmidActivationDone = false, isUserAgentFetched = false, isAAIDFetched = false;
 
     // hide the constructor from javadocs
     private SDKSettings() {
@@ -437,34 +443,71 @@ public class SDKSettings {
         useBackgroundThreads = enable;
     }
 
-    public static void init(final Context context, final InitListener listener) {
+    public static void init(Context context, final InitListener listener) {
+        init(context, listener, true, true);
+    }
+
+    /**
+     * This is an overloaded init method which provides flexibility to enable/disable booleans for activateOmid, fetcbUserAgent and fetchAAID.
+     * @param fetchUserAgent enable / disable fetching of User Agent.
+     * @param fetchAAID enable / disable fetching of AAID.
+     * */
+    public static void init(final Context context, final InitListener listener, final boolean fetchUserAgent, final boolean fetchAAID) {
         // Store the UA in the settings
-        if (StringUtil.isEmpty(Settings.getSettings().ua) || !Omid.isActive()) {
+        isOmidActivationDone = Omid.isActive();
+        isUserAgentFetched = !fetchUserAgent || !StringUtil.isEmpty(Settings.getSettings().ua);
+        isAAIDFetched = !fetchAAID || !StringUtil.isEmpty(getAAID());
+        if (!isOmidActivationDone) {
+            ANOmidViewabilty.getInstance().activateOmidAndCreatePartner(context.getApplicationContext());
+            isOmidActivationDone = true;
+            onInitFinished(listener);
+        }
+        if (!isUserAgentFetched) {
             TasksManager.getInstance().executeOnMainThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (!Omid.isActive()) {
-                        ANOmidViewabilty.getInstance().activateOmidAndCreatePartner(context.getApplicationContext());
+                    try {
+                        Settings.getSettings().ua = new WebView(context).getSettings()
+                                .getUserAgentString();
+                        Clog.v(Clog.baseLogTag,
+                                Clog.getString(R.string.ua, Settings.getSettings().ua));
+                        isUserAgentFetched = true;
+                    } catch (Exception e) {
+                        // Catches PackageManager$NameNotFoundException for webview
+                        Settings.getSettings().ua = "";
+                        Clog.e(Clog.baseLogTag, " Exception: " + e.getMessage());
                     }
-
-                    if (StringUtil.isEmpty(Settings.getSettings().ua)) {
-                        try {
-                            Settings.getSettings().ua = new WebView(context).getSettings()
-                                    .getUserAgentString();
-                            Clog.v(Clog.baseLogTag,
-                                    Clog.getString(R.string.ua, Settings.getSettings().ua));
-                        } catch (Exception e) {
-                            // Catches PackageManager$NameNotFoundException for webview
-                            Settings.getSettings().ua = "";
-                            Clog.e(Clog.baseLogTag, " Exception: " + e.getMessage());
-                        }
-                    }
+                    onInitFinished(listener);
                 }
             });
         }
         Clog.setErrorContext(context.getApplicationContext());
-        if (StringUtil.isEmpty(getAAID())) {
-            AdvertisingIDUtil.retrieveAndSetAAID(context, listener);
+        /*
+         * We have a check where it executes the block only when getAAID() is empty,
+         * thus if we setAAID() prior to calling SDKSettings.init() it won't run following block.
+         */
+        if (!isAAIDFetched) {
+            AdvertisingIDUtil.retrieveAndSetAAID(context, new InitListener() {
+                @Override
+                public void onInitFinished() {
+                    isAAIDFetched = true;
+                    SDKSettings.onInitFinished(listener);
+                }
+            });
+        }
+
+        // For the cases where Omid is already activated and UserAgent & AAID are already fetched, onInitFinished must be triggered.
+        onInitFinished(listener);
+    }
+
+    private static void onInitFinished(final InitListener listener) {
+        if (listener != null && isOmidActivationDone && isUserAgentFetched && isAAIDFetched) {
+            TasksManager.getInstance().executeOnMainThread(new Runnable() {
+                @Override
+                public void run() {
+                    listener.onInitFinished();
+                }
+            });
         }
     }
 

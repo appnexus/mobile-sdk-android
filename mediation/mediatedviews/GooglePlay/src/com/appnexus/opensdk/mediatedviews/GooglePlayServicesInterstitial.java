@@ -27,6 +27,8 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.mediation.admob.AdMobExtras;
 
+import java.util.ArrayList;
+
 /**
  * This class is the Google AdMob interstitial adaptor it provides the functionality needed to allow
  * an application using the App Nexus SDK to load a banner ad through the Google SDK. The instantiation
@@ -84,7 +86,7 @@ public class GooglePlayServicesInterstitial implements MediatedInterstitialAdVie
 
         Bundle bundle = new Bundle();
 
-        if (targetingParameters.getAge() != null) {
+        if (!StringUtil.isEmpty(targetingParameters.getAge())) {
             bundle.putString("Age", targetingParameters.getAge());
         }
         if (targetingParameters.getLocation() != null) {
@@ -96,7 +98,19 @@ public class GooglePlayServicesInterstitial implements MediatedInterstitialAdVie
                     builder.setContentUrl(p.second);
                 }
             } else {
-                bundle.putString(p.first, p.second);
+                if (bundle.containsKey(p.first)) {
+                    ArrayList<String> listValues = new ArrayList<>();
+                    Object value = bundle.get(p.first);
+                    if (value instanceof String) {
+                        listValues.add((String) value);
+                    } else if (value instanceof ArrayList) {
+                        listValues.addAll((ArrayList<String>) value);
+                    }
+                    listValues.add(p.second);
+                    bundle.putStringArrayList(p.first, listValues);
+                } else {
+                    bundle.putString(p.first, p.second);
+                }
             }
         }
 

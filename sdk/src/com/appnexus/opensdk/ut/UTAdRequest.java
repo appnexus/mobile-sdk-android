@@ -113,7 +113,11 @@ public class UTAdRequest {
                     UTAdRequester requester = new AdViewRequestManager(ad);
                     if (requester != null) {
                         requester.failed(code, null);
+                    }else{
+                        Clog.e(Clog.baseLogTag, "Exiting because of UTAdRequester is null, response will not be processed further and no listener will be invoked");
                     }
+                }else{
+                    Clog.e(Clog.baseLogTag, "Exiting because of Ad request object is null, response will not be processed further and no listener will be invoked");
                 }
             }
             return;
@@ -121,6 +125,8 @@ public class UTAdRequest {
         UTAdRequester requester = this.requester.get();
         if (requester != null) {
             requester.failed(code, null);
+        }else{
+            Clog.e(Clog.baseLogTag, "Exiting because of UTAdRequester is null, response will not be processed further and no listener will be invoked");
         }
         Clog.clearLastResponse();
     }
@@ -280,6 +286,8 @@ public class UTAdRequest {
                 if (requester != null) {
                     // add the orientation extra for interstitial ads
                     requester.onReceiveUTResponse(result);
+                }else{
+                    Clog.e(Clog.baseLogTag, "Exiting because of UTAdRequester is null, response will not be processed further and no listener will be invoked");
                 }
             }
         } else if (anMultiAdRequest != null) {
@@ -321,7 +329,11 @@ public class UTAdRequest {
                         }
                         Clog.e(Clog.SRMLogTag, "SUCCESS: " + ad);
                         requester.onReceiveUTResponse(result);
+                    }else{
+                        Clog.e(Clog.baseLogTag, "Exiting because of UTAdRequester is null, response will not be processed further and no listener will be invoked");
                     }
+                }else{
+                    Clog.e(Clog.baseLogTag, "Exiting because of Ad request object is null, response will not be processed further and no listener will be invoked");
                 }
             }
         }

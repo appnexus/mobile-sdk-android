@@ -16,16 +16,66 @@
 
 package com.appnexus.opensdk;
 
+import android.os.Build;
+import android.webkit.WebView;
+
+import com.appnexus.opensdk.tasksmanager.TasksManager;
+import com.appnexus.opensdk.util.MockMainActivity;
+import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.StringUtil;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.Shadows;
+import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.util.ReflectionHelpers;
+import org.robolectric.util.Scheduler;
 
+import static android.os.Looper.getMainLooper;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.robolectric.Shadows.shadowOf;
 
 
 @RunWith(RobolectricTestRunner.class)
 public class SDKSettingsTest {
+
+    private MockMainActivity activity;
+    private Scheduler bgScheduler;
+    private Scheduler uiScheduler;
+    private int sdkVersion;
+
+    @Before
+    public void setup() {
+        sdkVersion = ReflectionHelpers.getStaticField(Build.VERSION.class, "SDK_INT");
+        Robolectric.getBackgroundThreadScheduler().reset();
+        Robolectric.getForegroundThreadScheduler().reset();
+        activity = Robolectric.buildActivity(MockMainActivity.class).create().start().resume().visible().get();
+        shadowOf(activity).grantPermissions("android.permission.INTERNET");
+        bgScheduler = Robolectric.getBackgroundThreadScheduler();
+        uiScheduler = Robolectric.getForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        bgScheduler.pause();
+        uiScheduler.pause();
+    }
+
+    @After
+    public void tearDown() {
+        activity.finish();
+        shadowOf(getMainLooper()).quitUnchecked();
+        bgScheduler.reset();
+        uiScheduler.reset();
+        Settings.getSettings().ua = null;
+        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", sdkVersion);
+        Clog.e("SDK_VERSION", sdkVersion + "");
+    }
 
     @Test
     public void testSDKVersion() {
@@ -33,4 +83,15 @@ public class SDKSettingsTest {
         assertEquals(SDKSettings.getSDKVersion(),  BuildConfig.VERSION_NAME);
     }
 
+    @Test
+    public void testSDKSettingsInitBelowJELLY_BEAN() {
+        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", 16);
+        assertTrue(StringUtil.isEmpty(Settings.getSettings().ua));
+        SDKSettings.init(activity, null);
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        WebView webView = new WebView(activity);
+        assertNotNull(Settings.getSettings().ua);
+        assertEquals(Settings.getSettings().ua, (webView.getSettings().getUserAgentString()));
+    }
 }
