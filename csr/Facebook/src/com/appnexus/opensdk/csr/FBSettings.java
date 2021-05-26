@@ -18,7 +18,9 @@ package com.appnexus.opensdk.csr;
 
 import android.content.Context;
 
+import com.facebook.ads.AudienceNetworkAds;
 import com.facebook.ads.BidderTokenProvider;
+import com.appnexus.opensdk.utils.Clog;
 
 public class FBSettings {
     // key to retrieve AdChoices related objects
@@ -26,6 +28,11 @@ public class FBSettings {
     public static final String KEY_ADCHOICES_LINKURL = "AdChoicesLinkUrl";
 
     public static String getBidderToken(Context context) {
-        return BidderTokenProvider.getBidderToken(context);
+        if (AudienceNetworkAds.isInitialized(context)) {
+            return BidderTokenProvider.getBidderToken(context);
+        } else {
+            Clog.e(Clog.csrLogTag, "FAN SDK must be initialised to get the Bidder Token");
+            return null;
+        }
     }
 }
