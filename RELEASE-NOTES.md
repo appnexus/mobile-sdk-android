@@ -1,3 +1,11 @@
+## 7.14
+### New Feature
++ MS-4684 Added flexibility to not fetch User Agent and AAID when calling SDKSettings.init() to improve app launch performance
++ MS-4711 Exposed API in Native Custom element to support clickUrl and clickFallbackUrl for Native Ad [https://wiki.xandr.com/x/pZkFB]
+### Improvements/Bug Fixes
++ MS-4746 Fixed an issue with Google Mediation adapter not sending multiple values for the same key
++ MS-4747 Added initialization check before fetching Bidder Token from Facebook SDK
+
 ## 7.13.1
 ### Improvements/Bug Fixes
 + MS-4716 Blocked selection of non-supported 3GPP video type for rendering
