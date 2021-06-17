@@ -955,6 +955,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         externalIdsMap.put(ANExternalUserIdSource.CRITEO, "sdksettings-externalid-Criteo-foobar");
         externalIdsMap.put(ANExternalUserIdSource.THE_TRADE_DESK, "sdksettings-externalid-ttd-foobar");
         externalIdsMap.put(ANExternalUserIdSource.NETID, "sdksettings-externalid-netid-foobar");
+        externalIdsMap.put(ANExternalUserIdSource.UID2, "sdksettings-externalid-uid2-foobar");
 
 
         // Default params, euid node will not be present in the POST DATA
@@ -974,6 +975,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         assertTrue(euidArrayAftersetExternalIds.toString().contains("{\"source\":\"netid.de\",\"id\":\"sdksettings-externalid-netid-foobar\"}"));
         assertTrue(euidArrayAftersetExternalIds.toString().contains("{\"source\":\"liveramp.com\",\"id\":\"sdksettings-externalid-liveramp-foobar\"}"));
         assertTrue(euidArrayAftersetExternalIds.toString().contains("{\"source\":\"adserver.org\",\"id\":\"sdksettings-externalid-ttd-foobar\",\"rti_partner\":\"TDID\"}"));
+        assertTrue(euidArrayAftersetExternalIds.toString().contains("{\"source\":\"uidapi.com\",\"id\":\"sdksettings-externalid-uid2-foobar\",\"rti_partner\":\"UID2\"}"));
 
 
         // setExternalIds Map and later reset it and make sure  euid is not present in the POST DATA

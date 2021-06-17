@@ -19,5 +19,6 @@ public enum ANExternalUserIdSource {
     CRITEO,
     THE_TRADE_DESK,
     NETID,
-    LIVERAMP
+    LIVERAMP,
+    UID2
 }

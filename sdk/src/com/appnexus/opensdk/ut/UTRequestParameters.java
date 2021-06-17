@@ -112,10 +112,13 @@ public class UTRequestParameters {
     private static final String EXTERNALID_SOURCE = "source";
     private static final String EXTERNALID_ID = "id";
     private static final String EXTERNALID_RTI_PARTNER = "rti_partner";
+    private static final String EXTERNALID_RTI_PARTNER_UID2 = "UID2";
+    private static final String EXTERNALID_RTI_PARTNER_TDID = "TDID";
     private static final String EXTERNALID_SOURCE_LIVERAMP = "liveramp.com";
     private static final String EXTERNALID_SOURCE_NETID = "netid.de";
     private static final String EXTERNALID_SOURCE_CRITEO = "criteo.com";
     private static final String EXTERNALID_SOURCE_THETRADEDESK = "adserver.org";
+    private static final String EXTERNALID_SOURCE_UID2 = "uidapi.com";
     private static final String USER = "user";
     private static final String USER_AGE = "age";
     private static final String USER_GENDER = "gender";
@@ -859,7 +862,7 @@ public class UTRequestParameters {
                         case THE_TRADE_DESK:
                             idObject.put(EXTERNALID_SOURCE, EXTERNALID_SOURCE_THETRADEDESK);
                             idObject.put(EXTERNALID_ID, entry.getValue());
-                            idObject.put(EXTERNALID_RTI_PARTNER, "TDID");
+                            idObject.put(EXTERNALID_RTI_PARTNER, EXTERNALID_RTI_PARTNER_TDID);
                             break;
                         case CRITEO:
                             idObject.put(EXTERNALID_SOURCE, EXTERNALID_SOURCE_CRITEO);
@@ -872,6 +875,11 @@ public class UTRequestParameters {
                         case LIVERAMP:
                             idObject.put(EXTERNALID_SOURCE, EXTERNALID_SOURCE_LIVERAMP);
                             idObject.put(EXTERNALID_ID, entry.getValue());
+                            break;
+                        case UID2:
+                            idObject.put(EXTERNALID_SOURCE, EXTERNALID_SOURCE_UID2);
+                            idObject.put(EXTERNALID_ID, entry.getValue());
+                            idObject.put(EXTERNALID_RTI_PARTNER, EXTERNALID_RTI_PARTNER_UID2);
                             break;
                     }
                     idArray.put(idObject);
