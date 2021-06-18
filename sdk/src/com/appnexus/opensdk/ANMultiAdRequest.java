@@ -188,6 +188,18 @@ public class ANMultiAdRequest {
         return false;
     }
 
+    /**
+     * This API is used to stop the Multi Ad Request, before the request is completed.
+     * */
+    public void stop() {
+        if (mAdFetcher != null) {
+
+            // Stop Ad Fetcher
+            mAdFetcher.stop();
+            mAdFetcher.clearDurations();
+        }
+    }
+
     private void initAds() {
         for (WeakReference<Ad> ads: getAdUnitList()) {
             Ad ad = ads.get();

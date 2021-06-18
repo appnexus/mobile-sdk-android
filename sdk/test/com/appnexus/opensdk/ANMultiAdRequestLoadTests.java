@@ -90,6 +90,56 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
         assertTrue(marCompleted);
     }
 
+    @Test
+    public void testMARWithSingleInitializationMethodAndStop() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        assertFalse(marCompleted);
+        reset();
+
+        anMultiAdRequest.load();
+
+        anMultiAdRequest.stop();
+
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+
+        assertFalse(marCompleted);
+    }
+
+    @Test
+    public void testMARWithConvenienceAndStop() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        assertFalse(marCompleted);
+        reset();
+
+        BannerAdView bannerAdView = new BannerAdView(activity);
+        bannerAdView.setPlacementID("0");
+        bannerAdView.setAdListener(this);
+        bannerAdView.setAdSize(320, 50);
+        bannerAdView.setAutoRefreshInterval(-1);
+
+        InterstitialAdView interstitialAdView = new InterstitialAdView(activity);
+        interstitialAdView.setPlacementID("0");
+        interstitialAdView.setAdListener(this);
+
+        ANMultiAdRequest anMultiAdRequestLocal = new ANMultiAdRequest(activity, 0, 1234, this, true, bannerAdView, interstitialAdView);
+
+        anMultiAdRequestLocal.stop();
+
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+
+        assertFalse(marCompleted);
+    }
+
     //MAR Success With NoBid Response for AdUnits
     @Test
     public void testMARSuccessAdUnitNoBid() {
