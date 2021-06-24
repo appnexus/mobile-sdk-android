@@ -141,7 +141,7 @@ class AdWebView extends WebView implements Displayable,
         this.getSettings().setSupportZoom(false);
         this.getSettings().setUseWideViewPort(false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            this.getSettings().setMediaPlaybackRequiresUserGesture(false);
+            this.getSettings().setMediaPlaybackRequiresUserGesture(true);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             this.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
