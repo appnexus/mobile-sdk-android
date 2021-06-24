@@ -47,7 +47,8 @@
 
                 var targetId = "video-content";
 
-                var options = constructVideoPlayerOptions(videoOptions)
+                var decodedOptions = atob(videoOptions);
+                var options = constructVideoPlayerOptions(decodedOptions);
 
                 var targetElement        = document.getElementById(targetId);
                 options.targetElementId  = targetId;
