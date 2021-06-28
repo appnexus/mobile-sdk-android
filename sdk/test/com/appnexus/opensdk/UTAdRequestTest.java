@@ -627,6 +627,50 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         assertFalse(Settings.getSettings().deviceAccessAllowed); // When consent required set to true and no purpose consent string deviceAccess is not allowed
     }
 
+
+
+    /**
+     * Test addtl_consent in /ut request body
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGooggleACMConsentString() throws Exception {
+
+        ANGDPRSettings.setConsentRequired(activity, true);
+
+        executionSteps();
+        JSONObject postDataBeforeGDPRValueSet = inspectPostData();
+        assertEquals(true, postDataBeforeGDPRValueSet.getJSONObject("gdpr_consent").getBoolean("consent_required"));
+        assertEquals("{\"consent_required\":true,\"consent_string\":\"\"}",postDataBeforeGDPRValueSet.getJSONObject("gdpr_consent").toString());
+
+
+        PreferenceManager.getDefaultSharedPreferences(activity).edit().putString("IABTCF_AddtlConsent", "123479").apply(); // invalid ACM string
+        executionSteps();
+        JSONObject postDataWithGDPRValueInvalidACMSet = inspectPostData();
+        assertEquals(true, postDataWithGDPRValueInvalidACMSet.getJSONObject("gdpr_consent").getBoolean("consent_required"));
+        assertEquals("{\"consent_required\":true,\"consent_string\":\"\"}",postDataBeforeGDPRValueSet.getJSONObject("gdpr_consent").toString());
+
+
+        PreferenceManager.getDefaultSharedPreferences(activity).edit().putString("IABTCF_AddtlConsent", "1~7.12.35.62.66.70.89.93.108").apply();
+        executionSteps();
+        JSONObject postDataWithGDPRValueSet = inspectPostData();
+        assertEquals(true, postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getBoolean("consent_required"));
+        JSONArray arry = new JSONArray();
+        arry.put(7);
+        arry.put(12);
+        arry.put(35);
+        arry.put(62);
+        arry.put(66);
+        arry.put(70);
+        arry.put(89);
+        arry.put(93);
+        arry.put(108);
+        assertEquals(arry, postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getJSONArray("addtl_consent"));
+    }
+
+
+
     /**
      * Test ANGDPRSettings.reset()
      *
@@ -992,6 +1036,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
     public void tearDown() {
         super.tearDown();
         SDKSettings.setOMEnabled(true);
+        ANGDPRSettings.reset(activity);
 //        try {
 //            if (server != null) {
 //                server.shutdown();
