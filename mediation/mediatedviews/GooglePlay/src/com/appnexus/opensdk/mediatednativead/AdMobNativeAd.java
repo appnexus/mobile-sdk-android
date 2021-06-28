@@ -22,7 +22,7 @@ import com.appnexus.opensdk.MediatedNativeAdController;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.mediatedviews.GooglePlayServicesBanner;
 import com.google.android.gms.ads.AdLoader;
-import com.google.android.gms.ads.formats.NativeAdOptions;
+import com.google.android.gms.ads.nativead.NativeAdOptions;
 
 /**
  * This class is AdMob native ad adapter - it allows an application that integrates with AppNexus
@@ -58,7 +58,7 @@ public class AdMobNativeAd implements MediatedNativeAd {
 
             AdLoader.Builder builder = new AdLoader.Builder(context, uid);
             builder.withNativeAdOptions(adOptionsBuilder.build());
-            builder.forUnifiedNativeAd(adMobNativeListener);
+            builder.forNativeAd(adMobNativeListener);
             builder.build().loadAd(GooglePlayServicesBanner.buildRequest(tp));
         }
 

@@ -16,10 +16,8 @@
 
 package com.appnexus.opensdk.mediatedviews;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
@@ -27,18 +25,20 @@ import android.view.View;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
-import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.JsonUtil;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
-import com.google.android.gms.ads.doubleclick.PublisherAdView;
-import com.google.android.gms.ads.mediation.admob.AdMobExtras;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
+import com.google.android.gms.ads.admanager.AdManagerAdRequest;
+import com.google.android.gms.ads.admanager.AdManagerAdView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class is the Google DFP banner adaptor it provides the functionality needed to allow
@@ -51,7 +51,7 @@ import java.util.ArrayList;
  */
 public class GooglePlayDFPBanner implements MediatedBannerAdView {
     private static final String SECOND_PRICE_KEY = "anhb";
-    private PublisherAdView adView;
+    private AdManagerAdView adView;
     private Application.ActivityLifecycleCallbacks activityListener;
     private GooglePlayAdListener adListener;
 
@@ -77,7 +77,7 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
         DFBBannerSSParameters ssparm = new DFBBannerSSParameters(parameter);
         AdSize adSize = ssparm.isSmartBanner ? AdSize.SMART_BANNER : new AdSize(width, height);
 
-        adView = new PublisherAdView(activity);
+        adView = new AdManagerAdView(activity);
         adView.setAdUnitId(adUnitID);
         adView.setAdSizes(adSize);
         adView.setAdListener(adListener);
@@ -117,11 +117,14 @@ public class GooglePlayDFPBanner implements MediatedBannerAdView {
         destroy();
     }
 
-    private PublisherAdRequest buildRequest(DFBBannerSSParameters ssparm, TargetingParameters targetingParameters) {
-        PublisherAdRequest.Builder builder = new PublisherAdRequest.Builder();
+    private AdManagerAdRequest buildRequest(DFBBannerSSParameters ssparm, TargetingParameters targetingParameters) {
+        AdManagerAdRequest.Builder builder = new AdManagerAdRequest.Builder();
         if ((ssparm.test_device != null) && (ssparm.test_device.length() > 0)) {
             adListener.printToClog("test device " + ssparm.test_device);
-            builder.addTestDevice(ssparm.test_device);
+            List<String> testDeviceIds = Arrays.asList(ssparm.test_device);
+            RequestConfiguration configuration =
+                    new RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build();
+            MobileAds.setRequestConfiguration(configuration);
         }
 
         Bundle bundle = new Bundle();

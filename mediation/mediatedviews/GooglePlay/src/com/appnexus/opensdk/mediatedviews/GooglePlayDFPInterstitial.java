@@ -19,14 +19,19 @@ package com.appnexus.opensdk.mediatedviews;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Pair;
+
+import androidx.annotation.NonNull;
+
 import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.utils.StringUtil;
-import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
-import com.google.android.gms.ads.doubleclick.PublisherInterstitialAd;
-import com.google.android.gms.ads.mediation.admob.AdMobExtras;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.admanager.AdManagerAdRequest;
+import com.google.android.gms.ads.admanager.AdManagerInterstitialAd;
+import com.google.android.gms.ads.admanager.AdManagerInterstitialAdLoadCallback;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 /**
@@ -39,8 +44,9 @@ import java.util.ArrayList;
  * SDK.
  */
 public class GooglePlayDFPInterstitial implements MediatedInterstitialAdView {
-    private PublisherInterstitialAd interstitialAd;
+    private AdManagerInterstitialAd interstitialAd;
     private GooglePlayAdListener adListener;
+    private WeakReference<Activity> activityWeakReference;
 
     @Override
     public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity,
@@ -48,11 +54,28 @@ public class GooglePlayDFPInterstitial implements MediatedInterstitialAdView {
         adListener = new GooglePlayAdListener(mIC, super.getClass().getSimpleName());
         adListener.printToClog(String.format(" - requesting an ad: [%s, %s]", parameter, adUnitId));
 
-        interstitialAd = new PublisherInterstitialAd(activity);
-        interstitialAd.setAdUnitId(adUnitId);
-        interstitialAd.setAdListener(adListener);
+        activityWeakReference = new WeakReference<>(activity);
 
-        interstitialAd.loadAd(buildRequest(targetingParameters));
+        AdManagerInterstitialAd.load(activity, adUnitId, buildRequest(targetingParameters), new AdManagerInterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull AdManagerInterstitialAd adManagerInterstitialAd) {
+                super.onAdLoaded(adManagerInterstitialAd);
+                // The interstitialAd reference will be null until
+                // an ad is loaded.
+                interstitialAd = adManagerInterstitialAd;
+                // This is open for discussion, as AdMob Interstitial does not have support for
+                // setAppEventListener() but DFP Interstitial does support it, thus used here.
+                interstitialAd.setAppEventListener(adListener);
+                adListener.onAdLoaded();
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                super.onAdFailedToLoad(loadAdError);
+                adListener.onAdFailedToLoad(loadAdError);
+                interstitialAd = null;
+            }
+        });
     }
 
     @Override
@@ -62,22 +85,22 @@ public class GooglePlayDFPInterstitial implements MediatedInterstitialAdView {
             adListener.printToClogError("show called while interstitial ad view was null");
             return;
         }
-        if (!interstitialAd.isLoaded()) {
-            adListener.printToClogError("show called while interstitial ad view was not ready");
-            return;
-        }
 
-        interstitialAd.show();
-        adListener.printToClog("interstitial ad shown");
+        if (activityWeakReference != null && activityWeakReference.get() != null) {
+            interstitialAd.show(activityWeakReference.get());
+            adListener.printToClog("interstitial ad shown");
+        } else {
+            adListener.printToClog("Activity already garbage collected");
+        }
     }
 
     @Override
     public boolean isReady() {
-        return (interstitialAd != null) && (interstitialAd.isLoaded());
+        return (interstitialAd != null);
     }
 
-    private PublisherAdRequest buildRequest(TargetingParameters targetingParameters) {
-        PublisherAdRequest.Builder builder = new PublisherAdRequest.Builder();
+    private AdManagerAdRequest buildRequest(TargetingParameters targetingParameters) {
+        AdManagerAdRequest.Builder builder = new AdManagerAdRequest.Builder();
 
         Bundle bundle = new Bundle();
 
@@ -118,7 +141,7 @@ public class GooglePlayDFPInterstitial implements MediatedInterstitialAdView {
     @Override
     public void destroy() {
         if(interstitialAd!=null) {
-            interstitialAd.setAdListener(null);
+            interstitialAd.setAppEventListener(null);
             interstitialAd = null;
             adListener=null;
         }

@@ -15,17 +15,20 @@
  */
 package com.appnexus.opensdk.mediatednativead;
 
+import androidx.annotation.NonNull;
+
 import com.appnexus.opensdk.MediatedNativeAdController;
 import com.appnexus.opensdk.NativeAdEventListener;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.utils.Clog;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.nativead.NativeAd;
 
 import java.lang.ref.WeakReference;
 
-public class AdMobNativeListener extends AdListener implements UnifiedNativeAd.OnUnifiedNativeAdLoadedListener {
+public class AdMobNativeListener extends AdListener implements NativeAd.OnNativeAdLoadedListener {
     MediatedNativeAdController mBC;
     private WeakReference<AdMobNativeAdResponse> weakReferenceAdMobNativeAdResponse;
 
@@ -34,26 +37,29 @@ public class AdMobNativeListener extends AdListener implements UnifiedNativeAd.O
     }
 
     @Override
-    public void onAdFailedToLoad(int errorCode) {
+    public void onAdFailedToLoad(LoadAdError errorCode) {
         Clog.e(Clog.mediationLogTag, "AdMob - onAdFailedToLoad");
+
         if (mBC != null) {
-            ResultCode code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
-            switch (errorCode) {
+            ResultCode code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR, errorCode.getResponseInfo().toString());
+
+            switch (errorCode.getCode()) {
                 case AdRequest.ERROR_CODE_INTERNAL_ERROR:
-                    code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
+                    code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR, errorCode.getResponseInfo().toString());
                     break;
                 case AdRequest.ERROR_CODE_INVALID_REQUEST:
-                    code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
+                    code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST, errorCode.getResponseInfo().toString());
                     break;
                 case AdRequest.ERROR_CODE_NETWORK_ERROR:
-                    code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
+                    code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR, errorCode.getResponseInfo().toString());
                     break;
                 case AdRequest.ERROR_CODE_NO_FILL:
-                    code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
+                    code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL, errorCode.getResponseInfo().toString());
                     break;
                 default:
                     break;
             }
+
             mBC.onAdFailed(code);
         }
     }
@@ -81,17 +87,17 @@ public class AdMobNativeListener extends AdListener implements UnifiedNativeAd.O
                 listener = adMobNativeAdResponse.getListener();
             }
         }
-        if(mBC!=null) {
+        if (mBC != null) {
             mBC.onAdImpression(listener);
         }
     }
 
 
     @Override
-    public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
-        Clog.e(Clog.mediationLogTag, "AdMob - onUnifiedNativeAdLoaded");
+    public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
+        Clog.e(Clog.mediationLogTag, "AdMob - onNativeAdLoaded");
         if (mBC != null) {
-            AdMobNativeAdResponse response = new AdMobNativeAdResponse(unifiedNativeAd);
+            AdMobNativeAdResponse response = new AdMobNativeAdResponse(nativeAd);
             weakReferenceAdMobNativeAdResponse = new WeakReference<AdMobNativeAdResponse>(response);
             mBC.onAdLoaded(response);
         }

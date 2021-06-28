@@ -19,14 +19,19 @@ package com.appnexus.opensdk.mediatedviews;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Pair;
+
+import androidx.annotation.NonNull;
+
 import com.appnexus.opensdk.MediatedInterstitialAdView;
 import com.appnexus.opensdk.MediatedInterstitialAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
-import com.google.android.gms.ads.mediation.admob.AdMobExtras;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 /**
@@ -41,22 +46,33 @@ import java.util.ArrayList;
 public class GooglePlayServicesInterstitial implements MediatedInterstitialAdView {
     private InterstitialAd interstitialAd;
     private GooglePlayAdListener adListener;
+    private WeakReference<Activity> activityWeakReference;
 
     @Override
     public void requestAd(MediatedInterstitialAdViewController mIC, Activity activity,
                           String parameter, String adUnitId, TargetingParameters targetingParameters) {
         adListener = new GooglePlayAdListener(mIC, super.getClass().getSimpleName());
         adListener.printToClog(String.format(" - requesting an ad: [%s, %s]", parameter, adUnitId));
-
-        interstitialAd = new InterstitialAd(activity);
-        interstitialAd.setAdUnitId(adUnitId);
-        interstitialAd.setAdListener(adListener);
+        activityWeakReference = new WeakReference<>(activity);
 
         try {
-            interstitialAd.loadAd(buildRequest(targetingParameters));
+            InterstitialAd.load(activity, adUnitId, buildRequest(targetingParameters), new InterstitialAdLoadCallback() {
+                @Override
+                public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                    super.onAdLoaded(interstitialAd);
+                    GooglePlayServicesInterstitial.this.interstitialAd = interstitialAd;
+                    adListener.onAdLoaded();
+                }
+
+                @Override
+                public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                    super.onAdFailedToLoad(loadAdError);
+                    adListener.onAdFailedToLoad(loadAdError);
+                }
+            });
         } catch (NoClassDefFoundError e) {
             // This can be thrown by Play Services on Honeycomb.
-            adListener.onAdFailedToLoad(AdRequest.ERROR_CODE_NO_FILL);
+            adListener.onAdFailedToLoad(new LoadAdError(AdRequest.ERROR_CODE_NO_FILL, e.getMessage(), "", null, null));
         }
     }
 
@@ -67,18 +83,18 @@ public class GooglePlayServicesInterstitial implements MediatedInterstitialAdVie
             adListener.printToClogError("show called while interstitial ad view was null");
             return;
         }
-        if (!interstitialAd.isLoaded()) {
-            adListener.printToClogError("show called while interstitial ad view was not ready");
-            return;
-        }
 
-        interstitialAd.show();
-        adListener.printToClog("interstitial ad shown");
+        if (activityWeakReference != null && activityWeakReference.get() != null) {
+            interstitialAd.show(activityWeakReference.get());
+            adListener.printToClog("interstitial ad shown");
+        } else {
+            adListener.printToClog("Activity already garbage collected");
+        }
     }
 
     @Override
     public boolean isReady() {
-        return (interstitialAd != null) && (interstitialAd.isLoaded());
+        return (interstitialAd != null);
     }
 
     private AdRequest buildRequest(TargetingParameters targetingParameters) {
@@ -123,7 +139,6 @@ public class GooglePlayServicesInterstitial implements MediatedInterstitialAdVie
     @Override
     public void destroy() {
         if(interstitialAd!=null){
-            interstitialAd.setAdListener(null);
             interstitialAd=null;
             adListener=null;
         }

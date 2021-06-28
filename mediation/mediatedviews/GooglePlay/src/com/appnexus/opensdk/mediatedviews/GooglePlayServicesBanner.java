@@ -25,12 +25,12 @@ import android.view.View;
 import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.TargetingParameters;
-import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.LoadAdError;
 
 import java.util.ArrayList;
 
@@ -75,7 +75,7 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
             adView.loadAd(buildRequest(targetingParameters));
         } catch (NoClassDefFoundError e) {
             // This can be thrown by Play Services on Honeycomb.
-            adListener.onAdFailedToLoad(AdRequest.ERROR_CODE_NO_FILL);
+            adListener.onAdFailedToLoad(new LoadAdError(AdRequest.ERROR_CODE_NO_FILL, e.getMessage(), "", null, null));
         }
 
         return adView;
