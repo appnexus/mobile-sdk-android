@@ -1,3 +1,18 @@
+## 7.15
+### New Feature
++ MS-4749 Add support for Unified ID 2.0 (UID2) [https://wiki.xandr.com/x/DAkYBg]
++ MS-4760 Added support for Google Additional Consent field
++ MS-4772 Exposed API in ANMultiAdRequest to stop the Ad Request [https://wiki.xandr.com/x/rLA9Bg]
+### Mediation partner updates
++ MS-4779 Upgraded Google Play Services Ads SDK from 19.7.0 to 20.1.0
++ MS-4781 Upgraded Facebook SDK from 6.2.0 to 6.5.0
++ MS-4783 Upgraded Smart Ad Server SDK from 7.6.1 to 7.10.0
+### Improvements/Bug Fixes
++ MS-4766 Updated Open Measurement SDK to v1.3.20
++ MS-4794 Disabled autoplay for HTML5 Banner Video Ads
++ MS-4796 Fixed an issue with Ad text being sent with unescaped single quotes (Github #61)
++ MS-4797 Disabled autoDismissDelay when the Interstitial Ad is interacted (Github #62)
+
 ## 7.14
 ### New Feature
 + MS-4684 Added flexibility to not fetch User Agent and AAID when calling SDKSettings.init() to improve app launch performance
