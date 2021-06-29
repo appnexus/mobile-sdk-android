@@ -24,7 +24,8 @@ import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.utils.Clog;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.doubleclick.AppEventListener;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.admanager.AppEventListener;
 
 public class GooglePlayAdListener extends AdListener implements AppEventListener {
     MediatedAdViewController mediatedAdViewController;
@@ -56,24 +57,24 @@ public class GooglePlayAdListener extends AdListener implements AppEventListener
     }
 
     @Override
-    public void onAdFailedToLoad(int errorCode) {
+    public void onAdFailedToLoad(LoadAdError errorCode) {
         super.onAdFailedToLoad(errorCode);
         printToClog("onAdFailedToLoad with error code " + errorCode);
 
-        ResultCode code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
+        ResultCode code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR, errorCode.getResponseInfo().toString());
 
-        switch (errorCode) {
+        switch (errorCode.getCode()) {
             case AdRequest.ERROR_CODE_INTERNAL_ERROR:
-                code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR);
+                code = ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR, errorCode.getResponseInfo().toString());
                 break;
             case AdRequest.ERROR_CODE_INVALID_REQUEST:
-                code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
+                code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST, errorCode.getResponseInfo().toString());
                 break;
             case AdRequest.ERROR_CODE_NETWORK_ERROR:
-                code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
+                code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR, errorCode.getResponseInfo().toString());
                 break;
             case AdRequest.ERROR_CODE_NO_FILL:
-                code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL);
+                code = ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL, errorCode.getResponseInfo().toString());
                 break;
             default:
                 break;
@@ -85,9 +86,9 @@ public class GooglePlayAdListener extends AdListener implements AppEventListener
     }
 
     @Override
-    public void onAdLeftApplication() {
-        super.onAdLeftApplication();
-        printToClog("onAdLeftApplication");
+    public void onAdClicked() {
+        super.onAdClicked();
+        printToClog("onAdClicked");
         if (mediatedAdViewController != null) {
             mediatedAdViewController.onAdClicked();
         }

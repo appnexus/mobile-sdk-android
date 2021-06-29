@@ -157,6 +157,9 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
 
     @Override
     public void interacted() {
+        if (autoDismissHandler != null) {
+            autoDismissHandler.removeCallbacksAndMessages(null);
+        }
     }
 
 

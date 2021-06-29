@@ -112,10 +112,13 @@ public class UTRequestParameters {
     private static final String EXTERNALID_SOURCE = "source";
     private static final String EXTERNALID_ID = "id";
     private static final String EXTERNALID_RTI_PARTNER = "rti_partner";
+    private static final String EXTERNALID_RTI_PARTNER_UID2 = "UID2";
+    private static final String EXTERNALID_RTI_PARTNER_TDID = "TDID";
     private static final String EXTERNALID_SOURCE_LIVERAMP = "liveramp.com";
     private static final String EXTERNALID_SOURCE_NETID = "netid.de";
     private static final String EXTERNALID_SOURCE_CRITEO = "criteo.com";
     private static final String EXTERNALID_SOURCE_THETRADEDESK = "adserver.org";
+    private static final String EXTERNALID_SOURCE_UID2 = "uidapi.com";
     private static final String USER = "user";
     private static final String USER_AGE = "age";
     private static final String USER_GENDER = "gender";
@@ -162,6 +165,7 @@ public class UTRequestParameters {
     private static final String GDPR_CONSENT = "gdpr_consent";
     private static final String GDPR_CONSENT_STRING = "consent_string";
     private static final String GDPR_CONSENT_REQUIRED = "consent_required";
+    private static final String GDPR_GOOGLE_ACM_ADDTL_CONSENT = "addtl_consent";
     private static final String FORCE_CREATIVE_ID = "force_creative_id";
     private static final String IAB_SUPPORT = "iab_support";
     private static final String OMIDPN = "omidpn";
@@ -859,7 +863,7 @@ public class UTRequestParameters {
                         case THE_TRADE_DESK:
                             idObject.put(EXTERNALID_SOURCE, EXTERNALID_SOURCE_THETRADEDESK);
                             idObject.put(EXTERNALID_ID, entry.getValue());
-                            idObject.put(EXTERNALID_RTI_PARTNER, "TDID");
+                            idObject.put(EXTERNALID_RTI_PARTNER, EXTERNALID_RTI_PARTNER_TDID);
                             break;
                         case CRITEO:
                             idObject.put(EXTERNALID_SOURCE, EXTERNALID_SOURCE_CRITEO);
@@ -872,6 +876,11 @@ public class UTRequestParameters {
                         case LIVERAMP:
                             idObject.put(EXTERNALID_SOURCE, EXTERNALID_SOURCE_LIVERAMP);
                             idObject.put(EXTERNALID_ID, entry.getValue());
+                            break;
+                        case UID2:
+                            idObject.put(EXTERNALID_SOURCE, EXTERNALID_SOURCE_UID2);
+                            idObject.put(EXTERNALID_ID, entry.getValue());
+                            idObject.put(EXTERNALID_RTI_PARTNER, EXTERNALID_RTI_PARTNER_UID2);
                             break;
                     }
                     idArray.put(idObject);
@@ -1119,6 +1128,10 @@ public class UTRequestParameters {
                 if (consentRequired != null) {
                     gdprConsent.put(GDPR_CONSENT_REQUIRED, consentRequired);
                     gdprConsent.put(GDPR_CONSENT_STRING, ANGDPRSettings.getConsentString(context));
+                    JSONArray googleACMConsentStringJSONArray = ANGDPRSettings.getGoogleACMConsentStringJSONArray(context);
+                    if(googleACMConsentStringJSONArray !=null){
+                        gdprConsent.put(GDPR_GOOGLE_ACM_ADDTL_CONSENT, googleACMConsentStringJSONArray);
+                    }
                 }
             }
         } catch (JSONException e) {

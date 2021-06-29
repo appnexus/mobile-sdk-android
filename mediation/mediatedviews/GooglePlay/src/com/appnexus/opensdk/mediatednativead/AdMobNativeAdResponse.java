@@ -26,9 +26,8 @@ import com.appnexus.opensdk.NativeAdEventListener;
 import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
-import com.google.android.gms.ads.formats.NativeAd;
-import com.google.android.gms.ads.formats.UnifiedNativeAd;
-import com.google.android.gms.ads.formats.UnifiedNativeAdView;
+import com.google.android.gms.ads.nativead.NativeAd;
+import com.google.android.gms.ads.nativead.NativeAdView;
 
 import java.util.HashMap;
 import java.util.List;
@@ -57,10 +56,10 @@ public class AdMobNativeAdResponse extends BaseNativeAdResponse {
     private Runnable expireRunnable;
     private Runnable aboutToExpireRunnable;
 
-    private final UnifiedNativeAd nativeAd;
+    private final NativeAd nativeAd;
     private Handler nativeExpireHandler;
 
-    AdMobNativeAdResponse(final UnifiedNativeAd ad) {
+    AdMobNativeAdResponse(final NativeAd ad) {
         this.nativeAd = ad;
         expireRunnable = new Runnable() {
             @Override
@@ -227,15 +226,15 @@ public class AdMobNativeAdResponse extends BaseNativeAdResponse {
         return expired;
     }
 
-    private UnifiedNativeAdView adView = null;
+    private NativeAdView adView = null;
 
     @Override
     protected boolean registerView(View view, NativeAdEventListener listener) {
         if (view != null && !registered && !expired) {
             try {
-                adView = (UnifiedNativeAdView) view;
+                adView = (NativeAdView) view;
             } catch (ClassCastException e) {
-                Clog.w(Clog.mediationLogTag, "The view registered for AdMob UnifiedNativeAd has to be a subclass of com.google.android.gms.ads.formats.UnifiedNativeAdView");
+                Clog.w(Clog.mediationLogTag, "The view registered for AdMob NativeAd has to be a subclass of com.google.android.gms.ads.nativead.NativeAdView");
             }
             if (adView != null) {
                 adView.setNativeAd(nativeAd);

@@ -22,8 +22,12 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
+
+import org.json.JSONArray;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Global GDPR Settings class.
@@ -42,6 +46,8 @@ public class ANGDPRSettings {
     private static final String IABTCF_SUBJECT_TO_GDPR = "IABTCF_gdprApplies";
     private static final String IABTCF_PurposeConsents = "IABTCF_PurposeConsents";
 
+    // Google ACM consent parameter
+    private static final String IABTCF_ADDTL_CONSENT = "IABTCF_AddtlConsent";
 
     /**
      * Set the consent string in the SDK
@@ -112,6 +118,40 @@ public class ANGDPRSettings {
             }
         }
         return "";
+    }
+
+
+    // pull Google Ad Tech Provider (ATP) IDs ids from the Addtional Consent(AC)string and convert them to JSONArray of integers.
+    // for example if addtlConsentString = '1~7.12.35.62.66.70.89.93.108', then we need to return [7,12,35,62,66,70,89,93,108] this is the format impbus understands.
+    public static JSONArray getGoogleACMConsentStringJSONArray(Context context) {
+        if (context != null) {
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+            if (pref.contains(IABTCF_ADDTL_CONSENT)) {
+                // From https://support.google.com/admanager/answer/9681920
+                // An AC string contains the following three components:
+                // Part 1: A specification version number, such as "1"
+                // Part 2: A separator symbol "~"
+                // Part 3: A dot-separated list of user-consented Google Ad Tech Provider (ATP) IDs. Example: "1.35.41.101"
+                // For example, the AC string 1~1.35.41.101 means that the user has consented to ATPs with IDs 1, 35, 41 and 101, and the string is created using the format defined in the v1.0 specification.
+                String addtlConsentString = pref.getString(IABTCF_ADDTL_CONSENT, "");
+                // Only if a valid Additional consent string is present proceed further.
+                // The string has to start with 1~ (we support only version 1 of the ACM spec)
+                if (!StringUtil.isEmpty(addtlConsentString) && addtlConsentString.length()>2 && addtlConsentString.startsWith("1~")) {
+                    List<Integer> arrayListofATP = new ArrayList<>();
+                    try {
+                        String[] parsedAC = addtlConsentString.split("~", 2);
+                        String[] consentedATP = parsedAC[1].split("\\.", -1);
+                        for (int i = 0; i < consentedATP.length; i++) {
+                            arrayListofATP.add(Integer.parseInt(consentedATP[i]));
+                        }
+                        return new JSONArray(arrayListofATP);
+                    } catch (Exception e) {
+                        Clog.e(Clog.baseLogTag, "Exception while processing Google addtlConsentString: " + e.getMessage());
+                    }
+                }
+            }
+        }
+        return null;
     }
 
 

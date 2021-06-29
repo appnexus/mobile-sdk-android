@@ -1,5 +1,5 @@
 // Project Properties
-version = "19.7.0" // supported Google version
+version = "20.1.0" // supported Google version
 
 apply plugin: 'com.android.library'
 

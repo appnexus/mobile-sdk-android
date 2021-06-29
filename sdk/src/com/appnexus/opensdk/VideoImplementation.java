@@ -99,7 +99,7 @@ class VideoImplementation {
         try {
             //Encode videoXML to Base64String
             String encodedVastContent = Base64.encodeToString(vastXML.getBytes("UTF-8"), Base64.NO_WRAP);
-            String options = ANVideoPlayerSettings.getVideoPlayerSettings().fetchBannerSettings();
+            String options = Base64.encodeToString(ANVideoPlayerSettings.getVideoPlayerSettings().fetchBannerSettings().getBytes("UTF-8"), Base64.NO_WRAP);
             String inject = String.format("javascript:window.createVastPlayerWithContent('%s','%s')",
                     encodedVastContent, options);
             adWebView.injectJavaScript(inject);
