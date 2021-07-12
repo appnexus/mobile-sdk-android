@@ -33,12 +33,14 @@ import com.appnexus.opensdk.utils.Clog;
 
 public class MyActivity extends Activity {
 
+    BannerAdView bav;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
 
-        final BannerAdView bav = new BannerAdView(this);
+        bav = new BannerAdView(this);
 
         SDKSettings.useHttps(true);
 
@@ -130,5 +132,13 @@ public class MyActivity extends Activity {
                 bav.loadAd();
             }
         }, 0);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (bav != null) {
+            bav.activityOnDestroy();
+        }
+        super.onDestroy();
     }
 }

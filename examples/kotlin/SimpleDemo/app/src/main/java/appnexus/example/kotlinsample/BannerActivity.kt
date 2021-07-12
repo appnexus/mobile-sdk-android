@@ -67,7 +67,9 @@ class BannerActivity : AppCompatActivity(), AdListener {
     }
 
     override fun onDestroy() {
-//        banner.activityOnDestroy()
+        if (banner != null) {
+            banner.activityOnDestroy()
+        }
         super.onDestroy()
     }
 

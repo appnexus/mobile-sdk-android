@@ -656,4 +656,33 @@ class MARActivity : Activity() {
             this.adStarRating.text = value
         }
     }
+
+    override fun onDestroy() {
+        if (anMultiAdRequest != null) {
+            anMultiAdRequest!!.adUnitList.forEach {
+                var ad = it.get()
+                if (ad != null) {
+                    when (it) {
+                        is BannerAdView -> it.activityOnDestroy()
+                        is InterstitialAdView -> it.activityOnDestroy()
+                        is VideoAd -> it.activityOnDestroy()
+                    }
+                }
+            }
+        }
+
+        if (anMultiAdRequest2 != null) {
+            anMultiAdRequest2!!.adUnitList.forEach {
+                var ad = it.get()
+                if (ad != null) {
+                    when (ad) {
+                        is BannerAdView -> it.activityOnDestroy()
+                        is InterstitialAdView -> it.activityOnDestroy()
+                        is VideoAd -> it.activityOnDestroy()
+                    }
+                }
+            }
+        }
+        super.onDestroy()
+    }
 }
