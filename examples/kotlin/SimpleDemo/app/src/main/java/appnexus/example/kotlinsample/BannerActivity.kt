@@ -21,6 +21,7 @@ class BannerActivity : AppCompatActivity(), AdListener {
 
         banner = BannerAdView(this)
         banner.placementID = "17058950" // PlacementID
+        banner.setForceCreativeId(270957916)
         banner.setAdSize(300, 250) // Size
         banner.adListener = this // AdListener
         banner.loadAd()
@@ -63,6 +64,11 @@ class BannerActivity : AppCompatActivity(), AdListener {
     private fun log(msg: String){
         Log.d("BannerActivity",msg)
         Toast.makeText(this.applicationContext, msg, Toast.LENGTH_LONG).show()
+    }
+
+    override fun onDestroy() {
+//        banner.activityOnDestroy()
+        super.onDestroy()
     }
 
 
