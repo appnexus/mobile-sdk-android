@@ -21,7 +21,6 @@ class BannerActivity : AppCompatActivity(), AdListener {
 
         banner = BannerAdView(this)
         banner.placementID = "17058950" // PlacementID
-        banner.setForceCreativeId(270957916)
         banner.setAdSize(300, 250) // Size
         banner.adListener = this // AdListener
         banner.loadAd()
