@@ -100,4 +100,11 @@ class InterstitialActivity : AppCompatActivity(), AdListener {
 
         }
     }
+
+    override fun onDestroy() {
+        if (interstitial != null) {
+            interstitial.activityOnDestroy()
+        }
+        super.onDestroy()
+    }
 }

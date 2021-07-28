@@ -136,4 +136,11 @@ class BannerActivity : AppCompatActivity(), AdListener {
         if (!idlingResource.isIdleNow)
             idlingResource.decrement()
     }
+
+    override fun onDestroy() {
+        if (banner != null) {
+            banner.activityOnDestroy()
+        }
+        super.onDestroy()
+    }
 }

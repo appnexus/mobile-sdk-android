@@ -146,4 +146,11 @@ class VideoActivity : AppCompatActivity(), VideoAdLoadListener {
             idlingResource.increment()
         }
     }
+
+    override fun onDestroy() {
+        if (video != null) {
+            video.activityOnDestroy()
+        }
+        super.onDestroy()
+    }
 }

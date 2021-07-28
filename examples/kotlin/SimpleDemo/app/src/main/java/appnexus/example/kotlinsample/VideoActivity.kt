@@ -54,8 +54,10 @@ class VideoActivity : AppCompatActivity(), VideoAdLoadListener, VideoAdPlaybackL
     }
 
     override fun onDestroy() {
+        if (instreamVideoAd != null) {
+            instreamVideoAd.activityOnDestroy()
+        }
         super.onDestroy()
-        instreamVideoAd.activityOnDestroy()
     }
 
     // VideoAdLoadListener - Start

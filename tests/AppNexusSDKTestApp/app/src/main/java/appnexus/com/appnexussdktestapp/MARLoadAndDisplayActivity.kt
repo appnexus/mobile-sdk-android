@@ -431,4 +431,20 @@ class MARLoadAndDisplayActivity : Activity() {
         Clog.e("TOAST", msg)
         Clog.e("LAZYLOAD", msg)
     }
+
+    override fun onDestroy() {
+        if (anMultiAdRequest != null) {
+            anMultiAdRequest!!.adUnitList.forEach {
+                var ad = it.get()
+                if (ad != null) {
+                    when (it) {
+                        is BannerAdView -> it.activityOnDestroy()
+                        is InterstitialAdView -> it.activityOnDestroy()
+                        is VideoAd -> it.activityOnDestroy()
+                    }
+                }
+            }
+        }
+        super.onDestroy()
+    }
 }

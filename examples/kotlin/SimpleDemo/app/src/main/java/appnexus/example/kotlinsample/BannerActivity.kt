@@ -65,5 +65,12 @@ class BannerActivity : AppCompatActivity(), AdListener {
         Toast.makeText(this.applicationContext, msg, Toast.LENGTH_LONG).show()
     }
 
+    override fun onDestroy() {
+        if (banner != null) {
+            banner.activityOnDestroy()
+        }
+        super.onDestroy()
+    }
+
 
 }

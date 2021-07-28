@@ -39,6 +39,7 @@ import androidx.test.espresso.idling.CountingIdlingResource;
 import com.appnexus.opensdk.ANAdResponseInfo;
 import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.ANMultiAdRequest;
+import com.appnexus.opensdk.Ad;
 import com.appnexus.opensdk.AdListener;
 import com.appnexus.opensdk.AdSize;
 import com.appnexus.opensdk.AdView;
@@ -56,6 +57,7 @@ import com.appnexus.opensdk.instreamvideo.VideoAdPlaybackListener;
 import com.appnexus.opensdk.mar.MultiAdRequestListener;
 import com.appnexus.opensdk.utils.Clog;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -677,5 +679,35 @@ public class MyActivity extends Activity {
             }
             return views;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (anMultiAdRequest != null) {
+            for (WeakReference<Ad> adRef: anMultiAdRequest.getAdUnitList()) {
+                Ad ad  = adRef.get();
+                if (ad instanceof BannerAdView) {
+                    ((BannerAdView) ad).activityOnDestroy();
+                } else if (ad instanceof InterstitialAdView){
+                    ((InterstitialAdView) ad).activityOnDestroy();
+                } else if (ad instanceof VideoAd) {
+                    ((VideoAd) ad).activityOnDestroy();
+                }
+            }
+        }
+
+        if (anMultiAdRequest2 != null) {
+            for (WeakReference<Ad> adRef: anMultiAdRequest2.getAdUnitList()) {
+                Ad ad  = adRef.get();
+                if (ad instanceof BannerAdView) {
+                    ((BannerAdView) ad).activityOnDestroy();
+                } else if (ad instanceof InterstitialAdView){
+                    ((InterstitialAdView) ad).activityOnDestroy();
+                } else if (ad instanceof VideoAd) {
+                    ((VideoAd) ad).activityOnDestroy();
+                }
+            }
+        }
+        super.onDestroy();
     }
 }
