@@ -1332,23 +1332,24 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     }
 
     void fireImpressionTracker() {
-        synchronized (impressionTrackers) {
-            // Just to be fail safe since we are making it to null below to mark it as beign used.
+        // Just to be fail safe since we are making it to null below to mark it as being used.
+        if (impressionTrackers != null && impressionTrackers.size() > 0) {
             SharedNetworkManager nm = SharedNetworkManager.getInstance(getContext());
-            if (impressionTrackers != null && impressionTrackers.size() > 0) {
+            if (nm.isConnected(getContext())) {
                 for (String url : impressionTrackers) {
-                    if (nm.isConnected(getContext())) {
-                        fireImpressionTracker(url);
-                    } else {
-                        nm.addURL(url, getContext());
-                    }
+                    // Rare case: There can be a HTTP request for url, where nm.isConnected() is false, now
+                    fireImpressionTracker(url);
                 }
-                // Making it to null so that there is no duplicate firing. We fire exactly only once.
-                impressionTrackers = null;
+            } else {
+                for (String url : impressionTrackers) {
+                    nm.addURL(url, getContext());
+                }
             }
-            if (lastDisplayable != null) {
-                lastDisplayable.onAdImpression();
-            }
+            // Making it to null so that there is no duplicate firing. We fire exactly only once.
+            impressionTrackers = null;
+        }
+        if (lastDisplayable != null) {
+            lastDisplayable.onAdImpression();
         }
     }
 
