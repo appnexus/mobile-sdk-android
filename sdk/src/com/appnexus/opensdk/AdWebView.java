@@ -743,17 +743,31 @@ class AdWebView extends WebView implements Displayable,
 
     @Override
     public void destroy() {
+
+        // in case `this` was not removed when destroy was called
+        ViewUtil.removeChildFromParent(this);
+
+        MutableContextWrapper wrapper = (MutableContextWrapper) getContext();
+        wrapper.setBaseContext(wrapper.getApplicationContext());
+
+        if (adView != null) {
+            adView = null;
+        }
+
         if (mWebChromeClient != null) {
             mWebChromeClient.onHideCustomView();
+            mWebChromeClient = null;
+            setWebChromeClient(null);
         }
+
+        setWebViewClient(null);
+
         if (isNativeAd) {
             NativeAdSDK.unRegisterTracking(this);
         } else {
             omidAdSession.stopAdSession();
             implementation.destroy();
         }
-        // in case `this` was not removed when destroy was called
-        ViewUtil.removeChildFromParent(this);
         if (isNativeAd) {
             AdWebView.super.destroy();
         } else {
