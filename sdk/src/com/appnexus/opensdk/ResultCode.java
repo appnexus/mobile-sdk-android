@@ -67,6 +67,11 @@ public class ResultCode {
      */
     public static int CUSTOM_ADAPTER_ERROR = 7;
 
+    /**
+     * Ad Request Interrupted by the User
+     */
+    public static int REQUEST_INTERRUPTED_BY_USER = 8;
+
     private int errorCode;
     private String message;
 
@@ -96,6 +101,9 @@ public class ResultCode {
                     break;
                 case 7:
                     message = "CUSTOM_ADAPTER_ERROR";
+                    break;
+                case 8:
+                    message = "REQUEST_INTERRUPTED_BY_USER";
                     break;
                 default:
                     message = "UNKNOWN";

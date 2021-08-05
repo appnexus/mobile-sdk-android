@@ -192,11 +192,15 @@ public class ANMultiAdRequest {
      * This API is used to stop the Multi Ad Request, before the request is completed.
      * */
     public void stop() {
-        if (mAdFetcher != null) {
-
-            // Stop Ad Fetcher
-            mAdFetcher.stop();
-            mAdFetcher.clearDurations();
+        if (isMARRequestInProgress) {
+            if (mAdFetcher != null) {
+                // Stop Ad Fetcher
+                mAdFetcher.stop();
+                mAdFetcher.clearDurations();
+            }
+            onRequestFailed(ResultCode.getNewInstance(ResultCode.REQUEST_INTERRUPTED_BY_USER));
+        } else {
+            Clog.e(Clog.SRMLogTag, "Unable to stop Multi Ad Request. It is already processed.");
         }
     }
 
@@ -322,13 +326,14 @@ public class ANMultiAdRequest {
     }
 
     public void onMARLoadCompleted() {
+        isMARRequestInProgress = false;
         if (ANMultiAdRequest.this.multiAdRequestListener != null) {
             ANMultiAdRequest.this.multiAdRequestListener.onMultiAdRequestCompleted();
         }
-        isMARRequestInProgress = false;
     }
 
     public void onRequestFailed(ResultCode code) {
+        isMARRequestInProgress = false;
         if (multiAdRequestListener != null) {
             multiAdRequestListener.onMultiAdRequestFailed(code);
         }
