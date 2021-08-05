@@ -324,8 +324,9 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
         }
 
         @Override
-        protected void loadURLInCorrectBrowser(String url) {
+        protected boolean loadURLInCorrectBrowser(String url) {
             testString = url;
+            return true;
         }
 
         @Override
