@@ -1,3 +1,12 @@
+## 7.16
+### Bug Fixes
+###### Fixed:
++ MS-4705 Memory leak caused by AdWebView [Github #57]
++ MS-4809 NullPointerException while processing the AdResponse [Github #64]
++ MS-4810 Performance issues while firing Impression tracker [Github #63]
++ MS-4811 Issue with ANMultiAdRequest.stop() [Github #58]
++ MS-4823 Issue caused by ANBackgroundThread initialization with Multi Ad Requests
+
 ## 7.15
 ### New Feature
 + MS-4749 Add support for Unified ID 2.0 (UID2) [https://wiki.xandr.com/x/DAkYBg]
