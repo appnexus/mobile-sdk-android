@@ -20,9 +20,14 @@ import java.util.concurrent.Executor;
 
 public class TasksManager {
 
-    private static TasksManager instance = null;
     private Executor mainThreadExecutor;
     private Executor backgroundThreadExecutor;
+
+    // When the TasksManager class is loaded, TasksManagerWrapper is not loaded and hence doesn’t create object when loading the class.
+    // It looks like an Eager initialization, but is a Lazy initialization, with Thread safety.
+    private static class TasksManagerWrapper {
+        private static final TasksManager INSTANCE = new TasksManager();
+    }
 
     private TasksManager() {
         mainThreadExecutor = new MainThreadExecutor();
@@ -32,14 +37,8 @@ public class TasksManager {
     /**
      * Factory method to obtain the Singleton instance of the TasksManager
      * */
-    public synchronized static TasksManager getInstance() {
-        if (instance == null) {
-            synchronized (TasksManager.class) {
-                instance = new TasksManager();
-            }
-
-        }
-        return instance;
+    public static TasksManager getInstance() {
+        return TasksManagerWrapper.INSTANCE;
     }
 
     /**

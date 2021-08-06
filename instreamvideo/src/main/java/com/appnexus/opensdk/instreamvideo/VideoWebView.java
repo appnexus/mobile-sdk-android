@@ -58,6 +58,8 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 
+import static com.appnexus.opensdk.utils.WebviewUtil.isValidUrl;
+
 
 class VideoWebView extends WebView {
 
@@ -202,8 +204,9 @@ class VideoWebView extends WebView {
         if (owner.getClickThroughAction() == ANClickThroughAction.RETURN_URL) {
             fireAdClickedWithReturnUrl(url);
         } else {
-            loadURLInCorrectBrowser(url);
-            fireAdClicked();
+            if (loadURLInCorrectBrowser(url)) {
+                fireAdClicked();
+            }
         }
     }
 
@@ -305,14 +308,19 @@ class VideoWebView extends WebView {
 
 
     // handles browser logic for shouldOverrideUrl
-    void loadURLInCorrectBrowser(String url) {
+    boolean loadURLInCorrectBrowser(String url) {
         if (owner.getClickThroughAction() == ANClickThroughAction.OPEN_SDK_BROWSER) {
 
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.opening_inapp));
 
             //If it's a direct URL to the play store, just open it.
             if (checkForApp(url)) {
-                return;
+                return true;
+            }
+
+            //If it's an invalid http url return without loading it.
+            if (!isValidUrl(url)) {
+                return false;
             }
 
             try {
@@ -352,13 +360,14 @@ class VideoWebView extends WebView {
             } catch (Exception e) {
                 // Catches PackageManager$NameNotFoundException for webview
                 Clog.e(Clog.baseLogTag, "Exception initializing the redirect webview: " + e.getMessage());
+                return false;
             }
         } else if (owner.getClickThroughAction() == ANClickThroughAction.OPEN_DEVICE_BROWSER) {
             Clog.d(Clog.baseLogTag,
                     Clog.getString(R.string.opening_native));
             openNativeIntent(url);
         }
-
+        return true;
     }
 
     void fireAdClickedWithReturnUrl(String clickUrl) {

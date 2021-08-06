@@ -33,7 +33,6 @@ import android.net.http.SslError;
 import android.os.Build;
 import android.os.Handler;
 import android.util.DisplayMetrics;
-import android.util.Patterns;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -65,11 +64,10 @@ import com.appnexus.opensdk.viewability.ANOmidAdSession;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
+
+import static com.appnexus.opensdk.utils.WebviewUtil.isValidUrl;
 
 @SuppressLint("ViewConstructor")
 class AdWebView extends WebView implements Displayable,
@@ -479,9 +477,10 @@ class AdWebView extends WebView implements Displayable,
                     case HitTestResult.SRC_ANCHOR_TYPE:
                     case HitTestResult.SRC_IMAGE_ANCHOR_TYPE:
 
-                        loadURLInCorrectBrowser(url);
+                        if (loadURLInCorrectBrowser(url)) {
+                            fireAdClicked();
+                        }
                         view.stopLoading();
-                        fireAdClicked();
                         break;
                 }
             }
@@ -539,8 +538,9 @@ class AdWebView extends WebView implements Displayable,
         if (adView.getClickThroughAction() == ANClickThroughAction.RETURN_URL) {
             fireAdClickedWithReturnUrl(url);
         } else {
-            loadURLInCorrectBrowser(url);
-            fireAdClicked();
+            if (loadURLInCorrectBrowser(url)) {
+                fireAdClicked();
+            }
         }
     }
 
@@ -559,16 +559,6 @@ class AdWebView extends WebView implements Displayable,
                         R.string.action_cant_be_completed,
                         Toast.LENGTH_SHORT).show();
             }
-            return false;
-        }
-    }
-
-    private boolean isValidUrl(String url) {
-        try {
-            new URL(url).toURI();
-            return Patterns.WEB_URL.matcher(url).matches();
-        } catch (MalformedURLException | URISyntaxException e) {
-            e.printStackTrace();
             return false;
         }
     }
@@ -602,20 +592,20 @@ class AdWebView extends WebView implements Displayable,
     }
 
     // handles browser logic for shouldOverrideUrl
-    void loadURLInCorrectBrowser(String url) {
+    boolean loadURLInCorrectBrowser(String url) {
         if (adView.getClickThroughAction() == ANClickThroughAction.OPEN_SDK_BROWSER) {
 
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.opening_inapp));
 
             //If it's a direct URL to the play store, just open it.
             if (checkForApp(url)) {
-                return;
+                return true;
             }
 
 
             //If it's an invalid http url return without loading it.
             if (!isValidUrl(url)) {
-                return;
+                return false;
             }
 
             try {
@@ -655,6 +645,7 @@ class AdWebView extends WebView implements Displayable,
             } catch (Exception e) {
                 // Catches PackageManager$NameNotFoundException for webview
                 Clog.e(Clog.baseLogTag, "Exception initializing the redirect webview: " + e.getMessage());
+                return false;
             }
         } else if (adView.getClickThroughAction() == ANClickThroughAction.OPEN_DEVICE_BROWSER) {
             Clog.d(Clog.baseLogTag,
@@ -662,7 +653,7 @@ class AdWebView extends WebView implements Displayable,
             openNativeIntent(url);
             triggerBrowserLaunchEvent();
         }
-
+        return true;
     }
 
 
@@ -743,17 +734,31 @@ class AdWebView extends WebView implements Displayable,
 
     @Override
     public void destroy() {
+
+        // in case `this` was not removed when destroy was called
+        ViewUtil.removeChildFromParent(this);
+
+        MutableContextWrapper wrapper = (MutableContextWrapper) getContext();
+        wrapper.setBaseContext(wrapper.getApplicationContext());
+
+        if (adView != null) {
+            adView = null;
+        }
+
         if (mWebChromeClient != null) {
             mWebChromeClient.onHideCustomView();
+            mWebChromeClient = null;
+            setWebChromeClient(null);
         }
+
+        setWebViewClient(null);
+
         if (isNativeAd) {
             NativeAdSDK.unRegisterTracking(this);
         } else {
             omidAdSession.stopAdSession();
             implementation.destroy();
         }
-        // in case `this` was not removed when destroy was called
-        ViewUtil.removeChildFromParent(this);
         if (isNativeAd) {
             AdWebView.super.destroy();
         } else {

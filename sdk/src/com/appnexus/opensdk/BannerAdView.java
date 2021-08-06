@@ -969,6 +969,10 @@ public class BannerAdView extends AdView {
 
     @Override
     public void activityOnDestroy() {
+        ViewUtil.removeChildFromParent(this);
+
+        setAdListener(null);
+
         if (this.currentDisplayable != null) {
             this.currentDisplayable.onDestroy();
             this.currentDisplayable = null;

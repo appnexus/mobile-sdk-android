@@ -216,6 +216,13 @@ public class AdViewRequestManager extends RequestManager {
         final Ad owner = this.owner.get();
         if ((owner != null) && getAdList() != null && !getAdList().isEmpty()) {
             final BaseAdResponse baseAdResponse = popAd();
+
+            if (baseAdResponse == null) {
+                Clog.e(Clog.baseLogTag, "processNextAd failed:: invalid Ad response:: " + baseAdResponse);
+                continueWaterfall(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR));
+                return;
+            }
+
             this.currentAd = baseAdResponse;
 
             if (UTConstants.RTB.equalsIgnoreCase(baseAdResponse.getContentSource())) {

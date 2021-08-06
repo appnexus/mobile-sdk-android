@@ -212,4 +212,11 @@ class BannerLazyLoadActivity : AppCompatActivity(), AppEventListener {
         Clog.e("LAZYLOAD", name)
 //        appEvent = name
     }
+
+    override fun onDestroy() {
+        if (banner != null) {
+            banner.activityOnDestroy()
+        }
+        super.onDestroy()
+    }
 }

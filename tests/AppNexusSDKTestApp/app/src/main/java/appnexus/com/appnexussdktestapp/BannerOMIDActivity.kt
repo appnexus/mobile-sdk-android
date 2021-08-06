@@ -238,4 +238,11 @@ class BannerOMIDActivity : AppCompatActivity(), AdListener, AppEventListener {
             msg = "Removed View"
         }
     }
+
+    override fun onDestroy() {
+        if (banner != null) {
+            banner.activityOnDestroy()
+        }
+        super.onDestroy()
+    }
 }

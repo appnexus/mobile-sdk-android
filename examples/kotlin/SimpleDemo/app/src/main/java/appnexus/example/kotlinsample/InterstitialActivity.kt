@@ -62,5 +62,11 @@ class InterstitialActivity : AppCompatActivity(), AdListener {
         Toast.makeText(this.applicationContext, msg, Toast.LENGTH_LONG).show()
     }
 
+    override fun onDestroy() {
+        if (interstitial != null) {
+            interstitial.activityOnDestroy()
+        }
+        super.onDestroy()
+    }
 
 }

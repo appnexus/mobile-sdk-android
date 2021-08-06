@@ -60,13 +60,6 @@ public class AdFetcher {
     // Fires requests whenever it receives a message
     public AdFetcher(Ad owner) {
         this.owner = owner;
-        if (SDKSettings.isBackgroundThreadingEnabled()) {
-            HandlerThread backgroundThread = new HandlerThread(ANBACKGROUND);
-            backgroundThread.start();
-            handler = new RequestHandler(this, backgroundThread.getLooper());
-        } else {
-            handler = new RequestHandler(this, Looper.myLooper());
-        }
 
         requestManager = new AdViewRequestManager(owner);
         anMultiAdRequest = null;
@@ -74,22 +67,17 @@ public class AdFetcher {
 
     public AdFetcher(ANMultiAdRequest anMultiAdRequest) {
         this.owner = null;
-        if (SDKSettings.isBackgroundThreadingEnabled()) {
-            HandlerThread backgroundThread = new HandlerThread(ANBACKGROUND);
-            backgroundThread.start();
-            handler = new RequestHandler(this, backgroundThread.getLooper());
-        } else {
-            handler = new RequestHandler(this, Looper.myLooper());
-        }
         this.anMultiAdRequest = anMultiAdRequest;
     }
 
     public void destroy() {
-        String threadName = handler.getLooper().getThread().getName();
-        if (threadName.contains(ANBACKGROUND)) {
-            Clog.i(Clog.baseLogTag, "Quitting background " + threadName);
-            handler.getLooper().quit();
-            handler = null;
+        if (handler != null) {
+            String threadName = handler.getLooper().getThread().getName();
+            if (threadName.contains(ANBACKGROUND)) {
+                Clog.i(Clog.baseLogTag, "Quitting background " + threadName);
+                handler.getLooper().quit();
+                handler = null;
+            }
         }
         if (requestManager != null) {
             requestManager.cancel();
@@ -125,6 +113,7 @@ public class AdFetcher {
     }
 
     public void start() {
+        initHandler();
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.start));
         createTasker();
         switch (state) {
@@ -169,6 +158,18 @@ public class AdFetcher {
         }
     }
 
+    private void initHandler() {
+        if (handler == null) {
+            if (SDKSettings.isBackgroundThreadingEnabled()) {
+                HandlerThread backgroundThread = new HandlerThread(ANBACKGROUND);
+                backgroundThread.start();
+                handler = new RequestHandler(this, backgroundThread.getLooper());
+            } else {
+                handler = new RequestHandler(this, Looper.myLooper());
+            }
+        }
+    }
+
     private void createTasker() {
         if (tasker == null) {
             // Start a Scheduler to execute recurring tasks
@@ -202,7 +203,9 @@ public class AdFetcher {
         public void run() {
             Clog.v(Clog.baseLogTag,
                     Clog.getString(R.string.handler_message_pass));
-            handler.sendEmptyMessage(0);
+            if(handler != null) {
+                handler.sendEmptyMessage(0);
+            }
 
         }
 

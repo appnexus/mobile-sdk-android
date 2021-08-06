@@ -21,12 +21,16 @@ import android.text.TextUtils;
 
 // We are using WebKit CookieManager to store and retrieve cookies,
 // This enables the cookies to be shared between HttpUrlConnection and the WebView.
+import android.util.Patterns;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -194,6 +198,16 @@ public class WebviewUtil {
             Clog.e(Clog.httpRespLogTag, "Unable to find a CookieManager - Exception: "+e.getMessage());
         }
         return null;
+    }
+
+    public static boolean isValidUrl(String url) {
+        try {
+            new URL(url).toURI();
+            return Patterns.WEB_URL.matcher(url).matches();
+        } catch (MalformedURLException | URISyntaxException e) {
+            Clog.e(Clog.httpRespLogTag, "Invalid Url detected - Exception: "+e.getMessage());
+            return false;
+        }
     }
 
 }

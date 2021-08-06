@@ -21,6 +21,8 @@
         </activity>
         <activity android:name=".BannerOMIDActivity"/>
         <activity android:name=".MARLoadAndDisplayActivity"/>
+        <activity android:name=".BannerScaleLoadAndDisplayActivity"/>
+        <activity android:name=".MARScaleLoadAndDisplayActivity"/>
         <activity android:name=".BannerActivity">
 
 <!--             <intent-filter> -->

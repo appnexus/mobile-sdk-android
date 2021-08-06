@@ -23,6 +23,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
@@ -251,7 +252,9 @@ class MARActivity : Activity() {
         if (idlingResource.isIdleNow) {
             idlingResource.increment()
         }
-        anMultiAdRequest!!.load()
+        Handler(Looper.getMainLooper()).post({
+            anMultiAdRequest!!.load()
+        })
     }
 
     internal fun load2(bgTask: Boolean = false) {
@@ -260,7 +263,9 @@ class MARActivity : Activity() {
         if (idlingResource.isIdleNow) {
             idlingResource.increment()
         }
-        anMultiAdRequest2!!.load()
+        Handler(Looper.getMainLooper()).post({
+            anMultiAdRequest2!!.load()
+        })
     }
 
     private fun setupNativeAd(): NativeAdRequest {
@@ -655,5 +660,34 @@ class MARActivity : Activity() {
         fun setAdStartValue(value: String) {
             this.adStarRating.text = value
         }
+    }
+
+    override fun onDestroy() {
+        if (anMultiAdRequest != null) {
+            anMultiAdRequest!!.adUnitList.forEach {
+                var ad = it.get()
+                if (ad != null) {
+                    when (it) {
+                        is BannerAdView -> it.activityOnDestroy()
+                        is InterstitialAdView -> it.activityOnDestroy()
+                        is VideoAd -> it.activityOnDestroy()
+                    }
+                }
+            }
+        }
+
+        if (anMultiAdRequest2 != null) {
+            anMultiAdRequest2!!.adUnitList.forEach {
+                var ad = it.get()
+                if (ad != null) {
+                    when (ad) {
+                        is BannerAdView -> ad.activityOnDestroy()
+                        is InterstitialAdView -> ad.activityOnDestroy()
+                        is VideoAd -> ad.activityOnDestroy()
+                    }
+                }
+            }
+        }
+        super.onDestroy()
     }
 }

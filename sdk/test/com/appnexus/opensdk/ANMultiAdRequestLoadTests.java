@@ -100,6 +100,31 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
 
         anMultiAdRequest.stop();
 
+        assertTrue(marFailed);
+    }
+
+    @Test
+    public void testMARWithSingleInitializationMethodAndStopRemoveAddAndLoad() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        assertFalse(marCompleted);
+        reset();
+
+        anMultiAdRequest.load();
+
+        anMultiAdRequest.stop();
+
+        assertTrue(marFailed);
+
+        anMultiAdRequest.removeAdUnit(interstitialAdView);
+
+        InterstitialAdView interstitialAdView2 = new InterstitialAdView(activity);
+        interstitialAdView2.setPlacementID("0");
+        interstitialAdView2.setAdListener(this);
+
+        anMultiAdRequest.addAdUnit(interstitialAdView2);
+
+        anMultiAdRequest.load();
+
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
@@ -107,7 +132,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
 
-        assertFalse(marCompleted);
+        assertTrue(marCompleted);
     }
 
     @Test
@@ -130,6 +155,42 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
 
         anMultiAdRequestLocal.stop();
 
+        assertTrue(marFailed);
+
+    }
+
+    @Test
+    public void testMARWithConvenienceAndStopRemoveAddAndLoad() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        assertFalse(marCompleted);
+        reset();
+
+        BannerAdView bannerAdView = new BannerAdView(activity);
+        bannerAdView.setPlacementID("0");
+        bannerAdView.setAdListener(this);
+        bannerAdView.setAdSize(320, 50);
+        bannerAdView.setAutoRefreshInterval(-1);
+
+        InterstitialAdView interstitialAdView = new InterstitialAdView(activity);
+        interstitialAdView.setPlacementID("0");
+        interstitialAdView.setAdListener(this);
+
+        ANMultiAdRequest anMultiAdRequestLocal = new ANMultiAdRequest(activity, 0, 1234, this, true, bannerAdView, interstitialAdView);
+
+        anMultiAdRequestLocal.stop();
+
+        assertTrue(marFailed);
+
+        anMultiAdRequest.removeAdUnit(interstitialAdView);
+
+        InterstitialAdView interstitialAdView2 = new InterstitialAdView(activity);
+        interstitialAdView2.setPlacementID("0");
+        interstitialAdView2.setAdListener(this);
+
+        anMultiAdRequest.addAdUnit(interstitialAdView2);
+
+        anMultiAdRequest.load();
+
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
@@ -137,7 +198,8 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
 
-        assertFalse(marCompleted);
+        assertTrue(marCompleted);
+
     }
 
     //MAR Success With NoBid Response for AdUnits

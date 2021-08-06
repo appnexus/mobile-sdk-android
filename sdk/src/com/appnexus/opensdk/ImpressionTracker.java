@@ -58,7 +58,7 @@ class ImpressionTracker {
         this.impressionTrackerListener = impressionTrackerListener;
     }
 
-    private synchronized void fire() {
+    private void fire() {
         // check if impression has already fired
         if (!fired) {
             SharedNetworkManager nm = SharedNetworkManager.getInstance(context);

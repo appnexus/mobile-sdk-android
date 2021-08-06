@@ -299,8 +299,6 @@ class MARScaleTest {
 //        println("Total Count: " + count)
 //    }
 
-
-
     private fun setupTwelveRTBBanner() {
         for (i in 0..11) {
             addBanner()

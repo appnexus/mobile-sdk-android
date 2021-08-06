@@ -309,31 +309,29 @@ public class CSRNativeBannerController implements CSRController {
         ArrayList<String> impressionTrackers = currentAd.getImpressionURLs();
         // Just to be fail safe since we are making it to null below to mark it as beign used.
         if (impressionTrackers != null) {
-            synchronized (impressionTrackers) {
-                Context context = this.contextWeakReference.get();
-                // If not connected to network and impression trackerlist size is non zero queue them to be fired in future.
-                if (context != null && !SharedNetworkManager.getInstance(context).isConnected(context) && impressionTrackers.size() > 0) {
-                    SharedNetworkManager nm = SharedNetworkManager.getInstance(context);
-                    for (String url : impressionTrackers) {
-                        nm.addURL(url, context, new ImpressionTrackerListener() {
-                            @Override
-                            public void onImpressionTrackerFired() {
-                                if (listener != null) {
-                                    listener.onAdImpression();
-                                }
+            Context context = this.contextWeakReference.get();
+            // If not connected to network and impression trackerlist size is non zero queue them to be fired in future.
+            if (context != null && !SharedNetworkManager.getInstance(context).isConnected(context) && impressionTrackers.size() > 0) {
+                SharedNetworkManager nm = SharedNetworkManager.getInstance(context);
+                for (String url : impressionTrackers) {
+                    nm.addURL(url, context, new ImpressionTrackerListener() {
+                        @Override
+                        public void onImpressionTrackerFired() {
+                            if (listener != null) {
+                                listener.onAdImpression();
                             }
-                        });
-                    }
+                        }
+                    });
                 }
-                // else for all other cases when impression trackerlist size in non zero fire the trackers
-                else if (impressionTrackers.size() > 0) {
-                    for (String url : impressionTrackers) {
-                        fireTracker(url);
-                    }
-                }
-                // Reset impression URL once we have either fired them all or added thme to SharedNewtorkManager Queue.
-                currentAd.setImpressionURLs(null);
             }
+            // else for all other cases when impression trackerlist size in non zero fire the trackers
+            else if (impressionTrackers.size() > 0) {
+                for (String url : impressionTrackers) {
+                    fireTracker(url);
+                }
+            }
+            // Reset impression URL once we have either fired them all or added thme to SharedNewtorkManager Queue.
+            currentAd.setImpressionURLs(null);
         }
     }
 
@@ -341,24 +339,22 @@ public class CSRNativeBannerController implements CSRController {
         ArrayList<String> clickTrackers = currentAd.getClickUrls();
         // Just to be fail safe since we are making it to null below to mark it as beign used.
         if (clickTrackers != null) {
-            synchronized (clickTrackers) {
-                Context context = this.contextWeakReference.get();
-                // If not connected to network and impression trackerlist size is non zero queue them to be fired in future.
-                if (context != null && !SharedNetworkManager.getInstance(context).isConnected(context) && clickTrackers.size() > 0) {
-                    SharedNetworkManager nm = SharedNetworkManager.getInstance(context);
-                    for (String url : clickTrackers) {
-                        nm.addURL(url, context);
-                    }
+            Context context = this.contextWeakReference.get();
+            // If not connected to network and impression trackerlist size is non zero queue them to be fired in future.
+            if (context != null && !SharedNetworkManager.getInstance(context).isConnected(context) && clickTrackers.size() > 0) {
+                SharedNetworkManager nm = SharedNetworkManager.getInstance(context);
+                for (String url : clickTrackers) {
+                    nm.addURL(url, context);
                 }
-                // else for all other cases when impression trackerlist size in non zero fire the trackers
-                else if (clickTrackers.size() > 0) {
-                    for (String url : clickTrackers) {
-                        fireTracker(url);
-                    }
-                }
-                // Reset impression URL once we have either fired them all or added them to SharedNewtorkManager Queue.
-                currentAd.setClickUrls(null);
             }
+            // else for all other cases when impression trackerlist size in non zero fire the trackers
+            else if (clickTrackers.size() > 0) {
+                for (String url : clickTrackers) {
+                    fireTracker(url);
+                }
+            }
+            // Reset impression URL once we have either fired them all or added them to SharedNewtorkManager Queue.
+            currentAd.setClickUrls(null);
         }
     }
 
