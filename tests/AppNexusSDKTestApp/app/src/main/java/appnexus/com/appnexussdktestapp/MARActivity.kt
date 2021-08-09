@@ -23,6 +23,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
@@ -251,7 +252,9 @@ class MARActivity : Activity() {
         if (idlingResource.isIdleNow) {
             idlingResource.increment()
         }
-        anMultiAdRequest!!.load()
+        Handler(Looper.getMainLooper()).post({
+            anMultiAdRequest!!.load()
+        })
     }
 
     internal fun load2(bgTask: Boolean = false) {
@@ -260,7 +263,9 @@ class MARActivity : Activity() {
         if (idlingResource.isIdleNow) {
             idlingResource.increment()
         }
-        anMultiAdRequest2!!.load()
+        Handler(Looper.getMainLooper()).post({
+            anMultiAdRequest2!!.load()
+        })
     }
 
     private fun setupNativeAd(): NativeAdRequest {
@@ -676,9 +681,9 @@ class MARActivity : Activity() {
                 var ad = it.get()
                 if (ad != null) {
                     when (ad) {
-                        is BannerAdView -> it.activityOnDestroy()
-                        is InterstitialAdView -> it.activityOnDestroy()
-                        is VideoAd -> it.activityOnDestroy()
+                        is BannerAdView -> ad.activityOnDestroy()
+                        is InterstitialAdView -> ad.activityOnDestroy()
+                        is VideoAd -> ad.activityOnDestroy()
                     }
                 }
             }
