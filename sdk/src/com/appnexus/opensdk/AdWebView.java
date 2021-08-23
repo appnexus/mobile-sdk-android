@@ -258,11 +258,11 @@ class AdWebView extends WebView implements Displayable,
     }
 
     private int getAdHeight() {
-        return adView.getRequestParameters().getPrimarySize().height();
+        return adView != null ? adView.getRequestParameters().getPrimarySize().height(): -1;
     }
 
     private int getAdWidth() {
-        return adView.getRequestParameters().getPrimarySize().width();
+        return adView != null ? adView.getRequestParameters().getPrimarySize().width(): -1;
     }
 
 
@@ -375,6 +375,11 @@ class AdWebView extends WebView implements Displayable,
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             Clog.v(Clog.baseLogTag, "Loading URL: " + url);
+
+            if (adView == null) {
+                return false;
+            }
+
             if (url.startsWith("javascript:")) {
                 return false;
             }
@@ -741,10 +746,6 @@ class AdWebView extends WebView implements Displayable,
         MutableContextWrapper wrapper = (MutableContextWrapper) getContext();
         wrapper.setBaseContext(wrapper.getApplicationContext());
 
-        if (adView != null) {
-            adView = null;
-        }
-
         if (mWebChromeClient != null) {
             mWebChromeClient.onHideCustomView();
             mWebChromeClient = null;
@@ -777,6 +778,10 @@ class AdWebView extends WebView implements Displayable,
         }
         this.removeAllViews();
         stopCheckViewable();
+
+        if (adView != null) {
+            adView = null;
+        }
     }
 
     private void setCreativeWidth(int w) {
