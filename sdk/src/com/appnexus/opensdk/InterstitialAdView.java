@@ -572,6 +572,7 @@ public class InterstitialAdView extends AdView {
 
     @Override
     public void activityOnDestroy() {
+        destroy();
         destroyed = true;
     }
 
