@@ -96,6 +96,10 @@ public abstract class BaseNativeAdResponse implements NativeAdResponse {
             aboutToExpireTime = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT;
         } else if (contentSource.equalsIgnoreCase("rtb") && memberId == 12085) {
             aboutToExpireTime = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_MSAN;
+        } else if (contentSource.equalsIgnoreCase("rtb") && memberId == 9642) {
+            aboutToExpireTime = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_INDEX;
+        } else if (contentSource.equalsIgnoreCase("rtb") && memberId == 12317) {
+            aboutToExpireTime = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_INMOBI;
         }
 
         return aboutToExpireTime - getExpiryInterval(contentSource, memberId);
@@ -112,6 +116,10 @@ public abstract class BaseNativeAdResponse implements NativeAdResponse {
             Clog.e(Clog.baseLogTag, "for RTB & member 12085 expiryInterval can not be greater than 10 minutes, default interval will be used.");
         } else if (contentSource.equalsIgnoreCase("rtb") && memberId == 11217 && expiryInterval >= Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT){
             Clog.e(Clog.baseLogTag, "for RTB & member 11217 expiryInterval can not be greater than 5 minutes, default interval will be used.");
+        } else if (contentSource.equalsIgnoreCase("rtb") && memberId == 9642 && expiryInterval >= Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_INDEX){
+            Clog.e(Clog.baseLogTag, "for RTB & member 9642 expiryInterval can not be greater than 5 minutes, default interval will be used.");
+        } else if (contentSource.equalsIgnoreCase("rtb") && memberId == 12317 && expiryInterval >= Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_INMOBI){
+            Clog.e(Clog.baseLogTag, "for RTB & member 12317 expiryInterval can not be greater than 55 minutes, default interval will be used.");
         } else if(expiryInterval >= Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME){
             Clog.e(Clog.baseLogTag, "for RTB  expiryInterval can not be greater than 6 hours, default interval will be used.");
         } else {

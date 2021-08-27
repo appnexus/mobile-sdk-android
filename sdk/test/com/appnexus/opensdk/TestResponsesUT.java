@@ -398,6 +398,18 @@ public class TestResponsesUT {
         return anNative().replace("\"buyer_member_id\":958", "\"buyer_member_id\":11217");
     }
 
+    public static String anNativeMSAN() {
+        return anNative().replace("\"buyer_member_id\":958", "\"buyer_member_id\":12085");
+    }
+
+    public static String anNativeIndex() {
+        return anNative().replace("\"buyer_member_id\":958", "\"buyer_member_id\":9642");
+    }
+
+    public static String anNativeInMobi() {
+        return anNative().replace("\"buyer_member_id\":958", "\"buyer_member_id\":12317");
+    }
+
     public static String anNative() {
         String nativeResponse = templateNativeResponse("test title", "test description", "additional test description", "sponsored", "cta",
                 "5", "http://path_to_icon.com", 100, 150, "http://path_to_main.com",
