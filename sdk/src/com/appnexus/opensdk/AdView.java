@@ -1332,27 +1332,31 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
     }
 
     void fireImpressionTracker() {
-        // Just to be fail safe since we are making it to null below to mark it as being used.
-        if (impressionTrackers != null && impressionTrackers.size() > 0) {
-            SharedNetworkManager nm = SharedNetworkManager.getInstance(getContext());
-            if (nm.isConnected(getContext())) {
-                for (String url : impressionTrackers) {
-                    // Rare case: There can be a HTTP request for url, where nm.isConnected() is false, now
-                    fireImpressionTracker(url);
+        try {
+            // Just to be fail safe since we are making it to null below to mark it as being used.
+            if (impressionTrackers != null && impressionTrackers.size() > 0) {
+                ArrayList<String> impTrackers = new ArrayList<>(impressionTrackers);
+                // Making it to null so that there is no duplicate firing. We fire exactly only once.
+                impressionTrackers = null;
+                SharedNetworkManager nm = SharedNetworkManager.getInstance(getContext());
+                if (nm.isConnected(getContext())) {
+                    for (String url : impTrackers) {
+                        // Rare case: There can be a HTTP request for url, where nm.isConnected() is false, now
+                        fireImpressionTracker(url);
+                    }
+                } else {
+                    for (String url : impTrackers) {
+                        nm.addURL(url, getContext());
+                    }
                 }
-            } else {
-                for (String url : impressionTrackers) {
-                    nm.addURL(url, getContext());
-                }
+                impTrackers.clear();
             }
-            // Making it to null so that there is no duplicate firing. We fire exactly only once.
-            impressionTrackers = null;
-        }
-        if (lastDisplayable != null) {
-            lastDisplayable.onAdImpression();
-        }
-    }
 
+            if (lastDisplayable != null) {
+                lastDisplayable.onAdImpression();
+            }
+        } catch (Exception e) { }
+    }
 
     void fireImpressionTracker(final String trackerUrl) {
         Clog.d("FIRE_IMPRESSION", getEffectiveImpressionCountingMethod().name());

@@ -29,7 +29,6 @@ import com.appnexus.opensdk.ut.adresponse.RTBNativeAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.SSMHTMLAdResponse;
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.Settings.CountImpression;
 import com.appnexus.opensdk.utils.StringUtil;
 
@@ -431,7 +430,7 @@ public class AdViewRequestManager extends RequestManager {
     }
 
     protected void loadLazyAd() {
-        Ad adOwner = owner.get();
+        final Ad adOwner = owner.get();
 
         if (adOwner == null || currentAd == null) {
             failed(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR), null);
@@ -439,8 +438,13 @@ public class AdViewRequestManager extends RequestManager {
         }
 
         initiateWebview(adOwner, currentAd);
-        if (adOwner instanceof AdView) {
-            fireImpressionTrackerEarly((AdView) adOwner, currentAd);
+        if (adOwner != null && adOwner instanceof AdView) {
+            TasksManager.getInstance().executeOnMainThread(new Runnable() {
+                @Override
+                public void run() {
+                    fireImpressionTrackerEarly((AdView) adOwner, currentAd);
+                }
+            });
         }
     }
 
