@@ -68,7 +68,7 @@ class BannerScaleLoadAndDisplayActivity : Activity() {
         val count = intent.getIntExtra(COUNT, -1)
         displayAd = intent.getBooleanExtra(DISPLAY_AD, true)
         Clog.e("COUNT", count.toString())
-        for (i in 0..count) {
+        for (i in 0..count-1) {
 //            idlingResource.increment()
             arrayListAdUnits.add(setupBannerAd("RTB"))
         }

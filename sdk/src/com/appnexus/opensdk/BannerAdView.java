@@ -18,10 +18,7 @@ package com.appnexus.opensdk;
 
 
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.TypedArray;
 import android.graphics.Point;
 import android.os.Build;
@@ -94,12 +91,11 @@ import static com.appnexus.opensdk.VideoOrientation.UNKNOWN;
  * }
  * </pre>
  */
-public class BannerAdView extends AdView {
+public class BannerAdView extends AdView implements ScreenEventListener {
 
     private int period;
     private boolean loadAdHasBeenCalled;
     private boolean shouldReloadOnResume;
-    private BroadcastReceiver receiver;
     protected boolean shouldResetContainer;
     private boolean expandsToFitScreenWidth;
     private boolean resizeToFitContainer;
@@ -190,37 +186,12 @@ public class BannerAdView extends AdView {
         }
     }
 
-    private void setupBroadcast() {
-        if (receiver != null) return;
-
-        IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
-        filter.addAction(Intent.ACTION_SCREEN_ON);
-        receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
-                    stop();
-                    Clog.d(Clog.baseLogTag,
-                            Clog.getString(R.string.screen_off_stop));
-                } else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
-                    boolean ad_started = false;
-                    if (period > 0) {
-                        start();
-                        ad_started = true;
-                    } else if (shouldReloadOnResume) {
-                        stop();
-                        start();
-                        ad_started = true;
-                    }
-                    if (ad_started) {
-                        Clog.d(Clog.baseLogTag,
-                                Clog.getString(R.string.screen_on_start));
-                    }
-                }
-            }
-        };
-        // for non-sticky filters, registerReceiver always returns null.
-        getContext().registerReceiver(receiver, filter);
+    private void registerScreenEventListener() {
+        ScreenEventReceiver screenEventReceiver = ScreenEventReceiver.getInstance(getContext());
+        if (screenEventReceiver.isAlreadyRegistered(this)) {
+            return;
+        }
+        screenEventReceiver.registerListener(this);
     }
 
     @Override
@@ -264,7 +235,7 @@ public class BannerAdView extends AdView {
 
         // Are we coming back from a screen/user presence change?
         if (loadAdHasBeenCalled) {
-            setupBroadcast();
+            registerScreenEventListener();
             if (shouldReloadOnResume) {
                 start();
             }
@@ -287,7 +258,7 @@ public class BannerAdView extends AdView {
     // Make sure receiver is registered.
     private void onFirstLayout() {
         if (period > 0) {
-            setupBroadcast();
+            registerScreenEventListener();
         }
     }
 
@@ -412,6 +383,30 @@ public class BannerAdView extends AdView {
     @Override
     protected void displayMediated(MediatedDisplayable d) {
         display(d);
+    }
+
+    @Override
+    public void onScreenOn() {
+        boolean ad_started = false;
+        if (period > 0) {
+            start();
+            ad_started = true;
+        } else if (shouldReloadOnResume) {
+            stop();
+            start();
+            ad_started = true;
+        }
+        if (ad_started) {
+            Clog.d(Clog.baseLogTag,
+                    Clog.getString(R.string.screen_on_start));
+        }
+    }
+
+    @Override
+    public void onScreenOff() {
+        stop();
+        Clog.d(Clog.baseLogTag,
+                Clog.getString(R.string.screen_off_stop));
     }
 
     class AnimatorListener implements Animation.AnimationListener {
@@ -900,7 +895,7 @@ public class BannerAdView extends AdView {
             // Register a broadcast receiver to pause and refresh when the phone
             // is
             // locked
-            setupBroadcast();
+            registerScreenEventListener();
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.unhidden));
             //The only time we want to request on visibility changes is if an ad hasn't been loaded yet (loadAdHasBeenCalled)
             // shouldReloadOnResume is true
@@ -922,7 +917,7 @@ public class BannerAdView extends AdView {
             }
         } else {
             // Unregister the receiver to prevent a leak.
-            dismantleBroadcast();
+            unregisterScreenEventListener();
             Clog.d(Clog.baseLogTag, Clog.getString(R.string.hidden));
             if (mAdFetcher != null && loadAdHasBeenCalled) {
                 stop();
@@ -935,14 +930,12 @@ public class BannerAdView extends AdView {
         }
     }
 
-    private void dismantleBroadcast() {
-        if (receiver == null) return;
-        // Catch exception to protect against receiver failing to be registered.
-        try {
-            getContext().unregisterReceiver(receiver);
-        } catch (IllegalArgumentException ignored) {
+    private void unregisterScreenEventListener() {
+        ScreenEventReceiver screenEventReceiver = ScreenEventReceiver.getInstance(getContext());
+        if (!screenEventReceiver.isAlreadyRegistered(this)) {
+            return;
         }
-        receiver = null;
+        screenEventReceiver.unregisterListener(this);
     }
 
     @Override
@@ -978,7 +971,7 @@ public class BannerAdView extends AdView {
             this.currentDisplayable = null;
         }
 
-        dismantleBroadcast();
+        unregisterScreenEventListener();
         if (mAdFetcher != null) {
             stop();
         }
