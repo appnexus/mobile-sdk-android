@@ -1,3 +1,15 @@
+## 7.17
+### New Features:
++ MS-4838 TTL SDK expiry listener logic for Index Exchange
++ MS-4840 TTL SDK expiry listener logic for for InMobi
+### Bug Fixes
+###### Fixed:
++ MS-3471 Memory Leak in InterstitialAdView
++ MS-4831 Intermittent issue when loadLazyAd is called from background thread
++ MS-4832 NullPointerException being thrown in certain MRAID implementations [Github #66]
++ MS-4833 NullPointerException being thrown while firing the Impression trackers in certain scenarios
++ MS-4834 Issue with too many broadcast receivers getting registered, leading to performance degradation
+
 ## 7.16
 ### Bug Fixes
 ###### Fixed:

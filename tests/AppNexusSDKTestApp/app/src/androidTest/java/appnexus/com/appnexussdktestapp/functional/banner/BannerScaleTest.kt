@@ -88,15 +88,31 @@ class BannerScaleTest {
 
         Clog.e("COUNT: ", bannerActivity.recyclerListAdView.adapter!!.itemCount.toString())
 
-        (0 until count-1 step 3).forEach { i-> bannerActivity.recyclerListAdView.smoothScrollToPosition(i)
-        Thread.sleep(1000)}
+        scrollDown(count)
 
-        (count-1 until 0 step 3).forEach { i-> bannerActivity.recyclerListAdView.smoothScrollToPosition(i)
-            Thread.sleep(500)}
+        Thread.sleep(1000)
+
+        scrollUp(count)
+
+        Thread.sleep(1000)
+
+        scrollUp(count)
 
         Espresso.onView(ViewMatchers.withId(R.id.recyclerListAdView))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+    }
 
+    fun scrollDown(count: Int) {
+        (0 until count - 1 step 1).forEach { i ->
+            bannerActivity.recyclerListAdView.smoothScrollToPosition(i)
+            Thread.sleep(1000)
+        }
+    }
 
+    fun scrollUp(count: Int) {
+        (count - 1 until 0 step 1).forEach { i ->
+            bannerActivity.recyclerListAdView.smoothScrollToPosition(i)
+            Thread.sleep(1000)
+        }
     }
 }

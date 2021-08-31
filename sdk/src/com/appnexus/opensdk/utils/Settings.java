@@ -131,6 +131,8 @@ public class Settings {
     public static final long NATIVE_AD_RESPONSE_EXPIRATION_TIME_CSM_CSR = 60 * 60 * 1000; // an hour
     public static final long NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT = 5 * 60 * 1000; // 5 minutes
     public static final long NATIVE_AD_RESPONSE_EXPIRATION_TIME_MSAN = 10 * 60 * 1000; // 10 minutes
+    public static final long NATIVE_AD_RESPONSE_EXPIRATION_TIME_INDEX = 5 * 60 * 1000; // 5 minutes
+    public static final long NATIVE_AD_RESPONSE_EXPIRATION_TIME_INMOBI = 55 * 60 * 1000; // 55 minutes
 
     public static final long NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT = 60 * 1000; // 1 minute
 

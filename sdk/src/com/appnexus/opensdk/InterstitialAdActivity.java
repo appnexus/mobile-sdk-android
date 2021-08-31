@@ -36,7 +36,7 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
     private FrameLayout layout;
     private long now;
     private InterstitialAdView adView;
-    public static final int COUNTDOWN_INTERVAL = 1;
+    final int COUNTDOWN_INTERVAL = 1;
     private CircularProgressBar countdownWidget;
     private ANCountdownTimer countdownTimer;
     private Handler autoDismissHandler;
@@ -153,6 +153,8 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
         if (adView != null) {
             adView.setAdImplementation(null);
         }
+
+        dismissInterstitial();
     }
 
     @Override

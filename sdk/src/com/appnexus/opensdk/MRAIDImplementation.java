@@ -123,10 +123,12 @@ class MRAIDImplementation {
             owner.adView.post(new Runnable() {
                 @Override
                 public void run() {
-                    ViewGroup.LayoutParams layoutParams = owner.adView.getLayoutParams();
-                    if (layoutParams != null) {
-                        default_width = layoutParams.width;
-                        default_height = layoutParams.height;
+                    if (owner != null && owner.adView != null) {
+                        ViewGroup.LayoutParams layoutParams = owner.adView.getLayoutParams();
+                        if (layoutParams != null) {
+                            default_width = layoutParams.width;
+                            default_height = layoutParams.height;
+                        }
                     }
                 }
             });
