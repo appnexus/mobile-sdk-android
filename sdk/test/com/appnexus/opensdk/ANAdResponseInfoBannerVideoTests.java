@@ -27,12 +27,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.robolectric.shadows.ShadowLooper;
 
-import static android.os.Looper.getMainLooper;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
@@ -70,6 +67,9 @@ public class ANAdResponseInfoBannerVideoTests extends BaseViewAdTest {
         assertEquals(bannerAdView.getAdResponseInfo().getBuyMemberId(), 123);
         assertEquals(bannerAdView.getAdResponseInfo().getContentSource(), UTConstants.RTB);
         assertEquals(bannerAdView.getAdResponseInfo().getNetworkName(), "");
+        assertEquals(bannerAdView.getAdResponseInfo().getCpm(), 0.000010);
+        assertEquals(bannerAdView.getAdResponseInfo().getCpmPublisherCurrency(), 0.000010);
+        assertEquals(bannerAdView.getAdResponseInfo().getPublisherCurrencyCode(), "$");
     }
 
     @Test

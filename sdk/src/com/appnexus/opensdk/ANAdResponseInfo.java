@@ -25,6 +25,9 @@ public class ANAdResponseInfo {
     String contentSource = "";
     String networkName = "";
     String auctionId = "";
+    private double cpm;
+    private double cpmPublisherCurrency;
+    private String publisherCurrencyCode = "";
 
 
     /**
@@ -116,6 +119,39 @@ public class ANAdResponseInfo {
 
     public void setAuctionId(String auctionId) {
         this.auctionId = auctionId;
+    }
+
+    /**
+     * Retrieve the cpm
+     * */
+    public double getCpm() {
+        return cpm;
+    }
+
+    public void setCpm(double cpm) {
+        this.cpm = cpm;
+    }
+
+    /**
+     * Retrieve the cpm publisher currency
+     * */
+    public double getCpmPublisherCurrency() {
+        return cpmPublisherCurrency;
+    }
+
+    public void setCpmPublisherCurrency(double cpmPublisherCurrency) {
+        this.cpmPublisherCurrency = cpmPublisherCurrency;
+    }
+
+    /**
+     * Retrieve the publisher currency code
+     * */
+    public String getPublisherCurrencyCode() {
+        return publisherCurrencyCode;
+    }
+
+    public void setPublisherCurrencyCode(String publisherCurrencyCode) {
+        this.publisherCurrencyCode = publisherCurrencyCode;
     }
 
 }
