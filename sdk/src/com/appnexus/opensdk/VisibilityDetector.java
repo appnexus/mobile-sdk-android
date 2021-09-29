@@ -25,7 +25,8 @@ import com.appnexus.opensdk.utils.Settings;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -33,52 +34,67 @@ import java.util.concurrent.TimeUnit;
 class VisibilityDetector {
     static final long VISIBILITY_THROTTLE_MILLIS = 250;
     private boolean scheduled = false;
-    private HashMap<WeakReference<View>, ArrayList<VisibilityListener>> viewListenerMap;
+    private List<WeakReference<View>> viewList;
     private Runnable visibilityCheck;
     private ScheduledExecutorService tasker;
     private static VisibilityDetector visibilityDetector;
     private Handler mHandler;
 
-    static VisibilityDetector create(WeakReference<View> view) {
-        if (view == null) {
-            Clog.d(Clog.nativeLogTag, "Unable to check visibility");
-            return null;
-        }
-
+    static VisibilityDetector getInstance() {
         if (visibilityDetector == null) {
             visibilityDetector = new VisibilityDetector();
         }
-
-        visibilityDetector.addViewForVisibility(view);
         return visibilityDetector;
     }
 
     private VisibilityDetector() {
     }
 
-    private void addViewForVisibility(WeakReference<View> view) {
+    private boolean contains(List<WeakReference<View>> list, View reference)
+    {
+        if (list != null) {
+            for (WeakReference<View> viewWeakReference : list) {
+                if (viewWeakReference.get() == reference) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean remove(List<WeakReference<View>> list, View reference)
+    {
+        for (Iterator<WeakReference<View>> iterator = list.iterator(); iterator.hasNext(); ) {
+            WeakReference<View> weakRef = iterator.next();
+            if (weakRef.get() == reference) {
+                if (!(reference instanceof BannerAdView)) {
+                    reference.setTag(R.string.native_view_tag, null);
+                }
+                iterator.remove();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void addVisibilityListener(View view) {
+        if (view == null) {
+            Clog.d(Clog.nativeLogTag, "Unable to check visibility for null reference");
+            return;
+        }
+
         if (mHandler == null) {
             mHandler = new Handler();
         }
-        if (viewListenerMap == null) {
-            viewListenerMap = new HashMap();
+        if (viewList == null) {
+            viewList = new ArrayList<>();
         }
-        if (!viewListenerMap.containsKey(view)) {
-            this.viewListenerMap.put(view, new ArrayList<VisibilityListener>());
-            if (this.viewListenerMap.size() == 1) {
+        if (!contains(viewList, view)) {
+            this.viewList.add(new WeakReference<View>(view));
+            if (this.viewList.size() == 1) {
                 scheduleVisibilityCheck();
             }
         }
-    }
-
-    void addVisibilityListener(WeakReference<View> viewWeakReference, VisibilityListener listener) {
-        if (listener != null && viewListenerMap.containsKey(viewWeakReference) && !viewListenerMap.get(viewWeakReference).contains(listener)) {
-            viewListenerMap.get(viewWeakReference).add(listener);
-        }
-    }
-
-    boolean removeVisibilityListener(WeakReference<View> viewWeakReference) {
-        return viewListenerMap.remove(viewWeakReference) != null;
     }
 
     void scheduleVisibilityCheck(){
@@ -87,30 +103,15 @@ class VisibilityDetector {
         this.visibilityCheck = new Runnable() {
             @Override
             public void run() {
-                HashMap<WeakReference<View>, ArrayList<VisibilityListener>> tempMap = new HashMap<>(viewListenerMap);
-                for (WeakReference<View> viewWeakReference : tempMap.keySet()) {
-                    ArrayList<VisibilityListener> listeners = tempMap.get(viewWeakReference);
+                ArrayList<WeakReference<View>> tempList = new ArrayList<>(viewList);
+                for (WeakReference<View> viewWeakReference : tempList) {
+                    VisibilityListener listener = getListener(viewWeakReference);
                     View view = viewWeakReference.get();
-                    if (listeners != null && listeners.size() > 0 && view != null) {
-                        // copy listeners to a new array to avoid concurrentmodificationexception
-                        ArrayList<VisibilityListener> tempList = new ArrayList<VisibilityListener>();
-                        for (VisibilityListener listener : listeners) {
-                            tempList.add(listener);
-                        }
-                        if (isVisible(view)) {
-                            for (VisibilityListener listener : tempList) {
-                                listener.onVisibilityChanged(true);
-                            }
-                        } else {
-                            for (VisibilityListener listener : tempList) {
-                                listener.onVisibilityChanged(false);
-                            }
-                        }
+                    if (listener != null) {
+                        Clog.e("Visibility", view.toString() + ", isVisible: " + isVisible(view));
+                        listener.onVisibilityChanged(isVisible(view));
                     } else {
-                        viewListenerMap.remove(viewWeakReference);
-                        if (viewListenerMap.size() == 0) {
-
-                        }
+                        destroy(view);
                     }
                 }
             }
@@ -124,7 +125,20 @@ class VisibilityDetector {
         }, 0, VISIBILITY_THROTTLE_MILLIS, TimeUnit.MILLISECONDS);
     }
 
+    private VisibilityListener getListener(WeakReference<View> viewWeakReference) {
+        View view = viewWeakReference.get();
+        if (view != null) {
+            if (view instanceof VisibilityListener) {
+                return (VisibilityListener) view;
+            } else {
+                return (VisibilityListener) view.getTag(R.string.native_view_tag);
+            }
+        }
+        return null;
+    }
+
     boolean isVisible(View view) {
+
         if (view == null || view.getVisibility() != View.VISIBLE || view.getParent() == null) {
             return false;
         }
@@ -149,16 +163,18 @@ class VisibilityDetector {
         }
     }
 
-    void destroy(WeakReference<View> view) {
-        if (viewListenerMap.containsKey(view)) {
-            removeVisibilityListener(view);
+    void destroy(View view) {
+        if (contains(viewList, view)) {
+            remove(viewList, view);
         }
-        if (viewListenerMap.size() == 0) {
+        if (viewList == null || viewList.size() == 0) {
             if (tasker != null) {
                 tasker.shutdownNow();
             }
             scheduled = false;
-            mHandler.removeCallbacks(visibilityCheck);
+            if (mHandler != null) {
+                mHandler.removeCallbacks(visibilityCheck);
+            }
         }
     }
 

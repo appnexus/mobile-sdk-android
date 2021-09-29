@@ -104,7 +104,7 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
             registeredView = null;
             clickables = null;
             if (visibilityDetector != null) {
-                visibilityDetector.destroy(viewWeakReference);
+                visibilityDetector.destroy(viewWeakReference.get());
             }
             impressionTrackers = null;
             listener = null;
@@ -339,7 +339,7 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
         if (!expired && view != null) {
             this.listener = listener;
             viewWeakReference = new WeakReference<>(view);
-            visibilityDetector = VisibilityDetector.create(viewWeakReference);
+            visibilityDetector = VisibilityDetector.getInstance();
             if (visibilityDetector == null) {
                 return false;
             }

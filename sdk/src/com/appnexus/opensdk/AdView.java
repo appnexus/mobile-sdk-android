@@ -34,6 +34,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.appnexus.opensdk.VisibilityDetector.VisibilityListener;
 import com.appnexus.opensdk.tasksmanager.TasksManager;
 import com.appnexus.opensdk.ut.UTAdRequester;
 import com.appnexus.opensdk.ut.UTConstants;
@@ -57,7 +58,7 @@ import java.util.List;
  * BannerAdView}.  This may not be instantiated directly.  Its public
  * methods are accessed through one of its sub classes.
  */
-public abstract class AdView extends FrameLayout implements Ad, MultiAd {
+public abstract class AdView extends FrameLayout implements Ad, MultiAd, VisibilityListener {
 
     AdFetcher mAdFetcher;
     private AdResponse ad = null;
@@ -167,19 +168,6 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
 
     boolean isMRAIDExpanded() {
         return isMRAIDExpanded;
-    }
-
-    private void addVisibilityDetector(final WeakReference<View> view) {
-        final VisibilityDetector visibilityDetector = VisibilityDetector.create(view);
-        visibilityDetector.addVisibilityListener(view, new VisibilityDetector.VisibilityListener() {
-            @Override
-            public void onVisibilityChanged(boolean visible) {
-                if (visible && impressionTrackers != null && impressionTrackers.size() > 0) {
-                    fireImpressionTracker();
-                    visibilityDetector.destroy(view);
-                }
-            }
-        });
     }
 
     @Override
@@ -400,6 +388,10 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
      * when permanently remove the AdView from the view hierarchy.
      */
     public void destroy() {
+        if (VisibilityDetector.getInstance() != null) {
+            VisibilityDetector.getInstance().destroy(AdView.this);
+        }
+
         Clog.d(Clog.baseLogTag, "called destroy() on AdView");
         if (this.lastDisplayable != null) {
             this.lastDisplayable.destroy();
@@ -1254,8 +1246,11 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
                     }
                     if (ad.getDisplayable() != null && ad.getMediaType().equals(MediaType.BANNER) && ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER)) {
                         if (getEffectiveImpressionCountingMethod() == CountImpression.ONE_PX) {
-                            WeakReference<View> weakReferenceView = new WeakReference<View>(ad.getDisplayable().getView());
-                            addVisibilityDetector(weakReferenceView);
+                            VisibilityDetector visibilityDetector = VisibilityDetector.getInstance();
+                            if (visibilityDetector != null) {
+                                visibilityDetector.destroy(AdView.this);
+                                visibilityDetector.addVisibilityListener(AdView.this);
+                            }
                         }
                     }
                     setCreativeWidth(ad.getDisplayable().getCreativeWidth());
@@ -1632,6 +1627,14 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd {
             return CountImpression.LAZY_LOAD;
         } else {
             return CountImpression.DEFAULT;
+        }
+    }
+
+    @Override
+    public void onVisibilityChanged(boolean visible) {
+        if (visible && impressionTrackers != null && impressionTrackers.size() > 0) {
+            fireImpressionTracker();
+            VisibilityDetector.getInstance().destroy(this);
         }
     }
 }

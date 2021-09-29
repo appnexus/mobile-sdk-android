@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.webkit.WebView
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.appnexus.opensdk.SDKSettings
 import com.appnexus.opensdk.utils.Settings
 
 class MainActivity : AppCompatActivity() {
@@ -13,6 +14,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        SDKSettings.setCountImpressionOn1pxRendering(true)
 
         Settings.getSettings().debug_mode = true
         Settings.getSettings().useHttps = true
