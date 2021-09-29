@@ -100,13 +100,8 @@ public class AdFetcher {
     }
 
     public void stop() {
-        if (requestManager != null) {
-            requestManager.cancel();
-            requestManager = null;
-        }
 
-        clearTasker();
-
+        destroy();
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.stop));
         timePausedAt = System.currentTimeMillis();
         state = STATE.STOPPED;
@@ -261,12 +256,15 @@ public class AdFetcher {
                 fetcher.requestManager = new AdViewRequestManager(fetcher.anMultiAdRequest);
                 fetcher.requestManager.execute();
             } else {
-                MediaType mediaType = fetcher.owner.getMediaType();
-                if (mediaType.equals(MediaType.NATIVE) || mediaType.equals(MediaType.INTERSTITIAL) || mediaType.equals(MediaType.BANNER) || mediaType.equals(MediaType.INSTREAM_VIDEO)) {
-                    fetcher.requestManager = new AdViewRequestManager(fetcher.owner);
-                    fetcher.requestManager.execute();
-                } else {
-                    fetcher.owner.getAdDispatcher().onAdFailed(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST), null);
+                // Sanity null check
+                if (fetcher.owner != null) {
+                    MediaType mediaType = fetcher.owner.getMediaType();
+                    if (mediaType.equals(MediaType.NATIVE) || mediaType.equals(MediaType.INTERSTITIAL) || mediaType.equals(MediaType.BANNER) || mediaType.equals(MediaType.INSTREAM_VIDEO)) {
+                        fetcher.requestManager = new AdViewRequestManager(fetcher.owner);
+                        fetcher.requestManager.execute();
+                    } else {
+                        fetcher.owner.getAdDispatcher().onAdFailed(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST), null);
+                    }
                 }
             }
         }
