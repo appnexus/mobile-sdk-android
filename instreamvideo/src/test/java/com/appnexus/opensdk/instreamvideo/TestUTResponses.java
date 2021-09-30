@@ -118,7 +118,7 @@ public class TestUTResponses {
     public static final String ADS = "\"ads\":[%s]";
 
 
-    public static final String RTB_VIDEO = "{\"content_source\":\"rtb\",\"ad_type\":\"video\",\"buyer_member_id\":123,\"creative_id\":6332753,\"media_type_id\":4,\"media_subtype_id\":64,\"client_initiated_ad_counting\":true,\"rtb\":{\"video\":{\"content\":\"%s\",\"duration_ms\":100}}}";
+    public static final String RTB_VIDEO = "{\"cpm\":0.000010,\"cpm_publisher_currency\":0.000010,\"publisher_currency_code\":\"$\",\"content_source\":\"rtb\",\"ad_type\":\"video\",\"buyer_member_id\":123,\"creative_id\":6332753,\"media_type_id\":4,\"media_subtype_id\":64,\"client_initiated_ad_counting\":true,\"rtb\":{\"video\":{\"content\":\"%s\",\"duration_ms\":100}}}";
 
     public static String blank() {
         return "";

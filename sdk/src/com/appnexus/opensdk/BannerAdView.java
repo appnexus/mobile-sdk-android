@@ -975,6 +975,7 @@ public class BannerAdView extends AdView implements ScreenEventListener {
         if (mAdFetcher != null) {
             stop();
         }
+        destroy();
     }
 
     @Override

@@ -1,3 +1,11 @@
+## 7.18
+### New Features:
++ MS-4710 Make bid price available as part of AdResponseInfo [https://wiki.xandr.com/x/WoBKC]
+### Bug Fixes
+###### Fixed:
++ MS-4811 Issue with MAR.stop() api when used with enabled background threading [Github #58]
++ MS-4850 Memory Leak caused by VisibilityDetector
+
 ## 7.17
 ### New Features:
 + MS-4838 TTL SDK expiry listener logic for Index Exchange

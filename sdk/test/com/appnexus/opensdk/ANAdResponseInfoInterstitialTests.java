@@ -27,12 +27,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.robolectric.shadows.ShadowLooper;
 
-import static android.os.Looper.getMainLooper;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
@@ -69,6 +66,9 @@ public class ANAdResponseInfoInterstitialTests extends BaseViewAdTest {
         assertEquals(interstitialAdView.getAdResponseInfo().getBuyMemberId(), 123);
         assertEquals(interstitialAdView.getAdResponseInfo().getContentSource(), UTConstants.RTB);
         assertEquals(interstitialAdView.getAdResponseInfo().getNetworkName(), "");
+        assertEquals(interstitialAdView.getAdResponseInfo().getCpm(), 0.000010);
+        assertEquals(interstitialAdView.getAdResponseInfo().getCpmPublisherCurrency(), 0.000010);
+        assertEquals(interstitialAdView.getAdResponseInfo().getPublisherCurrencyCode(), "$");
     }
 
     @Test
@@ -83,6 +83,9 @@ public class ANAdResponseInfoInterstitialTests extends BaseViewAdTest {
         assertEquals(interstitialAdView.getAdResponseInfo().getBuyMemberId(), 0);
         assertEquals(interstitialAdView.getAdResponseInfo().getContentSource(), "");
         assertEquals(interstitialAdView.getAdResponseInfo().getNetworkName(), "");
+        assertEquals(interstitialAdView.getAdResponseInfo().getCpm(), 0d);
+        assertEquals(interstitialAdView.getAdResponseInfo().getCpmPublisherCurrency(), 0d);
+        assertEquals(interstitialAdView.getAdResponseInfo().getPublisherCurrencyCode(), "");
     }
 
     @Test

@@ -43,7 +43,6 @@ class ImpressionTracker {
             return null;
         } else {
             ImpressionTracker impressionTracker = new ImpressionTracker(viewWeakReference, url, visibilityDetector, context, anOmidAdSession, impressionTrackerListener);
-            visibilityDetector.addVisibilityListener(viewWeakReference, impressionTracker.listener);
             return impressionTracker;
         }
     }
@@ -56,6 +55,11 @@ class ImpressionTracker {
         this.context = context;
         this.anOmidAdSession = anOmidAdSession;
         this.impressionTrackerListener = impressionTrackerListener;
+        View view = viewWeakReference.get();
+        if (view != null) {
+            view.setTag(R.string.native_view_tag, listener);
+            visibilityDetector.addVisibilityListener(viewWeakReference.get());
+        }
     }
 
     private void fire() {
@@ -78,7 +82,7 @@ class ImpressionTracker {
                     }
                 };
                 asyncTask.execute();
-                visibilityDetector.destroy(viewWeakReference);
+                visibilityDetector.destroy(viewWeakReference.get());
                 listener = null;
             } else {
                 nm.addURL(url, context, new ImpressionTrackerListener() {

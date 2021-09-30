@@ -73,6 +73,9 @@ public class ANAdResponseInfoVideoTests extends BaseRoboTest implements VideoAdL
         assertEquals(videoAd.getAdResponseInfo().getContentSource(), UTConstants.RTB);
         assertEquals(videoAd.getAdResponseInfo().getNetworkName(), "");
         assertEquals(videoAd.getAdResponseInfo().getAuctionId(), "123456789");
+        assertEquals(videoAd.getAdResponseInfo().getCpm(), 0.000010);
+        assertEquals(videoAd.getAdResponseInfo().getCpmPublisherCurrency(), 0.000010);
+        assertEquals(videoAd.getAdResponseInfo().getPublisherCurrencyCode(), "$");
     }
 
     @Test
@@ -88,6 +91,10 @@ public class ANAdResponseInfoVideoTests extends BaseRoboTest implements VideoAdL
         assertEquals(videoAd.getAdResponseInfo().getContentSource(), "");
         assertEquals(videoAd.getAdResponseInfo().getNetworkName(), "");
         assertEquals(videoAd.getAdResponseInfo().getAuctionId(), "3552547938089377051000000");
+        assertEquals(videoAd.getAdResponseInfo().getCpm(), 0d);
+        assertEquals(videoAd.getAdResponseInfo().getCpmPublisherCurrency(), 0d);
+        assertEquals(videoAd.getAdResponseInfo().getPublisherCurrencyCode(), "");
+
     }
 
     @Test

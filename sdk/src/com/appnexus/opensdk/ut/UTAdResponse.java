@@ -83,6 +83,9 @@ public class UTAdResponse {
     private static final String RESPONSE_KEY_AUCTION_ID = "auction_id";
     private static final String RESPONSE_KEY_SECOND_PRICE = "second_price";
     private static final String RESPONSE_KEY_BUYER_MEMBER_ID = "buyer_member_id";
+    private static final String RESPONSE_KEY_CPM = "cpm";
+    private static final String RESPONSE_KEY_CPM_PUBLISHER_CURRENCY = "cpm_publisher_currency";
+    private static final String RESPONSE_KEY_CPM_CURRENCY_CODE = "publisher_currency_code";
     private JSONObject tag;
     private Integer key = null;
 
@@ -208,6 +211,9 @@ public class UTAdResponse {
                 String contentSource = JsonUtil.getJSONString(ad, RESPONSE_KEY_CONTENT_SOURCE);
                 String creativeId = JsonUtil.getJSONString(ad, RESPONSE_KEY_CREATIVE_ID);
                 int memberId = JsonUtil.getJSONInt(ad, RESPONSE_KEY_BUYER_MEMBER_ID);
+                double bidPriceCpm = JsonUtil.getJSONDouble(ad, RESPONSE_KEY_CPM);
+                double bidPricePublisherCurrency = JsonUtil.getJSONDouble(ad, RESPONSE_KEY_CPM_PUBLISHER_CURRENCY);
+                String bidPriceCurrencyCode = JsonUtil.getJSONString(ad, RESPONSE_KEY_CPM_CURRENCY_CODE);
 
                 ANAdResponseInfo adResponseInfo = new ANAdResponseInfo();
                 adResponseInfo.setAdType(getAdType(adType));
@@ -216,6 +222,10 @@ public class UTAdResponse {
                 adResponseInfo.setAuctionId(auctionID);
                 adResponseInfo.setContentSource(contentSource);
                 adResponseInfo.setBuyMemberId(memberId);
+                adResponseInfo.setCpm(bidPriceCpm);
+                adResponseInfo.setCpmPublisherCurrency(bidPricePublisherCurrency);
+                adResponseInfo.setPublisherCurrencyCode(bidPriceCurrencyCode);
+
 
                 if (contentSource != null && contentSource.equalsIgnoreCase(UTConstants.CSM)) {
                     handleCSM(ad, adType, notifyUrl, adResponseInfo);
