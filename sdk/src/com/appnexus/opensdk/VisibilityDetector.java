@@ -67,7 +67,7 @@ class VisibilityDetector {
         for (Iterator<WeakReference<View>> iterator = list.iterator(); iterator.hasNext(); ) {
             WeakReference<View> weakRef = iterator.next();
             if (weakRef.get() == reference) {
-                if (!(reference instanceof BannerAdView)) {
+                if (reference != null && !(reference instanceof BannerAdView)) {
                     reference.setTag(R.string.native_view_tag, null);
                 }
                 iterator.remove();

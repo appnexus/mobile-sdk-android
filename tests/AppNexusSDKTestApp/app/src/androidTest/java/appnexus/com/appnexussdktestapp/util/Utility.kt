@@ -5,7 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
-import java.lang.ref.WeakReference
+import org.junit.Assert
 
 class Utility {
     companion object {
@@ -14,21 +14,25 @@ class Utility {
 
             Handler(Looper.getMainLooper()).post({
                 val vDetector = Class.forName("com.appnexus.opensdk.VisibilityDetector")
-                val create = vDetector.getDeclaredMethod("create", WeakReference::class.java)
-                create.isAccessible = true
-                val weakReference = WeakReference(View(context))
-                val vDetInst = create.invoke(null, weakReference)
+                val getInstance = vDetector.getDeclaredMethod("getInstance")
+                getInstance.isAccessible = true
+                val viewReference = View(context)
+                val vDetInst = getInstance.invoke(null)
 
-                val destroy = vDetector.getDeclaredMethod("destroy", WeakReference::class.java)
+                val addVisibilityListener = vDetector.getDeclaredMethod("addVisibilityListener", View::class.java)
+                addVisibilityListener.isAccessible = true
+                addVisibilityListener.invoke(vDetInst, viewReference)
+
+                val destroy = vDetector.getDeclaredMethod("destroy", View::class.java)
                 destroy.isAccessible = true
-                destroy.invoke(vDetInst, weakReference)
+                destroy.invoke(vDetInst, viewReference)
 
-                val declaredField = vDetector.getDeclaredField("viewListenerMap")
+                val declaredField = vDetector.getDeclaredField("viewList")
                 declaredField.isAccessible = true
-                var map = declaredField.get(vDetInst) as HashMap<Object, Object>
-                Log.e("VISIBILITY", " Size: ${checkZero} ${map.size}");
+                var list = declaredField.get(vDetInst) as List<Object>
+                Log.e("VISIBILITY", " Size: ${checkZero} ${list.size}");
 
-                junit.framework.Assert.assertTrue(map.size == checkZero)
+                Assert.assertEquals(checkZero, list.size)
 
             })
         }

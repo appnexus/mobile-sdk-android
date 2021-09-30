@@ -74,7 +74,8 @@ public class ImageService {
             return;
         }
         if (imageUrlMap != null && !imageUrlMap.isEmpty()) {
-            for (Map.Entry pairs : imageUrlMap.entrySet()) {
+            HashMap<String, String> imageUrlMapCopy = new HashMap<>(imageUrlMap);
+            for (Map.Entry pairs : imageUrlMapCopy.entrySet()) {
                 ImageDownloader downloader = new ImageDownloader(imageReceiver, (String) pairs.getKey(), (String) pairs.getValue(), this);
                 Clog.d(Clog.baseLogTag, "Downloading " + pairs.getKey() + " from url: " + pairs.getValue());
                 downloader.execute();
