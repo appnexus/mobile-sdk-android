@@ -15,6 +15,7 @@ class Utility {
             Handler(Looper.getMainLooper()).post({
                 val vDetector = Class.forName("com.appnexus.opensdk.VisibilityDetector")
                 val getInstance = vDetector.getDeclaredMethod("getInstance")
+                
                 getInstance.isAccessible = true
                 val viewReference = View(context)
                 val vDetInst = getInstance.invoke(null)
