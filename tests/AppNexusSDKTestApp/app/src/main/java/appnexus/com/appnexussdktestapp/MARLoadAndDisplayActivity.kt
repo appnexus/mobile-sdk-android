@@ -179,7 +179,7 @@ class MARLoadAndDisplayActivity : Activity() {
                     idlingResource.decrement()
             }
 
-            override fun onAdFailed(errorcode: ResultCode, adResponseInfo: ANAdResponseInfo) {
+            override fun onAdFailed(errorcode: ResultCode, adResponseInfo: ANAdResponseInfo?) {
                 msg += "Native Ad Failed:$errorcode\n"
                 toast()
                 if (!idlingResource.isIdleNow)
@@ -313,7 +313,9 @@ class MARLoadAndDisplayActivity : Activity() {
                 onLazyAdLoaded = true
                 arrayListAd.add(adView)
                 if (displayAd)
-                    recyclerListAdView.adapter!!.notifyDataSetChanged()
+                    Handler(Looper.getMainLooper()).post({
+                        recyclerListAdView.adapter!!.notifyDataSetChanged()
+                    })
                 if (!idlingResource.isIdleNow)
                     idlingResource.decrement()
             }
