@@ -47,6 +47,7 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -106,7 +107,8 @@ public class UTAdRequest {
         ANMultiAdRequest anMultiAdRequest = getMultiAdRequest();
         if (anMultiAdRequest != null && anMultiAdRequest.isMARRequestInProgress()) {
             anMultiAdRequest.onRequestFailed(code);
-            ArrayList<WeakReference<Ad>> adUnitList = anMultiAdRequest.getAdUnitList();
+            ArrayList<WeakReference<Ad>> adUnitList = new ArrayList();
+            adUnitList.addAll(anMultiAdRequest.getAdUnitList());
             for (WeakReference<Ad> adWeakReference : adUnitList) {
                 Ad ad = adWeakReference.get();
                 if (ad != null) {
@@ -204,7 +206,8 @@ public class UTAdRequest {
                         JSONObject tag = tagsArray.getJSONObject(i);
                         jsonMap.put(JsonUtil.getJSONString(tag, "uuid"), tag);
                     }
-                    ArrayList<WeakReference<Ad>> adUnitList = anMultiAdRequest.getAdUnitList();
+                    ArrayList<WeakReference<Ad>> adUnitList = new ArrayList();
+                    adUnitList.addAll(anMultiAdRequest.getAdUnitList());
                     for (WeakReference<Ad> adWeakReference : adUnitList) {
                         Ad ad = adWeakReference.get();
                         if (ad != null) {
@@ -298,7 +301,8 @@ public class UTAdRequest {
             } else {
                 anMultiAdRequest.onMARLoadCompleted();
             }
-            ArrayList<WeakReference<Ad>> adUnitList = anMultiAdRequest.getAdUnitList();
+            ArrayList<WeakReference<Ad>> adUnitList = new ArrayList();
+            adUnitList.addAll(anMultiAdRequest.getAdUnitList());
             for (WeakReference<Ad> adWeakReference : adUnitList) {
                 Ad ad = adWeakReference.get();
                 Clog.d(Clog.SRMLogTag, "RECIEVED: " + ad);
