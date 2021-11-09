@@ -83,4 +83,23 @@ class NativeTest {
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Assert.assertTrue(nativeActivity.didLogImpression)
     }
+
+    /*
+   * Sanity Test for the Native Ad
+   * */
+    @Test
+    fun nativeAdImpressionTest() {
+        Assert.assertFalse(nativeActivity.didLogImpression)
+        nativeActivity.triggerAdLoad("17982237", creativeId = 182426521)
+        Espresso.onView(ViewMatchers.withId(R.id.title))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.description))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Thread.sleep(5000)
+        Espresso.onView(ViewMatchers.withId(R.id.icon))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.image))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Assert.assertTrue(nativeActivity.didLogImpression)
+    }
 }

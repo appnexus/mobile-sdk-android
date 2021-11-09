@@ -159,7 +159,8 @@ class VisibilityDetector {
         if (SDKSettings.getCountImpressionOn1pxRendering()) {
             return visibleViewArea >= Settings.MIN_AREA_VIEWED_FOR_1PX;
         } else {
-            return 100 * visibleViewArea >= Settings.MIN_PERCENTAGE_VIEWED * totalArea;
+            // Default Native case
+            return view.getWindowToken() != null;
         }
     }
 

@@ -23,7 +23,6 @@ import android.view.View;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
-import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.viewability.ANOmidAdSession;
 
 import java.lang.ref.WeakReference;
@@ -57,8 +56,12 @@ class ImpressionTracker {
         this.impressionTrackerListener = impressionTrackerListener;
         View view = viewWeakReference.get();
         if (view != null) {
-            view.setTag(R.string.native_view_tag, listener);
-            visibilityDetector.addVisibilityListener(viewWeakReference.get());
+            if (!SDKSettings.getCountImpressionOn1pxRendering() && view.getWindowToken() != null) {
+                listener.onVisibilityChanged(true);
+            } else {
+                view.setTag(R.string.native_view_tag, listener);
+                visibilityDetector.addVisibilityListener(viewWeakReference.get());
+            }
         }
     }
 
@@ -102,21 +105,12 @@ class ImpressionTracker {
     }
 
     class ImpressionListener implements VisibilityDetector.VisibilityListener {
-        long elapsedTime = 0;
 
         @Override
         public void onVisibilityChanged(boolean visible) {
-            if (visible && SDKSettings.getCountImpressionOn1pxRendering()) {
+            if (visible) {
                 ImpressionTracker.this.fire();
-            } else {
-                if (visible) {
-                    elapsedTime += VisibilityDetector.VISIBILITY_THROTTLE_MILLIS;
-                } else {
-                    elapsedTime = 0;
-                }
-                if (elapsedTime >= Settings.NATIVE_AD_VISIBLE_PERIOD_MILLIS) {
-                    ImpressionTracker.this.fire();
-                }
+                Clog.e("NativeImpression", "FIRING Impression Tracker");
             }
         }
     }
