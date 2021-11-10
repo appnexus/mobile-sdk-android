@@ -1155,7 +1155,7 @@ public class BannerAdView extends AdView implements ScreenEventListener {
                 view.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
             } else {
                 view.getLayoutParams().width = FrameLayout.LayoutParams.MATCH_PARENT;
-                view.getLayoutParams().height = FrameLayout.LayoutParams.MATCH_PARENT;
+                view.getLayoutParams().height = new_height;
             }
             ((WebView)view).setInitialScale((int) Math.ceil(ratio_delta * 100));
         }else{

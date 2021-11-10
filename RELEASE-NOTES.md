@@ -1,3 +1,10 @@
+## 7.19
+### Improvement/Bug Fixes
++ MS-4847 Improved impression tracking methodology for Native Ads, trackers to be fired on Render [https://docs.xandr.com/bundle/mobile-sdk/page/android-sdk.html]
+###### Fixed:
++ MS-4758 Issue with expandsToFitScreenWidth for Lazy Load Banner
++ MS-4879 ConcurrentModificationException in UTAdRequest
+
 ## 7.18
 ### New Features:
 + MS-4710 Make bid price available as part of AdResponseInfo [https://wiki.xandr.com/x/WoBKC]

@@ -38,6 +38,7 @@ import appnexus.com.appnexussdktestapp.BannerActivity
 import appnexus.com.appnexussdktestapp.R
 import com.appnexus.opensdk.ANClickThroughAction
 import com.appnexus.opensdk.AdActivity
+import com.appnexus.opensdk.SDKSettings
 import com.appnexus.opensdk.utils.StringUtil
 import com.appnexus.opensdk.utils.ViewUtil
 import com.microsoft.appcenter.espresso.Factory
@@ -203,5 +204,78 @@ class BannerNativeTest {
 
         var width = ViewUtil.getValueInDP(bannerActivity, bannerActivity.banner.width)
         Assert.assertTrue("Screen Width Resize Assertion Failure expected = " + ViewUtil.getScreenSizeAsDP(bannerActivity)[0] + ", actual = " + width, width == ViewUtil.getScreenSizeAsDP(bannerActivity)[0])
+    }
+
+    /*
+    * Sanity Test for the Banner Native Ad Impression
+    * */
+    @Test
+    fun bannerNativeLoadImpressionTest() {
+
+        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, creativeId = 182426521)
+        onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(matches(isDisplayed()))
+        Assert.assertTrue(bannerActivity.impressionLogged)
+    }
+
+    /*
+    * Sanity Test for the Banner Native Ad Impression when Contianer view is attached later
+    * */
+    @Test
+    fun bannerNativeLoadImpressionTestWithViewAttachedLater() {
+
+        bannerActivity.shouldDisplay = false
+        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, creativeId = 182426521)
+        onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(matches(isDisplayed()))
+        Assert.assertFalse(bannerActivity.impressionLogged)
+        bannerActivity.attachNative()
+        Thread.sleep(1000)
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
+        Assert.assertTrue(bannerActivity.impressionLogged)
+    }
+
+    /*
+    * Sanity Test for the Banner Native Ad Impression
+    * */
+    @Test
+    fun bannerNativeLoadImpressionTestOnePx() {
+
+        SDKSettings.setCountImpressionOn1pxRendering(true)
+        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, creativeId = 182426521)
+        Thread.sleep(1000)
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
+        Assert.assertTrue(bannerActivity.impressionLogged)
+        SDKSettings.setCountImpressionOn1pxRendering(false)
+    }
+
+    /*
+    * Sanity Test for the Banner Native Ad Impression when Container view is attached later
+    * */
+    @Test
+    fun bannerNativeLoadImpressionTestOnePxWithViewAttachedLater() {
+        SDKSettings.setCountImpressionOn1pxRendering(true)
+        bannerActivity.shouldDisplay = false
+        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, creativeId = 182426521)
+        onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(matches(isDisplayed()))
+        Assert.assertFalse(bannerActivity.impressionLogged)
+        bannerActivity.attachNative(false)
+        Thread.sleep(1000)
+        Assert.assertFalse(bannerActivity.impressionLogged)
+        bannerActivity.attachNative()
+        Thread.sleep(1000)
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
+        Assert.assertTrue(bannerActivity.impressionLogged)
+        SDKSettings.setCountImpressionOn1pxRendering(false)
     }
 }

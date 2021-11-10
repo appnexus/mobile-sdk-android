@@ -205,7 +205,9 @@ public class ANMultiAdRequest {
     }
 
     private void initAds() {
-        for (WeakReference<Ad> ads: getAdUnitList()) {
+        ArrayList<WeakReference<Ad>> adUnitList = new ArrayList();
+        adUnitList.addAll(getAdUnitList());
+        for (WeakReference<Ad> ads: adUnitList) {
             Ad ad = ads.get();
             if (ad != null && ad.getMultiAd() != null) {
                 ad.getMultiAd().init();

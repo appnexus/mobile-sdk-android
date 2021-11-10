@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.webkit.WebView
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -15,10 +17,13 @@ import androidx.test.espresso.idling.CountingIdlingResource
 import appnexus.com.appnexussdktestapp.utility.Utils
 import com.appnexus.opensdk.*
 import com.appnexus.opensdk.utils.Settings
+import com.appnexus.opensdk.utils.ViewUtil
 import com.squareup.picasso.Picasso
 
 class BannerActivity : AppCompatActivity(), AdListener {
 
+    private lateinit var nativeView: View
+    var impressionLogged = false
     var shouldDisplay: Boolean = true
     val banner_id: Int = 1234
     lateinit var banner: BannerAdView
@@ -122,7 +127,7 @@ class BannerActivity : AppCompatActivity(), AdListener {
 
     private fun handleNativeResponse(response: NativeAdResponse?) {
 
-        val nativeView: View = View.inflate(this, R.layout.layout_native, null)
+        nativeView = View.inflate(this, R.layout.layout_native, null)
         val icon: ImageView = nativeView.findViewById(R.id.icon)
         val image: ImageView = nativeView.findViewById(R.id.image)
         val title: TextView = nativeView.findViewById(R.id.title)
@@ -132,7 +137,30 @@ class BannerActivity : AppCompatActivity(), AdListener {
         if (response?.imageUrl != null) Picasso.get().load(response.imageUrl).into(image)
         title.setText(response?.title)
         desc.setText(response?.description)
-        layout.addView(nativeView)
+        if (shouldDisplay) {
+            layout.addView(nativeView)
+        }
+        NativeAdSDK.registerTracking(response, nativeView, object: NativeAdEventListener {
+            override fun onAdImpression() {
+                impressionLogged = true
+            }
+
+            override fun onAdAboutToExpire() {
+            }
+
+            override fun onAdWasClicked() {
+            }
+
+            override fun onAdWasClicked(clickUrl: String?, fallbackURL: String?) {
+            }
+
+            override fun onAdExpired() {
+            }
+
+            override fun onAdWillLeaveApplication() {
+            }
+
+        })
         if (!idlingResource.isIdleNow)
             idlingResource.decrement()
     }
@@ -142,5 +170,17 @@ class BannerActivity : AppCompatActivity(), AdListener {
             banner.activityOnDestroy()
         }
         super.onDestroy()
+    }
+
+    fun attachNative(display: Boolean = true) {
+        Handler(Looper.getMainLooper()).post({
+            if (!display) {
+                nativeView.visibility = GONE
+            } else {
+                nativeView.visibility = VISIBLE
+            }
+            ViewUtil.removeChildFromParent(nativeView)
+            layout.addView(nativeView)
+        })
     }
 }
