@@ -26,9 +26,10 @@ import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.viewability.ANOmidAdSession;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 class ImpressionTracker {
-    private String url;
+    private ArrayList<String> urls;
     private VisibilityDetector visibilityDetector;
     private boolean fired = false;
     private Context context;
@@ -37,18 +38,18 @@ class ImpressionTracker {
     private ImpressionTrackerListener impressionTrackerListener;
     private WeakReference<View> viewWeakReference;
 
-    static ImpressionTracker create(WeakReference<View> viewWeakReference, String url, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession, ImpressionTrackerListener impressionTrackerListener) {
+    static ImpressionTracker create(WeakReference<View> viewWeakReference, ArrayList<String> urls, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession, ImpressionTrackerListener impressionTrackerListener) {
         if (visibilityDetector == null) {
             return null;
         } else {
-            ImpressionTracker impressionTracker = new ImpressionTracker(viewWeakReference, url, visibilityDetector, context, anOmidAdSession, impressionTrackerListener);
+            ImpressionTracker impressionTracker = new ImpressionTracker(viewWeakReference, urls, visibilityDetector, context, anOmidAdSession, impressionTrackerListener);
             return impressionTracker;
         }
     }
 
-    private ImpressionTracker(WeakReference<View> viewWeakReference, String url, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession, ImpressionTrackerListener impressionTrackerListener) {
+    private ImpressionTracker(WeakReference<View> viewWeakReference, ArrayList<String> urls, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession, ImpressionTrackerListener impressionTrackerListener) {
         this.viewWeakReference = viewWeakReference;
-        this.url = url;
+        this.urls = urls;
         this.visibilityDetector = visibilityDetector;
         this.listener = new ImpressionListener();
         this.context = context;
@@ -69,37 +70,39 @@ class ImpressionTracker {
         // check if impression has already fired
         if (!fired) {
             SharedNetworkManager nm = SharedNetworkManager.getInstance(context);
-            if (nm.isConnected(context)) {
-                @SuppressLint("StaticFieldLeak") HTTPGet asyncTask = new HTTPGet() {
-                    @Override
-                    protected void onPostExecute(HTTPResponse response) {
-                        Clog.d(Clog.nativeLogTag, "Impression tracked.");
-                        if (impressionTrackerListener != null) {
-                            impressionTrackerListener.onImpressionTrackerFired();
+            for (final String url : urls) {
+                if (nm.isConnected(context)) {
+                    @SuppressLint("StaticFieldLeak") HTTPGet asyncTask = new HTTPGet() {
+                        @Override
+                        protected void onPostExecute(HTTPResponse response) {
+                            Clog.d(Clog.nativeLogTag, "Impression tracked.");
+                            if (impressionTrackerListener != null) {
+                                impressionTrackerListener.onImpressionTrackerFired();
+                            }
                         }
-                    }
 
-                    @Override
-                    protected String getUrl() {
-                        return url;
-                    }
-                };
-                asyncTask.execute();
-                visibilityDetector.destroy(viewWeakReference.get());
-                listener = null;
-            } else {
-                nm.addURL(url, context, new ImpressionTrackerListener() {
-                    @Override
-                    public void onImpressionTrackerFired() {
-                        if (impressionTrackerListener != null) {
-                            impressionTrackerListener.onImpressionTrackerFired();
+                        @Override
+                        protected String getUrl() {
+                            return url;
                         }
-                    }
-                });
+                    };
+                    asyncTask.execute();
+                } else {
+                    nm.addURL(url, context, new ImpressionTrackerListener() {
+                        @Override
+                        public void onImpressionTrackerFired() {
+                            if (impressionTrackerListener != null) {
+                                impressionTrackerListener.onImpressionTrackerFired();
+                            }
+                        }
+                    });
+                }
             }
             if (anOmidAdSession != null) {
                 anOmidAdSession.fireImpression();
             }
+            visibilityDetector.destroy(viewWeakReference.get());
+            listener = null;
             fired = true;
         }
     }
