@@ -143,6 +143,11 @@ class VisibilityDetector {
             return false;
         }
 
+        if (!SDKSettings.getCountImpressionOn1pxRendering()) {
+            // Default Native case
+            return view.getWindowToken() != null;
+        }
+
         // holds the visible part of a view
         Rect clippedArea = new Rect();
 
@@ -157,11 +162,10 @@ class VisibilityDetector {
             return false;
         }
         if (SDKSettings.getCountImpressionOn1pxRendering()) {
+            // OnePx (Banner and Native)
             return visibleViewArea >= Settings.MIN_AREA_VIEWED_FOR_1PX;
-        } else {
-            // Default Native case
-            return view.getWindowToken() != null;
         }
+        return false;
     }
 
     void destroy(View view) {

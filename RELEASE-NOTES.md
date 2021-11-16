@@ -1,5 +1,6 @@
-## 7.19
+## 7.19.1
 ### Improvement/Bug Fixes
++ MS-4911 Addressed an issue (introduced in 7.18) with native impression tracking that prevented certain native creatives from firing multiple impression trackers.
 + MS-4847 Improved impression tracking methodology for Native Ads, trackers to be fired on Render [https://docs.xandr.com/bundle/mobile-sdk/page/android-sdk.html]
 ###### Fixed:
 + MS-4758 Issue with expandsToFitScreenWidth for Lazy Load Banner
