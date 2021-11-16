@@ -106,7 +106,7 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
             if (visibilityDetector != null) {
                 visibilityDetector.destroy(viewWeakReference.get());
             }
-            impressionTrackers = null;
+            impressionTracker = null;
             listener = null;
             // free assets
             if (icon != null) {
@@ -137,7 +137,7 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
     private NativeAdEventListener listener;
     private View.OnClickListener clickListener;
     private VisibilityDetector visibilityDetector;
-    private ArrayList<ImpressionTracker> impressionTrackers;
+    private ImpressionTracker impressionTracker;
     private ProgressDialog progressDialog;
     private ANClickThroughAction clickThroughAction = ANClickThroughAction.OPEN_SDK_BROWSER;
     private WeakReference<View> viewWeakReference;
@@ -344,22 +344,18 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
                 return false;
             }
 
-            impressionTrackers = new ArrayList<ImpressionTracker>(imp_trackers.size());
-            for (String url : imp_trackers) {
-                ImpressionTracker impressionTracker = ImpressionTracker.create(viewWeakReference, url, visibilityDetector, view.getContext(), anOmidAdSession, new ImpressionTrackerListener() {
-                    @Override
-                    public void onImpressionTrackerFired() {
-                        if (listener != null) {
-                            listener.onAdImpression();
-                        }
-                        if (anNativeExpireHandler != null) {
-                            anNativeExpireHandler.removeCallbacks(expireRunnable);
-                            anNativeExpireHandler.removeCallbacks(aboutToExpireRunnable);
-                        }
+            impressionTracker = ImpressionTracker.create(viewWeakReference, imp_trackers, visibilityDetector, view.getContext(), anOmidAdSession, new ImpressionTrackerListener() {
+                @Override
+                public void onImpressionTrackerFired() {
+                    if (listener != null) {
+                        listener.onAdImpression();
                     }
-                });
-                impressionTrackers.add(impressionTracker);
-            }
+                    if (anNativeExpireHandler != null) {
+                        anNativeExpireHandler.removeCallbacks(expireRunnable);
+                        anNativeExpireHandler.removeCallbacks(aboutToExpireRunnable);
+                    }
+                }
+            });
             this.registeredView = view;
             setClickListener();
             view.setOnClickListener(clickListener);
