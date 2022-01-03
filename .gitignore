@@ -17,3 +17,4 @@ tests/gradle**
 !gradle.properties
 !gradle-wrapper.properties
 */projectFilesBackup
+**/*.log
