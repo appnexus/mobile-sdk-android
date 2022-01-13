@@ -301,44 +301,52 @@ public class UTAdRequest {
             } else {
                 anMultiAdRequest.onMARLoadCompleted();
             }
-            ArrayList<WeakReference<Ad>> adUnitList = new ArrayList();
-            adUnitList.addAll(anMultiAdRequest.getAdUnitList());
-            for (WeakReference<Ad> adWeakReference : adUnitList) {
-                Ad ad = adWeakReference.get();
-                Clog.d(Clog.SRMLogTag, "RECIEVED: " + ad);
-                if (ad != null) {
-                    UTAdRequester requester = new AdViewRequestManager(ad);
-                    ad.getMultiAd().setRequestManager(requester);
-                    if (adResponseMap == null) {
-                        ResultCode code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
-                        Clog.e(Clog.SRMLogTag, "FAILED: " + code.getMessage());
-                        requester.failed(code, null);
-                        continue;
-                    }
-                    UTAdResponse result = adResponseMap.get(ad.getRequestParameters().getUUID());
-                    Clog.d(Clog.SRMLogTag, "RECIEVED: RESPONSE: " + result);
+            if (anMultiAdRequest != null && anMultiAdRequest.getAdUnitList() != null && !anMultiAdRequest.getAdUnitList().isEmpty()) {
+                ArrayList<WeakReference<Ad>> adUnitList = new ArrayList();
+                adUnitList.addAll(anMultiAdRequest.getAdUnitList());
+                if (!adUnitList.isEmpty()) {
+                    for (WeakReference<Ad> adWeakReference : adUnitList) {
+                        if (adWeakReference != null) {
+                            Ad ad = adWeakReference.get();
+                            Clog.d(Clog.SRMLogTag, "RECIEVED: " + ad);
+                            if (ad != null) {
+                                UTAdRequester requester = new AdViewRequestManager(ad);
+                                ad.getMultiAd().setRequestManager(requester);
+                                if (adResponseMap == null) {
+                                    ResultCode code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
+                                    Clog.e(Clog.SRMLogTag, "FAILED: " + code.getMessage());
+                                    requester.failed(code, null);
+                                    continue;
+                                }
+                                UTAdResponse result = adResponseMap.get(ad.getRequestParameters().getUUID());
+                                Clog.d(Clog.SRMLogTag, "RECIEVED: RESPONSE: " + result);
 
-                    if (requester != null) {
-                        if (result == null) {
-                            ResultCode code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
-                            Clog.e(Clog.SRMLogTag, "FAILED: " + code.getMessage());
-                            requester.failed(code, null);
-                            continue;
+                                if (requester != null) {
+                                    if (result == null) {
+                                        ResultCode code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
+                                        Clog.e(Clog.SRMLogTag, "FAILED: " + code.getMessage());
+                                        requester.failed(code, null);
+                                        continue;
+                                    }
+                                    if (result.isHttpError()) {
+                                        ResultCode code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
+                                        Clog.e(Clog.SRMLogTag, "FAILED: " + code.getMessage());
+                                        requester.failed(code, null);
+                                        continue;
+                                    }
+                                    Clog.e(Clog.SRMLogTag, "SUCCESS: " + ad);
+                                    requester.onReceiveUTResponse(result);
+                                } else {
+                                    Clog.e(Clog.baseLogTag, "Exiting because of UTAdRequester is null, response will not be processed further and no listener will be invoked");
+                                }
+                            } else {
+                                Clog.e(Clog.baseLogTag, "Exiting because of Ad request object is null, response will not be processed further and no listener will be invoked");
+                            }
                         }
-                        if (result.isHttpError()) {
-                            ResultCode code = ResultCode.getNewInstance(ResultCode.NETWORK_ERROR);
-                            Clog.e(Clog.SRMLogTag, "FAILED: " + code.getMessage());
-                            requester.failed(code, null);
-                            continue;
-                        }
-                        Clog.e(Clog.SRMLogTag, "SUCCESS: " + ad);
-                        requester.onReceiveUTResponse(result);
-                    }else{
-                        Clog.e(Clog.baseLogTag, "Exiting because of UTAdRequester is null, response will not be processed further and no listener will be invoked");
                     }
-                }else{
-                    Clog.e(Clog.baseLogTag, "Exiting because of Ad request object is null, response will not be processed further and no listener will be invoked");
                 }
+            } else {
+                Clog.e(Clog.baseLogTag, "Exiting because no Ad Unit is attached to the MAR instance, response will not be processed further and no listener will be invoked");
             }
         }
     }
