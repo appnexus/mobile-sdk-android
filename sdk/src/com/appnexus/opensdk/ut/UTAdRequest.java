@@ -334,7 +334,7 @@ public class UTAdRequest {
                                         requester.failed(code, null);
                                         continue;
                                     }
-                                    Clog.e(Clog.SRMLogTag, "SUCCESS: " + ad);
+                                    Clog.d(Clog.SRMLogTag, "SUCCESS: " + ad);
                                     requester.onReceiveUTResponse(result);
                                 } else {
                                     Clog.e(Clog.baseLogTag, "Exiting because of UTAdRequester is null, response will not be processed further and no listener will be invoked");

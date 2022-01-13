@@ -1216,7 +1216,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
                 @Override
                 public void run() {
                     if (adListener != null) {
-                        Clog.e("ADVIEW", "onAdClicked clickUrl");
+                        Clog.d(Clog.baseLogTag, "onAdClicked clickUrl");
                         adListener.onAdClicked(AdView.this, clickUrl);
 
                     }

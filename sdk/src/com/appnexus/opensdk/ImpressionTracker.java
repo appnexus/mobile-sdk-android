@@ -113,7 +113,7 @@ class ImpressionTracker {
         public void onVisibilityChanged(boolean visible) {
             if (visible) {
                 ImpressionTracker.this.fire();
-                Clog.e("NativeImpression", "FIRING Impression Tracker");
+                Clog.d(Clog.baseLogTag, "FIRING Impression Tracker");
             }
         }
     }

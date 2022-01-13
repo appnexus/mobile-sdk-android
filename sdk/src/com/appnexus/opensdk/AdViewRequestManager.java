@@ -105,7 +105,7 @@ public class AdViewRequestManager extends RequestManager {
 
     private void processFailure(ResultCode code, ANAdResponseInfo responseInfo) {
         printMediatedClasses();
-        Clog.e("AdViewRequestManager", code.getMessage());
+        Clog.e(Clog.baseLogTag, code.getMessage());
 
         Ad owner = this.owner.get();
         fireTracker(noAdUrl, Clog.getString(R.string.no_ad_url));
@@ -176,7 +176,7 @@ public class AdViewRequestManager extends RequestManager {
     @Override
     public void onReceiveUTResponse(UTAdResponse response) {
         super.onReceiveUTResponse(response);
-        Clog.e("AdViewRequestManager", "onReceiveUTResponse");
+        Clog.d(Clog.baseLogTag, "onReceiveUTResponse");
         processUTResponse(response);
     }
 
