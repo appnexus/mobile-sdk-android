@@ -73,6 +73,23 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
         assertEquals(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
     }
 
+    // MAR null tags
+    @Test
+    public void testMARSuccessWithSingleInitializationMethodNoTags() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.NO_TAGS));
+        assertFalse(marFailed);
+        executeMARRequest();
+        assertTrue(marFailed);
+    }
+
+    @Test
+    public void testMARSuccessWithConvenienceNoTags() {
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.NO_TAGS));
+        assertFalse(marFailed);
+        initMARWithConvenience();
+        assertTrue(marFailed);
+    }
+
     //MAR Success
     @Test
     public void testMARSuccessWithSingleInitializationMethod() {

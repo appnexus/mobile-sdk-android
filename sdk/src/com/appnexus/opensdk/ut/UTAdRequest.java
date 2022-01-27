@@ -202,18 +202,22 @@ public class UTAdRequest {
                     LinkedHashMap<String, JSONObject> jsonMap = new LinkedHashMap<>();
                     JSONObject response = new JSONObject(result);
                     JSONArray tagsArray = JsonUtil.getJSONArray(response, "tags");
-                    for (int i = 0; i < tagsArray.length(); i++) {
-                        JSONObject tag = tagsArray.getJSONObject(i);
-                        jsonMap.put(JsonUtil.getJSONString(tag, "uuid"), tag);
-                    }
-                    ArrayList<WeakReference<Ad>> adUnitList = new ArrayList();
-                    adUnitList.addAll(anMultiAdRequest.getAdUnitList());
-                    for (WeakReference<Ad> adWeakReference : adUnitList) {
-                        Ad ad = adWeakReference.get();
-                        if (ad != null) {
-                            UTRequestParameters requestParameters = ad.getRequestParameters();
-                            adResponseMap.put(ad.getRequestParameters().getUUID(), new UTAdResponse(result, jsonMap.get(ad.getRequestParameters().getUUID()), conn.getHeaderFields(), requestParameters.getMediaType(), requestParameters.getOrientation()));
+                    if (tagsArray !=  null) {
+                        for (int i = 0; i < tagsArray.length(); i++) {
+                            JSONObject tag = tagsArray.getJSONObject(i);
+                            jsonMap.put(JsonUtil.getJSONString(tag, "uuid"), tag);
                         }
+                        ArrayList<WeakReference<Ad>> adUnitList = new ArrayList();
+                        adUnitList.addAll(anMultiAdRequest.getAdUnitList());
+                        for (WeakReference<Ad> adWeakReference : adUnitList) {
+                            Ad ad = adWeakReference.get();
+                            if (ad != null) {
+                                UTRequestParameters requestParameters = ad.getRequestParameters();
+                                adResponseMap.put(ad.getRequestParameters().getUUID(), new UTAdResponse(result, jsonMap.get(ad.getRequestParameters().getUUID()), conn.getHeaderFields(), requestParameters.getMediaType(), requestParameters.getOrientation()));
+                            }
+                        }
+                    } else {
+                        return null;
                     }
                 }
             } else {
