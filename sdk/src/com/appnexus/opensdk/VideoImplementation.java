@@ -21,6 +21,7 @@ import android.util.Base64;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ViewUtil;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
@@ -44,7 +45,11 @@ class VideoImplementation {
 
 
     protected void dispatchNativeCallback(String url) {
+
         url = url.replaceFirst("video://", "");
+
+        url = new String(Base64.decode(url, Base64.NO_WRAP));
+
 
         try {
             JSONObject videoObject = new JSONObject(url);
@@ -68,8 +73,11 @@ class VideoImplementation {
                 Clog.e(Clog.videoLogTag, "Error: Unhandled event::" + url);
                 return;
             }
-        } catch (Exception e) {
+        } catch (JSONException ex) {
             Clog.e(Clog.videoLogTag, "Exception: JsonError::" + url);
+            handleVideoError();
+        } catch (Exception ex) {
+            Clog.e(Clog.videoLogTag, "Exception caught::" + url);
             return;
         }
     }

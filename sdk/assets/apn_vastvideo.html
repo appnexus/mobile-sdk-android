@@ -95,7 +95,8 @@
                 window.webkit.messageHandlers.observe.postMessage(message);
             } else {
                 var jsonString = JSON.stringify(message);
-                window.location = "video://" + jsonString;
+                var encodedString = "video://" + btoa(jsonString);
+                window.location = encodedString;
             }
         }
 
