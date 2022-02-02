@@ -108,7 +108,7 @@ class VisibilityDetector {
                     VisibilityListener listener = getListener(viewWeakReference);
                     View view = viewWeakReference.get();
                     if (listener != null) {
-                        Clog.e("Visibility", view.toString() + ", isVisible: " + isVisible(view));
+                        Clog.d(Clog.visibilityLogTag, view.toString() + ", isVisible: " + isVisible(view));
                         listener.onVisibilityChanged(isVisible(view));
                     } else {
                         destroy(view);

@@ -17,6 +17,7 @@
 package com.appnexus.opensdk.instreamvideo.shadows;
 
 import android.os.Handler;
+import android.util.Base64;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 
@@ -26,6 +27,8 @@ import com.appnexus.opensdk.utils.Clog;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowWebView;
+
+import java.io.UnsupportedEncodingException;
 
 @Implements(value = WebView.class, callThroughByDefault = true)
 public class ShadowCustomClickThroughWebView extends ShadowWebView {
@@ -58,9 +61,9 @@ public class ShadowCustomClickThroughWebView extends ShadowWebView {
         if (script.contains("createVastPlayerWithContent")) {
             Clog.d(TestUtil.testLogTag, "evaluateJavascript createVastPlayerWithContent");
             if (!simulateVideoError) {
-                this.getWebViewClient().shouldOverrideUrlLoading(webView, "video://{\"event\":\"adReady\",\"params\":{\"creativeUrl\":\"http://vcdn.adnxs.com/p/creative-video/05/64/6d/99/05646d99.webm\",\"duration\":96000}}");
+                this.getWebViewClient().shouldOverrideUrlLoading(webView, "video://" + encodeBase64("{\"event\":\"adReady\",\"params\":{\"creativeUrl\":\"http://vcdn.adnxs.com/p/creative-video/05/64/6d/99/05646d99.webm\",\"duration\":96000}}"));
             } else {
-                this.getWebViewClient().shouldOverrideUrlLoading(webView, "video://{\"event\":\"video-error\",\"params\":{}}");
+                this.getWebViewClient().shouldOverrideUrlLoading(webView, "video://" + encodeBase64("{\"event\":\"video-error\",\"params\":{}}"));
             }
 
             if (simulateDelayedVideoError) {
@@ -68,7 +71,7 @@ public class ShadowCustomClickThroughWebView extends ShadowWebView {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        getWebViewClient().shouldOverrideUrlLoading(webView, "video://{\"event\":\"video-error\",\"params\":{}}");
+                        getWebViewClient().shouldOverrideUrlLoading(webView, "video://" + encodeBase64("{\"event\":\"video-error\",\"params\":{}}"));
                     }
                 }, 1000);
             }
@@ -82,6 +85,16 @@ public class ShadowCustomClickThroughWebView extends ShadowWebView {
                 }, 2000);
             }
         }
+    }
+
+    private String encodeBase64(String str) {
+        try {
+            String encodedString = Base64.encodeToString(str.getBytes("UTF-8"), Base64.NO_WRAP);
+            return encodedString;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
 }

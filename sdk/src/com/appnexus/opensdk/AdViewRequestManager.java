@@ -105,7 +105,7 @@ public class AdViewRequestManager extends RequestManager {
 
     private void processFailure(ResultCode code, ANAdResponseInfo responseInfo) {
         printMediatedClasses();
-        Clog.e("AdViewRequestManager", code.getMessage());
+        Clog.e(Clog.baseLogTag, code.getMessage());
 
         Ad owner = this.owner.get();
         fireTracker(noAdUrl, Clog.getString(R.string.no_ad_url));
@@ -176,7 +176,7 @@ public class AdViewRequestManager extends RequestManager {
     @Override
     public void onReceiveUTResponse(UTAdResponse response) {
         super.onReceiveUTResponse(response);
-        Clog.e("AdViewRequestManager", "onReceiveUTResponse");
+        Clog.d(Clog.baseLogTag, "onReceiveUTResponse");
         processUTResponse(response);
     }
 
@@ -332,9 +332,14 @@ public class AdViewRequestManager extends RequestManager {
                     if (ownerAd instanceof BannerAdView && ((BannerAdView)ownerAd).isLazyWebviewInactive() && UTConstants.AD_TYPE_BANNER.equalsIgnoreCase(rtbAdResponse.getAdType())) {
                         ((AdDispatcher)ownerAd.getAdDispatcher()).onLazyAdLoaded(currentAd.getAdResponseInfo());
                     } else {
-                        initiateWebview(ownerAd, rtbAdResponse);
-                        AdView owner = (AdView) ownerAd;
-                        fireImpressionTrackerEarly(owner, rtbAdResponse);
+                        if (ownerAd instanceof AdView) {
+                            initiateWebview(ownerAd, rtbAdResponse);
+                            AdView owner = (AdView) ownerAd;
+                            fireImpressionTrackerEarly(owner, rtbAdResponse);
+                        } else {
+                            Clog.e(Clog.baseLogTag, "AdType can not be identified.");
+                            continueWaterfall(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST));
+                        }
                     }
                 } else {
                     Clog.e(Clog.baseLogTag, "handleRTBResponse failed:: invalid adType::" + rtbAdResponse.getAdType());
@@ -422,6 +427,7 @@ public class AdViewRequestManager extends RequestManager {
         } else {
             adWebview = new AdWebView((AdView) owner, AdViewRequestManager.this);
             adWebview.loadAd(response);
+
         }
     }
 

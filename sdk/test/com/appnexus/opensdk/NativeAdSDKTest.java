@@ -140,75 +140,6 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     }
 
-    @Test
-    public void requestNativeSuccessTestExpiryModifiedValidInterval() {
-        Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = 120 * 1000;
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
-        adRequest.loadAd();
-        Lock.pause(1000);
-        waitForTasks();
-        Robolectric.flushForegroundThreadScheduler();
-        Robolectric.flushBackgroundThreadScheduler();
-
-        waitForTasks();
-        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
-        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
-        assertAdLoaded(true);
-        nativeAdView = DummyView.getDummyView(activity);
-
-        NativeAdSDK.registerTracking(response, nativeAdView, this);
-        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 0);
-        long expiryInterval = getExpiryInterval(UTConstants.RTB, 0);
-        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
-        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL);
-        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL);
-
-        ShadowLooper.pauseMainLooper();
-        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
-        ShadowLooper.unPauseMainLooper();
-        assertTrue(aboutToExpire);
-
-        ShadowLooper.pauseMainLooper();
-        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
-        ShadowLooper.unPauseMainLooper();
-        assertTrue(expired);
-
-    }
-
-    @Test
-    public void requestNativeSuccessTestExpiryModifiedInvalidInterval() {
-        Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME;
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
-        adRequest.loadAd();
-        Lock.pause(1000);
-        waitForTasks();
-        Robolectric.flushForegroundThreadScheduler();
-        Robolectric.flushBackgroundThreadScheduler();
-
-        waitForTasks();
-        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
-        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
-        assertAdLoaded(true);
-        nativeAdView = DummyView.getDummyView(activity);
-
-        NativeAdSDK.registerTracking(response, nativeAdView, this);
-        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 0);
-        long expiryInterval = getExpiryInterval(UTConstants.RTB, 0);
-        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
-        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
-        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
-
-        ShadowLooper.pauseMainLooper();
-        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
-        ShadowLooper.unPauseMainLooper();
-        assertTrue(aboutToExpire);
-
-        ShadowLooper.pauseMainLooper();
-        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
-        ShadowLooper.unPauseMainLooper();
-        assertTrue(expired);
-
-    }
 
     @Test
     public void requestNativeSuccessTestExpiryNotCalledWhenViewAttachedToWindow() {
@@ -248,52 +179,6 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
         ShadowLooper.unPauseMainLooper();
 
         assertFalse(aboutToExpire);
-        ShadowLooper.pauseMainLooper();
-        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
-        ShadowLooper.unPauseMainLooper();
-        assertFalse(expired);
-
-    }
-
-    @Test
-    public void requestNativeSuccessTestExpiryNotCalledAfterOnAdAboutToExpiryAlreadyCalledWhenViewAttachedToWindow() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
-        adRequest.loadAd();
-        Lock.pause(1000);
-        waitForTasks();
-        Robolectric.flushForegroundThreadScheduler();
-        Robolectric.flushBackgroundThreadScheduler();
-
-        waitForTasks();
-        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
-        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
-        assertAdLoaded(true);
-        nativeAdView = DummyView.getDummyView(activity);
-
-        NativeAdSDK.registerTracking(response, nativeAdView, this);
-
-        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 0);
-        long expiryInterval = getExpiryInterval(UTConstants.RTB, 0);
-        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
-        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
-        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
-
-        ShadowLooper.pauseMainLooper();
-        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
-        ShadowLooper.unPauseMainLooper();
-
-        assertTrue(aboutToExpire);
-
-        attachToWindow(nativeAdView);
-        nativeAdView.setVisibility(View.VISIBLE);
-
-        while (!impressionLogged) {
-            waitForTasks();
-            Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
-            Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
-        }
-        assertTrue(impressionLogged);
-
         ShadowLooper.pauseMainLooper();
         Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
         ShadowLooper.unPauseMainLooper();
@@ -896,77 +781,6 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     }
 
-    // ========= INMOBI ====== //
-
-    @Test
-    public void requestNativeSuccessTestExpiryInmobi() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeInMobi()));
-        adRequest.loadAd();
-        Lock.pause(1000);
-        waitForTasks();
-        Robolectric.flushForegroundThreadScheduler();
-        Robolectric.flushBackgroundThreadScheduler();
-
-        waitForTasks();
-        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
-        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
-        assertAdLoaded(true);
-        nativeAdView = DummyView.getDummyView(activity);
-
-        NativeAdSDK.registerTracking(response, nativeAdView, this);
-        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 12317);
-        long expiryInterval = getExpiryInterval(UTConstants.RTB, 12317);
-        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
-        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_INMOBI - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
-        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
-
-        ShadowLooper.pauseMainLooper();
-        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
-        ShadowLooper.unPauseMainLooper();
-
-        assertTrue(aboutToExpire);
-        ShadowLooper.pauseMainLooper();
-        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
-        ShadowLooper.unPauseMainLooper();
-        assertTrue(expired);
-
-    }
-
-    @Test
-    public void requestNativeSuccessTestExpiryInMobiModifiedValidInterval() {
-        Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = 120 * 1000;
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeInMobi()));
-        adRequest.loadAd();
-        Lock.pause(1000);
-        waitForTasks();
-        Robolectric.flushForegroundThreadScheduler();
-        Robolectric.flushBackgroundThreadScheduler();
-
-        waitForTasks();
-        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
-        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
-        assertAdLoaded(true);
-        nativeAdView = DummyView.getDummyView(activity);
-
-        NativeAdSDK.registerTracking(response, nativeAdView, this);
-        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 12317);
-        long expiryInterval = getExpiryInterval(UTConstants.RTB, 12317);
-        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
-        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_INMOBI - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL);
-        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL);
-
-        ShadowLooper.pauseMainLooper();
-        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
-        ShadowLooper.unPauseMainLooper();
-
-        assertTrue(aboutToExpire);
-        ShadowLooper.pauseMainLooper();
-        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
-        ShadowLooper.unPauseMainLooper();
-        assertTrue(expired);
-
-    }
-
     @Test
     public void requestNativeSuccessTestExpiryInMobiModifiedInvalidInterval() {
         Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_INMOBI;
@@ -999,51 +813,6 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
         Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
         ShadowLooper.unPauseMainLooper();
         assertTrue(expired);
-
-    }
-
-    @Test
-    public void requestNativeSuccessInMobiTestExpiryNotCalledWhenViewAttachedToWindow() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeInMobi()));
-        adRequest.loadAd();
-        Lock.pause(1000);
-        waitForTasks();
-        Robolectric.flushForegroundThreadScheduler();
-        Robolectric.flushBackgroundThreadScheduler();
-
-        waitForTasks();
-        Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
-        Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
-        assertAdLoaded(true);
-        nativeAdView = DummyView.getDummyView(activity);
-        attachToWindow(nativeAdView);
-        nativeAdView.setVisibility(View.VISIBLE);
-
-        NativeAdSDK.registerTracking(response, nativeAdView, this);
-
-        long aboutToExpireTime = getAboutToExpireTime(UTConstants.RTB, 12317);
-        long expiryInterval = getExpiryInterval(UTConstants.RTB, 12317);
-        Log.e("INTERVALS", "About To Expire Interval: " + aboutToExpireTime + ", ExpiryInterval: " + expiryInterval);
-        assertEquals(aboutToExpireTime, Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_INMOBI - Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
-        assertEquals(expiryInterval, Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL_DEFAULT);
-
-        while (!impressionLogged) {
-            waitForTasks();
-            Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
-            Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
-        }
-
-        assertTrue(impressionLogged);
-
-        ShadowLooper.pauseMainLooper();
-        Robolectric.getForegroundThreadScheduler().advanceBy(aboutToExpireTime, TimeUnit.MILLISECONDS);
-        ShadowLooper.unPauseMainLooper();
-
-        assertFalse(aboutToExpire);
-        ShadowLooper.pauseMainLooper();
-        Robolectric.getForegroundThreadScheduler().advanceBy(expiryInterval, TimeUnit.MILLISECONDS);
-        ShadowLooper.unPauseMainLooper();
-        assertFalse(expired);
 
     }
 

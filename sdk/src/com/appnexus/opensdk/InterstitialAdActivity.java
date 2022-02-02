@@ -85,8 +85,6 @@ class InterstitialAdActivity implements AdActivity.AdActivityImplementation {
         // If the ad will auto-dismiss before the closeButtonDelay is hit, then show the countdown timer based on dismissAdInterval
         if ((dismissAdInterval > 0) && dismissAdInterval <= closeButtonDelay)
             closeButtonDelay = dismissAdInterval;
-        Clog.e("displayCountdownWidget", closeButtonDelay + "");
-
         countdownWidget = ViewUtil.createCircularProgressBar(adActivity);
         layout.addView(countdownWidget);
         countdownWidget.setMax(closeButtonDelay);

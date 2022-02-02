@@ -17,6 +17,7 @@
 package com.appnexus.opensdk.instreamvideo.shadows;
 
 import android.os.Build;
+import android.util.Base64;
 import android.webkit.WebView;
 
 import com.appnexus.opensdk.instreamvideo.util.TestUtil;
@@ -26,6 +27,8 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowWebView;
+
+import java.io.UnsupportedEncodingException;
 
 @Implements(value = WebView.class, callThroughByDefault = true)
 public class ShadowCustomWebView extends ShadowWebView {
@@ -42,7 +45,7 @@ public class ShadowCustomWebView extends ShadowWebView {
             Clog.w(TestUtil.testLogTag, "ShadowCustomWebView loadUrl");
             String adReady = AD_READY_CONSTANT.replace("aspect_ratio", aspectRatio);
             // Just send back adReady notification from here since this is unit tests webview is not loading complete.
-            this.getWebViewClient().shouldOverrideUrlLoading(webView, String.format("video://%s", adReady));
+            this.getWebViewClient().shouldOverrideUrlLoading(webView, String.format("video://%s", encodeBase64(adReady)));
         }
 
     }
@@ -53,5 +56,15 @@ public class ShadowCustomWebView extends ShadowWebView {
         } else {
             loadUrl(url);
         }
+    }
+
+    private String encodeBase64(String str) {
+        try {
+            String encodedString = Base64.encodeToString(str.getBytes("UTF-8"), Base64.NO_WRAP);
+            return encodedString;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 }

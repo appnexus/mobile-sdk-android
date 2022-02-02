@@ -113,13 +113,13 @@ public abstract class RequestManager implements UTAdRequester {
 
     // returns the first mediated ad if available
     protected BaseAdResponse popAd() {
-        if ((adList != null) && (adList.getFirst() != null)) {
+        if ((adList != null) && !adList.isEmpty() && adList.getFirst() != null) {
             if (adList.getFirst().getContentSource() != null && adList.getFirst().getContentSource().equalsIgnoreCase("csm")) {
                 CSMSDKAdResponse CSMSDKAdResponse = (CSMSDKAdResponse) adList.getFirst();
                 mediatedClasses.add(CSMSDKAdResponse.getClassName());
             }
 
-            return adList.removeFirst();
+            return adList == null || adList.isEmpty() ? null :adList.removeFirst();
         }
         return null;
     }

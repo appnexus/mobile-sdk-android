@@ -17,6 +17,7 @@
 package com.appnexus.opensdk.shadows;
 
 import android.os.Handler;
+import android.util.Base64;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 
@@ -27,6 +28,8 @@ import com.appnexus.opensdk.utils.StringUtil;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowWebView;
+
+import java.io.UnsupportedEncodingException;
 
 @Implements(value = WebView.class, callThroughByDefault = true)
 public class ShadowCustomVideoWebView extends ShadowWebView {
@@ -59,12 +62,12 @@ public class ShadowCustomVideoWebView extends ShadowWebView {
             if (!StringUtil.isEmpty(aspectRatio)) {
                 String adReady = AD_READY_CONSTANT.replace("aspect_ratio", aspectRatio);
                 // Just send back adReady notification from here since this is unit tests webview is not loading complete.
-                getWebViewClient().shouldOverrideUrlLoading(webView, String.format("video://%s", adReady));
+                getWebViewClient().shouldOverrideUrlLoading(webView, String.format("video://%s", encodeBase64(adReady)));
             } else {
                 if (!simulateVideoError) {
-                    this.getWebViewClient().shouldOverrideUrlLoading(webView, "video://{\"event\":\"adReady\",\"params\":{\"creativeUrl\":\"http://vcdn.adnxs.com/p/creative-video/05/64/6d/99/05646d99.webm\",\"duration\":96000}}");
+                    this.getWebViewClient().shouldOverrideUrlLoading(webView, "video://" + encodeBase64("{\"event\":\"adReady\",\"params\":{\"creativeUrl\":\"http://vcdn.adnxs.com/p/creative-video/05/64/6d/99/05646d99.webm\",\"duration\":96000}}"));
                 } else {
-                    this.getWebViewClient().shouldOverrideUrlLoading(webView, "video://{\"event\":\"video-error\",\"params\":{}}");
+                    this.getWebViewClient().shouldOverrideUrlLoading(webView, "video://" + encodeBase64("{\"event\":\"video-error\",\"params\":{}}"));
                 }
 
                 if (simulateDelayedVideoError) {
@@ -72,12 +75,22 @@ public class ShadowCustomVideoWebView extends ShadowWebView {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            getWebViewClient().shouldOverrideUrlLoading(webView, "video://{\"event\":\"video-error\",\"params\":{}}");
+                            getWebViewClient().shouldOverrideUrlLoading(webView, "video://" + encodeBase64("{\"event\":\"video-error\",\"params\":{}}"));
                         }
                     }, 1000);
                 }
             }
         }
+    }
+
+    private String encodeBase64(String str) {
+        try {
+            String encodedString = Base64.encodeToString(str.getBytes("UTF-8"), Base64.NO_WRAP);
+            return encodedString;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
 }
