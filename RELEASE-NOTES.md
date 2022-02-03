@@ -1,3 +1,12 @@
+## 7.20
+### Improvement/Bug Fixes
++ MS-4946 Optimized SDK logging for OMID SDK [Github #68]
++ MS-4947 Updated README file [Github #49]
+###### Fixed:
++ MS-4916 Rendering issue with certain video creatives
++ MS-4933 NullPointerException thrown for empty tags in server response
++ MS-4943 NullPointerException thrown in RequestManager for certain scenarios
+
 ## 7.19.1
 ### Improvement/Bug Fixes
 + MS-4911 Addressed an issue (introduced in 7.18) with native impression tracking that prevented certain native creatives from firing multiple impression trackers.
