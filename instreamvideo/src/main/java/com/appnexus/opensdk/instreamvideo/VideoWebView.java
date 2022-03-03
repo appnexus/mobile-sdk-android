@@ -513,7 +513,7 @@ class VideoWebView extends WebView {
         try {
             //Encode videoXML to Base64String
             String encodedVastContent = Base64.encodeToString(baseAdResponse.getAdContent().getBytes("UTF-8"), Base64.NO_WRAP);
-            String options = Base64.encodeToString(ANVideoPlayerSettings.getVideoPlayerSettings().fetchBannerSettings().getBytes("UTF-8"), Base64.NO_WRAP);
+            String options = Base64.encodeToString(ANVideoPlayerSettings.getVideoPlayerSettings().fetchInStreamVideoSettings().getBytes("UTF-8"), Base64.NO_WRAP);
             String inject = String.format("javascript:window.createVastPlayerWithContent('%s','%s')",
                     encodedVastContent, options);
             this.injectJavaScript(inject);
