@@ -38,6 +38,7 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
     Activity context;
     AdView adView;
     private AdWebView adWebView;
+    boolean isCustomViewExpanded = false;
 
     public VideoEnabledWebChromeClient(Activity activity) {
         this.context = activity;
@@ -85,6 +86,10 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
                 root.addView(frame,
                         new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                 ViewGroup.LayoutParams.MATCH_PARENT));
+                if ((adView != null) && !adView.isInterstitial() && !adView.isMRAIDExpanded()) {
+                    this.adView.getAdDispatcher().onAdExpanded();
+                }
+                isCustomViewExpanded = true;
             } catch (Exception e) {
                 Clog.d(Clog.baseLogTag, e.toString());
             }
@@ -112,6 +117,10 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
         }
 
         root.removeView(frame);
+        isCustomViewExpanded = false;
+        if ((adView != null) && !adView.isInterstitial() && !adView.isMRAIDExpanded()) {
+            this.adView.getAdDispatcher().onAdCollapsed();
+        }
 
         if (customViewCallback != null) {
             // Try catch added to handle crash in 4.0.3 devices
@@ -192,4 +201,15 @@ class VideoEnabledWebChromeClient extends BaseWebChromeClient {
         }
     }
 
+    public boolean exitFullscreenVideo() {
+        if (customViewCallback != null && isCustomViewExpanded) {
+            try {
+                customViewCallback.onCustomViewHidden();
+                return true;
+            } catch (NullPointerException e) {
+                Clog.e(Clog.baseLogTag, "Exception calling customViewCallback  onCustomViewHidden: " + e.getMessage());
+            }
+        }
+        return false;
+    }
 }

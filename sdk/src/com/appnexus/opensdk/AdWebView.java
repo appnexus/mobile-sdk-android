@@ -836,6 +836,14 @@ class AdWebView extends WebView implements Displayable,
         }
     }
 
+    @Override
+    public boolean exitFullscreenVideo() {
+        if (mWebChromeClient != null) {
+            return mWebChromeClient.exitFullscreenVideo();
+        }
+        return false;
+    }
+
     public boolean isMRAIDUseCustomClose() {
         return MRAIDUseCustomClose;
     }

@@ -35,6 +35,8 @@ interface Displayable {
 
     public void onDestroy();
 
+    public boolean exitFullscreenVideo();
+
     public void onAdImpression();
 
     public void addFriendlyObstruction(View friendlyObstructionView);
