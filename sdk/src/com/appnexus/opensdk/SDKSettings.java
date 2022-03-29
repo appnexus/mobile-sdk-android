@@ -31,6 +31,9 @@ import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 import com.iab.omid.library.appnexus.Omid;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
@@ -369,19 +372,83 @@ public class SDKSettings {
     }
 
     /**
+     * @Deprecared use ANSDKSettings.setUserIds(List<ANUserId> userIdList); as alternative
      * A Map containing objects that hold External UserId parameters for the current application user.
      * @param externalUserIds
      */
+    @Deprecated
     public static void setExternalUserIds(Map<ANExternalUserIdSource,String> externalUserIds){
-         Settings.getSettings().externalUserIds = externalUserIds;
+        if(externalUserIds!=null) {
+            List<ANUserId> userIds = new ArrayList<>();
+            for (Map.Entry<ANExternalUserIdSource, String> entry : externalUserIds.entrySet()) {
+                switch (entry.getKey()) {
+                    case THE_TRADE_DESK:
+                        ANUserId tradeDeskUserID = new ANUserId(ANUserId.Source.THE_TRADE_DESK, entry.getValue());
+                        userIds.add(tradeDeskUserID);
+                        break;
+                    case CRITEO:
+                        ANUserId criteoUserId = new ANUserId(ANUserId.Source.CRITEO, entry.getValue());
+                        userIds.add(criteoUserId);
+                        break;
+                    case NETID:
+                        ANUserId netIdUserID = new ANUserId(ANUserId.Source.NETID, entry.getValue());
+                        userIds.add(netIdUserID);
+                        break;
+                    case LIVERAMP:
+                        ANUserId liveRampUserID = new ANUserId(ANUserId.Source.LIVERAMP, entry.getValue());
+                        userIds.add(liveRampUserID);
+                        break;
+                    case UID2:
+                        ANUserId UID2UserId = new ANUserId(ANUserId.Source.UID2, entry.getValue());
+                        userIds.add(UID2UserId);
+                        break;
+                }
+            }
+            Settings.getSettings().userIds = userIds;
+        }else{
+            Settings.getSettings().userIds = null;
+        }
+    }
+
+    /**
+     * @Deprecated use ANSDKSettings.getUserIds() as alternative
+     * Returns the Map that hold External UserId parameters for the current application user, initially added using {@link #setExternalUserIds(Map<ANExternalUserIdSource,String>)}
+     * @@return externalUserIds as Map.
+     */
+    @Deprecated
+    public static Map<ANExternalUserIdSource,String> getExternalUserIds() {
+        Map<ANExternalUserIdSource,String> externalUserIds = new HashMap<>();
+        for (ANUserId userID: Settings.getSettings().userIds) {
+            if(userID.getSource().equalsIgnoreCase(ANUserId.EXTENDEDID_SOURCE_THETRADEDESK)){
+                externalUserIds.put(ANExternalUserIdSource.THE_TRADE_DESK,userID.getUserId());
+            }else if(userID.getSource().equalsIgnoreCase(ANUserId.EXTENDEDID_SOURCE_CRITEO)){
+                externalUserIds.put(ANExternalUserIdSource.CRITEO,userID.getUserId());
+            }else if(userID.getSource().equalsIgnoreCase(ANUserId.EXTENDEDID_SOURCE_NETID)){
+                externalUserIds.put(ANExternalUserIdSource.NETID,userID.getUserId());
+            }else if(userID.getSource().equalsIgnoreCase(ANUserId.EXTENDEDID_SOURCE_LIVERAMP)){
+                externalUserIds.put(ANExternalUserIdSource.LIVERAMP,userID.getUserId());
+            }else if(userID.getSource().equalsIgnoreCase(ANUserId.EXTENDEDID_SOURCE_UID2)){
+                externalUserIds.put(ANExternalUserIdSource.UID2,userID.getUserId());
+            }
+        }
+        return externalUserIds;
+    }
+
+    
+    /**
+     * A Map containing objects that hold External UserId parameters for the current application user.
+     * @param userIdList
+     */
+    public static void setUserIds(List<ANUserId> userIdList){
+        Settings.getSettings().userIds = userIdList;
     }
 
     /**
      * Returns the Map that hold External UserId parameters for the current application user, initially added using {@link #setExternalUserIds(Map<ANExternalUserIdSource,String>)}
      * @@return externalUserIds as Map.
      */
-    public static Map<ANExternalUserIdSource,String> getExternalUserIds() {
-        return Settings.getSettings().externalUserIds;
+    public static List<ANUserId> getUserIds() {
+        return Settings.getSettings().userIds;
     }
 
 

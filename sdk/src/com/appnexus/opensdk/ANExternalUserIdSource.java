@@ -15,6 +15,7 @@
  */
 package com.appnexus.opensdk;
 
+@Deprecated
 public enum ANExternalUserIdSource {
     CRITEO,
     THE_TRADE_DESK,

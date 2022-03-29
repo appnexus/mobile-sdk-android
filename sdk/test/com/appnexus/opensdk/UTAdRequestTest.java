@@ -29,6 +29,7 @@ import org.robolectric.shadows.ShadowLog;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import static junit.framework.Assert.assertEquals;
@@ -993,6 +994,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
      * @throws Exception
      */
     @Test
+    @Deprecated
     public void testExternalUserIds() throws Exception {
         Map<ANExternalUserIdSource,String> externalIdsMap = new HashMap<>();
         externalIdsMap.put(ANExternalUserIdSource.LIVERAMP, "sdksettings-externalid-liveramp-foobar");
@@ -1030,6 +1032,66 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         assertFalse(postDataReset.has("eids"));
 
     }
+
+
+
+    /**
+     * Test User Id parameters in /ut request body
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testUserIds() throws Exception {
+        List<ANUserId> userIds = new ArrayList<>();
+
+        ANUserId tradeDeskUserID = new ANUserId(ANUserId.Source.THE_TRADE_DESK, "sdksettings-userid-ttd-foobar");
+        userIds.add(tradeDeskUserID);
+
+        ANUserId criteoUserId = new ANUserId(ANUserId.Source.CRITEO, "sdksettings-userid-Criteo-foobar");
+        userIds.add(criteoUserId);
+
+        ANUserId netIdUserID = new ANUserId(ANUserId.Source.NETID, "sdksettings-userid-netid-foobar");
+        userIds.add(netIdUserID);
+
+        ANUserId liveRampUserID = new ANUserId(ANUserId.Source.LIVERAMP, "sdksettings-userid-liveramp-foobar");
+        userIds.add(liveRampUserID);
+
+        ANUserId UID2UserId = new ANUserId(ANUserId.Source.UID2, "sdksettings-userid-uid2-foobar");
+        userIds.add(UID2UserId);
+
+        ANUserId genericUserID = new ANUserId("Generic Source", "sdksettings-userid-generic-foobar");
+        userIds.add(genericUserID);
+
+
+
+        // Default params, euid node will not be present in the POST DATA
+        executionSteps();
+        JSONObject postDataBefore = inspectPostData();
+        assertFalse(postDataBefore.has("eids"));
+
+
+        SDKSettings.setUserIds(userIds);
+        executionSteps();
+        JSONObject postDataAftersetExternalIds = inspectPostData();
+        JSONArray euidArrayAftersetExternalIds = postDataAftersetExternalIds.getJSONArray("eids");
+        assertNotNull(euidArrayAftersetExternalIds);
+        assertEquals(userIds.size(), euidArrayAftersetExternalIds.length());
+        assertTrue(euidArrayAftersetExternalIds.toString().contains("{\"source\":\"criteo.com\",\"id\":\"sdksettings-userid-Criteo-foobar\"}"));
+        assertTrue(euidArrayAftersetExternalIds.toString().contains("{\"source\":\"netid.de\",\"id\":\"sdksettings-userid-netid-foobar\"}"));
+        assertTrue(euidArrayAftersetExternalIds.toString().contains("{\"source\":\"liveramp.com\",\"id\":\"sdksettings-userid-liveramp-foobar\"}"));
+        assertTrue(euidArrayAftersetExternalIds.toString().contains("{\"source\":\"adserver.org\",\"id\":\"sdksettings-userid-ttd-foobar\",\"rti_partner\":\"TDID\"}"));
+        assertTrue(euidArrayAftersetExternalIds.toString().contains("{\"source\":\"uidapi.com\",\"id\":\"sdksettings-userid-uid2-foobar\",\"rti_partner\":\"UID2\"}"));
+        assertTrue(euidArrayAftersetExternalIds.toString().contains("{\"source\":\"Generic Source\",\"id\":\"sdksettings-userid-generic-foobar\"}"));
+
+        // setExternalIds Map and later reset it and make sure  euid is not present in the POST DATA
+        SDKSettings.setUserIds(userIds);
+        SDKSettings.setUserIds(null);
+        executionSteps();
+        JSONObject postDataReset = inspectPostData();
+        assertFalse(postDataReset.has("eids"));
+
+    }
+
 
 
     @Override
