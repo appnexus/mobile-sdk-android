@@ -1,3 +1,28 @@
+##### We Intent to remove all the deprecated APIs listed below in Xandr SDK v8.0. If you are using any of the below APIs we request to migrate to their equivalent. Do reach out to Xandr [support](https://help.xandr.com/s/login/) on questions or concerns.
+
+| Class                   | Method(s)     |
+| ------------------------|----------- |
+| ANNativeAdResponse      |  isOpenNativeBrowser(),  openNativeBrowser(boolean openNativeBrowser)       |
+| VideoAd               | getOpensNativeBrowser(), setOpensNativeBrowser(boolean opensNativeBrowser), setExternalUid(String externalUid), getExternalUid(), getCreativeId()        |
+| ANMultiAdRequest | getExternalUid(), setExternalUid(String externalUid)|
+| BannerAdView | loadAdOffscreen(), getOpensNativeBrowser(), setOpensNativeBrowser(boolean opensNativeBrowser), getExternalUid(), setExternalUid(String externalUid), getCreativeId(), getAdType(),setAllowNativeDemand(boolean enabled, int rendererId)|
+| InterstitialAdView | loadAdOffscreen(), getOpensNativeBrowser(), setOpensNativeBrowser(boolean opensNativeBrowser), getExternalUid(), setExternalUid(String externalUid), getCreativeId(), getAdType()|
+| NativeAdRequest | getOpensNativeBrowser(), setOpensNativeBrowser(boolean opensNativeBrowser), getExternalUid(), setExternalUid(String externalUid), getRendererId(), setRendererId(int rendererId) |
+| NativeAdResponse |  getCreativeId() , setCreativeId(String creativeId)|
+| SDKSettings | useHttps(boolean useHttps), isHttpsEnabled(), setExternalUserIds(Map<ANExternalUserIdSource,String> externalUserIds), getExternalUserIds(), setAllowUsingSimpleDomain(boolean allow)|
+| Clog | clogged (Variable) |
+| ANExternalUserIdSource (enum)| |
+
+## 7.21
+### Improvement/Bug Fixes
++ MS-4705 Memory leak caused by AdWebView [Github #57]
++ MS-4880 Exposed API for exiting from full screen banner video [https://docs.xandr.com/bundle/mobile-sdk/page/api-for-pressed-back-button-for-android.html]
++ MS-4953 Added support for passing Publisher/Extended User Id via ANSDKSetting.setUserIds(List<ANUserId> userIdList).[https://docs.xandr.com/bundle/mobile-sdk/page/user-id-s--mapping-on-android.html]
++ MS-4972 Fixed issue with the increase in sdk size while building apk
++ MS-4982 Added Android 11+ support for sdk related package visibility
+### Deprecated APIs
++ setExternalUserIds and getExternalUserIds methods in SDKSettings class and ANExternalUserIdSource enum are deprecated, use setUserIds and getUserIds in SDKSettings class and ANUserId class instead
+
 ## 7.20
 ### Improvement/Bug Fixes
 + MS-4946 Optimized SDK logging for OMID SDK [Github #68]
