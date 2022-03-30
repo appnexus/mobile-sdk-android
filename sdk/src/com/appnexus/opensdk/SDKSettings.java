@@ -372,7 +372,7 @@ public class SDKSettings {
     }
 
     /**
-     * @Deprecared use ANSDKSettings.setUserIds(List<ANUserId> userIdList); as alternative
+     * @Deprecared use SDKSettings.setUserIds(List<ANUserId> userIdList); as alternative
      * A Map containing objects that hold External UserId parameters for the current application user.
      * @param externalUserIds
      */
@@ -411,7 +411,7 @@ public class SDKSettings {
     }
 
     /**
-     * @Deprecated use ANSDKSettings.getUserIds() as alternative
+     * @Deprecated use SDKSettings.getUserIds() as alternative
      * Returns the Map that hold External UserId parameters for the current application user, initially added using {@link #setExternalUserIds(Map<ANExternalUserIdSource,String>)}
      * @@return externalUserIds as Map.
      */
