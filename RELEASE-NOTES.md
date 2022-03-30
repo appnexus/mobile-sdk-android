@@ -1,3 +1,28 @@
+## 7.21
+### Improvement/Bug Fixes
++ MS-4880 Exposed API for exiting from full screen banner video
++ MS-4953 Changed the industry ID API from ANExternalUserId to ANExtendedUserID and update relevant docs
++ MS-4957 Project Olympus - Remove stored credentials, Update ThirdPartyLibraries(in MVP.js) and Remove unused code having security vulnerabilities
++ MS-4982 Support for sdk related Android 11 package visibility
+###### Fixed:
++ MS-4705 Memory leak caused by AdWebView [Github #57]
++ MS-4972 Issue with the increase in sdk size.
+
+## We Intent to remove all the deprecated API's listed below from Xandr SDK in  v8.0. If you are using any of the below API's  we request to migrate to their supported equivalent. If you have any questions reach out to Xandr support.
+
+| Class                   | Method(s)     |
+| ------------------------|----------- |
+| ANNAtiveAdResponse      |  isOpenNativeBrowser(),  openNativeBrowser(boolean openNativeBrowser)       |
+| VideoAd               | getOpensNativeBrowser(), setOpensNativeBrowser(boolean opensNativeBrowser), setExternalUid(String externalUid), getExternalUid(), getCreativeId()        |
+| ANMultiAdRequest | getExternalUid(), setExternalUid(String externalUid)|
+| BannerAdView | loadAdOffscreen(), getMemberID(), getOpensNativeBrowser(), setOpensNativeBrowser(boolean opensNativeBrowser), getExternalUid(), setExternalUid(String externalUid), getCreativeId(), getAdType(),setAllowNativeDemand(boolean enabled, int rendererId)|
+| InterstitialAdView | loadAdOffscreen(), getMemberID(), getOpensNativeBrowser(), setOpensNativeBrowser(boolean opensNativeBrowser), getExternalUid(), setExternalUid(String externalUid), getCreativeId(), getAdType()|
+| NativeAdRequest | getOpensNativeBrowser(), setOpensNativeBrowser(boolean opensNativeBrowser), getExternalUid(), setExternalUid(String externalUid), getRendererId(), setRendererId(int rendererId) |
+| NativeAdResponse |  getCreativeId() , setCreativeId(String creativeId)|
+| SDKSettings | useHttps(boolean useHttps), isHttpsEnabled(), setExternalUserIds(Map<ANExternalUserIdSource,String> externalUserIds), getExternalUserIds(), setAllowUsingSimpleDomain(boolean allow)|
+| Clog | clogged (Variable) |
+| ANExternalUserIdSource (enum)| |
+
 ## 7.20
 ### Improvement/Bug Fixes
 + MS-4946 Optimized SDK logging for OMID SDK [Github #68]
