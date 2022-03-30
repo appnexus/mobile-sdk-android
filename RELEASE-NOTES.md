@@ -1,3 +1,18 @@
+##### We Intent to remove all the deprecated APIs listed below in Xandr SDK v8.0. If you are using any of the below APIs we request to migrate to their equivalent. Do reach out to Xandr [support](https://help.xandr.com/s/login/) on questions or concerns.
+
+| Class                   | Method(s)     |
+| ------------------------|----------- |
+| ANNativeAdResponse      |  isOpenNativeBrowser(),  openNativeBrowser(boolean openNativeBrowser)       |
+| VideoAd               | getOpensNativeBrowser(), setOpensNativeBrowser(boolean opensNativeBrowser), setExternalUid(String externalUid), getExternalUid(), getCreativeId()        |
+| ANMultiAdRequest | getExternalUid(), setExternalUid(String externalUid)|
+| BannerAdView | loadAdOffscreen(), getOpensNativeBrowser(), setOpensNativeBrowser(boolean opensNativeBrowser), getExternalUid(), setExternalUid(String externalUid), getCreativeId(), getAdType(),setAllowNativeDemand(boolean enabled, int rendererId)|
+| InterstitialAdView | loadAdOffscreen(), getOpensNativeBrowser(), setOpensNativeBrowser(boolean opensNativeBrowser), getExternalUid(), setExternalUid(String externalUid), getCreativeId(), getAdType()|
+| NativeAdRequest | getOpensNativeBrowser(), setOpensNativeBrowser(boolean opensNativeBrowser), getExternalUid(), setExternalUid(String externalUid), getRendererId(), setRendererId(int rendererId) |
+| NativeAdResponse |  getCreativeId() , setCreativeId(String creativeId)|
+| SDKSettings | useHttps(boolean useHttps), isHttpsEnabled(), setExternalUserIds(Map<ANExternalUserIdSource,String> externalUserIds), getExternalUserIds(), setAllowUsingSimpleDomain(boolean allow)|
+| Clog | clogged (Variable) |
+| ANExternalUserIdSource (enum)| |
+
 ## 7.21
 ### Improvement/Bug Fixes
 + MS-4880 Exposed API for exiting from full screen banner video
@@ -7,21 +22,6 @@
 ###### Fixed:
 + MS-4705 Memory leak caused by AdWebView [Github #57]
 + MS-4972 Issue with the increase in sdk size.
-
-## We Intent to remove all the deprecated API's listed below from Xandr SDK in  v8.0. If you are using any of the below API's  we request to migrate to their supported equivalent. If you have any questions reach out to Xandr support.
-
-| Class                   | Method(s)     |
-| ------------------------|----------- |
-| ANNAtiveAdResponse      |  isOpenNativeBrowser(),  openNativeBrowser(boolean openNativeBrowser)       |
-| VideoAd               | getOpensNativeBrowser(), setOpensNativeBrowser(boolean opensNativeBrowser), setExternalUid(String externalUid), getExternalUid(), getCreativeId()        |
-| ANMultiAdRequest | getExternalUid(), setExternalUid(String externalUid)|
-| BannerAdView | loadAdOffscreen(), getMemberID(), getOpensNativeBrowser(), setOpensNativeBrowser(boolean opensNativeBrowser), getExternalUid(), setExternalUid(String externalUid), getCreativeId(), getAdType(),setAllowNativeDemand(boolean enabled, int rendererId)|
-| InterstitialAdView | loadAdOffscreen(), getMemberID(), getOpensNativeBrowser(), setOpensNativeBrowser(boolean opensNativeBrowser), getExternalUid(), setExternalUid(String externalUid), getCreativeId(), getAdType()|
-| NativeAdRequest | getOpensNativeBrowser(), setOpensNativeBrowser(boolean opensNativeBrowser), getExternalUid(), setExternalUid(String externalUid), getRendererId(), setRendererId(int rendererId) |
-| NativeAdResponse |  getCreativeId() , setCreativeId(String creativeId)|
-| SDKSettings | useHttps(boolean useHttps), isHttpsEnabled(), setExternalUserIds(Map<ANExternalUserIdSource,String> externalUserIds), getExternalUserIds(), setAllowUsingSimpleDomain(boolean allow)|
-| Clog | clogged (Variable) |
-| ANExternalUserIdSource (enum)| |
 
 ## 7.20
 ### Improvement/Bug Fixes
