@@ -90,6 +90,11 @@ class MediatedDisplayable implements Displayable {
         // For clearing all the Friendly Obstruction
     }
 
+    @Override
+    public boolean exitFullscreenVideo() {
+        return false;
+    }
+
     void setView(View view) {
         this.view = view;
     }

@@ -4,7 +4,6 @@ package com.appnexus.opensdk.suite;
 import com.appnexus.opensdk.NativeAdSDKTest;
 import com.appnexus.opensdk.NativeAdToRequestParametersTest;
 import com.appnexus.opensdk.NativeFriendlyObstructionTests;
-import com.appnexus.opensdk.NativeRequestTest;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -14,10 +13,8 @@ import org.junit.runners.Suite;
 
 @Suite.SuiteClasses({
         NativeAdSDKTest.class,
-        NativeRequestTest.class,
         NativeFriendlyObstructionTests.class,
         NativeAdToRequestParametersTest.class,
-//        NativeAdSDKFailedTest.class,
 })
 public class NativeAdSDKTestSuite {
 }

@@ -1,10 +1,8 @@
 package com.appnexus.opensdk.suite;
 
 
-
 import com.appnexus.opensdk.AdActivityTest;
 import com.appnexus.opensdk.AdFetcherTest;
-import com.appnexus.opensdk.AdListenerTest;
 import com.appnexus.opensdk.AdRequestToAdRequesterTest;
 import com.appnexus.opensdk.AdViewFriendlyObstructionTests;
 import com.appnexus.opensdk.AdViewRequestManagerTest;
@@ -15,11 +13,10 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+        AdViewRequestManagerTest.class,
         AdActivityTest.class,
         AdFetcherTest.class,
-        AdListenerTest.class,
         AdRequestToAdRequesterTest.class,
-        AdViewRequestManagerTest.class,
         AdViewFriendlyObstructionTests.class,
         UTAdRequestTest.class,
 })

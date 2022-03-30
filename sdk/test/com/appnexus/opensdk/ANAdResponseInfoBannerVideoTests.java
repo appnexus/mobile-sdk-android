@@ -31,6 +31,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertSame;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -56,10 +57,10 @@ public class ANAdResponseInfoBannerVideoTests extends BaseViewAdTest {
     public void testAdResponseInfoRTBBannerVideo() {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.rtbVASTVideo())); // First queue a regular HTML banner response
         assertNull(bannerAdView.getAdResponseInfo());
-        assertTrue(bannerAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOWN initially
+        assertSame(bannerAdView.getAdType(), AdType.UNKNOWN); // First tests if ad_type is UNKNOWN initially
         executeBannerRequest();
         assertCallbacks(true);
-        assertTrue(bannerAdView.getAdType() == AdType.VIDEO); // If a HTML banner is served then BANNER
+        assertSame(bannerAdView.getAdType(), AdType.VIDEO); // If a HTML banner is served then BANNER
         assertNotNull(bannerAdView.getAdResponseInfo());
         assertEquals(bannerAdView.getAdResponseInfo().getAdType(), AdType.VIDEO);
         assertEquals(bannerAdView.getAdResponseInfo().getCreativeId(), "6332753");

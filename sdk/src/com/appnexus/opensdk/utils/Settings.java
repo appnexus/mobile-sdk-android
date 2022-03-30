@@ -22,14 +22,17 @@ import android.text.TextUtils;
 
 import com.appnexus.opensdk.ANExternalUserIdSource;
 import com.appnexus.opensdk.ANGDPRSettings;
+import com.appnexus.opensdk.ANUserId;
 import com.appnexus.opensdk.BuildConfig;
 import com.appnexus.opensdk.MediaType;
 import com.appnexus.opensdk.R;
 import com.appnexus.opensdk.ut.UTConstants;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -99,7 +102,7 @@ public class Settings {
     private HashSet<String> invalidNativeNetworks = new HashSet<String>();
 
     public String publisherUserId = "";
-    public Map<ANExternalUserIdSource,String> externalUserIds = new HashMap<>();
+    public List<ANUserId> userIds = new ArrayList<>();
 
     /**
      * This boolean is responsible for firing the Impression tracker on 1px visibility of the Ad View

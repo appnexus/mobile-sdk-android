@@ -10,8 +10,9 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         ANMultiAdRequestApiTest.class,
-        ANMultiAdRequestLoadTests.class,
         ANMultiAdRequestToRequestParametersTest.class,
+        ANMultiAdRequestLoadTests.class,
+
 })
 public class MARTestSuite {
 }

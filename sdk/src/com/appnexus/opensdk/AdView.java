@@ -345,12 +345,10 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
         requestParameters.setInventoryCodeAndMemberID(memberID, inventoryCode);
     }
 
-    @Deprecated
     /**
      * Retrieve the member ID.
      *
      * @return the member id that this AdView belongs to.
-     * @deprecated use {{@link ANAdResponseInfo}.getBuyMemberId}
      */
     public int getMemberID() {
         return requestParameters.getMemberID();

@@ -993,6 +993,17 @@ public class BannerAdView extends AdView implements ScreenEventListener {
     }
 
     /**
+     * To be called by the developer when the expanded video needs to exit.
+     * example: when activity's onBackPressed() function is called.
+     */
+    public boolean exitFullscreenVideo() {
+        if (this.currentDisplayable != null && getAdResponseInfo().getAdType() == AdType.VIDEO) {
+            return this.currentDisplayable.exitFullscreenVideo();
+        }
+        return false;
+    }
+
+    /**
      * Check whether the ad will expand to fit the screen width.  This
      * feature is disabled by default.
      *

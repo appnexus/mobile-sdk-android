@@ -115,6 +115,7 @@ class AdWebView extends WebView implements Displayable,
     private final String RENDERER_FILE = "apn_renderNativeAssets.html";
     String RENDERER_URL = "AN_NATIVE_ASSEMBLY_RENDERER_URL";
     String RENDERER_JSON = "AN_NATIVE_RESPONSE_OBJECT";
+    private boolean isDestroyTriggered;
 
     public AdWebView(AdView adView, UTAdRequester requester) {
         super(new MutableContextWrapper(adView.getContext()));
@@ -374,6 +375,11 @@ class AdWebView extends WebView implements Displayable,
     private class AdWebViewClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+            if (isDestroyTriggered) {
+                return false;
+            }
+
             Clog.v(Clog.baseLogTag, "Loading URL: " + url);
 
             if (adView == null) {
@@ -740,6 +746,8 @@ class AdWebView extends WebView implements Displayable,
     @Override
     public void destroy() {
 
+        isDestroyTriggered = true;
+
         // in case `this` was not removed when destroy was called
         ViewUtil.removeChildFromParent(this);
 
@@ -776,6 +784,7 @@ class AdWebView extends WebView implements Displayable,
                 }
             }, 300);
         }
+//        AdWebView.super.destroy();
         this.removeAllViews();
         stopCheckViewable();
 
@@ -834,6 +843,14 @@ class AdWebView extends WebView implements Displayable,
         if (omidAdSession != null) {
             omidAdSession.removeAllFriendlyObstructions();
         }
+    }
+
+    @Override
+    public boolean exitFullscreenVideo() {
+        if (mWebChromeClient != null) {
+            return mWebChromeClient.exitFullscreenVideo();
+        }
+        return false;
     }
 
     public boolean isMRAIDUseCustomClose() {
