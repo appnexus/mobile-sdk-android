@@ -1,6 +1,7 @@
 /**
  AppNexus Android SDK Build
  **/
+
 apply plugin: "org.sonarqube"
 apply plugin  :'android-reporting'
 buildscript {

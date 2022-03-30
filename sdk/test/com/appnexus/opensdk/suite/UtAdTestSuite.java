@@ -12,11 +12,11 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        ResultCodeTest.class,
-        TestANClickThroughAction.class,
         VideoImplementationTest.class,
+        ResultCodeTest.class,
         WebviewUtilTest.class,
         UTAdResponseTest.class,
+        TestANClickThroughAction.class,
 })
 public class UtAdTestSuite {
 }

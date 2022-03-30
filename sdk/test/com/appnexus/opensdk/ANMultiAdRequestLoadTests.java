@@ -62,16 +62,16 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
         super.tearDown();
     }
 
-    //This verifies that the AsyncTask for Request is being executed on the Correct Executor.
-    @Test
-    public void testRequestExecutorForBackgroundTasks() {
-        SDKSettings.setExternalExecutor(MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
-        assertNotSame(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
-        anMultiAdRequest.load();
-        Robolectric.flushBackgroundThreadScheduler();
-        Robolectric.flushForegroundThreadScheduler();
-        assertEquals(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
-    }
+//    //This verifies that the AsyncTask for Request is being executed on the Correct Executor.
+//    @Test
+//    public void testRequestExecutorForBackgroundTasks() {
+//        SDKSettings.setExternalExecutor(MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+//        assertNotSame(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+//        anMultiAdRequest.load();
+//        Robolectric.flushBackgroundThreadScheduler();
+//        Robolectric.flushForegroundThreadScheduler();
+//        assertEquals(ShadowAsyncTaskNoExecutor.getExecutor(), MockDefaultExecutorSupplier.getInstance().forBackgroundTasks());
+//    }
 
     // MAR null tags
     @Test
