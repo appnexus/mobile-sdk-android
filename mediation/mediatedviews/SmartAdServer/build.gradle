@@ -34,7 +34,7 @@ repositories {
 
     maven { url 'https://packagecloud.io/smartadserver/android/maven2' }
     // For Exoplayer
-    maven { url 'https://google.bintray.com/exoplayer/' }
+    maven { url 'https://dl.google.com/dl/android/maven2'}
 }
 
 
