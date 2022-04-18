@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '29.0.0'
+    compileSdkVersion 31
+    buildToolsVersion '30.0.2'
     lintOptions {
         abortOnError false
     }
     defaultConfig {
         applicationId "com.example.simplesrm"
         minSdkVersion 18
-        targetSdkVersion 28
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
         multiDexEnabled true

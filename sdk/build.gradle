@@ -7,7 +7,7 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 28
-    buildToolsVersion '29.0.0'
+    buildToolsVersion '30.0.2'
     defaultConfig {
         versionCode 93 // An integer value that represents the version of the code, relative to other versions. Increase for each release.
         versionName version

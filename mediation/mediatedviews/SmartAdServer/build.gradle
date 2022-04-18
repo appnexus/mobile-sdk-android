@@ -3,12 +3,12 @@ version = "7.10.0"  // supported SmartAdServer version
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 31
     buildToolsVersion "29.0.0"
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 28
+        targetSdkVersion 31
         versionCode 1
         versionName version
         consumerProguardFiles 'proguard-project.txt'
