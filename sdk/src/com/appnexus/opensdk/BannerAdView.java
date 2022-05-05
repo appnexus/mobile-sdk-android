@@ -1251,9 +1251,16 @@ public class BannerAdView extends AdView implements ScreenEventListener {
         return animator.getTransitionDuration();
     }
 
+
     /**
-     * @deprecated RendererId is not used anymore
-     *
+     * Set the Native RendererId for this AdUnit/Placement
+     * @param rendererId the Native Assembly renderer_id that is associated with this placement.
+     */
+    public void setRendererId(int rendererId) {
+        requestParameters.setRendererId(rendererId);
+    }
+
+    /**
      * Get the RendererId of the request
      *
      * @return Default int value 0, which indicates that renderer_id is not sent in the UT Request.

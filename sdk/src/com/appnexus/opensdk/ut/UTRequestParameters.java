@@ -1158,14 +1158,14 @@ public class UTRequestParameters {
     }
 
     /**
-     * @deprecated rendererId is not used anymore
+     * Set the Renderer id for the AdUnit associated with this UtRequestParameter object
      */
     public void setRendererId(int rendererId) {
         this.rendererId = rendererId;
     }
 
     /**
-     * @deprecated rendererId is not used anymore
+     * Get the Renderer id for the AdUnit associated with this UtRequestParameter object
      */
     public int getRendererId() {
         return rendererId;

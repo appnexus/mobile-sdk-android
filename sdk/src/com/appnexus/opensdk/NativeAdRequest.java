@@ -388,7 +388,7 @@ public class NativeAdRequest implements Ad, MultiAd {
 
     /**
      * @return Default int value 0, which indicates that renderer_id is not sent in the UT Request.
-     * @deprecated rendererId is not required anymore. Renderer to Placement mapping can now be done through Native Assembly in console.
+     *
      * <p>
      * Get the RendererId of the request
      */
@@ -398,7 +398,7 @@ public class NativeAdRequest implements Ad, MultiAd {
 
     /**
      * @param rendererId the Native Assembly renderer_id that is associated with this placement.
-     * @deprecated rendererId is not required anymore. Renderer to Placement mapping can now be done through Native Assembly in console.
+     *
      * <p>
      * Set the rendererId associated with placement.
      */
