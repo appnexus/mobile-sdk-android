@@ -45,6 +45,7 @@ import android.widget.FrameLayout;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Hex;
+import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.utils.W3CEvent;
@@ -184,44 +185,45 @@ class MRAIDImplementation {
 
     @SuppressLint("NewApi")
     private void setSupportsValues(AdWebView view) {
+        PackageManager pm = owner.getContext().getPackageManager();
+
         //SMS
-        if (hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("sms:5555555555")))) {
+        if (hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("sms:5555555555")), pm)) {
             setSupports(view, "sms", true);
         }
 
         //Tel
-        if (hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("tel:5555555555")))) {
+        if (hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("tel:5555555555")), pm)) {
             setSupports(view, "tel", true);
         }
 
         //Calendar
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            if (hasIntent(new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI))) {
-                setSupports(view, "calendar", true);
-                supportsCalendar = true;
-            } else if (hasIntent(new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event"))) {
-                setSupports(view, "calendar", true);
-                supportsCalendar = true;
-                W3CEvent.useMIME = true;
-            }
+        if (hasIntent(new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI), pm)) {
+            setSupports(view, "calendar", true);
+            supportsCalendar = true;
+        } else if (hasIntent(new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event"), pm)) {
+            setSupports(view, "calendar", true);
+            supportsCalendar = true;
+            W3CEvent.useMIME = true;
         }
 
+
         //Store Picture only if on API 11 or above
-        PackageManager pm = owner.getContext().getPackageManager();
         if (pm.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, owner.getContext().getPackageName()) == PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                setSupports(view, "storePicture", true);
-                supportsPictureAPI = true;
-            }
+            setSupports(view, "storePicture", true);
+            supportsPictureAPI = true;
         }
 
         //Video should always work inline.
         setSupports(view, "inlineVideo", true);
     }
 
-    boolean hasIntent(Intent i) {
-        PackageManager pm = owner.getContext().getPackageManager();
-        return pm.queryIntentActivities(i, 0).size() > 0;
+    boolean hasIntent(Intent i, PackageManager pm) {
+        String intentUri = i.toUri(0);
+        if (Settings.getCachedIntentForAction(intentUri)==null) {
+            Settings.cacheIntentForAction(pm.queryIntentActivities(i, 0).size() > 0,intentUri);
+        }
+        return Boolean.TRUE.equals(Settings.getCachedIntentForAction(i.getAction()));
     }
 
     void onViewableChange(boolean viewable) {
