@@ -78,7 +78,7 @@ class BannerVideoTest {
     @Test
     fun bannerVideoLoadTest() {
 
-        bannerActivity.triggerAdLoad("14757590", allowVideoDemand = true, creativeId = 162035356)
+        bannerActivity.triggerAdLoad("17058950", allowVideoDemand = true)
 
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
@@ -94,7 +94,7 @@ class BannerVideoTest {
     @Test
     fun bannerVPAIDVideoLoadTest() {
 
-        bannerActivity.triggerAdLoad("14768519", allowVideoDemand = true, creativeId = 162056795)
+        bannerActivity.triggerAdLoad("17058950", allowVideoDemand = true)
 
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
@@ -112,7 +112,7 @@ class BannerVideoTest {
     @Test
     fun bannerVideoLoadBGTest() {
 
-        bannerActivity.triggerAdLoad("14757590", allowVideoDemand = true, creativeId = 162035356, bgTask = true)
+        bannerActivity.triggerAdLoad("17058950", allowVideoDemand = true,  bgTask = true)
 
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
@@ -128,7 +128,7 @@ class BannerVideoTest {
     @Test
     fun bannerVPAIDVideoLoadBGTest() {
 
-        bannerActivity.triggerAdLoad("14768519", allowVideoDemand = true, creativeId = 162056795, bgTask = true)
+        bannerActivity.triggerAdLoad("17058950", allowVideoDemand = true,  bgTask = true)
 
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))

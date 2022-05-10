@@ -77,7 +77,7 @@ class VideoTest {
     @Test
     fun videoTest() {
 
-        videoActivity.triggerAdLoad("14757590", creativeId = 162035356)
+        videoActivity.triggerAdLoad("17058950")
 
         onView(withId(R.id.play_button)).check(matches(isDisplayed()))
 
@@ -102,7 +102,7 @@ class VideoTest {
     @Test
     fun videoVPAIDTest() {
 
-        videoActivity.triggerAdLoad("14768519", creativeId = 162056795)
+        videoActivity.triggerAdLoad("17058950")
 
         onView(withId(R.id.play_button)).check(matches(isDisplayed()))
 
@@ -132,7 +132,7 @@ class VideoTest {
     @Test
     fun videoBGTest() {
 
-        videoActivity.triggerAdLoad("14757590", creativeId = 162035356, bgTask = true)
+        videoActivity.triggerAdLoad("17058950", bgTask = true)
 
         onView(withId(R.id.play_button)).check(matches(isDisplayed()))
 
@@ -157,7 +157,7 @@ class VideoTest {
     @Test
     fun videoVPAIDBGTest() {
 
-        videoActivity.triggerAdLoad("14768519", creativeId = 162056795, bgTask = true)
+        videoActivity.triggerAdLoad("17058950", bgTask = true)
 
         onView(withId(R.id.play_button)).check(matches(isDisplayed()))
 

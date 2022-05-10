@@ -115,6 +115,8 @@ class BannerActivity : AppCompatActivity(), AdListener {
             banner.allowVideoDemand = allowVideoDemand
             banner.resizeAdToFitContainer = resizeToFitContainer
             banner.expandsToFitScreenWidth = expandsToFitScreenWidth
+            banner.setAllowBannerDemand(!(allowNativeDemand || allowVideoDemand))
+
             SDKSettings.useHttps(useHttps)
             banner.adListener = this
             if(creativeId != null) {

@@ -90,7 +90,7 @@ class BannerNativeTest {
     @Test
     fun bannerNativeAssemblyRendererLoadWrongRendererUrlTest() {
 
-        bannerActivity.triggerAdLoad("14790187", allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, creativeId = 162039377)
+        bannerActivity.triggerAdLoad("17058950", allowNativeDemand = true, rendererId = 502, useNativeRenderer = true)
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
@@ -114,7 +114,7 @@ class BannerNativeTest {
     @Test
     fun bannerNativeAssemblyRendererClickThroughSDKBrowserTest() {
 
-        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, clickThroughAction = ANClickThroughAction.OPEN_SDK_BROWSER, creativeId = 162039377)
+        bannerActivity.triggerAdLoad("17058950", allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, clickThroughAction = ANClickThroughAction.OPEN_SDK_BROWSER)
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
@@ -134,7 +134,7 @@ class BannerNativeTest {
     @Test
     fun bannerNativeAssemblyRendererClickThroughDeviceBrowserTest() {
 
-        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, clickThroughAction = ANClickThroughAction.OPEN_DEVICE_BROWSER, creativeId = 162039377)
+        bannerActivity.triggerAdLoad("17058950", allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, clickThroughAction = ANClickThroughAction.OPEN_DEVICE_BROWSER)
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
@@ -155,7 +155,7 @@ class BannerNativeTest {
     @Test
     fun bannerNativeAssemblyRendererClickThroughReturnUrlTest() {
 
-        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, clickThroughAction = ANClickThroughAction.RETURN_URL, creativeId = 162039377)
+        bannerActivity.triggerAdLoad("17058950", allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, clickThroughAction = ANClickThroughAction.RETURN_URL)
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
@@ -174,7 +174,7 @@ class BannerNativeTest {
     @Test
     fun bannerNativeAssemblyRendererResizeToFitContainerTest() {
 
-        bannerActivity.triggerAdLoad("17982237", width = 300, height = 250, allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, resizeToFitContainer = true, expandsToFitScreenWidth = false, creativeId = 162039377)
+        bannerActivity.triggerAdLoad("17058950", width = 300, height = 250, allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, resizeToFitContainer = true, expandsToFitScreenWidth = false)
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
@@ -194,7 +194,7 @@ class BannerNativeTest {
     @Test
     fun bannerNativeAssemblyRendererExpandToFitScreenTest() {
 
-        bannerActivity.triggerAdLoad("17982237", width = 300, height = 250, allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, expandsToFitScreenWidth = true, creativeId = 162039377)
+        bannerActivity.triggerAdLoad("17058950", width = 300, height = 250, allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, expandsToFitScreenWidth = true)
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
@@ -212,7 +212,7 @@ class BannerNativeTest {
     @Test
     fun bannerNativeLoadImpressionTest() {
 
-        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, creativeId = 182426521)
+        bannerActivity.triggerAdLoad("17058950", allowNativeDemand = true)
         onView(ViewMatchers.withId(R.id.linearLayout))
             .check(matches(isDisplayed()))
         Assert.assertTrue(bannerActivity.impressionLogged)
@@ -225,7 +225,7 @@ class BannerNativeTest {
     fun bannerNativeLoadImpressionTestWithViewAttachedLater() {
 
         bannerActivity.shouldDisplay = false
-        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, creativeId = 182426521)
+        bannerActivity.triggerAdLoad("17058950", allowNativeDemand = true)
         onView(ViewMatchers.withId(R.id.linearLayout))
             .check(matches(isDisplayed()))
         Assert.assertFalse(bannerActivity.impressionLogged)
@@ -245,7 +245,7 @@ class BannerNativeTest {
     fun bannerNativeLoadImpressionTestOnePx() {
 
         SDKSettings.setCountImpressionOn1pxRendering(true)
-        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, creativeId = 182426521)
+        bannerActivity.triggerAdLoad("17058950", allowNativeDemand = true)
         Thread.sleep(1000)
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
@@ -262,7 +262,7 @@ class BannerNativeTest {
     fun bannerNativeLoadImpressionTestOnePxWithViewAttachedLater() {
         SDKSettings.setCountImpressionOn1pxRendering(true)
         bannerActivity.shouldDisplay = false
-        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, creativeId = 182426521)
+        bannerActivity.triggerAdLoad("17058950", allowNativeDemand = true)
         onView(ViewMatchers.withId(R.id.linearLayout))
             .check(matches(isDisplayed()))
         Assert.assertFalse(bannerActivity.impressionLogged)

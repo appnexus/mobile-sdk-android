@@ -30,6 +30,7 @@ import androidx.test.runner.AndroidJUnit4
 import appnexus.com.appnexussdktestapp.MARLoadAndDisplayActivity
 import appnexus.com.appnexussdktestapp.R
 import appnexus.com.appnexussdktestapp.util.Utility.Companion.checkVisibilityDetectorMap
+import appnexus.com.appnexussdktestapp.util.Utility.Companion.resetVisibilityDetector
 import com.appnexus.opensdk.SDKSettings
 import kotlinx.android.synthetic.main.activity_mar_load.*
 import org.hamcrest.Matchers.not
@@ -61,13 +62,13 @@ class MARCombinationVisibilityDetectorTest {
         IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
         arrayListAdType.clear()
         arrayListBidType.clear()
+        resetVisibilityDetector()
     }
 
     @After
     fun destroy() {
         IdlingRegistry.getInstance().unregister(myActivity.idlingResource)
     }
-
     @Test
     fun testMARCombinationTwoRTBBanner() {
         SDKSettings.setCountImpressionOn1pxRendering(true)

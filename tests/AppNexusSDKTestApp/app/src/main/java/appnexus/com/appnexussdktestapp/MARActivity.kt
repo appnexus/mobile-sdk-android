@@ -57,10 +57,10 @@ class MARActivity : Activity() {
     lateinit var layoutBanner: LinearLayout
     lateinit var layoutVideo: LinearLayout
     lateinit var layoutNative: LinearLayout
-    internal var placementID = "17982237"
-    internal var bannerPlacementId = "10263964"
-    internal var interstitialPlacementId = "7067108"
-    internal var nativePlacementId = "9505207"
+    internal var placementID = "17058950"
+    internal var bannerPlacementId = "17058950"
+    internal var interstitialPlacementId = "17058950"
+    internal var nativePlacementId = "17058950"
     internal var videoPlacementId = placementID
     internal var count = 1
     lateinit var iav: InterstitialAdView
