@@ -4,7 +4,6 @@ project(':sdk').projectDir = new File(settingsDir, '../../sdk')
 include ':instreamvideo'
 project(':instreamvideo').projectDir = new File(settingsDir, '../../instreamvideo')
 
-include ':Facebook'
 include ':GooglePlay'
 include ':SmartAdServer'
 
