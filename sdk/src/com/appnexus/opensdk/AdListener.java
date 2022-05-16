@@ -96,4 +96,11 @@ public interface AdListener {
      */
     public void onLazyAdLoaded(AdView adView);
 
+    /**
+     * Called on ad impression
+     *
+     * @param adView The {@link AdView} that observed the impression.
+     */
+    public void onAdImpression(AdView adView);
+
 }

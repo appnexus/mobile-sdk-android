@@ -303,6 +303,16 @@ public abstract class MediatedAdViewController {
             listener.onAdClicked();
     }
 
+    /**
+     * Call this method to inform the AppNexus SDK that
+     *  ad impression has been observed.
+     */
+    public void onAdImpression() {
+        if (hasFailed || destroyed) return;
+        if (listener != null)
+            listener.onAdImpression();
+    }
+
     private void fireResponseURL(final String responseURL, final ResultCode result) {
 
         if ((responseURL == null) || StringUtil.isEmpty(responseURL)) {

@@ -20,7 +20,7 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener, MultiAdR
     InterstitialAdView interstitialAdView;
     AdViewRequestManager requestManager;
 
-    boolean adLazyLoaded, adLoaded, adFailed, adExpanded, adCollapsed, adClicked, adClickedWithUrl, marCompleted, marFailed;
+    boolean adLazyLoaded, adLoaded, adFailed, adExpanded, adCollapsed, adClicked, adClickedWithUrl, marCompleted, marFailed, adImpression;
     boolean isAutoDismissDelay, enableInterstitialShowonLoad;
     NativeAdResponse nativeAdResponse;
     boolean isBannerLoaded;
@@ -150,6 +150,11 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener, MultiAdR
         adLoaded = true;
         this.nativeAdResponse = nativeAdResponse;
         isBannerLoaded = false;
+    }
+
+    @Override
+    public void onAdImpression(AdView adView) {
+        adImpression = true;
     }
 
     @Override

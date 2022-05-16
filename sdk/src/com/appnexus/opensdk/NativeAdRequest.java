@@ -613,6 +613,11 @@ public class NativeAdRequest implements Ad, MultiAd {
         public void onAdClicked(String clickUrl) {
 
         }
+
+        @Override
+        public void onAdImpression() {
+            Clog.d(Clog.nativeLogTag, "onAdImpression");
+        }
     }
 
     @Override

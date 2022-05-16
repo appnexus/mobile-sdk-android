@@ -44,4 +44,9 @@ public interface BaseAdDispatcher {
      * {@link ANClickThroughAction}
      */
     public void onAdClicked(String clickUrl);
+
+    /**
+     * Called on ad impression
+     */
+    public void onAdImpression();
 }
