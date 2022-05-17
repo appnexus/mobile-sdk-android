@@ -75,7 +75,7 @@ class InterstitialTest {
     @Test
     fun interstitialActivityTest() {
 
-        interstitialActivity.triggerAdLoad("17058950", autoDismiss = -1, closeButtonDelay = 2, creativeId = 166843001)
+        interstitialActivity.triggerAdLoad("17058950", autoDismiss = -1, closeButtonDelay = 2)
 
         //check if the triggered intent is pointing to the AdActivity
         intended(IntentMatchers.hasComponent(AdActivity::class.java.name))
@@ -97,7 +97,7 @@ class InterstitialTest {
     @Test
     fun interstitialActivityBGTest() {
 
-        interstitialActivity.triggerAdLoad("17058950", autoDismiss = -1, closeButtonDelay = 2, creativeId = 166843001, bgTask = true)
+        interstitialActivity.triggerAdLoad("17058950", autoDismiss = -1, closeButtonDelay = 2, bgTask = true)
 
         //check if the triggered intent is pointing to the AdActivity
         intended(IntentMatchers.hasComponent(AdActivity::class.java.name))

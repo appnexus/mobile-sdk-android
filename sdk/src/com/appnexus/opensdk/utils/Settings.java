@@ -161,6 +161,11 @@ public class Settings {
     private static Settings settings_instance = null;
     public boolean locationEnabledForCreative = true;
 
+    /**
+     * This map is responsible for storing the installed packages for given Action,
+     */
+    private static Map<String, Boolean> hasIntentMap = new HashMap();
+
     public static Settings getSettings() {
         if (settings_instance == null) {
             settings_instance = new Settings();
@@ -224,6 +229,24 @@ public class Settings {
     // There is only one cookie domain
     public static String getCookieDomain(){
         return UTConstants.COOKIE_DOMAIN;
+    }
+
+
+    /**
+     * To cache this intent action .
+     * @param hasIntent
+     * @param action
+     */
+    public static void cacheIntentForAction(boolean hasIntent, String action) {
+        hasIntentMap.put(action,hasIntent);
+    }
+
+    /**
+     * To check the intent action is cached or not.
+     * @param action
+     */
+    public static Boolean getCachedIntentForAction(String action) {
+        return hasIntentMap.containsKey(action)? hasIntentMap.get(action):null;
     }
 
 }

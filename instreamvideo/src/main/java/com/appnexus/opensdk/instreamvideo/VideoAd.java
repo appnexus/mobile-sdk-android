@@ -620,6 +620,11 @@ public class VideoAd implements Ad, MultiAd {
                 videoPlaybackListener.onAdClicked(VideoAd.this, clickUrl);
             }
         }
+
+        @Override
+        public void onAdImpression() {
+            Clog.d(Clog.videoLogTag, "onAdImpression");
+        }
     }
 
     public void activityOnDestroy() {

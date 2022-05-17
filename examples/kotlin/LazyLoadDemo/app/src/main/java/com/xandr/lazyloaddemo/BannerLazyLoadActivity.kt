@@ -94,6 +94,11 @@ class BannerLazyLoadActivity : AppCompatActivity() {
                 msg = "onLazyAdLoaded"
                 toast()
             }
+
+            override fun onAdImpression(adView: AdView?) {
+                msg = "onAdImpression"
+                toast()
+            }
         }
         banner.adListener = adListener
     }

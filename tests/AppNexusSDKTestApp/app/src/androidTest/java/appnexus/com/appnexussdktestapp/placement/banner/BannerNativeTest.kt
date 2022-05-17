@@ -80,7 +80,7 @@ class BannerNativeTest {
     @Test
     fun bannerNativeLoadTest() {
 
-        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, creativeId = 182426521)
+        bannerActivity.triggerAdLoad("17058950", allowNativeDemand = true)
         onView(ViewMatchers.withId(R.id.linearLayout))
             .check(matches(isDisplayed()))
         onView(ViewMatchers.withId(R.id.linearLayout))
@@ -105,7 +105,7 @@ class BannerNativeTest {
     * */
     @Test
     fun bannerNativeAssemblyRendererLoadTest() {
-        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, creativeId = 162039377)
+        bannerActivity.triggerAdLoad("17058950", allowNativeDemand = true, rendererId = 502, useNativeRenderer = true)
         onView(ViewMatchers.withId(R.id.linearLayout))
             .check(matches(isDisplayed()))
         onView(ViewMatchers.withId(R.id.linearLayout))
@@ -123,7 +123,7 @@ class BannerNativeTest {
     @Test
     fun bannerNativeLoadBGTest() {
 
-        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, creativeId = 182426521, bgTask = true)
+        bannerActivity.triggerAdLoad("17058950", allowNativeDemand = true, bgTask = true)
         onView(ViewMatchers.withId(R.id.linearLayout))
             .check(matches(isDisplayed()))
         onView(ViewMatchers.withId(R.id.linearLayout))
@@ -148,7 +148,7 @@ class BannerNativeTest {
     * */
     @Test
     fun bannerNativeAssemblyRendererLoadBGTest() {
-        bannerActivity.triggerAdLoad("17982237", allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, creativeId = 162039377, bgTask = true)
+        bannerActivity.triggerAdLoad("17058950", allowNativeDemand = true, rendererId = 502, useNativeRenderer = true, bgTask = true)
         onView(ViewMatchers.withId(R.id.linearLayout))
             .check(matches(isDisplayed()))
         onView(ViewMatchers.withId(R.id.linearLayout))

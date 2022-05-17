@@ -106,6 +106,11 @@ public class MyActivity extends Activity {
             public void onLazyAdLoaded(AdView adView) {
 
             }
+
+            @Override
+            public void onAdImpression(AdView adView) {
+                Clog.v("SIMPLEBANNER", "onAdImpression");
+            }
         };
 
         bav.setAdListener(adListener);

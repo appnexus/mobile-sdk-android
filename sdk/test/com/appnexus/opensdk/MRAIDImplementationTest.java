@@ -362,7 +362,7 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
     }
 
     static class MockAdDispatcher implements AdDispatcher {
-        boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked, appEventOccurred, adClickedWithUrl;
+        boolean adLoaded, adFailed, adExpanded, adCollapsed, adClicked, appEventOccurred, adClickedWithUrl, adImpression;
 
         String eventName, eventData;
         private ANAdResponseInfo mAdResponseInfo;
@@ -418,6 +418,11 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
         @Override
         public void onAdClicked(String clickUrl) {
             adClickedWithUrl = true;
+        }
+
+        @Override
+        public void onAdImpression() {
+            adImpression = true;
         }
     }
 }

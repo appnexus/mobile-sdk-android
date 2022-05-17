@@ -88,7 +88,7 @@ class BannerOnePxTest {
 
         bannerActivity.shouldDisplay = false;
 
-        bannerActivity.triggerAdLoad("14757567", 320, 50, creativeId = 166843001)
+        bannerActivity.triggerAdLoad("17058950", 320, 50)
 
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
@@ -131,7 +131,7 @@ class BannerOnePxTest {
 
         bannerActivity.shouldDisplay = false;
 
-        bannerActivity.triggerAdLoad("14847003", 300, 250, creativeId = 166843311)
+        bannerActivity.triggerAdLoad("17058950", 300, 250)
 
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
@@ -179,7 +179,7 @@ class BannerOnePxTest {
 
         bannerActivity.shouldDisplay = false;
 
-        bannerActivity.triggerAdLoad("14757567", 320, 50, creativeId = 166843001, bgTask = true)
+        bannerActivity.triggerAdLoad("17058950", 320, 50, bgTask = true)
 
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
@@ -222,7 +222,7 @@ class BannerOnePxTest {
 
         bannerActivity.shouldDisplay = false;
 
-        bannerActivity.triggerAdLoad("14847003", 300, 250, creativeId = 166843311, bgTask = true)
+        bannerActivity.triggerAdLoad("17058950", 300, 250,  bgTask = true)
 
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))

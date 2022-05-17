@@ -71,7 +71,7 @@ class NativeTest {
     @Test
     fun nativeAdLoadTest() {
 
-        nativeActivity.triggerAdLoad("17982237", creativeId = 182426521)
+        nativeActivity.triggerAdLoad("17058950")
         Espresso.onView(ViewMatchers.withId(R.id.title))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.description))
@@ -93,7 +93,7 @@ class NativeTest {
     @Test
     fun nativeAdLoadBGTest() {
 
-        nativeActivity.triggerAdLoad("17982237", creativeId = 182426521, bgTask = true)
+        nativeActivity.triggerAdLoad("17058950", bgTask = true)
         Espresso.onView(ViewMatchers.withId(R.id.title))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.description))
@@ -115,7 +115,7 @@ class NativeTest {
     @Test
     fun nativeAdLoadBGExecutorTest() {
 
-        nativeActivity.triggerAdLoad("17982237", creativeId = 182426521, bgTask = true, useExecutor = true)
+        nativeActivity.triggerAdLoad("17058950",bgTask = true, useExecutor = true)
         Espresso.onView(ViewMatchers.withId(R.id.title))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.description))

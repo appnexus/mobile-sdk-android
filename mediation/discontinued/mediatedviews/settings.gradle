@@ -5,3 +5,5 @@ include ':Amazon'
 include ':InMobi'
 include ':MillennialMedia'
 include ':MoPub'
+include ':Facebook'
+

@@ -108,7 +108,7 @@ public class BannerImpressionTests extends BaseViewAdTest {
 
         attachBannerToView();
 
-        confirmNoImpressionULRinQueue();
+        confirmNoImpressionURLinQueue();
 
         goOnline();
 
@@ -156,7 +156,7 @@ public class BannerImpressionTests extends BaseViewAdTest {
 
         attachBannerToView();
 
-        confirmNoImpressionULRinQueue();
+        confirmNoImpressionURLinQueue();
     }
 
     // 1. Loads the banner off screen
@@ -207,7 +207,7 @@ public class BannerImpressionTests extends BaseViewAdTest {
     }
 
 
-    private void confirmNoImpressionULRinQueue() {
+    private void confirmNoImpressionURLinQueue() {
         // Wait for Any tasks and flush them.
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();

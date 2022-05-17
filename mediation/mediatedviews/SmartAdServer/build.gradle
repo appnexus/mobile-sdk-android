@@ -1,14 +1,14 @@
 // Project Properties
-version = "7.10.0"  // supported SmartAdServer version
+version = "7.17.0"  // supported SmartAdServer version
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion "29.0.0"
+    compileSdkVersion 32
+    buildToolsVersion "32.0.0"
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 28
+        targetSdkVersion 32
         versionCode 1
         versionName version
         consumerProguardFiles 'proguard-project.txt'
@@ -26,6 +26,7 @@ dependencies {
     api 'com.google.android.exoplayer:exoplayer-core:2.12.0'
     api 'com.squareup.okhttp3:okhttp:3.12.12'
     api 'androidx.preference:preference:1.1.1'
+
 }
 
 

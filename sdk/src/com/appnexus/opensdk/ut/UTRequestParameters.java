@@ -1023,7 +1023,7 @@ public class UTRequestParameters {
             Settings.getSettings().deviceAccessAllowed = ANGDPRSettings.canIAccessDeviceData(context);
 
             if (Settings.getSettings().deviceAccessAllowed && !SDKSettings.isAAIDUsageDisabled() && !Settings.getSettings().doNotTrack) {
-                if (!StringUtil.isEmpty(Settings.getSettings().aaid)) {
+                if (!StringUtil.isEmpty(Settings.getSettings().aaid) && !Settings.getSettings().aaid.equalsIgnoreCase("00000000-0000-0000-0000-000000000000")) {
                     JSONObject device_id = new JSONObject();
                     device_id.put(DEVICE_ID_AAID, Settings.getSettings().aaid);
                     device.put(DEVICE_DEVICE_ID, device_id);
@@ -1158,14 +1158,14 @@ public class UTRequestParameters {
     }
 
     /**
-     * @deprecated rendererId is not used anymore
+     * Set the Renderer id for the AdUnit associated with this UtRequestParameter object
      */
     public void setRendererId(int rendererId) {
         this.rendererId = rendererId;
     }
 
     /**
-     * @deprecated rendererId is not used anymore
+     * Get the Renderer id for the AdUnit associated with this UtRequestParameter object
      */
     public int getRendererId() {
         return rendererId;

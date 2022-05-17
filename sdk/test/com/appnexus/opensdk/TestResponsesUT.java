@@ -24,6 +24,10 @@ public class TestResponsesUT {
 
     public static final String RESPONSE_URL_PATH = "response_url?";
     public static final String IMPRESSION_URL_PATH = "impression_url?";
+    public static final String IMPRESSION_URL_PATH2 = "impression_url?id=2";
+    public static final String IMPRESSION_URL_PATH3 = "impression_url?id=3";
+    public static final String IMPRESSION_URL_PATH4 = "impression_url?id=4";
+    public static final String IMPRESSION_URL_PATH5 = "impression_url?id=5";
     public static final String NO_AD_URL_PATH = "no_ad?";
     public static final String NOTIFY_URL_PATH = "vast_track/v2?info&notifyURL";
     public static final String SSM_URL_PATH = "ssm?";
@@ -33,6 +37,10 @@ public class TestResponsesUT {
     public static String NO_AD_URL = "http://mobile.devnxs.net/no_ad_url?";
     public static String NOTIFY_URL = "http://mobile.devnxs.net/vast_track/v2?info&notifyURL";
     public static String IMPRESSION_URL = "";
+    public static String IMPRESSION_URL2 = "";
+    public static String IMPRESSION_URL3 = "";
+    public static String IMPRESSION_URL4 = "";
+    public static String IMPRESSION_URL5 = "";
     public static String RESPONSE_URL = "";
     public static final String NO_BID_TRUE = "true";
     public static final String NO_BID_FALSE = "false";
@@ -45,6 +53,10 @@ public class TestResponsesUT {
         NOTIFY_URL = url + NOTIFY_URL_PATH;
         SSM_URL = url + SSM_URL_PATH;
         IMPRESSION_URL = url + IMPRESSION_URL_PATH;
+        IMPRESSION_URL2 = url + IMPRESSION_URL_PATH2;
+        IMPRESSION_URL3 = url + IMPRESSION_URL_PATH3;
+        IMPRESSION_URL4 = url + IMPRESSION_URL_PATH4;
+        IMPRESSION_URL5 = url + IMPRESSION_URL_PATH5;
     }
 
     public static final String DUMMY_BANNER_CONTENT = "<script type=\\\"text/javascript\\\">document.write('<div style=\\\"background-color:#EF8200;height:1000px;width:1000px;\\\"><p>%s</p></div>');</script>";
@@ -88,6 +100,7 @@ public class TestResponsesUT {
     public static final String NO_TAGS = "{\"error\": \"unknown\"}";
     public static final String RTB_VIDEO = "{\"cpm\":0.000010,\"cpm_publisher_currency\":0.000010,\"publisher_currency_code\":\"$\",\"content_source\":\"rtb\",\"ad_type\":\"video\",\"notify_url\":\"%s\",\"buyer_member_id\":123,\"creative_id\":6332753,\"media_type_id\":4,\"media_subtype_id\":64,\"client_initiated_ad_counting\":true,\"rtb\":{\"video\":{\"content\":\"%s\",\"duration_ms\":100}}}";
     public static final String CSR_NATIVE = "{\"cpm\":0.000010,\"cpm_publisher_currency\":0.000010,\"publisher_currency_code\":\"$\",\"version\":\"3.0.0\",\"tags\":[{\"tag_id\":16268678,\"auction_id\":\"4050477843877235823\",\"nobid\":false,\"no_ad_url\":\"https://nym1-mobile.adnxs.com/it\",\"timeout_ms\":0,\"ad_profile_id\":1266762,\"rtb_video_fallback\":false,\"ads\":[{\"content_source\":\"csr\",\"ad_type\":\"native\",\"buyer_member_id\":10094,\"creative_id\":163940558,\"media_type_id\":12,\"media_subtype_id\":65,\"brand_category_id\":17,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"<script></script>\"},\"csr\":{\"timeout_ms\":500,\"handler\":[{\"type\":\"android\",\"class\":\"%s\",\"payload\":\"{\\\"placement_id\\\":\\\"333673923704415_469697383435401\\\"}\",\"id\":\"333673923704415_469697383435401\"},{\"type\":\"ios\",\"class\":\"ANAdAdapterCSRNativeBannerFacebook\",\"payload\":\"test param\",\"id\":\"333673923704415_469697383435401\"}],\"trackers\":[{\"impression_urls\":[\"https://nym1-mobile.adnxs.com/it\"],\"video_events\":{}}],\"request_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_req\",\"response_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_resp\"}}]}]}";
+    public static final String MULTIPLE_IMPRESSION_URLS = "{\"\"}";
 
     public static String mediationNoFillThenCSRSuccessfull() {
         return "{\"version\":\"3.0.0\",\"tags\":[{\"tag_id\":16268678,\"auction_id\":\"4050477843877235823\",\"nobid\":false,\"no_ad_url\":\"https://nym1-mobile.adnxs.com/it\",\"timeout_ms\":0,\"ad_profile_id\":1266762,\"rtb_video_fallback\":false,\"ads\":[{\"content_source\":\"csm\",\"ad_type\":\"native\",\"buyer_member_id\":10094,\"creative_id\":163940558,\"media_type_id\":12,\"media_subtype_id\":65,\"brand_category_id\":17,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"<script></script>\"},\"csm\":{\"timeout_ms\":500,\"handler\":[{\"type\":\"android\",\"class\":\"com.appnexus.opensdk.testviews.MediatedNativeNoFill\",\"param\":\"test param\",\"id\":\"2038077109846299_2317914228529251\"},{\"type\":\"ios\",\"class\":\"ANAdAdapterNativeFacebook\",\"param\":\"test param\",\"id\":\"2038077109846299_2317914228529251\"}],\"trackers\":[{\"impression_urls\":[\"https://nym1-mobile.adnxs.com/it\"],\"video_events\":{}}],\"request_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_req\",\"response_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_resp\"}},{\"content_source\":\"csr\",\"ad_type\":\"native\",\"buyer_member_id\":10094,\"creative_id\":163940558,\"media_type_id\":12,\"media_subtype_id\":65,\"brand_category_id\":17,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"<script></script>\"},\"csr\":{\"timeout_ms\":500,\"handler\":[{\"type\":\"android\",\"class\":\"com.appnexus.opensdk.testviews.CSRNativeSuccessful\",\"payload\":\"{\\\"placement_id\\\":\\\"333673923704415_469697383435401\\\"}\",\"id\":\"333673923704415_469697383435401\"},{\"type\":\"ios\",\"class\":\"ANAdAdapterCSRNativeBannerFacebook\",\"payload\":\"test param\",\"id\":\"333673923704415_469697383435401\"}],\"trackers\":[{\"impression_urls\":[\"https://nym1-mobile.adnxs.com/it\"],\"video_events\":{}}],\"request_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_req\",\"response_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_resp\"}}]}]}";
@@ -126,6 +139,15 @@ public class TestResponsesUT {
     public static String banner() {
         String bannerContent = String.format(DUMMY_BANNER_CONTENT, "Test Banner Content");
         return templateBannerRTBAdsResponse(bannerContent, 320, 50, IMPRESSION_URL);
+    }
+
+    /**
+     * Returns a RTB HTML Banner UT Response
+     */
+    public static String bannerWithMultipleImpressionUrls() {
+        String multipleImpressionUrls = IMPRESSION_URL + "\", \"" + IMPRESSION_URL2 + "\", \"" + IMPRESSION_URL3 + "\", \"" + IMPRESSION_URL4 + "\", \"" + IMPRESSION_URL5;
+        String bannerContent = String.format(DUMMY_BANNER_CONTENT, "Test Banner Content");
+        return templateBannerRTBAdsResponse(bannerContent, 320, 50, multipleImpressionUrls);
     }
 
     /**

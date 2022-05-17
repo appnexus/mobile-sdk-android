@@ -1,22 +1,18 @@
 // Project Properties
-version = "1.36" // Instream SDK version
+version = "1.37" // Instream SDK version
 
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion '29.0.0'
+    compileSdkVersion 32
+    buildToolsVersion '32.0.0'
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 28
-        versionCode 34 // An integer value that represents the version of the code, relative to other versions. Increase for each release.
+        targetSdkVersion 32
+        versionCode 35 // An integer value that represents the version of the code, relative to other versions. Increase for each release.
         versionName version
         consumerProguardFiles 'proguard-project.txt'
-    }
-
-    sourceSets {
-        test.manifest.srcFile '../sdk/AndroidManifestTest.xml'
     }
 
     lintOptions {

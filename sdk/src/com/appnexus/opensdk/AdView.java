@@ -99,6 +99,10 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
     private boolean isFetching = false;
 
     private ArrayList<WeakReference<View>> friendlyObstructionList = new ArrayList<>();
+    private int countOfImpressionTrackerUrls = 0;
+    private int countOfImpressionTrackersFired = 0;
+    private boolean isFired = false;
+
 
     /**
      * Begin Construction
@@ -1222,6 +1226,20 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
             });
         }
 
+        @Override
+        public void onAdImpression() {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (adListener != null) {
+                        Clog.d(Clog.baseLogTag, "onAdImpression");
+                        adListener.onAdImpression(AdView.this);
+
+                    }
+                }
+            });
+        }
+
         private void handleNativeAd(AdResponse ad) {
             setAdType(AdType.NATIVE);
 
@@ -1241,6 +1259,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
                 public void run() {
                     if (ad.getResponseData() != null && ad.getResponseData().getImpressionURLs() != null && ad.getResponseData().getImpressionURLs().size() > 0) {
                         impressionTrackers = ad.getResponseData().getImpressionURLs();
+                        resetImpressionTrackerVariables();
                     }
                     if (ad.getDisplayable() != null && ad.getMediaType().equals(MediaType.BANNER) && ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER)) {
                         if (getEffectiveImpressionCountingMethod() == CountImpression.ONE_PX) {
@@ -1307,6 +1326,12 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
         }
     }
 
+    private void resetImpressionTrackerVariables() {
+        countOfImpressionTrackersFired = 0;
+        countOfImpressionTrackerUrls = 0;
+        isFired = false;
+    }
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -1329,6 +1354,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
             // Just to be fail safe since we are making it to null below to mark it as being used.
             if (impressionTrackers != null && impressionTrackers.size() > 0) {
                 ArrayList<String> impTrackers = new ArrayList<>(impressionTrackers);
+                countOfImpressionTrackerUrls = impTrackers.size();
                 // Making it to null so that there is no duplicate firing. We fire exactly only once.
                 impressionTrackers = null;
                 SharedNetworkManager nm = SharedNetworkManager.getInstance(getContext());
@@ -1340,6 +1366,10 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
                 } else {
                     for (String url : impTrackers) {
                         nm.addURL(url, getContext());
+                    }
+                    Clog.i("Impression Tracker", "Added to the shared network manager");
+                    if (dispatcher != null) {
+                        dispatcher.onAdImpression();
                     }
                 }
                 impTrackers.clear();
@@ -1358,6 +1388,10 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
             protected void onPostExecute(HTTPResponse response) {
                 if (response != null && response.getSucceeded()) {
                     Clog.d(Clog.baseLogTag, "Impression Tracked successfully!");
+                    countOfImpressionTrackersFired++;
+                    if (countOfImpressionTrackersFired == countOfImpressionTrackerUrls && dispatcher != null) {
+                        dispatcher.onAdImpression();
+                    }
                 }
             }
 

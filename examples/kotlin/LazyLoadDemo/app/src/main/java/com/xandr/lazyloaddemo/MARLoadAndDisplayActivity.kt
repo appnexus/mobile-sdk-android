@@ -153,6 +153,11 @@ class MARLoadAndDisplayActivity : Activity() {
             override fun onLazyAdLoaded(adView: AdView?) {
             }
 
+            override fun onAdImpression(adView: AdView?) {
+                msg += "onAdImpression"
+                toast()
+            }
+
             override fun onAdLoaded(av: AdView) {
                 msg = "Interstitial Ad Loaded\n"
                 toast()
@@ -234,6 +239,11 @@ class MARLoadAndDisplayActivity : Activity() {
                 arrayListAd.add(adView)
                 if (displayAd)
                     recyclerListAdView.adapter!!.notifyDataSetChanged()
+            }
+
+            override fun onAdImpression(adView: AdView?) {
+                msg = "onAdImpression"
+                toast()
             }
 
             override fun onAdLoaded(av: AdView) {

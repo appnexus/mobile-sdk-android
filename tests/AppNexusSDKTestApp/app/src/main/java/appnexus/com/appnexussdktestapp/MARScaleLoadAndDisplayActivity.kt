@@ -154,6 +154,11 @@ class MARScaleLoadAndDisplayActivity : Activity() {
                     idlingResource.decrement()
             }
 
+            override fun onAdImpression(adView: AdView?) {
+                msg += "Ad Impression"
+                toast()
+            }
+
             override fun onAdLoaded(av: AdView) {
                 Clog.e("SimpleSRM", "The Ad Loaded!")
                 //                if (av.getParent() != null && av.getParent() instanceof ViewGroup) {

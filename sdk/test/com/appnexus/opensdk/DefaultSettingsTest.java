@@ -26,6 +26,9 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotSame;
+import static junit.framework.Assert.assertNull;
 
 @Config(sdk = 21)
 @RunWith(RobolectricTestRunner.class)
@@ -67,5 +70,15 @@ public class DefaultSettingsTest extends BaseRoboTest {
         System.out.println("Setting WebView Base URL"+Settings.getWebViewBaseUrl());
         assertEquals("https://ib.adnxs-simple.com/ut/v3", Settings.getAdRequestUrl());
         System.out.println("REQUEST Request URL"+Settings.getAdRequestUrl());
+    }
+
+    @Test
+    public void testCheckIntentIsCachedOrNot(){
+        assertNull(Settings.getCachedIntentForAction("ACTION_VIEW"));
+        Settings.cacheIntentForAction(true, "ACTION_VIEW");
+        assertEquals( Settings.getCachedIntentForAction("ACTION_VIEW"),  Boolean.TRUE);
+        assertNull(Settings.getCachedIntentForAction("ACTION_LAUNCH"));
+        Settings.cacheIntentForAction(false, "ACTION_DIAL");
+        assertEquals( Settings.getCachedIntentForAction("ACTION_DIAL"),  Boolean.FALSE);
     }
 }

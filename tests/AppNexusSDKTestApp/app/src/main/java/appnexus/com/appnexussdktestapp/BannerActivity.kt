@@ -58,6 +58,10 @@ class BannerActivity : AppCompatActivity(), AdListener {
     override fun onLazyAdLoaded(adView: AdView?) {
     }
 
+    override fun onAdImpression(adView: AdView?) {
+        Toast.makeText(this, "Ad Impression", Toast.LENGTH_LONG).show()
+    }
+
     override fun onAdLoaded(ad: AdView?) {
         Toast.makeText(this, "AdLoaded", Toast.LENGTH_LONG).show()
         if (layout.childCount > 0)
@@ -115,6 +119,8 @@ class BannerActivity : AppCompatActivity(), AdListener {
             banner.allowVideoDemand = allowVideoDemand
             banner.resizeAdToFitContainer = resizeToFitContainer
             banner.expandsToFitScreenWidth = expandsToFitScreenWidth
+            banner.setAllowBannerDemand(!(allowNativeDemand || allowVideoDemand))
+
             SDKSettings.useHttps(useHttps)
             banner.adListener = this
             if(creativeId != null) {

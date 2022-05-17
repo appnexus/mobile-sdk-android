@@ -85,7 +85,7 @@ class InAppBrowserUITest {
 
         Thread.sleep(2000)
 
-        bannerActivity.triggerAdLoad("14757567", 320, 50, creativeId = 166843001)
+        bannerActivity.triggerAdLoad("17058950", 320, 50)
 
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
@@ -137,7 +137,7 @@ class InAppBrowserUITest {
 
         Thread.sleep(2000)
 
-        bannerActivity.triggerAdLoad("14757567", 320, 50, creativeId = 166843001)
+        bannerActivity.triggerAdLoad("17058950", 320, 50)
 
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
@@ -195,7 +195,7 @@ class InAppBrowserUITest {
 
         Thread.sleep(2000)
 
-        bannerActivity.triggerAdLoad("14757567", 320, 50, creativeId = 166843001)
+        bannerActivity.triggerAdLoad("17058950", 320, 50)
 
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
@@ -252,7 +252,7 @@ class InAppBrowserUITest {
 
         Thread.sleep(2000)
 
-        bannerActivity.triggerAdLoad("14757567", 320, 50, creativeId = 166843001)
+        bannerActivity.triggerAdLoad("17058950", 320, 50)
 
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))

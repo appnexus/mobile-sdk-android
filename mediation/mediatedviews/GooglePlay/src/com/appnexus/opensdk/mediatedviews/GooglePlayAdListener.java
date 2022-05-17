@@ -119,8 +119,17 @@ public class GooglePlayAdListener extends AdListener implements AppEventListener
 
     }
 
+    @Override
+    public void onAdImpression() {
+        super.onAdImpression();
+        printToClog("onAdImpression");
+        if (mediatedAdViewController != null) {
+            mediatedAdViewController.onAdImpression();
+        }
+    }
+
     private void processAdLoad() {
-        Clog.e("GoogleEvent", retryCount +"");
+        Clog.e("GoogleEvent", retryCount + "");
         if (retryCount < GooglePlayAdsSettings.getTotalRetries()) {
             if (secondPriceIsHigher) {
                 mediatedAdViewController.onAdFailed(ResultCode.getNewInstance(ResultCode.UNABLE_TO_FILL));
@@ -131,7 +140,7 @@ public class GooglePlayAdListener extends AdListener implements AppEventListener
                 }
                 secondPriceHandler.postDelayed(secondPriceRunnable, GooglePlayAdsSettings.getSecondPriceWaitInterval());
             }
-        }else {
+        } else {
             mediatedAdViewController.onAdLoaded();
             deallocateHandlerAndRunnable();
         }
