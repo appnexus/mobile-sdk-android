@@ -105,6 +105,11 @@ class BannerLazyLoadActivity : AppCompatActivity(), AppEventListener {
                     idlingResource.decrement()
                 }
             }
+
+            override fun onAdImpression(adView: AdView?) {
+                msg = "onAdImpression"
+                toast()
+            }
         }
         banner.adListener = adListener
         banner.enableLazyLoad()

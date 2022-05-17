@@ -165,6 +165,11 @@ public class MyActivity extends Activity {
             public void onLazyAdLoaded(AdView adView) {
 
             }
+
+            @Override
+            public void onAdImpression(AdView adView) {
+                Clog.v("SimpleSRM", "onAdImpression");
+            }
         });
 
 //        List<Ad> adUnitList = new ArrayList<>();
@@ -401,6 +406,11 @@ public class MyActivity extends Activity {
             @Override
             public void onLazyAdLoaded(AdView adView) {
 
+            }
+
+            @Override
+            public void onAdImpression(AdView adView) {
+                Clog.v("SimpleSRM", "onAdImpression");
             }
         });
 

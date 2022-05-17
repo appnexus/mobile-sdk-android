@@ -60,6 +60,10 @@ class BannerActivity : AppCompatActivity(), AdListener {
         log("Ad onLazyAdLoaded")
     }
 
+    override fun onAdImpression(adView: AdView?) {
+        log("Ad onAdImpression")
+    }
+
     private fun log(msg: String){
         Log.d("BannerActivity",msg)
         Toast.makeText(this.applicationContext, msg, Toast.LENGTH_LONG).show()

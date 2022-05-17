@@ -215,6 +215,11 @@ class MARLoadAndDisplayActivity : Activity() {
             override fun onLazyAdLoaded(adView: AdView?) {
             }
 
+            override fun onAdImpression(adView: AdView?) {
+                msg = "Ad Impression"
+                toast()
+            }
+
             override fun onAdLoaded(av: AdView) {
                 msg += "Interstitial Ad Loaded\n"
                 toast()
@@ -318,6 +323,11 @@ class MARLoadAndDisplayActivity : Activity() {
                     })
                 if (!idlingResource.isIdleNow)
                     idlingResource.decrement()
+            }
+
+            override fun onAdImpression(adView: AdView?) {
+                msg = "Ad Impression"
+                toast()
             }
 
             override fun onAdLoaded(av: AdView) {

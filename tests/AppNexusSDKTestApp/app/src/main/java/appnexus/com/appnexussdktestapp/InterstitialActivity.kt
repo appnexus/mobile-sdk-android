@@ -49,6 +49,10 @@ class InterstitialActivity : AppCompatActivity(), AdListener {
     override fun onLazyAdLoaded(adView: AdView?) {
     }
 
+    override fun onAdImpression(adView: AdView?) {
+        Toast.makeText(this, "Ad Impression", Toast.LENGTH_LONG).show()
+    }
+
     override fun onAdLoaded(ad: AdView?) {
         Toast.makeText(this, "AdLoaded", Toast.LENGTH_LONG).show()
         if (!idlingResource.isIdleNow)

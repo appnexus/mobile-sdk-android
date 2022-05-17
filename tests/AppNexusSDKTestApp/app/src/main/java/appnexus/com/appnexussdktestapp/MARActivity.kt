@@ -118,6 +118,11 @@ class MARActivity : Activity() {
             override fun onLazyAdLoaded(adView: AdView?) {
             }
 
+            override fun onAdImpression(adView: AdView?) {
+                msg = "Ad Impression"
+                toast()
+            }
+
             override fun onAdLoaded(av: AdView) {
                 if (av is InterstitialAdView) {
                     msg += "Interstitial Ad Loaded\n"
@@ -340,6 +345,11 @@ class MARActivity : Activity() {
             }
 
             override fun onLazyAdLoaded(adView: AdView?) {
+            }
+
+            override fun onAdImpression(adView: AdView?) {
+                msg = "Ad Impression"
+                toast()
             }
 
             override fun onAdLoaded(av: AdView) {
