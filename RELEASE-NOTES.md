@@ -1,4 +1,24 @@
-##### We Intent to remove all the deprecated APIs listed below in Xandr SDK v8.0. If you are using any of the below APIs we request to migrate to their equivalent. Do reach out to Xandr [support](https://help.xandr.com/s/login/) on questions or concerns.
+## 7.22
+
+### Announcements:
+This will be the last major release in SDK v7.x series.
+The next major release will be SDK v8.0 which will include some breaking changes as proposed in Intent to Implement's listed below along with other changes.
+1. Xandr SDK v8.0 Removal Notice for Deprecated APIs [https://github.com/appnexus/mobile-sdk-android/issues/71]
+2. Xandr will be moving toward counting "Viewable Impressions - for Direct-Sold Inventory" [https://github.com/appnexus/mobile-sdk-android/issues/72]
+
+### Improvement/Bug Fixes
++ MS-4793 Added permission for AD_ID to fetch AAID on Android 13+
++ MS-4999 Removed the RendererID-deprecation notice
++ MS-5008 Added onAdImpression callback for the Banner and Interstitial Ads [https://wiki.xandr.com/x/4wgYBg]
+### Mediation partner updates
++ MS-4871 Upgraded Google Play Services Ads SDK from 20.1.0 to 20.6.0
++ MS-4870 Upgraded Smart Ad Server SDK from 7.10.0 to 7.17.0
++ MS-4872 Discontinued support for Facebook SDK mediation Adapter
+
+## 7.21
+
+### Announcements:
+We Intent to remove all the deprecated APIs listed below in Xandr SDK v8.0. If you are using any of the below APIs we request to migrate to their equivalent. Do reach out to Xandr [support](https://help.xandr.com/s/login/) on questions or concerns.
 
 | Class                   | Method(s)     |
 | ------------------------|----------- |
@@ -13,7 +33,6 @@
 | Clog | clogged (Variable) |
 | ANExternalUserIdSource (enum)| |
 
-## 7.21
 ### Improvement/Bug Fixes
 + MS-4705 Memory leak caused by AdWebView [Github #57]
 + MS-4880 Exposed API for exiting from full screen banner video [https://docs.xandr.com/bundle/mobile-sdk/page/api-for-pressed-back-button-for-android.html]
