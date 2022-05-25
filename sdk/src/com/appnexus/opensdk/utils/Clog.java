@@ -25,12 +25,7 @@ import java.util.ArrayList;
 import static com.appnexus.opensdk.utils.ClogListener.LOG_LEVEL;
 
 public class Clog {
-    /**
-     * @deprecated As of release 1.21, logging system properties are used instead.
-     * See Log.isLoggable() for more info.
-     */
-    @Deprecated
-    public static boolean clogged = false;
+
     private static final int MAX_LOG_TAG_LENGTH = 22;
 
     private static void logIfLoggable(String LogTag, String message, int level, Throwable tr) {

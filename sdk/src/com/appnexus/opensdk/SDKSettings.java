@@ -318,25 +318,6 @@ public class SDKSettings {
     }
 
     /**
-     * @param useHttps whether to enable Https or not.
-     * @deprecated The SDK uses Https by default.
-     * This API does not bring any change.
-     */
-    @Deprecated
-    public static void useHttps(boolean useHttps) {
-        return;
-    }
-
-    /**
-     * @deprecated The SDK uses Https by default.
-     * This API always returns true.
-     */
-    @Deprecated
-    public static boolean isHttpsEnabled() {
-        return true;
-    }
-
-    /**
      * Sets whether or not location (latitude, longitude)
      * permission alert will be shown to the user when called by the Creative.
      *
@@ -372,70 +353,6 @@ public class SDKSettings {
     }
 
     /**
-     * @Deprecared use SDKSettings.setUserIds(List<ANUserId> userIdList); as alternative
-     * A Map containing objects that hold External UserId parameters for the current application user.
-     * @param externalUserIds
-     */
-    @Deprecated
-    public static void setExternalUserIds(Map<ANExternalUserIdSource,String> externalUserIds){
-        if(externalUserIds!=null) {
-            List<ANUserId> userIds = new ArrayList<>();
-            for (Map.Entry<ANExternalUserIdSource, String> entry : externalUserIds.entrySet()) {
-                switch (entry.getKey()) {
-                    case THE_TRADE_DESK:
-                        ANUserId tradeDeskUserID = new ANUserId(ANUserId.Source.THE_TRADE_DESK, entry.getValue());
-                        userIds.add(tradeDeskUserID);
-                        break;
-                    case CRITEO:
-                        ANUserId criteoUserId = new ANUserId(ANUserId.Source.CRITEO, entry.getValue());
-                        userIds.add(criteoUserId);
-                        break;
-                    case NETID:
-                        ANUserId netIdUserID = new ANUserId(ANUserId.Source.NETID, entry.getValue());
-                        userIds.add(netIdUserID);
-                        break;
-                    case LIVERAMP:
-                        ANUserId liveRampUserID = new ANUserId(ANUserId.Source.LIVERAMP, entry.getValue());
-                        userIds.add(liveRampUserID);
-                        break;
-                    case UID2:
-                        ANUserId UID2UserId = new ANUserId(ANUserId.Source.UID2, entry.getValue());
-                        userIds.add(UID2UserId);
-                        break;
-                }
-            }
-            Settings.getSettings().userIds = userIds;
-        }else{
-            Settings.getSettings().userIds = null;
-        }
-    }
-
-    /**
-     * @Deprecated use SDKSettings.getUserIds() as alternative
-     * Returns the Map that hold External UserId parameters for the current application user, initially added using {@link #setExternalUserIds(Map<ANExternalUserIdSource,String>)}
-     * @@return externalUserIds as Map.
-     */
-    @Deprecated
-    public static Map<ANExternalUserIdSource,String> getExternalUserIds() {
-        Map<ANExternalUserIdSource,String> externalUserIds = new HashMap<>();
-        for (ANUserId userID: Settings.getSettings().userIds) {
-            if(userID.getSource().equalsIgnoreCase(ANUserId.EXTENDEDID_SOURCE_THETRADEDESK)){
-                externalUserIds.put(ANExternalUserIdSource.THE_TRADE_DESK,userID.getUserId());
-            }else if(userID.getSource().equalsIgnoreCase(ANUserId.EXTENDEDID_SOURCE_CRITEO)){
-                externalUserIds.put(ANExternalUserIdSource.CRITEO,userID.getUserId());
-            }else if(userID.getSource().equalsIgnoreCase(ANUserId.EXTENDEDID_SOURCE_NETID)){
-                externalUserIds.put(ANExternalUserIdSource.NETID,userID.getUserId());
-            }else if(userID.getSource().equalsIgnoreCase(ANUserId.EXTENDEDID_SOURCE_LIVERAMP)){
-                externalUserIds.put(ANExternalUserIdSource.LIVERAMP,userID.getUserId());
-            }else if(userID.getSource().equalsIgnoreCase(ANUserId.EXTENDEDID_SOURCE_UID2)){
-                externalUserIds.put(ANExternalUserIdSource.UID2,userID.getUserId());
-            }
-        }
-        return externalUserIds;
-    }
-
-    
-    /**
      * A Map containing objects that hold External UserId parameters for the current application user.
      * @param userIdList
      */
@@ -444,7 +361,7 @@ public class SDKSettings {
     }
 
     /**
-     * Returns the Map that hold External UserId parameters for the current application user, initially added using {@link #setExternalUserIds(Map<ANExternalUserIdSource,String>)}
+     * Returns the Map that hold External UserId parameters for the current application user, initially added using {@link #setUserIds(List)}
      * @@return externalUserIds as Map.
      */
     public static List<ANUserId> getUserIds() {
@@ -596,16 +513,6 @@ public class SDKSettings {
      * */
     public static void setCountImpressionOn1pxRendering(boolean enable) {
         countImpressionOn1pxRendering = enable;
-    }
-
-
-    /**
-     * @deprecated This will be removed in future releases. This is introduced just a fail safe kill switch for initial rollout. No Alternative.
-     * To allow/disallow using ib.adnxs-simple.com domain for Ad Requests.
-     * @param allow set true to enable, false to disable. Default is true.
-     * */
-    public static void setAllowUsingSimpleDomain(boolean allow) {
-        Settings.getSettings().simpleDomainUsageAllowed = allow;
     }
 
 }

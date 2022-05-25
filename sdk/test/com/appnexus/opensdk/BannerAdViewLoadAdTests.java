@@ -83,7 +83,7 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
         executeBannerRequest();
         assertTrue(bannerAdView.getAdType() == AdType.NATIVE); // If a Native Ad is served then NATIVE
 
-        assertTrue(nativeAdResponse.getCreativeId().equalsIgnoreCase("47772560"));
+        assertTrue(nativeAdResponse.getAdResponseInfo().getCreativeId().equalsIgnoreCase("47772560"));
         assertTrue(nativeAdResponse.getIconUrl().equalsIgnoreCase("http://path_to_icon.com"));
         assertTrue(nativeAdResponse.getIcon() == null);
         assertTrue(nativeAdResponse.getImage() == null);
@@ -135,7 +135,7 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
 
     private void executeBannerRequest() {
         bannerAdView.setAutoRefreshInterval(15000);
-        bannerAdView.loadAdOffscreen();
+        bannerAdView.loadAd();
 
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
@@ -154,7 +154,7 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
     public void testgetCreativeIdBanner() {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
         executeBannerRequest();
-        assertEquals("6332753", bannerAdView.getCreativeId());
+        assertEquals("6332753", bannerAdView.getAdResponseInfo().getCreativeId());
     }
 
 
@@ -162,14 +162,14 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
     public void testgetCreativeIdBannerNativeCreativeId() {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative())); // First queue a banner Native response
         executeBannerRequest();
-        assertEquals("47772560", bannerAdView.getCreativeId());
+        assertEquals("47772560", nativeAdResponse.getAdResponseInfo().getCreativeId());
     }
 
     @Test
     public void testgetCreativeIdUnKnownCreativeId() {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blankBanner())); // First queue a regular HTML banner response
         executeBannerRequest();
-        assertEquals("", bannerAdView.getCreativeId());
+        assertEquals("", bannerAdView.getAdResponseInfo().getCreativeId());
 
     }
 

@@ -259,14 +259,6 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
 
     }
 
-     // Tests the value of ExternalUid
-    @Test
-    public void testSetExternalUId(){
-        setExternalUId();
-        assertSetExternalUId();
-
-    }
-
     /**
      * Validates the Traffic Source in the request
      *
@@ -290,17 +282,6 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
         videoAd.setExtInvCode("Xandr");
         assertEquals("Xandr", videoAd.getExtInvCode());
     }
-
-    private void setExternalUId(){
-        videoAd.setExternalUid("AppNexus");
-    }
-
-    private void assertSetExternalUId(){
-        assertNotNull(videoAd.getExternalUid());
-        assertEquals(videoAd.getExternalUid(), "AppNexus");
-
-    }
-
 
     @Override
     public void onAdLoaded(VideoAd videoAd) {

@@ -66,7 +66,6 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
     int creativeWidth;
     int creativeHeight;
     private AdType adType;
-    String creativeId = "";
     private AdListener adListener;
     private AppEventListener appEventListener;
 
@@ -243,14 +242,6 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
             return true;
         }
         return false;
-    }
-
-    /**
-     * @deprecated use {@link #loadAd()} instead.
-     */
-    @Deprecated
-    public void loadAdOffscreen() {
-        loadAd();
     }
 
     /**
@@ -738,40 +729,6 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
     }
 
     /**
-     * Retrieve the setting that determines whether or not the
-     * device's native browser is used instead of the in-app
-     * browser when the user clicks an ad.
-     *
-     * @return true if the device's native browser will be used; false otherwise.
-     * @deprecated Use getClickThroughAction instead
-     * Refer {@link ANClickThroughAction}
-     */
-    public boolean getOpensNativeBrowser() {
-        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
-                R.string.get_opens_native_browser, requestParameters.getOpensNativeBrowser()));
-        return requestParameters.getOpensNativeBrowser();
-    }
-
-    /**
-     * Set this to true to disable the in-app browser.  This will
-     * cause URLs to open in a native browser such as Chrome so
-     * that when the user clicks on an ad, your app will be paused
-     * and the native browser will open.  Set this to false to
-     * enable the in-app browser instead (a lightweight browser
-     * that runs within your app).  The default value is false.
-     *
-     * @param opensNativeBrowser Whether or not the device's native browser should be used for
-     *                           landing pages.
-     * @deprecated Use setClickThroughAction instead
-     * Refer {@link ANClickThroughAction}
-     */
-    public void setOpensNativeBrowser(boolean opensNativeBrowser) {
-        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
-                R.string.set_opens_native_browser, opensNativeBrowser));
-        requestParameters.setOpensNativeBrowser(opensNativeBrowser);
-    }
-
-    /**
      * Returns the ANClickThroughAction that is used for this AdView.
      *
      * @return {@link ANClickThroughAction}
@@ -871,28 +828,6 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
     public void setAge(String age) {
         requestParameters.setAge(age);
     }
-
-    @Deprecated
-    /**
-     * Set the current user's externalUID
-     *
-     * @param externalUid .
-     * @deprecated  Use ({@link SDKSettings}.setPublisherUserId)
-     */
-    public void setExternalUid(String externalUid) {
-        requestParameters.setExternalUid(externalUid);
-    }
-
-    @Deprecated
-    /**
-     * Retrieve the externalUID that was previously set.
-     *
-     * @return externalUID.
-     */
-    public String getExternalUid() {
-        return requestParameters.getExternalUid();
-    }
-
 
     /**
      * Get whether or not the banner or interstitial should show the loading indicator
@@ -1008,22 +943,6 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
         return creativeWidth;
     }
 
-
-    @Deprecated
-    /**
-     * Retrieve the Creative Id  of the creative .
-     *
-     * @return the creativeId
-     * @deprecated see ({@link ANAdResponseInfo}.getCreativeId)
-     */
-    public String getCreativeId() {
-        return creativeId;
-    }
-
-    void setCreativeId(String creativeId) {
-        this.creativeId = creativeId;
-    }
-
     /**
      * Set AppNexus CreativeId that you want to display on this AdUnit for debugging/testing purpose.
      *
@@ -1053,15 +972,13 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
         adType = type;
     }
 
-    @Deprecated
     /**
      * Retrieve the AdType being served on the AdView
      * AdType can be Banner/Video
      *
      * @return AdType of the Creative
-     * @deprecated Use ({@link ANAdResponseInfo}.getAdType)
      */
-    public AdType getAdType() {
+    AdType getAdType() {
         return adType;
     }
 
@@ -1243,11 +1160,9 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
         private void handleNativeAd(AdResponse ad) {
             setAdType(AdType.NATIVE);
 
-            setCreativeId(ad.getResponseData().getAdResponseInfo().getCreativeId());
             final NativeAdResponse response = ad.getNativeAdResponse();
             response.setAdResponseInfo(ad.getResponseData().getAdResponseInfo());
 //            setAdResponseInfo(ad.getResponseData().getAdResponseInfo());
-            response.setCreativeId(ad.getResponseData().getAdResponseInfo().getCreativeId());
             if (adListener != null) {
                 adListener.onAdLoaded(response);
             }
@@ -1272,7 +1187,6 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
                     }
                     setCreativeWidth(ad.getDisplayable().getCreativeWidth());
                     setCreativeHeight(ad.getDisplayable().getCreativeHeight());
-                    setCreativeId(ad.getResponseData().getAdResponseInfo().getCreativeId());
                     setAdResponseInfo(ad.getResponseData().getAdResponseInfo());
                     if (ad.isMediated() && ad.getResponseData().getContentSource() == UTConstants.CSM) {
                         try {

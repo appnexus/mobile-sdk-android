@@ -43,7 +43,7 @@ import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.robolectric.Shadows.shadowOf;
 
-@Config(sdk = Build.VERSION_CODES.Q)
+@Config(sdk = Build.VERSION_CODES.M)
 @RunWith(RobolectricTestRunner.class)
 public class SDKSettingsTest {
 

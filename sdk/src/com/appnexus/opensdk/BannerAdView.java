@@ -573,11 +573,11 @@ public class BannerAdView extends AdView implements ScreenEventListener {
                 setShouldReloadOnResume(a.getBoolean(attr, false));
                 Clog.d(Clog.xmlLogTag, Clog.getString(
                         R.string.xml_set_should_reload, shouldReloadOnResume));
-            } else if (attr == R.styleable.BannerAdView_opens_native_browser) {
-                setOpensNativeBrowser(a.getBoolean(attr, false));
-                Clog.d(Clog.xmlLogTag, Clog.getString(
-                        R.string.xml_set_opens_native_browser,
-                        getOpensNativeBrowser()));
+//            } else if (attr == R.styleable.BannerAdView_opens_native_browser) {
+//                setOpensNativeBrowser(a.getBoolean(attr, false));
+//                Clog.d(Clog.xmlLogTag, Clog.getString(
+//                        R.string.xml_set_opens_native_browser,
+//                        getOpensNativeBrowser()));
             } else if (attr == R.styleable.BannerAdView_expands_to_fit_screen_width) {
                 setExpandsToFitScreenWidth(a.getBoolean(attr, false));
                 Clog.d(Clog.xmlLogTag, Clog.getString(
@@ -828,22 +828,6 @@ public class BannerAdView extends AdView implements ScreenEventListener {
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
                 R.string.set_allow_banner, enabled));
         requestParameters.setBannerEnabled(enabled);
-    }
-
-    /**
-     * @deprecated @deprecated Use setAllowNativeDemand(boolean) instead. Renderer to Placement mapping can now be done through Native Assembly in console.
-     *
-     * Sets whether or not Native Ads(AppNexus Media Type:12) can serve on this Ad object.
-     * This overrides the value set in console.
-     *
-     * @param enabled    whether to enable Native Ads or not. default is false
-     * @param rendererId the Native Assembly renderer_id that is associated with this placement.
-     */
-    public void setAllowNativeDemand(boolean enabled, int rendererId) {
-        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
-                R.string.set_allow_native, enabled));
-        requestParameters.setBannerNativeEnabled(enabled);
-        requestParameters.setRendererId(rendererId);
     }
 
     /**

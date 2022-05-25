@@ -100,39 +100,6 @@ public class VideoAd implements Ad, MultiAd {
     }
 
     /**
-     * Retrieve the setting that determines whether or not the
-     * device's native browser is used instead of the in-app
-     * browser when the user clicks an ad.
-     *
-     * @return true if the device's native browser will be used; false otherwise.
-     * @deprecated Use getClickThroughAction instead
-     * Refer {@link ANClickThroughAction}
-     */
-    public boolean getOpensNativeBrowser() {
-        Clog.d(Clog.videoLogTag, Clog.getString(
-                R.string.set_placement_id, requestParameters.getOpensNativeBrowser()));
-        return requestParameters.getOpensNativeBrowser();
-    }
-
-    /**
-     * Set this to true to disable the in-app browser.  This will
-     * cause URLs to open in a native browser such as Chrome so
-     * that when the user clicks on an ad, your app will be paused
-     * and the native browser will open.  Set this to false to
-     * enable the in-app browser instead (a lightweight browser
-     * that runs within your app).  The default value is false.
-     *
-     * @param opensNativeBrowser
-     * @deprecated Use setClickThroughAction instead
-     * Refer {@link ANClickThroughAction}
-     */
-    public void setOpensNativeBrowser(boolean opensNativeBrowser) {
-        Clog.d(Clog.videoLogTag, Clog.getString(
-                R.string.set_opens_native_browser, opensNativeBrowser));
-        requestParameters.setOpensNativeBrowser(opensNativeBrowser);
-    }
-
-    /**
      * Sets the placement id of the VideoAd. The placement ID
      * identifies the location in your application where ads will
      * be shown.  You must have a valid, active placement ID to
@@ -246,27 +213,6 @@ public class VideoAd implements Ad, MultiAd {
      */
     public String getAge() {
         return requestParameters.getAge();
-    }
-
-    @Deprecated
-    /**
-     * Set the current user's externalUID
-     *
-     * @param externalUid .
-     * @deprecated  Use ({@link SDKSettings}.setPublisherUserId)
-     */
-    public void setExternalUid(String externalUid) {
-        requestParameters.setExternalUid(externalUid);
-    }
-
-    @Deprecated
-    /**
-     * Retrieve the externalUID that was previously set.
-     *
-     * @return externalUID.
-     */
-    public String getExternalUid() {
-        return requestParameters.getExternalUid();
     }
 
     /**
@@ -783,20 +729,6 @@ public class VideoAd implements Ad, MultiAd {
         }
 
         return 0;
-    }
-
-    @Deprecated
-    /**
-     * Retrieve the Creative Id  of the creative .
-     *
-     * @return the creativeId
-     * @deprecated use ({@link ANAdResponseInfo}.getCreativeId)
-     */
-    public String getCreativeId() {
-        if (getAdResponseInfo() != null) {
-            return getAdResponseInfo().getCreativeId();
-        }
-        return "";
     }
 
     /**

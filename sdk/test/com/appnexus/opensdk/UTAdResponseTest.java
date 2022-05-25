@@ -154,7 +154,7 @@ public class UTAdResponseTest extends BaseRoboTest {
             assertEquals(UTConstants.AD_TYPE_NATIVE, nativeAdResponse.getAdType());
             assertTrue(nativeAdResponse.getNativeAdResponse().getIconUrl().contains("http://path_to_icon.com"));
             assertTrue(nativeAdResponse.getNativeAdResponse().getImageUrl().contains("http://path_to_main.com"));
-            assertEquals(false, nativeAdResponse.getNativeAdResponse().isOpenNativeBrowser());
+            assertEquals(false, nativeAdResponse.getNativeAdResponse().getClickThroughAction() == ANClickThroughAction.OPEN_DEVICE_BROWSER);
             assertEquals(true, nativeAdResponse.getNativeAdResponse().getLoadsInBackground());
             assertEquals("47772560", nativeAdResponse.getAdResponseInfo().getCreativeId());
         }

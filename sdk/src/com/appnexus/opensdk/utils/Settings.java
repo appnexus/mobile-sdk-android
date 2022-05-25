@@ -20,7 +20,6 @@ import android.location.Location;
 import android.os.Build;
 import android.text.TextUtils;
 
-import com.appnexus.opensdk.ANExternalUserIdSource;
 import com.appnexus.opensdk.ANGDPRSettings;
 import com.appnexus.opensdk.ANUserId;
 import com.appnexus.opensdk.BuildConfig;

@@ -76,24 +76,6 @@ public interface NativeAdResponse {
      */
     public void setImage(Bitmap bitmap);
 
-
-    @Deprecated
-    /**
-     * Retrieve the creative Id
-     *
-     * @return empty string "" if not present
-     * @deprecated Use ({@link ANAdResponseInfo}.getCreativeId)
-     */
-    public String getCreativeId();
-
-    @Deprecated
-    /**
-     * Set the creative Id
-     *
-     * @param creativeId set "" if not present
-     */
-    public void setCreativeId(String creativeId);
-
     /**
      * Retrieve the AdResponseInfo
      *

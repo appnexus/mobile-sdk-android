@@ -118,13 +118,6 @@ public class BannerAdViewTest extends BaseRoboTest {
 
     }
 
-    // Tests the value of ExternalUid
-    @Test
-    public void testSetExternalUId(){
-        setExternalUId();
-        assertSetExternalUId();
-    }
-
     // Tests the functionality of the public facing API for enabling the Lazy Load works as expected
     @Test
     public void testEnableLazyLoad(){
@@ -174,10 +167,6 @@ public class BannerAdViewTest extends BaseRoboTest {
         assertNull(bannerAdView.getExtInvCode());
         bannerAdView.setExtInvCode("Xandr");
         assertEquals("Xandr", bannerAdView.getExtInvCode());
-    }
-
-    private void setExternalUId(){
-        bannerAdView.setExternalUid("AppNexus");
     }
 
     private void setAdSize(){
@@ -233,12 +222,6 @@ public class BannerAdViewTest extends BaseRoboTest {
 
         assertTrue(bannerAdView.getMaxWidth() == 1080);
         assertTrue(bannerAdView.getMaxHeight() == 720);
-    }
-
-    private void assertSetExternalUId(){
-        assertNotNull(bannerAdView.getExternalUid());
-        assertEquals(bannerAdView.getExternalUid(), "AppNexus");
-
     }
 
     /******************* AdSize Tests END********************************************************/

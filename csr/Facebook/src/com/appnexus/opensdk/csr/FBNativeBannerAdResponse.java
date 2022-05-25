@@ -224,16 +224,6 @@ public class FBNativeBannerAdResponse extends BaseNativeAdResponse {
     }
 
     @Override
-    public String getCreativeId() {
-        return creativeId;
-    }
-
-    @Override
-    public void setCreativeId(String creativeId) {
-        this.creativeId = creativeId;
-    }
-
-    @Override
     public String getIconUrl() {
         return null;
     }
