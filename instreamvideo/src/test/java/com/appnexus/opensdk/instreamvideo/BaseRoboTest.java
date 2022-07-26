@@ -4,6 +4,7 @@ import android.app.Activity;
 
 
 import com.appnexus.opensdk.ANAdResponseInfo;
+import com.appnexus.opensdk.XandrAd;
 import com.appnexus.opensdk.instreamvideo.shadows.ShadowSettings;
 import com.appnexus.opensdk.instreamvideo.util.Lock;
 import com.appnexus.opensdk.ut.UTConstants;
@@ -32,6 +33,7 @@ public class BaseRoboTest {
 
     @Before
     public void setup() {
+        XandrAd.init(9325, null, false, null);
         Robolectric.getBackgroundThreadScheduler().reset();
         Robolectric.getForegroundThreadScheduler().reset();
         ShadowLog.stream = System.out;

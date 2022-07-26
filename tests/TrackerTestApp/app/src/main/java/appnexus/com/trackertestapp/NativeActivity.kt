@@ -68,7 +68,6 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener, NativeAdEve
             nativeAdRequest = NativeAdRequest(this, if (placement == null) "17982237" else placement)
             nativeAdRequest.clickThroughAction = ANClickThroughAction.RETURN_URL
             nativeAdRequest.placementID = if (placement == null) "17982237" else placement
-            SDKSettings.useHttps(useHttps)
             nativeAdRequest.listener = this
             if (creativeId != null) {
                 val utils = Utils()

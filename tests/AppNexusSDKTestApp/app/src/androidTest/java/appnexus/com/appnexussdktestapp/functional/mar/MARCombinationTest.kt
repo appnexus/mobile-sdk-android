@@ -27,6 +27,7 @@ import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import appnexus.com.appnexussdktestapp.MARLoadAndDisplayActivity
 import appnexus.com.appnexussdktestapp.R
+import com.appnexus.opensdk.XandrAd
 import junit.framework.Assert.assertFalse
 import junit.framework.Assert.assertTrue
 import org.junit.*
@@ -53,6 +54,7 @@ class MARCombinationTest {
 
     @Before
     fun setup() {
+        XandrAd.init(123, null, false, null)
         IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
         IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
         arrayListAdType.clear()
@@ -276,7 +278,7 @@ class MARCombinationTest {
         assertFalse(myActivity.onLazyLoadAdLoaded)
 
 
-        Thread.sleep(2000)
+        Thread.sleep(5000)
         Espresso.onView(ViewMatchers.withText("Activate")).perform(ViewActions.click())
         Thread.sleep(8000)
 

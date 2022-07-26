@@ -39,6 +39,7 @@ import appnexus.com.appnexussdktestapp.R
 import com.appnexus.opensdk.ANClickThroughAction
 import com.appnexus.opensdk.AdActivity
 import com.appnexus.opensdk.SDKSettings
+import com.appnexus.opensdk.XandrAd
 import com.appnexus.opensdk.utils.StringUtil
 import com.appnexus.opensdk.utils.ViewUtil
 import com.microsoft.appcenter.espresso.Factory
@@ -70,6 +71,8 @@ class BannerNativeTest {
 
     @Before
     fun setup() {
+        XandrAd.reset()
+        XandrAd.init(123, null, false, null)
         IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
         IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
         var intent = Intent()
@@ -228,14 +231,18 @@ class BannerNativeTest {
         bannerActivity.triggerAdLoad("17058950", allowNativeDemand = true)
         onView(ViewMatchers.withId(R.id.linearLayout))
             .check(matches(isDisplayed()))
-        Assert.assertFalse(bannerActivity.impressionLogged)
-        bannerActivity.attachNative()
         Thread.sleep(1000)
-        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
-            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
+        // This logic has been changed now
+        // Does not wait for the view to be attached to the Window
+        // We need to assert that the impression must have been logged until here
         Assert.assertTrue(bannerActivity.impressionLogged)
+//        bannerActivity.attachNative()
+//        Thread.sleep(1000)
+//        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+//            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+//        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+//            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
+//        Assert.assertTrue(bannerActivity.impressionLogged)
     }
 
     /*
@@ -244,7 +251,7 @@ class BannerNativeTest {
     @Test
     fun bannerNativeLoadImpressionTestOnePx() {
 
-        SDKSettings.setCountImpressionOn1pxRendering(true)
+        XandrAd.init(10094, null, false) { }
         bannerActivity.triggerAdLoad("17058950", allowNativeDemand = true)
         Thread.sleep(1000)
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
@@ -252,7 +259,6 @@ class BannerNativeTest {
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
         Assert.assertTrue(bannerActivity.impressionLogged)
-        SDKSettings.setCountImpressionOn1pxRendering(false)
     }
 
     /*
@@ -260,7 +266,7 @@ class BannerNativeTest {
     * */
     @Test
     fun bannerNativeLoadImpressionTestOnePxWithViewAttachedLater() {
-        SDKSettings.setCountImpressionOn1pxRendering(true)
+        XandrAd.init(10094, null, false, null)
         bannerActivity.shouldDisplay = false
         bannerActivity.triggerAdLoad("17058950", allowNativeDemand = true)
         onView(ViewMatchers.withId(R.id.linearLayout))
@@ -276,6 +282,5 @@ class BannerNativeTest {
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
         Assert.assertTrue(bannerActivity.impressionLogged)
-        SDKSettings.setCountImpressionOn1pxRendering(false)
     }
 }

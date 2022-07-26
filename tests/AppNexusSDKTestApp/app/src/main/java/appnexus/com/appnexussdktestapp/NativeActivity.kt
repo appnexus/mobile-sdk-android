@@ -64,7 +64,6 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener, NativeAdEve
             didLogImpression = false
             nativeAdRequest = NativeAdRequest(this, if (placement == null) "17982237" else placement)
             nativeAdRequest.placementID = if (placement == null) "17982237" else placement
-            SDKSettings.useHttps(useHttps)
             nativeAdRequest.listener = this
             if (creativeId != null) {
                 val utils = Utils()

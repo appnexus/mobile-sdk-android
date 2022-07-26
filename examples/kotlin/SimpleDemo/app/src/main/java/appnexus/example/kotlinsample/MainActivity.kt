@@ -14,9 +14,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        SDKSettings.setCountImpressionOn1pxRendering(true)
-
+        
         Settings.getSettings().debug_mode = true
         Settings.getSettings().useHttps = true
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

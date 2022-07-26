@@ -27,6 +27,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.runner.AndroidJUnit4
 import appnexus.com.appnexussdktestapp.BannerScaleLoadAndDisplayActivity
 import appnexus.com.appnexussdktestapp.R
+import com.appnexus.opensdk.XandrAd
 import com.appnexus.opensdk.utils.Clog
 import com.microsoft.appcenter.espresso.Factory
 import kotlinx.android.synthetic.main.activity_mar_load.*
@@ -58,6 +59,7 @@ class BannerScaleTest {
 
     @Before
     fun setup() {
+        XandrAd.init(123, null, false, null)
         IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
         IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
     }

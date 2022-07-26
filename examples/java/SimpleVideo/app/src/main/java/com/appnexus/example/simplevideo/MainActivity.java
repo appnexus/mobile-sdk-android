@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.appnexus.opensdk.InitListener;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.instreamvideo.Quartile;
@@ -62,7 +63,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SDKSettings.init(this, new SDKSettings.InitListener() {
+        SDKSettings.init(this, new InitListener() {
             @Override
             public void onInitFinished() {
                 infoText = (TextView) findViewById(R.id.infotTextView);

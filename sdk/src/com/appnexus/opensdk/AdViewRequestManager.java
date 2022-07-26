@@ -15,6 +15,8 @@
  */
 package com.appnexus.opensdk;
 
+import static com.appnexus.opensdk.utils.Settings.ImpressionType.BEGIN_TO_RENDER;
+
 import android.app.Activity;
 
 import com.appnexus.opensdk.tasksmanager.TasksManager;
@@ -29,7 +31,7 @@ import com.appnexus.opensdk.ut.adresponse.RTBNativeAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.SSMHTMLAdResponse;
 import com.appnexus.opensdk.utils.Clog;
-import com.appnexus.opensdk.utils.Settings.CountImpression;
+import com.appnexus.opensdk.utils.Settings.ImpressionType;
 import com.appnexus.opensdk.utils.StringUtil;
 
 import java.lang.ref.WeakReference;
@@ -165,7 +167,7 @@ public class AdViewRequestManager extends RequestManager {
                         bav.resizeViewToFitContainer(width, height, ad.getDisplayable().getView());
                     }
                 }
-                fireImpressionTrackerEarly (bav, ad.getResponseData());
+                fireImpressionTrackerIfBeginToRender(bav, ad.getResponseData());
             }
             ((AdDispatcher) owner.getAdDispatcher()).onAdLoaded(ad);
         } else {
@@ -180,10 +182,9 @@ public class AdViewRequestManager extends RequestManager {
         processUTResponse(response);
     }
 
-    private void fireImpressionTrackerEarly (AdView adView, BaseAdResponse response) {
-        if(adView.getEffectiveImpressionCountingMethod() == CountImpression.ON_LOAD ||
-                (adView.getEffectiveImpressionCountingMethod() == CountImpression.LAZY_LOAD &&
-                        adView.isWebviewActivated() && response.getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER))){
+    private void fireImpressionTrackerIfBeginToRender(AdView adView, BaseAdResponse response) {
+        ImpressionType impressionType = response.getImpressionType();
+        if(impressionType == BEGIN_TO_RENDER && adView.getMediaType() != MediaType.INTERSTITIAL) {
             if(response.getImpressionURLs() != null && response.getImpressionURLs().size() > 0){
                 adView.impressionTrackers = response.getImpressionURLs();
                 adView.fireImpressionTracker();
@@ -335,7 +336,7 @@ public class AdViewRequestManager extends RequestManager {
                         if (ownerAd instanceof AdView) {
                             initiateWebview(ownerAd, rtbAdResponse);
                             AdView owner = (AdView) ownerAd;
-                            fireImpressionTrackerEarly(owner, rtbAdResponse);
+                            fireImpressionTrackerIfBeginToRender(owner, rtbAdResponse);
                         } else {
                             Clog.e(Clog.baseLogTag, "AdType can not be identified.");
                             continueWaterfall(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST));
@@ -448,7 +449,7 @@ public class AdViewRequestManager extends RequestManager {
             TasksManager.getInstance().executeOnMainThread(new Runnable() {
                 @Override
                 public void run() {
-                    fireImpressionTrackerEarly((AdView) adOwner, currentAd);
+                    fireImpressionTrackerIfBeginToRender((AdView) adOwner, currentAd);
                 }
             });
         }

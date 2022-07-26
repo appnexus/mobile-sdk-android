@@ -55,7 +55,7 @@ import java.util.concurrent.TimeUnit
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-class BannerLazyLoadTest {
+class BannerLazyLoadImpressionTest {
     val Int.dp: Int
         get() = (this / Resources.getSystem().displayMetrics.density).toInt()
     val Int.px: Int
@@ -72,6 +72,7 @@ class BannerLazyLoadTest {
 
     @Before
     fun setup() {
+        XandrAd.reset()
         XandrAd.init(123, null, false, null)
         IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
         IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
@@ -88,10 +89,55 @@ class BannerLazyLoadTest {
     }
 
     /*
-    * Test for the Invalid Renderer Url for Banner Native Ad (NativeAssemblyRenderer)
+    * Test for the Eligible ViewableImpression
     * */
     @Test
-    fun bannerLazyLoad() {
+    fun bannerLazyLoadViewableImpression() {
+
+        XandrAd.init(10094, null, false, null)
+        Thread.sleep(2000)
+
+        Espresso.onView(ViewMatchers.withId(R.id.main_content))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+
+        Espresso.onView(ViewMatchers.withId(R.id.main_content))
+            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(2)))
+//        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
+//            .check(ViewAssertions.matches(CoreMatchers.not(ViewMatchers.isDisplayed())))
+
+        Assert.assertFalse(bannerActivity.onAdImpression)
+
+        onView(withId(R.id.activateWebview)).perform(ViewActions.click())
+
+        var count = 0
+        while (count < 5 && !bannerActivity.onAdImpression) {
+            Thread.sleep(1000)
+            count++
+        }
+        // Impression tracker is not fired before the banner is displayed on the screen
+        Assert.assertTrue(bannerActivity.onAdImpression)
+
+        Thread.sleep(1000)
+
+        Espresso.onView(ViewMatchers.withId(R.id.main_content))
+            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(3)))
+        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+
+        count = 0
+        while (count < 5 && !bannerActivity.onAdImpression) {
+            Thread.sleep(1000)
+            count++
+        }
+
+        Assert.assertTrue(bannerActivity.onAdImpression)
+    }
+
+    /*
+    * Test for the Eligible ViewableImpression
+    * */
+    @Test
+    fun bannerLazyLoadNotEligibleForViewableImpression() {
 
         Thread.sleep(2000)
 
@@ -103,7 +149,17 @@ class BannerLazyLoadTest {
 //        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
 //            .check(ViewAssertions.matches(CoreMatchers.not(ViewMatchers.isDisplayed())))
 
+        Assert.assertFalse(bannerActivity.onAdImpression)
+
         onView(withId(R.id.activateWebview)).perform(ViewActions.click())
+
+        var count = 0
+        while (count < 5 && !bannerActivity.onAdImpression) {
+            Thread.sleep(1000)
+            count++
+        }
+        // Impression tracker is fired before the banner is displayed on the screen
+        Assert.assertTrue(bannerActivity.onAdImpression)
 
         Thread.sleep(5000)
 
@@ -111,25 +167,15 @@ class BannerLazyLoadTest {
             .check(ViewAssertions.matches(ViewMatchers.hasChildCount(3)))
         Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Assert.assertTrue(
-            "Wrong Ad Width",
-            bannerActivity.banner.getChildAt(0).width.dp >= (bannerActivity.banner.adWidth - 1) ||
-                    bannerActivity.banner.getChildAt(0).width.dp <= (bannerActivity.banner.adWidth + 1)
-        )
-        Assert.assertTrue(
-            "Wrong Ad Height",
-            bannerActivity.banner.getChildAt(0).height.dp >= (bannerActivity.banner.adHeight - 1) ||
-                    bannerActivity.banner.getChildAt(0).height.dp <= (bannerActivity.banner.adHeight + 1)
-        )
 
-        println("LAZY LOAD: " + bannerActivity.logListener.logMsg)
+        Assert.assertTrue(bannerActivity.onAdImpression)
     }
 
     /*
     * Test for the Invalid Renderer Url for Banner Native Ad (NativeAssemblyRenderer)
     * */
     @Test
-    fun bannerLazyLoadReload() {
+    fun bannerLazyLoadDefaultReload() {
 
         Thread.sleep(2000)
 
@@ -149,18 +195,6 @@ class BannerLazyLoadTest {
             .check(ViewAssertions.matches(ViewMatchers.hasChildCount(3)))
         Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Assert.assertTrue(
-            "Wrong Ad Width",
-            bannerActivity.banner.getChildAt(0).width.dp >= (bannerActivity.banner.adWidth - 1) ||
-                    bannerActivity.banner.getChildAt(0).width.dp <= (bannerActivity.banner.adWidth + 1)
-        )
-        Assert.assertTrue(
-            "Wrong Ad Height",
-            bannerActivity.banner.getChildAt(0).height.dp >= (bannerActivity.banner.adHeight - 1) ||
-                    bannerActivity.banner.getChildAt(0).height.dp <= (bannerActivity.banner.adHeight + 1)
-        )
-
-        println("LAZY LOAD: " + bannerActivity.logListener.logMsg)
 
         onView(withId(R.id.enableAndReload)).perform(ViewActions.click())
 

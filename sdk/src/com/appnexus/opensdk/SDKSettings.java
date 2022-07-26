@@ -20,7 +20,6 @@ import android.content.Context;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.appnexus.opensdk.tasksmanager.TasksManager;
@@ -31,13 +30,8 @@ import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 import com.iab.omid.library.appnexus.Omid;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executor;
-
-import static com.appnexus.opensdk.utils.Settings.countImpressionOn1pxRendering;
 
 /**
  * Global static functions that apply to all SDK views and calls.
@@ -493,26 +487,6 @@ public class SDKSettings {
                 }
             });
         }
-    }
-
-    public interface InitListener {
-        void onInitFinished();
-    }
-
-    /**
-     * @return boolean that states the value of countImpressionOn1pxRendering
-     * set by using {@link #setCountImpressionOn1pxRendering(boolean)}. Default is false.
-     * */
-    public static boolean getCountImpressionOn1pxRendering() {
-        return countImpressionOn1pxRendering;
-    }
-
-    /**
-     * To enable the Impression counting on 1px display
-     * @param enable set true to enable, false to disable. Default is false.
-     * */
-    public static void setCountImpressionOn1pxRendering(boolean enable) {
-        countImpressionOn1pxRendering = enable;
     }
 
 }

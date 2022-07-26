@@ -27,6 +27,7 @@ import androidx.test.runner.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import appnexus.com.appnexussdktestapp.BannerActivity
 import appnexus.com.appnexussdktestapp.R
+import com.appnexus.opensdk.XandrAd
 import com.microsoft.appcenter.espresso.Factory
 import org.junit.*
 
@@ -58,6 +59,7 @@ class BannerVideoTest {
 
     @Before
     fun setup() {
+        XandrAd.init(123, null, false, null)
         IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
         IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
         var intent = Intent()

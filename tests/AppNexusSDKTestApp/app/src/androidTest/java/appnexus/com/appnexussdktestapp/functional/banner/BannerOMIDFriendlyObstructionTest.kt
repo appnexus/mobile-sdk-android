@@ -28,6 +28,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.runner.AndroidJUnit4
 import appnexus.com.appnexussdktestapp.BannerOMIDActivity
 import appnexus.com.appnexussdktestapp.R
+import com.appnexus.opensdk.XandrAd
 import com.microsoft.appcenter.espresso.Factory
 import org.junit.*
 import org.junit.runner.RunWith
@@ -56,6 +57,7 @@ class BannerOMIDFriendlyObstructionTest {
 
     @Before
     fun setup() {
+        XandrAd.init(123, null, false, null)
         IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
         IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
         var intent = Intent()
@@ -79,7 +81,7 @@ class BannerOMIDFriendlyObstructionTest {
 
         Thread.sleep(2000)
 
-        bannerActivity.triggerAdLoad("14757567", 300, 250, creativeId = 156075267)
+        bannerActivity.triggerAdLoad("24087742", 300, 250)
 
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))

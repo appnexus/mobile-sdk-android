@@ -31,6 +31,7 @@ import appnexus.com.appnexussdktestapp.NativeActivity
 import appnexus.com.appnexussdktestapp.R
 import appnexus.com.appnexussdktestapp.util.Utility.Companion.checkVisibilityDetectorMap
 import com.appnexus.opensdk.SDKSettings
+import com.appnexus.opensdk.XandrAd
 import com.microsoft.appcenter.espresso.Factory
 import kotlinx.android.synthetic.main.layout_native.*
 import org.hamcrest.Matchers.not
@@ -60,6 +61,8 @@ class NativeOnePxTest {
 
     @Before
     fun setup() {
+        XandrAd.reset()
+        XandrAd.init(123, null, false, null)
         IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
         IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
         var intent = Intent()
@@ -70,7 +73,8 @@ class NativeOnePxTest {
 
     @After
     fun destroy() {
-        SDKSettings.setCountImpressionOn1pxRendering(false)
+        XandrAd.init(10094, null, false) { }
+        Thread.sleep(2000)
         IdlingRegistry.getInstance().unregister(nativeActivity.idlingResource)
         reportHelper.label("Stopping App")
     }
@@ -81,7 +85,8 @@ class NativeOnePxTest {
     @Test
     fun nativeAdLoadTestOnePx() {
 
-        SDKSettings.setCountImpressionOn1pxRendering(true)
+        XandrAd.init(10094, null, false) { }
+        Thread.sleep(2000)
 
         nativeActivity.shouldDisplay = false
 
@@ -113,7 +118,8 @@ class NativeOnePxTest {
     @Test
     fun nativeAdLoadBGTest() {
 
-        SDKSettings.setCountImpressionOn1pxRendering(true)
+        XandrAd.init(10094, null, false) { }
+        Thread.sleep(2000)
 
         nativeActivity.shouldDisplay = false
 
@@ -145,7 +151,8 @@ class NativeOnePxTest {
     @Test
     fun nativeAdLoadBGExecutorTest() {
 
-        SDKSettings.setCountImpressionOn1pxRendering(true)
+        XandrAd.init(10094, null, false) { }
+        Thread.sleep(2000)
 
         nativeActivity.shouldDisplay = false
 

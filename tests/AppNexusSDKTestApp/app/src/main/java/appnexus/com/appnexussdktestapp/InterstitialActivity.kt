@@ -92,7 +92,6 @@ class InterstitialActivity : AppCompatActivity(), AdListener {
             interstitial = InterstitialAdView(this)
             interstitial.id = interstitial_id
             interstitial.placementID = if (placement == null) "17982237" else placement
-            SDKSettings.useHttps(useHttps)
             interstitial.adListener = this
             interstitial.closeButtonDelay = closeButtonDelay
             if(creativeId != null) {

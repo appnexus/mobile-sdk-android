@@ -97,9 +97,6 @@ class MARActivity : Activity() {
 
         adRequest = setupNativeAd()
 
-        SDKSettings.useHttps(true)
-
-
         // Set up a listener on this ad view that logs events.
         //        AdListener adListener =
 

@@ -109,6 +109,11 @@ public class AdListenerTest extends BaseViewAdTest {
     @Test
     public void testBannerAdImpressionForMultipleImpressionUrls() {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.bannerWithMultipleImpressionUrls()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
         requestManager = new AdViewRequestManager(bannerAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
@@ -118,6 +123,23 @@ public class AdListenerTest extends BaseViewAdTest {
         attachBannerToView();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        int count = 0;
+        while (count < 5 && !adImpression) {
+            count++;
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         assertTrue(adImpression);
     }
 
@@ -133,6 +155,18 @@ public class AdListenerTest extends BaseViewAdTest {
         attachBannerToView();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
+
+        int count = 0;
+        while (count < 5 && !adImpression) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                count++;
+            }
+        }
+
         assertTrue(adImpression);
     }
 
@@ -150,8 +184,16 @@ public class AdListenerTest extends BaseViewAdTest {
         Robolectric.flushForegroundThreadScheduler();
         assertCallbacks(true);
         attachBannerToView();
+
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         assertTrue(adImpression);
     }
 
@@ -160,6 +202,7 @@ public class AdListenerTest extends BaseViewAdTest {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
         bannerAdView.enableLazyLoad();
         executeBannerRequest();
+
         assertLazyLoadCallbackInProgress();
         bannerAdView.loadLazyAd();
         Robolectric.flushBackgroundThreadScheduler();

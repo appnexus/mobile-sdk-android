@@ -334,7 +334,7 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
                 return false;
             }
 
-            impressionTracker = ImpressionTracker.create(viewWeakReference, imp_trackers, visibilityDetector, view.getContext(), anOmidAdSession, new ImpressionTrackerListener() {
+            impressionTracker = ImpressionTracker.create(viewWeakReference, imp_trackers, visibilityDetector, view.getContext(), anOmidAdSession, getImpressionType(), new ImpressionTrackerListener() {
                 @Override
                 public void onImpressionTrackerFired() {
                     if (listener != null) {

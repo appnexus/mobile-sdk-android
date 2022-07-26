@@ -14,10 +14,11 @@
  *    limitations under the License.
  */
 
-package appnexus.com.appnexussdktestapp.placement.banner
+package appnexus.com.appnexussdktestapp.functional.banner
 
 import android.content.Intent
 import android.content.res.Resources
+import android.view.View
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.IdlingPolicies
 import androidx.test.espresso.IdlingRegistry
@@ -27,9 +28,13 @@ import androidx.test.runner.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import appnexus.com.appnexussdktestapp.BannerActivity
 import appnexus.com.appnexussdktestapp.R
+import com.appnexus.opensdk.InitListener
 import com.appnexus.opensdk.XandrAd
 import com.microsoft.appcenter.espresso.Factory
+import org.hamcrest.CoreMatchers.not
 import org.junit.*
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 
 import org.junit.runner.RunWith
 import java.util.concurrent.TimeUnit
@@ -40,7 +45,7 @@ import java.util.concurrent.TimeUnit
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-class BannerTest {
+class BannerImpressionTest {
     val Int.dp: Int
         get() = (this / Resources.getSystem().displayMetrics.density).toInt()
     val Int.px: Int
@@ -57,6 +62,7 @@ class BannerTest {
 
     @Before
     fun setup() {
+        XandrAd.reset()
         XandrAd.init(123, null, false, null)
         IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
         IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
@@ -73,40 +79,15 @@ class BannerTest {
     }
 
     /*
-    * Sanity Test for the Banner Ad of size 320x50
+    * Sanity Test for the Banner Viewable Impression
     * */
     @Test
-    fun bannerLoadSize320x50Test() {
+    fun bannerViewableImpression() {
 
-
+        XandrAd.init(10094, null, false, null)
         Thread.sleep(2000)
 
-        bannerActivity.triggerAdLoad("17058950", 320, 50)
-
-        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
-            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
-        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Assert.assertTrue(
-            "Wrong Ad Width",
-            bannerActivity.banner.getChildAt(0).width.dp >= (bannerActivity.banner.adWidth - 1) ||
-                    bannerActivity.banner.getChildAt(0).width.dp <= (bannerActivity.banner.adWidth + 1)
-        )
-        Assert.assertTrue(
-            "Wrong Ad Height",
-            bannerActivity.banner.getChildAt(0).height.dp >= (bannerActivity.banner.adHeight - 1) ||
-                    bannerActivity.banner.getChildAt(0).height.dp <= (bannerActivity.banner.adHeight + 1)
-        )
-
-    }
-
-    /*
-    * Sanity Test for the Banner Ad of size 300x250
-    * */
-    @Test
-    fun bannerLoadSize300x250Test() {
+        Assert.assertFalse(bannerActivity.onAdImpression)
 
         bannerActivity.triggerAdLoad("17058950", 300, 250)
 
@@ -116,32 +97,71 @@ class BannerTest {
             .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
         Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Assert.assertTrue(
-            "Wrong Ad Width",
-            bannerActivity.banner.getChildAt(0).width.dp >= (bannerActivity.banner.adWidth - 1) ||
-                    bannerActivity.banner.getChildAt(0).width.dp <= (bannerActivity.banner.adWidth + 1)
-        )
-        Assert.assertTrue(
-            "Wrong Ad Height",
-            bannerActivity.banner.getChildAt(0).height.dp >= (bannerActivity.banner.adHeight - 1) ||
-                    bannerActivity.banner.getChildAt(0).height.dp <= (bannerActivity.banner.adHeight + 1)
-        )
 
+        var count = 0
+        while (count < 5 && !bannerActivity.onAdImpression) {
+            Thread.sleep(1000)
+            count++
+        }
+
+        Assert.assertTrue(bannerActivity.onAdImpression)
     }
 
-
-    // BG Testing
-
     /*
-    * Sanity Test for the Banner Ad of size 320x50
+    * Test for the Eligible Banner Viewable Impression when Visibility is GONE
+    * and then the Visibility is changed to VISIBLE
     * */
     @Test
-    fun bannerLoadSize320x50BGTest() {
+    fun bannerViewableImpressionVisibilityGone() {
 
+        XandrAd.init(10094, null, false, null)
+        Thread.sleep(2000)
+
+        Assert.assertFalse(bannerActivity.onAdImpression)
+        bannerActivity.shouldDisplay = false
+
+        bannerActivity.triggerAdLoad("17058950", 300, 250, visibility = View.GONE)
+
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
+        Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
+            .check(ViewAssertions.matches(not(ViewMatchers.isDisplayed())))
+
+        assertTrue(XandrAd.isEligibleForViewableImpression(10094))
+
+        var count = 0
+        while (count < 5 && !bannerActivity.onAdImpression) {
+            Thread.sleep(1000)
+            count++
+        }
+
+        assertFalse(bannerActivity.onAdImpression)
+
+        bannerActivity.displayBanner()
+        count = 0
+        while (count < 5 && !bannerActivity.onAdImpression) {
+            Thread.sleep(1000)
+            count++
+        }
+
+        Assert.assertTrue(bannerActivity.onAdImpression)
+    }
+
+    // -- DEFAULT Impression tracking
+
+    /*
+    * Sanity Test for the Banner Default Impression
+    * */
+    @Test
+    fun bannerDefaultImpression() {
 
         Thread.sleep(2000)
 
-        bannerActivity.triggerAdLoad("17058950", 320, 50,  bgTask = true)
+        Assert.assertFalse(bannerActivity.onAdImpression)
+
+        bannerActivity.triggerAdLoad("17058950", 300, 250)
 
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
@@ -149,43 +169,41 @@ class BannerTest {
             .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
         Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Assert.assertTrue(
-            "Wrong Ad Width",
-            bannerActivity.banner.getChildAt(0).width.dp >= (bannerActivity.banner.adWidth - 1) ||
-                    bannerActivity.banner.getChildAt(0).width.dp <= (bannerActivity.banner.adWidth + 1)
-        )
-        Assert.assertTrue(
-            "Wrong Ad Height",
-            bannerActivity.banner.getChildAt(0).height.dp >= (bannerActivity.banner.adHeight - 1) ||
-                    bannerActivity.banner.getChildAt(0).height.dp <= (bannerActivity.banner.adHeight + 1)
-        )
 
+        Assert.assertTrue(bannerActivity.onAdImpression)
     }
 
     /*
-    * Sanity Test for the Banner Ad of size 300x250
+    * Sanity Test for the Banner Default Impression with invalid Member ID
     * */
     @Test
-    fun bannerLoadSize300x250BGTest() {
+    fun bannerDefaultImpressionWithInvalidMemberId() {
 
-        bannerActivity.triggerAdLoad("17058950", 300, 250, bgTask = true)
+        XandrAd.init(123, null, false, null)
+        Thread.sleep(2000)
+
+        Assert.assertFalse(bannerActivity.onAdImpression)
+
+        bannerActivity.shouldDisplay = false
+
+        bannerActivity.triggerAdLoad("17058950", 300, 250)
+
+        var count = 0
+        while (count < 5 && !bannerActivity.onAdImpression) {
+            Thread.sleep(1000)
+            count++
+        }
+
+        Assert.assertTrue(bannerActivity.onAdImpression)
 
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
             .check(ViewAssertions.matches(ViewMatchers.hasChildCount(1)))
         Espresso.onView(ViewMatchers.withId(bannerActivity.banner_id))
-            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Assert.assertTrue(
-            "Wrong Ad Width",
-            bannerActivity.banner.getChildAt(0).width.dp >= (bannerActivity.banner.adWidth - 1) ||
-                    bannerActivity.banner.getChildAt(0).width.dp <= (bannerActivity.banner.adWidth + 1)
-        )
-        Assert.assertTrue(
-            "Wrong Ad Height",
-            bannerActivity.banner.getChildAt(0).height.dp >= (bannerActivity.banner.adHeight - 1) ||
-                    bannerActivity.banner.getChildAt(0).height.dp <= (bannerActivity.banner.adHeight + 1)
-        )
+            .check(ViewAssertions.matches(not(ViewMatchers.isDisplayed())))
+
 
     }
+
 }

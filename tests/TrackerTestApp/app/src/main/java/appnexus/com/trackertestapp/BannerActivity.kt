@@ -106,7 +106,6 @@ class BannerActivity : AppCompatActivity(), AdListener, AppEventListener, Native
             banner.allowVideoDemand = allowVideoDemand
             banner.resizeAdToFitContainer = resizeToFitContainer
             banner.expandsToFitScreenWidth = expandsToFitScreenWidth
-            SDKSettings.useHttps(useHttps)
             banner.adListener = this
             if(creativeId != null) {
                 val utils = Utils()

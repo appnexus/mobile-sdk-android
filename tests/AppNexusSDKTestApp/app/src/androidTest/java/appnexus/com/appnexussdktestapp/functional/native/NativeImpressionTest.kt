@@ -20,6 +20,8 @@ import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.IdlingPolicies
 import androidx.test.espresso.IdlingRegistry
@@ -30,8 +32,11 @@ import androidx.test.runner.AndroidJUnit4
 import appnexus.com.appnexussdktestapp.NativeImpressionActivity
 import appnexus.com.appnexussdktestapp.R
 import com.appnexus.opensdk.SDKSettings
+import com.appnexus.opensdk.XandrAd
 import com.microsoft.appcenter.espresso.Factory
+import org.hamcrest.CoreMatchers.not
 import org.junit.*
+import org.junit.Assert.assertFalse
 import org.junit.runner.RunWith
 import java.util.concurrent.TimeUnit
 
@@ -54,6 +59,8 @@ class NativeImpressionTest {
 
     @Before
     fun setup() {
+        XandrAd.reset()
+        XandrAd.init(123, null, false, null)
         IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
         IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
         var intent = Intent()
@@ -72,17 +79,37 @@ class NativeImpressionTest {
    * Test for Default Native Impression firing method.
    * */
     @Test
-    fun nativeAdImpressionTestWithAttachedView() {
+    fun nativeAdImpressionTest() {
         Assert.assertFalse(nativeActivity.didLogImpression)
-        nativeActivity.shouldDisplay = true
+        nativeActivity.shouldDisplay = false
         nativeActivity.triggerAdLoad("17982237", creativeId = 182426521)
         Thread.sleep(1000)
+        var count = 0
+        while (count < 5 && !nativeActivity.didLogImpression) {
+            Thread.sleep(1000)
+            count++
+        }
+        Assert.assertTrue(nativeActivity.didLogImpression)
+
+        nativeActivity.changeVisibility(GONE)
+        nativeActivity.attachNative()
+        Thread.sleep(5000)
+        Espresso.onView(ViewMatchers.withId(R.id.title))
+            .check(ViewAssertions.matches(not(ViewMatchers.isDisplayed())))
+        Espresso.onView(ViewMatchers.withId(R.id.description))
+            .check(ViewAssertions.matches(not(ViewMatchers.isDisplayed())))
+        Espresso.onView(ViewMatchers.withId(R.id.icon))
+            .check(ViewAssertions.matches(not(ViewMatchers.isDisplayed())))
+        Espresso.onView(ViewMatchers.withId(R.id.image))
+            .check(ViewAssertions.matches(not(ViewMatchers.isDisplayed())))
+        Assert.assertTrue(nativeActivity.didLogImpression)
+
+        nativeActivity.changeVisibility(VISIBLE)
+
         Espresso.onView(ViewMatchers.withId(R.id.title))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.description))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        Assert.assertTrue(nativeActivity.didLogImpression)
-        Thread.sleep(5000)
         Espresso.onView(ViewMatchers.withId(R.id.icon))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.image))
@@ -91,7 +118,51 @@ class NativeImpressionTest {
     }
 
     /*
-   * Test for Default Native Impression firing method.
+    * Test for Native Viewable Impression firing method.
+    * */
+    @Test
+    fun nativeAdImpressionTestViewableImpression() {
+        XandrAd.init(10094, null, false, null)
+        Assert.assertFalse(nativeActivity.didLogImpression)
+        nativeActivity.shouldDisplay = false
+        nativeActivity.triggerAdLoad("17982237", creativeId = 182426521)
+        Thread.sleep(1000)
+        Assert.assertFalse(nativeActivity.didLogImpression)
+        nativeActivity.changeVisibility(GONE)
+        nativeActivity.attachNative()
+        Thread.sleep(5000)
+        Espresso.onView(ViewMatchers.withId(R.id.title))
+            .check(ViewAssertions.matches(not(ViewMatchers.isDisplayed())))
+        Espresso.onView(ViewMatchers.withId(R.id.description))
+            .check(ViewAssertions.matches(not(ViewMatchers.isDisplayed())))
+        Espresso.onView(ViewMatchers.withId(R.id.icon))
+            .check(ViewAssertions.matches(not(ViewMatchers.isDisplayed())))
+        Espresso.onView(ViewMatchers.withId(R.id.image))
+            .check(ViewAssertions.matches(not(ViewMatchers.isDisplayed())))
+        Assert.assertFalse(nativeActivity.didLogImpression) // The Impression isn't fired yet
+
+        nativeActivity.changeVisibility(VISIBLE)
+
+        Espresso.onView(ViewMatchers.withId(R.id.title))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.description))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.icon))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(ViewMatchers.withId(R.id.image))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+
+        var count = 0
+        while (count < 5 && !nativeActivity.didLogImpression) {
+            Thread.sleep(1000)
+            count++
+        }
+
+        Assert.assertTrue(nativeActivity.didLogImpression)
+    }
+
+    /*
+   * Test for Native Impression firing method.
    * */
     @Test
     fun nativeAdImpressionTestWithAttachedToDummyView() {
@@ -100,7 +171,13 @@ class NativeImpressionTest {
         nativeActivity.shouldAttachToDummy = true
         nativeActivity.triggerAdLoad("17982237", creativeId = 182426521)
         Thread.sleep(1000)
-        Assert.assertFalse(nativeActivity.didLogImpression)
+        var count = 0
+        while (count < 5 && !nativeActivity.didLogImpression) {
+            Thread.sleep(1000)
+            count++
+        }
+        // New native method changes (BEGIN TO RENDER)
+        Assert.assertTrue(nativeActivity.didLogImpression)
 
         nativeActivity.attachNative()
         Thread.sleep(1000)
@@ -138,7 +215,7 @@ class NativeImpressionTest {
   * */
     @Test
     fun nativeAdDefaultImpressionTestWhenOnePxEnabled() {
-        SDKSettings.setCountImpressionOn1pxRendering(true)
+        XandrAd.init(10094, null, false, null)
         Assert.assertFalse(nativeActivity.didLogImpression)
         nativeActivity.shouldDisplay = false
         nativeActivity.triggerAdLoad("17982237", creativeId = 182426521)
@@ -163,8 +240,6 @@ class NativeImpressionTest {
         Espresso.onView(ViewMatchers.withId(R.id.image))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Assert.assertTrue(nativeActivity.didLogImpression)
-        SDKSettings.setCountImpressionOn1pxRendering(false)
-
     }
 
     /*
@@ -173,7 +248,7 @@ class NativeImpressionTest {
   * */
     @Test
     fun nativeAdDefaultImpressionTestWhenOnePxEnabledWithAttachedView() {
-        SDKSettings.setCountImpressionOn1pxRendering(true)
+        XandrAd.init(10094, null, false, null)
         Assert.assertFalse(nativeActivity.didLogImpression)
         nativeActivity.shouldDisplay = true
         nativeActivity.triggerAdLoad("17982237", creativeId = 182426521)
@@ -189,6 +264,5 @@ class NativeImpressionTest {
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
         Espresso.onView(ViewMatchers.withId(R.id.image))
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-        SDKSettings.setCountImpressionOn1pxRendering(false)
     }
 }

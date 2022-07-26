@@ -279,10 +279,11 @@ public class BannerAdView extends AdView implements ScreenEventListener {
      */
     @Override
     public boolean loadAd() {
-        loadAdHasBeenCalled = true;
-        if (super.loadAd())
+
+        if (super.loadAd()) {
+            loadAdHasBeenCalled = true;
             return true;
-        else {
+        } else {
             loadAdHasBeenCalled = false;
             return false;
         }
@@ -1276,29 +1277,6 @@ public class BannerAdView extends AdView implements ScreenEventListener {
      */
     protected void setVideoOrientation(VideoOrientation videoOrientation) {
         this.videoOrientation = videoOrientation;
-    }
-
-
-    /**
-     * Set whether to count impression when the creative html loads.
-     * This feature is disabled by default.
-     *
-     * @param enabled If set to true, impression will be counted when creative html loads.
-     */
-    public void setCountImpressionOnAdLoad(boolean enabled) {
-        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
-                R.string.set_count_on_ad_load, enabled));
-        countBannerImpressionOnAdLoad = enabled;
-    }
-
-
-    /**
-     * Check whether impression is being counted on creative html load
-     *
-     * @return If true, impression will be counted when creative html loads.
-     */
-    public boolean getCountImpressionOnAdLoad() {
-        return countBannerImpressionOnAdLoad;
     }
 
     /**

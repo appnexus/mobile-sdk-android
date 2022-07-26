@@ -33,6 +33,7 @@ public class BaseRoboTest {
 
     @Before
     public void setup() {
+        XandrAd.init(9325, null, false, null);
         SDKSettings.setExternalExecutor(null);
         Robolectric.getBackgroundThreadScheduler().reset();
         Robolectric.getForegroundThreadScheduler().reset();

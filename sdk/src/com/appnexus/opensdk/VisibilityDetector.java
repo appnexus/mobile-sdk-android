@@ -16,12 +16,15 @@
 
 package com.appnexus.opensdk;
 
+import static com.appnexus.opensdk.utils.Settings.ImpressionType.*;
+
 import android.graphics.Rect;
 import android.os.Handler;
 import android.view.View;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.Settings.ImpressionType;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -108,7 +111,6 @@ class VisibilityDetector {
                     VisibilityListener listener = getListener(viewWeakReference);
                     View view = viewWeakReference.get();
                     if (listener != null) {
-                        Clog.d(Clog.visibilityLogTag, view.toString() + ", isVisible: " + isVisible(view));
                         listener.onVisibilityChanged(isVisible(view));
                     } else {
                         destroy(view);
@@ -143,11 +145,6 @@ class VisibilityDetector {
             return false;
         }
 
-        if (!SDKSettings.getCountImpressionOn1pxRendering()) {
-            // Default Native case
-            return view.getWindowToken() != null;
-        }
-
         // holds the visible part of a view
         Rect clippedArea = new Rect();
 
@@ -161,11 +158,8 @@ class VisibilityDetector {
         if (totalArea <= 0) {
             return false;
         }
-        if (SDKSettings.getCountImpressionOn1pxRendering()) {
-            // OnePx (Banner and Native)
-            return visibleViewArea >= Settings.MIN_AREA_VIEWED_FOR_1PX;
-        }
-        return false;
+        // Viewable Impression (Banner and Native)
+        return visibleViewArea >= Settings.MIN_AREA_VIEWED_FOR_1PX;
     }
 
     void destroy(View view) {
