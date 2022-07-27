@@ -968,6 +968,8 @@ public class BannerAdView extends AdView implements ScreenEventListener {
         if (this.currentDisplayable != null) {
             this.currentDisplayable.onPause();
         }
+
+        VisibilityDetector.getInstance().pauseVisibilityDetector();
     }
 
     @Override
@@ -975,6 +977,8 @@ public class BannerAdView extends AdView implements ScreenEventListener {
         if (this.currentDisplayable != null) {
             this.currentDisplayable.onResume();
         }
+
+        VisibilityDetector.getInstance().resumeVisibilityDetector();
     }
 
     /**

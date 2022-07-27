@@ -16,15 +16,12 @@
 
 package com.appnexus.opensdk;
 
-import static com.appnexus.opensdk.utils.Settings.ImpressionType.*;
-
 import android.graphics.Rect;
 import android.os.Handler;
 import android.view.View;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
-import com.appnexus.opensdk.utils.Settings.ImpressionType;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -174,6 +171,22 @@ class VisibilityDetector {
             if (mHandler != null) {
                 mHandler.removeCallbacks(visibilityCheck);
             }
+        }
+    }
+
+    void pauseVisibilityDetector() {
+        if (tasker != null) {
+            tasker.shutdownNow();
+        }
+        scheduled = false;
+        if (mHandler != null && visibilityCheck != null) {
+            mHandler.removeCallbacks(visibilityCheck);
+        }
+    }
+
+    void resumeVisibilityDetector() {
+        if (viewList != null && viewList.size() > 0) {
+            scheduleVisibilityCheck();
         }
     }
 
