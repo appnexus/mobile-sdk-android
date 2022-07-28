@@ -28,6 +28,7 @@ public class RTBNativeAdResponse extends BaseAdResponse {
     public RTBNativeAdResponse(int width, int height, String adType, ANNativeAdResponse nativeAdResponse, ArrayList<String> impressionURLs, ANAdResponseInfo adResponseInfo) {
         super(width, height, adType, impressionURLs, adResponseInfo);
         this.nativeAdResponse = nativeAdResponse;
+        this.nativeAdResponse.setImpressionType(getImpressionType());
     }
 
     public ANNativeAdResponse getNativeAdResponse() {

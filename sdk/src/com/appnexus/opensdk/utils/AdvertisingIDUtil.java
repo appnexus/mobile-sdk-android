@@ -21,6 +21,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Pair;
 
+import com.appnexus.opensdk.InitListener;
 import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.tasksmanager.TasksManager;
 
@@ -93,7 +94,7 @@ public class AdvertisingIDUtil {
         return new Pair<String, Boolean>(aaid, limited);
     }
 
-    public static void retrieveAndSetAAID(final Context context, final SDKSettings.InitListener listener) {
+    public static void retrieveAndSetAAID(final Context context, final InitListener listener) {
         // skip if AAID is already available
         if (!StringUtil.isEmpty(SDKSettings.getAAID())) {
             return;
@@ -139,9 +140,9 @@ public class AdvertisingIDUtil {
 
 
         private WeakReference<Context> context;
-        SDKSettings.InitListener listener;
+        InitListener listener;
 
-        private AAIDTask(Context context, SDKSettings.InitListener listener) {
+        private AAIDTask(Context context, InitListener listener) {
             this.context = new WeakReference<Context>(context);
             this.listener = listener;
         }

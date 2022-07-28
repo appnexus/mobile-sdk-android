@@ -30,7 +30,6 @@ import android.util.Pair;
 import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.ANGDPRSettings;
 import com.appnexus.opensdk.ANMultiAdRequest;
-import com.appnexus.opensdk.ANExternalUserIdSource;
 import com.appnexus.opensdk.ANUSPrivacySettings;
 import com.appnexus.opensdk.ANUserId;
 import com.appnexus.opensdk.Ad;
@@ -62,8 +61,6 @@ public class UTRequestParameters {
 
     private MediaType mediaType;
     private String placementID;
-    @Deprecated
-    private String externalUid;
     private int memberID;
     private int publisherId;
     private String invCode;
@@ -270,23 +267,6 @@ public class UTRequestParameters {
         return adSizes;
     }
 
-    /**
-     * @deprecated Use setClickThroughAction instead
-     * Refer {@link ANClickThroughAction}
-     */
-    public void setOpensNativeBrowser(boolean opensNativeBrowser) {
-        setClickThroughAction(opensNativeBrowser ? ANClickThroughAction.OPEN_DEVICE_BROWSER : ANClickThroughAction.OPEN_SDK_BROWSER);
-    }
-
-    /**
-     * @deprecated Use getClickThroughAction instead
-     * Refer {@link ANClickThroughAction}
-     */
-    public boolean getOpensNativeBrowser() {
-        return (getClickThroughAction() == ANClickThroughAction.OPEN_DEVICE_BROWSER);
-    }
-
-
     public ANClickThroughAction getClickThroughAction() {
         return clickThroughAction;
     }
@@ -325,16 +305,6 @@ public class UTRequestParameters {
 
     public AdView.GENDER getGender() {
         return gender;
-    }
-
-    @Deprecated
-    public String getExternalUid() {
-        return externalUid;
-    }
-
-    @Deprecated
-    public void setExternalUid(String externalUid) {
-        this.externalUid = externalUid;
     }
 
     public int getVideoAdMinDuration() {
@@ -448,7 +418,7 @@ public class UTRequestParameters {
      */
 
     public TargetingParameters getTargetingParameters() {
-        return new TargetingParameters(age, gender, customKeywords, SDKSettings.getLocation(), externalUid);
+        return new TargetingParameters(age, gender, customKeywords, SDKSettings.getLocation());
     }
 
     private String getFacebookBidderToken(Context context) {
@@ -836,8 +806,6 @@ public class UTRequestParameters {
 
             if(!StringUtil.isEmpty(Settings.getSettings().publisherUserId)){
                 user.put(USER_EXTERNALUID, Settings.getSettings().publisherUserId);
-            } else if (!StringUtil.isEmpty(utRequestParameters.getExternalUid())) {
-                user.put(USER_EXTERNALUID, utRequestParameters.getExternalUid());
             }
 
             if(Settings.getSettings().doNotTrack){

@@ -31,6 +31,7 @@ import androidx.test.filters.LargeTest
 import androidx.test.runner.AndroidJUnit4
 import appnexus.com.appnexussdktestapp.InterstitialActivity
 import com.appnexus.opensdk.AdActivity
+import com.appnexus.opensdk.XandrAd
 import com.microsoft.appcenter.espresso.Factory
 import org.junit.After
 import org.junit.Assert.assertTrue
@@ -55,6 +56,7 @@ class InterstitialTest {
 
     @Before
     fun setup() {
+        XandrAd.init(123, null, false, null)
         IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
         IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
         var intent = Intent()
@@ -86,6 +88,12 @@ class InterstitialTest {
 
         Espresso.onView(ViewMatchers.withId(closeButtonId)).perform(ViewActions.click())
 
+        var count = 0
+        while (count < 5 && !interstitialActivity.isAdCollapsed) {
+            Thread.sleep(1000)
+            count++
+        }
+
         assertTrue(interstitialActivity.isAdCollapsed)
     }
     
@@ -107,6 +115,12 @@ class InterstitialTest {
         Espresso.onView(ViewMatchers.withId(closeButtonId)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
         Espresso.onView(ViewMatchers.withId(closeButtonId)).perform(ViewActions.click())
+
+        var count = 0
+        while (count < 5 && !interstitialActivity.isAdCollapsed) {
+            Thread.sleep(1000)
+            count++
+        }
 
         assertTrue(interstitialActivity.isAdCollapsed)
     }

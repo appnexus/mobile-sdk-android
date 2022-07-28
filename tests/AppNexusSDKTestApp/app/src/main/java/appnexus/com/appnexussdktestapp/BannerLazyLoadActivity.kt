@@ -18,6 +18,7 @@ package appnexus.com.appnexussdktestapp
 
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
@@ -33,6 +34,7 @@ class BannerLazyLoadActivity : AppCompatActivity(), AppEventListener {
 
     val banner_id: Int = 1234
     lateinit var banner: BannerAdView
+    var onAdImpression = false
     var msg = ""
     var logListener = LogListener()
     var idlingResource: CountingIdlingResource = CountingIdlingResource("Banner Load Count", true)
@@ -44,7 +46,6 @@ class BannerLazyLoadActivity : AppCompatActivity(), AppEventListener {
         banner = BannerAdView(this)
         banner.appEventListener = this
         banner.id = banner_id
-        SDKSettings.useHttps(true)
         // This is your AppNexus placement ID.
         banner.placementID = "17058950"
         // Turning this on so we always get an ad during testing.
@@ -108,6 +109,7 @@ class BannerLazyLoadActivity : AppCompatActivity(), AppEventListener {
 
             override fun onAdImpression(adView: AdView?) {
                 msg = "onAdImpression"
+                onAdImpression = true
                 toast()
             }
         }
@@ -151,6 +153,7 @@ class BannerLazyLoadActivity : AppCompatActivity(), AppEventListener {
         if (idlingResource.isIdleNow) {
             idlingResource.increment()
         }
+        onAdImpression = false
         Handler().postDelayed({
             banner!!.loadAd()
             msg += " loadAd() triggered"
@@ -211,6 +214,16 @@ class BannerLazyLoadActivity : AppCompatActivity(), AppEventListener {
         override fun getLogLevel(): ClogListener.LOG_LEVEL {
             return LOG_LEVEL.E
         }
+    }
+
+    fun displayBanner(display: Boolean = true) {
+        Handler(Looper.getMainLooper()).post({
+            if (!display) {
+                banner.visibility = View.GONE
+            } else {
+                banner.visibility = View.VISIBLE
+            }
+        })
     }
 
     override fun onAppEvent(adView: AdView?, name: String?, data: String?) {

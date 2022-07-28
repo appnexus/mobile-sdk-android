@@ -23,6 +23,7 @@ import com.appnexus.opensdk.BaseNativeTest;
 import com.appnexus.opensdk.NativeAdSDK;
 import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.TestResponsesUT;
+import com.appnexus.opensdk.XandrAd;
 import com.appnexus.opensdk.mocks.MockDefaultExecutorSupplier;
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowOMIDNativeWebView;

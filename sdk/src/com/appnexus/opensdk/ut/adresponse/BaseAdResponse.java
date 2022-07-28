@@ -16,7 +16,12 @@
 
 package com.appnexus.opensdk.ut.adresponse;
 
+import static com.appnexus.opensdk.utils.Settings.ImpressionType.*;
+
 import com.appnexus.opensdk.ANAdResponseInfo;
+import com.appnexus.opensdk.XandrAd;
+import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.Settings.ImpressionType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +37,7 @@ public abstract class BaseAdResponse {
     private String contentSource;
     private String adContent;
     private ArrayList<String> impressionURLs = new ArrayList<String>();
+    private ImpressionType impressionType = BEGIN_TO_RENDER;
 
     private HashMap<String, Object> extras = new HashMap<String, Object>();
 
@@ -41,6 +47,7 @@ public abstract class BaseAdResponse {
         this.adType = adType;
         this.adResponseInfo = adResponseInfo;
         this.impressionURLs = impressionURLs;
+        this.impressionType = XandrAd.isEligibleForViewableImpression(adResponseInfo.getBuyMemberId())? VIEWABLE_IMPRESSION: BEGIN_TO_RENDER;
     }
 
     public int getWidth() {
@@ -110,5 +117,9 @@ public abstract class BaseAdResponse {
 
     public void setAdResponseInfo(ANAdResponseInfo adResponseInfo) {
         this.adResponseInfo = adResponseInfo;
+    }
+
+    public Settings.ImpressionType getImpressionType() {
+        return impressionType;
     }
 }

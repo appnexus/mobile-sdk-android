@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import org.junit.Assert
 import java.lang.ref.WeakReference
+import java.util.concurrent.CopyOnWriteArrayList
 
 class Utility {
     companion object {
@@ -54,7 +55,8 @@ class Utility {
                 } else {
                     emptyList<WeakReference<View>>()
                 }
-                list.forEach {
+                var asyncList = CopyOnWriteArrayList(list)
+                asyncList.forEach {
                     destroy.invoke(vDetInst, it.get())
                 }
             }

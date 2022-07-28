@@ -42,9 +42,6 @@ public class MyActivity extends Activity {
 
         bav = new BannerAdView(this);
 
-        SDKSettings.useHttps(true);
-
-
         Log.d("sdkVersion", "sdkVersion: "+ SDKSettings.getSDKVersion());
         // This is your AppNexus placement ID.
         bav.setPlacementID("17058950");

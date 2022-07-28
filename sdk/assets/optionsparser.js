@@ -141,7 +141,7 @@ var getOMIDPartner = function(){
 var OMIDVideoEvent = {
     "isSkippable"  : true,
     "isAutoPlay"  : true,
-    "position"  : "In-Banner"
+    "position"  : "standalone"
 };
 
 var OMIDVideoEvents = function(){
@@ -165,11 +165,11 @@ function constructVideoPlayerOptions (publisherOptions){
         if(entryPointType){
             if (entryPointType == "BANNER") {
                 options = combineObjectsAndSubobjects(options, outstreamOptions);
-                OMIDVideoEvent.position = "In-Banner";
+                OMIDVideoEvent.position = "standalone";
                 OMIDVideoEvent.isSkippable = outstreamOptions.skippable;
             } else if (entryPointType == "INSTREAM_VIDEO") {
                 options = combineObjectsAndSubobjects(options, instreamOptions);
-                OMIDVideoEvent.position = "In-Video";
+                OMIDVideoEvent.position = "preroll";
                 OMIDVideoEvent.isSkippable = true;
             }
             OMIDVideoEvent.isAutoPlay = true;

@@ -108,7 +108,6 @@ class VisibilityDetector {
                     VisibilityListener listener = getListener(viewWeakReference);
                     View view = viewWeakReference.get();
                     if (listener != null) {
-                        Clog.d(Clog.visibilityLogTag, view.toString() + ", isVisible: " + isVisible(view));
                         listener.onVisibilityChanged(isVisible(view));
                     } else {
                         destroy(view);
@@ -143,11 +142,6 @@ class VisibilityDetector {
             return false;
         }
 
-        if (!SDKSettings.getCountImpressionOn1pxRendering()) {
-            // Default Native case
-            return view.getWindowToken() != null;
-        }
-
         // holds the visible part of a view
         Rect clippedArea = new Rect();
 
@@ -161,11 +155,8 @@ class VisibilityDetector {
         if (totalArea <= 0) {
             return false;
         }
-        if (SDKSettings.getCountImpressionOn1pxRendering()) {
-            // OnePx (Banner and Native)
-            return visibleViewArea >= Settings.MIN_AREA_VIEWED_FOR_1PX;
-        }
-        return false;
+        // Viewable Impression (Banner and Native)
+        return visibleViewArea >= Settings.MIN_AREA_VIEWED_FOR_1PX;
     }
 
     void destroy(View view) {
@@ -180,6 +171,22 @@ class VisibilityDetector {
             if (mHandler != null) {
                 mHandler.removeCallbacks(visibilityCheck);
             }
+        }
+    }
+
+    void pauseVisibilityDetector() {
+        if (tasker != null) {
+            tasker.shutdownNow();
+        }
+        scheduled = false;
+        if (mHandler != null && visibilityCheck != null) {
+            mHandler.removeCallbacks(visibilityCheck);
+        }
+    }
+
+    void resumeVisibilityDetector() {
+        if (viewList != null && viewList.size() > 0) {
+            scheduleVisibilityCheck();
         }
     }
 

@@ -83,16 +83,6 @@ public class MockFBNativeBannerAdResponse extends BaseNativeAdResponse {
     }
 
     @Override
-    public String getCreativeId() {
-        return "123";
-    }
-
-    @Override
-    public void setCreativeId(String creativeId) {
-
-    }
-
-    @Override
     public ANAdResponseInfo getAdResponseInfo() {
         return adResponseInfo;
     }

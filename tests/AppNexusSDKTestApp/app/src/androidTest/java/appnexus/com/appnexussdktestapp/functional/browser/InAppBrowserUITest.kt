@@ -33,6 +33,7 @@ import appnexus.com.appnexussdktestapp.BannerActivity
 import appnexus.com.appnexussdktestapp.R
 import appnexus.com.appnexussdktestapp.util.SizeMatcher
 import com.appnexus.opensdk.AdActivity
+import com.appnexus.opensdk.XandrAd
 import com.appnexus.opensdk.utils.ViewUtil
 import com.microsoft.appcenter.espresso.Factory
 import org.junit.*
@@ -62,6 +63,7 @@ class InAppBrowserUITest {
 
     @Before
     fun setup() {
+        XandrAd.init(123, null, false, null)
         IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
         IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
         var intent = Intent()

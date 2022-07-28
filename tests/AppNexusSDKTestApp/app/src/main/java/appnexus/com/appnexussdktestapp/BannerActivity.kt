@@ -28,6 +28,7 @@ class BannerActivity : AppCompatActivity(), AdListener {
     val banner_id: Int = 1234
     lateinit var banner: BannerAdView
     var clickUrl: String? = ""
+    var onAdImpression = false
     var idlingResource: CountingIdlingResource = CountingIdlingResource("Banner Load Count", true)
 
     override fun onAdClicked(p0: AdView?) {
@@ -60,6 +61,7 @@ class BannerActivity : AppCompatActivity(), AdListener {
 
     override fun onAdImpression(adView: AdView?) {
         Toast.makeText(this, "Ad Impression", Toast.LENGTH_LONG).show()
+        onAdImpression = true;
     }
 
     override fun onAdLoaded(ad: AdView?) {
@@ -102,13 +104,15 @@ class BannerActivity : AppCompatActivity(), AdListener {
 //        )
     }
 
-    fun triggerAdLoad(placement: String?, width: Int = 300, height: Int = 250, useHttps: Boolean = true, allowNativeDemand: Boolean = false, allowVideoDemand: Boolean = false, rendererId: Int = -1, useNativeRenderer: Boolean = false, clickThroughAction: ANClickThroughAction = ANClickThroughAction.OPEN_SDK_BROWSER, resizeToFitContainer: Boolean = false, expandsToFitScreenWidth: Boolean = false, creativeId: Int? = null, bgTask: Boolean = false) {
+    fun triggerAdLoad(placement: String?, width: Int = 300, height: Int = 250, useHttps: Boolean = true, allowNativeDemand: Boolean = false, allowVideoDemand: Boolean = false, rendererId: Int = -1, useNativeRenderer: Boolean = false, clickThroughAction: ANClickThroughAction = ANClickThroughAction.OPEN_SDK_BROWSER, resizeToFitContainer: Boolean = false, expandsToFitScreenWidth: Boolean = false, creativeId: Int? = null, bgTask: Boolean = false, visibility: Int = VISIBLE) {
 
+        onAdImpression = false
         SDKSettings.enableBackgroundThreading(bgTask)
         Handler(Looper.getMainLooper()).post {
 
             idlingResource.increment()
             banner = BannerAdView(this)
+            banner.visibility = visibility
             banner.id = banner_id
             banner.placementID = if (placement == null) "17982237" else placement
             banner.setAdSize(width, height)
@@ -121,7 +125,6 @@ class BannerActivity : AppCompatActivity(), AdListener {
             banner.expandsToFitScreenWidth = expandsToFitScreenWidth
             banner.setAllowBannerDemand(!(allowNativeDemand || allowVideoDemand))
 
-            SDKSettings.useHttps(useHttps)
             banner.adListener = this
             if(creativeId != null) {
                 val utils = Utils()
@@ -187,6 +190,16 @@ class BannerActivity : AppCompatActivity(), AdListener {
             }
             ViewUtil.removeChildFromParent(nativeView)
             layout.addView(nativeView)
+        })
+    }
+
+    fun displayBanner(display: Boolean = true) {
+        Handler(Looper.getMainLooper()).post({
+            if (!display) {
+                banner.visibility = GONE
+            } else {
+                banner.visibility = VISIBLE
+            }
         })
     }
 }

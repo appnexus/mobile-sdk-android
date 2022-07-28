@@ -277,7 +277,7 @@ public class AdViewFriendlyObstructionTests extends BaseViewAdTest {
 
     private void executeBannerRequest() {
         bannerAdView.setAutoRefreshInterval(15000);
-        bannerAdView.loadAdOffscreen();
+        bannerAdView.loadAd();
 
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();

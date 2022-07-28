@@ -95,7 +95,6 @@ class InterstitialActivity : AppCompatActivity(), AdListener, AppEventListener {
             interstitial = InterstitialAdView(this)
             interstitial.id = interstitial_id
             interstitial.placementID = if (placement == null) "17982237" else placement
-            SDKSettings.useHttps(useHttps)
             interstitial.adListener = this
             interstitial.closeButtonDelay = 5
             interstitial.clickThroughAction = ANClickThroughAction.RETURN_URL

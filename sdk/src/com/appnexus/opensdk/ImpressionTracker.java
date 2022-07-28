@@ -23,6 +23,8 @@ import android.view.View;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
+import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.Settings.ImpressionType;
 import com.appnexus.opensdk.viewability.ANOmidAdSession;
 
 import java.lang.ref.WeakReference;
@@ -40,16 +42,16 @@ class ImpressionTracker {
     private boolean isFired = false;
     private int countOfImpressionTrackersFired = 0;
 
-    static ImpressionTracker create(WeakReference<View> viewWeakReference, ArrayList<String> urls, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession, ImpressionTrackerListener impressionTrackerListener) {
+    static ImpressionTracker create(WeakReference<View> viewWeakReference, ArrayList<String> urls, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession, ImpressionType impressionType, ImpressionTrackerListener impressionTrackerListener) {
         if (visibilityDetector == null) {
             return null;
         } else {
-            ImpressionTracker impressionTracker = new ImpressionTracker(viewWeakReference, urls, visibilityDetector, context, anOmidAdSession, impressionTrackerListener);
+            ImpressionTracker impressionTracker = new ImpressionTracker(viewWeakReference, urls, visibilityDetector, context, anOmidAdSession, impressionType, impressionTrackerListener);
             return impressionTracker;
         }
     }
 
-    private ImpressionTracker(WeakReference<View> viewWeakReference, ArrayList<String> urls, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession, ImpressionTrackerListener impressionTrackerListener) {
+    private ImpressionTracker(WeakReference<View> viewWeakReference, ArrayList<String> urls, VisibilityDetector visibilityDetector, Context context, ANOmidAdSession anOmidAdSession, ImpressionType impressionType, ImpressionTrackerListener impressionTrackerListener) {
         this.viewWeakReference = viewWeakReference;
         this.urls = urls;
         this.visibilityDetector = visibilityDetector;
@@ -59,7 +61,7 @@ class ImpressionTracker {
         this.impressionTrackerListener = impressionTrackerListener;
         View view = viewWeakReference.get();
         if (view != null) {
-            if (!SDKSettings.getCountImpressionOn1pxRendering() && view.getWindowToken() != null) {
+            if (impressionType == Settings.ImpressionType.BEGIN_TO_RENDER) {
                 listener.onVisibilityChanged(true);
             } else {
                 view.setTag(R.string.native_view_tag, listener);

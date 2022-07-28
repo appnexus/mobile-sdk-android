@@ -25,6 +25,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import appnexus.com.appnexussdktestapp.MARActivity
+import com.appnexus.opensdk.XandrAd
 import org.hamcrest.Matchers.anything
 import org.junit.*
 import org.junit.runner.RunWith
@@ -48,6 +49,7 @@ class MARTest {
 
     @Before
     fun setup() {
+        XandrAd.init(123, null, false, null)
         IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
         IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
         val intent = Intent()

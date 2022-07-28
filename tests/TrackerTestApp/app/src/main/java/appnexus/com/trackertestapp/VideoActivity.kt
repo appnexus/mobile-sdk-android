@@ -79,7 +79,6 @@ class VideoActivity : AppCompatActivity(), VideoAdLoadListener {
             video = VideoAd(this, if (placement == null) "13989299" else placement)
             video.clickThroughAction = ANClickThroughAction.RETURN_URL
             video.adLoadListener = this
-            SDKSettings.useHttps(useHttps)
             // Load and display a Video
             // Video Ad elements
             val instreamVideoLayout = layoutInflater.inflate(R.layout.fragment_preview_instream, null)

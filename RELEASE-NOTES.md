@@ -1,3 +1,15 @@
+## 8.0
+
+### Announcements:
+
+We have completed the removal of the APIs referenced in the 7.21 release. Please note there are breaking changes to some of our APIs, particularly for our init methods which is required for ad calls to be successful- XandrAd.init(). See our [8.0 integration guide](https://docs.xandr.com/bundle/mobile-sdk/page/migrating-android-sdk-v7-to-8-0.html), as well as our [SDK initialization guide](https://docs.xandr.com/bundle/mobile-sdk/page/android---sdk-initialization--v8-0-.html) for further details.
+
+### Improvement/Bug Fixes
++ MS-5011 Updated impression counting methodology. Please see our new [impression counting methodology guide](https://docs.xandr.com/bundle/mobile-sdk/page/updated-impression-counting-mechanism---mobile-sdk-v8-0-and-above.html).
++ MS-5054 Fixed ANR issue related to visibility detector
++ MS-5007 Removed all discontinued mediation adapters
++ MS-5014 Upgraded to OMSDK v1.3.31
+
 ## 7.22
 
 ### Announcements:

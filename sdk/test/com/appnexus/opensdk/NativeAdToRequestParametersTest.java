@@ -55,14 +55,6 @@ public class NativeAdToRequestParametersTest extends BaseRoboTest {
 
     }
 
-    // Tests the value of ExternalUid
-    @Test
-    public void testSetExternalUId(){
-        setExternalUId();
-        assertSetExternalUId();
-
-    }
-
     // Tests the value of ForceCreativeId
     @Test
     public void testSetForceCreativeId(){
@@ -76,16 +68,6 @@ public class NativeAdToRequestParametersTest extends BaseRoboTest {
     public void testSetRendererId(){
         setRendererId();
         assertSetRendererId();
-    }
-
-    private void setExternalUId(){
-        nativeAdRequest.setExternalUid("AppNexus");
-    }
-
-    private void assertSetExternalUId(){
-        assertNotNull(nativeAdRequest.getExternalUid());
-        assertEquals(nativeAdRequest.getExternalUid(), "AppNexus");
-
     }
 
     private void setRendererId(){

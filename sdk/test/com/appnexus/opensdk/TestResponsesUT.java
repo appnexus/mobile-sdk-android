@@ -794,4 +794,7 @@ public class TestResponsesUT {
     }
 
 
+    public static String bannerWithBuyerMemberId(int buyerMemberId) {
+        return banner().replace("\"buyer_member_id\":123", "\"buyer_member_id\":" + buyerMemberId);
+    }
 }

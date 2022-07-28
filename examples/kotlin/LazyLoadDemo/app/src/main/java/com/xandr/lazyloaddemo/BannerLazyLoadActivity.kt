@@ -40,7 +40,6 @@ class BannerLazyLoadActivity : AppCompatActivity() {
 
     private fun setupBanner() {
         banner = BannerAdView(this)
-        SDKSettings.useHttps(true)
         // This is your AppNexus placement ID.
         banner.placementID = "17058950"
         // Turning this on so we always get an ad during testing.

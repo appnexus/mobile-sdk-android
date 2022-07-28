@@ -175,17 +175,6 @@ public class AdMobNativeAdResponse extends BaseNativeAdResponse {
         this.coverImage = bitmap;
     }
 
-
-    @Override
-    public String getCreativeId() {
-        return this.creativeId;
-    }
-
-    @Override
-    public void setCreativeId(String creativeId) {
-        this.creativeId = creativeId;
-    }
-
     @Override
     public String getIconUrl() {
         return iconUrl;

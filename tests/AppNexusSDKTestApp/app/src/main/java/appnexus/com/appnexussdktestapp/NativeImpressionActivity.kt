@@ -80,7 +80,6 @@ class NativeImpressionActivity : AppCompatActivity(), NativeAdRequestListener,
             nativeAdRequest =
                 NativeAdRequest(this, if (placement == null) "17982237" else placement)
             nativeAdRequest.placementID = if (placement == null) "17982237" else placement
-            SDKSettings.useHttps(useHttps)
             nativeAdRequest.listener = this
             if (creativeId != null) {
                 val utils = Utils()
@@ -111,10 +110,10 @@ class NativeImpressionActivity : AppCompatActivity(), NativeAdRequestListener,
         if (response?.imageUrl != null) Picasso.get().load(response.imageUrl).into(image)
         title.setText(response?.title)
         desc.setText(response?.description)
+        NativeAdSDK.registerTracking(response, mainLayout, this)
         if (!idlingResource.isIdleNow)
             idlingResource.decrement()
 
-        NativeAdSDK.registerTracking(response, mainLayout, this)
     }
 
     override fun onAdImpression() {
@@ -142,6 +141,12 @@ class NativeImpressionActivity : AppCompatActivity(), NativeAdRequestListener,
         Handler(Looper.getMainLooper()).post({
             ViewUtil.removeChildFromParent(mainLayout)
             main_parent.addView(mainLayout)
+        })
+    }
+
+    fun changeVisibility(visible: Int) {
+        Handler(Looper.getMainLooper()).post({
+            mainLayout?.visibility = visible
         })
     }
 }

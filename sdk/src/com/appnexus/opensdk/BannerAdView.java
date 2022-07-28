@@ -279,10 +279,11 @@ public class BannerAdView extends AdView implements ScreenEventListener {
      */
     @Override
     public boolean loadAd() {
-        loadAdHasBeenCalled = true;
-        if (super.loadAd())
+
+        if (super.loadAd()) {
+            loadAdHasBeenCalled = true;
             return true;
-        else {
+        } else {
             loadAdHasBeenCalled = false;
             return false;
         }
@@ -573,11 +574,11 @@ public class BannerAdView extends AdView implements ScreenEventListener {
                 setShouldReloadOnResume(a.getBoolean(attr, false));
                 Clog.d(Clog.xmlLogTag, Clog.getString(
                         R.string.xml_set_should_reload, shouldReloadOnResume));
-            } else if (attr == R.styleable.BannerAdView_opens_native_browser) {
-                setOpensNativeBrowser(a.getBoolean(attr, false));
-                Clog.d(Clog.xmlLogTag, Clog.getString(
-                        R.string.xml_set_opens_native_browser,
-                        getOpensNativeBrowser()));
+//            } else if (attr == R.styleable.BannerAdView_opens_native_browser) {
+//                setOpensNativeBrowser(a.getBoolean(attr, false));
+//                Clog.d(Clog.xmlLogTag, Clog.getString(
+//                        R.string.xml_set_opens_native_browser,
+//                        getOpensNativeBrowser()));
             } else if (attr == R.styleable.BannerAdView_expands_to_fit_screen_width) {
                 setExpandsToFitScreenWidth(a.getBoolean(attr, false));
                 Clog.d(Clog.xmlLogTag, Clog.getString(
@@ -831,22 +832,6 @@ public class BannerAdView extends AdView implements ScreenEventListener {
     }
 
     /**
-     * @deprecated @deprecated Use setAllowNativeDemand(boolean) instead. Renderer to Placement mapping can now be done through Native Assembly in console.
-     *
-     * Sets whether or not Native Ads(AppNexus Media Type:12) can serve on this Ad object.
-     * This overrides the value set in console.
-     *
-     * @param enabled    whether to enable Native Ads or not. default is false
-     * @param rendererId the Native Assembly renderer_id that is associated with this placement.
-     */
-    public void setAllowNativeDemand(boolean enabled, int rendererId) {
-        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
-                R.string.set_allow_native, enabled));
-        requestParameters.setBannerNativeEnabled(enabled);
-        requestParameters.setRendererId(rendererId);
-    }
-
-    /**
      * Sets whether or not Native Ads(AppNexus Media Type:12) should be Renderered or not.
      *
      * @param enabled whether to enable Native Assembly Renderer or not. default is false
@@ -983,6 +968,8 @@ public class BannerAdView extends AdView implements ScreenEventListener {
         if (this.currentDisplayable != null) {
             this.currentDisplayable.onPause();
         }
+
+        VisibilityDetector.getInstance().pauseVisibilityDetector();
     }
 
     @Override
@@ -990,6 +977,8 @@ public class BannerAdView extends AdView implements ScreenEventListener {
         if (this.currentDisplayable != null) {
             this.currentDisplayable.onResume();
         }
+
+        VisibilityDetector.getInstance().resumeVisibilityDetector();
     }
 
     /**
@@ -1292,29 +1281,6 @@ public class BannerAdView extends AdView implements ScreenEventListener {
      */
     protected void setVideoOrientation(VideoOrientation videoOrientation) {
         this.videoOrientation = videoOrientation;
-    }
-
-
-    /**
-     * Set whether to count impression when the creative html loads.
-     * This feature is disabled by default.
-     *
-     * @param enabled If set to true, impression will be counted when creative html loads.
-     */
-    public void setCountImpressionOnAdLoad(boolean enabled) {
-        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
-                R.string.set_count_on_ad_load, enabled));
-        countBannerImpressionOnAdLoad = enabled;
-    }
-
-
-    /**
-     * Check whether impression is being counted on creative html load
-     *
-     * @return If true, impression will be counted when creative html loads.
-     */
-    public boolean getCountImpressionOnAdLoad() {
-        return countBannerImpressionOnAdLoad;
     }
 
     /**

@@ -256,31 +256,6 @@ public class ANMultiAdRequest {
 
     // For End User
 
-    @Deprecated
-    /**
-     * Retrieve the externalUID that was previously set.
-     *
-     * @return externalUID.
-     */
-    public String getExternalUid() {
-        return utRequestParameters.getExternalUid();
-    }
-
-    // For End User
-
-    @Deprecated
-    /**
-     * Set the current user's externalUID
-     *
-     * @param externalUid .
-     * @deprecated  Use ({@link SDKSettings}.setPublisherUserId)
-     */
-    public void setExternalUid(String externalUid) {
-        utRequestParameters.setExternalUid(externalUid);
-    }
-
-    // For End User
-
     /**
      * Add the custom keyword
      *

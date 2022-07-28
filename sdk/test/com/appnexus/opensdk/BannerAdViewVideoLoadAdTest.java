@@ -86,7 +86,7 @@ public class BannerAdViewVideoLoadAdTest extends BaseViewAdTest {
     public void testgetCreativeIdVideoCreativeId() {
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.rtbVASTVideo())); // First queue a regular HTML banner response
         executeBannerRequest();
-        assertEquals("6332753", bannerAdView.getCreativeId());
+        assertEquals("6332753", bannerAdView.getAdResponseInfo().getCreativeId());
     }
 
 
@@ -94,7 +94,7 @@ public class BannerAdViewVideoLoadAdTest extends BaseViewAdTest {
 
     private void executeBannerRequest() {
         bannerAdView.setAutoRefreshInterval(15);
-        bannerAdView.loadAdOffscreen();
+        bannerAdView.loadAd();
 
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();

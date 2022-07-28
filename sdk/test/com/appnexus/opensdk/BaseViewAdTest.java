@@ -95,10 +95,6 @@ public class BaseViewAdTest extends BaseRoboTest implements AdListener, MultiAdR
         assertEquals(true, adFailed);
     }
 
-    public void assertOpensInNativeBrowser() {
-        assertEquals(bannerAdView.getOpensNativeBrowser(), ((ANNativeAdResponse) nativeAdResponse).isOpenNativeBrowser());
-    }
-
     public void assertClickThroughAction() {
         System.out.println("BANNER CLICKTHROUGH: " + bannerAdView.getClickThroughAction() + ", NATIVEADRESPONSE CLICKTHROUGH: " + ((ANNativeAdResponse) nativeAdResponse).getClickThroughAction());
         assertEquals(bannerAdView.getClickThroughAction(), ((ANNativeAdResponse) nativeAdResponse).getClickThroughAction());

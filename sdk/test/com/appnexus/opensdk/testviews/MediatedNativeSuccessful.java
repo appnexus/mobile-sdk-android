@@ -85,16 +85,6 @@ public class MediatedNativeSuccessful implements MediatedNativeAd, NativeAdEvent
                 }
 
                 @Override
-                public String getCreativeId() {
-                    return null;
-                }
-
-                @Override
-                public void setCreativeId(String creativeId) {
-
-                }
-
-                @Override
                 public ANAdResponseInfo getAdResponseInfo() {
                     return adResponseInfo;
                 }

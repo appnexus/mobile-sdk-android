@@ -328,7 +328,7 @@ public class NativeRequestTest extends BaseNativeTest {
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
-        assertEquals("47772560", response.getCreativeId());
+        assertEquals("47772560", response.getAdResponseInfo().getCreativeId());
         assertAdLoaded(true);
     }
 

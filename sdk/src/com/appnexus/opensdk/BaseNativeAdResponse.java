@@ -16,10 +16,13 @@
 package com.appnexus.opensdk;
 
 
+import static com.appnexus.opensdk.utils.Settings.ImpressionType.*;
+
 import android.view.View;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.Settings.ImpressionType;
 import com.appnexus.opensdk.viewability.ANOmidAdSession;
 import com.appnexus.opensdk.viewability.ANOmidVerificationScriptParseUtil;
 import com.iab.omid.library.appnexus.adsession.VerificationScriptResource;
@@ -32,6 +35,7 @@ public abstract class BaseNativeAdResponse implements NativeAdResponse {
 
     protected ANOmidAdSession anOmidAdSession = new ANOmidAdSession();
     private ANAdResponseInfo adResponseInfo;
+    private Settings.ImpressionType impressionType = BEGIN_TO_RENDER;
 
     protected abstract boolean registerView(View view, NativeAdEventListener listener);
 
@@ -130,4 +134,11 @@ public abstract class BaseNativeAdResponse implements NativeAdResponse {
         return interval;
     }
 
+    public void setImpressionType(ImpressionType impressionType) {
+        this.impressionType = impressionType;
+    }
+
+    public ImpressionType getImpressionType() {
+        return impressionType;
+    }
 }

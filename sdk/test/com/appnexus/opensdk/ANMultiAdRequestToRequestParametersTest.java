@@ -578,12 +578,11 @@ public class ANMultiAdRequestToRequestParametersTest extends BaseRoboTest {
     private void setUserInfo() {
         setAge();
         setGender();
-        setExternalUId();
     }
 
     private void assertUserInfoRequestParameters() {
         String postData = getRequestParametersPostData();
-        assertTrue(postData.contains("\"user\":{\"age\":20,\"gender\":2,\"language\":\"en\",\"external_uid\":\"AppNexus\"}"));
+        assertTrue(postData.contains("\"user\":{\"age\":20,\"gender\":2,\"language\":\"en\"}"));
     }
 
     private void assertDefaultUserInfo() {
@@ -593,16 +592,12 @@ public class ANMultiAdRequestToRequestParametersTest extends BaseRoboTest {
 
     private void assertAttachedBannerUserInfoRequestParameters() {
         String postData = getBannerRequestParametersPostData();
-        assertTrue(postData.contains("\"user\":{\"age\":20,\"gender\":2,\"language\":\"en\",\"external_uid\":\"AppNexus\"}"));
+        assertTrue(postData.contains("\"user\":{\"age\":20,\"gender\":2,\"language\":\"en\"}"));
     }
 
     private void assertAttachedBannerDefaultUserInfo() {
         String postData = getBannerRequestParametersPostData();
         assertTrue(postData.contains("\"user\":{\"gender\":0,\"language\":\"en\"}"));
-    }
-
-    private void setExternalUId() {
-        anMultiAdRequest.setExternalUid("AppNexus");
     }
 
     private void setAge() {
@@ -611,11 +606,6 @@ public class ANMultiAdRequestToRequestParametersTest extends BaseRoboTest {
 
     private void setGender() {
         anMultiAdRequest.setGender(AdView.GENDER.FEMALE);
-    }
-
-    private void assertExternalUId() {
-        assertNotNull(anMultiAdRequest.getExternalUid());
-        assertEquals(anMultiAdRequest.getExternalUid(), "AppNexus");
     }
 
     public UTRequestParameters getRequestParameters() {

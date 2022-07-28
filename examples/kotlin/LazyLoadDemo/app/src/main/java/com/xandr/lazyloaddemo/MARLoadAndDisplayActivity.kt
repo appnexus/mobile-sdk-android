@@ -58,7 +58,6 @@ class MARLoadAndDisplayActivity : Activity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true)
         }
-        SDKSettings.useHttps(true)
 
         var layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         recyclerListAdView.layoutManager = layoutManager

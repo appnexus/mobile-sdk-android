@@ -56,6 +56,7 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.Settings;
+import com.appnexus.opensdk.utils.Settings.ImpressionType;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
@@ -191,12 +192,6 @@ class AdWebView extends WebView implements Displayable,
 
             isVideoAd = (UTConstants.AD_TYPE_VIDEO.equalsIgnoreCase(ad.getAdType()));
             isNativeAd = (UTConstants.AD_TYPE_NATIVE.equalsIgnoreCase(ad.getAdType()));
-
-            if(adView.getEffectiveImpressionCountingMethod() == Settings.CountImpression.ON_LOAD ||
-                    (adView.getEffectiveImpressionCountingMethod() == Settings.CountImpression.LAZY_LOAD &&
-                            adView.isWebviewActivated() && ad.getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER))) {
-                onAdImpression();
-            }
 
             if (isNativeAd) {
                 isMRAIDEnabled = false;

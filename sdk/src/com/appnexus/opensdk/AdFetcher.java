@@ -108,6 +108,9 @@ public class AdFetcher {
     }
 
     public void start() {
+        if (!XandrAd.isInitialised()) {
+            XandrAd.throwUninitialisedException();
+        }
         initHandler();
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.start));
         createTasker();

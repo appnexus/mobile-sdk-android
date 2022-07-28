@@ -20,7 +20,6 @@ import android.location.Location;
 import android.os.Build;
 import android.text.TextUtils;
 
-import com.appnexus.opensdk.ANExternalUserIdSource;
 import com.appnexus.opensdk.ANGDPRSettings;
 import com.appnexus.opensdk.ANUserId;
 import com.appnexus.opensdk.BuildConfig;
@@ -45,11 +44,9 @@ public class Settings {
      * ONE_PX - When 1px of content is displayed
      * LAZY_LOAD - When the content is loaded on the Webview (LazyLoad is enabled)
      * */
-    public enum CountImpression {
-        DEFAULT, // When the Ad is displayed
-        ON_LOAD, // When content is loaded on the WebView
-        ONE_PX,  // When 1px of content is displayed
-        LAZY_LOAD // When the content is loaded on the Webview (LazyLoad is enabled)
+    public enum ImpressionType {
+        BEGIN_TO_RENDER, // When the Ad begin to render
+        VIEWABLE_IMPRESSION,  // When 1px of Ad content is visible on screen
     }
 
     public String hidmd5 = null;
@@ -103,13 +100,6 @@ public class Settings {
 
     public String publisherUserId = "";
     public List<ANUserId> userIds = new ArrayList<>();
-
-    /**
-     * This boolean is responsible for firing the Impression tracker on 1px visibility of the Ad View
-     * true - follow the 1px constraint to fire the Impression
-     * false - do not follow the 1px constraint to fire the Impression
-     * */
-    public static boolean countImpressionOn1pxRendering = false;
 
     /**
      * @deprecated

@@ -1,9 +1,0 @@
-include ':sdk'
-project(':sdk').projectDir = new File(settingsDir, '../../../sdk')
-
-include ':Amazon'
-include ':InMobi'
-include ':MillennialMedia'
-include ':MoPub'
-include ':Facebook'
-

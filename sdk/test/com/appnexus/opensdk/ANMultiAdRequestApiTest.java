@@ -262,13 +262,11 @@ public class ANMultiAdRequestApiTest extends BaseRoboTest {
     private void setUserInfo() {
         setAge();
         setGender();
-        setExternalUId();
     }
 
     private void assertDefaultUserInfo() {
         assertDefaultAge();
         assertDefaultGender();
-        assertDefaultExternalUId();
     }
 
     private void assertDefaultAge() {
@@ -279,27 +277,9 @@ public class ANMultiAdRequestApiTest extends BaseRoboTest {
         assertEquals(anMultiAdRequest.getGender(), AdView.GENDER.UNKNOWN);
     }
 
-    private void assertDefaultExternalUId() {
-        assertNull(anMultiAdRequest.getExternalUid());
-    }
-
     private void assertUserInfo() {
         assertAge();
         assertGender();
-        assertExternalUId();
-    }
-
-    // Tests the value of ExternalUid
-    @Test
-    public void testSetExternalUId(){
-        assertDefaultExternalUId();
-        setExternalUId();
-        assertExternalUId();
-
-    }
-
-    private void setExternalUId(){
-        anMultiAdRequest.setExternalUid("AppNexus");
     }
 
     private void setAge() {
@@ -308,11 +288,6 @@ public class ANMultiAdRequestApiTest extends BaseRoboTest {
 
     private void setGender() {
         anMultiAdRequest.setGender(AdView.GENDER.FEMALE);
-    }
-
-    private void assertExternalUId(){
-        assertNotNull(anMultiAdRequest.getExternalUid());
-        assertEquals(anMultiAdRequest.getExternalUid(), "AppNexus");
     }
 
     private void assertAge() {

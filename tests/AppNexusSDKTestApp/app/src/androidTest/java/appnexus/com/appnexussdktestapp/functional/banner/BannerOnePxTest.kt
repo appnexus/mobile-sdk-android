@@ -32,6 +32,7 @@ import appnexus.com.appnexussdktestapp.BannerActivity
 import appnexus.com.appnexussdktestapp.R
 import appnexus.com.appnexussdktestapp.util.Utility.Companion.checkVisibilityDetectorMap
 import com.appnexus.opensdk.SDKSettings
+import com.appnexus.opensdk.XandrAd
 import com.microsoft.appcenter.espresso.Factory
 import org.hamcrest.Matchers.not
 import org.junit.*
@@ -61,17 +62,19 @@ class BannerOnePxTest {
 
     @Before
     fun setup() {
+        XandrAd.reset()
+        XandrAd.init(123, null, false, null)
         IdlingPolicies.setMasterPolicyTimeout(1, TimeUnit.MINUTES)
         IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
         var intent = Intent()
         mActivityTestRule.launchActivity(intent)
         bannerActivity = mActivityTestRule.activity
+        bannerActivity.shouldDisplay = true
         IdlingRegistry.getInstance().register(bannerActivity.idlingResource)
     }
 
     @After
     fun destroy() {
-        SDKSettings.setCountImpressionOn1pxRendering(false)
         IdlingRegistry.getInstance().unregister(bannerActivity.idlingResource)
         reportHelper.label("Stopping App")
     }
@@ -82,9 +85,9 @@ class BannerOnePxTest {
     @Test
     fun bannerLoadSize320x50TestOnePx() {
 
-        Thread.sleep(2000)
+        XandrAd.init(10094, null, false, null)
 
-        SDKSettings.setCountImpressionOn1pxRendering(true)
+        Thread.sleep(2000)
 
         bannerActivity.shouldDisplay = false;
 
@@ -127,7 +130,7 @@ class BannerOnePxTest {
     @Test
     fun bannerLoadSize300x250TestOnePx() {
 
-        SDKSettings.setCountImpressionOn1pxRendering(true)
+        XandrAd.init(10094, null, false, null)
 
         bannerActivity.shouldDisplay = false;
 
@@ -173,9 +176,10 @@ class BannerOnePxTest {
     @Test
     fun bannerLoadSize320x50TestBGOnePx() {
 
+        XandrAd.init(10094, null, false) { }
+
         Thread.sleep(2000)
 
-        SDKSettings.setCountImpressionOn1pxRendering(true)
 
         bannerActivity.shouldDisplay = false;
 
@@ -218,9 +222,11 @@ class BannerOnePxTest {
     @Test
     fun bannerLoadSize300x250TestBGOnePx() {
 
-        SDKSettings.setCountImpressionOn1pxRendering(true)
+        XandrAd.init(10094, null, false, null)
 
         bannerActivity.shouldDisplay = false;
+
+        checkVisibilityDetectorMap(0, bannerActivity)
 
         bannerActivity.triggerAdLoad("17058950", 300, 250,  bgTask = true)
 

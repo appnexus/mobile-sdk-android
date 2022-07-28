@@ -134,6 +134,7 @@
 	<string formatted="false" name="mediation_timeout">Mediation network timed out.</string>
 	<string formatted="false" name="fullscreen_video_show_error">Error showing custom fullscreen view</string>
 	<string formatted="false" name="fullscreen_video_hide_error">Error hiding custom fullscreen view</string>
+	<string formatted="false" name="fetch_viewable_impression_member_id_error">Error while fetching the Member Id(s)</string>
 	<string formatted="false" name="adactivity_missing">%s was not detected in AndroidManifest.xml!</string>
 	<string formatted="false" name="adactivity_no_type">AdActivity launched with no type.</string>
 	<string formatted="false" name="max_size_not_set">overrideMaxSize enabled, but max size not set.</string>

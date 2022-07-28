@@ -129,7 +129,6 @@ class BannerOMIDActivity : AppCompatActivity(), AdListener, AppEventListener {
             banner.resizeAdToFitContainer = resizeToFitContainer
             banner.expandsToFitScreenWidth = expandsToFitScreenWidth
             banner.autoRefreshInterval = 0
-            SDKSettings.useHttps(useHttps)
             banner.adListener = this
             banner.appEventListener = this
             if(creativeId != null) {
