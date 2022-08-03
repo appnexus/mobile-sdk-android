@@ -100,6 +100,8 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
     private int countOfImpressionTrackerUrls = 0;
     private int countOfImpressionTrackersFired = 0;
     private boolean isFired = false;
+    // Client suggested change for memory leak in VisibilityDetector
+    private boolean isDestroyed = false;
 
 
     /**
@@ -119,6 +121,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
     }
 
     void setup(Context context, AttributeSet attrs) {
+        isDestroyed = false;
         dispatcher = new AdViewDispatcher(handler);
         requestParameters = new UTRequestParameters(context);
         adType = AdType.UNKNOWN;
@@ -380,6 +383,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
      * when permanently remove the AdView from the view hierarchy.
      */
     public void destroy() {
+        isDestroyed = true;
         if (VisibilityDetector.getInstance() != null) {
             VisibilityDetector.getInstance().destroy(AdView.this);
         }
@@ -1171,6 +1175,11 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    // Client suggested change for memory leak in VisibilityDetector,
+                    // Stopping further execution if the AdView has already been destroyed.
+                    if (isDestroyed) {
+                        return;
+                    }
                     if (ad.getDisplayable() != null && ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER)) {
                         BaseAdResponse baseAdResponse = ad.getResponseData();
                         ImpressionType impressionType = baseAdResponse == null? null: baseAdResponse.getImpressionType();
