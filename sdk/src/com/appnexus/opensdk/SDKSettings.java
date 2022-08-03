@@ -445,8 +445,11 @@ public class SDKSettings {
                 @Override
                 public void run() {
                     try {
-                        Settings.getSettings().ua = new WebView(context).getSettings()
+                        WebView userAgentWebView = new WebView(context);
+                        Settings.getSettings().ua = userAgentWebView.getSettings()
                                 .getUserAgentString();
+                        // Client suggested change to destroy webview after fetching user agent (prevent memory leaks) - since it holds context
+                        userAgentWebView.destroy();
                         Clog.v(Clog.baseLogTag,
                                 Clog.getString(R.string.ua, Settings.getSettings().ua));
                         isUserAgentFetched = true;
