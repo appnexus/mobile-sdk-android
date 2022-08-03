@@ -62,7 +62,8 @@ public class SharedNetworkManager {
 
     public boolean isConnected(Context context) {
         if (permitted) {
-            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            // Client suggested change to prevent memory leak (using Application Context)
+            ConnectivityManager cm = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
             return activeNetwork != null && activeNetwork.isConnected();
         } else {
