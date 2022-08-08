@@ -72,6 +72,7 @@ public class AdFetcher {
 
     public void destroy() {
         if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
             String threadName = handler.getLooper().getThread().getName();
             if (threadName.contains(ANBACKGROUND)) {
                 Clog.i(Clog.baseLogTag, "Quitting background " + threadName);
