@@ -378,7 +378,7 @@ public class SDKSettings {
     }
 
     public static Executor getExternalExecutor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && clientExecutor == null) {
+        if (clientExecutor == null) {
             return AsyncTask.THREAD_POOL_EXECUTOR;
         }
         return clientExecutor;

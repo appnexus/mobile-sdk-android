@@ -113,9 +113,7 @@ class VideoWebView extends WebView {
             this.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
         this.getSettings().setAllowFileAccess(false);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            this.getSettings().setAllowContentAccess(false);
-        }
+        this.getSettings().setAllowContentAccess(false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             this.getSettings().setAllowFileAccessFromFileURLs(false);
             this.getSettings().setAllowUniversalAccessFromFileURLs(false);

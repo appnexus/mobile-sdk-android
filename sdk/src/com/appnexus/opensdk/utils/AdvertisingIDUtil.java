@@ -102,11 +102,7 @@ public class AdvertisingIDUtil {
         if (!SDKSettings.isBackgroundThreadingEnabled()) {
             AAIDTask getAAIDTask = new AAIDTask(context, listener);
             try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    getAAIDTask.executeOnExecutor(SDKSettings.getExternalExecutor());
-                } else {
-                    getAAIDTask.execute();
-                }
+                getAAIDTask.executeOnExecutor(SDKSettings.getExternalExecutor());
             } catch (RejectedExecutionException rejectedExecutionException) {
                 Clog.e(Clog.baseLogTag, "Concurrent Thread Exception while fetching the AAID: "
                         + rejectedExecutionException.getMessage());

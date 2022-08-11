@@ -89,11 +89,7 @@ public class UTAdRequest {
             processResponse(adResponseMap);
         } else {
             request = new AsyncRequest();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                request.executeOnExecutor(SDKSettings.getExternalExecutor());
-            } else {
-                request.execute();
-            }
+            request.executeOnExecutor(SDKSettings.getExternalExecutor());
         }
     }
 

@@ -63,9 +63,7 @@ public class WebviewUtil {
                 webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
             }
             webView.getSettings().setAllowFileAccess(false);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                webView.getSettings().setAllowContentAccess(false);
-            }
+            webView.getSettings().setAllowContentAccess(false);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 webView.getSettings().setAllowFileAccessFromFileURLs(false);
                 webView.getSettings().setAllowUniversalAccessFromFileURLs(false);
