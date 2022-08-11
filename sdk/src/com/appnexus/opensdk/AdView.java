@@ -82,6 +82,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
     private boolean enableLazyLoad = false;
     // This is to keep track if the loadLazyAd has been called or not
     private boolean activateWebview = false;
+    private  Displayable currentDisplayable = null;
 
     UTRequestParameters requestParameters;
 
@@ -383,12 +384,18 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
      * when permanently remove the AdView from the view hierarchy.
      */
     public void destroy() {
+        Clog.d(Clog.baseLogTag, "called destroy() on AdView");
         isDestroyed = true;
+
         if (VisibilityDetector.getInstance() != null) {
             VisibilityDetector.getInstance().destroy(AdView.this);
         }
 
-        Clog.d(Clog.baseLogTag, "called destroy() on AdView");
+        if (this.currentDisplayable != null) {
+            this.currentDisplayable.destroy();
+            this.currentDisplayable = null;
+        }
+
         if (this.lastDisplayable != null) {
             this.lastDisplayable.destroy();
             this.lastDisplayable = null;
@@ -854,6 +861,10 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
      */
     public void setShowLoadingIndicator(boolean show) {
         showLoadingIndicator = show;
+    }
+
+    public void setCurrentDisplayable(Displayable currentDisplayable) {
+        this.currentDisplayable = currentDisplayable;
     }
 
     /**
