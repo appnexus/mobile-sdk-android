@@ -17,6 +17,7 @@
 package com.appnexus.opensdk;
 
 import android.os.Build;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.appnexus.opensdk.tasksmanager.TasksManager;
@@ -40,6 +41,7 @@ import org.robolectric.util.Scheduler;
 import static android.os.Looper.getMainLooper;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -94,5 +96,17 @@ public class SDKSettingsTest {
         WebView webView = new WebView(activity);
         assertNotNull(Settings.getSettings().ua);
         assertEquals(Settings.getSettings().ua, (webView.getSettings().getUserAgentString()));
+    }
+
+    @Test
+    public void testSDKSettingsInitAboveHONEY_COMB() {
+        ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", 18);
+        assertTrue(StringUtil.isEmpty(Settings.getSettings().ua));
+        SDKSettings.init(activity, null);
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        WebView userAgentWebView = new WebView(activity);
+        assertNotNull(Settings.getSettings().ua);
+        assertNotEquals(Settings.getSettings().ua, (userAgentWebView.getSettings().getUserAgentString()));
     }
 }
