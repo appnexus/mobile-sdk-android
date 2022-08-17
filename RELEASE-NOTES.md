@@ -1,3 +1,18 @@
+## 8.0.1
+
+### Improvement/Bug Fixes
++ MS-5050 Bug fixes, minor improvements and some memory leaks fixes as listed below.
+    + Used updated API for fetching UserAgent
+    + Destroyed WebView after fetching UserAgent (< JELLY_BEAN_MR1)
+    + Fixed Memory Leak in AdSessionContext
+    + Fixed Memory Leak in VisibilityDetector
+    + Removed callbacks after destroy()
+    + Removed check for APIs over HONEYCOMB (as current minSdkVersion is 14)
+    + Removed usage of ScheduledExecutorService for single AdRequest
+    + Stopped async response for cancelled Ad request
+    + Used Application context for fetching ConnectionManager to avoid leaks
+    + Updated ProGuard rules
+
 ## 8.0
 
 ### Announcements:
