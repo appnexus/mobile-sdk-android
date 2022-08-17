@@ -20,4 +20,7 @@
 #}
 
 -keep public class com.facebook.ads.* { public *;}
+-keep public class com.appnexus.opensdk.csr.FBSettings {
+    public static java.lang.String getBidderToken(android.content.Context);
+}
 -keepattributes Signature
