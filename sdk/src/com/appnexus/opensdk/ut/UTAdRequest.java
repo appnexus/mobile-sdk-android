@@ -59,8 +59,10 @@ public class UTAdRequest {
     private WeakReference<UTAdRequester> requester; // The instance of AdRequester which is filing this request.
     private UTRequestParameters requestParams;
     private AsyncRequest request = null;
+    private boolean isCancelled = false;
 
     public UTAdRequest(UTAdRequester adRequester) {
+        isCancelled = false;
         this.requester = new WeakReference<UTAdRequester>(adRequester);
         ANMultiAdRequest anMultiAdRequest = getMultiAdRequest();
         requestParams = anMultiAdRequest == null ? adRequester.getRequestParams() : anMultiAdRequest.getRequestParameters();
@@ -76,10 +78,10 @@ public class UTAdRequest {
         } else {
             Clog.i(Clog.httpReqLogTag, "Internal Error");
             fail(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR));
-            fail(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR));
             if (request != null) {
                 request.cancel(true);
             }
+            isCancelled = true;
         }
     }
 
@@ -100,6 +102,9 @@ public class UTAdRequest {
     }
 
     private void fail(ResultCode code) {
+        if (isCancelled) {
+            return;
+        }
         ANMultiAdRequest anMultiAdRequest = getMultiAdRequest();
         if (anMultiAdRequest != null && anMultiAdRequest.isMARRequestInProgress()) {
             anMultiAdRequest.onRequestFailed(code);
@@ -244,12 +249,16 @@ public class UTAdRequest {
 
         @Override
         protected HashMap<String, UTAdResponse> doInBackground(Void... voids) {
-            return makeRequest();
+            // Client suggested changes to stop processing the AdRequest
+            return isCancelled()? null: makeRequest();
         }
 
         @Override
         protected void onPostExecute(HashMap<String, UTAdResponse> adResponseHashMap) {
-            processResponse(adResponseHashMap);
+            // Client suggested changes to stop processing the AdRequest
+            if (!isCancelled()) {
+                processResponse(adResponseHashMap);
+            }
         }
 
 
