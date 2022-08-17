@@ -20,6 +20,7 @@ import android.content.Context;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.appnexus.opensdk.tasksmanager.TasksManager;
@@ -377,7 +378,7 @@ public class SDKSettings {
     }
 
     public static Executor getExternalExecutor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && clientExecutor == null) {
+        if (clientExecutor == null) {
             return AsyncTask.THREAD_POOL_EXECUTOR;
         }
         return clientExecutor;
@@ -445,8 +446,16 @@ public class SDKSettings {
                 @Override
                 public void run() {
                     try {
-                        Settings.getSettings().ua = new WebView(context).getSettings()
-                                .getUserAgentString();
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                            // Client suggested change where getDefaultUserAgent() is used to fetch user agent for Android version 17 and above
+                            Settings.getSettings().ua = WebSettings.getDefaultUserAgent(context);
+                        } else {
+                            WebView userAgentWebView = new WebView(context);
+                            Settings.getSettings().ua = userAgentWebView.getSettings()
+                                    .getUserAgentString();
+                            // Client suggested change to destroy webview after fetching user agent (prevent memory leaks) - since it holds context
+                            userAgentWebView.destroy();
+                        }
                         Clog.v(Clog.baseLogTag,
                                 Clog.getString(R.string.ua, Settings.getSettings().ua));
                         isUserAgentFetched = true;

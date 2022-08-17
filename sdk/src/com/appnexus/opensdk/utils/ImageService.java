@@ -113,11 +113,7 @@ public class ImageService {
             } else {
                 downloaderAsync = new ImageDownloaderAsync();
                 Clog.d(Clog.baseLogTag, "Downloading " + key + " from url: " + url);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    downloaderAsync.executeOnExecutor(SDKSettings.getExternalExecutor());
-                } else {
-                    downloaderAsync.execute();
-                }
+                downloaderAsync.executeOnExecutor(SDKSettings.getExternalExecutor());
             }
         }
 

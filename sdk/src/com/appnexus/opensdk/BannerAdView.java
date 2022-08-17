@@ -1124,14 +1124,9 @@ public class BannerAdView extends AdView implements ScreenEventListener {
         WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
 
-        @SuppressWarnings("UnusedAssignment") int width = -1;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            Point p = new Point();
-            display.getSize(p);
-            width = p.x;
-        } else {
-            width = display.getWidth();
-        }
+        Point p = new Point();
+        display.getSize(p);
+        int width = p.x;
 
         float ratio_delta = ((float) width) / ((float) adWidth);
         int new_height = (int) Math.floor(adHeight * ratio_delta);

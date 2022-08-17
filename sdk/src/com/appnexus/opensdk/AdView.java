@@ -82,6 +82,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
     private boolean enableLazyLoad = false;
     // This is to keep track if the loadLazyAd has been called or not
     private boolean activateWebview = false;
+    private  Displayable currentDisplayable = null;
 
     UTRequestParameters requestParameters;
 
@@ -100,6 +101,8 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
     private int countOfImpressionTrackerUrls = 0;
     private int countOfImpressionTrackersFired = 0;
     private boolean isFired = false;
+    // Client suggested change for memory leak in VisibilityDetector
+    private boolean isDestroyed = false;
 
 
     /**
@@ -119,6 +122,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
     }
 
     void setup(Context context, AttributeSet attrs) {
+        isDestroyed = false;
         dispatcher = new AdViewDispatcher(handler);
         requestParameters = new UTRequestParameters(context);
         adType = AdType.UNKNOWN;
@@ -380,11 +384,18 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
      * when permanently remove the AdView from the view hierarchy.
      */
     public void destroy() {
+        Clog.d(Clog.baseLogTag, "called destroy() on AdView");
+        isDestroyed = true;
+
         if (VisibilityDetector.getInstance() != null) {
             VisibilityDetector.getInstance().destroy(AdView.this);
         }
 
-        Clog.d(Clog.baseLogTag, "called destroy() on AdView");
+        if (this.currentDisplayable != null) {
+            this.currentDisplayable.destroy();
+            this.currentDisplayable = null;
+        }
+
         if (this.lastDisplayable != null) {
             this.lastDisplayable.destroy();
             this.lastDisplayable = null;
@@ -852,6 +863,10 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
         showLoadingIndicator = show;
     }
 
+    public void setCurrentDisplayable(Displayable currentDisplayable) {
+        this.currentDisplayable = currentDisplayable;
+    }
+
     /**
      * The user's gender.
      */
@@ -1171,6 +1186,11 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    // Client suggested change for memory leak in VisibilityDetector,
+                    // Stopping further execution if the AdView has already been destroyed.
+                    if (isDestroyed) {
+                        return;
+                    }
                     if (ad.getDisplayable() != null && ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER)) {
                         BaseAdResponse baseAdResponse = ad.getResponseData();
                         ImpressionType impressionType = baseAdResponse == null? null: baseAdResponse.getImpressionType();

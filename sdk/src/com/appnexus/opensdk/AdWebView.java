@@ -121,6 +121,7 @@ class AdWebView extends WebView implements Displayable,
     public AdWebView(AdView adView, UTAdRequester requester) {
         super(new MutableContextWrapper(adView.getContext()));
         this.adView = adView;
+        this.adView.setCurrentDisplayable(this);
         this.caller_requester = requester;
         this.initialMraidStateString = MRAIDImplementation.MRAID_INIT_STATE_STRINGS[
                 MRAIDImplementation.MRAID_INIT_STATE.STARTING_DEFAULT.ordinal()];
@@ -749,13 +750,13 @@ class AdWebView extends WebView implements Displayable,
         MutableContextWrapper wrapper = (MutableContextWrapper) getContext();
         wrapper.setBaseContext(wrapper.getApplicationContext());
 
+        setWebViewClient(new WebViewClient());
+
         if (mWebChromeClient != null) {
             mWebChromeClient.onHideCustomView();
             mWebChromeClient = null;
             setWebChromeClient(null);
         }
-
-        setWebViewClient(null);
 
         if (isNativeAd) {
             NativeAdSDK.unRegisterTracking(this);

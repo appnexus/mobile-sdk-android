@@ -65,11 +65,7 @@ public abstract class HTTPGet {
             }
         } else {
             httpGetAsync = new HTTPGetAsync();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                httpGetAsync.executeOnExecutor(SDKSettings.getExternalExecutor());
-            } else {
-                httpGetAsync.execute();
-            }
+            httpGetAsync.executeOnExecutor(SDKSettings.getExternalExecutor());
         }
     }
 
