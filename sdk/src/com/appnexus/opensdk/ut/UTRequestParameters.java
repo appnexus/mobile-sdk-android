@@ -72,6 +72,7 @@ public class UTRequestParameters {
     private boolean isBannerVideoEnabled = false;
     private boolean isBannerEnabled = true;
     private boolean isBannerNativeEnabled = false;
+    private boolean isHighImpactEnabled = false;
     private String extInvCode;
     private float reserve = 0.00f;
     private String age;
@@ -176,6 +177,7 @@ public class UTRequestParameters {
     private static final int ALLOWED_TYPE_BANNER = 1;
     private static final int ALLOWED_TYPE_INTERSTITIAL = 3;
     private static final int ALLOWED_TYPE_VIDEO = 4;
+    private static final int ALLOWED_TYPE_HIGH_IMPACT = 11;
     private static final int ALLOWED_TYPE_NATIVE = 12;
     private static final String os = "android";
 
@@ -697,6 +699,12 @@ public class UTRequestParameters {
                             tag.put(VIDEO_FRAMEWORKS, omidFrameworksValue);
                         }
                     }
+                    if (utRequestParameters.isHighImpactEnabled) {
+                        allowedMediaAdTypes.put(ALLOWED_TYPE_HIGH_IMPACT);
+                        if(!utRequestParameters.isBannerEnabled && SDKSettings.getOMEnabled()) {
+                            tag.put(BANNER_FRAMEWORKS, omidFrameworksValue);
+                        }
+                    }
                     if (utRequestParameters.isBannerNativeEnabled) {
                         allowedMediaAdTypes.put(ALLOWED_TYPE_NATIVE);
                         if(SDKSettings.getOMEnabled()) {
@@ -1176,5 +1184,13 @@ public class UTRequestParameters {
 
     public void setPublisherId(int publisherId) {
         this.publisherId = publisherId;
+    }
+
+    public boolean isHighImpactEnabled() {
+        return isHighImpactEnabled;
+    }
+
+    public void setHighImpactEnabled(boolean highImpactEnabled) {
+        isHighImpactEnabled = highImpactEnabled;
     }
 }
