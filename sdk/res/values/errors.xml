@@ -72,6 +72,7 @@
 	<string formatted="false" name="set_allow_video">setAllowVideo() to %b</string>
 	<string formatted="false" name="set_allow_banner">setAllowBanner() to %b</string>
 	<string formatted="false" name="set_allow_native">setAllowNative() to %b</string>
+	<string formatted="false" name="set_allow_high_impact">setAllowHighImpact() to %b</string>
 	<string formatted="false" name="set_count_on_ad_load">setCountImpressionOnAdLoad() to %b</string>
 	<string formatted="false" name="webview_loading">WebView loading body: %s</string>
 	<string formatted="false" name="load_ad_int">loadAd() called for interstitial.</string>

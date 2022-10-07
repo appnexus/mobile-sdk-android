@@ -852,6 +852,18 @@ public class BannerAdView extends AdView implements ScreenEventListener {
         requestParameters.setBannerNativeEnabled(enabled);
     }
 
+    /**
+     * Sets whether or not High Impact media(AppNexus Media Type:11) can serve on this Ad object.
+     * This overrides the value set in console.
+     *
+     * @param enabled whether to enable High Impact media or not. default is false
+     */
+    public void setAllowHighImpactDemand(boolean enabled) {
+        Clog.d(Clog.publicFunctionsLogTag, Clog.getString(
+                R.string.set_allow_high_impact, enabled));
+        requestParameters.setHighImpactEnabled(enabled);
+    }
+
 
     /**
      * Check whether Video Ad is enabled on this ad view
@@ -870,6 +882,15 @@ public class BannerAdView extends AdView implements ScreenEventListener {
      */
     public boolean getAllowNativeDemand() {
         return requestParameters.isBannerNativeEnabled();
+    }
+
+    /**
+     * Check whether High Impact media is enabled on this ad view
+     *
+     * @return If true, High Impact Ad can be loaded on the ad view.
+     */
+    public boolean getAllowHighImpactDemand() {
+        return requestParameters.isHighImpactEnabled();
     }
 
 
