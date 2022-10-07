@@ -1,3 +1,8 @@
+## 8.1
+
+### Improvement/Bug Fixes
++ MS-5080 Enable support for high impact media type creatives in BannerAdView
+
 ## 8.0.1
 
 ### Improvement/Bug Fixes
