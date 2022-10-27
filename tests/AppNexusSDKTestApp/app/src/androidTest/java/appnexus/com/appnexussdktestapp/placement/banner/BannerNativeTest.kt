@@ -18,9 +18,11 @@ package appnexus.com.appnexussdktestapp.placement.banner
 
 import android.content.Intent
 import android.content.res.Resources
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingPolicies
 import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -31,10 +33,7 @@ import appnexus.com.appnexussdktestapp.BannerActivity
 import appnexus.com.appnexussdktestapp.R
 import com.appnexus.opensdk.XandrAd
 import com.microsoft.appcenter.espresso.Factory
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
 import org.junit.runner.RunWith
 import java.util.concurrent.TimeUnit
 
@@ -74,6 +73,33 @@ class BannerNativeTest {
     fun destroy() {
         IdlingRegistry.getInstance().unregister(bannerActivity.idlingResource)
         reportHelper.label("Stopping App")
+    }
+
+    /*
+    * Sanity Test for the Banner Ad of size 320x50
+    * */
+    @Test
+    fun bannerNativeLoadPerformanceTest() {
+
+        bannerActivity.triggerAdLoad("17058950", allowNativeDemand = true)
+
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Assert.assertTrue(
+            "Load time performance failure ${bannerActivity.getTime()}",
+            bannerActivity.getTime() < 2000
+        )
+
+        Thread.sleep(500)
+
+        bannerActivity.triggerAdLoad("17058950", allowNativeDemand = true)
+
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Assert.assertTrue(
+            "Load time performance failure ${bannerActivity.getTime()}",
+            bannerActivity.getTime() < 2000
+        )
     }
 
     /*

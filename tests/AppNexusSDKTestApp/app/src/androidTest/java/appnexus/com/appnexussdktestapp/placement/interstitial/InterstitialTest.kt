@@ -24,6 +24,7 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.Intents.times
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.espresso.matcher.ViewMatchers
@@ -33,11 +34,8 @@ import appnexus.com.appnexussdktestapp.InterstitialActivity
 import com.appnexus.opensdk.AdActivity
 import com.appnexus.opensdk.XandrAd
 import com.microsoft.appcenter.espresso.Factory
-import org.junit.After
+import org.junit.*
 import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.concurrent.TimeUnit
 
@@ -69,6 +67,37 @@ class InterstitialTest {
     fun destroy() {
         IdlingRegistry.getInstance().unregister(interstitialActivity.idlingResource)
         reportHelper.label("Stopping App")
+    }
+
+    /*
+    * Sanity Test for the Banner Ad of size 320x50
+    * */
+    @Test
+    fun interstitialLoadPerformanceTest() {
+
+        interstitialActivity.triggerAdLoad("17058950", autoDismiss = -1, closeButtonDelay = 2)
+
+        intended(IntentMatchers.hasComponent(AdActivity::class.java.name))
+
+        Assert.assertTrue(
+            "Load time performance failure ${interstitialActivity.getTime()}",
+            interstitialActivity.getTime() > 2000
+        )
+
+        Thread.sleep(500)
+
+        Espresso.pressBack()
+
+        Thread.sleep(500)
+
+        interstitialActivity.triggerAdLoad("17058950", autoDismiss = -1, closeButtonDelay = 2)
+
+        intended(IntentMatchers.hasComponent(AdActivity::class.java.name), times(2))
+
+        Assert.assertTrue(
+            "Load time performance failure ${interstitialActivity.getTime()}",
+            interstitialActivity.getTime() < 3000
+        )
     }
 
     /*

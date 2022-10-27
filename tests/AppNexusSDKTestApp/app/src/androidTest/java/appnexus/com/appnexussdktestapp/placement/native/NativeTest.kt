@@ -68,6 +68,33 @@ class NativeTest {
     }
 
     /*
+    * Sanity Test for the Banner Ad of size 320x50
+    * */
+    @Test
+    fun nativeLoadPerformanceTest() {
+
+        nativeActivity.triggerAdLoad("17058950")
+
+        Espresso.onView(ViewMatchers.withId(R.id.title))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Assert.assertTrue(
+            "Load time performance failure ${nativeActivity.getTime()}",
+            nativeActivity.getTime() < 2000
+        )
+
+        Thread.sleep(500)
+
+        nativeActivity.triggerAdLoad("17058950")
+
+        Espresso.onView(ViewMatchers.withId(R.id.title))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Assert.assertTrue(
+            "Load time performance failure ${nativeActivity.getTime()}",
+            nativeActivity.getTime() < 2000
+        )
+    }
+
+    /*
     * Sanity Test for the Native Ad
     * */
     @Test

@@ -75,6 +75,33 @@ class BannerVideoTest {
     }
 
     /*
+    * Sanity Test for the Banner Ad of size 320x50
+    * */
+    @Test
+    fun bannerVideoLoadPerformanceTest() {
+
+        bannerActivity.triggerAdLoad("17058950", allowVideoDemand = true)
+
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Assert.assertTrue(
+            "Load time performance failure ${bannerActivity.getTime()}",
+            bannerActivity.getTime() > 2000
+        )
+
+        Thread.sleep(500)
+
+        bannerActivity.triggerAdLoad("17058950", allowVideoDemand = true)
+
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Assert.assertTrue(
+            "Load time performance failure ${bannerActivity.getTime()}",
+            bannerActivity.getTime() < 2000
+        )
+    }
+
+    /*
     * Sanity Test for the Banner Video (Outstream Video)
     * */
     @Test
