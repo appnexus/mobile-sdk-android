@@ -476,7 +476,7 @@ public class SDKSettings {
         if (!isAAIDFetched) {
             AdvertisingIDUtil.retrieveAndSetAAID(context, new InitListener() {
                 @Override
-                public void onInitFinished() {
+                public void onInitFinished(boolean success) {
                     isAAIDFetched = true;
                     SDKSettings.onInitFinished(listener);
                 }
@@ -492,7 +492,7 @@ public class SDKSettings {
             TasksManager.getInstance().executeOnMainThread(new Runnable() {
                 @Override
                 public void run() {
-                    listener.onInitFinished();
+                    listener.onInitFinished(true);
                 }
             });
         }

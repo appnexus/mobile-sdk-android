@@ -21,14 +21,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.appnexus.opensdk.ANClickThroughAction;
 import com.appnexus.opensdk.AdListener;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.BannerAdView;
+import com.appnexus.opensdk.InitListener;
 import com.appnexus.opensdk.NativeAdResponse;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.SDKSettings;
+import com.appnexus.opensdk.XandrAd;
 import com.appnexus.opensdk.utils.Clog;
 
 public class MyActivity extends Activity {
@@ -39,6 +42,12 @@ public class MyActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
+        XandrAd.init(10094, this, true, new InitListener() {
+            @Override
+            public void onInitFinished(boolean success) {
+                Toast.makeText(MyActivity.this, "Init Completed with " + success, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         bav = new BannerAdView(this);
 

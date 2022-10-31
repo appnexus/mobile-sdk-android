@@ -18,7 +18,6 @@ package com.appnexus.opensdk.utils;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.util.Pair;
 
 import com.appnexus.opensdk.InitListener;
@@ -118,7 +117,7 @@ public class AdvertisingIDUtil {
                         @Override
                         public void run() {
                             if (listener != null) {
-                                listener.onInitFinished();
+                                listener.onInitFinished(true);
                             }
                         }
                     });
@@ -154,7 +153,7 @@ public class AdvertisingIDUtil {
             super.onPostExecute(pair);
             SDKSettings.setAAID(pair.first, pair.second);
             if (listener != null) {
-                listener.onInitFinished();
+                listener.onInitFinished(true);
             }
         }
     }
