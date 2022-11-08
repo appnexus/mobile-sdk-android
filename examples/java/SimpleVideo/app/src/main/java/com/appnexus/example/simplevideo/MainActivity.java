@@ -65,7 +65,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         SDKSettings.init(this, new InitListener() {
             @Override
-            public void onInitFinished() {
+            public void onInitFinished(boolean success) {
                 infoText = (TextView) findViewById(R.id.infotTextView);
                 playButon = (ImageButton) findViewById(R.id.play_button);
                 videoPlayer = (VideoView) findViewById(R.id.video_player);
