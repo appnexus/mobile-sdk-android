@@ -259,22 +259,26 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
         return loadAd();
     }
 
-    protected void loadAdFromHtml(String html, int width, int height) {
+    protected void loadAdFromHtml(String html, int width, int height, int buyerMemberId) {
         // load an ad directly from html
         loadedOffscreen = true;
         AdWebView output = new AdWebView(this, null);
-        RTBHTMLAdResponse response = new RTBHTMLAdResponse(width, height, getMediaType().toString(), null, getAdResponseInfo());
+        ANAdResponseInfo adResponseInfo = new ANAdResponseInfo();
+        adResponseInfo.setBuyMemberId(buyerMemberId);
+        RTBHTMLAdResponse response = new RTBHTMLAdResponse(width, height, getMediaType().toString(), null, adResponseInfo);
         response.setAdContent(html);
         output.loadAd(response);
         display(output);
     }
 
 
-    protected void loadAdFromVAST(String VASTXML, int width, int height) {
+    protected void loadAdFromVAST(String VASTXML, int width, int height, int buyerMemberId) {
         // load an ad directly from VASTXML
         loadedOffscreen = true;
         AdWebView output = new AdWebView(this, null);
-        RTBVASTAdResponse response = new RTBVASTAdResponse(width, height, AdType.VIDEO.toString(), null, null, getAdResponseInfo());
+        ANAdResponseInfo adResponseInfo = new ANAdResponseInfo();
+        adResponseInfo.setBuyMemberId(buyerMemberId);
+        RTBVASTAdResponse response = new RTBVASTAdResponse(width, height, AdType.VIDEO.toString(), null, null, adResponseInfo);
         response.setAdContent(VASTXML);
         response.setContentSource(UTConstants.RTB);
         response.addToExtras(UTConstants.EXTRAS_KEY_MRAID, true);
