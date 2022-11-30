@@ -22,7 +22,7 @@ android {
         main.res.srcDir 'res'
         main.assets.srcDir 'assets'
         main.resources.srcDir 'src'
-        test.manifest.srcFile 'AndroidManifestTest.xml'
+//        test.manifest.srcFile 'AndroidManifestTest.xml'
         test.java.srcDir 'test'
     }
 

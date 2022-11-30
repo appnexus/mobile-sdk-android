@@ -2,6 +2,10 @@ package com.appnexus.opensdk;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.content.Context;
+import android.text.TextUtils;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import androidx.annotation.NonNull;
 
@@ -627,6 +631,28 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         assertEquals(true, postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getBoolean("consent_required"));
         assertEquals("fooBar", postDataWithGDPRValueSet.getJSONObject("gdpr_consent").getString("consent_string"));
         assertFalse(Settings.getSettings().deviceAccessAllowed); // When consent required set to true and no purpose consent string deviceAccess is not allowed
+    }
+
+    /**
+     * Test GPP in /ut request body
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testGPPSettings() throws Exception {
+        executionSteps();
+        JSONObject postDataBeforeGPPValueSet = inspectPostData();
+        assertFalse(postDataBeforeGPPValueSet.has("privacy"));
+
+        setGPPString(activity, "gppString");
+        setGPPSID(activity, "1_2_3");
+        executionSteps();
+        JSONObject postDataWithGPPValueSet = inspectPostData();
+        assertEquals("gppString", postDataWithGPPValueSet.getJSONObject("privacy").getString("gpp"));
+        JSONArray testArr = postDataWithGPPValueSet.getJSONObject("privacy").getJSONArray("gpp_sid");
+        for (int i = 0; i < testArr.length(); i++) {
+            assertEquals(i+1, testArr.get(i));
+        }
     }
 
 
@@ -1344,5 +1370,28 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
     @Override
     public void nativeRenderingFailed() {
+    }
+
+    /**
+     * Set the consent string in the SDK
+     *
+     * @param gppString
+     */
+    private void setGPPString(Context context, String gppString) {
+        if(!TextUtils.isEmpty(gppString) && context != null) {
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putString("IABGPP_HDR_GppString", gppString).apply();
+        }
+    }
+
+
+    /**
+     * Set the consentRequired value in the SDK
+     *
+     * @param gppSid underscore (_) separated sid string
+     */
+    private void setGPPSID(Context context, String gppSid) {
+        if (context != null) {
+            PreferenceManager.getDefaultSharedPreferences(context).edit().putString("IABGPP_GppSID", gppSid).apply();
+        }
     }
 }
