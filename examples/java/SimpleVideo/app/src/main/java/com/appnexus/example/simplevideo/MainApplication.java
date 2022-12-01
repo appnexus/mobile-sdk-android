@@ -12,9 +12,10 @@ public class MainApplication extends Application {
         super.onCreate();
         XandrAd.init(10094, this, true, new InitListener() {
             @Override
-            public void onInitFinished() {
-                Toast.makeText(getApplicationContext(), "Init Completed", Toast.LENGTH_SHORT).show();
+            public void onInitFinished(boolean success) {
+                Toast.makeText(getApplicationContext(), "Init Completed with " + success, Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 }

@@ -3,6 +3,7 @@ package appnexus.com.appnexussdktestapp
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.test.espresso.idling.CountingIdlingResource
@@ -12,6 +13,8 @@ import com.appnexus.opensdk.utils.Settings
 
 class InterstitialActivity : AppCompatActivity(), AdListener {
 
+    private var startTime: Long = 0L
+    private var finalTime: Long = 0L
     var isAdCollapsed: Boolean = false
     var isAdExpanded: Boolean = false
     var idlingResource: CountingIdlingResource = CountingIdlingResource("Interstitial Load Counter", true)
@@ -40,6 +43,7 @@ class InterstitialActivity : AppCompatActivity(), AdListener {
     }
 
     override fun onAdRequestFailed(p0: AdView?, p1: ResultCode?) {
+        finalTime = System.currentTimeMillis()
         Toast.makeText(this, "Ad Failed: " + p1?.message, Toast.LENGTH_LONG).show()
         println(p1?.message)
         if (!idlingResource.isIdleNow)
@@ -54,6 +58,7 @@ class InterstitialActivity : AppCompatActivity(), AdListener {
     }
 
     override fun onAdLoaded(ad: AdView?) {
+        finalTime = System.currentTimeMillis()
         Toast.makeText(this, "AdLoaded", Toast.LENGTH_LONG).show()
         if (!idlingResource.isIdleNow)
             idlingResource.decrement()
@@ -66,6 +71,7 @@ class InterstitialActivity : AppCompatActivity(), AdListener {
     }
 
     override fun onAdLoaded(p0: NativeAdResponse?) {
+        finalTime = System.currentTimeMillis()
         Toast.makeText(this, "Native Ad Loaded", Toast.LENGTH_LONG).show()
         if (!idlingResource.isIdleNow)
             idlingResource.decrement()
@@ -98,6 +104,7 @@ class InterstitialActivity : AppCompatActivity(), AdListener {
                 val utils = Utils()
                 utils.setForceCreativeId(creativeId, interstitial = interstitial);
             }
+            startTime = System.currentTimeMillis()
             interstitial.loadAd()
             idlingResource.increment()
 
@@ -109,5 +116,11 @@ class InterstitialActivity : AppCompatActivity(), AdListener {
             interstitial.activityOnDestroy()
         }
         super.onDestroy()
+    }
+
+    fun getTime(): Long {
+        val totalTime = finalTime - startTime
+        Log.e("TOTAL TIME", "$totalTime")
+        return totalTime
     }
 }

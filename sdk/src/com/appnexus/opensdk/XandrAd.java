@@ -24,7 +24,6 @@ import com.appnexus.opensdk.utils.HTTPResponse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,16 +62,22 @@ public class XandrAd {
         if (!isSdkInitialised) {
             SDKSettings.init(context, new InitListener() {
                 @Override
-                public void onInitFinished() {
+                public void onInitFinished(boolean success) {
                     isSdkInitialised = true;
                     if (initListener != null && areMemberIdsCached) {
-                        initListener.onInitFinished();
+                        initListener.onInitFinished(success);
                     }
                 }
             });
         }
         XandrAd.memberId = memberId;
         if (!areMemberIdsCached) {
+            if (context != null && !SharedNetworkManager.getInstance(context).isConnected(context)) {
+                if (initListener != null) {
+                    initListener.onInitFinished(false);
+                    return;
+                }
+            }
             HTTPGet fetchJson = new HTTPGet() {
                 @Override
                 protected void onPostExecute(HTTPResponse response) {
@@ -92,7 +97,7 @@ public class XandrAd {
 
                     areMemberIdsCached = true;
                     if (initListener != null && isSdkInitialised) {
-                        initListener.onInitFinished();
+                        initListener.onInitFinished(true);
                     }
                 }
 

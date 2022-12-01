@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.webkit.WebView
 import android.widget.*
@@ -23,12 +24,15 @@ import com.appnexus.opensdk.utils.Settings
 
 class VideoActivity : AppCompatActivity(), VideoAdLoadListener {
 
+    private var startTime: Long = 0L
+    private var finalTime: Long = 0L
     private lateinit var baseContainer: RelativeLayout
     private lateinit var playButon: ImageButton
     private lateinit var videoPlayer: VideoView
     private lateinit var context: Context
 
     override fun onAdLoaded(videoAd: VideoAd?) {
+        finalTime = System.currentTimeMillis()
         Toast.makeText(
             this, "Ad is ready. Hit on Play button to start",
             Toast.LENGTH_SHORT
@@ -38,6 +42,7 @@ class VideoActivity : AppCompatActivity(), VideoAdLoadListener {
     }
 
     override fun onAdRequestFailed(videoAd: VideoAd?, errorCode: ResultCode?) {
+        finalTime = System.currentTimeMillis()
         Toast.makeText(this, "Ad Failed: " + errorCode?.message, Toast.LENGTH_LONG).show()
         println(errorCode?.message)
         idlingResource.decrement()
@@ -141,6 +146,7 @@ class VideoActivity : AppCompatActivity(), VideoAdLoadListener {
                 }
             })
 
+            startTime = System.currentTimeMillis()
             video.loadAd()
             idlingResource.increment()
         }
@@ -152,4 +158,11 @@ class VideoActivity : AppCompatActivity(), VideoAdLoadListener {
         }
         super.onDestroy()
     }
+
+    fun getTime(): Long {
+        val totalTime = finalTime - startTime
+        Log.e("TOTAL TIME", "$totalTime")
+        return totalTime
+    }
+
 }

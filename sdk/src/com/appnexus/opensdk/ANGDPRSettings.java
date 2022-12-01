@@ -49,6 +49,10 @@ public class ANGDPRSettings {
     // Google ACM consent parameter
     private static final String IABTCF_ADDTL_CONSENT = "IABTCF_AddtlConsent";
 
+    // GPP consent parameters
+    private static final String IABGPP_TCFEU2_SubjectToGDPR = "IABGPP_TCFEU2_gdprApplies";
+    private static final String IABGPP_TCFEU2_PurposeConsents = "IABGPP_TCFEU2_PurposeConsents";
+
     /**
      * Set the consent string in the SDK
      *
@@ -173,6 +177,8 @@ public class ANGDPRSettings {
                 subjectToGdprValue = pref.getString(ANGDPR_CONSENT_REQUIRED, "");
             } else if (pref.contains(IAB_SUBJECT_TO_GDPR)) {
                 subjectToGdprValue = pref.getString(IAB_SUBJECT_TO_GDPR, "");
+            }  else if (pref.contains(IABGPP_TCFEU2_SubjectToGDPR)) {
+                subjectToGdprValue = pref.getString(IABGPP_TCFEU2_SubjectToGDPR, "");
             }
         }
 
@@ -208,7 +214,9 @@ public class ANGDPRSettings {
         if (pref.contains(IABTCF_PurposeConsents)){
             deviceConsent = pref.getString(IABTCF_PurposeConsents, null);
         }else if (pref.contains(ANGDPR_PurposeConsents)) {
-                deviceConsent = pref.getString(ANGDPR_PurposeConsents, null);
+            deviceConsent = pref.getString(ANGDPR_PurposeConsents, null);
+        } else if (pref.contains(IABGPP_TCFEU2_PurposeConsents)) {
+            deviceConsent = pref.getString(IABGPP_TCFEU2_PurposeConsents, null);
         }
 
         return !StringUtil.isEmpty(deviceConsent) ? deviceConsent.substring(0, 1) : null;
@@ -231,6 +239,4 @@ public class ANGDPRSettings {
 
         return false;
     }
-
-
 }

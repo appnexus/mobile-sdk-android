@@ -76,6 +76,33 @@ class BannerTest {
     * Sanity Test for the Banner Ad of size 320x50
     * */
     @Test
+    fun bannerLoadPerformanceTest() {
+
+        bannerActivity.triggerAdLoad("17058950", 320, 50)
+
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Assert.assertTrue(
+            "Load time performance failure ${bannerActivity.getTime()}",
+            bannerActivity.getTime() > 2000
+        )
+
+        Thread.sleep(500)
+
+        bannerActivity.triggerAdLoad("17058950", 320, 50)
+
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Assert.assertTrue(
+            "Load time performance failure ${bannerActivity.getTime()}",
+            bannerActivity.getTime() < 2000
+        )
+    }
+
+    /*
+    * Sanity Test for the Banner Ad of size 320x50
+    * */
+    @Test
     fun bannerLoadSize320x50Test() {
 
 
@@ -126,7 +153,6 @@ class BannerTest {
             bannerActivity.banner.getChildAt(0).height.dp >= (bannerActivity.banner.adHeight - 1) ||
                     bannerActivity.banner.getChildAt(0).height.dp <= (bannerActivity.banner.adHeight + 1)
         )
-
     }
 
 

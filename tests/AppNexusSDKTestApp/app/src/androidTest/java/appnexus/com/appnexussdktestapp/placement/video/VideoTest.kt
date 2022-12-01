@@ -18,11 +18,14 @@ package appnexus.com.appnexussdktestapp.placement.video
 
 
 import android.content.Intent
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingPolicies
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.web.assertion.WebViewAssertions
@@ -36,10 +39,7 @@ import appnexus.com.appnexussdktestapp.R
 import appnexus.com.appnexussdktestapp.VideoActivity
 import com.appnexus.opensdk.XandrAd
 import com.microsoft.appcenter.espresso.Factory
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
 import org.junit.runner.RunWith
 import java.util.concurrent.TimeUnit
 
@@ -71,6 +71,33 @@ class VideoTest {
     fun destroy() {
         IdlingRegistry.getInstance().unregister(videoActivity.idlingResource)
         reportHelper.label("Stopping App")
+    }
+
+    /*
+    * Sanity Test for the Banner Ad of size 320x50
+    * */
+    @Test
+    fun videoLoadPerformanceTest() {
+
+        videoActivity.triggerAdLoad("17058950")
+
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Assert.assertTrue(
+            "Load time performance failure ${videoActivity.getTime()}",
+            videoActivity.getTime() <= 2000
+        )
+
+        Thread.sleep(500)
+
+        videoActivity.triggerAdLoad("17058950")
+
+        Espresso.onView(ViewMatchers.withId(R.id.linearLayout))
+            .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Assert.assertTrue(
+            "Load time performance failure ${videoActivity.getTime()}",
+            videoActivity.getTime() < 2000
+        )
     }
 
     /*

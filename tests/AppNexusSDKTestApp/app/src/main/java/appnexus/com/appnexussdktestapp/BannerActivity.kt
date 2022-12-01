@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -22,6 +23,8 @@ import com.squareup.picasso.Picasso
 
 class BannerActivity : AppCompatActivity(), AdListener {
 
+    private var startTime: Long = 0L
+    private var finalTime: Long = 0L
     private lateinit var nativeView: View
     var impressionLogged = false
     var shouldDisplay: Boolean = true
@@ -50,6 +53,7 @@ class BannerActivity : AppCompatActivity(), AdListener {
     }
 
     override fun onAdRequestFailed(p0: AdView?, p1: ResultCode?) {
+        finalTime = System.currentTimeMillis()
         Toast.makeText(this, "Ad Failed: " + p1?.message, Toast.LENGTH_LONG).show()
         println(p1?.message)
         if (!idlingResource.isIdleNow)
@@ -65,6 +69,7 @@ class BannerActivity : AppCompatActivity(), AdListener {
     }
 
     override fun onAdLoaded(ad: AdView?) {
+        finalTime = System.currentTimeMillis()
         Toast.makeText(this, "AdLoaded", Toast.LENGTH_LONG).show()
         if (layout.childCount > 0)
             layout.removeAllViews()
@@ -77,6 +82,7 @@ class BannerActivity : AppCompatActivity(), AdListener {
     }
 
     override fun onAdLoaded(nativeAdResponse: NativeAdResponse?) {
+        finalTime = System.currentTimeMillis()
         Toast.makeText(this, "Native Ad Loaded", Toast.LENGTH_LONG).show()
         handleNativeResponse(nativeAdResponse)
     }
@@ -130,6 +136,7 @@ class BannerActivity : AppCompatActivity(), AdListener {
                 val utils = Utils()
                 utils.setForceCreativeId(creativeId, banner = banner);
             }
+            startTime = System.currentTimeMillis()
             banner.loadAd()
         }
     }
@@ -201,5 +208,11 @@ class BannerActivity : AppCompatActivity(), AdListener {
                 banner.visibility = VISIBLE
             }
         })
+    }
+
+    fun getTime(): Long {
+        val totalTime = finalTime - startTime
+        Log.e("TOTAL TIME", "$totalTime")
+        return totalTime
     }
 }

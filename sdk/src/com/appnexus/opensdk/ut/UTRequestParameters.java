@@ -53,7 +53,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Map;
 import java.util.UUID;
 import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 
@@ -172,6 +171,11 @@ public class UTRequestParameters {
     private static final String TRAFFICE_SOURCE_CODE = "traffic_source_code";
 
     private static final String US_PRIVACY = "us_privacy";
+
+    // GPP
+    private static final String PRIVACY = "privacy";
+    private static final String GPP_SID = "gpp_sid";
+    private static final String GPP = "gpp";
 
 
     private static final int ALLOWED_TYPE_BANNER = 1;
@@ -565,6 +569,12 @@ public class UTRequestParameters {
                 postData.put(GDPR_CONSENT, gdprConsent);
             }
 
+            // add GDPR Consent
+            JSONObject privacy = getPrivacyObject();
+            if (privacy != null && privacy.length() > 0) {
+                postData.put(PRIVACY, privacy);
+            }
+
             // add IAB Support Signal
 
             if (SDKSettings.getOMEnabled()) {
@@ -588,6 +598,22 @@ public class UTRequestParameters {
         }
         Clog.i(Clog.httpReqLogTag, "POST data: " + postData.toString());
         return postData.toString();
+    }
+
+    private JSONObject getPrivacyObject() {
+        JSONObject privacyObject = new JSONObject();
+        try {
+            Context context = this.getContext();
+            if (context != null) {
+                JSONArray gppSidArray = ANGPPSettings.getIabGppSIDArray(context);
+                if (gppSidArray != null) {
+                    privacyObject.put(GPP, ANGPPSettings.getIabGppString(context));
+                    privacyObject.put(GPP_SID, gppSidArray);
+                }
+            }
+        } catch (JSONException e) {
+        }
+        return privacyObject;
     }
 
     private JSONObject getGeoOverride() {

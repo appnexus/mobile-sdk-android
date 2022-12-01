@@ -3,6 +3,7 @@ package appnexus.com.appnexussdktestapp
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -18,12 +19,15 @@ import kotlinx.android.synthetic.main.layout_native.*
 
 class NativeActivity : AppCompatActivity(), NativeAdRequestListener, NativeAdEventListener {
 
+    private var startTime: Long = 0L
+    private var finalTime: Long = 0L
     var shouldDisplay: Boolean = true
     var didLogImpression: Boolean = false
     lateinit var nativeAdRequest: NativeAdRequest
     var idlingResource: CountingIdlingResource = CountingIdlingResource("Native Load Count", true)
 
     override fun onAdLoaded(nativeAdResponse: NativeAdResponse?) {
+        finalTime = System.currentTimeMillis()
         Toast.makeText(this, "Native Ad Loaded", Toast.LENGTH_LONG).show()
         TasksManager.getInstance().executeOnMainThread {
             handleNativeResponse(nativeAdResponse)
@@ -31,6 +35,7 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener, NativeAdEve
     }
 
     override fun onAdFailed(errorcode: ResultCode?, adResponseinfo: ANAdResponseInfo?) {
+        finalTime = System.currentTimeMillis()
         if (!idlingResource.isIdleNow)
             idlingResource.decrement()
     }
@@ -70,7 +75,7 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener, NativeAdEve
                 utils.setForceCreativeId(creativeId, nativeAdRequest = nativeAdRequest);
             }
 
-
+            startTime = System.currentTimeMillis()
             if (useExecutor) {
                 TasksManager.getInstance().executeOnBackgroundThread({
                     nativeAdRequest.loadAd()
@@ -118,5 +123,11 @@ class NativeActivity : AppCompatActivity(), NativeAdRequestListener, NativeAdEve
     }
 
     override fun onAdWillLeaveApplication() {
+    }
+
+    fun getTime(): Long {
+        val totalTime = finalTime - startTime
+        Log.e("TOTAL TIME", "$totalTime")
+        return totalTime
     }
 }

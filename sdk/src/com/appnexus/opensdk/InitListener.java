@@ -17,5 +17,5 @@
 package com.appnexus.opensdk;
 
 public interface InitListener {
-    void onInitFinished();
+    void onInitFinished(boolean success);
 }
