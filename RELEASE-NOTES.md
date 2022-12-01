@@ -1,3 +1,14 @@
+## 8.2
+
+### Improvement/Bug Fixes
++ MS-5172 Support for Global Privacy Platform (GPP) [https://docs.xandr.com/bundle/mobile-sdk/page/sdk-privacy-for-android.html]
++ MS-5132 Add a boolean to notify success / failure for XandrAd InitListener [Github #74][https://docs.xandr.com/bundle/mobile-sdk/page/android-sdk-initialization-v8-0.html]
++ MS-5024 Updated ProGuard settings [Github #65]
++ MS-5190 NullPointerException while using loadAdFromVAST for BannerAdView
+
+### Mediation partner updates
++ MS-5195 Upgraded Facebook Audience Network SDK from 6.5.0 to 6.12.0
+
 ## 8.1
 
 ### Improvement/Bug Fixes
