@@ -1,5 +1,5 @@
 // Project properties
-version = "8.1"
+version = "8.2"
 group='com.appnexus.opensdk'
 
 // Android build
@@ -9,7 +9,7 @@ android {
     compileSdkVersion 32
     buildToolsVersion '32.0.0'
     defaultConfig {
-        versionCode 97 // An integer value that represents the version of the code, relative to other versions. Increase for each release.
+        versionCode 98 // An integer value that represents the version of the code, relative to other versions. Increase for each release.
         versionName version
         consumerProguardFiles 'proguard-project.txt'
         minSdkVersion 14
