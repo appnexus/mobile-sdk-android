@@ -114,9 +114,6 @@ public class GooglePlayServicesBanner implements MediatedBannerAdView {
         AdRequest.Builder builder = new AdRequest.Builder();
 
         if (targetingParameters != null) {
-            if (targetingParameters.getLocation() != null) {
-                builder.setLocation(targetingParameters.getLocation());
-            }
             Bundle bundle = new Bundle();
 
             if (!StringUtil.isEmpty(targetingParameters.getAge())) {
