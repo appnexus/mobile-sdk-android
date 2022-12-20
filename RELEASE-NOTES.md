@@ -1,3 +1,11 @@
+## 8.3.0
+
+### Improvement/Bug Fixes
++ MS-5208, MS-5215 Upgraded OMSDK from 1.3.31 to 1.4.2
+
+### Mediation partner updates
++ MS-5210 Upgraded Google AdMob SDK from 20.6.0 to 21.3.0
+
 ## 8.2
 
 ### Improvement/Bug Fixes
