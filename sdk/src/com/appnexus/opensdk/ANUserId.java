@@ -85,4 +85,12 @@ public class ANUserId {
     public int hashCode() {
         return Objects.hash(source, userId);
     }
+
+    @Override
+    public String toString() {
+        return "ANUserId{" +
+                "source='" + source + '\'' +
+                ", userId='" + userId + '\'' +
+                '}';
+    }
 }
