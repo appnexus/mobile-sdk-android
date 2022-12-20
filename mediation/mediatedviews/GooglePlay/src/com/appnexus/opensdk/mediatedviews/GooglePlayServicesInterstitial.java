@@ -105,9 +105,6 @@ public class GooglePlayServicesInterstitial implements MediatedInterstitialAdVie
         if (!StringUtil.isEmpty(targetingParameters.getAge())) {
             bundle.putString("Age", targetingParameters.getAge());
         }
-        if (targetingParameters.getLocation() != null) {
-            builder.setLocation(targetingParameters.getLocation());
-        }
         for (Pair<String, String> p : targetingParameters.getCustomKeywords()) {
             if (p.first.equals("content_url")) {
                 if (!StringUtil.isEmpty(p.second)) {

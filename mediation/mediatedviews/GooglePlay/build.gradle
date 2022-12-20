@@ -1,5 +1,5 @@
 // Project Properties
-version = "20.6.0" // supported Google version
+version = "21.3.0" // supported Google version
 
 apply plugin: 'com.android.library'
 
@@ -8,7 +8,7 @@ android {
     buildToolsVersion '32.0.0'
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 32
         versionCode 1
         versionName version
