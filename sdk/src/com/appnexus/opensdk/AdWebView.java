@@ -817,6 +817,9 @@ class AdWebView extends WebView implements Displayable,
     public void onAdImpression() {
         if (!isVideoAd && !isNativeAd) {
             omidAdSession.fireImpression();
+            if (SDKSettings.isOMIDOptimizationEnabled()) {
+                omidAdSession.stopAdSession();
+            }
         }
     }
 

@@ -48,6 +48,12 @@ public class SDKSettings {
     private static Boolean useBackgroundThreads = false;
 
     /**
+     * This boolean is responsible for the optimization of OMID CPU consumption
+     * Enabling this boolean will stop the OMID ad session after firing OMID Impression
+     * */
+    private static Boolean enableOMIDOptimization = false;
+
+    /**
      * For internal use only
      * */
     private static boolean isOmidActivationDone = false, isUserAgentFetched = false, isAAIDFetched = false;
@@ -420,6 +426,21 @@ public class SDKSettings {
      * */
     public static void enableBackgroundThreading(boolean enable) {
         useBackgroundThreads = enable;
+    }
+
+    /**
+     * @return boolean which states if the OMID optimization will be done or not
+     * */
+    public static boolean isOMIDOptimizationEnabled() {
+        return enableOMIDOptimization;
+    }
+
+    /**
+     * This boolean is responsible for the optimization of OMID CPU consumption
+     * Enabling this boolean will stop the OMID ad session after firing OMID Impression
+     * */
+    public static void enableOMIDOptimization(boolean enable) {
+        enableOMIDOptimization = enable;
     }
 
     public static void init(Context context, final InitListener listener) {
