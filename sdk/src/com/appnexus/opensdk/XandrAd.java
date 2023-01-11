@@ -17,10 +17,16 @@
 package com.appnexus.opensdk;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.provider.CalendarContract;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
+import com.appnexus.opensdk.utils.Settings;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -70,6 +76,7 @@ public class XandrAd {
                 }
             });
         }
+        mraidBackgroundTask(context);
         XandrAd.memberId = memberId;
         if (!areMemberIdsCached) {
             if (context != null && !SharedNetworkManager.getInstance(context).isConnected(context)) {
@@ -146,5 +153,50 @@ public class XandrAd {
     public static void throwUninitialisedException() {
         //Todo: Add a reference to the doc link in the Exception
         throw new IllegalStateException("Xandr SDK must be initialised before making an Ad Request.");
+    }
+
+    /**
+     * MRAID - Run package manager querying intent activities in background and
+     * cache the intent activities for later use
+     * */
+    private static void mraidBackgroundTask(final Context context) {
+
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                PackageManager pm = context.getPackageManager();
+                isMraidSMS(pm);
+                isMraidTel(pm);
+                isMraidCalendar(pm);
+                isMraidCalendarEvent(pm);
+            }
+        });
+    }
+
+    //Cache Intent Activities
+    private static boolean hasIntent(Intent i, PackageManager pm) {
+
+        String intentUri = i.toUri(0);
+        if (Settings.getCachedIntentForAction(intentUri)==null) {
+            Settings.cacheIntentForAction(pm.queryIntentActivities(i, 0).size() > 0, intentUri);
+        }
+        return Boolean.TRUE.equals(Settings.getCachedIntentForAction(i.getAction()));
+    }
+
+    public static boolean isMraidSMS(PackageManager pm) {
+        return hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("sms:5555555555")), pm);
+    }
+
+    public static boolean isMraidTel(PackageManager pm) {
+        return hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("tel:5555555555")), pm);
+    }
+
+    public static boolean isMraidCalendar(PackageManager pm) {
+        return hasIntent(new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI), pm);
+    }
+
+    public static boolean isMraidCalendarEvent(PackageManager pm) {
+        return hasIntent(new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event"), pm);
     }
 }

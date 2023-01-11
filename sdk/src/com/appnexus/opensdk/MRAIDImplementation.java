@@ -188,20 +188,20 @@ class MRAIDImplementation {
         PackageManager pm = owner.getContext().getPackageManager();
 
         //SMS
-        if (hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("sms:5555555555")), pm)) {
+        if (XandrAd.isMraidSMS(pm)) {
             setSupports(view, "sms", true);
         }
 
         //Tel
-        if (hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("tel:5555555555")), pm)) {
+        if (XandrAd.isMraidTel(pm)) {
             setSupports(view, "tel", true);
         }
 
         //Calendar
-        if (hasIntent(new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI), pm)) {
+        if (XandrAd.isMraidCalendar(pm)) {
             setSupports(view, "calendar", true);
             supportsCalendar = true;
-        } else if (hasIntent(new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event"), pm)) {
+        } else if (XandrAd.isMraidCalendarEvent(pm)) {
             setSupports(view, "calendar", true);
             supportsCalendar = true;
             W3CEvent.useMIME = true;
@@ -218,13 +218,14 @@ class MRAIDImplementation {
         setSupports(view, "inlineVideo", true);
     }
 
+    /* //calling below method from XandrAd
     boolean hasIntent(Intent i, PackageManager pm) {
         String intentUri = i.toUri(0);
         if (Settings.getCachedIntentForAction(intentUri)==null) {
             Settings.cacheIntentForAction(pm.queryIntentActivities(i, 0).size() > 0,intentUri);
         }
         return Boolean.TRUE.equals(Settings.getCachedIntentForAction(i.getAction()));
-    }
+    }*/
 
     void onViewableChange(boolean viewable) {
         if (!readyFired) return;
