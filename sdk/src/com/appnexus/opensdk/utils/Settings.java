@@ -18,16 +18,11 @@ package com.appnexus.opensdk.utils;
 
 import android.location.Location;
 import android.os.Build;
-import android.text.TextUtils;
-
-import com.appnexus.opensdk.ANGDPRSettings;
 import com.appnexus.opensdk.ANUserId;
 import com.appnexus.opensdk.BuildConfig;
 import com.appnexus.opensdk.MediaType;
 import com.appnexus.opensdk.R;
 import com.appnexus.opensdk.ut.UTConstants;
-
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -239,4 +234,10 @@ public class Settings {
         return hasIntentMap.containsKey(action)? hasIntentMap.get(action):null;
     }
 
+    /**
+     * To check the intent hashmap is empty or not.
+     */
+    public static Boolean getCachedIntentHashMap() {
+        return hasIntentMap.isEmpty();
+    }
 }

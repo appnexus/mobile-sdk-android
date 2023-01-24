@@ -20,17 +20,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.provider.CalendarContract;
-
+import com.appnexus.opensdk.tasksmanager.TasksManager;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.Settings;
-
 import org.json.JSONArray;
 import org.json.JSONException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +51,7 @@ public class XandrAd {
     private static final String viewableImpressionConfigUrl = "https://acdn.adnxs.com/mobile/viewableimpression/member_list_array.json";
     private static boolean isSdkInitialised;
     private static boolean areMemberIdsCached;
-
+    private static boolean isMraidInitialised;
     /**
      * Initialize Xandr Ads SDK
      * @param memberId for initialising the XandrAd,
@@ -62,8 +59,9 @@ public class XandrAd {
      * @param preCacheContent enable / disable pre-caching of the content.provides flexibility to pre-cache content, such as fetch userAgent, fetch AAID and activate OMID. Pre-caching will make the future ad requests faster.
      * @param initListener for listening to the completion event.
      * */
-    public static void init(int memberId, Context context, boolean preCacheContent, final InitListener initListener) {
+    public static void init(int memberId, final Context context, boolean preCacheContent, final InitListener initListener) {
         isSdkInitialised = !preCacheContent || context == null;
+        isMraidInitialised = !Settings.getCachedIntentHashMap();
         areMemberIdsCached = cachedViewableImpressionMemberIds.size() > 0;
         if (!isSdkInitialised) {
             SDKSettings.init(context, new InitListener() {
@@ -76,7 +74,23 @@ public class XandrAd {
                 }
             });
         }
-        mraidBackgroundTask(context);
+
+        if(!isMraidInitialised) {
+            TasksManager.getInstance().executeOnBackgroundThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        assert context != null;
+                        processMraid(context);
+                    } finally {
+                        if(!Settings.getCachedIntentHashMap()) {
+                            isMraidInitialised = true;
+                        }
+                    }
+                }
+            });
+        }
+
         XandrAd.memberId = memberId;
         if (!areMemberIdsCached) {
             if (context != null && !SharedNetworkManager.getInstance(context).isConnected(context)) {
@@ -103,7 +117,7 @@ public class XandrAd {
                     }
 
                     areMemberIdsCached = true;
-                    if (initListener != null && isSdkInitialised) {
+                    if (initListener != null && isSdkInitialised && isMraidInitialised) {
                         initListener.onInitFinished(true);
                     }
                 }
@@ -155,25 +169,6 @@ public class XandrAd {
         throw new IllegalStateException("Xandr SDK must be initialised before making an Ad Request.");
     }
 
-    /**
-     * MRAID - Run package manager querying intent activities in background and
-     * cache the intent activities for later use
-     * */
-    private static void mraidBackgroundTask(final Context context) {
-
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-
-                PackageManager pm = context.getPackageManager();
-                isMraidSMS(pm);
-                isMraidTel(pm);
-                isMraidCalendar(pm);
-                isMraidCalendarEvent(pm);
-            }
-        });
-    }
-
     //Cache Intent Activities
     private static boolean hasIntent(Intent i, PackageManager pm) {
 
@@ -198,5 +193,17 @@ public class XandrAd {
 
     public static boolean isMraidCalendarEvent(PackageManager pm) {
         return hasIntent(new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event"), pm);
+    }
+
+    /**
+     * MRAID - Run package manager querying intent activities in background and
+     * cache the intent activities for later use
+     * */
+    public static void processMraid(Context context) {
+        PackageManager pm = context.getPackageManager();
+        isMraidSMS(pm);
+        isMraidTel(pm);
+        isMraidCalendar(pm);
+        isMraidCalendarEvent(pm);
     }
 }
