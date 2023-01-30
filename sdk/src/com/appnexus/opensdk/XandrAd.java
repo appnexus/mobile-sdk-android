@@ -68,23 +68,21 @@ public class XandrAd {
                 @Override
                 public void onInitFinished(boolean success) {
                     isSdkInitialised = true;
-                    if (initListener != null && areMemberIdsCached) {
-                        initListener.onInitFinished(success);
-                    }
+                    XandrAd.onInitFinished(initListener);
                 }
             });
         }
 
-        if(!isMraidInitialised) {
+        if(!isMraidInitialised && context != null) {
             TasksManager.getInstance().executeOnBackgroundThread(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        assert context != null;
                         processMraid(context);
                     } finally {
                         if(!Settings.getCachedIntentHashMap()) {
                             isMraidInitialised = true;
+                            onInitFinished(initListener);
                         }
                     }
                 }
@@ -117,9 +115,7 @@ public class XandrAd {
                     }
 
                     areMemberIdsCached = true;
-                    if (initListener != null && isSdkInitialised && isMraidInitialised) {
-                        initListener.onInitFinished(true);
-                    }
+                    onInitFinished(initListener);
                 }
 
                 @Override
@@ -205,5 +201,16 @@ public class XandrAd {
         isMraidTel(pm);
         isMraidCalendar(pm);
         isMraidCalendarEvent(pm);
+    }
+
+    private static void onInitFinished(final InitListener listener) {
+        if (listener != null && isSdkInitialised && isMraidInitialised && areMemberIdsCached) {
+            TasksManager.getInstance().executeOnMainThread(new Runnable() {
+                @Override
+                public void run() {
+                    listener.onInitFinished(true);
+                }
+            });
+        }
     }
 }
