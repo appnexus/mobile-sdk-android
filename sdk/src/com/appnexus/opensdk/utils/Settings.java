@@ -252,6 +252,4 @@ public class Settings {
     public void setCachedAdWebView(List<WebView> cachedAdWebView) {
         Settings.cachedAdWebView = cachedAdWebView;
     }
-
->>>>>>> develop
 }
