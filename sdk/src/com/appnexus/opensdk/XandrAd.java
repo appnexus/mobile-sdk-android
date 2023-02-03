@@ -63,7 +63,7 @@ public class XandrAd {
      * */
     public static void init(int memberId, final Context context, boolean preCacheContent,
                             final InitListener initListener) {
-        init(memberId, context, preCacheContent, false, initListener);
+        init(memberId, context, preCacheContent, true, initListener);
     }
 
     /**
