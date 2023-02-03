@@ -26,12 +26,16 @@ import android.webkit.WebView;
 import com.appnexus.opensdk.tasksmanager.TasksManager;
 import com.appnexus.opensdk.utils.AdvertisingIDUtil;
 import com.appnexus.opensdk.utils.Clog;
+import com.appnexus.opensdk.utils.HTTPGet;
+import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 import com.iab.omid.library.appnexus.Omid;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 
 /**
@@ -57,6 +61,8 @@ public class SDKSettings {
      * For internal use only
      * */
     private static boolean isOmidActivationDone = false, isUserAgentFetched = false, isAAIDFetched = false;
+
+    private static boolean isWarmupAdCallDone = false;
 
     // hide the constructor from javadocs
     private SDKSettings() {
@@ -453,6 +459,8 @@ public class SDKSettings {
      * @param fetchAAID enable / disable fetching of AAID.
      * */
     public static void init(final Context context, final InitListener listener, final boolean fetchUserAgent, final boolean fetchAAID) {
+        prefetchWebview(context);
+        warmupAdCall();
         // Store the UA in the settings
         isOmidActivationDone = Omid.isActive();
         isUserAgentFetched = !fetchUserAgent || !StringUtil.isEmpty(Settings.getSettings().ua);
@@ -506,6 +514,44 @@ public class SDKSettings {
 
         // For the cases where Omid is already activated and UserAgent & AAID are already fetched, onInitFinished must be triggered.
         onInitFinished(listener);
+    }
+
+    private static void warmupAdCall() {
+        if (isWarmupAdCallDone) {
+            return;
+        }
+        new HTTPGet()  {
+
+            @Override
+            protected void onPostExecute(HTTPResponse response) {
+                isWarmupAdCallDone = true;
+            }
+
+            @Override
+            protected String getUrl() {
+                return Settings.getAdRequestUrl();
+            }
+        }.execute();
+    }
+
+    private static void prefetchWebview(Context context) {
+        List cachedAdWebView = Settings.getSettings().getCachedAdWebView();
+        if (cachedAdWebView.size() == 0) {
+            AdWebView webView = new AdWebView(context);
+            cachedAdWebView.add(webView);
+        }
+    }
+
+    public static AdWebView fetchWebView(Context context) {
+        AdWebView adWebView;
+        List cachedAdWebView = Settings.getSettings().getCachedAdWebView();
+        if (cachedAdWebView.size() > 0) {
+            adWebView = (AdWebView) cachedAdWebView.remove(0);
+        } else {
+            adWebView = new AdWebView(context);
+        }
+        prefetchWebview(context);
+        return adWebView;
     }
 
     private static void onInitFinished(final InitListener listener) {

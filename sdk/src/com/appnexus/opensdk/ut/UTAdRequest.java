@@ -135,6 +135,7 @@ public class UTAdRequest {
     }
 
     HashMap<String, UTAdResponse> makeRequest() {
+        Clog.logTime(getClass().getSimpleName() + " - makeRequest");
         try {
 
             Settings.getSettings().deviceAccessAllowed = ANGDPRSettings.canIAccessDeviceData(requestParams.getContext()); // Make sure GDPR device access is allowed.
@@ -272,6 +273,7 @@ public class UTAdRequest {
 
 
     void processResponse(HashMap<String, UTAdResponse> adResponseMap) {
+        Clog.logTime(getClass().getSimpleName() + " - processResponse");
         // check for invalid responses
         ANMultiAdRequest anMultiAdRequest = getMultiAdRequest();
         if (anMultiAdRequest == null) {

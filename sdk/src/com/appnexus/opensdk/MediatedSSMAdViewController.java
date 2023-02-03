@@ -16,7 +16,6 @@
 
 package com.appnexus.opensdk;
 
-import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 
@@ -116,7 +115,8 @@ public class MediatedSSMAdViewController {
         fireResponseURL(ssmHtmlAdResponse, ResultCode.getNewInstance(ResultCode.SUCCESS));
         UTAdRequester requester = this.caller_requester.get();
         if (requester != null) {
-            final AdWebView output = new AdWebView(owner, requester);
+            final AdWebView output = SDKSettings.fetchWebView(owner.getContext());
+            output.init(owner,  requester);
             output.loadAd(ssmHtmlAdResponse);
         }
     }

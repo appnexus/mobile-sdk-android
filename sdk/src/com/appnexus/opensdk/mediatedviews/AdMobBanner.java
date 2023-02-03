@@ -23,6 +23,7 @@ import com.appnexus.opensdk.MediatedBannerAdView;
 import com.appnexus.opensdk.MediatedBannerAdViewController;
 import com.appnexus.opensdk.ResultCode;
 import com.appnexus.opensdk.TargetingParameters;
+import com.appnexus.opensdk.utils.Clog;
 
 /**
  * This class is an intermediate adaptor that chooses between the legacy
@@ -44,6 +45,7 @@ public class AdMobBanner implements MediatedBannerAdView {
             }
             return null;
         }
+        Clog.logTime(getClass().getSimpleName() + " - requestAd");
         return mediatedAdView.requestAd(mBC, activity, parameter, adUnitID, width, height, targetingParameters);
     }
 

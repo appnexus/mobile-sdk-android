@@ -18,22 +18,21 @@ package com.appnexus.opensdk.utils;
 
 import android.location.Location;
 import android.os.Build;
-import android.text.TextUtils;
+import android.webkit.WebView;
 
-import com.appnexus.opensdk.ANGDPRSettings;
 import com.appnexus.opensdk.ANUserId;
 import com.appnexus.opensdk.BuildConfig;
 import com.appnexus.opensdk.MediaType;
 import com.appnexus.opensdk.R;
 import com.appnexus.opensdk.ut.UTConstants;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Settings {
 
@@ -156,6 +155,8 @@ public class Settings {
      */
     private static Map<String, Boolean> hasIntentMap = new HashMap();
 
+    private static List<WebView> cachedAdWebView = new CopyOnWriteArrayList();
+
     public static Settings getSettings() {
         if (settings_instance == null) {
             settings_instance = new Settings();
@@ -237,6 +238,14 @@ public class Settings {
      */
     public static Boolean getCachedIntentForAction(String action) {
         return hasIntentMap.containsKey(action)? hasIntentMap.get(action):null;
+    }
+
+    public List<WebView> getCachedAdWebView() {
+        return cachedAdWebView;
+    }
+
+    public void setCachedAdWebView(List<WebView> cachedAdWebView) {
+        Settings.cachedAdWebView = cachedAdWebView;
     }
 
 }
