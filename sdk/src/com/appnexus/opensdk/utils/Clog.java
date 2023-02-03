@@ -24,9 +24,13 @@ import java.util.ArrayList;
 
 import static com.appnexus.opensdk.utils.ClogListener.LOG_LEVEL;
 
+import com.appnexus.opensdk.Ad;
+import com.appnexus.opensdk.BuildConfig;
+
 public class Clog {
 
     private static final int MAX_LOG_TAG_LENGTH = 22;
+    private static long previousTime = 0L;
 
     private static void logIfLoggable(String LogTag, String message, int level, Throwable tr) {
         try {
@@ -349,5 +353,30 @@ public class Clog {
             return tag.substring(0, MAX_LOG_TAG_LENGTH);
         }
         return tag;
+    }
+
+    /**
+     * Not intended to be used outside of SDK
+     * Displays the log with the tag: LOG_TIME
+     * Generally this is used to log the time taken a few methods to execute
+     */
+    public static void logTime(String message) {
+        if (BuildConfig.DEBUG) {
+            long currentTime = System.currentTimeMillis();
+            long totalTime = currentTime - previousTime;
+            d("LOG_TIME", message + " - " + (totalTime < 20000L && totalTime > 0L ? totalTime : 0L));
+            previousTime = currentTime;
+        }
+    }
+
+    /**
+     * Not intended to be used outside of SDK
+     * Displays the log with the tag: OPENSDK-LoadTime
+     * Generally this is used to log the time taken by an ad to loadAd
+     */
+    public static void logLoadTime(Ad ad) {
+        if (BuildConfig.DEBUG) {
+            d(baseLogTag +  "-LoadTime", ad.getClass().getName() + ": " + (ad.getFinishTime() - ad.getStartTime()) + "ms");
+        }
     }
 }

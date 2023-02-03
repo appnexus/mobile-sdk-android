@@ -118,17 +118,30 @@ class AdWebView extends WebView implements Displayable,
     String RENDERER_JSON = "AN_NATIVE_RESPONSE_OBJECT";
     private boolean isDestroyTriggered;
 
+    public AdWebView(Context context) {
+        super(new MutableContextWrapper(context));
+        setupSettings();
+    }
+
     public AdWebView(AdView adView, UTAdRequester requester) {
         super(new MutableContextWrapper(adView.getContext()));
+        init(adView, requester);
+        setupSettings();
+        setup();
+    }
+
+    public void init(AdView adView, UTAdRequester requester) {
+        Context context = getContext();
+        if (context instanceof MutableContextWrapper) {
+            ((MutableContextWrapper) context).setBaseContext(adView.getContext());
+        }
         this.adView = adView;
         this.adView.setCurrentDisplayable(this);
         this.caller_requester = requester;
         this.initialMraidStateString = MRAIDImplementation.MRAID_INIT_STATE_STRINGS[
                 MRAIDImplementation.MRAID_INIT_STATE.STARTING_DEFAULT.ordinal()];
-        setupSettings();
         setup();
     }
-
 
     @SuppressWarnings("deprecation")
     @SuppressLint("SetJavaScriptEnabled")

@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.CalendarContract;
+
 import com.appnexus.opensdk.tasksmanager.TasksManager;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
@@ -38,7 +39,7 @@ import java.util.List;
 public class XandrAd {
 
     /**
-    * memberId will be set using the {@link XandrAd#init(int, Context, boolean, InitListener)}
+    * memberId will be set using the {@link XandrAd#init(int, Context, boolean, boolean, InitListener)}
     **/
     private static int memberId = -1;
     /**
@@ -52,6 +53,7 @@ public class XandrAd {
     private static boolean isSdkInitialised;
     private static boolean areMemberIdsCached;
     private static boolean isMraidInitialised;
+
     /**
      * Initialize Xandr Ads SDK
      * @param memberId for initialising the XandrAd,
@@ -59,9 +61,23 @@ public class XandrAd {
      * @param preCacheContent enable / disable pre-caching of the content.provides flexibility to pre-cache content, such as fetch userAgent, fetch AAID and activate OMID. Pre-caching will make the future ad requests faster.
      * @param initListener for listening to the completion event.
      * */
-    public static void init(int memberId, final Context context, boolean preCacheContent, final InitListener initListener) {
+    public static void init(int memberId, final Context context, boolean preCacheContent,
+                            final InitListener initListener) {
+        init(memberId, context, preCacheContent, false, initListener);
+    }
+
+    /**
+     * Initialize Xandr Ads SDK
+     * @param memberId for initialising the XandrAd,
+     * @param context for pre-caching the content.
+     * @param preCacheContent enable / disable pre-caching of the content.provides flexibility to pre-cache content, such as fetch userAgent, fetch AAID and activate OMID. Pre-caching will make the future ad requests faster.
+     * @param preCacheMraidSupports enable / disable pre-caching of the intent activities
+     * @param initListener for listening to the completion event.
+     * */
+    public static void init(int memberId, final Context context, boolean preCacheContent, boolean preCacheMraidSupports,
+                            final InitListener initListener) {
         isSdkInitialised = !preCacheContent || context == null;
-        isMraidInitialised = !Settings.getCachedIntentHashMap();
+        isMraidInitialised = !preCacheMraidSupports || !Settings.isIntentMapAlreadyCached();
         areMemberIdsCached = cachedViewableImpressionMemberIds.size() > 0;
         if (!isSdkInitialised) {
             SDKSettings.init(context, new InitListener() {
@@ -80,7 +96,7 @@ public class XandrAd {
                     try {
                         processMraid(context);
                     } finally {
-                        if(!Settings.getCachedIntentHashMap()) {
+                        if(!Settings.isIntentMapAlreadyCached()) {
                             isMraidInitialised = true;
                             onInitFinished(initListener);
                         }

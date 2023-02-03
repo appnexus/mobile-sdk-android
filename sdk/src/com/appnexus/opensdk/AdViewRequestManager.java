@@ -137,6 +137,7 @@ public class AdViewRequestManager extends RequestManager {
 
     @Override
     public void onReceiveAd(AdResponse ad) {
+        Clog.logTime(getClass().getSimpleName() + " - onReceiveAd");
         printMediatedClasses();
         if (controller != null) {
             // do not hold a reference of current mediated ad controller after ad is loaded
@@ -196,6 +197,7 @@ public class AdViewRequestManager extends RequestManager {
     }
 
     private void processUTResponse(UTAdResponse response) {
+        Clog.logTime(getClass().getSimpleName() + " - processUTResponse");
         final Ad owner = this.owner.get();
         if ((owner != null) && doesAdListExists(response)) {
             setAdList(response.getAdList());
@@ -379,6 +381,7 @@ public class AdViewRequestManager extends RequestManager {
 
 
     private void handleCSMResponse(Ad ownerAd, final CSMSDKAdResponse csmSdkAdResponse) {
+        Clog.logTime(getClass().getSimpleName() + " - handleCSMResponse");
         Clog.i(Clog.baseLogTag, "Mediation type is CSM, passing it to MediatedAdViewController.");
         if (csmSdkAdResponse.getAdType().equals(UTConstants.AD_TYPE_NATIVE)) {
             mediatedNativeAdController = MediatedNativeAdController.create(csmSdkAdResponse,
@@ -421,12 +424,14 @@ public class AdViewRequestManager extends RequestManager {
             TasksManager.getInstance().executeOnMainThread(new Runnable() {
                 @Override
                 public void run() {
-                    adWebview = new AdWebView((AdView) owner, AdViewRequestManager.this);
+                    adWebview = SDKSettings.fetchWebView(((AdView) owner).getContext());
+                    adWebview.init((AdView) owner,  AdViewRequestManager.this);
                     adWebview.loadAd(response);
                 }
             });
         } else {
-            adWebview = new AdWebView((AdView) owner, AdViewRequestManager.this);
+            adWebview = SDKSettings.fetchWebView(((AdView) owner).getContext());
+            adWebview.init((AdView) owner,  AdViewRequestManager.this);
             adWebview.loadAd(response);
 
         }

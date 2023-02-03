@@ -1061,6 +1061,60 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
     }
 
+    /**
+     * Test User Id comparison with parameters in /ut request body
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testUserIdsComparison() throws Exception {
+        ANUserId tradeDeskUserID = new ANUserId(ANUserId.Source.THE_TRADE_DESK, "sdksettings-userid-ttd-foobar");
+        ANUserId tradeDeskUserIDDup = new ANUserId(ANUserId.Source.THE_TRADE_DESK, "sdksettings-userid-ttd-foobar");
+        assertTrue(tradeDeskUserID.equals(tradeDeskUserIDDup));
+
+        ANUserId criteoUserId = new ANUserId(ANUserId.Source.CRITEO, "sdksettings-userid-Criteo-foobar");
+        ANUserId criteoUserIdDup = new ANUserId(ANUserId.Source.CRITEO, "sdksettings-userid-Criteo-foobar");
+        assertTrue(criteoUserId.equals(criteoUserIdDup));
+
+        ANUserId netIdUserID = new ANUserId(ANUserId.Source.NETID, "sdksettings-userid-netid-foobar");
+        ANUserId netIdUserIDDup = new ANUserId(ANUserId.Source.NETID, "sdksettings-userid-netid-foobar");
+        assertTrue(netIdUserID.equals(netIdUserIDDup));
+
+        ANUserId liveRampUserID = new ANUserId(ANUserId.Source.LIVERAMP, "sdksettings-userid-liveramp-foobar");
+        ANUserId liveRampUserIDDup = new ANUserId(ANUserId.Source.LIVERAMP, "sdksettings-userid-liveramp-foobar");
+        assertTrue(liveRampUserID.equals(liveRampUserIDDup));
+
+        ANUserId UID2UserId = new ANUserId(ANUserId.Source.UID2, "sdksettings-userid-uid2-foobar");
+        ANUserId UID2UserIdDup = new ANUserId(ANUserId.Source.UID2, "sdksettings-userid-uid2-foobar");
+        assertTrue(UID2UserId.equals(UID2UserIdDup));
+
+        ANUserId genericUserID = new ANUserId("Generic Source", "sdksettings-userid-generic-foobar");
+        ANUserId genericUserIDDup = new ANUserId("Generic Source", "sdksettings-userid-generic-foobar");
+        assertTrue(genericUserID.equals(genericUserIDDup));
+    }
+
+    /**
+     * Test User Id toString()
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testUserIdsToString() throws Exception {
+        ANUserId tradeDeskUserID = new ANUserId(ANUserId.Source.THE_TRADE_DESK, "sdksettings-userid-ttd-foobar");
+        ANUserId criteoUserId = new ANUserId(ANUserId.Source.CRITEO, "sdksettings-userid-Criteo-foobar");
+        ANUserId netIdUserID = new ANUserId(ANUserId.Source.NETID, "sdksettings-userid-netid-foobar");
+        ANUserId liveRampUserID = new ANUserId(ANUserId.Source.LIVERAMP, "sdksettings-userid-liveramp-foobar");
+        ANUserId UID2UserId = new ANUserId(ANUserId.Source.UID2, "sdksettings-userid-uid2-foobar");
+        ANUserId genericUserID = new ANUserId("Generic Source", "sdksettings-userid-generic-foobar");
+
+        assertEquals(criteoUserId.toString(), "{\"source\":\"criteo.com\",\"id\":\"sdksettings-userid-Criteo-foobar\"}");
+        assertEquals(netIdUserID.toString(), "{\"source\":\"netid.de\",\"id\":\"sdksettings-userid-netid-foobar\"}");
+        assertEquals(liveRampUserID.toString(), "{\"source\":\"liveramp.com\",\"id\":\"sdksettings-userid-liveramp-foobar\"}");
+        assertEquals(tradeDeskUserID.toString(), "{\"source\":\"adserver.org\",\"id\":\"sdksettings-userid-ttd-foobar\"}");
+        assertEquals(UID2UserId.toString(), "{\"source\":\"uidapi.com\",\"id\":\"sdksettings-userid-uid2-foobar\"}");
+        assertEquals(genericUserID.toString(), "{\"source\":\"Generic Source\",\"id\":\"sdksettings-userid-generic-foobar\"}");
+    }
+
 
 
     @Override

@@ -162,6 +162,7 @@ public class SmartAdServerBannerAdView extends SmartAdServerBaseAdapter implemen
             }
         });
 
+        Clog.logTime(getClass().getSimpleName() + " - requestAd");
         // Load the banner
         bannerView.loadAd(adPlacement);
 

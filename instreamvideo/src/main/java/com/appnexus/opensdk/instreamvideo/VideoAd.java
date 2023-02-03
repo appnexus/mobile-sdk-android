@@ -845,6 +845,16 @@ public class VideoAd implements Ad, MultiAd {
         return this;
     }
 
+    @Override
+    public Long getStartTime() {
+        return 0L;
+    }
+
+    @Override
+    public Long getFinishTime() {
+        return 0L;
+    }
+
     public ANAdResponseInfo getAdResponseInfo() {
         return adResponseInfo;
     }

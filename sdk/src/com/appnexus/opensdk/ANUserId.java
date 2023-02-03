@@ -17,6 +17,8 @@
 
 package com.appnexus.opensdk;
 
+import java.util.Objects;
+
 public class ANUserId {
 
     private String source;
@@ -69,5 +71,24 @@ public class ANUserId {
 
     public String getSource() {
         return source;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ANUserId anUserId = (ANUserId) o;
+        return Objects.equals(source, anUserId.source) && Objects.equals(userId, anUserId.userId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(source, userId);
+    }
+
+    @Override
+    public String toString() {
+        // Maybe include RTI Partner in future (TBD)
+        return "{\"source\":\"" + source + "\",\"id\":\"" + userId + "\"}";
     }
 }
