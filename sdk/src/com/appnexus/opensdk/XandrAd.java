@@ -94,7 +94,7 @@ public class XandrAd {
                 @Override
                 public void run() {
                     try {
-                        processMraid(context);
+                        preCacheHasIntentForMRAID(context);
                     } finally {
                         if(!Settings.isIntentMapAlreadyCached()) {
                             isMraidInitialised = true;
@@ -191,19 +191,19 @@ public class XandrAd {
         return Boolean.TRUE.equals(Settings.getCachedIntentForAction(i.getAction()));
     }
 
-    public static boolean isMraidSMS(PackageManager pm) {
+    public static boolean hasSMSIntent(PackageManager pm) {
         return hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("sms:5555555555")), pm);
     }
 
-    public static boolean isMraidTel(PackageManager pm) {
+    public static boolean hasTelIntent(PackageManager pm) {
         return hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("tel:5555555555")), pm);
     }
 
-    public static boolean isMraidCalendar(PackageManager pm) {
+    public static boolean hasCalendarIntent(PackageManager pm) {
         return hasIntent(new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI), pm);
     }
 
-    public static boolean isMraidCalendarEvent(PackageManager pm) {
+    public static boolean hasCalendarEventIntent(PackageManager pm) {
         return hasIntent(new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event"), pm);
     }
 
@@ -211,12 +211,12 @@ public class XandrAd {
      * MRAID - Run package manager querying intent activities in background and
      * cache the intent activities for later use
      * */
-    public static void processMraid(Context context) {
+    public static void preCacheHasIntentForMRAID(Context context) {
         PackageManager pm = context.getPackageManager();
-        isMraidSMS(pm);
-        isMraidTel(pm);
-        isMraidCalendar(pm);
-        isMraidCalendarEvent(pm);
+        hasSMSIntent(pm);
+        hasTelIntent(pm);
+        hasCalendarIntent(pm);
+        hasCalendarEventIntent(pm);
     }
 
     private static void onInitFinished(final InitListener listener) {
