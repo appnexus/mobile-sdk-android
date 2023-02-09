@@ -33,9 +33,7 @@ import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.viewability.ANOmidViewabilty;
 import com.iab.omid.library.appnexus.Omid;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 
 /**
@@ -56,6 +54,8 @@ public class SDKSettings {
      * Enabling this boolean will stop the OMID ad session after firing OMID Impression
      * */
     private static Boolean enableOMIDOptimization = false;
+
+    private static Boolean enableBannerOptimization = true;
 
     /**
      * For internal use only
@@ -535,10 +535,12 @@ public class SDKSettings {
     }
 
     private static void prefetchWebview(Context context) {
-        List cachedAdWebView = Settings.getSettings().getCachedAdWebView();
-        if (cachedAdWebView.size() == 0) {
-            AdWebView webView = new AdWebView(context);
-            cachedAdWebView.add(webView);
+        if (isBannerOptimizationEnabled()) {
+            List cachedAdWebView = Settings.getSettings().getCachedAdWebView();
+            if (cachedAdWebView.size() == 0) {
+                AdWebView webView = new AdWebView(context);
+                cachedAdWebView.add(webView);
+            }
         }
     }
 
@@ -565,4 +567,21 @@ public class SDKSettings {
         }
     }
 
+    /**
+     * Experimental API, to be used in case of issue with banner optimization
+     * To be removed in v9.0
+     * */
+    @Deprecated
+    public static void enableBannerOptimization(boolean enable) {
+        enableBannerOptimization = enable;
+    }
+
+    /**
+     * Experimental API, to be used in case of issue with banner optimization
+     * To be removed in v9.0
+     * */
+    @Deprecated
+    public static Boolean isBannerOptimizationEnabled() {
+        return enableBannerOptimization;
+    }
 }
