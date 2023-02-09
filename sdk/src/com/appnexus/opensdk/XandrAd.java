@@ -17,14 +17,18 @@
 package com.appnexus.opensdk;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.provider.CalendarContract;
 
+import com.appnexus.opensdk.tasksmanager.TasksManager;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
 import com.appnexus.opensdk.utils.HTTPResponse;
-
+import com.appnexus.opensdk.utils.Settings;
 import org.json.JSONArray;
 import org.json.JSONException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +39,7 @@ import java.util.List;
 public class XandrAd {
 
     /**
-    * memberId will be set using the {@link XandrAd#init(int, Context, boolean, InitListener)}
+    * memberId will be set using the {@link XandrAd#init(int, Context, boolean, boolean, InitListener)}
     **/
     private static int memberId = -1;
     /**
@@ -48,6 +52,7 @@ public class XandrAd {
     private static final String viewableImpressionConfigUrl = "https://acdn.adnxs.com/mobile/viewableimpression/member_list_array.json";
     private static boolean isSdkInitialised;
     private static boolean areMemberIdsCached;
+    private static boolean isMraidInitialised;
 
     /**
      * Initialize Xandr Ads SDK
@@ -56,20 +61,50 @@ public class XandrAd {
      * @param preCacheContent enable / disable pre-caching of the content.provides flexibility to pre-cache content, such as fetch userAgent, fetch AAID and activate OMID. Pre-caching will make the future ad requests faster.
      * @param initListener for listening to the completion event.
      * */
-    public static void init(int memberId, Context context, boolean preCacheContent, final InitListener initListener) {
+    public static void init(int memberId, final Context context, boolean preCacheContent,
+                            final InitListener initListener) {
+        init(memberId, context, preCacheContent, false, initListener);
+    }
+
+    /**
+     * Initialize Xandr Ads SDK
+     * @param memberId for initialising the XandrAd,
+     * @param context for pre-caching the content.
+     * @param preCacheContent enable / disable pre-caching of the content.provides flexibility to pre-cache content, such as fetch userAgent, fetch AAID and activate OMID. Pre-caching will make the future ad requests faster.
+     * @param preCacheMraidSupports enable / disable pre-caching of the intent activities, false by default.
+     * @param initListener for listening to the completion event.
+     * */
+    public static void init(int memberId, final Context context, boolean preCacheContent, boolean preCacheMraidSupports,
+                            final InitListener initListener) {
         isSdkInitialised = !preCacheContent || context == null;
+        isMraidInitialised = !preCacheMraidSupports || !Settings.isIntentMapAlreadyCached();
         areMemberIdsCached = cachedViewableImpressionMemberIds.size() > 0;
         if (!isSdkInitialised) {
             SDKSettings.init(context, new InitListener() {
                 @Override
                 public void onInitFinished(boolean success) {
                     isSdkInitialised = true;
-                    if (initListener != null && areMemberIdsCached) {
-                        initListener.onInitFinished(success);
+                    XandrAd.onInitFinished(initListener);
+                }
+            });
+        }
+
+        if(!isMraidInitialised && context != null) {
+            TasksManager.getInstance().executeOnBackgroundThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        preCacheHasIntentForMRAID(context);
+                    } finally {
+                        if(!Settings.isIntentMapAlreadyCached()) {
+                            isMraidInitialised = true;
+                            onInitFinished(initListener);
+                        }
                     }
                 }
             });
         }
+
         XandrAd.memberId = memberId;
         if (!areMemberIdsCached) {
             if (context != null && !SharedNetworkManager.getInstance(context).isConnected(context)) {
@@ -96,9 +131,7 @@ public class XandrAd {
                     }
 
                     areMemberIdsCached = true;
-                    if (initListener != null && isSdkInitialised) {
-                        initListener.onInitFinished(true);
-                    }
+                    onInitFinished(initListener);
                 }
 
                 @Override
@@ -146,5 +179,54 @@ public class XandrAd {
     public static void throwUninitialisedException() {
         //Todo: Add a reference to the doc link in the Exception
         throw new IllegalStateException("Xandr SDK must be initialised before making an Ad Request.");
+    }
+
+    //Cache Intent Activities
+    private static boolean hasIntent(Intent i, PackageManager pm) {
+
+        String intentUri = i.toUri(0);
+        if (Settings.getCachedIntentForAction(intentUri)==null) {
+            Settings.cacheIntentForAction(pm.queryIntentActivities(i, 0).size() > 0, intentUri);
+        }
+        return Boolean.TRUE.equals(Settings.getCachedIntentForAction(i.getAction()));
+    }
+
+    public static boolean hasSMSIntent(PackageManager pm) {
+        return hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("sms:5555555555")), pm);
+    }
+
+    public static boolean hasTelIntent(PackageManager pm) {
+        return hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("tel:5555555555")), pm);
+    }
+
+    public static boolean hasCalendarIntent(PackageManager pm) {
+        return hasIntent(new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI), pm);
+    }
+
+    public static boolean hasCalendarEventIntent(PackageManager pm) {
+        return hasIntent(new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event"), pm);
+    }
+
+    /**
+     * MRAID - Run package manager querying intent activities in background and
+     * cache the intent activities for later use
+     * */
+    public static void preCacheHasIntentForMRAID(Context context) {
+        PackageManager pm = context.getPackageManager();
+        hasSMSIntent(pm);
+        hasTelIntent(pm);
+        hasCalendarIntent(pm);
+        hasCalendarEventIntent(pm);
+    }
+
+    private static void onInitFinished(final InitListener listener) {
+        if (listener != null && isSdkInitialised && isMraidInitialised && areMemberIdsCached) {
+            TasksManager.getInstance().executeOnMainThread(new Runnable() {
+                @Override
+                public void run() {
+                    listener.onInitFinished(true);
+                }
+            });
+        }
     }
 }
