@@ -63,7 +63,7 @@ public class XandrAd {
      * */
     public static void init(int memberId, final Context context, boolean preCacheContent,
                             final InitListener initListener) {
-        init(memberId, context, preCacheContent, true, initListener);
+        init(memberId, context, preCacheContent, false, initListener);
     }
 
     /**
@@ -71,7 +71,7 @@ public class XandrAd {
      * @param memberId for initialising the XandrAd,
      * @param context for pre-caching the content.
      * @param preCacheContent enable / disable pre-caching of the content.provides flexibility to pre-cache content, such as fetch userAgent, fetch AAID and activate OMID. Pre-caching will make the future ad requests faster.
-     * @param preCacheMraidSupports enable / disable pre-caching of the intent activities
+     * @param preCacheMraidSupports enable / disable pre-caching of the intent activities, false by default.
      * @param initListener for listening to the completion event.
      * */
     public static void init(int memberId, final Context context, boolean preCacheContent, boolean preCacheMraidSupports,
