@@ -1,3 +1,11 @@
+## 8.4
+
+### Improvement/Bug Fixes
++ MS-5030 Treewalker eats CPU [Github #51]
++ MS-5106 & MS-5143 Banner load time performance improvements
++ MS-5228 Fix for MRAID related performance issue [https://docs.xandr.com/bundle/mobile-sdk/page/android-sdk-initialization-v8-0.html]
++ MS-5229 Added missing equals/hashcode for ANUserId [Github #78]
+
 ## 8.3.0
 
 ### Improvement/Bug Fixes
