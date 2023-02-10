@@ -32,9 +32,7 @@ import android.graphics.Rect;
 import android.media.AudioManager;
 import android.media.MediaRouter;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
-import android.provider.CalendarContract;
 import android.util.Base64;
 import android.util.Pair;
 import android.view.Gravity;
@@ -45,7 +43,6 @@ import android.widget.FrameLayout;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Hex;
-import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.utils.W3CEvent;
@@ -188,20 +185,20 @@ class MRAIDImplementation {
         PackageManager pm = owner.getContext().getPackageManager();
 
         //SMS
-        if (hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("sms:5555555555")), pm)) {
+        if (XandrAd.hasSMSIntent(pm)) {
             setSupports(view, "sms", true);
         }
 
         //Tel
-        if (hasIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("tel:5555555555")), pm)) {
+        if (XandrAd.hasTelIntent(pm)) {
             setSupports(view, "tel", true);
         }
 
         //Calendar
-        if (hasIntent(new Intent(Intent.ACTION_EDIT).setData(CalendarContract.Events.CONTENT_URI), pm)) {
+        if (XandrAd.hasCalendarIntent(pm)) {
             setSupports(view, "calendar", true);
             supportsCalendar = true;
-        } else if (hasIntent(new Intent(Intent.ACTION_EDIT).setType("vnd.android.cursor.item/event"), pm)) {
+        } else if (XandrAd.hasCalendarEventIntent(pm)) {
             setSupports(view, "calendar", true);
             supportsCalendar = true;
             W3CEvent.useMIME = true;
@@ -216,14 +213,6 @@ class MRAIDImplementation {
 
         //Video should always work inline.
         setSupports(view, "inlineVideo", true);
-    }
-
-    boolean hasIntent(Intent i, PackageManager pm) {
-        String intentUri = i.toUri(0);
-        if (Settings.getCachedIntentForAction(intentUri)==null) {
-            Settings.cacheIntentForAction(pm.queryIntentActivities(i, 0).size() > 0,intentUri);
-        }
-        return Boolean.TRUE.equals(Settings.getCachedIntentForAction(i.getAction()));
     }
 
     void onViewableChange(boolean viewable) {

@@ -69,6 +69,7 @@ public class MediatedBannerAdViewController extends MediatedAdViewController {
 
         try {
             if(activity!=null && !destroyed){
+                Clog.logTime(getClass().getSimpleName() + " - constructor - requesting Ad");
                 View viewFromMediatedAdaptor = ((MediatedBannerAdView) mAV).requestAd(this,
                         activity,
                         currentAd.getParam(),

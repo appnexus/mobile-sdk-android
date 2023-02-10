@@ -60,6 +60,8 @@ import java.util.List;
  */
 public abstract class AdView extends FrameLayout implements Ad, MultiAd, VisibilityListener {
 
+    protected Long startTime = 0L;
+    protected Long finishTime = 0L;
     AdFetcher mAdFetcher;
     private AdResponse ad = null;
     boolean mraid_changing_size_or_visibility = false;
@@ -161,6 +163,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
         isFetching = true;
         activateWebview = false;
         adResponseInfo = null;
+        startTime = System.currentTimeMillis();
     }
 
     /**
@@ -262,7 +265,8 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
     protected void loadAdFromHtml(String html, int width, int height, int buyerMemberId) {
         // load an ad directly from html
         loadedOffscreen = true;
-        AdWebView output = new AdWebView(this, null);
+        AdWebView output = SDKSettings.fetchWebView(getContext());
+        output.init(this, null);
         ANAdResponseInfo adResponseInfo = new ANAdResponseInfo();
         adResponseInfo.setBuyMemberId(buyerMemberId);
         RTBHTMLAdResponse response = new RTBHTMLAdResponse(width, height, getMediaType().toString(), null, adResponseInfo);
@@ -275,7 +279,8 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
     protected void loadAdFromVAST(String VASTXML, int width, int height, int buyerMemberId) {
         // load an ad directly from VASTXML
         loadedOffscreen = true;
-        AdWebView output = new AdWebView(this, null);
+        AdWebView output = SDKSettings.fetchWebView(getContext());
+        output.init(this, null);
         ANAdResponseInfo adResponseInfo = new ANAdResponseInfo();
         adResponseInfo.setBuyMemberId(buyerMemberId);
         RTBVASTAdResponse response = new RTBVASTAdResponse(width, height, AdType.VIDEO.toString(), null, null, adResponseInfo);
@@ -1086,6 +1091,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
                 @Override
                 public void run() {
                     setAdResponseInfo(adResponseInfo);
+                    recordFinishTime();
                     if (adListener != null) {
                         adListener.onAdRequestFailed(AdView.this, code);
                     }
@@ -1181,6 +1187,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
             final NativeAdResponse response = ad.getNativeAdResponse();
             response.setAdResponseInfo(ad.getResponseData().getAdResponseInfo());
 //            setAdResponseInfo(ad.getResponseData().getAdResponseInfo());
+            recordFinishTime();
             if (adListener != null) {
                 adListener.onAdLoaded(response);
             }
@@ -1237,6 +1244,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
                     } else if (ad.getResponseData().getAdType().equalsIgnoreCase(UTConstants.AD_TYPE_BANNER)) {
                         setAdType(AdType.BANNER);
                     }
+                    recordFinishTime();
                     if (adListener != null) {
                         adListener.onAdLoaded(AdView.this);
                     }
@@ -1288,6 +1296,11 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
                 adListener.onLazyAdLoaded(AdView.this);
             }
         }
+    }
+
+    private void recordFinishTime() {
+        finishTime = System.currentTimeMillis();
+        Clog.logLoadTime(AdView.this);
     }
 
     void setImpressionTrackerVariables(BaseAdResponse ad) {
@@ -1615,5 +1628,15 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
             fireImpressionTracker();
             VisibilityDetector.getInstance().destroy(this);
         }
+    }
+
+    @Override
+    public Long getStartTime() {
+        return startTime;
+    }
+
+    @Override
+    public Long getFinishTime() {
+        return finishTime;
     }
 }

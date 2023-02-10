@@ -69,5 +69,15 @@ public interface Ad {
      * Not intended to be used outside of SDK.
      * */
     MultiAd getMultiAd();
-    
+
+    /**
+     * Not intended to be used outside of SDK
+     */
+    Long getStartTime();
+
+    /**
+     * Not intended to be used outside of SDK
+     */
+    Long getFinishTime();
+
 }

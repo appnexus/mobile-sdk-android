@@ -112,6 +112,7 @@ public class AdFetcher {
         if (!XandrAd.isInitialised()) {
             XandrAd.throwUninitialisedException();
         }
+        Clog.logTime(getClass().getSimpleName() + " - start");
         initHandler();
         Clog.d(Clog.baseLogTag, Clog.getString(R.string.start));
         switch (state) {

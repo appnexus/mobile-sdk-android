@@ -602,4 +602,14 @@ public class NativeAdRequest implements Ad, MultiAd {
         return this;
     }
 
+    @Override
+    public Long getStartTime() {
+        return 0L;
+    }
+
+    @Override
+    public Long getFinishTime() {
+        return 0L;
+    }
+
 }
