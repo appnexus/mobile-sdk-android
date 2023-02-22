@@ -165,7 +165,9 @@ public class XandrAd {
      *                      OR the buyerMemberId is contained within the cached list of member IDs
      * */
     public static boolean isEligibleForViewableImpression(int buyerMemberId) {
-        return doesContainMemberId(buyerMemberId) || buyerMemberId == memberId;
+        boolean isEligible = doesContainMemberId(buyerMemberId) || buyerMemberId == memberId;
+        Clog.i(Clog.baseLogTag, "Effective impression counting method for this auction : " + (isEligible? "Viewable Impression" : "Begin to Render"));
+        return isEligible;
     }
 
     /**
