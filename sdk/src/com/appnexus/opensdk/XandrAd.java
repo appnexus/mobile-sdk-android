@@ -60,7 +60,10 @@ public class XandrAd {
      * @param context for pre-caching the content.
      * @param preCacheContent enable / disable pre-caching of the content.provides flexibility to pre-cache content, such as fetch userAgent, fetch AAID and activate OMID. Pre-caching will make the future ad requests faster.
      * @param initListener for listening to the completion event.
+     * Use {@link XandrAd#init(int, Context, boolean, boolean, InitListener)} signature instead
+     * To be removed in v9.0
      * */
+    @Deprecated
     public static void init(int memberId, final Context context, boolean preCacheContent,
                             final InitListener initListener) {
         init(memberId, context, preCacheContent, false, initListener);
