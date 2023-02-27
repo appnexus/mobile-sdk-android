@@ -596,7 +596,7 @@ public class UTRequestParameters {
         } catch (JSONException e) {
             Clog.e(Clog.httpReqLogTag, "JSONException: " + e.getMessage());
         }
-        Clog.i(Clog.httpReqLogTag, "POST data: " + postData.toString());
+        Clog.d(Clog.httpReqLogTag, "POST data: " + postData.toString());
         return postData.toString();
     }
 

@@ -102,7 +102,7 @@ public abstract class HTTPGet {
                 out.setSucceeded(false);
                 return out;
             }
-            Clog.i(Clog.httpReqLogTag, "HTTPGet ReqURL - " + reqUrl);
+            Clog.d(Clog.httpReqLogTag, "HTTPGet ReqURL - " + reqUrl);
             //  Create and connect to HTTP service
             connection = createConnection(reqUrl);
             setConnectionParams(connection);

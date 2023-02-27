@@ -192,7 +192,7 @@ public class UTAdRequest {
 
                 String result = builder.toString();
 
-                Clog.i(Clog.httpRespLogTag, "RESPONSE - " + result);
+                Clog.d(Clog.httpRespLogTag, "RESPONSE - " + result);
                 Map<String, List<String>> headers = conn.getHeaderFields();
                 if (Settings.getSettings().deviceAccessAllowed && !Settings.getSettings().doNotTrack) {
                     WebviewUtil.cookieSync(headers);
