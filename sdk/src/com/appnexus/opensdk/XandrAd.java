@@ -79,9 +79,13 @@ public class XandrAd {
      * */
     public static void init(int memberId, final Context context, boolean preCacheContent, boolean preCacheMraidSupports,
                             final InitListener initListener) {
+        // Assigning / Updating memberId
+        XandrAd.memberId = memberId;
         isSdkInitialised = !preCacheContent || context == null;
         isMraidInitialised = !preCacheMraidSupports || !Settings.isIntentMapAlreadyCached();
         areMemberIdsCached = cachedViewableImpressionMemberIds.size() > 0;
+        // Triggering onInitFinished if further initialization is not required
+        onInitFinished(initListener);
         if (!isSdkInitialised) {
             SDKSettings.init(context, new InitListener() {
                 @Override
@@ -108,7 +112,6 @@ public class XandrAd {
             });
         }
 
-        XandrAd.memberId = memberId;
         if (!areMemberIdsCached) {
             if (context != null && !SharedNetworkManager.getInstance(context).isConnected(context)) {
                 if (initListener != null) {
