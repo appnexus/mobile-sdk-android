@@ -701,7 +701,7 @@ class AdWebView extends WebView implements Displayable,
         return new AdResponse() {
             @Override
             public MediaType getMediaType() {
-                return adView.getMediaType();
+                return adView != null ? adView.getMediaType() : null;
             }
 
             @Override
