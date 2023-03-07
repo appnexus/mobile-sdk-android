@@ -60,7 +60,10 @@ public class XandrAd {
      * @param context for pre-caching the content.
      * @param preCacheContent enable / disable pre-caching of the content.provides flexibility to pre-cache content, such as fetch userAgent, fetch AAID and activate OMID. Pre-caching will make the future ad requests faster.
      * @param initListener for listening to the completion event.
+     * Use {@link XandrAd#init(int, Context, boolean, boolean, InitListener)} signature instead
+     * To be removed in v9.0
      * */
+    @Deprecated
     public static void init(int memberId, final Context context, boolean preCacheContent,
                             final InitListener initListener) {
         init(memberId, context, preCacheContent, false, initListener);
@@ -76,9 +79,13 @@ public class XandrAd {
      * */
     public static void init(int memberId, final Context context, boolean preCacheContent, boolean preCacheMraidSupports,
                             final InitListener initListener) {
+        // Assigning / Updating memberId
+        XandrAd.memberId = memberId;
         isSdkInitialised = !preCacheContent || context == null;
         isMraidInitialised = !preCacheMraidSupports || !Settings.isIntentMapAlreadyCached();
         areMemberIdsCached = cachedViewableImpressionMemberIds.size() > 0;
+        // Triggering onInitFinished if further initialization is not required
+        onInitFinished(initListener);
         if (!isSdkInitialised) {
             SDKSettings.init(context, new InitListener() {
                 @Override
@@ -105,7 +112,6 @@ public class XandrAd {
             });
         }
 
-        XandrAd.memberId = memberId;
         if (!areMemberIdsCached) {
             if (context != null && !SharedNetworkManager.getInstance(context).isConnected(context)) {
                 if (initListener != null) {
@@ -165,7 +171,9 @@ public class XandrAd {
      *                      OR the buyerMemberId is contained within the cached list of member IDs
      * */
     public static boolean isEligibleForViewableImpression(int buyerMemberId) {
-        return doesContainMemberId(buyerMemberId) || buyerMemberId == memberId;
+        boolean isEligible = doesContainMemberId(buyerMemberId) || buyerMemberId == memberId;
+        Clog.i(Clog.baseLogTag, "Effective impression counting method for this auction : " + (isEligible? "Viewable Impression" : "Begin to Render"));
+        return isEligible;
     }
 
     /**

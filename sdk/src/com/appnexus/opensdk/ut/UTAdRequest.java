@@ -70,13 +70,13 @@ public class UTAdRequest {
             SharedNetworkManager networkManager = SharedNetworkManager.getInstance(requestParams.getContext());
             if (!networkManager.isConnected(requestParams.getContext())) {
                 fail(ResultCode.getNewInstance(ResultCode.NETWORK_ERROR));
-                Clog.i(Clog.httpReqLogTag, "Connection Error");
+                Clog.e(Clog.httpReqLogTag, "Connection Error");
                 if (request != null) {
                     request.cancel(true);
                 }
             }
         } else {
-            Clog.i(Clog.httpReqLogTag, "Internal Error");
+            Clog.e(Clog.httpReqLogTag, "Internal Error");
             fail(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR));
             if (request != null) {
                 request.cancel(true);
@@ -192,7 +192,7 @@ public class UTAdRequest {
 
                 String result = builder.toString();
 
-                Clog.i(Clog.httpRespLogTag, "RESPONSE - " + result);
+                Clog.d(Clog.httpRespLogTag, "RESPONSE - " + result);
                 Map<String, List<String>> headers = conn.getHeaderFields();
                 if (Settings.getSettings().deviceAccessAllowed && !Settings.getSettings().doNotTrack) {
                     WebviewUtil.cookieSync(headers);
@@ -279,7 +279,7 @@ public class UTAdRequest {
         if (anMultiAdRequest == null) {
 
             if (adResponseMap == null) {
-                Clog.i(Clog.httpRespLogTag, Clog.getString(R.string.no_response));
+                Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.no_response));
                 fail(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST));
                 return;
             }
@@ -287,7 +287,7 @@ public class UTAdRequest {
             if (adResponseMap.size() == 1) {
                 UTAdResponse result = adResponseMap.get(requestParams.getUUID());
                 if (result == null) {
-                    Clog.i(Clog.httpRespLogTag, Clog.getString(R.string.no_response));
+                    Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.no_response));
                     fail(ResultCode.getNewInstance(ResultCode.NETWORK_ERROR));
                     return; // http request failed
                 }

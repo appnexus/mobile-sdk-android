@@ -464,7 +464,7 @@ public class NativeAdRequest implements Ad, MultiAd {
         }
 
         private void processAdLoaded(AdResponse ad) {
-            if (!ad.getMediaType().equals(MediaType.NATIVE)) {
+            if (ad.getMediaType() != MediaType.NATIVE) {
                 onAdFailed(ResultCode.getNewInstance(ResultCode.INTERNAL_ERROR), null);
             } else {
                 final String IMAGE_URL = "image", ICON_URL = "icon";

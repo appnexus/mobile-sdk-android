@@ -193,7 +193,7 @@ public class NativeAdSDK {
         if (response != null && !response.hasExpired()) {
             return true;
         }
-        Clog.d(Clog.nativeLogTag, "NativeAdResponse is not valid");
+        Clog.e(Clog.nativeLogTag, "NativeAdResponse is not valid");
         return false;
     }
 

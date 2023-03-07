@@ -156,7 +156,7 @@ public class AdViewRequestManager extends RequestManager {
         }
         Ad owner = this.owner.get();
         if (owner != null) {
-            if (ad.getMediaType().equals(MediaType.BANNER)) {
+            if (ad.getMediaType() == MediaType.BANNER) {
                 BannerAdView bav = (BannerAdView) owner;
                 if (bav.getExpandsToFitScreenWidth() || bav.getResizeAdToFitContainer()) {
                     int width = ad.getResponseData().getWidth() <= 1 ? bav.getRequestParameters().getPrimarySize().width() : ad.getResponseData().getWidth();
@@ -389,14 +389,14 @@ public class AdViewRequestManager extends RequestManager {
 
         } else {
             AdView owner = (AdView) ownerAd;
-            if (owner.getMediaType().equals(MediaType.BANNER)) {
+            if (owner.getMediaType() == MediaType.BANNER) {
                 controller = MediatedBannerAdViewController.create(
                         (Activity) owner.getContext(),
                         AdViewRequestManager.this,
                         csmSdkAdResponse,
                         owner.getAdDispatcher());
 
-            } else if (owner.getMediaType().equals(MediaType.INTERSTITIAL)) {
+            } else if (owner.getMediaType() == MediaType.INTERSTITIAL) {
                 controller = MediatedInterstitialAdViewController.create(
                         (Activity) owner.getContext(),
                         AdViewRequestManager.this,

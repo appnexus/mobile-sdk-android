@@ -448,7 +448,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
             }
 
             // Reset the context of MutableContext wrapper for banner expand and close case.
-            if (getMediaType().equals(MediaType.BANNER) && (caller.owner.getContext() instanceof MutableContextWrapper)) {
+            if (getMediaType() == MediaType.BANNER && (caller.owner.getContext() instanceof MutableContextWrapper)) {
                 ((MutableContextWrapper) caller.owner.getContext()).setBaseContext(getContext());
             }
         }
@@ -604,7 +604,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
                 }
 
                 int adviewLoc[] = new int[2];
-                if (getMediaType().equals(MediaType.INTERSTITIAL)) {
+                if (getMediaType() == MediaType.INTERSTITIAL) {
                     InterstitialAdView.INTERSTITIALADVIEW_TO_USE.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
                     InterstitialAdView.INTERSTITIALADVIEW_TO_USE.getLocationOnScreen(adviewLoc);
                     container_size = new Point(InterstitialAdView.INTERSTITIALADVIEW_TO_USE.getMeasuredWidth(),
@@ -1056,9 +1056,9 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
 
         private void processAdLoaded(AdResponse ad) {
             isFetching = false;
-            if (ad.getMediaType().equals(MediaType.BANNER) || ad.getMediaType().equals(MediaType.INTERSTITIAL)) {
+            if (ad.getMediaType() == MediaType.BANNER || ad.getMediaType() == MediaType.INTERSTITIAL) {
                 handleBannerOrInterstitialAd(ad);
-            } else if (ad.getMediaType().equals(MediaType.NATIVE)) {
+            } else if (ad.getMediaType() == MediaType.NATIVE) {
                 handleNativeAd(ad);
             } else {
                 Clog.e(Clog.baseLogTag, "UNKNOWN media type::" + ad.getMediaType());
@@ -1148,7 +1148,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
 
         @Override
         public void toggleAutoRefresh() {
-            if (getMediaType().equals(MediaType.BANNER) && mAdFetcher.getState() == AdFetcher.STATE.STOPPED) {
+            if (getMediaType() == MediaType.BANNER && mAdFetcher.getState() == AdFetcher.STATE.STOPPED) {
                 mAdFetcher.start();
             }
         }
@@ -1209,7 +1209,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
                             if (baseAdResponse.getImpressionURLs() != null && baseAdResponse.getImpressionURLs().size() > 0) {
                                 setImpressionTrackerVariables(baseAdResponse);
                             }
-                        } else if (ImpressionType.VIEWABLE_IMPRESSION == impressionType && ad.getMediaType().equals(MediaType.BANNER)) {
+                        } else if (ImpressionType.VIEWABLE_IMPRESSION == impressionType && ad.getMediaType() == MediaType.BANNER) {
                             if (baseAdResponse.getImpressionURLs() != null && baseAdResponse.getImpressionURLs().size() > 0) {
                                 setImpressionTrackerVariables(baseAdResponse);
                             }

@@ -131,7 +131,7 @@ class MRAIDImplementation {
                 }
             });
 
-            if (owner.adView.getMediaType().equals(MediaType.BANNER)) {
+            if (owner.adView.getMediaType() == MediaType.BANNER) {
                 default_gravity = ((FrameLayout.LayoutParams) owner.getLayoutParams()).gravity;
             }
 
@@ -269,7 +269,7 @@ class MRAIDImplementation {
                     owner.getLayoutParams());
             lp.height = default_height;
             lp.width = default_width;
-            if (owner.adView.getMediaType().equals(MediaType.BANNER)) {
+            if (owner.adView.getMediaType() == MediaType.BANNER) {
                 lp.gravity = default_gravity;
             } else {
                 lp.gravity = Gravity.CENTER;

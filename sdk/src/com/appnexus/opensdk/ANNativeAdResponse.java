@@ -127,7 +127,9 @@ public class ANNativeAdResponse extends BaseNativeAdResponse {
                 listener.onAdAboutToExpire();
             }
             if (anNativeExpireHandler != null) {
-                anNativeExpireHandler.postDelayed(expireRunnable, getExpiryInterval(UTConstants.RTB, memberId));
+                long interval = getExpiryInterval(UTConstants.RTB, memberId);
+                anNativeExpireHandler.postDelayed(expireRunnable, interval);
+                Clog.w(Clog.baseLogTag, "onAdExpired() will be called in " + interval + "ms.");
             }
         }
     };
