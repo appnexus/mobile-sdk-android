@@ -1,3 +1,10 @@
+## 8.5
+
+### Improvement/Bug Fixes
++ MS-5237 Moved request / response details to debug level log
++ MS-5060 Fixed media buttons in full screen Banner Outstream Video
++ MS-5258 Fixed NullPointerException for Interstitial ad media type
+
 ## 8.4
 
 ### Improvement/Bug Fixes
