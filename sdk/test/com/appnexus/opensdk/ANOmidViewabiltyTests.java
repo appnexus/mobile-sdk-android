@@ -79,8 +79,8 @@ public class ANOmidViewabiltyTests extends BaseViewAdTest {
     // 3. Checks if impression event is fired to JS layer or not.
     @Test
     public void testOmidSessionCreation() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // This is for UT Request
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for Impression
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for Impression
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // This is for UT Request
         runBasicBannerTest();
         attachBannerToView();
 

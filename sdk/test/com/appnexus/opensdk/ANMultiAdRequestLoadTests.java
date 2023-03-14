@@ -76,7 +76,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     // MAR null tags
     @Test
     public void testMARSuccessWithSingleInitializationMethodNoTags() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.NO_TAGS));
+        server.setDispatcher(getDispatcher(TestResponsesUT.NO_TAGS));
         assertFalse(marFailed);
         executeMARRequest();
         assertTrue(marFailed);
@@ -84,7 +84,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
 
     @Test
     public void testMARSuccessWithConvenienceNoTags() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.NO_TAGS));
+        server.setDispatcher(getDispatcher(TestResponsesUT.NO_TAGS));
         assertFalse(marFailed);
         initMARWithConvenience();
         assertTrue(marFailed);
@@ -93,7 +93,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     //MAR Success
     @Test
     public void testMARSuccessWithSingleInitializationMethod() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         assertFalse(marCompleted);
         executeMARRequest();
         assertTrue(marCompleted);
@@ -101,7 +101,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
 
     @Test
     public void testMARSuccessWithConvenience() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         assertFalse(marCompleted);
         initMARWithConvenience();
         assertTrue(marCompleted);
@@ -109,7 +109,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
 
     @Test
     public void testMARWithSingleInitializationMethodAndStop() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         assertFalse(marCompleted);
         reset();
 
@@ -122,7 +122,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
 
     @Test
     public void testMARWithSingleInitializationMethodAndStopRemoveAddAndLoad() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         assertFalse(marCompleted);
         reset();
 
@@ -154,7 +154,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
 
     @Test
     public void testMARWithConvenienceAndStop() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         assertFalse(marCompleted);
         reset();
 
@@ -178,7 +178,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
 
     @Test
     public void testMARWithConvenienceAndStopRemoveAddAndLoad() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         assertFalse(marCompleted);
         reset();
 
@@ -222,7 +222,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     //MAR Success With NoBid Response for AdUnits
     @Test
     public void testMARSuccessAdUnitNoBid() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccessAdUnitNoBid()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccessAdUnitNoBid()));
         assertFalse(marCompleted);
         executeMARRequest();
         assertTrue(marCompleted);
@@ -231,7 +231,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     //MAR Failure with empty response
     @Test
     public void testMARFailure() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(""));
+        server.setDispatcher(getDispatcher(""));
         assertFalse(marFailed);
         executeMARRequest();
         assertTrue(marFailed);
@@ -240,7 +240,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     //MAR Success with the AdListener success calls for the AdUnits
     @Test
     public void testMARSuccessWithAdListenerLoad() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         assertFalse(marCompleted);
         executeMARRequest();
         assertTrue(marCompleted);
@@ -256,7 +256,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     //MAR Success with the AdListener failure calls for the AdUnits
     @Test
     public void testMARSuccessAdUnitNoBidWithAdListenerFailure() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccessAdUnitNoBid()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccessAdUnitNoBid()));
         assertFalse(marFailed);
         assertFalse(marCompleted);
         executeMARRequest();
@@ -273,7 +273,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     @Test
     public void testMARSuccessWithAdListenerLazyLoad() {
         bannerAdView.enableLazyLoad();
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         assertFalse(marCompleted);
         executeMARRequest();
         assertTrue(marCompleted);
@@ -296,7 +296,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     @Test
     public void testMARSuccessWithAdListenerLazyLoadBeforeAndAfterInititializingMARRequest() {
         bannerAdView.enableLazyLoad();
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         assertFalse(marCompleted);
         assertFalse(bannerAdView.loadLazyAd());
         executeMARRequest();
@@ -319,8 +319,8 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     //MAR Success with Success Reload
     @Test
     public void testMARSuccessAndReloadSuccess() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         assertFalse(marFailed);
         assertFalse(marCompleted);
         executeMARRequest();
@@ -334,8 +334,8 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     //MAR Success with Success Reload
     @Test
     public void testMARSuccessAndReloadSuccessWithBannerPlacementChanges() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         assertFalse(marFailed);
         assertFalse(marCompleted);
         executeMARRequest();
@@ -350,14 +350,17 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     //MAR Success with Failure Reload
     @Test
     public void testMARSuccessAndReloadFailure() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(""));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         assertFalse(marFailed);
         assertFalse(marCompleted);
         executeMARRequest();
         assertTrue(marCompleted);
         assertFalse(marFailed);
         //Reload
+        waitForTasks();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        server.setDispatcher(getDispatcher(""));
         executeMARRequest();
         assertTrue(marFailed);
         assertFalse(marCompleted);
@@ -366,8 +369,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     //MAR Failure with Success Reload
     @Test
     public void testMARFailureAndReloadSuccess() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(""));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(""));
         assertFalse(marFailed);
         assertFalse(marCompleted);
         executeMARRequest();
@@ -377,6 +379,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         executeMARRequest();
         assertTrue(marCompleted);
         assertFalse(marFailed);
@@ -385,7 +388,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     //MAR Success with No bid response for AdUnits with AdUnits Success Reload
     @Test
     public void testMARSuccessAdUnitNoBidWithAdListenerFailureReloadSuccess() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccessAdUnitNoBid()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccessAdUnitNoBid()));
         assertFalse(marCompleted);
         executeMARRequest();
         assertTrue(marCompleted);
@@ -398,7 +401,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         executeMARRequest();
         assertTrue(marCompleted);
         Robolectric.flushBackgroundThreadScheduler();
@@ -411,7 +414,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     //MAR Success with an attached BannerAdView request
     @Test
     public void testMARSuccessAdUnitNoBidWithBannerRequest() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccessAdUnitNoBid()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccessAdUnitNoBid()));
         assertFalse(marCompleted);
         executeMARRequest();
         assertTrue(marCompleted);
@@ -424,7 +427,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         executeBannerRequest();
         assertFalse(marCompleted);
         assertFalse(marFailed);
@@ -438,7 +441,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     //MAR Success with an attached Interstitial request
     @Test
     public void testMARSuccessAdUnitNoBidWithInterstitialRequest() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccessAdUnitNoBid()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccessAdUnitNoBid()));
         assertFalse(marCompleted);
         executeMARRequest();
         Robolectric.flushBackgroundThreadScheduler();
@@ -451,7 +454,7 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         executeInterstitialRequest();
         assertFalse(marCompleted);
         assertFalse(marFailed);
@@ -465,10 +468,10 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     //Concurrent MAR Success
     @Test
     public void testConcurrentMARSuccess() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         assertFalse(marCompleted);
         executeMARRequest();
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         executeSecondMARRequest();
         assertTrue(marCompleted);
         assertTrue(secondMarCompleted);
@@ -476,11 +479,11 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
 
     @Test
     public void testConcurrentMARSuccessWithConvenience() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         assertFalse(marCompleted);
         assertFalse(secondMarCompleted);
         initMARWithConvenience();
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         executeSecondMARRequest();
         assertTrue(marCompleted);
         assertTrue(secondMarCompleted);
@@ -517,10 +520,10 @@ public class ANMultiAdRequestLoadTests extends BaseViewAdTest {
     //Concurrent MAR Success
     @Test
     public void testReloadMARSuccess() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         assertFalse(marCompleted);
         executeMARRequest();
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(MockServerResponses.marSuccess()));
+        server.setDispatcher(getDispatcher(MockServerResponses.marSuccess()));
         executeSecondMARRequest();
         assertTrue(marCompleted);
         assertTrue(secondMarCompleted);

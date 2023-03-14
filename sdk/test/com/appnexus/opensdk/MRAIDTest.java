@@ -54,7 +54,7 @@ public class MRAIDTest extends BaseViewAdTest {
     }
 
     private void loadMraidBanner(String testName) {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mraidBanner(testName)));
+        server.setDispatcher(getDispatcher(TestResponsesUT.mraidBanner(testName)));
         requestManager = new AdViewRequestManager(bannerAdView);
         requestManager.execute();
         // let AdFetcher queue AdRequest

@@ -1133,7 +1133,7 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
 
     private void executionSteps() {
         utAdRequest = new UTAdRequest(this);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         utAdRequest.execute();
         waitForTasks();
         clearAAIDAsyncTasks();

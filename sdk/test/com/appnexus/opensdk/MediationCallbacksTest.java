@@ -71,9 +71,9 @@ public class MediationCallbacksTest extends BaseViewAdTest {
     }
 
     public void runCallbacksTest(int testNumber, boolean success) {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.callbacks(testNumber)));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for Response URL
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for NO AD URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.callbacks(testNumber)));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for Response URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for NO AD URL
         Robolectric.flushForegroundThreadScheduler();
         Robolectric.flushBackgroundThreadScheduler();
 

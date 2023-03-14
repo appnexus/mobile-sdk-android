@@ -69,7 +69,7 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
 
     @Test
     public void testgetAdTypeBanner() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // First queue a regular HTML banner response
         assertTrue(bannerAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOW initially
         executeBannerRequest();
         assertTrue(bannerAdView.getAdType() == AdType.BANNER); // If a HTML banner is served then BANNER
@@ -78,7 +78,7 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
 
     @Test
     public void testgetAdTypeBannerNative() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeVideo())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeVideo())); // First queue a regular HTML banner response
         assertTrue(bannerAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOWN initially
         executeBannerRequest();
         assertTrue(bannerAdView.getAdType() == AdType.NATIVE); // If a Native Ad is served then NATIVE
@@ -103,18 +103,18 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
     @Test
     public void testBannerNativeSwitchingAdTypes() {
         bannerAdView.setAutoRefreshInterval(15000);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        Assert.assertEquals(AdType.UNKNOWN, bannerAdView.getAdType());
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
+        assertEquals(AdType.UNKNOWN, bannerAdView.getAdType());
         requestManager = new AdViewRequestManager(bannerAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
-        Assert.assertEquals(15000, bannerAdView.getAutoRefreshInterval());
-        Assert.assertEquals(AdType.BANNER, bannerAdView.getAdType());
+        assertEquals(15000, bannerAdView.getAutoRefreshInterval());
+        assertEquals(AdType.BANNER, bannerAdView.getAdType());
         assertCallbacks(true);
         assertBannerAdResponse(true);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeWithoutImages()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeWithoutImages()));
         bannerAdView.enableNativeRendering(false);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
@@ -124,16 +124,16 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Assert.assertEquals(15000, bannerAdView.getAutoRefreshInterval());
-        Assert.assertEquals(AdType.NATIVE, bannerAdView.getAdType());
-        Assert.assertEquals(false, bannerAdView.isNativeRenderingEnabled());
+        assertEquals(15000, bannerAdView.getAutoRefreshInterval());
+        assertEquals(AdType.NATIVE, bannerAdView.getAdType());
+        assertEquals(false, bannerAdView.isNativeRenderingEnabled());
         assertCallbacks(true);
         assertBannerAdResponse(false);
     }
 
     @Test
     public void testgetAdTypeUnKnown() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blankBanner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.blankBanner())); // First queue a regular HTML banner response
         assertTrue(bannerAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOWN initially
         executeBannerRequest();
         assertTrue(bannerAdView.getAdType() == AdType.UNKNOWN); // If a HTML banner is served then BANNER
@@ -158,7 +158,7 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
 
     @Test
     public void testgetCreativeIdBanner() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // First queue a regular HTML banner response
         executeBannerRequest();
         assertEquals("6332753", bannerAdView.getAdResponseInfo().getCreativeId());
     }
@@ -166,14 +166,14 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
 
     @Test
     public void testgetCreativeIdBannerNativeCreativeId() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative())); // First queue a banner Native response
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative())); // First queue a banner Native response
         executeBannerRequest();
         assertEquals("47772560", nativeAdResponse.getAdResponseInfo().getCreativeId());
     }
 
     @Test
     public void testgetCreativeIdUnKnownCreativeId() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blankBanner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.blankBanner())); // First queue a regular HTML banner response
         executeBannerRequest();
         assertNull(bannerAdView.getAdResponseInfo());
 
@@ -181,7 +181,7 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
 
     @Test
     public void testAutoRefreshBannerNativeRenderer() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeRenderer())); // First queue a banner Native response
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeRenderer())); // First queue a banner Native response
         bannerAdView.enableNativeRendering(true);
         executeBannerRequest();
         assertTrue(bannerAdView.isNativeRenderingEnabled());
@@ -191,7 +191,7 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
     @Test
     public void testUseNativeAssemblyRendererTrue() {
         ShadowCustomWebView.simulateRendererScriptSuccess = true;
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeRenderer())); // First queue a banner Native response
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeRenderer())); // First queue a banner Native response
         bannerAdView.enableNativeRendering(true);
         executeBannerRequest();
         assertTrue(bannerAdView.isNativeRenderingEnabled());
@@ -202,7 +202,7 @@ public class BannerAdViewLoadAdTests extends BaseViewAdTest {
     @Test
     public void testUseNativeAssemblyRendererFalse() {
         ShadowCustomWebView.simulateRendererScriptSuccess = false;
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative())); // First queue a banner Native response
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative())); // First queue a banner Native response
         bannerAdView.enableNativeRendering(false);
         executeBannerRequest();
         assertFalse(bannerAdView.isNativeRenderingEnabled());

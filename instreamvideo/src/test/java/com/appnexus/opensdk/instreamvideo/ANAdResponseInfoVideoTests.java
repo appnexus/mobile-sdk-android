@@ -24,7 +24,6 @@ import com.appnexus.opensdk.instreamvideo.shadows.ShadowCustomWebView;
 import com.appnexus.opensdk.instreamvideo.shadows.ShadowSettings;
 import com.appnexus.opensdk.instreamvideo.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.ut.UTConstants;
-import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,7 +61,7 @@ public class ANAdResponseInfoVideoTests extends BaseRoboTest implements VideoAdL
 
     @Test
     public void testAdResponseInfoRTBVideo() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestUTResponses.video())); // First queue a regular HTML banner response
         assertNull(videoAd.getAdResponseInfo());
         executeVideoRequest();
         assertNotNull(videoAd.getAdResponseInfo());
@@ -80,7 +79,7 @@ public class ANAdResponseInfoVideoTests extends BaseRoboTest implements VideoAdL
 
     @Test
     public void testAdResponseInfoRTBVideoNoBid() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.NO_BID));
+        server.setDispatcher(getDispatcher(TestUTResponses.NO_BID));
         assertNull(videoAd.getAdResponseInfo());
         executeVideoRequest();
         assertNotNull(videoAd.getAdResponseInfo());
@@ -99,7 +98,7 @@ public class ANAdResponseInfoVideoTests extends BaseRoboTest implements VideoAdL
 
     @Test
     public void testAdResponseInfoRTBVideoBlank() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.blank()));
+        server.setDispatcher(getDispatcher(TestUTResponses.blank()));
         assertNull(videoAd.getAdResponseInfo());
         executeVideoRequest();
         assertNull(videoAd.getAdResponseInfo());

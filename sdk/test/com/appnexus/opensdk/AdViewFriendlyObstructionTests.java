@@ -57,7 +57,7 @@ public class AdViewFriendlyObstructionTests extends BaseViewAdTest {
 
     @Test
     public void testBannerAddFriendlyObstruction() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // First queue a regular HTML banner response
         assertFriendlyObstruction(bannerAdView, 0);
         SDKSettings.setOMEnabled(true);
         View v1 = new View(activity);
@@ -75,7 +75,7 @@ public class AdViewFriendlyObstructionTests extends BaseViewAdTest {
 
     @Test
     public void testBannerAddAndRemoveFriendlyObstruction() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // First queue a regular HTML banner response
         assertFriendlyObstruction(bannerAdView, 0);
         SDKSettings.setOMEnabled(true);
         View v1 = new View(activity);
@@ -98,7 +98,7 @@ public class AdViewFriendlyObstructionTests extends BaseViewAdTest {
 
     @Test
     public void testBannerAddAndRemoveAllFriendlyObstruction() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // First queue a regular HTML banner response
         assertFriendlyObstruction(bannerAdView, 0);
         SDKSettings.setOMEnabled(true);
         View v1 = new View(activity);
@@ -121,7 +121,7 @@ public class AdViewFriendlyObstructionTests extends BaseViewAdTest {
 
     @Test
     public void testInterstitialAddFriendlyObstruction() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // First queue a regular HTML banner response
         assertFriendlyObstruction(interstitialAdView, 0);
         SDKSettings.setOMEnabled(true);
         View v1 = new View(activity);
@@ -139,7 +139,7 @@ public class AdViewFriendlyObstructionTests extends BaseViewAdTest {
 
     @Test
     public void testInterstitialAddAndRemoveFriendlyObstruction() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // First queue a regular HTML banner response
         assertFriendlyObstruction(interstitialAdView, 0);
         SDKSettings.setOMEnabled(true);
         View v1 = new View(activity);
@@ -162,7 +162,7 @@ public class AdViewFriendlyObstructionTests extends BaseViewAdTest {
 
     @Test
     public void testInterstitialAddAndRemoveAllFriendlyObstruction() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // First queue a regular HTML banner response
         assertFriendlyObstruction(interstitialAdView, 0);
         SDKSettings.setOMEnabled(true);
         View v1 = new View(activity);
@@ -185,7 +185,7 @@ public class AdViewFriendlyObstructionTests extends BaseViewAdTest {
 
 //    @Test
 //    public void testBannerNativeAddFriendlyObstruction() {
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative())); // First queue a regular HTML banner response
+//        server.setDispatcher(getDispatcher(TestResponsesUT.anNative())); // First queue a regular HTML banner response
 //        SDKSettings.setOMEnabled(true);
 //        executeBannerRequest();
 //        assertFriendlyObstruction(0);
@@ -206,7 +206,7 @@ public class AdViewFriendlyObstructionTests extends BaseViewAdTest {
 //    @Test
 //    public void testBannerNativeRendererAddFriendlyObstruction() {
 //        bannerAdView.enableNativeRendering(true);
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeRenderer())); // First queue a regular HTML banner response
+//        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeRenderer())); // First queue a regular HTML banner response
 //        assertFriendlyObstruction(bannerAdView, 0);
 //        SDKSettings.setOMEnabled(true);
 //        View v1 = new View(activity);
@@ -224,7 +224,7 @@ public class AdViewFriendlyObstructionTests extends BaseViewAdTest {
 //    @Test
 //    public void testBannerNativeRendererAddAndRemoveFriendlyObstruction() {
 //        bannerAdView.enableNativeRendering(true);
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeRenderer())); // First queue a regular HTML banner response
+//        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeRenderer())); // First queue a regular HTML banner response
 //        assertFriendlyObstruction(bannerAdView, 0);
 //        SDKSettings.setOMEnabled(true);
 //        View v1 = new View(activity);
@@ -244,7 +244,7 @@ public class AdViewFriendlyObstructionTests extends BaseViewAdTest {
 //    @Test
 //    public void testBannerNativeRendererAddAndRemoveAllFriendlyObstruction() {
 //        bannerAdView.enableNativeRendering(true);
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeRenderer())); // First queue a regular HTML banner response
+//        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeRenderer())); // First queue a regular HTML banner response
 //        assertFriendlyObstruction(bannerAdView, 0);
 //        SDKSettings.setOMEnabled(true);
 //        View v1 = new View(activity);

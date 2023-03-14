@@ -157,8 +157,8 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
     // makes the responseURL call with SUCCESS code
     @Test
     public void test1SucceedingMediationCall() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedSuccessfulBanner()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedSuccessfulBanner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
     }
 
@@ -166,9 +166,9 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
     // makes the responseURL call with MEDIATED_SDK_UNAVAILABLE code
     @Test
     public void test2NoClassMediationCall() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedFakeClassBannerInterstitial()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for no Ad URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedFakeClassBannerInterstitial()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for no Ad URL
         runBasicMediationTest(ResultCode.getNewInstance(MEDIATED_SDK_UNAVAILABLE), ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_FALSE);
         assertNoAdURL();
     }
@@ -177,9 +177,9 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
     // makes the responseURL call with MEDIATED_SDK_UNAVAILABLE code
     @Test
     public void test3BadClassMediationCall() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedDummyClassBannerInterstitial()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for Response URL
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for no Ad URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for Response URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for no Ad URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedDummyClassBannerInterstitial()));
         runBasicMediationTest(ResultCode.getNewInstance(MEDIATED_SDK_UNAVAILABLE), ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_FALSE);
         assertNoAdURL();
     }
@@ -191,9 +191,9 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
         // Create an AdRequest which will request a mediated response
         // that returns an class which does not make an ad request
         // then verify that the correct fail URL request was made
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedNoRequestBanner()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for response URL
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for no Ad URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedNoRequestBanner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for response URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for no Ad URL
 
         requestManager.execute();
 
@@ -227,9 +227,9 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
     // makes the responseURL call with MEDIATED_SDK_UNAVAILABLE code
     @Test
     public void test5ErrorThrownMediationCall() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedOutOfMemoryBanner()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for no Ad URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedOutOfMemoryBanner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for no Ad URL
         runBasicMediationTest(ResultCode.getNewInstance(INTERNAL_ERROR), ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_TRUE);
         assertNoAdURL();
     }
@@ -241,9 +241,9 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
         // Create an AdRequest which will request a mediated response
         // that succeeds in instantiation but fails to return an ad
         // verify that the correct fail URL request was made
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedNoFillBanner()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for no Ad URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedNoFillBanner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for no Ad URL
         runBasicMediationTest(ResultCode.getNewInstance(UNABLE_TO_FILL), ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_TRUE);
         assertNoAdURL();
     }
@@ -252,9 +252,9 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
     // transitions to the standard ad successfully
     @Test
     public void test7NoFillMediationWithStandardResponseURL() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.noFillCSM_RTBBanner()));
-        //server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.noFillCSM_RTBBanner()));
+        //server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         runBasicMediationTest(ResultCode.getNewInstance(UNABLE_TO_FILL), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
         // check that the standard ad was loaded
         View view = bannerAdView.getChildAt(0);
@@ -264,9 +264,9 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
     // Verify that a standard ad can transition to a mediated ad successfully
 //    @Test
 //    public void test8StandardThenMediated() {
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedSuccessfulBanner()));
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+//        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
+//        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedSuccessfulBanner()));
+//        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
 //
 //        // load a standard ad
 //        requestManager.execute();
@@ -315,8 +315,8 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
     public void test9Http404ErrorResponseFromSuccess() {
         String[] classNames = {"MediatedBannerSuccessful"};
         String[] responseURLs = {"http://wiki221random.devnxs.net/"};
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
 
         executeUTRequest();
         Robolectric.flushBackgroundThreadScheduler();
@@ -329,8 +329,8 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
     public void test9Http404ErrorResponseFromFailure() {
         String[] classNames = {"MediatedBannerNoFillView"};
         String[] responseURLs = {"http://wiki221random.devnxs.net/"};
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
 
         executeUTRequest();
         Robolectric.flushBackgroundThreadScheduler();
@@ -347,8 +347,8 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
     public void test11FirstSuccessfulSkipSecond() {
         String[] classNames = {"MediatedBannerSuccessful", "MediatedBannerSuccessful2"};
         String[] responseURLs = {TestResponsesUT.RESPONSE_URL, TestResponsesUT.RESPONSE_URL};
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
 
         runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
         assertTrue("Banner " + MediatedBannerSuccessful.didPass, MediatedBannerSuccessful.didPass);
@@ -361,9 +361,9 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
     public void test12SkipFirstSuccessfulSecond() {
         String[] classNames = {"MediatedBannerNoFillView", "MediatedBannerSuccessful2"};
         String[] responseURLs = {TestResponsesUT.RESPONSE_URL, TestResponsesUT.RESPONSE_URL};
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
 
         executeUTRequest();
         executeAndAssertResponseURL(2, ResultCode.getNewInstance(UNABLE_TO_FILL), CHECK_LATENCY_TRUE);
@@ -382,10 +382,10 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
 
         String[] classNames = {"MediatedBannerNoFillView", "MediatedBannerNoFillView"};
         String[] responseURLs = {TestResponsesUT.RESPONSE_URL, TestResponsesUT.RESPONSE_URL};
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for no Ad URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for no Ad URL
 
         executeUTRequest();
         executeAndAssertResponseURL(2, ResultCode.getNewInstance(UNABLE_TO_FILL), CHECK_LATENCY_TRUE);
@@ -404,8 +404,8 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
     public void test16NoResponseURL() {
         String[] classNames = {"FakeClass", "MediatedBannerNoFillView", "MediatedBannerSuccessful"};
         String[] responseURLs = {"", null, TestResponsesUT.RESPONSE_URL};
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
 
         assertTrue(MediatedBannerSuccessful.didPass);
@@ -413,8 +413,8 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
 
     @Test
     public void test17SucceedingMediationCallGetCreativeSize() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedSuccessfulBanner()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedSuccessfulBanner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
         assertEquals(50, bannerAdView.getCreativeHeight());
         assertEquals(320, bannerAdView.getCreativeWidth());
@@ -426,9 +426,9 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
     public void testDestroy() {
         String[] classNames = {"MediatedBannerNoFillView", "MediatedBannerSuccessful2"};
         String[] responseURLs = {TestResponsesUT.RESPONSE_URL, TestResponsesUT.RESPONSE_URL};
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
 
         executeUTRequest();
         executeAndAssertResponseURL(2, ResultCode.getNewInstance(UNABLE_TO_FILL), CHECK_LATENCY_TRUE);
@@ -449,8 +449,8 @@ public class MediatedBannerAdViewControllerTest extends BaseViewAdTest {
     // activityonResume succesfully triggers onResume
     @Test
     public void testMediationCallonPauseonResume() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedSuccessfulBanner()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedSuccessfulBanner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
         bannerAdView.activityOnPause();
         assertTrue(MediatedBannerSuccessful.didPause);

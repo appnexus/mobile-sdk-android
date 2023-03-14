@@ -9,8 +9,8 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        MRAIDImplementationTest.class,
         MRAIDTest.class,
+        MRAIDImplementationTest.class,
 })
 public class MRAIDTestSuite {
 }

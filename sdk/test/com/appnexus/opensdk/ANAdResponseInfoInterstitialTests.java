@@ -54,7 +54,7 @@ public class ANAdResponseInfoInterstitialTests extends BaseViewAdTest {
 
     @Test
     public void testAdResponseInfoRTBInterstitial() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // First queue a regular HTML banner response
         assertNull(interstitialAdView.getAdResponseInfo());
         assertTrue(interstitialAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOWN initially
         executeBannerRequest();
@@ -73,7 +73,7 @@ public class ANAdResponseInfoInterstitialTests extends BaseViewAdTest {
 
     @Test
     public void testAdResponseInfoRTBInterstitialNoBid() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.NO_BID));
+        server.setDispatcher(getDispatcher(TestResponsesUT.NO_BID));
         assertNull(interstitialAdView.getAdResponseInfo());
         executeBannerRequest();
         assertNotNull(interstitialAdView.getAdResponseInfo());
@@ -90,7 +90,7 @@ public class ANAdResponseInfoInterstitialTests extends BaseViewAdTest {
 
     @Test
     public void testAdResponseInfoRTBInterstitialBlank() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         assertNull(interstitialAdView.getAdResponseInfo());
         executeBannerRequest();
         assertNull(interstitialAdView.getAdResponseInfo());
@@ -98,7 +98,7 @@ public class ANAdResponseInfoInterstitialTests extends BaseViewAdTest {
 
     @Test
     public void testgetCreativeIdInterstitial() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // First queue a regular HTML banner response
         assertNull(interstitialAdView.getAdResponseInfo());
         executeBannerRequest();
         assertEquals("6332753", interstitialAdView.getAdResponseInfo().getCreativeId());
@@ -106,7 +106,7 @@ public class ANAdResponseInfoInterstitialTests extends BaseViewAdTest {
 
     @Test
     public void testGetAdResponseInfoNullForBlankInterstitialResponse() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blankBanner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.blankBanner())); // First queue a regular HTML banner response
         assertNull(interstitialAdView.getAdResponseInfo());
         executeBannerRequest();
         assertNull(interstitialAdView.getAdResponseInfo());
