@@ -22,9 +22,6 @@ android {
         unitTests {
             includeAndroidResources = true
         }
-        unitTests.all {
-            systemProperty 'robolectric.dependency.repo.url', 'https://repo1.maven.org/maven2'
-        }
     }
 }
 
@@ -36,6 +33,7 @@ dependencies {
     testImplementation 'com.android.support:support-annotations:28.0.0'
     testImplementation 'org.robolectric:shadows-httpclient:4.3.1'
     testImplementation 'com.squareup.okhttp:mockwebserver:2.7.5'
+    testImplementation group: 'org.robolectric', name: 'android-all', version: '10-robolectric-5803371'
 
 }
 
