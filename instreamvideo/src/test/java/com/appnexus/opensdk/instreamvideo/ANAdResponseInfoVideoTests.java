@@ -59,6 +59,7 @@ public class ANAdResponseInfoVideoTests extends BaseRoboTest implements VideoAdL
         adResponseInfo = null;
     }
 
+    //test
     @Test
     public void testAdResponseInfoRTBVideo() {
         server.setDispatcher(getDispatcher(TestUTResponses.video())); // First queue a regular HTML banner response
