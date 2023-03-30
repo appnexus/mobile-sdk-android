@@ -199,8 +199,8 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
     // makes the responseURL call with SUCCESS code
     @Test
     public void testSucceedingMediationCall() {
-        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedSuccessfulNative()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedSuccessfulNative()));
         runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
         assertTrue(MediatedNativeSuccessful.params.equalsIgnoreCase("abc"));
         assertTrue(MediatedNativeSuccessful.uid.equalsIgnoreCase("1234"));
@@ -209,9 +209,9 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
 
     @Test
     public void testMediatedOnAdImpressionLogged() {
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         server.setDispatcher(getDispatcher(TestResponsesUT.mediatedSuccessfulNative()));
-        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
-        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
         assertTrue(MediatedNativeSuccessful.impressionLogged);
     }
@@ -220,9 +220,9 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
     // makes the responseURL call with MEDIATED_SDK_UNAVAILABLE code
     @Test
     public void testNoClassMediationCall() {
-        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedFakeClass_Native()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));// This is for No Ad URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedFakeClass_Native()));
         runBasicMediationTest(ResultCode.getNewInstance(MEDIATED_SDK_UNAVAILABLE), ASSERT_AD_LOAD_FAIL,CHECK_LATENCY_FALSE);
         assertNoAdURL();
     }
@@ -231,9 +231,9 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
     // makes the responseURL call with MEDIATED_SDK_UNAVAILABLE code
     @Test
     public void testBadClassMediationCall() {
-        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedDummyClass_Native()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));// This is for No Ad URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedDummyClass_Native()));
         runBasicMediationTest(ResultCode.getNewInstance(MEDIATED_SDK_UNAVAILABLE), ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_FALSE);
         assertNoAdURL();
 
@@ -248,9 +248,9 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
     // makes the responseURL call with MEDIATED_SDK_UNAVAILABLE code
     @Test
     public void testErrorThrownMediationCall() {
-        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedOutOfMemoryNative()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));// This is for No Ad URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedOutOfMemoryNative()));
         runBasicMediationTest(ResultCode.getNewInstance(INTERNAL_ERROR), ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_TRUE);
 
         assertNoAdURL();
@@ -263,9 +263,9 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
         // Create an AdRequest which will request a mediated response
         // that succeeds in instantiation but fails to return an ad
         // verify that the correct fail URL request was made
-        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedNoFillNative()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));// This is for No Ad URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedNoFillNative()));
         runBasicMediationTest(ResultCode.getNewInstance(UNABLE_TO_FILL), ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_TRUE);
         assertNoAdURL();
     }
@@ -274,9 +274,9 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
     // transitions to the standard ad successfully
     @Test
     public void testNoFillMediationWithStandardResponseURL() {
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         server.setDispatcher(getDispatcher(TestResponsesUT.noFillCSM_RTBNative()));
         //server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
-        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         runBasicMediationTest(ResultCode.getNewInstance(UNABLE_TO_FILL), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
 
     }
@@ -290,8 +290,8 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
     public void testFirstSuccessfulSkipSecond() {
         String[] classNames = {"MediatedNativeSuccessful", "MediatedNativeSuccessful2"};
         String[] responseURLs = {TestResponsesUT.RESPONSE_URL, TestResponsesUT.RESPONSE_URL};
-        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Native(classNames, responseURLs)));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Native(classNames, responseURLs)));
 
         runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
         assertTrue("Native " + MediatedNativeSuccessful.didPass, MediatedNativeSuccessful.didPass);
@@ -304,9 +304,9 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
     public void testSkipFirstSuccessfulSecond() {
         String[] classNames = {"MediatedNativeNoFill", "MediatedNativeSuccessful2"};
         String[] responseURLs = {TestResponsesUT.RESPONSE_URL, TestResponsesUT.RESPONSE_URL};
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Native(classNames, responseURLs)));
-        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
-        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
 
         executeUTRequest();
         Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT + 1000);
@@ -337,9 +337,9 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
 
         String[] classNames = {"MediatedNativeNoFill", "MediatedNativeNoFill"};
         String[] responseURLs = {TestResponsesUT.RESPONSE_URL, TestResponsesUT.RESPONSE_URL};
-        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Native(classNames, responseURLs)));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));// First ResponseURL
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));// Second Response URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Native(classNames, responseURLs)));
 //        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));// This is for No Ad URL
 
         executeUTRequest();
@@ -360,8 +360,8 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
     public void testNoResponseURL() {
         String[] classNames = {"FakeClass", "MediatedNativeNoFill", "MediatedNativeSuccessful"};
         String[] responseURLs = {"", null, TestResponsesUT.RESPONSE_URL};
-        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Native(classNames, responseURLs)));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // For Response URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Native(classNames, responseURLs)));
         runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
 
         assertTrue(MediatedNativeSuccessful.didPass);
@@ -373,9 +373,9 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
     public void testDestroy() {
         String[] classNames = {"MediatedNativeNoFill", "MediatedNativeSuccessful2"};
         String[] responseURLs = {TestResponsesUT.RESPONSE_URL, TestResponsesUT.RESPONSE_URL};
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Native(classNames, responseURLs)));
-        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
-        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
 
         executeUTRequest();
         Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT + 1000);
@@ -396,9 +396,9 @@ public class MediatedNativeAdViewControllerTest extends BaseNativeTest {
     // Verify that the Impression trackers are fired as expected.
     @Test
     public void testImpressionLogging() {
-        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedSuccessfulNative()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));// For response URL
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));// For Impression URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedSuccessfulNative()));
         runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
         assertTrue(MediatedNativeSuccessful.params.equalsIgnoreCase("abc"));
         assertTrue(MediatedNativeSuccessful.uid.equalsIgnoreCase("1234"));
