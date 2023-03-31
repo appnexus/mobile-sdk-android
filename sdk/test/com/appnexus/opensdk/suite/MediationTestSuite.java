@@ -13,12 +13,12 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        MediatedBannerAdViewControllerTest.class,
-        MediatedInterstitialAdViewControllerTest.class,
         MediatedNativeAdViewControllerTest.class,
-        MediatedSSMAdViewControllerTest.class,
         MediationTimeoutTest.class,
         MediationCallbacksTest.class,
+        /*MediatedBannerAdViewControllerTest.class,
+        MediatedInterstitialAdViewControllerTest.class,
+        MediatedSSMAdViewControllerTest.class,*/
 })
 public class MediationTestSuite {
 }

@@ -204,9 +204,9 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
     // makes the responseURL call with SUCCESS code
     @Test
     public void testSucceedingSSMMediationCall() {
-        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedSSMBanner()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedSSMBanner()));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.DUMMY_BANNER_CONTENT).setBodyDelay(2, TimeUnit.MILLISECONDS));
-        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
         runBasicSSMMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
     }
 
@@ -214,10 +214,10 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
     // makes the responseURL call with MEDIATED_SDK_UNAVAILABLE code
     @Test
     public void testFailureSSMMediationCall() {
-        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedSSMBanner()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedSSMBanner()));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()).setBodyDelay(25,TimeUnit.MILLISECONDS)); // Status 200 but no Ad from SSM handler
-        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for Response URL
-        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));// This is for No Ad URL
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for Response URL
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));// This is for No Ad URL
         executeUTRequest();
         Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT + 1000);
 
@@ -239,10 +239,10 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
     // makes the responseURL call with MEDIATED_SDK_UNAVAILABLE code
     @Test
     public void test404FailureSSMMediationCall() {
-        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedSSMBanner()));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedSSMBanner()));
         server.enqueue(new MockResponse().setResponseCode(404)); // Status 404
-        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for Response URL
-        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));// This is for No Ad URL
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for Response URL
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));// This is for No Ad URL
         //runBasicSSMMediationTest(SUCCESS, ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
 
         executeUTRequest();
@@ -264,9 +264,9 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
     // Verify that a response with 2 mediated ads stops after the first (successful) ad
     @Test
     public void testFirstSuccessfulSkipSecond() {
-        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_SSM_Banner_Interstitial(2)));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.waterfall_SSM_Banner_Interstitial(2)));
         server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.DUMMY_BANNER_CONTENT).setBodyDelay(2, TimeUnit.MILLISECONDS)); // SSM Response
-        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // Response URL
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // Response URL
         runBasicSSMMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
 
     }
