@@ -149,7 +149,7 @@ public class NativeRequestTest extends BaseNativeTest {
 
     @Test
     public void requestNativeGetsMediationNoFillThenCSR() {
-        server.enqueue(new MockResponse().setBody(TestResponsesUT.mediationNoFillThenCSRSuccessfull()).setResponseCode(200));
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediationNoFillThenCSRSuccessfull()));
 //        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
         adRequest.setListener(this);
         adRequest.loadAd();
@@ -166,7 +166,7 @@ public class NativeRequestTest extends BaseNativeTest {
 
     @Test
     public void requestNativeGetsCSRNofillThenMediation() {
-        server.enqueue(new MockResponse().setBody(TestResponsesUT.csrNoFillThenMediationSuccessfull()).setResponseCode(200));
+        server.setDispatcher(getDispatcher(TestResponsesUT.csrNoFillThenMediationSuccessfull()));
 //        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
         adRequest.setListener(this);
         assertNull(nativeAdResponse);
