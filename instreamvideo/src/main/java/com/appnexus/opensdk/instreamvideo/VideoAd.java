@@ -365,10 +365,12 @@ public class VideoAd implements Ad, MultiAd {
     }
 
 
-    protected void loadAdFromVAST(String VASTXML, int width, int height) {
+    protected void loadAdFromVAST(String VASTXML, int width, int height, int buyerMemberId) {
         // load an ad directly from VASTXML
         VideoWebView output = new VideoWebView(this.getContext(), this, null);
-        RTBVASTAdResponse response = new RTBVASTAdResponse(width, height, AdType.VIDEO.toString(), null, null, getAdResponseInfo());
+        ANAdResponseInfo adResponseInfo = new ANAdResponseInfo();
+        adResponseInfo.setBuyMemberId(buyerMemberId);
+        RTBVASTAdResponse response = new RTBVASTAdResponse(width, height, AdType.VIDEO.toString(), null, null, adResponseInfo);
         response.setAdContent(VASTXML);
         response.setContentSource(UTConstants.RTB);
         response.addToExtras(UTConstants.EXTRAS_KEY_MRAID, true);
