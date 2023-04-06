@@ -1,3 +1,12 @@
+## 8.6
+
+### Improvement/Bug Fixes
++ MS-5199 Upgrade Gradle Plugin from 5.4.1 to 8.0.2
++ MS-5306 Fixed NullPointerException while using loadAdFromVAST for Video
+
+### Mediation partner updates
++ MS-5297 Upgraded Facebook Audience Network SDK from 6.12.0 to 6.13.7
+
 ## 8.5
 
 ### Improvement/Bug Fixes
