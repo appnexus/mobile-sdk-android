@@ -28,11 +28,11 @@ android {
 
 dependencies {
     api project(':sdk')
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.robolectric:robolectric:4.3'
+    testImplementation 'androidx.test.ext:junit:1.1.5'
+    testImplementation 'org.robolectric:robolectric:4.3.1'
     testImplementation 'org.assertj:assertj-core:1.7.0'
-    testImplementation 'com.android.support:support-annotations:28.0.0'
-    testImplementation 'org.robolectric:shadows-httpclient:4.3'
+    testImplementation 'androidx.annotation:annotation:1.3.0'
+    testImplementation 'org.robolectric:shadows-httpclient:4.3.1'
     testImplementation 'com.squareup.okhttp:mockwebserver:2.5.0'
 }
 
@@ -52,7 +52,7 @@ ext {
     pom_distribution_repo_id = "ossrh"
     pom_distribution_repo_url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 
-    username =project.hasProperty('nexusUsername') ? project.getProperties().get('nexusUsername') : "Replace your username here"
+    username = project.hasProperty('nexusUsername') ? project.getProperties().get('nexusUsername') : "Replace your username here"
     password = project.hasProperty('nexusPassword') ? project.getProperties().get('nexusPassword') : "Replace your password here"
 }
 
@@ -129,7 +129,7 @@ publishing {
 }
 
 repositories {
-    maven{
+    maven {
         url "https://maven.google.com"
     }
     jcenter()
