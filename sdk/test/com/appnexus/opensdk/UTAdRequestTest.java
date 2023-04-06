@@ -3,11 +3,10 @@ package com.appnexus.opensdk;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.content.Context;
+import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-
-import androidx.annotation.NonNull;
 
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.ut.UTAdRequest;
@@ -42,6 +41,8 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
+
+import androidx.annotation.NonNull;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 21, shadows = {ShadowSettings.class, ShadowLog.class})
