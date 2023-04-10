@@ -137,16 +137,4 @@ public class BaseRoboTest {
             }
         };
     }
-
-    public Dispatcher getDispatcherWithHeader(final String response, final String name, final String cookieStrings) {
-        return new Dispatcher() {
-            @NonNull
-            @Override
-            public MockResponse dispatch(@NonNull RecordedRequest request) {
-                return new MockResponse().setResponseCode(200)
-                        .setHeader(name, cookieStrings)
-                        .setBody(response);
-            }
-        };
-    }
 }
