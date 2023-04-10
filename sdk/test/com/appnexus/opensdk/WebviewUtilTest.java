@@ -70,7 +70,7 @@ public class WebviewUtilTest extends BaseViewAdTest {
     //This verifies that the cookies in response are synced correctly to the device.
     @Test
     public void test1CookiesSync() {
-        server.enqueue(new MockResponse().setResponseCode(200).setHeader("Set-Cookie", TestResponsesUT.UUID_COOKIE_1).setBody(TestResponsesUT.banner()));
+        server.setDispatcher(getDispatcherWithHeader(TestResponsesUT.banner(), "Set-Cookie", TestResponsesUT.UUID_COOKIE_1));
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
@@ -82,8 +82,7 @@ public class WebviewUtilTest extends BaseViewAdTest {
     //This verifies the Cookie is reset properly.
     @Test
     public void test2CookiesReset() {
-        server.enqueue(new MockResponse().setResponseCode(200).setHeader("Set-Cookie", TestResponsesUT.UUID_COOKIE_RESET).setBody(TestResponsesUT.banner()));
-
+        server.setDispatcher(getDispatcherWithHeader(TestResponsesUT.banner(), "Set-Cookie", TestResponsesUT.UUID_COOKIE_RESET));
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
