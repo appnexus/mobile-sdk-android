@@ -26,7 +26,7 @@ import org.junit.runners.Suite;
         ANVideoPlayerDefaultSettingsTest.class,
         ANVideoPlayerSettingsTest.class,
         ApplicationTest.class,
-        //SDKSettingsTest.class,
+        SDKSettingsTest.class,
 })
 public class DefaultSettingsTestSuite {
 }
