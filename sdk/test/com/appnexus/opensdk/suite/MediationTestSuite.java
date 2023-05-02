@@ -16,9 +16,9 @@ import org.junit.runners.Suite;
         MediatedNativeAdViewControllerTest.class,
         MediationTimeoutTest.class,
         MediationCallbacksTest.class,
-        /*MediatedBannerAdViewControllerTest.class,
+        MediatedBannerAdViewControllerTest.class,
         MediatedInterstitialAdViewControllerTest.class,
-        MediatedSSMAdViewControllerTest.class,*/
+        MediatedSSMAdViewControllerTest.class,
 })
 public class MediationTestSuite {
 }
