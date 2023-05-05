@@ -17,7 +17,6 @@
 package com.appnexus.opensdk;
 
 import android.net.UrlQuerySanitizer;
-
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowCustomWebView;
 import com.appnexus.opensdk.shadows.ShadowSettings;
@@ -26,15 +25,12 @@ import com.appnexus.opensdk.testviews.MediatedInterstitialNoRequest;
 import com.appnexus.opensdk.testviews.MediatedInterstitialSuccessful;
 import com.appnexus.opensdk.testviews.MediatedInterstitialSuccessful2;
 import com.appnexus.opensdk.util.Lock;
-import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-
 import static com.appnexus.opensdk.ResultCode.INTERNAL_ERROR;
 import static com.appnexus.opensdk.ResultCode.MEDIATED_SDK_UNAVAILABLE;
 import static com.appnexus.opensdk.ResultCode.SUCCESS;
@@ -102,8 +98,6 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
                         int latencyVal = Integer.parseInt(str_latencyVal.replace("_HTTP/1.1", ""));
                         assertTrue(latencyVal > 0); // should be greater than 0 at the minimum and should be present in the response
                     }
-
-
                 }
             }
         } catch (InterruptedException e) {
@@ -112,7 +106,6 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
         } catch (Exception e) {
             fail();
         }
-
     }
 
     private void assertNoAdURL() {
@@ -128,6 +121,9 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
     }
 
     private void executeUTRequest() {
+        Robolectric.getBackgroundThreadScheduler().reset();
+        Robolectric.getForegroundThreadScheduler().reset();
+
         Robolectric.flushForegroundThreadScheduler();
         Robolectric.flushBackgroundThreadScheduler();
         requestManager.execute();
@@ -135,19 +131,16 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
     }
-
     private void executeAndAssertResponseURL(int positionInQueue, ResultCode errorCode, boolean checkLatency) {
-//        waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         assertResponseURL(positionInQueue, errorCode, checkLatency);
     }
 
     // common format for several of the basic mediation tests
-    public void runBasicMediationTest(ResultCode errorCode, boolean success, boolean checkLatency) {
+    public void runBasicMediationTest(ResultCode errorCode, boolean success, boolean checkLatency, int positionInQueue) {
         executeUTRequest();
-
-        executeAndAssertResponseURL(2, errorCode, checkLatency);
+        executeAndAssertResponseURL(positionInQueue, errorCode, checkLatency);
         assertCallbacks(success);
         assertEquals(success,interstitialAdView.isReady());
         if(ResultCode.SUCCESS == errorCode.getCode()){
@@ -159,24 +152,23 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
     /**
      * Basic Mediation tests, in particular, testing the responseURL
      */
-
     // Verify that a successful mediation response,
     // makes the responseURL call with SUCCESS code
     @Test
     public void testSucceedingMediationCall() {
-        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedSuccessfulInterstitial()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
-        runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedSuccessfulInterstitial()));
+        runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE, 2);
     }
 
     // Verify that a response with a class that cannot be found,
     // makes the responseURL call with MEDIATED_SDK_UNAVAILABLE code
     @Test
     public void testNoClassMediationCall() {
-        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedFakeClassBannerInterstitial()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for NO_AD url
-        runBasicMediationTest(ResultCode.getNewInstance(MEDIATED_SDK_UNAVAILABLE), ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_FALSE);
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedFakeClassBannerInterstitial()));
+        runBasicMediationTest(ResultCode.getNewInstance(MEDIATED_SDK_UNAVAILABLE), ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_FALSE, 2);
         assertNoAdURL();
     }
 
@@ -184,10 +176,10 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
     // makes the responseURL call with MEDIATED_SDK_UNAVAILABLE code
     @Test
     public void testBadClassMediationCall() {
-        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedDummyClassBannerInterstitial()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for NO_AD url
-        runBasicMediationTest(ResultCode.getNewInstance(MEDIATED_SDK_UNAVAILABLE), ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_FALSE);
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedDummyClassBannerInterstitial()));
+        runBasicMediationTest(ResultCode.getNewInstance(MEDIATED_SDK_UNAVAILABLE), ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_FALSE, 2);
         assertNoAdURL();
     }
 
@@ -198,16 +190,16 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
         // Create an AdRequest which will request a mediated response
         // that returns an class which does not make an ad request
         // then verify that the correct fail URL request was made
-        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedNoRequestInterstitial()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for NO_AD url
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedNoRequestInterstitial()));
         requestManager.execute();
 
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
 
         try {
-            Thread.sleep(20000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.toString();
             //fail(e.toString());
@@ -223,7 +215,6 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
             Robolectric.flushForegroundThreadScheduler();
         }
 
-
         assertCallbacks(false);
         assertTrue(MediatedInterstitialNoRequest.didInstantiate);
         assertFalse(interstitialAdView.isReady());
@@ -234,10 +225,10 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
     // makes the responseURL call with MEDIATED_SDK_UNAVAILABLE code
     @Test
     public void testErrorThrownMediationCall() {
-        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedOutOfMemoryInterstitial()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for NO_AD url
-        runBasicMediationTest(ResultCode.getNewInstance(INTERNAL_ERROR), ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_TRUE);
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedOutOfMemoryInterstitial()));
+        runBasicMediationTest(ResultCode.getNewInstance(INTERNAL_ERROR), ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_TRUE, 2);
         assertNoAdURL();
     }
 
@@ -248,10 +239,10 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
         // Create an AdRequest which will request a mediated response
         // that succeeds in instantiation but fails to return an ad
         // verify that the correct fail URL request was made
-        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedNoFillInterstitial()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for NO_AD url
-        runBasicMediationTest(ResultCode.getNewInstance(UNABLE_TO_FILL), ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_TRUE);
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedNoFillInterstitial()));
+        runBasicMediationTest(ResultCode.getNewInstance(UNABLE_TO_FILL), ASSERT_AD_LOAD_FAIL, CHECK_LATENCY_TRUE, 2);
         assertNoAdURL();
     }
 
@@ -259,10 +250,10 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
     // transitions to the standard ad successfully
     @Test
     public void testNoFillMediationWithRTB() {
-        server.setDispatcher(getDispatcher(TestResponsesUT.noFillCSM_RTBInterstitial()));
         //server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
-        runBasicMediationTest(ResultCode.getNewInstance(UNABLE_TO_FILL), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
+        server.setDispatcher(getDispatcher(TestResponsesUT.noFillCSM_RTBInterstitial()));
+        runBasicMediationTest(ResultCode.getNewInstance(UNABLE_TO_FILL), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE, 2);
     }
 
     // Verify that a 404 responseURL is handled properly
@@ -270,12 +261,16 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
     public void testHttp404ErrorResponseFromSuccess() {
         String[] classNames = {"MediatedInterstitialSuccessful"};
         String[] responseURLs = {"http://wiki221random.devnxs.net/"};
-        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
 
-        executeUTRequest();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+        requestManager.execute();
+        // execute main ad request
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
+
         assertCallbacks(true);
         assertTrue(interstitialAdView.isReady());
     }
@@ -285,12 +280,16 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
     public void testHttp404ErrorResponseFromFailure() {
         String[] classNames = {"MediatedInterstitialNoFillView"};
         String[] responseURLs = {"http://wiki221random.devnxs.net/"};
-        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
 
-        executeUTRequest();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+        requestManager.execute();
+        // execute main ad request
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
+
         assertCallbacks(false);
         assertFalse(interstitialAdView.isReady());
     }
@@ -304,10 +303,10 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
     public void testFirstSuccessfulSkipSecond() {
         String[] classNames = {"MediatedInterstitialSuccessful", "MediatedInterstitialSuccessful2"};
         String[] responseURLs = {TestResponsesUT.RESPONSE_URL, TestResponsesUT.RESPONSE_URL};
-        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
 
-        runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
+        runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE, 2);
         assertTrue("Interstitial " + MediatedInterstitialSuccessful.didPass, MediatedInterstitialSuccessful.didPass);
         assertFalse("Interstitial2 " + MediatedInterstitialSuccessful2.didPass, MediatedInterstitialSuccessful2.didPass);
     }
@@ -318,15 +317,20 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
     public void testSkipFirstSuccessfulSecond() {
         String[] classNames = {"MediatedInterstitialNoFillView", "MediatedInterstitialSuccessful2"};
         String[] responseURLs = {TestResponsesUT.RESPONSE_URL, TestResponsesUT.RESPONSE_URL};
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
-        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
-        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
 
-        executeUTRequest();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+        requestManager.execute();
+        // execute main ad request
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+
         executeAndAssertResponseURL(2, ResultCode.getNewInstance(UNABLE_TO_FILL), CHECK_LATENCY_TRUE);
-        //2 request are already taken out of queue current position of ResponseURL in queue is 1
+        //1 request are already taken out of queue current position of ResponseURL in queue is 1
         executeAndAssertResponseURL(1, ResultCode.getNewInstance(SUCCESS), CHECK_LATENCY_TRUE);
-
 
         assertCallbacks(true);
         assertTrue(interstitialAdView.isReady());
@@ -344,14 +348,21 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
 
         String[] classNames = {"MediatedInterstitialNoFillView", "MediatedInterstitialNoFillView"};
         String[] responseURLs = {TestResponsesUT.RESPONSE_URL, TestResponsesUT.RESPONSE_URL};
-        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for NO_AD url
+        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
 
-        executeUTRequest();
+        //executeUTRequest();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+        requestManager.execute();
+        // execute main ad request
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+
         executeAndAssertResponseURL(2, ResultCode.getNewInstance(UNABLE_TO_FILL), CHECK_LATENCY_TRUE);
-        //2 request are already taken out of queue current position of ResponseURL in queue is 1
+        //1 request are already taken out of queue current position of ResponseURL in queue is 1
         executeAndAssertResponseURL(1, ResultCode.getNewInstance(UNABLE_TO_FILL), CHECK_LATENCY_TRUE);
 
         Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT + 1000);
@@ -367,9 +378,9 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
     public void testNoResponseURL() {
         String[] classNames = {"FakeClass", "MediatedInterstitialNoFillView", "MediatedInterstitialSuccessful"};
         String[] responseURLs = {"", null, TestResponsesUT.RESPONSE_URL};
-        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
         server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
-        runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
+        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
+        runBasicMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE, 2);
 
         assertTrue(MediatedInterstitialSuccessful.didPass);
     }
@@ -380,13 +391,20 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
     public void testDestroy() {
         String[] classNames = {"MediatedInterstitialNoFillView", "MediatedInterstitialSuccessful2"};
         String[] responseURLs = {TestResponsesUT.RESPONSE_URL, TestResponsesUT.RESPONSE_URL};
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_CSM_Banner_Interstitial(classNames, responseURLs)));
-        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
-        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
 
-        executeUTRequest();
+        //executeUTRequest();
+        Robolectric.flushForegroundThreadScheduler();
+        Robolectric.flushBackgroundThreadScheduler();
+        requestManager.execute();
+        // execute main ad request
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+
         executeAndAssertResponseURL(2, ResultCode.getNewInstance(UNABLE_TO_FILL), CHECK_LATENCY_TRUE);
-        //2 request are already taken out of queue current position of ResponseURL in queue is 1
+        //1 request are already taken out of queue current position of ResponseURL in queue is 1
         executeAndAssertResponseURL(1, ResultCode.getNewInstance(SUCCESS), CHECK_LATENCY_TRUE);
 
         Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT + 1000);
@@ -411,5 +429,4 @@ public class MediatedInterstitialAdViewControllerTest extends BaseViewAdTest {
         super.onAdRequestFailed(adView, resultCode);
         Lock.unpause();
     }
-
 }
