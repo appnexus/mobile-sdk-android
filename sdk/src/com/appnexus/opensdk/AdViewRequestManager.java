@@ -16,9 +16,7 @@
 package com.appnexus.opensdk;
 
 import static com.appnexus.opensdk.utils.Settings.ImpressionType.BEGIN_TO_RENDER;
-
 import android.app.Activity;
-
 import com.appnexus.opensdk.tasksmanager.TasksManager;
 import com.appnexus.opensdk.ut.UTAdResponse;
 import com.appnexus.opensdk.ut.UTConstants;
@@ -33,7 +31,6 @@ import com.appnexus.opensdk.ut.adresponse.SSMHTMLAdResponse;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings.ImpressionType;
 import com.appnexus.opensdk.utils.StringUtil;
-
 import java.lang.ref.WeakReference;
 
 public class AdViewRequestManager extends RequestManager {
@@ -158,7 +155,8 @@ public class AdViewRequestManager extends RequestManager {
         if (owner != null) {
             if (ad.getMediaType() == MediaType.BANNER) {
                 BannerAdView bav = (BannerAdView) owner;
-                if (bav.getExpandsToFitScreenWidth() || bav.getResizeAdToFitContainer()) {
+                if (bav.getExpandsToFitScreenWidth() || bav.getResizeAdToFitContainer() || bav.getVideoExpandsToFitScreenWidth()
+                        || bav.getResizeBannerVideoToFitContainer()) {
                     int width = ad.getResponseData().getWidth() <= 1 ? bav.getRequestParameters().getPrimarySize().width() : ad.getResponseData().getWidth();
                     int height = ad.getResponseData().getHeight() <= 1 ? bav.getRequestParameters().getPrimarySize().height() : ad.getResponseData().getHeight();
                     if (bav.getExpandsToFitScreenWidth()) {
@@ -166,6 +164,12 @@ public class AdViewRequestManager extends RequestManager {
                     }
                     if (bav.getResizeAdToFitContainer()) {
                         bav.resizeViewToFitContainer(width, height, ad.getDisplayable().getView());
+                    }
+                    if (bav.getVideoExpandsToFitScreenWidth()) {
+                        bav.expandToFitScreenWidth(bav.getBannerVideoCreativeWidth(), bav.getBannerVideoCreativeHeight(), ad.getDisplayable().getView());
+                    }
+                    if (bav.getResizeBannerVideoToFitContainer()) {
+                        bav.resizeViewToFitContainer(bav.getBannerVideoCreativeWidth(), bav.getBannerVideoCreativeHeight(), ad.getDisplayable().getView());
                     }
                 }
                 fireImpressionTrackerIfBeginToRender(bav, ad.getResponseData());

@@ -95,6 +95,11 @@ public class ANVideoPlayerSettings {
     private JSONObject optionsMap;
     private static ANVideoPlayerSettings anVideoPlayerSettings;
 
+
+    private AdSize landscapeBannerVideoPlayerSize = new AdSize(1,1);
+    private AdSize portraitBannerVideoPlayerSize = new AdSize(1,1);
+    private AdSize squareBannerVideoPlayerSize = new AdSize(1,1);
+
     public boolean isClickThroughControlEnabled() {
         return showClickThroughControl;
     }
@@ -172,6 +177,32 @@ public class ANVideoPlayerSettings {
     public void setSkipOffset(Integer skipOffset) {
         this.skipOffset = skipOffset;
     }
+
+
+    public AdSize getLandscapeBannerVideoPlayerSize() {
+        return landscapeBannerVideoPlayerSize;
+    }
+
+    public void setLandscapeBannerVideoPlayerSize(AdSize landscapeBannerVideoPlayerSize) {
+        this.landscapeBannerVideoPlayerSize = landscapeBannerVideoPlayerSize;
+    }
+
+    public AdSize getPortraitBannerVideoPlayerSize() {
+        return portraitBannerVideoPlayerSize;
+    }
+
+    public void setPortraitBannerVideoPlayerSize(AdSize portraitBannerVideoPlayerSize) {
+        this.portraitBannerVideoPlayerSize = portraitBannerVideoPlayerSize;
+    }
+
+    public AdSize getSquareBannerVideoPlayerSize() {
+        return squareBannerVideoPlayerSize;
+    }
+
+    public void setSquareBannerVideoPlayerSize(AdSize squareBannerVideoPlayerSize) {
+        this.squareBannerVideoPlayerSize = squareBannerVideoPlayerSize;
+    }
+
 
     private ANVideoPlayerSettings() {
         showClickThroughControl = true;

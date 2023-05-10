@@ -21,7 +21,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Point;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.Display;
 import android.view.Gravity;
@@ -31,7 +30,6 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
-
 import com.appnexus.opensdk.transitionanimation.Animator;
 import com.appnexus.opensdk.transitionanimation.TransitionDirection;
 import com.appnexus.opensdk.transitionanimation.TransitionType;
@@ -39,10 +37,9 @@ import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.ViewUtil;
 import com.appnexus.opensdk.utils.WebviewUtil;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-
+import static com.appnexus.opensdk.VideoOrientation.LANDSCAPE;
 import static com.appnexus.opensdk.VideoOrientation.UNKNOWN;
 
 
@@ -99,11 +96,15 @@ public class BannerAdView extends AdView implements ScreenEventListener {
     protected boolean shouldResetContainer;
     private boolean expandsToFitScreenWidth;
     private boolean resizeToFitContainer;
+    private boolean resizeBannerVideoToFitContainer;
+    private boolean videoExpandsToFitScreenWidth;
     private boolean enableNativeRendering;
     private boolean measured;
     private Animator animator;
     private boolean autoRefreshOffInXML;
     private VideoOrientation videoOrientation = UNKNOWN;
+    private int bannerVideoCreativeWidth;
+    private int bannerVideoCreativeHeight;
 
     private void setDefaultsBeforeXML() {
         loadAdHasBeenCalled = false;
@@ -173,6 +174,8 @@ public class BannerAdView extends AdView implements ScreenEventListener {
         shouldResetContainer = false;
         expandsToFitScreenWidth = false;
         resizeToFitContainer = false;
+        resizeBannerVideoToFitContainer = false;
+        videoExpandsToFitScreenWidth = false;
         enableNativeRendering = false;
         measured = false;
         animator = new Animator(getContext(), TransitionType.NONE, TransitionDirection.UP, 1000);
@@ -1019,6 +1022,30 @@ public class BannerAdView extends AdView implements ScreenEventListener {
      *
      * @return If true, the ad will expand to fit screen width.
      */
+    public boolean getVideoExpandsToFitScreenWidth() {
+        return videoExpandsToFitScreenWidth;
+    }
+
+    /**
+     * Set whether ads will expand to fit the screen width.  This
+     * feature will cause ad creatives that are smaller than the view
+     * size to 'stretch' to the current size.  This may cause video
+     * quality degradation for the benefit of having an ad occupy the
+     * entire ad view.  This feature is disabled by default.
+     *
+     * @param videoExpandsToFitScreenWidth If true, automatic expansion is
+     *                                enabled.
+     */
+    public void setVideoExpandsToFitScreenWidth(boolean videoExpandsToFitScreenWidth) {
+        this.videoExpandsToFitScreenWidth = videoExpandsToFitScreenWidth;
+    }
+
+    /**
+     * Check whether the ad will expand to fit the screen width.  This
+     * feature is disabled by default.
+     *
+     * @return If true, the ad will expand to fit screen width.
+     */
     public boolean getExpandsToFitScreenWidth() {
         return expandsToFitScreenWidth;
     }
@@ -1062,11 +1089,37 @@ public class BannerAdView extends AdView implements ScreenEventListener {
         return resizeToFitContainer;
     }
 
+    /**
+     * Check whether the video ad will expand to fit the BannerAdView.  This
+     * feature is disabled by default.
+     *
+     * @return If true, the video ad will expand to fit the BannerAdView.
+     */
+    public boolean getResizeBannerVideoToFitContainer() {
+        return resizeBannerVideoToFitContainer;
+    }
+
+    /**
+     * Set whether video ads will expand to fit the BannerAdView.  This
+     * feature will cause ad creatives that are smaller than the BannerAdView
+     * size to 'stretch' to the BannerAdView size.  This may cause video
+     * quality degradation for the benefit of having an ad occupy the
+     * entire BannerAdView.  This feature is disabled by default.
+     *
+     * @param resizeBannerVideoToFitContainer If true, automatic expansion is
+     *                               enabled.
+     */
+    public void setResizeBannerVideoToFitContainer(boolean resizeBannerVideoToFitContainer) {
+        this.resizeBannerVideoToFitContainer = resizeBannerVideoToFitContainer;
+    }
+
+
     @SuppressLint("NewApi")
     @SuppressWarnings("deprecation")
     protected void resizeViewToFitContainer(int adWidth, int adHeight, View view) {
         int containerWidth;
         int containerHeight;
+
         if (getWidth() <= 0) {
             containerWidth = getMeasuredWidth();
         } else {
@@ -1096,13 +1149,17 @@ public class BannerAdView extends AdView implements ScreenEventListener {
                 //expand to full container height
                 webViewHeight = containerHeight;
                 webViewWidth = (adWidth * containerHeight / adHeight);
-                ((WebView)view).setInitialScale((int) Math.ceil(100 * containerHeight / adHeight));
+                if(getVideoOrientation() != LANDSCAPE) {
+                    ((WebView) view).setInitialScale((int) Math.ceil(100 * containerHeight / adHeight));
+                }
 
             } else {
                 //expand to full container width
                 webViewWidth = containerWidth;
                 webViewHeight = (adHeight * containerWidth / adWidth);
-                ((WebView)view).setInitialScale((int) Math.ceil(100 * containerWidth / adWidth));
+                if(getVideoOrientation() != LANDSCAPE) {
+                    ((WebView) view).setInitialScale((int) Math.ceil(100 * containerWidth / adWidth));
+                }
             }
 
             // Adjust width or height of webview to fit container
@@ -1173,7 +1230,9 @@ public class BannerAdView extends AdView implements ScreenEventListener {
                 view.getLayoutParams().width = FrameLayout.LayoutParams.MATCH_PARENT;
                 view.getLayoutParams().height = new_height;
             }
-            ((WebView)view).setInitialScale((int) Math.ceil(ratio_delta * 100));
+            if(getVideoOrientation() != LANDSCAPE) {
+                ((WebView)view).setInitialScale((int) Math.ceil(ratio_delta * 100));
+            }
         }else{
             int adWidthInPixel = ViewUtil.getValueInPixel(getContext(), adWidth);
             float widthRatio = (float) width / (float) adWidthInPixel;
@@ -1325,5 +1384,34 @@ public class BannerAdView extends AdView implements ScreenEventListener {
     public boolean loadLazyAd() {
         return super.loadLazyAd();
     }
+
+    /**
+     * Get the Creative Width of the Banner Video
+     */
+    public int getBannerVideoCreativeWidth() {
+        return bannerVideoCreativeWidth;
+    }
+
+    /**
+     * Set the Creative Width of the Banner Video
+     */
+    public void setBannerVideoCreativeWidth(int bannerVideoCreativeWidth) {
+        this.bannerVideoCreativeWidth = bannerVideoCreativeWidth;
+    }
+
+    /**
+     * Get the Creative Height of the Banner Video
+     */
+    public int getBannerVideoCreativeHeight() {
+        return bannerVideoCreativeHeight;
+    }
+
+    /**
+     * Set the Creative Height of the Banner Video
+     */
+    public void setBannerVideoCreativeHeight(int bannerVideoCreativeHeight) {
+        this.bannerVideoCreativeHeight = bannerVideoCreativeHeight;
+    }
+
 
 }

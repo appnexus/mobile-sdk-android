@@ -17,15 +17,11 @@
 package com.appnexus.opensdk;
 
 import android.util.Base64;
-
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.ViewUtil;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.UnsupportedEncodingException;
-
 
 class VideoImplementation {
 
@@ -33,7 +29,6 @@ class VideoImplementation {
     private String vastXML;
     private boolean videoComplete = false;
     private boolean adReady = false;
-
 
     public VideoImplementation(AdWebView adWebView) {
         this.adWebView = adWebView;
@@ -50,7 +45,6 @@ class VideoImplementation {
 
         url = new String(Base64.decode(url, Base64.NO_WRAP));
 
-
         try {
             JSONObject videoObject = new JSONObject(url);
 
@@ -59,6 +53,17 @@ class VideoImplementation {
             if (eventName.equals("adReady")) {
                 if (paramsDictionary.has("aspectRatio")) {
                     processAspectRatio(paramsDictionary.getString("aspectRatio"));
+                }
+                if (paramsDictionary.has("width") &&
+                        paramsDictionary.has("height")) {
+
+                    try {
+                        ((BannerAdView) adWebView.adView).setBannerVideoCreativeWidth(Integer.parseInt(paramsDictionary.getString("width")));
+                        ((BannerAdView) adWebView.adView).setBannerVideoCreativeHeight(Integer.parseInt(paramsDictionary.getString("height")));
+                    } catch (NumberFormatException nfe) {
+                        Clog.d(Clog.videoLogTag, "Could not parse int value" + nfe);
+                    }
+
                 }
                 adWebView.success();
                 adReady = true;
@@ -84,7 +89,12 @@ class VideoImplementation {
 
     private void processAspectRatio(String fetchedAspectRatio) {
         if(adWebView.adView instanceof BannerAdView) {
-            ((BannerAdView)adWebView.adView).setVideoOrientation(ViewUtil.getVideoOrientation(fetchedAspectRatio));
+            VideoOrientation orientation = ViewUtil.getVideoOrientation(fetchedAspectRatio);
+            adWebView.resizeWebViewBasedOnVideoOrientation(orientation);
+
+            // TODO - UPdate Webview with and height here based on orientation =  Portrait,Landscape or Square
+            ((BannerAdView)adWebView.adView).setVideoOrientation(orientation);
+
         }
     }
 

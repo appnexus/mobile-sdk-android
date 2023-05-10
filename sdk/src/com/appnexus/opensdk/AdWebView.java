@@ -378,6 +378,44 @@ class AdWebView extends WebView implements Displayable,
         return userInteracted;
     }
 
+    public void resizeWebViewBasedOnVideoOrientation(VideoOrientation orientation) {
+
+        final float scale = adView.getContext().getResources()
+                .getDisplayMetrics().density;
+
+        int rheight, rwidth;
+        AdSize videoPlayerSize;
+
+        switch (orientation){
+            case PORTRAIT:
+                videoPlayerSize = ANVideoPlayerSettings.getVideoPlayerSettings().getPortraitBannerVideoPlayerSize();
+                break;
+            case SQUARE:
+                videoPlayerSize = ANVideoPlayerSettings.getVideoPlayerSettings().getSquareBannerVideoPlayerSize();
+                break;
+            default:
+                // Use Landscape size by default for Landscape and Unknown,
+                videoPlayerSize = ANVideoPlayerSettings.getVideoPlayerSettings().getLandscapeBannerVideoPlayerSize();
+
+        }
+        if(videoPlayerSize.height()>1 && videoPlayerSize.width()>1){
+            adResponseData.setHeight(videoPlayerSize.height());
+            adResponseData.setWidth(videoPlayerSize.width());
+
+            setCreativeHeight(videoPlayerSize.height());
+            setCreativeWidth(videoPlayerSize.width());
+
+
+            rheight = (int) (videoPlayerSize.height() * scale + 0.5f);
+            rwidth = (int) (videoPlayerSize.width() * scale + 0.5f);
+            AdView.LayoutParams resize = new AdView.LayoutParams(rwidth, rheight,
+                    Gravity.CENTER);
+            this.setLayoutParams(resize);
+            this.requestLayout();
+        }
+
+    }
+
     /**
      * AdWebViewClient for the webview
      */
