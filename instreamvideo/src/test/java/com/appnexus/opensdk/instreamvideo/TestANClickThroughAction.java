@@ -22,7 +22,6 @@ import com.appnexus.opensdk.instreamvideo.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.instreamvideo.shadows.ShadowCustomClickThroughWebView;
 import com.appnexus.opensdk.instreamvideo.shadows.ShadowSettings;
 import com.appnexus.opensdk.instreamvideo.shadows.ShadowWebSettings;
-import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,7 +59,7 @@ public class TestANClickThroughAction extends BaseRoboTest implements VideoAdLoa
     @Test
     public void testVideoANClickThroughActionReturnURL() {
         videoAd.setClickThroughAction(ANClickThroughAction.RETURN_URL);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestUTResponses.video())); // First queue a regular HTML banner response
         executeVideoRequest();
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
@@ -73,7 +72,7 @@ public class TestANClickThroughAction extends BaseRoboTest implements VideoAdLoa
     @Test
     public void testVideoANClickThroughActionSDKBrowser() {
         videoAd.setClickThroughAction(ANClickThroughAction.OPEN_SDK_BROWSER);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestUTResponses.video())); // First queue a regular HTML banner response
         executeVideoRequest();
 
         waitForTasks();
@@ -87,7 +86,7 @@ public class TestANClickThroughAction extends BaseRoboTest implements VideoAdLoa
     @Test
     public void testVideoANClickThroughActionDeviceBrowser() {
         videoAd.setClickThroughAction(ANClickThroughAction.OPEN_DEVICE_BROWSER);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestUTResponses.video())); // First queue a regular HTML banner response
         executeVideoRequest();
 
         waitForTasks();

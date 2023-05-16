@@ -117,7 +117,7 @@ public class ANOMIDNativeViewabilityTests extends BaseNativeTest {
 
     @Test
     public void testOmidNativeJSEventsRTB() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anOMIDNativeRTB()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anOMIDNativeRTB()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -141,7 +141,7 @@ public class ANOMIDNativeViewabilityTests extends BaseNativeTest {
 
     @Test
     public void testOmidNativeRendererJSEvents() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeRenderer()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeRenderer()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -166,7 +166,7 @@ public class ANOMIDNativeViewabilityTests extends BaseNativeTest {
 
     @Test
     public void testOmidNativeJSEventsCSM() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedSuccessfulNative()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedSuccessfulNative()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();

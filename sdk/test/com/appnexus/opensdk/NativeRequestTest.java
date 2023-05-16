@@ -149,7 +149,7 @@ public class NativeRequestTest extends BaseNativeTest {
 
     @Test
     public void requestNativeGetsMediationNoFillThenCSR() {
-        server.enqueue(new MockResponse().setBody(TestResponsesUT.mediationNoFillThenCSRSuccessfull()).setResponseCode(200));
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediationNoFillThenCSRSuccessfull()));
 //        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
         adRequest.setListener(this);
         adRequest.loadAd();
@@ -166,7 +166,7 @@ public class NativeRequestTest extends BaseNativeTest {
 
     @Test
     public void requestNativeGetsCSRNofillThenMediation() {
-        server.enqueue(new MockResponse().setBody(TestResponsesUT.csrNoFillThenMediationSuccessfull()).setResponseCode(200));
+        server.setDispatcher(getDispatcher(TestResponsesUT.csrNoFillThenMediationSuccessfull()));
 //        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
         adRequest.setListener(this);
         assertNull(nativeAdResponse);
@@ -187,7 +187,7 @@ public class NativeRequestTest extends BaseNativeTest {
 
     @Test
     public void requestNativeCSRNofill() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.csrNativeNofill()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.csrNativeNofill()));
 //        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
         adRequest.setListener(this);
         adRequest.loadAd();
@@ -205,7 +205,7 @@ public class NativeRequestTest extends BaseNativeTest {
 
     @Test
     public void requestNativeCSRSuccessful() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.csrNativeSuccessful()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.csrNativeSuccessful()));
 //        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
         adRequest.setListener(this);
         adRequest.loadAd();
@@ -222,7 +222,7 @@ public class NativeRequestTest extends BaseNativeTest {
 
 //    @Test
 //    public void requestNativeCSRSuccessfulAdExpiry() {
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.csrNativeSuccessful()));
+//        server.setDispatcher(getDispatcher(TestResponsesUT.csrNativeSuccessful()));
 ////        NativeAdRequestListener adListener = mock(NativeAdRequestListener.class);
 //        adRequest.setListener(this);
 //        adRequest.loadAd();
@@ -259,7 +259,7 @@ public class NativeRequestTest extends BaseNativeTest {
 
     @Test
     public void requestNativeSuccess() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -274,7 +274,7 @@ public class NativeRequestTest extends BaseNativeTest {
 
     @Test
     public void requestNativeSuccessNativeElement() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeVideo()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeVideo()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -304,7 +304,7 @@ public class NativeRequestTest extends BaseNativeTest {
 
     @Test
     public void requestNativeFailure() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.NO_BID));
+        server.setDispatcher(getDispatcher(TestResponsesUT.NO_BID));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -319,7 +319,7 @@ public class NativeRequestTest extends BaseNativeTest {
 
     @Test
     public void testCreativeId() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();

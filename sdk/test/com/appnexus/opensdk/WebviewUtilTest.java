@@ -23,7 +23,9 @@ import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.util.Lock;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.WebviewUtil;
+import com.squareup.okhttp.mockwebserver.Dispatcher;
 import com.squareup.okhttp.mockwebserver.MockResponse;
+import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +37,8 @@ import org.robolectric.shadows.ShadowWebView;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotSame;
+
+import androidx.annotation.NonNull;
 
 @Config(sdk = 21,
         shadows = {ShadowAsyncTaskNoExecutor.class,
@@ -70,7 +74,7 @@ public class WebviewUtilTest extends BaseViewAdTest {
     //This verifies that the cookies in response are synced correctly to the device.
     @Test
     public void test1CookiesSync() {
-        server.enqueue(new MockResponse().setResponseCode(200).setHeader("Set-Cookie", TestResponsesUT.UUID_COOKIE_1).setBody(TestResponsesUT.banner()));
+        server.setDispatcher(getWebViewDispatcherWithHeader(TestResponsesUT.banner(), "Set-Cookie", TestResponsesUT.UUID_COOKIE_1));
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
@@ -82,8 +86,7 @@ public class WebviewUtilTest extends BaseViewAdTest {
     //This verifies the Cookie is reset properly.
     @Test
     public void test2CookiesReset() {
-        server.enqueue(new MockResponse().setResponseCode(200).setHeader("Set-Cookie", TestResponsesUT.UUID_COOKIE_RESET).setBody(TestResponsesUT.banner()));
-
+        server.setDispatcher(getWebViewDispatcherWithHeader(TestResponsesUT.banner(), "Set-Cookie", TestResponsesUT.UUID_COOKIE_RESET));
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
@@ -115,6 +118,18 @@ public class WebviewUtilTest extends BaseViewAdTest {
     public void onAdRequestFailed(AdView adView, ResultCode resultCode) {
         super.onAdRequestFailed(adView, resultCode);
         Lock.unpause();
+    }
+
+    private Dispatcher getWebViewDispatcherWithHeader(final String response, final String headerName, final String cookieStrings) {
+        return new Dispatcher() {
+            @NonNull
+            @Override
+            public MockResponse dispatch(@NonNull RecordedRequest request) {
+                return new MockResponse().setResponseCode(200)
+                        .setHeader(headerName, cookieStrings)
+                        .setBody(response);
+            }
+        };
     }
 
 // @TODO RoboCookieManager adds cookies to the cookie store instead of replacing them need to figure out a way around that.

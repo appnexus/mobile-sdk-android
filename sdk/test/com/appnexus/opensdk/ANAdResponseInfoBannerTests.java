@@ -57,7 +57,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
 
     @Test
     public void testAdResponseInfoRTBBanner() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // First queue a regular HTML banner response
         assertNull(bannerAdView.getAdResponseInfo());
         assertTrue(bannerAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOWN initially
         executeBannerRequest();
@@ -77,7 +77,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
 
     @Test
     public void testAdResponseInfoLazyLoadBanner() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // First queue a regular HTML banner response
         assertNull(bannerAdView.getAdResponseInfo());
         assertTrue(bannerAdView.enableLazyLoad());
         executeBannerRequest();
@@ -98,7 +98,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
     // This proves that the second loadAd() behaves as a Lazy load even after the Lazy Ad has already been loaded once (after calling loadLazyAd())
     @Test
     public void testAdResponseInfoForLazyBannerAdLoadedSuccessAndLoadAgainWithAnotherResponse() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         bannerAdView.enableLazyLoad();
         executeBannerRequest();
         Assert.assertFalse(bannerAdView.getChildAt(0) instanceof WebView);
@@ -124,7 +124,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
         adFailed = false;
         restartServer();
         // mocking different banner response
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner_()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner_()));
         executeBannerRequest();
         assertLazyLoadCallbackInProgress();
         bannerAdView.loadLazyAd();
@@ -146,7 +146,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
 
 //    @Test
 //    public void testAdResponseInfoCSMBanner() {
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.noFillCSMBanner())); // First queue a regular HTML banner response
+//        server.setDispatcher(getDispatcher(TestResponsesUT.noFillCSMBanner())); // First queue a regular HTML banner response
 //        assertNull(bannerAdView.getAdResponseInfo());
 //        assertTrue(bannerAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOWN initially
 //        executeBannerRequest();
@@ -162,7 +162,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
 
     @Test
     public void testAdResponseInfoRTBBannerNative() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative())); // First queue a regular HTML banner response
         assertNull(bannerAdView.getAdResponseInfo());
         assertTrue(bannerAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOWN initially
         executeBannerRequest();
@@ -183,7 +183,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
     }
 
     public void testAdResponseInfoRTBBannerNativeRenderer() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeRenderer())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeRenderer())); // First queue a regular HTML banner response
         bannerAdView.enableNativeRendering(true);
         assertNull(bannerAdView.getAdResponseInfo());
         assertTrue(bannerAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOWN initially
@@ -204,7 +204,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
 
     @Test
     public void testAdResponseInfoRTBBannerNoBid() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.NO_BID));
+        server.setDispatcher(getDispatcher(TestResponsesUT.NO_BID));
         assertNull(bannerAdView.getAdResponseInfo());
         executeBannerRequest();
         assertNotNull(bannerAdView.getAdResponseInfo());
@@ -222,7 +222,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
 
     @Test
     public void testAdResponseInfoRTBBannerNoBidLazyLoad() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.NO_BID));
+        server.setDispatcher(getDispatcher(TestResponsesUT.NO_BID));
         assertNull(bannerAdView.getAdResponseInfo());
         bannerAdView.enableLazyLoad();
         executeBannerRequest();
@@ -242,7 +242,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
 
     @Test
     public void testAdResponseInfoRTBBannerBlank() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         assertNull(bannerAdView.getAdResponseInfo());
         executeBannerRequest();
         assertNull(bannerAdView.getAdResponseInfo());
@@ -250,7 +250,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
 
     @Test
     public void testGetCreativeIdBanner() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // First queue a regular HTML banner response
         assertNull(bannerAdView.getAdResponseInfo());
         executeBannerRequest();
         assertEquals("6332753", bannerAdView.getAdResponseInfo().getCreativeId());
@@ -258,7 +258,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
 
     @Test
     public void testGetCreativeIdBannerNativeCreativeId() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative())); // First queue a banner Native response
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative())); // First queue a banner Native response
         assertNull(bannerAdView.getAdResponseInfo());
         executeBannerRequest();
         assertEquals("47772560", nativeAdResponse.getAdResponseInfo().getCreativeId());
@@ -266,7 +266,7 @@ public class ANAdResponseInfoBannerTests extends BaseViewAdTest {
 
     @Test
     public void testGetAdResponseInfoNullForBlankBannerResponse() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blankBanner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.blankBanner())); // First queue a regular HTML banner response
         assertNull(bannerAdView.getAdResponseInfo());
         executeBannerRequest();
         assertNull(bannerAdView.getAdResponseInfo());

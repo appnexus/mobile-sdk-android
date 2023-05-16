@@ -48,7 +48,7 @@ public class TestANClickThroughAction extends BaseViewAdTest {
     @Test
     public void testBannerANClickThroughActionReturnURL() {
         bannerAdView.setClickThroughAction(ANClickThroughAction.RETURN_URL);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // First queue a regular HTML banner response
         executeBannerRequest();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
@@ -61,7 +61,7 @@ public class TestANClickThroughAction extends BaseViewAdTest {
     @Test
     public void testBannerANClickThroughActionSDKBrowser() {
         bannerAdView.setClickThroughAction(ANClickThroughAction.OPEN_SDK_BROWSER);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // First queue a regular HTML banner response
         executeBannerRequest();
 
         waitUntilExecuted();
@@ -73,7 +73,7 @@ public class TestANClickThroughAction extends BaseViewAdTest {
     @Test
     public void testBannerANClickThroughActionDeviceBrowser() {
         bannerAdView.setClickThroughAction(ANClickThroughAction.OPEN_DEVICE_BROWSER);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // First queue a regular HTML banner response
         executeBannerRequest();
 
         waitUntilExecuted();
@@ -85,7 +85,7 @@ public class TestANClickThroughAction extends BaseViewAdTest {
     @Test
     public void testInterstitialANClickThroughActionReturnURL() {
         interstitialAdView.setClickThroughAction(ANClickThroughAction.RETURN_URL);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.noFillCSM_RTBInterstitial()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.noFillCSM_RTBInterstitial()));
         executeInterstitialRequest();
 
         waitUntilExecuted();
@@ -97,7 +97,7 @@ public class TestANClickThroughAction extends BaseViewAdTest {
     @Test
     public void testInterstitialANClickThroughActionSDKBrowser() {
         interstitialAdView.setClickThroughAction(ANClickThroughAction.OPEN_SDK_BROWSER);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.noFillCSM_RTBInterstitial()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.noFillCSM_RTBInterstitial()));
 
         executeInterstitialRequest();
 
@@ -118,7 +118,7 @@ public class TestANClickThroughAction extends BaseViewAdTest {
     @Test
     public void testInterstitialANClickThroughActionDeviceBrowser() {
         interstitialAdView.setClickThroughAction(ANClickThroughAction.OPEN_DEVICE_BROWSER);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.noFillCSM_RTBInterstitial()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.noFillCSM_RTBInterstitial()));
         executeInterstitialRequest();
 
         waitUntilExecuted();

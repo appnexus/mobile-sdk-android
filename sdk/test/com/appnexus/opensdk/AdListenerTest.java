@@ -82,7 +82,7 @@ public class AdListenerTest extends BaseViewAdTest {
 
     @Test
     public void testBannerAdLoaded() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         requestManager = new AdViewRequestManager(bannerAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
@@ -92,8 +92,8 @@ public class AdListenerTest extends BaseViewAdTest {
 
     @Test
     public void testBannerAdImpression() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         requestManager = new AdViewRequestManager(bannerAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
@@ -108,12 +108,12 @@ public class AdListenerTest extends BaseViewAdTest {
 
     @Test
     public void testBannerAdImpressionForMultipleImpressionUrls() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.bannerWithMultipleImpressionUrls()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.bannerWithMultipleImpressionUrls()));
         requestManager = new AdViewRequestManager(bannerAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
@@ -145,8 +145,8 @@ public class AdListenerTest extends BaseViewAdTest {
 
     @Test
     public void testBannerAdImpressionOnline() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         requestManager = new AdViewRequestManager(bannerAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
@@ -172,12 +172,12 @@ public class AdListenerTest extends BaseViewAdTest {
 
     @Test
     public void testBannerAdImpressionForMultipleImpressionUrlsOnline() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.bannerWithMultipleImpressionUrls()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.bannerWithMultipleImpressionUrls()));
         requestManager = new AdViewRequestManager(bannerAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
@@ -199,7 +199,7 @@ public class AdListenerTest extends BaseViewAdTest {
 
     @Test
     public void testLazyBannerAdLoaded() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         bannerAdView.enableLazyLoad();
         executeBannerRequest();
 
@@ -213,7 +213,7 @@ public class AdListenerTest extends BaseViewAdTest {
     // This proves that the second loadAd() behaves as a Lazy load even after the Lazy Ad has already been loaded once (after calling loadLazyAd())
     @Test
     public void testLazyBannerAdLoadedSuccessAndLoadAgain() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         bannerAdView.enableLazyLoad();
         executeBannerRequest();
         assertFalse(bannerAdView.getChildAt(0) instanceof WebView);
@@ -227,7 +227,7 @@ public class AdListenerTest extends BaseViewAdTest {
         adLazyLoaded = false;
         adFailed = false;
         restartServer();
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         executeBannerRequest();
         assertLazyLoadCallbackInProgress();
         bannerAdView.loadLazyAd();
@@ -240,7 +240,7 @@ public class AdListenerTest extends BaseViewAdTest {
     // This proves that the second loadAd() also behaves as a Lazy load if the loadLazyAd() has not already been called before
     @Test
     public void testLazyBannerLazyAdLoadedAndLoadAgain() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         bannerAdView.enableLazyLoad();
         executeBannerRequest();
         assertFalse(bannerAdView.getChildAt(0) instanceof WebView);
@@ -249,7 +249,7 @@ public class AdListenerTest extends BaseViewAdTest {
         adLazyLoaded = false;
         adFailed = false;
         restartServer();
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         executeBannerRequest();
         assertFalse(bannerAdView.getChildAt(0) instanceof WebView);
         assertLazyLoadCallbackInProgress();
@@ -262,7 +262,7 @@ public class AdListenerTest extends BaseViewAdTest {
 
     @Test
     public void testEnableLazyLoadRTBBannerNoBidLoadLazyAd() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.NO_BID));
+        server.setDispatcher(getDispatcher(TestResponsesUT.NO_BID));
         bannerAdView.enableLazyLoad();
         executeBannerRequest();
         assertCallbacks(false);
@@ -272,7 +272,7 @@ public class AdListenerTest extends BaseViewAdTest {
 
     @Test
     public void testEnableLazyLoadRTBBannerNoBidLoadLazyAdLoadAdAgain() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.NO_BID));
+        server.setDispatcher(getDispatcher(TestResponsesUT.NO_BID));
         bannerAdView.enableLazyLoad();
         executeBannerRequest();
         assertCallbacks(false);
@@ -282,7 +282,7 @@ public class AdListenerTest extends BaseViewAdTest {
         adLazyLoaded = false;
         adFailed = false;
         restartServer();
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         executeBannerRequest();
         assertFalse(bannerAdView.getChildAt(0) instanceof WebView);
         assertLazyLoadCallbackInProgress();
@@ -295,7 +295,7 @@ public class AdListenerTest extends BaseViewAdTest {
 
     @Test
     public void testLazyBannerAdLoadWithloadLazyAdAlreadyCalled() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         bannerAdView.enableLazyLoad();
         assertFalse(bannerAdView.loadLazyAd());
         executeBannerRequest();
@@ -308,7 +308,7 @@ public class AdListenerTest extends BaseViewAdTest {
 
     @Test
     public void testLazyBannerNativeAdLoaded() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeWithoutImages()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeWithoutImages()));
         bannerAdView.enableLazyLoad();
         executeBannerRequest();
         assertCallbacks(true);
@@ -317,7 +317,7 @@ public class AdListenerTest extends BaseViewAdTest {
 
     @Test
     public void testLazyBannerAdFailed() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.invalidBanner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.invalidBanner()));
         bannerAdView.enableLazyLoad();
         executeBannerRequest();
         assertLazyLoadCallbackInProgress();
@@ -331,7 +331,7 @@ public class AdListenerTest extends BaseViewAdTest {
     // This proves that the second loadAd() behaves as a Lazy load after the Lazy Ad has failed in the first attempt (after calling loadLazyAd())
     @Test
     public void testLazyBannerAdLoadedFailureAndLoadAgainSuccess() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.invalidBanner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.invalidBanner()));
         bannerAdView.enableLazyLoad();
         assertFalse(bannerAdView.getChildAt(0) instanceof WebView);
         executeBannerRequest();
@@ -344,7 +344,7 @@ public class AdListenerTest extends BaseViewAdTest {
         adFailed = false;
         adLazyLoaded = false;
         restartServer();
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         executeBannerRequest();
         assertLazyLoadCallbackInProgress();
         assertFalse(bannerAdView.getChildAt(0) instanceof WebView);
@@ -356,7 +356,7 @@ public class AdListenerTest extends BaseViewAdTest {
 
     @Test
     public void testloadLazyAdAfterAdLoad() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         assertTrue(bannerAdView.enableLazyLoad());
         executeBannerRequest();
         assertLazyLoadCallbackInProgress();
@@ -373,8 +373,8 @@ public class AdListenerTest extends BaseViewAdTest {
 
 //    @Test
 //    public void testloadLazyAdAfterAdLoadAutoRefreshSuccessAndTwooFailures() {
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+//        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
+//        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
 //        assertTrue(bannerAdView.enableLazyLoad());
 //        bannerAdView.setAutoRefreshInterval(15000);
 //        executeBannerRequest();
@@ -391,7 +391,7 @@ public class AdListenerTest extends BaseViewAdTest {
 //        assertFalse(adFailed);
 //
 //        // First AutoRefresh Failure case
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.noResponse()));
+//        server.setDispatcher(getDispatcher(TestResponsesUT.noResponse()));
 //        adLoaded = false;
 //        adFailed = false;
 //        adLazyLoaded = false;
@@ -408,7 +408,7 @@ public class AdListenerTest extends BaseViewAdTest {
 //        assertTrue(adFailed);
 //
 //        // Second AutoRefresh Failure Case
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.noResponse()));
+//        server.setDispatcher(getDispatcher(TestResponsesUT.noResponse()));
 //        adLoaded = false;
 //        adFailed = false;
 //        adLazyLoaded = false;
@@ -425,7 +425,7 @@ public class AdListenerTest extends BaseViewAdTest {
 //        assertTrue(adFailed);
 //
 //        // Third AutoRefresh: Success Case
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+//        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
 //        adLoaded = false;
 //        adFailed = false;
 //        adLazyLoaded = false;
@@ -443,7 +443,7 @@ public class AdListenerTest extends BaseViewAdTest {
 
     @Test
     public void testloadLazyAdForDisabledLazyLoad() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         assertFalse(bannerAdView.isLazyLoadEnabled());
         executeBannerRequest();
         assertCallbacks(true);
@@ -458,7 +458,7 @@ public class AdListenerTest extends BaseViewAdTest {
 
     @Test
     public void testBannerAdFailed() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         requestManager = new AdViewRequestManager(bannerAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
@@ -470,7 +470,7 @@ public class AdListenerTest extends BaseViewAdTest {
 
     @Test
     public void testInterstitialAdLoaded() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         requestManager = new AdViewRequestManager(interstitialAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
@@ -480,7 +480,7 @@ public class AdListenerTest extends BaseViewAdTest {
 
     @Test
     public void testInterstitialAdFailed() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         requestManager = new AdViewRequestManager(interstitialAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();
@@ -494,7 +494,7 @@ public class AdListenerTest extends BaseViewAdTest {
         bannerAdView.setAutoRefreshInterval(30000);
         bannerAdView.setLoadsInBackground(false);
         bannerAdView.setClickThroughAction(ANClickThroughAction.RETURN_URL);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeWithoutImages()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeWithoutImages()));
         Assert.assertEquals(AdType.UNKNOWN, bannerAdView.getAdType());
         requestManager = new AdViewRequestManager(bannerAdView);
         requestManager.execute();
@@ -510,7 +510,7 @@ public class AdListenerTest extends BaseViewAdTest {
 
     @Test
     public void testBannerNativeAdFailed() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         requestManager = new AdViewRequestManager(bannerAdView);
         requestManager.execute();
         Robolectric.flushBackgroundThreadScheduler();

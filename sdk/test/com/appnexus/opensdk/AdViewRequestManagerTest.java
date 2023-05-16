@@ -83,8 +83,8 @@ public class AdViewRequestManagerTest extends BaseViewAdTest {
     // This tests that scenario
 //    @Test
 //    public void testNotifyURLForVideo() throws Exception {
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.rtbVASTVideo()));
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+//        server.setDispatcher(getDispatcher(TestResponsesUT.rtbVASTVideo()));
+//        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
 //
 //        executeUTRequest();
 //        assertCallbacks(true);

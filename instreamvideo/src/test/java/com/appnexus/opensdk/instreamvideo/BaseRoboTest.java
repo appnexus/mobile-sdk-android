@@ -1,15 +1,15 @@
 package com.appnexus.opensdk.instreamvideo;
 
 import android.app.Activity;
-
-
-import com.appnexus.opensdk.ANAdResponseInfo;
 import com.appnexus.opensdk.XandrAd;
 import com.appnexus.opensdk.instreamvideo.shadows.ShadowSettings;
 import com.appnexus.opensdk.instreamvideo.util.Lock;
 import com.appnexus.opensdk.ut.UTConstants;
 import com.squareup.okhttp.HttpUrl;
+import com.squareup.okhttp.mockwebserver.Dispatcher;
+import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
+import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -22,6 +22,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static org.robolectric.Shadows.shadowOf;
+
+import androidx.annotation.NonNull;
 
 public class BaseRoboTest {
     public static final int placementID = 1;
@@ -88,5 +90,19 @@ public class BaseRoboTest {
     public void waitForTasks() {
         scheduleTimerToCheckForTasks();
         Lock.pause();
+    }
+
+    /**
+     *creates a mock web server dispatcher with prerecorded requests and responses
+     **/
+    public Dispatcher getDispatcher(final String response) {
+        return new Dispatcher() {
+            @NonNull
+            @Override
+            public MockResponse dispatch(@NonNull RecordedRequest request) {
+                return new MockResponse().setResponseCode(200)
+                        .setBody(response);
+            }
+        };
     }
 }

@@ -120,7 +120,7 @@ public class AdFetcherTest extends BaseRoboTest {
         adFetcher.start();
         Lock.pause(1000); // added this so jenkins can have enough time to process
         // assert 3 here because a AAID async task
-        assertExpectedBGTasksAfterOneAdRequest(2);
+        assertExpectedBGTasksAfterOneAdRequest(3);
 
         assertEquals(AdFetcher.STATE.AUTO_REFRESH, adFetcher.getState());
 
@@ -128,7 +128,7 @@ public class AdFetcherTest extends BaseRoboTest {
         Lock.pause(30000 + 1000); // We wait for till autorefresh is triggered
 
         // in the following method, wait until next ad request is enqueued
-        assertExpectedBGTasksAfterOneAdRequest(3);
+        assertExpectedBGTasksAfterOneAdRequest(4);
         assertEquals(AdFetcher.STATE.AUTO_REFRESH, adFetcher.getState());
     }
 
@@ -238,7 +238,7 @@ public class AdFetcherTest extends BaseRoboTest {
     public void testStop() {
         if (adFetcher != null) {
             // not needed, but in case AdRequest is run
-            server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+            server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
             clearAAIDAsyncTasks();
             // start an AdFetcher normally, until an AdRequest is queued
             adFetcher.start();

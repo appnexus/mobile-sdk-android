@@ -82,8 +82,8 @@ public class BannerImpressionTests extends BaseViewAdTest {
     // 3. Checks if impression_url is fired succesfully
     @Test
     public void test_1BannerImpressionFiring() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // This is for UT Request
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for Impression
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for Impression
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // This is for UT Request
 
         runBasicBannerTest();
 
@@ -111,8 +111,8 @@ public class BannerImpressionTests extends BaseViewAdTest {
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.bannerWithBuyerMemberId(9325))); // This is for UT Request
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for Impression
+//        server.setDispatcher(getDispatcher(TestResponsesUT.bannerWithBuyerMemberId(9325))); // This is for UT Request
+//        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for Impression
 //
 //        runBasicBannerTest();
 //
@@ -139,8 +139,8 @@ public class BannerImpressionTests extends BaseViewAdTest {
 //    // 2. Checks if impression_url is fired succesfully
 //    @Test
 //    public void test_3BannerImpressionFiringonAdLoad() {
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // This is for UT Request
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for Impression
+//        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // This is for UT Request
+//        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for Impression
 //        bannerAdView.setCountImpressionOnAdLoad(true);
 //
 //        //runBasicBannerTest();
@@ -161,8 +161,8 @@ public class BannerImpressionTests extends BaseViewAdTest {
     public void test_1BannerImpressionFiringViewableImpressionTracking() {
         XandrAd.init(9325, null, false, null);
 
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.bannerWithBuyerMemberId(9325))); // This is for UT Request
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for Impression
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for Impression
+        server.setDispatcher(getDispatcher(TestResponsesUT.bannerWithBuyerMemberId(9325))); // This is for UT Request
 
         runBasicBannerTest();
 
@@ -175,8 +175,8 @@ public class BannerImpressionTests extends BaseViewAdTest {
     public void test_1BannerImpressionFiringViewableImpressionTrackingNotAvailableForExcludedMembers() {
         XandrAd.init(0, null, false, null);
 
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // This is for UT Request
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for Impression
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for Impression
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // This is for UT Request
 
         runBasicBannerTest();
 
@@ -193,8 +193,8 @@ public class BannerImpressionTests extends BaseViewAdTest {
 //        bannerAdView.setCountImpressionOnAdLoad(true);
 //        XandrAd.init(9325);
 //
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // This is for UT Request
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for Impression
+//        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // This is for UT Request
+//        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for Impression
 //
 //        runBasicBannerTest();
 //
@@ -241,7 +241,7 @@ public class BannerImpressionTests extends BaseViewAdTest {
        // waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
-        assertEquals(1, server.getRequestCount());
+        assertEquals(3, server.getRequestCount());
     }
 
 

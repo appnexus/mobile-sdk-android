@@ -84,7 +84,7 @@ public class NativeAdSDKFailedTest extends BaseNativeTest implements NativeAdEve
     @Test
     public void requestNativeSuccessTestExpiryModifiedValidInterval() {
         Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = 120 * 1000;
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -119,7 +119,7 @@ public class NativeAdSDKFailedTest extends BaseNativeTest implements NativeAdEve
     @Test
     public void requestNativeSuccessTestExpiryModifiedInvalidInterval() {
         Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME;
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -155,7 +155,7 @@ public class NativeAdSDKFailedTest extends BaseNativeTest implements NativeAdEve
 
 //    @Test
 //    public void requestNativeSuccessTestExpiryNotCalledAfterOnAdAboutToExpiryAlreadyCalledWhenViewAttachedToWindow() {
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+//        server.setDispatcher(getDispatcher(TestResponsesUT.anNative()));
 //        adRequest.loadAd();
 //        Lock.pause(1000);
 //        waitForTasks();
@@ -205,7 +205,7 @@ public class NativeAdSDKFailedTest extends BaseNativeTest implements NativeAdEve
 
     @Test
     public void requestNativeSuccessTestExpiryInmobi() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeInMobi()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeInMobi()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -240,7 +240,7 @@ public class NativeAdSDKFailedTest extends BaseNativeTest implements NativeAdEve
     @Test
     public void requestNativeSuccessTestExpiryInMobiModifiedValidInterval() {
         Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = 120 * 1000;
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeInMobi()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeInMobi()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -275,7 +275,7 @@ public class NativeAdSDKFailedTest extends BaseNativeTest implements NativeAdEve
 
     @Test
     public void requestNativeSuccessInMobiTestExpiryNotCalledWhenViewAttachedToWindow() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeInMobi()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeInMobi()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();

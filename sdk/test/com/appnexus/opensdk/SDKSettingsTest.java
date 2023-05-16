@@ -45,6 +45,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.robolectric.Shadows.shadowOf;
 
+import java.util.Locale;
+
 @Config(sdk = Build.VERSION_CODES.M)
 @RunWith(RobolectricTestRunner.class)
 public class SDKSettingsTest {
@@ -107,6 +109,6 @@ public class SDKSettingsTest {
         Robolectric.flushForegroundThreadScheduler();
         WebView userAgentWebView = new WebView(activity);
         assertNotNull(Settings.getSettings().ua);
-        assertNotEquals(Settings.getSettings().ua, (userAgentWebView.getSettings().getUserAgentString()));
+        assertNotEquals(Settings.getSettings().ua, (userAgentWebView.getSettings().getUserAgentString().trim().toLowerCase(Locale.ROOT)));
     }
 }

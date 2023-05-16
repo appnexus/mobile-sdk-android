@@ -115,7 +115,7 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements UTAdRequ
         setBannerRequestParams();
         // adRequest initialization goes here because getOwner is called in the constructor
         adRequest = new UTAdRequest(this);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         adRequest.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
@@ -130,7 +130,7 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements UTAdRequ
         setBannerRequestParams();
         // adRequest initialization goes here because getOwner is called in the constructor
         adRequest = new UTAdRequest(this);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative()));
         adRequest.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
@@ -145,7 +145,7 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements UTAdRequ
         setBannerRequestParams();
         adRequest = new UTAdRequest(this);
         // blanks are handled by requester
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         adRequest.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
@@ -169,7 +169,7 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements UTAdRequ
     public void testRequestNativeSucceeded() {
         setNativeRequestParams();
         adRequest = new UTAdRequest(this);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative()));
         adRequest.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
@@ -185,7 +185,7 @@ public class AdRequestToAdRequesterTest extends BaseRoboTest implements UTAdRequ
         adRequest = new UTAdRequest(this);
 
         // Server response for banner and interstitial is the same
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner()));
         adRequest.execute();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();

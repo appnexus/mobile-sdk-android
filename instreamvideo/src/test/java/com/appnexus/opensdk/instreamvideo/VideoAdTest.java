@@ -25,7 +25,6 @@ import com.appnexus.opensdk.instreamvideo.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.instreamvideo.util.Lock;
 import com.appnexus.opensdk.instreamvideo.util.TestUtil;
 import com.appnexus.opensdk.utils.Clog;
-import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import junit.framework.Assert;
 
@@ -78,7 +77,7 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
     @Test
     public void testGetVideoOrientationPortrait() throws Exception {
         ShadowCustomWebView.aspectRatio = "0.5625"; // 9:16
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video()));
+        server.setDispatcher(getDispatcher(TestUTResponses.video()));
 
         videoAd.loadAd();
         Lock.pause(1000);
@@ -97,7 +96,7 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
     @Test
     public void testGetVideoOrientationLandscape() throws Exception {
         ShadowCustomWebView.aspectRatio = "1.7778"; // 16:9
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video()));
+        server.setDispatcher(getDispatcher(TestUTResponses.video()));
 
         videoAd.loadAd();
         Lock.pause(1000);
@@ -116,7 +115,7 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
     @Test
     public void testGetVideoOrientationSquare() throws Exception {
         ShadowCustomWebView.aspectRatio = "1";
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video()));
+        server.setDispatcher(getDispatcher(TestUTResponses.video()));
 
         videoAd.loadAd();
         Lock.pause(1000);
@@ -135,7 +134,7 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
     @Test
     public void testGetVideoOrientationUnknown() throws Exception {
         ShadowCustomWebView.aspectRatio = "";
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video()));
+        server.setDispatcher(getDispatcher(TestUTResponses.video()));
 
         videoAd.loadAd();
         Lock.pause(1000);
@@ -154,7 +153,7 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
 
     @Test
     public void testGetCreativeURL() throws Exception {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video()));
+        server.setDispatcher(getDispatcher(TestUTResponses.video()));
 
         videoAd.loadAd();
         Lock.pause(1000);
@@ -173,7 +172,7 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
 
     @Test
     public void testGetVideoAdDuration() throws Exception {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video()));
+        server.setDispatcher(getDispatcher(TestUTResponses.video()));
 
         videoAd.loadAd();
         Lock.pause(1000);
@@ -191,7 +190,7 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
 
     @Test
     public void testGetVastXML() throws Exception {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video()));
+        server.setDispatcher(getDispatcher(TestUTResponses.video()));
 
         videoAd.loadAd();
         Lock.pause(1000);
@@ -209,7 +208,7 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
 
     @Test
     public void testGetVastURL() throws Exception {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video()));
+        server.setDispatcher(getDispatcher(TestUTResponses.video()));
 
         videoAd.loadAd();
         Lock.pause(1000);
@@ -227,7 +226,7 @@ public class VideoAdTest extends BaseRoboTest implements VideoAdLoadListener, Vi
 
     @Test
     public void testAdPlayStarted() throws Exception {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video()));
+        server.setDispatcher(getDispatcher(TestUTResponses.video()));
 
         videoAd.loadAd();
         Lock.pause(1000);

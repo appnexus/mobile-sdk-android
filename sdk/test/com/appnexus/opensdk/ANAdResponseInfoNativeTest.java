@@ -63,7 +63,7 @@ public class ANAdResponseInfoNativeTest extends BaseNativeTest {
 
     @Test
     public void requestNativeSuccessAdResponseInfo() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative()));
         assertNull(response);
         executeNativeRequest();
         assertNotNull(response.getAdResponseInfo());
@@ -82,7 +82,7 @@ public class ANAdResponseInfoNativeTest extends BaseNativeTest {
 
     @Test
     public void requestNativeNoBidAdResponseInfo() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.NO_BID));
+        server.setDispatcher(getDispatcher(TestResponsesUT.NO_BID));
         assertNull(adResponseInfo);
         executeNativeRequest();
         assertNotNull(adResponseInfo);
@@ -100,7 +100,7 @@ public class ANAdResponseInfoNativeTest extends BaseNativeTest {
 
     @Test
     public void requestNativeBlankAdResponseInfo() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
         assertNull(adResponseInfo);
         executeNativeRequest();
         assertNull(adResponseInfo);

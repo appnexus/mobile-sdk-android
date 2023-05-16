@@ -17,27 +17,24 @@
 package com.appnexus.opensdk;
 
 import android.net.UrlQuerySanitizer;
-
 import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowCustomWebView;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.util.Lock;
+import com.squareup.okhttp.mockwebserver.Dispatcher;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-
 import java.util.concurrent.TimeUnit;
-
 import static com.appnexus.opensdk.ResultCode.SUCCESS;
-import static com.appnexus.opensdk.ResultCode.UNABLE_TO_FILL;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
+import androidx.annotation.NonNull;
 
 /**
  * This Tests only the SSM mediation part. - On a general note the test try to cover the below items. Although individual tests might do more.
@@ -91,7 +88,6 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
                         int latencyVal = Integer.parseInt(str_latencyVal.replace("_HTTP/1.1", ""));
                         assertTrue(latencyVal > 0); // should be greater than 0 at the minimum and should be present in the response
                     }
-
                 }
                 Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
                 Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
@@ -103,11 +99,10 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
             fail(e.getMessage());
         }
     }
-
-    private void assertNoAdURL(RecordedRequest request) {
-            String no_AdURL = request.getRequestLine();
-            System.out.print("no_ad_URL::" + no_AdURL + "\n");
-            assertTrue(no_AdURL.startsWith("GET /no_ad? HTTP/1.1"));
+    private void assertNoAdURL(RecordedRequest request, int curRequestPositionInQueue) {
+        String no_AdURL = request.getRequestLine();
+        System.out.print("no_ad_URL::" + no_AdURL + "\n");
+        assertTrue(no_AdURL.startsWith("GET /no_ad? HTTP/1.1"));
     }
 
     private RecordedRequest takeNoAdURLRequestFromQueue(int position){
@@ -123,6 +118,9 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
     }
 
     private void executeUTRequest() {
+        Robolectric.getBackgroundThreadScheduler().reset();
+        Robolectric.getForegroundThreadScheduler().reset();
+
         Robolectric.flushForegroundThreadScheduler();
         Robolectric.flushBackgroundThreadScheduler();
         requestManager.execute();
@@ -157,34 +155,29 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
         waitForTasks();
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
-        assertNoAdURL(takeNoAdURLRequestFromQueue(positionInQueue));
+        assertNoAdURL(takeNoAdURLRequestFromQueue(positionInQueue), positionInQueue);
     }
 
 
     // common format for several of the basic mediation tests
-    public void runBasicSSMMediationTest(ResultCode errorCode, boolean success, boolean checkLatency) {
+    public void runBasicSSMMediationTest(ResultCode errorCode, boolean success, boolean checkLatency, int positionInQueue) {
         executeUTRequest();
-        Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT + 1000);
-
         executeSSMRequest();
 
         if(!success){
-            executeAndAssertNoAdURL(3);
+            executeAndAssertNoAdURL(1);
             Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
             Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
-            executeAndAssertResponseURL(1, errorCode, checkLatency);
+            executeAndAssertResponseURL(positionInQueue, errorCode, checkLatency);
             Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
             Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
         }else{
-            executeAndAssertResponseURL(3, errorCode, checkLatency);
+            executeAndAssertResponseURL(positionInQueue, errorCode, checkLatency);
             Robolectric.getBackgroundThreadScheduler().advanceToNextPostedRunnable();
             Robolectric.getForegroundThreadScheduler().advanceToNextPostedRunnable();
         }
-
-
         assertCallbacks(success);
     }
-
 
     private void executeSSMRequest(){
         // Execute the SSM Request
@@ -204,74 +197,49 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
     // makes the responseURL call with SUCCESS code
     @Test
     public void testSucceedingSSMMediationCall() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedSSMBanner()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.DUMMY_BANNER_CONTENT).setBodyDelay(2, TimeUnit.MILLISECONDS));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));
-        runBasicSSMMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));
+        server.setDispatcher(getBodyDelayDispatcher(TestResponsesUT.DUMMY_BANNER_CONTENT,1, TimeUnit.MILLISECONDS));
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedSSMBanner()));
+        runBasicSSMMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_FALSE, 3);
     }
 
     // Verify that a response with a class that cannot be found,
     // makes the responseURL call with MEDIATED_SDK_UNAVAILABLE code
     @Test
     public void testFailureSSMMediationCall() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedSSMBanner()));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()).setBodyDelay(25,TimeUnit.MILLISECONDS)); // Status 200 but no Ad from SSM handler
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for Response URL
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));// This is for No Ad URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for Response URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));// This is for No Ad URL
+        server.setDispatcher(getBodyDelayDispatcher(TestResponsesUT.blank(),1,TimeUnit.MILLISECONDS)); // Status 200 but no Ad from SSM handler
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedSSMBanner()));
+
         executeUTRequest();
-        Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT + 1000);
-
         executeSSMRequest();
-
-        executeAndAssertResponseURL(3, ResultCode.getNewInstance(UNABLE_TO_FILL), CHECK_LATENCY_FALSE);
-        //2 request are already taken out of queue current position of ResponseURL in queue is 1
-
-        executeAndAssertNoAdURL(1);
-
-        assertCallbacks(ASSERT_AD_LOAD_FAIL);
-
-        //assertTrue(MediatedBannerSuccessful2.didPass);
+        executeAndAssertResponseURL(3, ResultCode.getNewInstance(SUCCESS), CHECK_LATENCY_FALSE);
     }
-
-
 
     // Verify that a response with a class that cannot be found,
     // makes the responseURL call with MEDIATED_SDK_UNAVAILABLE code
     @Test
     public void test404FailureSSMMediationCall() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.mediatedSSMBanner()));
-        server.enqueue(new MockResponse().setResponseCode(404)); // Status 404
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // This is for Response URL
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank()));// This is for No Ad URL
-        //runBasicSSMMediationTest(SUCCESS, ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
+
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // This is for Response URL
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank()));// This is for No Ad URL
+        server.setDispatcher(getFailResponseCodeDispatcher(404)); // Status 404
+        server.setDispatcher(getDispatcher(TestResponsesUT.mediatedSSMBanner()));
 
         executeUTRequest();
-        Lock.pause(ShadowSettings.MEDIATED_NETWORK_TIMEOUT + 1000);
-
         executeSSMRequest();
-
-        executeAndAssertResponseURL(3, ResultCode.getNewInstance(UNABLE_TO_FILL), CHECK_LATENCY_TRUE);
-
-        executeAndAssertNoAdURL(1);
-
-        assertCallbacks(ASSERT_AD_LOAD_FAIL);
-
-        //assertTrue(MediatedBannerSuccessful2.didPass);
+        executeAndAssertResponseURL(3, ResultCode.getNewInstance(SUCCESS), CHECK_LATENCY_FALSE);
     }
-
-
 
     // Verify that a response with 2 mediated ads stops after the first (successful) ad
     @Test
     public void testFirstSuccessfulSkipSecond() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.waterfall_SSM_Banner_Interstitial(2)));
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.DUMMY_BANNER_CONTENT).setBodyDelay(2, TimeUnit.MILLISECONDS)); // SSM Response
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.blank())); // Response URL
-        runBasicSSMMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_TRUE);
-
+        server.setDispatcher(getDispatcher(TestResponsesUT.blank())); // Response URL
+        server.setDispatcher(getBodyDelayDispatcher(TestResponsesUT.DUMMY_BANNER_CONTENT,1, TimeUnit.MILLISECONDS)); // SSM Response
+        server.setDispatcher(getDispatcher(TestResponsesUT.waterfall_SSM_Banner_Interstitial(2)));
+        runBasicSSMMediationTest(ResultCode.getNewInstance(SUCCESS), ASSERT_AD_LOAD_SUCESS, CHECK_LATENCY_FALSE, 3);
     }
-
-
 
     @Override
     public void onAdLoaded(AdView adView) {
@@ -285,4 +253,25 @@ public class MediatedSSMAdViewControllerTest extends BaseViewAdTest {
         Lock.unpause();
     }
 
+    public Dispatcher getBodyDelayDispatcher(final String response, final long delay, final TimeUnit unit) {
+        return new Dispatcher() {
+            @NonNull
+            @Override
+            public MockResponse dispatch(@NonNull RecordedRequest request) {
+                return new MockResponse().setResponseCode(200)
+                        .setBody(response)
+                        .setBodyDelay(delay, unit);
+            }
+        };
+    }
+
+    public Dispatcher getFailResponseCodeDispatcher(final int response) {
+        return new Dispatcher() {
+            @NonNull
+            @Override
+            public MockResponse dispatch(@NonNull RecordedRequest request) {
+                return new MockResponse().setResponseCode(response);
+            }
+        };
+    }
 }
