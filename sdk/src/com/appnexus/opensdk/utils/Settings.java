@@ -69,7 +69,7 @@ public class Settings {
     public String ua = null;
 
     public final String sdkVersion = "8.6.1";
-//            BuildConfig.VERSION_NAME;
+//      BuildConfig.VERSION_NAME;
 
 
     public String mcc;
