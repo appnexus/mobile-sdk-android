@@ -65,7 +65,7 @@ public class BannerAdViewVideoLoadAdTest extends BaseViewAdTest {
 
     @Test
     public void testgetAdTypeVideo() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.rtbVASTVideo())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.rtbVASTVideo())); // First queue a regular HTML banner response
         assertTrue(bannerAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOW initially
         executeBannerRequest();
         assertTrue(bannerAdView.getAdType() == AdType.VIDEO); // If a VAST Video is served then VIDEO
@@ -73,7 +73,7 @@ public class BannerAdViewVideoLoadAdTest extends BaseViewAdTest {
 
     @Test
     public void testLazyBannerVideoAdLoaded() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.rtbVASTVideo()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.rtbVASTVideo()));
         bannerAdView.enableLazyLoad();
         bannerAdView.setAllowVideoDemand(true);
         executeBannerRequest();
@@ -84,7 +84,7 @@ public class BannerAdViewVideoLoadAdTest extends BaseViewAdTest {
 
     @Test
     public void testgetCreativeIdVideoCreativeId() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.rtbVASTVideo())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.rtbVASTVideo())); // First queue a regular HTML banner response
         executeBannerRequest();
         assertEquals("6332753", bannerAdView.getAdResponseInfo().getCreativeId());
     }

@@ -79,7 +79,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestNativeSuccess() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -108,7 +108,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestNativeSuccessTestExpiry() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -143,7 +143,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestNativeSuccessTestExpiryNotCalledWhenViewAttachedToWindow() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -188,7 +188,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestNativeSuccessTestExpiryTripleLift() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeTripleLift()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -223,7 +223,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
     @Test
     public void requestNativeSuccessTestExpiryTripleLiftModifiedValidInterval() {
         Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = 120 * 1000;
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeTripleLift()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -258,7 +258,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
     @Test
     public void requestNativeSuccessTestExpiryTripleLiftModifiedInvalidInterval() {
         Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT;
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeTripleLift()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -292,7 +292,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestNativeSuccessTripleLiftTestExpiryNotCalledWhenViewAttachedToWindow() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeTripleLift()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -337,7 +337,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestNativeSuccessTripleLiftTestExpiryNotCalledAfterOnAdAboutToExpireWhenViewAttachedToWindow() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeTripleLift()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -387,7 +387,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestNativeSuccessTestExpiryMSAN() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeMSAN()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeMSAN()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -422,7 +422,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
     @Test
     public void requestNativeSuccessTestExpiryMSANModifiedValidInterval() {
         Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = 120 * 1000;
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeMSAN()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeMSAN()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -457,7 +457,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
     @Test
     public void requestNativeSuccessTestExpiryMSANModifiedInvalidInterval() {
         Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_MSAN;
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeMSAN()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeMSAN()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -491,7 +491,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestNativeSuccessMSANTestExpiryNotCalledWhenViewAttachedToWindow() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeMSAN()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeMSAN()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -536,7 +536,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestNativeSuccessMSANTestExpiryNotCalledAfterOnAdAboutToExpireWhenViewAttachedToWindow() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeMSAN()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeMSAN()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -586,7 +586,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestNativeSuccessTestExpiryIndex() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeIndex()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeIndex()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -621,7 +621,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
     @Test
     public void requestNativeSuccessTestExpiryIndexModifiedValidInterval() {
         Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = 120 * 1000;
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeIndex()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeIndex()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -656,7 +656,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
     @Test
     public void requestNativeSuccessTestExpiryIndexModifiedInvalidInterval() {
         Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_INDEX;
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeIndex()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeIndex()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -690,7 +690,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestNativeSuccessIndexTestExpiryNotCalledWhenViewAttachedToWindow() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeIndex()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeIndex()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -735,7 +735,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestNativeSuccessIndexTestExpiryNotCalledAfterOnAdAboutToExpireWhenViewAttachedToWindow() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeIndex()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeIndex()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -784,7 +784,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
     @Test
     public void requestNativeSuccessTestExpiryInMobiModifiedInvalidInterval() {
         Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_INMOBI;
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeInMobi()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeInMobi()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -818,7 +818,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestNativeSuccessInMobiTestExpiryNotCalledAfterOnAdAboutToExpireWhenViewAttachedToWindow() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeInMobi()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeInMobi()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -868,7 +868,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestNativeSuccessTestExpiryRegisterExpiryListener() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -902,7 +902,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
     @Test
     public void requestNativeSuccessTestExpiryModifiedValidIntervalRegisterExpiryListener() {
         Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = 120 * 1000;
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -936,7 +936,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
     @Test
     public void requestNativeSuccessTestExpiryModifiedInvalidIntervalRegisterExpiryListener() {
         Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME;
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -969,7 +969,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestNativeSuccessTestExpiryCalledWhenViewAttachedToWindowRegisterExpiryListener() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -1006,7 +1006,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestNativeSuccessTestExpiryCalledAfterOnAdAboutToExpiryAlreadyCalledWhenViewAttachedToWindowRegisterExpiryListener() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -1045,7 +1045,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestNativeSuccessTestExpiryTripleLiftRegisterExpiryListener() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeTripleLift()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -1080,7 +1080,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
     @Test
     public void requestNativeSuccessTestExpiryTripleLiftModifiedValidIntervalRegisterExpiryListener() {
         Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = 120 * 1000;
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeTripleLift()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -1115,7 +1115,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
     @Test
     public void requestNativeSuccessTestExpiryTripleLiftModifiedInvalidIntervalRegisterExpiryListener() {
         Settings.NATIVE_AD_ABOUT_TO_EXPIRE_INTERVAL = Settings.NATIVE_AD_RESPONSE_EXPIRATION_TIME_TRIPLELIFT;
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeTripleLift()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -1149,7 +1149,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestNativeSuccessTripleLiftTestExpiryCalledWhenViewAttachedToWindowRegisterExpiryListener() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeTripleLift()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -1186,7 +1186,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestNativeSuccessTripleLiftTestExpiryCalledAfterOnAdAboutToExpireWhenViewAttachedToWindowRegisterExpiryListener() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNativeTripleLift()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeTripleLift()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();
@@ -1226,7 +1226,7 @@ public class NativeAdSDKTest extends BaseNativeTest implements NativeAdEventList
 
     @Test
     public void requestOnAdDidLogImpression() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative()));
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNative()));
         adRequest.loadAd();
         Lock.pause(1000);
         waitForTasks();

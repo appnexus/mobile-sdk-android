@@ -24,7 +24,6 @@ import com.appnexus.opensdk.instreamvideo.shadows.ShadowCustomWebView;
 import com.appnexus.opensdk.instreamvideo.shadows.ShadowSettings;
 import com.appnexus.opensdk.instreamvideo.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.instreamvideo.util.Lock;
-import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,7 +62,7 @@ public class VideoAdFriendlyObstructionTest extends BaseRoboTest {
 
     @Test
     public void testBannerAddFriendlyObstruction() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestUTResponses.video())); // First queue a regular HTML banner response
         assertFriendlyObstruction(videoAd, 0);
         SDKSettings.setOMEnabled(true);
         View v1 = new View(activity);
@@ -78,7 +77,7 @@ public class VideoAdFriendlyObstructionTest extends BaseRoboTest {
 
     @Test
     public void testBannerAddAndRemoveFriendlyObstruction() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestUTResponses.video())); // First queue a regular HTML banner response
         assertFriendlyObstruction(videoAd, 0);
         SDKSettings.setOMEnabled(true);
         View v1 = new View(activity);
@@ -97,7 +96,7 @@ public class VideoAdFriendlyObstructionTest extends BaseRoboTest {
 
     @Test
     public void testBannerAddAndRemoveAllFriendlyObstruction() {
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestUTResponses.video())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestUTResponses.video())); // First queue a regular HTML banner response
         assertFriendlyObstruction(videoAd, 0);
         SDKSettings.setOMEnabled(true);
         View v1 = new View(activity);

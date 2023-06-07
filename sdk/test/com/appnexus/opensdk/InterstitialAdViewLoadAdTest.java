@@ -63,7 +63,7 @@ public class InterstitialAdViewLoadAdTest extends BaseViewAdTest {
 
         setInterstitialShowonLoad(true);
         setAutoDismissDelay(false);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // First queue a regular HTML banner response
         assertTrue(interstitialAdView.getAdType() == AdType.UNKNOWN); // First tests if ad_type is UNKNOWN initially
         executeInterstitialRequest();
 
@@ -89,7 +89,7 @@ public class InterstitialAdViewLoadAdTest extends BaseViewAdTest {
 
         setInterstitialShowonLoad(true);
         setAutoDismissDelay(true);
-        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.banner())); // First queue a regular HTML banner response
+        server.setDispatcher(getDispatcher(TestResponsesUT.banner())); // First queue a regular HTML banner response
         assertTrue(interstitialAdView.getAdType() == AdType.UNKNOWN); // First 2tests if ad_type is UNKNOW initially
         executeInterstitialRequest();
 

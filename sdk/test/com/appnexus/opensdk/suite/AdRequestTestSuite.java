@@ -13,11 +13,11 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+        AdViewFriendlyObstructionTests.class,
         AdViewRequestManagerTest.class,
         AdActivityTest.class,
         AdFetcherTest.class,
         AdRequestToAdRequesterTest.class,
-        AdViewFriendlyObstructionTests.class,
         UTAdRequestTest.class,
 })
 public class AdRequestTestSuite {

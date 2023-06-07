@@ -8,7 +8,10 @@ import com.appnexus.opensdk.ut.UTConstants;
 import com.appnexus.opensdk.util.Lock;
 import com.appnexus.opensdk.util.MockMainActivity;
 import com.squareup.okhttp.HttpUrl;
+import com.squareup.okhttp.mockwebserver.Dispatcher;
+import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
+import com.squareup.okhttp.mockwebserver.RecordedRequest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -22,6 +25,8 @@ import java.util.TimerTask;
 
 import static android.os.Looper.getMainLooper;
 import static org.robolectric.Shadows.shadowOf;
+
+import androidx.annotation.NonNull;
 
 public class BaseRoboTest {
     public static final int placementID = 1;
@@ -117,5 +122,19 @@ public class BaseRoboTest {
         } catch (IOException e) {
             System.out.print("IOException");
         }
+    }
+
+    /**
+     *creates a mock web server dispatcher with prerecorded requests and responses
+     **/
+    public Dispatcher getDispatcher(final String response) {
+        return new Dispatcher() {
+            @NonNull
+            @Override
+            public MockResponse dispatch(@NonNull RecordedRequest request) {
+                return new MockResponse().setResponseCode(200)
+                        .setBody(response);
+            }
+        };
     }
 }

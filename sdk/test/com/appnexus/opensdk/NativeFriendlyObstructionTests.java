@@ -71,7 +71,7 @@ public class NativeFriendlyObstructionTests extends BaseNativeTest {
 
 //    @Test
 //    public void testNativeAddFriendlyObstruction() throws NoSuchFieldException, IllegalAccessException, InterruptedException {
-//        server.enqueue(new MockResponse().setResponseCode(200).setBody(TestResponsesUT.anNative())); // First queue a regular HTML banner response
+//        server.setDispatcher(getDispatcher(TestResponsesUT.anNative())); // First queue a regular HTML banner response
 //        SDKSettings.setOMEnabled(true);
 //        executeNativeRequest();
 //        assertFriendlyObstruction(0);

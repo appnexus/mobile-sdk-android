@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.CalendarContract;
-
 import com.appnexus.opensdk.tasksmanager.TasksManager;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.HTTPGet;
@@ -29,8 +28,8 @@ import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.Settings;
 import org.json.JSONArray;
 import org.json.JSONException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * This class holds the responsibility of caching the memberId and memberId list,
@@ -45,7 +44,7 @@ public class XandrAd {
     /**
      * Cached member IDs list
      * */
-    private static List<Integer> cachedViewableImpressionMemberIds = new ArrayList<>();
+    private static List<Integer> cachedViewableImpressionMemberIds = new CopyOnWriteArrayList<>();
     /**
      * Viewable Impression Config URL
      * */
@@ -132,6 +131,8 @@ public class XandrAd {
                                 }
                             }
                         } catch (JSONException e) {
+                            Clog.e(Clog.baseLogTag, Clog.getString(R.string.fetch_viewable_impression_member_id_error));
+                        } catch (ArrayIndexOutOfBoundsException boundsException) {
                             Clog.e(Clog.baseLogTag, Clog.getString(R.string.fetch_viewable_impression_member_id_error));
                         }
                     }
