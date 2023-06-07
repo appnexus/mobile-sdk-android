@@ -1,3 +1,8 @@
+## 8.6.1
+
+### Improvement/Bug Fixes
++ MS-5321 Fixed ArrayIndexOutOfBoundsException in XandrAd.init()
+
 ## 8.6
 
 ### Improvement/Bug Fixes
