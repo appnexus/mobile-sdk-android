@@ -49,4 +49,10 @@ public interface BaseAdDispatcher {
      * Called on ad impression
      */
     public void onAdImpression();
+
+    /**
+     * Called when an ad request is completed
+     * and ad response is received
+     */
+    public void onAdResponseReceived();
 }
