@@ -259,9 +259,10 @@ public class AdFetcher {
             }
 
             // Checks if the AdResponseReceived is enabled (isAdResponseReceived - boolean in the AdView)
-            if (fetcher.owner != null && fetcher.owner instanceof BannerAdView) {
+            if (fetcher.owner != null && fetcher.owner instanceof AdView) {
                 if(((AdView)fetcher.owner).isAdResponseReceived) {
                     ((AdView)fetcher.owner).isAdResponseReceived = false;
+                    Clog.d(Clog.baseLogTag, "Resetting isAdResponseReceived for Banner / Interstitial");
                 }
             }
 
