@@ -576,7 +576,7 @@ public class VideoAd implements Ad, MultiAd {
 
         @Override
         public void onAdResponseReceived() {
-
+            Clog.d(Clog.videoLogTag, "onAdResponseReceived");
         }
     }
 

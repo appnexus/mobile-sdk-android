@@ -1188,6 +1188,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
 
         @Override
         public void onAdResponseReceived() {
+            Clog.d(Clog.baseLogTag, "onAdResponseReceived");
             isAdResponseReceived = true;
         }
 

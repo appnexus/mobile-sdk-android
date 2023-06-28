@@ -565,7 +565,7 @@ public class NativeAdRequest implements Ad, MultiAd {
 
         @Override
         public void onAdResponseReceived() {
-
+            Clog.d(Clog.nativeLogTag, "onAdResponseReceived");
         }
     }
 
