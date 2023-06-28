@@ -52,7 +52,7 @@ public interface BaseAdDispatcher {
 
     /**
      * Called when an ad request is completed
-     * and ad response is received
+     * and successful ad response is received
      */
     public void onAdResponseReceived();
 }
