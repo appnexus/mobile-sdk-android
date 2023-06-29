@@ -60,6 +60,17 @@ class VideoImplementation {
                 if (paramsDictionary.has("aspectRatio")) {
                     processAspectRatio(paramsDictionary.getString("aspectRatio"));
                 }
+                if (paramsDictionary.has("width") &&
+                        paramsDictionary.has("height")) {
+
+                    try {
+                        ((BannerAdView) adWebView.adView).setBannerVideoCreativeWidth(Integer.parseInt(paramsDictionary.getString("width")));
+                        ((BannerAdView) adWebView.adView).setBannerVideoCreativeHeight(Integer.parseInt(paramsDictionary.getString("height")));
+                    } catch (NumberFormatException nfe) {
+                        Clog.d(Clog.videoLogTag, "Could not parse int value" + nfe);
+                    }
+
+                }
                 adWebView.success();
                 adReady = true;
             } else if (eventName.equals("videoStart")) {
@@ -84,7 +95,10 @@ class VideoImplementation {
 
     private void processAspectRatio(String fetchedAspectRatio) {
         if(adWebView.adView instanceof BannerAdView) {
-            ((BannerAdView)adWebView.adView).setVideoOrientation(ViewUtil.getVideoOrientation(fetchedAspectRatio));
+            VideoOrientation orientation = ViewUtil.getVideoOrientation(fetchedAspectRatio);
+            adWebView.resizeWebViewBasedOnVideoOrientation(orientation);
+            ((BannerAdView)adWebView.adView).setVideoOrientation(orientation);
+
         }
     }
 

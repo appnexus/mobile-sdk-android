@@ -104,6 +104,14 @@ public class BannerAdView extends AdView implements ScreenEventListener {
     private Animator animator;
     private boolean autoRefreshOffInXML;
     private VideoOrientation videoOrientation = UNKNOWN;
+    private int bannerVideoCreativeWidth;
+    private int bannerVideoCreativeHeight;
+
+    private AdSize landscapeBannerVideoPlayerSize = new AdSize(1,1);
+
+    private AdSize portraitBannerVideoPlayerSize = new AdSize(1,1);
+
+    private AdSize squareBannerVideoPlayerSize = new AdSize(1,1);
 
     private void setDefaultsBeforeXML() {
         loadAdHasBeenCalled = false;
@@ -1325,5 +1333,76 @@ public class BannerAdView extends AdView implements ScreenEventListener {
     public boolean loadLazyAd() {
         return super.loadLazyAd();
     }
+
+    /**
+     * Get the Creative Width of the Banner Video
+     */
+    public int getBannerVideoCreativeWidth() {
+        return bannerVideoCreativeWidth;
+    }
+
+    /**
+     * Set the Creative Width of the Banner Video
+     */
+    void setBannerVideoCreativeWidth(int bannerVideoCreativeWidth) {
+        this.bannerVideoCreativeWidth = bannerVideoCreativeWidth;
+    }
+
+    /**
+     * Get the Creative Height of the Banner Video
+     */
+    public int getBannerVideoCreativeHeight() {
+        return bannerVideoCreativeHeight;
+    }
+
+    /**
+     * Set the Creative Height of the Banner Video
+     */
+    void setBannerVideoCreativeHeight(int bannerVideoCreativeHeight) {
+        this.bannerVideoCreativeHeight = bannerVideoCreativeHeight;
+    }
+
+    /**
+     * Get Player Size for Landscape Banner Video
+     */
+    public AdSize getLandscapeBannerVideoPlayerSize() {
+        return landscapeBannerVideoPlayerSize;
+    }
+
+    /**
+     * Set Player Size for Landscape Banner Video
+     */
+    public void setLandscapeBannerVideoPlayerSize(AdSize landscapeBannerVideoPlayerSize) {
+        this.landscapeBannerVideoPlayerSize = landscapeBannerVideoPlayerSize;
+    }
+
+    /**
+     * Get Player Size for Portrait Banner Video
+     */
+    public AdSize getPortraitBannerVideoPlayerSize() {
+        return portraitBannerVideoPlayerSize;
+    }
+
+    /**
+     * Set Player Size for Portrait Banner Video
+     */
+    public void setPortraitBannerVideoPlayerSize(AdSize portraitBannerVideoPlayerSize) {
+        this.portraitBannerVideoPlayerSize = portraitBannerVideoPlayerSize;
+    }
+
+    /**
+     * Get Player Size for Landscape Square Video
+     */
+    public AdSize getSquareBannerVideoPlayerSize() {
+        return squareBannerVideoPlayerSize;
+    }
+
+    /**
+     * Set Player Size for Landscape Square Video
+     */
+    public void setSquareBannerVideoPlayerSize(AdSize squareBannerVideoPlayerSize) {
+        this.squareBannerVideoPlayerSize = squareBannerVideoPlayerSize;
+    }
+
 
 }
