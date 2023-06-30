@@ -24,10 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.appnexus.opensdk.ANClickThroughAction;
-import com.appnexus.opensdk.Ad;
 import com.appnexus.opensdk.AdListener;
-import com.appnexus.opensdk.AdSize;
-import com.appnexus.opensdk.AdType;
 import com.appnexus.opensdk.AdView;
 import com.appnexus.opensdk.BannerAdView;
 import com.appnexus.opensdk.InitListener;
@@ -57,10 +54,6 @@ public class MyActivity extends Activity {
         Log.d("sdkVersion", "sdkVersion: "+ SDKSettings.getSDKVersion());
         // This is your AppNexus placement ID.
         bav.setPlacementID("17058950");
-        bav.setAllowBannerDemand(false);
-        bav.setAllowVideoDemand(true);
-        //bav.setForceCreativeId(182434863); // Landscape creative
-        bav.setForceCreativeId(414238306); // Portrait/vertical video
 
         // Turning this on so we always get an ad during testing.
         bav.setShouldServePSAs(false);
@@ -69,15 +62,10 @@ public class MyActivity extends Activity {
         bav.setClickThroughAction(ANClickThroughAction.OPEN_SDK_BROWSER);
 
         // Get a 300x50 ad.
-        bav.setAdSize(320, 250);
+        bav.setAdSize(300, 250);
 
         // Resizes the container size to fit the banner ad
         bav.setResizeAdToFitContainer(true);
-
-        bav.setPortraitBannerVideoPlayerSize(new AdSize(300,400));
-        bav.setLandscapeBannerVideoPlayerSize(new AdSize(300,250));
-        bav.setSquareBannerVideoPlayerSize(new AdSize(200,200));
-
 
         // Set up a listener on this ad view that logs events.
         AdListener adListener = new AdListener() {
@@ -93,18 +81,6 @@ public class MyActivity extends Activity {
             @Override
             public void onAdLoaded(AdView bav) {
                 Clog.v("SIMPLEBANNER", "The Ad Loaded!");
-                if((bav instanceof BannerAdView) && bav.getAdResponseInfo().getAdType()== AdType.VIDEO) {
-                    Clog.d("SIMPLEBANNER","Banner:: Width="+ bav.getCreativeWidth());
-                    Clog.d("SIMPLEBANNER","Banner:: Height="+ bav.getCreativeHeight());
-                    Clog.d("SIMPLEBANNER","Banner:: Orientation="+ ((BannerAdView) bav).getVideoOrientation().name());
-
-
-                    //New API Option  - 4 - start
-                    // Actual Width and Height of the video creative is exposed to publisher app.
-                    Clog.d("SIMPLEBANNER","Video Creative width::"+ ((BannerAdView) bav).getBannerVideoCreativeWidth());
-                    Clog.d("SIMPLEBANNER","Video Creative height::"+ ((BannerAdView) bav).getBannerVideoCreativeHeight());
-                    //New API Option  - 4 - end
-                }
             }
 
             @Override
