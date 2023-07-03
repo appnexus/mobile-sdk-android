@@ -21,6 +21,7 @@ import com.appnexus.opensdk.shadows.ShadowAsyncTaskNoExecutor;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.shadows.ShadowWebSettings;
 import com.appnexus.opensdk.shadows.ShadowCustomVideoWebView;
+import com.appnexus.opensdk.util.TestUtil;
 import com.appnexus.opensdk.utils.Clog;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 
@@ -100,44 +101,90 @@ public class VideoImplementationTest extends BaseViewAdTest {
     public void testGetVideoOrientationPortrait() throws Exception {
         server.setDispatcher(getDispatcher(TestResponsesUT.rtbVASTVideo()));
         ShadowCustomVideoWebView.aspectRatio = "0.5625"; // 9:16
+        bannerAdView.setPortraitBannerVideoPlayerSize(new AdSize(300,400));
+        bannerAdView.setLandscapeBannerVideoPlayerSize(new AdSize(320,250));
+        bannerAdView.setSquareBannerVideoPlayerSize(new AdSize(200,200));
         executeBannerRequest();
         assertCallbacks(true);
         assertTrue(bannerAdView.mAdFetcher.getState() == AdFetcher.STATE.STOPPED);
 
         assertTrue(bannerAdView.getVideoOrientation().equals(VideoOrientation.PORTRAIT));
+
+        Clog.d(TestUtil.testLogTag, "VideoImplementaitonTest::bannerAdView.getCreativeWidth()::"+bannerAdView.getCreativeWidth());
+        Clog.d(TestUtil.testLogTag, "VideoImplementaitonTest::bannerAdView.getCreativeHeight()::"+bannerAdView.getCreativeHeight());
+        assertTrue(bannerAdView.getCreativeWidth() == 300);
+        assertTrue(bannerAdView.getCreativeHeight() == 400);
     }
 
     @Test
     public void testGetVideoOrientationLandscape() throws Exception {
         server.setDispatcher(getDispatcher(TestResponsesUT.rtbVASTVideo()));
         ShadowCustomVideoWebView.aspectRatio = "1.7778"; // 16:9
+        bannerAdView.setPortraitBannerVideoPlayerSize(new AdSize(300,400));
+        bannerAdView.setLandscapeBannerVideoPlayerSize(new AdSize(620,500));
+        bannerAdView.setSquareBannerVideoPlayerSize(new AdSize(200,200));
         executeBannerRequest();
         assertCallbacks(true);
         assertTrue(bannerAdView.mAdFetcher.getState() == AdFetcher.STATE.STOPPED);
 
         assertTrue(bannerAdView.getVideoOrientation().equals(VideoOrientation.LANDSCAPE));
+
+        Clog.d(TestUtil.testLogTag, "VideoImplementaitonTest::bannerAdView.getCreativeWidth()::"+bannerAdView.getCreativeWidth());
+        Clog.d(TestUtil.testLogTag, "VideoImplementaitonTest::bannerAdView.getCreativeHeight()::"+bannerAdView.getCreativeHeight());
+        assertTrue(bannerAdView.getCreativeWidth() == 620);
+        assertTrue(bannerAdView.getCreativeHeight() == 500);
     }
 
     @Test
     public void testGetVideoOrientationSquare() throws Exception {
         server.setDispatcher(getDispatcher(TestResponsesUT.rtbVASTVideo()));
         ShadowCustomVideoWebView.aspectRatio = "1";
+        bannerAdView.setPortraitBannerVideoPlayerSize(new AdSize(300,400));
+        bannerAdView.setLandscapeBannerVideoPlayerSize(new AdSize(620,500));
+        bannerAdView.setSquareBannerVideoPlayerSize(new AdSize(200,200));
         executeBannerRequest();
         //assertCallbacks(true);
         assertTrue(bannerAdView.mAdFetcher.getState() == AdFetcher.STATE.STOPPED);
 
         assertTrue(bannerAdView.getVideoOrientation().equals(VideoOrientation.SQUARE));
+
+        Clog.d(TestUtil.testLogTag, "VideoImplementaitonTest::bannerAdView.getCreativeWidth()::"+bannerAdView.getCreativeWidth());
+        Clog.d(TestUtil.testLogTag, "VideoImplementaitonTest::bannerAdView.getCreativeHeight()::"+bannerAdView.getCreativeHeight());
+        assertTrue(bannerAdView.getCreativeWidth() == 200);
+        assertTrue(bannerAdView.getCreativeHeight() == 200);
     }
 
     @Test
     public void testGetVideoOrientationUnknown() throws Exception {
         server.setDispatcher(getDispatcher(TestResponsesUT.rtbVASTVideo()));
-        ShadowCustomVideoWebView.aspectRatio = "";
+        ShadowCustomVideoWebView.aspectRatio = "0"; // Unknown Case
+        bannerAdView.setPortraitBannerVideoPlayerSize(new AdSize(300,400));
+        bannerAdView.setLandscapeBannerVideoPlayerSize(new AdSize(620,500));
+        bannerAdView.setSquareBannerVideoPlayerSize(new AdSize(200,200));
         executeBannerRequest();
         assertCallbacks(true);
         assertTrue(bannerAdView.mAdFetcher.getState() == AdFetcher.STATE.STOPPED);
 
         assertTrue(bannerAdView.getVideoOrientation().equals(VideoOrientation.UNKNOWN));
+
+
+        Clog.d(TestUtil.testLogTag, "VideoImplementaitonTest::bannerAdView.getCreativeWidth()::"+bannerAdView.getCreativeWidth());
+        Clog.d(TestUtil.testLogTag, "VideoImplementaitonTest::bannerAdView.getCreativeHeight()::"+bannerAdView.getCreativeHeight());
+        // If Orientation is unknown then by default Landscape sizes should be used
+        assertTrue(bannerAdView.getCreativeWidth() == 620);
+        assertTrue(bannerAdView.getCreativeHeight() == 500);
+    }
+
+    @Test
+    public void testGetVideoWidthAndHeight() throws Exception {
+        server.setDispatcher(getDispatcher(TestResponsesUT.rtbVASTVideo()));
+
+        executeBannerRequest();
+        assertCallbacks(true);
+        assertTrue(bannerAdView.mAdFetcher.getState() == AdFetcher.STATE.STOPPED);
+
+        assertTrue(bannerAdView.getBannerVideoCreativeWidth() == 243);
+        assertTrue(bannerAdView.getBannerVideoCreativeHeight() == 432);
     }
 
 
