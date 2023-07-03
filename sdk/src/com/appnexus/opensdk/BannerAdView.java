@@ -21,7 +21,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Point;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.Display;
 import android.view.Gravity;
@@ -1402,6 +1401,25 @@ public class BannerAdView extends AdView implements ScreenEventListener {
      */
     public void setSquareBannerVideoPlayerSize(AdSize squareBannerVideoPlayerSize) {
         this.squareBannerVideoPlayerSize = squareBannerVideoPlayerSize;
+    }
+
+    //Internal API to be used by AdWebview to determine its size for resizing based on VideoOrientation
+    protected AdSize getBannerVideoPlayerSize(VideoOrientation orientation){
+        AdSize videoPlayerSize;
+
+        switch (orientation){
+            case PORTRAIT:
+                videoPlayerSize = getPortraitBannerVideoPlayerSize();
+                break;
+            case SQUARE:
+                videoPlayerSize = getSquareBannerVideoPlayerSize();
+                break;
+            default:
+                // Use Landscape size by default for Landscape and Unknown,
+                videoPlayerSize = getLandscapeBannerVideoPlayerSize();
+
+        }
+        return videoPlayerSize;
     }
 
 
