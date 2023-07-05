@@ -96,8 +96,8 @@ class VideoImplementation {
     private void processAspectRatio(String fetchedAspectRatio) {
         if(adWebView.adView instanceof BannerAdView) {
             VideoOrientation orientation = ViewUtil.getVideoOrientation(fetchedAspectRatio);
-            adWebView.resizeWebViewBasedOnVideoOrientation(orientation);
             ((BannerAdView)adWebView.adView).setVideoOrientation(orientation);
+            adWebView.resizeWebViewBasedOnVideoOrientation();
 
         }
     }

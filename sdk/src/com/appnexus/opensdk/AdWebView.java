@@ -378,20 +378,20 @@ class AdWebView extends WebView implements Displayable,
         return userInteracted;
     }
 
-    public void resizeWebViewBasedOnVideoOrientation(VideoOrientation orientation) {
+    public void resizeWebViewBasedOnVideoOrientation() {
         //Resize only for BannerVideo
         if (adView == null || !(adView instanceof BannerAdView)) {
             return;
         }
-        AdSize videoPlayerSize = ((BannerAdView) adView).getBannerVideoPlayerSize(orientation);
+        AdSize videoPlayerSize = ((BannerAdView) adView).getBannerVideoPlayerSize();
 
         final float scale = adView.getContext().getResources()
                 .getDisplayMetrics().density;
 
         int rheight, rwidth;
 
-        //Resize only if publihser app has set a value greater than 1x1 other wise by default BannerVideo is sized to the primary adSize
-        if(videoPlayerSize.height()>1 && videoPlayerSize.width()>1){
+        //Resize only if publisher app has set a value greater than 1x1 other wise by default BannerVideo is sized to the primary adSize
+        if (videoPlayerSize.height() > 1 && videoPlayerSize.width() > 1) {
             adResponseData.setHeight(videoPlayerSize.height());
             adResponseData.setWidth(videoPlayerSize.width());
 

@@ -1404,10 +1404,10 @@ public class BannerAdView extends AdView implements ScreenEventListener {
     }
 
     //Internal API to be used by AdWebview to determine its size for resizing based on VideoOrientation
-    protected AdSize getBannerVideoPlayerSize(VideoOrientation orientation){
+    protected AdSize getBannerVideoPlayerSize(){
         AdSize videoPlayerSize;
 
-        switch (orientation){
+        switch (videoOrientation){
             case PORTRAIT:
                 videoPlayerSize = getPortraitBannerVideoPlayerSize();
                 break;
