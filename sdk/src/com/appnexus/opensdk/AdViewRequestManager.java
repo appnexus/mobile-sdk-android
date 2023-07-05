@@ -180,6 +180,10 @@ public class AdViewRequestManager extends RequestManager {
     public void onReceiveUTResponse(UTAdResponse response) {
         super.onReceiveUTResponse(response);
         Clog.d(Clog.baseLogTag, "onReceiveUTResponse");
+        Ad ownerAd = owner.get();
+        if(ownerAd != null && ownerAd.getAdDispatcher() != null) {
+            ownerAd.getAdDispatcher().onAdResponseReceived();
+        }
         processUTResponse(response);
     }
 

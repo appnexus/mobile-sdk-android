@@ -562,6 +562,11 @@ public class NativeAdRequest implements Ad, MultiAd {
         public void onAdImpression() {
             Clog.d(Clog.nativeLogTag, "onAdImpression");
         }
+
+        @Override
+        public void onAdResponseReceived() {
+            Clog.d(Clog.nativeLogTag, "onAdResponseReceived");
+        }
     }
 
     @Override

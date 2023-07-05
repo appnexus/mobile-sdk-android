@@ -424,5 +424,10 @@ public class MRAIDImplementationTest extends BaseViewAdTest {
         public void onAdImpression() {
             adImpression = true;
         }
+
+        @Override
+        public void onAdResponseReceived() {
+
+        }
     }
 }

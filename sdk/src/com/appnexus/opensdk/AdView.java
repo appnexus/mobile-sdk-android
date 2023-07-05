@@ -106,6 +106,11 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
     // Client suggested change for memory leak in VisibilityDetector
     private boolean isDestroyed = false;
 
+    /**
+     * This variable keeps track if the AdRequest has been completed and the AdResponse is received or not
+     * This does not ascertain that the received response is valid or not
+     */
+    protected boolean isAdResponseReceived = false;
 
     /**
      * Begin Construction
@@ -1179,6 +1184,12 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
                     }
                 }
             });
+        }
+
+        @Override
+        public void onAdResponseReceived() {
+            Clog.d(Clog.baseLogTag, "onAdResponseReceived");
+            isAdResponseReceived = true;
         }
 
         private void handleNativeAd(AdResponse ad) {
