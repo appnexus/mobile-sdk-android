@@ -65,7 +65,7 @@ public class ShadowCustomVideoWebView extends ShadowWebView {
                 getWebViewClient().shouldOverrideUrlLoading(webView, String.format("video://%s", encodeBase64(adReady)));
             } else {
                 if (!simulateVideoError) {
-                    this.getWebViewClient().shouldOverrideUrlLoading(webView, "video://" + encodeBase64("{\"event\":\"adReady\",\"params\":{\"creativeUrl\":\"http://vcdn.adnxs.com/p/creative-video/05/64/6d/99/05646d99.webm\",\"duration\":96000}}"));
+                    this.getWebViewClient().shouldOverrideUrlLoading(webView, "video://" + encodeBase64("{\"event\":\"adReady\",\"params\":{\"creativeUrl\":\"http://vcdn.adnxs.com/p/creative-video/05/64/6d/99/05646d99.webm\",\"duration\":96000,\"width\":\"243\",\"height\":\"432\"}}"));
                 } else {
                     this.getWebViewClient().shouldOverrideUrlLoading(webView, "video://" + encodeBase64("{\"event\":\"video-error\",\"params\":{}}"));
                 }
