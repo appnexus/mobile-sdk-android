@@ -257,6 +257,15 @@ public class AdFetcher {
                 Clog.e(Clog.lazyLoadLogTag, "Lazy Load Fetching");
                 ((AdView)fetcher.owner).deactivateWebviewForNextCall();
             }
+
+            // Checks if the AdResponseReceived is enabled (isAdResponseReceived - boolean in the AdView)
+            if (fetcher.owner != null && fetcher.owner instanceof AdView) {
+                if(((AdView)fetcher.owner).isAdResponseReceived) {
+                    ((AdView)fetcher.owner).isAdResponseReceived = false;
+                    Clog.d(Clog.baseLogTag, "Resetting isAdResponseReceived for Banner / Interstitial");
+                }
+            }
+
             fetcher.lastFetchTime = System.currentTimeMillis();
 
             // Spawn an AdRequest

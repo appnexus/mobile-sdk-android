@@ -1,3 +1,12 @@
+## 8.7
+
+### New Features
++ MS-5206 Added support for setting player size and getting video creative width and height for BannerVideo. New API introduced in BannerAdView setPortraitBannerVideoPlayerSize(AdSize), setLandscapeBannerVideoPlayerSize(AdSize), setSquareBannerVideoPlayerSize(AdSize), getBannerVideoCreativeWidth(), getBannerVideoCreativeHeight()
+
+### Improvement/Bug Fixes
++ MS-5295 Fixed ad rendering issue on scrolling/recyclerview
++ MS-5332 Update to AAID fetch logic
+
 ## 8.6.1
 
 ### Improvement/Bug Fixes

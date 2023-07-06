@@ -63,30 +63,31 @@ public class AdvertisingIDUtil {
         Boolean limited = false;
 
         // attempt to retrieve AAID from GooglePlayServices via reflection
+        if (Settings.getSettings().deviceAccessAllowed && !SDKSettings.isAAIDUsageDisabled() && !Settings.getSettings().doNotTrack) {
+            try {
+                if (context != null) {
+                    // NPE catches null objects
+                    Class<?> cInfo = Class.forName(cAdvertisingIdClientInfoName);
+                    Class<?> cClient = Class.forName(cAdvertisingIdClientName);
 
-        try {
-            if (context != null) {
-                // NPE catches null objects
-                Class<?> cInfo = Class.forName(cAdvertisingIdClientInfoName);
-                Class<?> cClient = Class.forName(cAdvertisingIdClientName);
+                    Method mGetAdvertisingIdInfo = cClient.getMethod("getAdvertisingIdInfo", Context.class);
+                    Method mGetId = cInfo.getMethod("getId");
+                    Method mIsLimitAdTrackingEnabled = cInfo.getMethod("isLimitAdTrackingEnabled");
 
-                Method mGetAdvertisingIdInfo = cClient.getMethod("getAdvertisingIdInfo", Context.class);
-                Method mGetId = cInfo.getMethod("getId");
-                Method mIsLimitAdTrackingEnabled = cInfo.getMethod("isLimitAdTrackingEnabled");
+                    Object adInfoObject = cInfo.cast(mGetAdvertisingIdInfo.invoke(null, context));
 
-                Object adInfoObject = cInfo.cast(mGetAdvertisingIdInfo.invoke(null, context));
-
-                aaid = (String) mGetId.invoke(adInfoObject);
-                limited = (Boolean) mIsLimitAdTrackingEnabled.invoke(adInfoObject);
+                    aaid = (String) mGetId.invoke(adInfoObject);
+                    limited = (Boolean) mIsLimitAdTrackingEnabled.invoke(adInfoObject);
+                }
+            } catch (ClassNotFoundException ignored) {
+            } catch (InvocationTargetException ignored) {
+            } catch (NoSuchMethodException ignored) {
+            } catch (IllegalAccessException ignored) {
+            } catch (ClassCastException ignored) {
+            } catch (NullPointerException ignored) {
+            } catch (Exception ignored) {
+                // catches GooglePlayServicesRepairableException, GooglePlayServicesNotAvailableException
             }
-        } catch (ClassNotFoundException ignored) {
-        } catch (InvocationTargetException ignored) {
-        } catch (NoSuchMethodException ignored) {
-        } catch (IllegalAccessException ignored) {
-        } catch (ClassCastException ignored) {
-        } catch (NullPointerException ignored) {
-        } catch (Exception ignored) {
-            // catches GooglePlayServicesRepairableException, GooglePlayServicesNotAvailableException
         }
 
         // set or clear the AAID depending on success/failure

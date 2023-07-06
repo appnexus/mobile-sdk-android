@@ -573,6 +573,11 @@ public class VideoAd implements Ad, MultiAd {
         public void onAdImpression() {
             Clog.d(Clog.videoLogTag, "onAdImpression");
         }
+
+        @Override
+        public void onAdResponseReceived() {
+            Clog.d(Clog.videoLogTag, "onAdResponseReceived");
+        }
     }
 
     public void activityOnDestroy() {
