@@ -161,7 +161,7 @@
 	<string formatted="false" name="apn_load_webview_failure_is_not_lazy_load">loadLazyAd() failed, the Ad isn\'t lazy loaded yet.</string>
 	<string formatted="false" name="apn_enable_lazy_webview_failure_request_in_progress">enableLazyLoad() failed, AdRequest is already in progress.</string>
 	<string formatted="false" name="apn_enable_lazy_webview_failure_already_enabled">enableLazyLoad() failed, Already enabled once.</string>
-	<string formatted="false" name="apn_enable_lazy_webview_failure_non_banner">loadLazyAd() failed, loadLazyAd can be applied only to the Banner Ad Type.</string>
+	<string formatted="false" name="apn_enable_lazy_webview_failure_non_banner">loadLazyAd() failed, loadLazyAd can be applied only to the Banner or Native Assembly Ad Type.</string>
 <string formatted="false" name="request_manager_owner_error">Request Manager can\'t proceed as it has <t></t>wo initialized owners</string>
 <string formatted="false" name="passed_context_error">Ad Request can\'t proceed without Activity Context</string>
 </resources>

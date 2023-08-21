@@ -454,7 +454,109 @@ public class AdListenerTest extends BaseViewAdTest {
         assertFalse(adFailed);
     }
 
+    //Native Assembly Load Lazy Testing
+    @Test
+    public void testLazyNativeAssemblyAdLoaded() {
+        ShadowCustomWebView.simulateRendererScriptSuccess = true;
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeRenderer()));
+        bannerAdView.setAllowNativeDemand(true);
+        bannerAdView.enableNativeRendering(true);
+        bannerAdView.enableLazyLoad();
+        executeBannerRequest();
 
+        assertLazyLoadCallbackInProgress();
+        bannerAdView.loadLazyAd();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertLazyLoadCallbackSuccess();
+    }
+
+    // This proves that the second loadAd() behaves as a Lazy load even after the Lazy Ad has already been loaded once (after calling loadLazyAd())
+    @Test
+    public void testLazyNativeAssemblyAdLoadedSuccessAndLoadAgain() {
+        ShadowCustomWebView.simulateRendererScriptSuccess = true;
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeRenderer()));
+        bannerAdView.setAllowNativeDemand(true);
+        bannerAdView.enableNativeRendering(true);
+        bannerAdView.enableLazyLoad();
+        executeBannerRequest();
+        assertFalse(bannerAdView.getChildAt(0) instanceof WebView);
+        assertLazyLoadCallbackInProgress();
+        bannerAdView.loadLazyAd();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertLazyLoadCallbackSuccess();
+        assertTrue(bannerAdView.getChildAt(0) instanceof WebView);
+        adLoaded = false;
+        adLazyLoaded = false;
+        adFailed = false;
+        restartServer();
+        ShadowCustomWebView.simulateRendererScriptSuccess = true;
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeRenderer()));
+        bannerAdView.setAllowNativeDemand(true);
+        bannerAdView.enableNativeRendering(true);
+        executeBannerRequest();
+        assertLazyLoadCallbackInProgress();
+        bannerAdView.loadLazyAd();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertLazyLoadCallbackSuccess();
+        assertTrue(bannerAdView.getChildAt(0) instanceof WebView);
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+    }
+
+    @Test
+    public void testloadLazyNativeAssemblyAdAfterAdLoad() {
+        ShadowCustomWebView.simulateRendererScriptSuccess = true;
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeRenderer()));
+        bannerAdView.setAllowNativeDemand(true);
+        bannerAdView.enableNativeRendering(true);
+        assertTrue(bannerAdView.enableLazyLoad());
+        executeBannerRequest();
+        assertLazyLoadCallbackInProgress();
+        assertTrue(bannerAdView.loadLazyAd());
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertLazyLoadCallbackSuccess();
+        adLoaded = false;
+        adFailed = false;
+        assertFalse(bannerAdView.loadLazyAd());
+        assertFalse(adLoaded);
+        assertFalse(adFailed);
+    }
+
+    @Test
+    public void testLazyNativeAssemblyAdLoadWithloadLazyAdAlreadyCalled() {
+        ShadowCustomWebView.simulateRendererScriptSuccess = true;
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeRenderer()));
+        bannerAdView.setAllowNativeDemand(true);
+        bannerAdView.enableNativeRendering(true);
+        bannerAdView.enableLazyLoad();
+        assertFalse(bannerAdView.loadLazyAd());
+        executeBannerRequest();
+        assertLazyLoadCallbackInProgress();
+        assertTrue(bannerAdView.loadLazyAd());
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertLazyLoadCallbackSuccess();
+    }
+
+    @Test
+    public void testLazyNativeAssemblyAdFailed() {
+        ShadowCustomWebView.simulateRendererScriptSuccess = false;
+        server.setDispatcher(getDispatcher(TestResponsesUT.anNativeRenderer())); // First queue a banner Native response
+        bannerAdView.setAllowNativeDemand(false);
+        bannerAdView.enableNativeRendering(false);
+        bannerAdView.enableLazyLoad();
+        executeBannerRequest();
+        bannerAdView.loadLazyAd();
+        Robolectric.flushBackgroundThreadScheduler();
+        Robolectric.flushForegroundThreadScheduler();
+        assertFalse(bannerAdView.loadLazyAd());
+        assertFalse(adFailed);
+        assertFalse(adLazyLoaded);
+    }
 
     @Test
     public void testBannerAdFailed() {

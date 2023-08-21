@@ -113,6 +113,12 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
     protected boolean isAdResponseReceived = false;
 
     /**
+     * This boolean keeps track, if the NativeAdResponse returned from impbus has a valid Native Renderer URL
+     * and is eligible to be displayed as a Banner Native Assembly Renderer Ad.
+     */
+    protected boolean eligibleForNativeAssemblyRendering = false;
+
+    /**
      * Begin Construction
      */
     AdView(Context context) {
@@ -1061,6 +1067,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
 
         private void processAdLoaded(AdResponse ad) {
             isFetching = false;
+            eligibleForNativeAssemblyRendering = false;
             if (ad.getMediaType() == MediaType.BANNER || ad.getMediaType() == MediaType.INTERSTITIAL) {
                 handleBannerOrInterstitialAd(ad);
             } else if (ad.getMediaType() == MediaType.NATIVE) {
@@ -1092,6 +1099,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
 
         private void processAdFailed(final ResultCode code, final ANAdResponseInfo adResponseInfo) {
             isFetching = false;
+            eligibleForNativeAssemblyRendering = false;
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -1190,6 +1198,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
         public void onAdResponseReceived() {
             Clog.d(Clog.baseLogTag, "onAdResponseReceived");
             isAdResponseReceived = true;
+            eligibleForNativeAssemblyRendering = false;
         }
 
         private void handleNativeAd(AdResponse ad) {
@@ -1596,8 +1605,8 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
             return false;
         }
 
-        // loadLazyAd() only if the AdType is AdType.BANNER
-        if (getAdResponseInfo().getAdType() != AdType.BANNER) {
+        // loadLazyAd() only if the AdType is AdType.BANNER or Native Assembly Ad Type
+        if (!isLastResponseSuccessful()) {
             Clog.w(Clog.lazyLoadLogTag, getContext().getString(R.string.apn_enable_lazy_webview_failure_non_banner));
             return false;
         }
@@ -1630,7 +1639,7 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
      * see {@link ANAdResponseInfo}
      */
     protected boolean isLastResponseSuccessful() {
-        return getAdResponseInfo() != null && getAdResponseInfo().getAdType() == AdType.BANNER;
+        return getAdResponseInfo() != null && (getAdResponseInfo().getAdType() == AdType.BANNER || (getAdResponseInfo().getAdType() == AdType.NATIVE && isEligibleForNativeAssemblyRendering()));
     }
 
     @Override
@@ -1650,4 +1659,12 @@ public abstract class AdView extends FrameLayout implements Ad, MultiAd, Visibil
     public Long getFinishTime() {
         return finishTime;
     }
+
+    /**
+     * Retrieve the NativeAssemblyRenderer of the request
+     *
+     * @return true if it is NativeAssemblyRenderer, else false
+     * */
+    public boolean isEligibleForNativeAssemblyRendering() { return eligibleForNativeAssemblyRendering; }
+
 }

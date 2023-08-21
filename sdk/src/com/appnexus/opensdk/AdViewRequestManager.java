@@ -266,8 +266,16 @@ public class AdViewRequestManager extends RequestManager {
         }
 
         if (owner instanceof BannerAdView && ((BannerAdView) owner).isNativeRenderingEnabled() && nativeAdResponse.getRendererUrl().length() > 0) {
-            initiateWebview(owner, baseAdResponse);
+            ((AdView)owner).eligibleForNativeAssemblyRendering = true;
+            if (((BannerAdView)owner).isLazyWebviewInactive()) {
+                ((AdDispatcher)owner.getAdDispatcher()).onLazyAdLoaded(currentAd.getAdResponseInfo());
+            } else {
+                initiateWebview(owner, baseAdResponse);
+            }
         } else {
+            if (owner != null && owner instanceof BannerAdView) {
+                ((AdView)owner).eligibleForNativeAssemblyRendering = false;
+            }
             processNativeAd(nativeAdResponse, baseAdResponse);
         }
     }
