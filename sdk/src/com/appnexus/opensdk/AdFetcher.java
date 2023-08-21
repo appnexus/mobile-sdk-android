@@ -280,7 +280,7 @@ public class AdFetcher {
                         fetcher.requestManager = new AdViewRequestManager(fetcher.owner);
                         fetcher.requestManager.execute();
                     } else {
-                        fetcher.owner.getAdDispatcher().onAdFailed(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST), null);
+                        fetcher.owner.getAdDispatcher().onAdFailed(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST, "Media type unknown"), null);
                     }
                 }
             }

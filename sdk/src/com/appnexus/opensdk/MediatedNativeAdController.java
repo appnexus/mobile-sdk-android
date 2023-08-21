@@ -76,7 +76,7 @@ public class MediatedNativeAdController {
                             currentAd.getId(), this,
                             requester.getRequestParams().getTargetingParameters());
                 } else {
-                    errorCode = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
+                    errorCode = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST, "Mediated request params not found");
                 }
             } catch (ClassNotFoundException e) {
                 // exception in Class.forName

@@ -280,7 +280,7 @@ public class UTAdRequest {
 
             if (adResponseMap == null) {
                 Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.no_response));
-                fail(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST));
+                fail(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST, "Server did not respond and failed to map response"));
                 return;
             }
 
@@ -306,7 +306,7 @@ public class UTAdRequest {
             }
         } else if (anMultiAdRequest != null) {
             if (adResponseMap == null) {
-                ResultCode code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
+                ResultCode code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST, "Failed to map response");
                 Clog.e(Clog.SRMLogTag, "FAILED: " + code.getMessage());
                 anMultiAdRequest.onRequestFailed(code);
             } else {
@@ -324,7 +324,7 @@ public class UTAdRequest {
                                 UTAdRequester requester = new AdViewRequestManager(ad);
                                 ad.getMultiAd().setRequestManager(requester);
                                 if (adResponseMap == null) {
-                                    ResultCode code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
+                                    ResultCode code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST, "Ad response mapping is null");
                                     Clog.e(Clog.SRMLogTag, "FAILED: " + code.getMessage());
                                     requester.failed(code, null);
                                     continue;
