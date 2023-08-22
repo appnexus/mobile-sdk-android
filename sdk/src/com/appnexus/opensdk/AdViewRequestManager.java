@@ -266,8 +266,16 @@ public class AdViewRequestManager extends RequestManager {
         }
 
         if (owner instanceof BannerAdView && ((BannerAdView) owner).isNativeRenderingEnabled() && nativeAdResponse.getRendererUrl().length() > 0) {
-            initiateWebview(owner, baseAdResponse);
+            ((AdView)owner).eligibleForNativeAssemblyRendering = true;
+            if (((BannerAdView)owner).isLazyWebviewInactive()) {
+                ((AdDispatcher)owner.getAdDispatcher()).onLazyAdLoaded(currentAd.getAdResponseInfo());
+            } else {
+                initiateWebview(owner, baseAdResponse);
+            }
         } else {
+            if (owner != null && owner instanceof BannerAdView) {
+                ((AdView)owner).eligibleForNativeAssemblyRendering = false;
+            }
             processNativeAd(nativeAdResponse, baseAdResponse);
         }
     }
@@ -344,8 +352,8 @@ public class AdViewRequestManager extends RequestManager {
                             AdView owner = (AdView) ownerAd;
                             fireImpressionTrackerIfBeginToRender(owner, rtbAdResponse);
                         } else {
-                            Clog.e(Clog.baseLogTag, "AdType can not be identified.");
-                            continueWaterfall(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST));
+                            Clog.e(Clog.baseLogTag, "AdType cannot be identified.");
+                            continueWaterfall(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST, "AdType cannot be identified."));
                         }
                     }
                 } else {
@@ -408,7 +416,7 @@ public class AdViewRequestManager extends RequestManager {
                         owner.getAdDispatcher());
             } else {
                 Clog.e(Clog.baseLogTag, "MediaType type can not be identified.");
-                continueWaterfall(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST));
+                continueWaterfall(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST, "MediaType type can not be identified"));
             }
         }
     }

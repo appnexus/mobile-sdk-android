@@ -71,7 +71,7 @@ public class CSRNativeBannerController implements CSRController {
                             this,
                             requester.getRequestParams().getTargetingParameters());
                 } else {
-                    errorCode = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST);
+                    errorCode = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST, "Unable to get CSR mediated request params");
                 }
             } catch (ClassNotFoundException e) {
                 // exception in Class.forName

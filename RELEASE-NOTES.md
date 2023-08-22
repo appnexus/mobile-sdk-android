@@ -1,3 +1,11 @@
+## 8.8
+
+### New Features
++ MS-5349 Enabled lazy loading for banner native rendering
+
+### Improvement/Bug Fixes
++ MS-5371 Added additional information for INVALID_REQUEST code error messages
+
 ## 8.7
 
 ### New Features

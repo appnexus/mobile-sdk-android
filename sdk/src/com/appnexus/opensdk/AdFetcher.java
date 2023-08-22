@@ -249,6 +249,12 @@ public class AdFetcher {
                     Clog.w(Clog.lazyLoadLogTag, "Not Fetching due to Lazy Load");
                     return;
                 }
+
+                // Condition to restrict the Auto Refresh if the AdType is not AdType.BANNER.
+                if (fetcher.owner != null && fetcher.owner instanceof AdView && ((AdView)fetcher.owner).getAdResponseInfo() != null && ((AdView)fetcher.owner).getAdResponseInfo().getAdType() != AdType.BANNER) {
+                    Clog.w(Clog.baseLogTag, "Not Fetching due to AdType is not BANNER");
+                    return;
+                }
             }
             // Checks if the lazy load is enabled and de activates the Webview (activateWebview - boolean in the AdView), so that the AutoRefresh for Lazy Load can work.
             // Doing this will deActivate the Webview, which will be required to be activated by calling the loadLazyAd() later.
@@ -280,7 +286,7 @@ public class AdFetcher {
                         fetcher.requestManager = new AdViewRequestManager(fetcher.owner);
                         fetcher.requestManager.execute();
                     } else {
-                        fetcher.owner.getAdDispatcher().onAdFailed(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST), null);
+                        fetcher.owner.getAdDispatcher().onAdFailed(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST, "Media type unknown"), null);
                     }
                 }
             }
