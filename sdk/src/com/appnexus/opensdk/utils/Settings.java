@@ -68,7 +68,7 @@ public class Settings {
     public boolean debug_mode = false; // This should always be false here.
     public String ua = null;
 
-    public final String sdkVersion = "8.7";
+    public final String sdkVersion = "8.8";
 //      BuildConfig.VERSION_NAME;
 
 
