@@ -16,6 +16,7 @@
 
 package com.appnexus.opensdk.shadows;
 
+import android.webkit.ValueCallback;
 import android.webkit.WebView;
 
 import com.appnexus.opensdk.util.TestUtil;
@@ -33,11 +34,31 @@ public class ShadowOMIDBannerHTMLWebView extends ShadowWebView {
     public static String omidImpressionString = "";
     public static String omidStartSession = "";
 
-
     /*
-    * OMID events call loadURL so its possible to store the values here and assert them against expected values.
+     * OMID events call evaluateJavascript so its possible to store the values here and assert them against expected values.
      */
     @Override
+    protected void evaluateJavascript(String script, ValueCallback<String> callback) {
+        super.evaluateJavascript(script, callback);
+        webView = new WebView(RuntimeEnvironment.application);
+        Clog.d(TestUtil.testLogTag, "ShadowOMIDBannerHTMLWebView loadUrl::"+script);
+        if(script.contains("omidBridge.init")){
+            omidInitString = script;
+        }
+
+        if(script.contains("omidBridge.startSession")){
+            omidStartSession = script;
+        }
+
+        if(script.contains("publishImpressionEvent")){
+            omidImpressionString = script;
+        }
+    }
+
+    /*
+     * OMID events do not make a call to loadUrl as of version 1.4.3 and later.
+     */
+    /*@Override
     public void loadUrl(String url) {
         super.loadUrl(url);
         webView = new WebView(RuntimeEnvironment.application);
@@ -53,7 +74,7 @@ public class ShadowOMIDBannerHTMLWebView extends ShadowWebView {
         if(url.contains("publishImpressionEvent")){
             omidImpressionString = url;
         }
-    }
+    }*/
 
 
     /*
