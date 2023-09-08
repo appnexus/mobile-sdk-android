@@ -1,5 +1,5 @@
 // Project Properties
-version = "7.17.0"  // supported SmartAdServer version
+version = "7.22.0"  // supported SmartAdServer version
 apply plugin: 'com.android.library'
 
 android {
