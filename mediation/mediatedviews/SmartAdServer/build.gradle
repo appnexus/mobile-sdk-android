@@ -1,5 +1,5 @@
 // Project Properties
-version = "7.17.0"  // supported SmartAdServer version
+version = "7.23.0"  // supported SmartAdServer version
 apply plugin: 'com.android.library'
 
 android {
@@ -23,7 +23,6 @@ android {
 dependencies {
     api project(':sdk')
     api "com.smartadserver.android:smart-display-sdk:$version@aar"
-    api "com.smartadserver.android:smart-core-sdk:$version@aar"
     api 'com.google.android.exoplayer:exoplayer-core:2.12.0'
     api 'com.squareup.okhttp3:okhttp:3.12.12'
     api 'androidx.preference:preference:1.1.1'
