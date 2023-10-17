@@ -66,9 +66,9 @@ public class TestResponsesUT {
     private static final String MRAID_CONTENT = "<script type=\\\"text/javascript\\\" src=\\\"mraid.js\\\"></script><script type=\\\"text/javascript\\\">document.write('<div style=\\\"background-color:#EF8200;height:1000px;width:1000px;\\\"><p>%s</p></div>');</script>";
     private static final String NATIVE_MAIN_MEDIA = "[{\"url\":\"%s\",\"width\":%d,\"height\":%d,\"label\":\"default\"},{\"url\":\"%s\",\"width\":%d,\"height\":%d},{\"url\":\"%s\",\"width\":%d,\"height\":%d}]";
     private static final String NATIVE_RATING = "{\"value\":%.2f,\"scale\":%.2f}";
-    private static final String RTB_NATIVE_VIEWABILITY_CONFIG = "<script type=\\\"text/javascript\\\" async=\\\"true\\\" src=\\\"https://acdn.adnxs.com/mobile/omsdk/test/omid-validation-verification-script-1.2.5.js#v;vk=dummyVendor;tv=cet=0;cecb=\\\"></script>";
-    private static final String RTB_NATIVE_RENDERER_VIEWABILITY_CONFIG = "<script type=\\\"text/javascript\\\" async=\\\"true\\\" src=\\\"https://acdn.adnxs.com/mobile/omsdk/test/omid-validation-verification-script-1.2.5.js#v;vk=dummyVendorRenderer;tv=cet=0;cecb=\\\"></script>";
-    private static final String CSM_NATIVE_VIEWABILITY_CONFIG = "<script type=\\\"text/javascript\\\" async=\\\"true\\\" src=\\\"https://acdn.adnxs.com/mobile/omsdk/test/omid-validation-verification-script-1.2.5.js#v;vk=dummyVendorCSM;tv=cet=0;cecb=\\\"></script>";
+    private static final String RTB_NATIVE_VIEWABILITY_CONFIG = "<script type=\\\"text/javascript\\\" async=\\\"true\\\" src=\\\"https://acdn.adnxs.com/mobile/omsdk/validation-verification-scripts-fortesting/omsdk-js-1.4.8/Validation-Script/omid-validation-verification-script-v1.js#v;vk=dummyVendor;tv=cet=0;cecb=\\\"></script>";
+    private static final String RTB_NATIVE_RENDERER_VIEWABILITY_CONFIG = "<script type=\\\"text/javascript\\\" async=\\\"true\\\" src=\\\"https://acdn.adnxs.com/mobile/omsdk/validation-verification-scripts-fortesting/omsdk-js-1.4.8/Validation-Script/omid-validation-verification-script-v1.js#v;vk=dummyVendorRenderer;tv=cet=0;cecb=\\\"></script>";
+    private static final String CSM_NATIVE_VIEWABILITY_CONFIG = "<script type=\\\"text/javascript\\\" async=\\\"true\\\" src=\\\"https://acdn.adnxs.com/mobile/omsdk/validation-verification-scripts-fortesting/omsdk-js-1.4.8/Validation-Script/omid-validation-verification-script-v1.js#v;vk=dummyVendorCSM;tv=cet=0;cecb=\\\"></script>";
     // template strings
     private static final String CLASSNAME = "com.appnexus.opensdk.testviews.%s";
 

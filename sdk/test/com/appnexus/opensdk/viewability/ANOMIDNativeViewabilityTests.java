@@ -78,7 +78,7 @@ public class ANOMIDNativeViewabilityTests extends BaseNativeTest {
     private void assertVerificationScriptResourceRTB() {
         ANOmidAdSession anOmidAdSession = getOMIDAdSession();
         VerificationScriptResource verificationScriptResource = anOmidAdSession.verificationScriptResources.get(0);
-        assertTrue(verificationScriptResource.getResourceUrl().toString().equalsIgnoreCase("https://acdn.adnxs.com/mobile/omsdk/test/omid-validation-verification-script-1.2.5.js"));
+        assertTrue(verificationScriptResource.getResourceUrl().toString().equalsIgnoreCase("https://acdn.adnxs.com/mobile/omsdk/validation-verification-scripts-fortesting/omsdk-js-1.4.8/Validation-Script/omid-validation-verification-script-v1.js"));
         assertTrue(verificationScriptResource.getVendorKey().equalsIgnoreCase("dummyVendor"));
         assertTrue(verificationScriptResource.getVerificationParameters().equalsIgnoreCase("v;vk=dummyVendor;tv=cet=0;cecb="));
     }
@@ -86,7 +86,7 @@ public class ANOMIDNativeViewabilityTests extends BaseNativeTest {
     private void assertVerificationScriptResourceNativeRenderer() {
         ANOmidAdSession anOmidAdSession = getOMIDAdSession();
         VerificationScriptResource verificationScriptResource = anOmidAdSession.verificationScriptResources.get(0);
-        assertTrue(verificationScriptResource.getResourceUrl().toString().equalsIgnoreCase("https://acdn.adnxs.com/mobile/omsdk/test/omid-validation-verification-script-1.2.5.js"));
+        assertTrue(verificationScriptResource.getResourceUrl().toString().equalsIgnoreCase("https://acdn.adnxs.com/mobile/omsdk/validation-verification-scripts-fortesting/omsdk-js-1.4.8/Validation-Script/omid-validation-verification-script-v1.js"));
         assertTrue(verificationScriptResource.getVendorKey().equalsIgnoreCase("dummyVendorRenderer"));
         assertTrue(verificationScriptResource.getVerificationParameters().equalsIgnoreCase("v;vk=dummyVendorRenderer;tv=cet=0;cecb="));
     }
@@ -95,7 +95,7 @@ public class ANOMIDNativeViewabilityTests extends BaseNativeTest {
     private void assertVerificationScriptResourceCSM() {
         ANOmidAdSession anOmidAdSession = getOMIDAdSession();
         VerificationScriptResource verificationScriptResource = anOmidAdSession.verificationScriptResources.get(0);
-        assertTrue(verificationScriptResource.getResourceUrl().toString().equalsIgnoreCase("https://acdn.adnxs.com/mobile/omsdk/test/omid-validation-verification-script-1.2.5.js"));
+        assertTrue(verificationScriptResource.getResourceUrl().toString().equalsIgnoreCase("https://acdn.adnxs.com/mobile/omsdk/validation-verification-scripts-fortesting/omsdk-js-1.4.8/Validation-Script/omid-validation-verification-script-v1.js"));
         assertTrue(verificationScriptResource.getVendorKey().equalsIgnoreCase("dummyVendorCSM"));
         assertTrue(verificationScriptResource.getVerificationParameters().equalsIgnoreCase("v;vk=dummyVendorCSM;tv=cet=0;cecb="));
     }
