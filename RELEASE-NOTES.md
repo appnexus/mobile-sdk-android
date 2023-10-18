@@ -1,3 +1,15 @@
+## 8.9
+
+### New Feature
++ 5664325 Added new parameters to SDKSettings.init() for flexibility in pre-fetching webviews. This can improve app launch performance
+
+### Improvement/Bug Fixes
++ 5663106 Upgraded OMSDK from 1.4.2 to 1.4.8
+
+### Mediation partner updates
++ 5622329 Upgraded Google AdMob SDK from 21.3.0 to 22.3.0
++ 5622334 Upgraded Smart Ad Server SDK from 7.17.0 to 7.23.0
+
 ## 8.8
 
 ### New Features
