@@ -42,7 +42,7 @@ public class NativeAdRequest implements Ad, MultiAd {
 
     public NativeAdRequest(Context context, String placementID) {
 
-        SDKSettings.init(context, null);
+        SDKSettings.init(context, null, true, true, false, false);
 
         requestParameters = new UTRequestParameters(context);
         requestParameters.setPlacementID(placementID);
@@ -57,7 +57,7 @@ public class NativeAdRequest implements Ad, MultiAd {
 
     public NativeAdRequest(Context context, String inventoryCode, int memberID) {
 
-        SDKSettings.init(context, null);
+        SDKSettings.init(context, null, true, true, false, false);
 
         requestParameters = new UTRequestParameters(context);
         requestParameters.setInventoryCodeAndMemberID(memberID, inventoryCode);
