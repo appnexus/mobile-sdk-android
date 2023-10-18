@@ -38,8 +38,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class XandrAd {
 
     /**
-    * memberId will be set using the {@link XandrAd#init(int, Context, boolean, boolean, InitListener)}
-    **/
+     * memberId will be set using the {@link XandrAd#init(int, Context, boolean, boolean, InitListener)}
+     **/
     private static int memberId = -1;
     /**
      * Cached member IDs list

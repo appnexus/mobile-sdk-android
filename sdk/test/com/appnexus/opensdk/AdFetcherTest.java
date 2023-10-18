@@ -142,7 +142,7 @@ public class AdFetcherTest extends BaseRoboTest {
         adFetcher.setPeriod(15000);
         adFetcher.start();
         Lock.pause(1000); // added this so jenkins can have enough time to process
-        // assert 3 here because a AAID async task
+        // assert 2 here because a AAID async task
         assertExpectedBGTasksAfterOneAdRequest(2);
 
         assertEquals(AdFetcher.STATE.AUTO_REFRESH, adFetcher.getState());
@@ -179,7 +179,7 @@ public class AdFetcherTest extends BaseRoboTest {
         adFetcher.setPeriod(15000);
         adFetcher.start();
         Lock.pause(1000); // added this so jenkins can have enough time to process
-        // assert 3 here because a AAID async task
+        // assert 2 here because a AAID async task
         assertExpectedBGTasksAfterOneAdRequest(2);
 
         assertEquals(AdFetcher.STATE.AUTO_REFRESH, adFetcher.getState());
@@ -207,7 +207,7 @@ public class AdFetcherTest extends BaseRoboTest {
 
         owner.loadAd();
         Lock.pause(1000); // added this so jenkins can have enough time to process
-        // assert 3 here because a AAID async task
+        // assert 4 here because a AAID async task
         assertExpectedBGTasksAfterOneAdRequest(4);
 
         assertEquals(AdFetcher.STATE.AUTO_REFRESH, adFetcher.getState());

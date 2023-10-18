@@ -49,14 +49,14 @@ public class SDKSettings {
      * */
     private static Boolean useBackgroundThreads = false;
 
+    @Deprecated
     private static Boolean enableBannerOptimization = true;
 
     /**
      * For internal use only
      * */
-    private static boolean isOmidActivationDone = false, isUserAgentFetched = false, isAAIDFetched = false;
+    private static boolean isOmidActivationDone = false, isUserAgentFetched = false, isAAIDFetched = false, isWarmupAdCallDone = false, isPrefetchWebViewDone = false;
 
-    private static boolean isWarmupAdCallDone = false;
 
     // hide the constructor from javadocs
     private SDKSettings() {
@@ -429,21 +429,42 @@ public class SDKSettings {
     }
 
     public static void init(Context context, final InitListener listener) {
-        init(context, listener, true, true);
+        init(context, listener, true, true, true, true);
     }
 
     /**
-     * This is an overloaded init method which provides flexibility to enable/disable booleans for activateOmid, fetcbUserAgent and fetchAAID.
+     * This is an overloaded init method which provides flexibility to enable/disable booleans for activateOmid, fetchUserAgent and fetchAAID.
      * @param fetchUserAgent enable / disable fetching of User Agent.
      * @param fetchAAID enable / disable fetching of AAID.
+     *  Use {@link SDKSettings#init(Context, InitListener, boolean, boolean, boolean, boolean)} signature instead
+     *  To be removed in v9.0
      * */
+    @Deprecated
     public static void init(final Context context, final InitListener listener, final boolean fetchUserAgent, final boolean fetchAAID) {
-        prefetchWebview(context);
-        warmupAdCall();
+        init(context, listener, fetchUserAgent, fetchAAID, true, true);
+    }
+
+    /**
+     * This is an overloaded init method which provides flexibility to enable/disable booleans for activateOmid, fetchUserAgent, fetchAAID, enableWarmUpAdCall and preFetchWebView.
+     * @param fetchUserAgent enable / disable fetching of User Agent.
+     * @param fetchAAID enable / disable fetching of AAID.
+     * @param enableWarmUpAdCall enable / disable of the warm up ad call.
+     * @param preFetchWebView enable / disable pre-fetching of the webview.
+     * */
+    public static void init(final Context context, final InitListener listener, final boolean fetchUserAgent, final boolean fetchAAID, final boolean enableWarmUpAdCall, final boolean preFetchWebView) {
         // Store the UA in the settings
         isOmidActivationDone = Omid.isActive();
         isUserAgentFetched = !fetchUserAgent || !StringUtil.isEmpty(Settings.getSettings().ua);
         isAAIDFetched = !fetchAAID || !StringUtil.isEmpty(getAAID());
+        // Execute prefetchWebview() if !isPrefetchWebViewDone or prefetchWebView is enabled.
+        if(!isPrefetchWebViewDone && preFetchWebView){
+            isPrefetchWebViewDone = true;
+            prefetchWebview(context);
+        }
+        // Execute warmupAdCall() if !isWarmupAdCallDone or warm up ad call is enabled.
+        if (!isWarmupAdCallDone && enableWarmUpAdCall) {
+            warmupAdCall();
+        }
         if (!isOmidActivationDone) {
             ANOmidViewabilty.getInstance().activateOmidAndCreatePartner(context.getApplicationContext());
             isOmidActivationDone = true;
@@ -496,9 +517,6 @@ public class SDKSettings {
     }
 
     private static void warmupAdCall() {
-        if (isWarmupAdCallDone) {
-            return;
-        }
         new HTTPGet()  {
 
             @Override
@@ -514,7 +532,7 @@ public class SDKSettings {
     }
 
     private static void prefetchWebview(Context context) {
-        if (isBannerOptimizationEnabled()) {
+        if (enableBannerOptimization) {
             List cachedAdWebView = Settings.getSettings().getCachedAdWebView();
             if (cachedAdWebView.size() == 0) {
                 AdWebView webView = new AdWebView(context);
@@ -549,6 +567,8 @@ public class SDKSettings {
     /**
      * Experimental API, to be used in case of issue with banner optimization
      * To be removed in v9.0
+     * Use {@link SDKSettings#init(Context, InitListener, boolean, boolean, boolean, boolean)} signature instead
+     * passing preFetchWebView = true/false while calling SDKSettings.init() has the same effect of setting enableBannerOptimization to true/false
      * */
     @Deprecated
     public static void enableBannerOptimization(boolean enable) {

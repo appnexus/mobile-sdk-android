@@ -58,7 +58,7 @@ class InstreamVideoView extends FrameLayout {
 
     void setup(Context context) {
 
-        SDKSettings.init(context, null);
+        SDKSettings.init(context, null, true, true, false, false);
 
         Clog.d(Clog.publicFunctionsLogTag, Clog.getString(R.string.new_adview));
 
