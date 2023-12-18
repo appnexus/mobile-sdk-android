@@ -42,7 +42,7 @@ public class  ShadowOMIDNativeWebView extends ShadowWebView {
     protected void evaluateJavascript(String script, ValueCallback<String> callback) {
         super.evaluateJavascript(script, callback);
         webView = new WebView(RuntimeEnvironment.application);
-        Clog.e(TestUtil.testLogTag, "ShadowOMIDNativeWebView loadUrl::"+script);
+        Clog.e(TestUtil.testLogTag, "ShadowOMIDNativeWebView evaluateJavascript::"+script);
         if(script.contains("omidBridge.init")){
             omidInitString = script;
         }
@@ -55,7 +55,7 @@ public class  ShadowOMIDNativeWebView extends ShadowWebView {
             omidImpressionString = script;
         }
 
-        if(script.contains(".finishSession()")){
+        if(script.contains(".finishSession")){
             omidFinishSession = script;
         }
     }

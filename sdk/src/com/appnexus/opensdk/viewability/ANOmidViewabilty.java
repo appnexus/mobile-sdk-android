@@ -23,8 +23,8 @@ import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
-import com.iab.omid.library.appnexus.Omid;
-import com.iab.omid.library.appnexus.adsession.Partner;
+import com.iab.omid.library.microsoft.Omid;
+import com.iab.omid.library.microsoft.adsession.Partner;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,10 +35,10 @@ import java.io.InputStreamReader;
 public class ANOmidViewabilty {
 
     private static ANOmidViewabilty omid_instance = null;
-    public static final String OMID_PARTNER_NAME = "Appnexus";
+    public static final String OMID_PARTNER_NAME = "Microsoft";
     private static String OMID_JS_SERVICE_CONTENT = "";
 
-    private static Partner appnexusPartner = null;
+    private static Partner microsoftPartner = null;
 
     public static ANOmidViewabilty getInstance() {
         if (omid_instance == null) {
@@ -68,9 +68,9 @@ public class ANOmidViewabilty {
 
 
         // If OMID active but partner is null then create partner
-        if (Omid.isActive() && appnexusPartner == null) {
+        if (Omid.isActive() && microsoftPartner == null) {
             try {
-                appnexusPartner = Partner.createPartner(OMID_PARTNER_NAME, Settings.getSettings().sdkVersion);
+                microsoftPartner = Partner.createPartner(OMID_PARTNER_NAME, Settings.getSettings().sdkVersion);
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             }
@@ -86,8 +86,8 @@ public class ANOmidViewabilty {
 
     }
 
-    public Partner getAppnexusPartner() {
-        return appnexusPartner;
+    public Partner getMicrosoftPartner() {
+        return microsoftPartner;
     }
 
     public String getOmidJsServiceContent() {

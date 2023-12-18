@@ -41,7 +41,7 @@ public class ShadowOMIDBannerHTMLWebView extends ShadowWebView {
     protected void evaluateJavascript(String script, ValueCallback<String> callback) {
         super.evaluateJavascript(script, callback);
         webView = new WebView(RuntimeEnvironment.application);
-        Clog.d(TestUtil.testLogTag, "ShadowOMIDBannerHTMLWebView loadUrl::"+script);
+        Clog.d(TestUtil.testLogTag, "ShadowOMIDBannerHTMLWebView evaluateJavascript::"+script);
         if(script.contains("omidBridge.init")){
             omidInitString = script;
         }

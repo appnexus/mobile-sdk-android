@@ -31,7 +31,7 @@ import com.appnexus.opensdk.utils.HTTPResponse;
 import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.StringUtil;
 import com.appnexus.opensdk.viewability.ANOmidViewabilty;
-import com.iab.omid.library.appnexus.Omid;
+import com.iab.omid.library.microsoft.Omid;
 
 import java.util.List;
 import java.util.concurrent.Executor;

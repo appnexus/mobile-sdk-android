@@ -23,7 +23,9 @@ import android.widget.LinearLayout;
 import com.appnexus.opensdk.shadows.ShadowOMIDBannerHTMLWebView;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.util.Lock;
-import com.iab.omid.library.appnexus.Omid;
+import com.appnexus.opensdk.viewability.ANOmidAdSession;
+import com.iab.omid.library.microsoft.Omid;
+import com.iab.omid.library.microsoft.adsession.AdSession;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.After;
@@ -36,6 +38,9 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
 import static junit.framework.Assert.assertTrue;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -84,7 +89,7 @@ public class ANOmidViewabiltyTests extends BaseViewAdTest {
         runBasicBannerTest();
         attachBannerToView();
 
-        assertTrue(ShadowOMIDBannerHTMLWebView.omidInitString.contains("if(window.omidBridge!==undefined){omidBridge.init({\"impressionOwner\":\"native\",\"mediaEventsOwner\":\"none\",\"creativeType\":\"htmlDisplay\",\"impressionType\":\"viewable\",\"isolateVerificationScripts\":false})}"));
+        assertTrue(ShadowOMIDBannerHTMLWebView.omidInitString.contains("if(window.omidBridge!==undefined){omidBridge.init({\"impressionOwner\":\"native\",\"mediaEventsOwner\":\"none\",\"creativeType\":\"htmlDisplay\",\"impressionType\":\"viewable\",\"isolateVerificationScripts\":false}"));
         int count = 0;
         while (count < 5 && ShadowOMIDBannerHTMLWebView.omidImpressionString.isEmpty()) {
             count++;
@@ -94,9 +99,8 @@ public class ANOmidViewabiltyTests extends BaseViewAdTest {
                 e.printStackTrace();
             }
         }
-        assertTrue(ShadowOMIDBannerHTMLWebView.omidImpressionString.contains("if(window.omidBridge!==undefined){omidBridge.publishImpressionEvent()}"));
+        assertTrue(ShadowOMIDBannerHTMLWebView.omidImpressionString.contains("if(window.omidBridge!==undefined){omidBridge.publishImpressionEvent("));
     }
-
 
     private void executeBannerRequest() {
 
