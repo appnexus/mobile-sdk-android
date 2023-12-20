@@ -177,6 +177,9 @@ public class UTRequestParameters {
     private static final String GPP_SID = "gpp_sid";
     private static final String GPP = "gpp";
 
+    // Content Language
+    private static final String REQUEST_CONTENT = "request_content";
+    private static final String CONTENT_LANGUAGE = "language";
 
     private static final int ALLOWED_TYPE_BANNER = 1;
     private static final int ALLOWED_TYPE_INTERSTITIAL = 3;
@@ -519,6 +522,11 @@ public class UTRequestParameters {
                 postData.put(AUCTION_TIMEOUT_MS, auctionTimeout);
             }
 
+            // add contentLanguage
+            JSONObject contentLanguage = getContentLanguage();
+            if (contentLanguage != null && contentLanguage.length() > 0) {
+                postData.put(REQUEST_CONTENT, contentLanguage);
+            }
 
             // add app
             JSONObject app = getAppObject();
@@ -630,6 +638,17 @@ public class UTRequestParameters {
             Clog.e(Clog.httpReqLogTag, "JSONException: " + e.getMessage());
         }
         return null;
+    }
+
+    private JSONObject getContentLanguage() {
+        JSONObject contentLanguage = new JSONObject();
+        try {
+            if (!StringUtil.isEmpty(SDKSettings.getContentLanguage())) {
+                contentLanguage.put(CONTENT_LANGUAGE, SDKSettings.getContentLanguage());
+            }
+        }catch (JSONException e) {
+        }
+        return contentLanguage;
     }
 
     private String orientation;

@@ -336,6 +336,21 @@ public class SDKSettings {
         return Settings.getSettings().locationEnabledForCreative;
     }
 
+    /**
+     * The contentLanguage will be passed to request parameters only if it isn't empty
+     *
+     * @param contentLanguage The contentLanguage value to use in the ad call.
+     */
+    public static void setContentLanguage(String contentLanguage){
+        Settings.getSettings().contentLanguage = contentLanguage;
+    }
+
+    /**
+     * Returns the contentLanguage value that is set using {setContentLanguage}
+     * */
+    public static String getContentLanguage() {
+        return Settings.getSettings().contentLanguage;
+    }
 
     /**
      * Specifies a string that corresponds to the Publisher(First Party) User ID for the current application user.

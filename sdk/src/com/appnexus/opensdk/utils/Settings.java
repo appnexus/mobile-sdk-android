@@ -99,6 +99,8 @@ public class Settings {
     public String publisherUserId = "";
     public List<ANUserId> userIds = new ArrayList<>();
 
+    public String contentLanguage;
+
     /**
      * @deprecated
      * This feature flag is responsible for turning on/off  ib.adnxs-simple.com domain usage.
