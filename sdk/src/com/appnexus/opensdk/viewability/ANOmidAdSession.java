@@ -21,15 +21,15 @@ import android.webkit.WebView;
 import com.appnexus.opensdk.SDKSettings;
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.StringUtil;
-import com.iab.omid.library.appnexus.ScriptInjector;
-import com.iab.omid.library.appnexus.adsession.AdEvents;
-import com.iab.omid.library.appnexus.adsession.AdSession;
-import com.iab.omid.library.appnexus.adsession.AdSessionConfiguration;
-import com.iab.omid.library.appnexus.adsession.AdSessionContext;
-import com.iab.omid.library.appnexus.adsession.CreativeType;
-import com.iab.omid.library.appnexus.adsession.ImpressionType;
-import com.iab.omid.library.appnexus.adsession.Owner;
-import com.iab.omid.library.appnexus.adsession.VerificationScriptResource;
+import com.iab.omid.library.microsoft.ScriptInjector;
+import com.iab.omid.library.microsoft.adsession.AdEvents;
+import com.iab.omid.library.microsoft.adsession.AdSession;
+import com.iab.omid.library.microsoft.adsession.AdSessionConfiguration;
+import com.iab.omid.library.microsoft.adsession.AdSessionContext;
+import com.iab.omid.library.microsoft.adsession.CreativeType;
+import com.iab.omid.library.microsoft.adsession.ImpressionType;
+import com.iab.omid.library.microsoft.adsession.Owner;
+import com.iab.omid.library.microsoft.adsession.VerificationScriptResource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +64,7 @@ public class ANOmidAdSession {
 
         try {
             String customReferenceData = "";
-            AdSessionContext adSessionContext = AdSessionContext.createHtmlAdSessionContext(ANOmidViewabilty.getInstance().getAppnexusPartner(), webView, null, customReferenceData);
+            AdSessionContext adSessionContext = AdSessionContext.createHtmlAdSessionContext(ANOmidViewabilty.getInstance().getMicrosoftPartner(), webView, null, customReferenceData);
 
             Owner owner = isVideoAd ? Owner.JAVASCRIPT : Owner.NATIVE;
 
@@ -92,7 +92,7 @@ public class ANOmidAdSession {
             return;
         try {
 
-            AdSessionContext adSessionContext = AdSessionContext.createNativeAdSessionContext(ANOmidViewabilty.getInstance().getAppnexusPartner(), ANOmidViewabilty.getInstance().getOmidJsServiceContent(), verificationScriptResources, null, null);
+            AdSessionContext adSessionContext = AdSessionContext.createNativeAdSessionContext(ANOmidViewabilty.getInstance().getMicrosoftPartner(), ANOmidViewabilty.getInstance().getOmidJsServiceContent(), verificationScriptResources, null, null);
             AdSessionConfiguration adSessionConfiguration =
                     AdSessionConfiguration.createAdSessionConfiguration(CreativeType.NATIVE_DISPLAY, ImpressionType.VIEWABLE, Owner.NATIVE, null, false);
 

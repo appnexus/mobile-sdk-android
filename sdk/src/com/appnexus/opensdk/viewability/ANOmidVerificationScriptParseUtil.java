@@ -18,7 +18,7 @@ package com.appnexus.opensdk.viewability;
 
 import com.appnexus.opensdk.utils.Clog;
 import com.appnexus.opensdk.utils.JsonUtil;
-import com.iab.omid.library.appnexus.adsession.VerificationScriptResource;
+import com.iab.omid.library.microsoft.adsession.VerificationScriptResource;
 
 import org.json.JSONObject;
 
