@@ -91,6 +91,8 @@ public class UTAdResponse {
 
 
     private boolean isHttpError = false;
+
+    private String httpErrorMessage = "";
     private LinkedList<BaseAdResponse> adList;
     private String noAdUrl;
     private int tagId;
@@ -105,8 +107,9 @@ public class UTAdResponse {
         this(body, null, headers, requestMediaType, orientation);
     }
 
-    public UTAdResponse(boolean isHttpError) {
+    public UTAdResponse(boolean isHttpError, String httpErrorMessage) {
         this.isHttpError = isHttpError;
+        this.httpErrorMessage = httpErrorMessage;
     }
 
     public UTAdResponse(String body, JSONObject tag, Map<String, List<String>> headers, MediaType requestMediaType, String orientation) {
@@ -543,6 +546,10 @@ public class UTAdResponse {
 
     boolean isHttpError() {
         return isHttpError;
+    }
+
+    String getHttpErrorMessage(){
+        return httpErrorMessage;
     }
 
     public MediaType getMediaType() {

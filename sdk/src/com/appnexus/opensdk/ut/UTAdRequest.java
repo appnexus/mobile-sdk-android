@@ -136,6 +136,7 @@ public class UTAdRequest {
 
     HashMap<String, UTAdResponse> makeRequest() {
         Clog.logTime(getClass().getSimpleName() + " - makeRequest");
+        HashMap<String, UTAdResponse> adResponseMap = new HashMap<>();
         try {
 
             Settings.getSettings().deviceAccessAllowed = ANGDPRSettings.canIAccessDeviceData(requestParams.getContext()); // Make sure GDPR device access is allowed.
@@ -178,7 +179,7 @@ public class UTAdRequest {
             // Read request response
             int httpResult = conn.getResponseCode();
 
-            HashMap<String, UTAdResponse> adResponseMap = new HashMap<>();
+
             if (httpResult == HttpURLConnection.HTTP_OK) {
                 StringBuilder builder = new StringBuilder();
                 InputStream is = conn.getInputStream();
@@ -224,26 +225,32 @@ public class UTAdRequest {
                 }
             } else {
                 Clog.d(Clog.httpRespLogTag, Clog.getString(R.string.http_bad_status, httpResult));
-                adResponseMap.put(requestParams.getUUID(), new UTAdResponse(true));
+                adResponseMap.put(requestParams.getUUID(), new UTAdResponse(true, "httpResultCode::"+httpResult));
             }
             return adResponseMap;
 
         } catch (SocketTimeoutException e) {
+            adResponseMap.put(requestParams.getUUID(), new UTAdResponse(true, Clog.getString(R.string.http_timeout)));
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_timeout));
         } catch (IOException e) {
+            adResponseMap.put(requestParams.getUUID(), new UTAdResponse(true, Clog.getString(R.string.http_io)));
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_io));
         } catch (SecurityException se) {
+            adResponseMap.put(requestParams.getUUID(), new UTAdResponse(true, Clog.getString(R.string.permissions_internet)));
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.permissions_internet));
         } catch (IllegalArgumentException ie) {
+            adResponseMap.put(requestParams.getUUID(), new UTAdResponse(true, Clog.getString(R.string.http_unknown)));
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_unknown));
         } catch (OutOfMemoryError e) {
+            adResponseMap.put(requestParams.getUUID(), new UTAdResponse(true, Clog.getString(R.string.http_ooo)));
             e.printStackTrace();
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.http_ooo));
         } catch (Exception e) {
+            adResponseMap.put(requestParams.getUUID(), new UTAdResponse(true, e.getClass().getSimpleName()));
             e.printStackTrace();
             Clog.e(Clog.httpReqLogTag, Clog.getString(R.string.unknown_exception));
         }
-        return null;
+        return adResponseMap;
     }
 
     private class AsyncRequest extends AsyncTask<Void, Integer, HashMap<String, UTAdResponse>> {
@@ -292,7 +299,7 @@ public class UTAdRequest {
                     return; // http request failed
                 }
                 if (result.isHttpError()) {
-                    fail(ResultCode.getNewInstance(ResultCode.NETWORK_ERROR));
+                    fail(ResultCode.getNewInstance(ResultCode.NETWORK_ERROR,result.getHttpErrorMessage()));
                     return;
                 }
 
