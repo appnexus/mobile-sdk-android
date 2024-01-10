@@ -285,7 +285,7 @@ public class UTAdRequest {
         ANMultiAdRequest anMultiAdRequest = getMultiAdRequest();
         if (anMultiAdRequest == null) {
 
-            if (adResponseMap == null) {
+            if (adResponseMap == null || adResponseMap.isEmpty()) {
                 Clog.e(Clog.httpRespLogTag, Clog.getString(R.string.no_response));
                 fail(ResultCode.getNewInstance(ResultCode.INVALID_REQUEST, "Server did not respond and failed to map response"));
                 return;
@@ -312,12 +312,18 @@ public class UTAdRequest {
                 }
             }
         } else if (anMultiAdRequest != null) {
-            if (adResponseMap == null) {
+            if (adResponseMap == null || adResponseMap.isEmpty()) {
                 ResultCode code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST, "Failed to map response");
                 Clog.e(Clog.SRMLogTag, "FAILED: " + code.getMessage());
                 anMultiAdRequest.onRequestFailed(code);
             } else {
-                anMultiAdRequest.onMARLoadCompleted();
+                if (adResponseMap.containsKey(null)) {
+                    ResultCode code = ResultCode.getNewInstance(ResultCode.INVALID_REQUEST, adResponseMap.get(null).getHttpErrorMessage());
+                    Clog.e(Clog.SRMLogTag, "FAILED: " + code.getMessage());
+                    anMultiAdRequest.onRequestFailed(code);
+                } else {
+                    anMultiAdRequest.onMARLoadCompleted();
+                }
             }
             if (anMultiAdRequest != null && anMultiAdRequest.getAdUnitList() != null && !anMultiAdRequest.getAdUnitList().isEmpty()) {
                 ArrayList<WeakReference<Ad>> adUnitList = new ArrayList();
