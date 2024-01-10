@@ -30,7 +30,7 @@ import com.appnexus.opensdk.shadows.ShadowOMIDNativeWebView;
 import com.appnexus.opensdk.shadows.ShadowSettings;
 import com.appnexus.opensdk.util.Lock;
 import com.appnexus.opensdk.utils.Settings;
-import com.iab.omid.library.appnexus.adsession.VerificationScriptResource;
+import com.iab.omid.library.microsoft.adsession.VerificationScriptResource;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 
 import org.junit.Test;
@@ -78,7 +78,7 @@ public class ANOMIDNativeViewabilityTests extends BaseNativeTest {
     private void assertVerificationScriptResourceRTB() {
         ANOmidAdSession anOmidAdSession = getOMIDAdSession();
         VerificationScriptResource verificationScriptResource = anOmidAdSession.verificationScriptResources.get(0);
-        assertTrue(verificationScriptResource.getResourceUrl().toString().equalsIgnoreCase("https://acdn.adnxs.com/mobile/omsdk/validation-verification-scripts-fortesting/omsdk-js-1.4.8/Validation-Script/omid-validation-verification-script-v1.js"));
+        assertTrue(verificationScriptResource.getResourceUrl().toString().equalsIgnoreCase("https://acdn.adnxs.com/mobile/omsdk/validation-verification-scripts-fortesting/omsdk-js-1.4.9/Validation-Script/omid-validation-verification-script-v1.js"));
         assertTrue(verificationScriptResource.getVendorKey().equalsIgnoreCase("dummyVendor"));
         assertTrue(verificationScriptResource.getVerificationParameters().equalsIgnoreCase("v;vk=dummyVendor;tv=cet=0;cecb="));
     }
@@ -86,7 +86,7 @@ public class ANOMIDNativeViewabilityTests extends BaseNativeTest {
     private void assertVerificationScriptResourceNativeRenderer() {
         ANOmidAdSession anOmidAdSession = getOMIDAdSession();
         VerificationScriptResource verificationScriptResource = anOmidAdSession.verificationScriptResources.get(0);
-        assertTrue(verificationScriptResource.getResourceUrl().toString().equalsIgnoreCase("https://acdn.adnxs.com/mobile/omsdk/validation-verification-scripts-fortesting/omsdk-js-1.4.8/Validation-Script/omid-validation-verification-script-v1.js"));
+        assertTrue(verificationScriptResource.getResourceUrl().toString().equalsIgnoreCase("https://acdn.adnxs.com/mobile/omsdk/validation-verification-scripts-fortesting/omsdk-js-1.4.9/Validation-Script/omid-validation-verification-script-v1.js"));
         assertTrue(verificationScriptResource.getVendorKey().equalsIgnoreCase("dummyVendorRenderer"));
         assertTrue(verificationScriptResource.getVerificationParameters().equalsIgnoreCase("v;vk=dummyVendorRenderer;tv=cet=0;cecb="));
     }
@@ -95,7 +95,7 @@ public class ANOMIDNativeViewabilityTests extends BaseNativeTest {
     private void assertVerificationScriptResourceCSM() {
         ANOmidAdSession anOmidAdSession = getOMIDAdSession();
         VerificationScriptResource verificationScriptResource = anOmidAdSession.verificationScriptResources.get(0);
-        assertTrue(verificationScriptResource.getResourceUrl().toString().equalsIgnoreCase("https://acdn.adnxs.com/mobile/omsdk/validation-verification-scripts-fortesting/omsdk-js-1.4.8/Validation-Script/omid-validation-verification-script-v1.js"));
+        assertTrue(verificationScriptResource.getResourceUrl().toString().equalsIgnoreCase("https://acdn.adnxs.com/mobile/omsdk/validation-verification-scripts-fortesting/omsdk-js-1.4.9/Validation-Script/omid-validation-verification-script-v1.js"));
         assertTrue(verificationScriptResource.getVendorKey().equalsIgnoreCase("dummyVendorCSM"));
         assertTrue(verificationScriptResource.getVerificationParameters().equalsIgnoreCase("v;vk=dummyVendorCSM;tv=cet=0;cecb="));
     }
@@ -194,22 +194,22 @@ public class ANOMIDNativeViewabilityTests extends BaseNativeTest {
     }
 
     private void assertOMIDSessionStartRTB(){
-        assertTrue(ShadowOMIDNativeWebView.omidInitString.contains("if(window.omidBridge!==undefined){omidBridge.init({\"impressionOwner\":\"native\",\"mediaEventsOwner\":\"none\",\"creativeType\":\"nativeDisplay\",\"impressionType\":\"viewable\",\"isolateVerificationScripts\":false})}"));
+        assertTrue(ShadowOMIDNativeWebView.omidInitString.contains("if(window.omidBridge!==undefined){omidBridge.init({\"impressionOwner\":\"native\",\"mediaEventsOwner\":\"none\",\"creativeType\":\"nativeDisplay\",\"impressionType\":\"viewable\",\"isolateVerificationScripts\":false}"));
         assertTrue(ShadowOMIDNativeWebView.omidStartSession.contains("{\"dummyVendor\":\"v;vk=dummyVendor;tv=cet=0;cecb=\"}"));
     }
 
     private void assertOMIDSessionStartRenderer(){
-        assertTrue(ShadowOMIDNativeWebView.omidInitString.contains("if(window.omidBridge!==undefined){omidBridge.init({\"impressionOwner\":\"native\",\"mediaEventsOwner\":\"none\",\"creativeType\":\"nativeDisplay\",\"impressionType\":\"viewable\",\"isolateVerificationScripts\":false})}"));
+        assertTrue(ShadowOMIDNativeWebView.omidInitString.contains("if(window.omidBridge!==undefined){omidBridge.init({\"impressionOwner\":\"native\",\"mediaEventsOwner\":\"none\",\"creativeType\":\"nativeDisplay\",\"impressionType\":\"viewable\",\"isolateVerificationScripts\":false}"));
         assertTrue(ShadowOMIDNativeWebView.omidStartSession.contains("{\"dummyVendorRenderer\":\"v;vk=dummyVendorRenderer;tv=cet=0;cecb=\"}"));
     }
 
     private void assertOMIDSessionStartCSM(){
-        assertTrue(ShadowOMIDNativeWebView.omidInitString.contains("if(window.omidBridge!==undefined){omidBridge.init({\"impressionOwner\":\"native\",\"mediaEventsOwner\":\"none\",\"creativeType\":\"nativeDisplay\",\"impressionType\":\"viewable\",\"isolateVerificationScripts\":false})}"));
+        assertTrue(ShadowOMIDNativeWebView.omidInitString.contains("if(window.omidBridge!==undefined){omidBridge.init({\"impressionOwner\":\"native\",\"mediaEventsOwner\":\"none\",\"creativeType\":\"nativeDisplay\",\"impressionType\":\"viewable\",\"isolateVerificationScripts\":false}"));
         assertTrue(ShadowOMIDNativeWebView.omidStartSession.contains("{\"dummyVendorCSM\":\"v;vk=dummyVendorCSM;tv=cet=0;cecb=\"}"));
     }
 
     private void assertOMIDSessionFinish() {
-        assertTrue(ShadowOMIDNativeWebView.omidFinishSession.contains("omidBridge.finishSession()"));
+        assertTrue(ShadowOMIDNativeWebView.omidFinishSession.contains("omidBridge.finishSession("));
     }
 
     private void attachNativeAdToViewAndRegisterTracking() {

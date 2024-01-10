@@ -25,7 +25,7 @@ import com.appnexus.opensdk.utils.Settings;
 import com.appnexus.opensdk.utils.Settings.ImpressionType;
 import com.appnexus.opensdk.viewability.ANOmidAdSession;
 import com.appnexus.opensdk.viewability.ANOmidVerificationScriptParseUtil;
-import com.iab.omid.library.appnexus.adsession.VerificationScriptResource;
+import com.iab.omid.library.microsoft.adsession.VerificationScriptResource;
 
 import org.json.JSONObject;
 

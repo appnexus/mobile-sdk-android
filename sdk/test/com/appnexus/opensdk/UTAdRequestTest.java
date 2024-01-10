@@ -73,6 +73,10 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
     private String COUNTRY_CODE = "countryCode";
     private String ZIP = "zip";
 
+    // Content Language
+    private String REQUEST_CONTENT = "request_content";
+    private String CONTENT_LANGUAGE = "language";
+
     @Override
     public void setup() {
         super.setup();
@@ -1116,7 +1120,28 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         assertEquals(genericUserID.toString(), "{\"source\":\"Generic Source\",\"id\":\"sdksettings-userid-generic-foobar\"}");
     }
 
+    /**
+     * Test Content Language parameters in /ut request body
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testContentLanguageParams() throws Exception {
 
+        // Default params
+        executionSteps();
+        JSONObject postDataBefore = inspectPostData();
+        assertFalse(postDataBefore.has(REQUEST_CONTENT));
+
+        // Set the params
+        SDKSettings.setContentLanguage("EN");
+        executionSteps();
+        JSONObject postData = inspectPostData();
+        assertTrue(postData.has(REQUEST_CONTENT));
+        JSONObject geoOverride = postData.getJSONObject(REQUEST_CONTENT);
+        assertTrue(geoOverride.has(CONTENT_LANGUAGE));
+        assertTrue(geoOverride.getString(CONTENT_LANGUAGE).equals("EN"));
+    }
 
     @Override
     public void tearDown() {
