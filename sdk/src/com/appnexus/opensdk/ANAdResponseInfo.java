@@ -28,6 +28,7 @@ public class ANAdResponseInfo {
     private double cpm;
     private double cpmPublisherCurrency;
     private String publisherCurrencyCode = "";
+    ANDSAResponseInfo dsaResponseInfo;
 
 
     /**
@@ -154,4 +155,23 @@ public class ANAdResponseInfo {
         this.publisherCurrencyCode = publisherCurrencyCode;
     }
 
+    /**
+     * Retrieves the Digital Services Act (DSA) information associated with this ad response.
+     * This method returns an ANDSAResponseInfo object, encapsulating details such as behalf, paid, ad render, and transparency information.
+     *
+     * @return The ANDSAResponseInfo object containing details such as behalf, paid, ad render, and transparency.
+     */
+    public ANDSAResponseInfo getDSAResponseInfo() {
+        return dsaResponseInfo;
+    }
+
+    /**
+     * Sets the Digital Services Act (DSA) information for this ad response.
+     * This method allows you to set an ANDSAResponseInfo object, encapsulating details such as behalf, paid, ad render, and transparency information.
+     *
+     * @param dsaResponseInfo The ANDSAResponseInfo object to be set for this ad response.
+     */
+    public void setDSAResponseInfo(ANDSAResponseInfo dsaResponseInfo) {
+        this.dsaResponseInfo = dsaResponseInfo;
+    }
 }

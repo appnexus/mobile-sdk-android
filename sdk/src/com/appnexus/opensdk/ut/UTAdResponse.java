@@ -17,6 +17,7 @@ package com.appnexus.opensdk.ut;
 
 import android.text.TextUtils;
 
+import com.appnexus.opensdk.ANDSAResponseInfo;
 import com.appnexus.opensdk.ANAdResponseInfo;
 import com.appnexus.opensdk.ANNativeAdResponse;
 import com.appnexus.opensdk.AdType;
@@ -86,6 +87,7 @@ public class UTAdResponse {
     private static final String RESPONSE_KEY_CPM = "cpm";
     private static final String RESPONSE_KEY_CPM_PUBLISHER_CURRENCY = "cpm_publisher_currency";
     private static final String RESPONSE_KEY_CPM_CURRENCY_CODE = "publisher_currency_code";
+    private static final String RESPONSE_KEY_DSA = "dsa";
     private JSONObject tag;
     private Integer key = null;
 
@@ -217,6 +219,7 @@ public class UTAdResponse {
                 double bidPriceCpm = JsonUtil.getJSONDouble(ad, RESPONSE_KEY_CPM);
                 double bidPricePublisherCurrency = JsonUtil.getJSONDouble(ad, RESPONSE_KEY_CPM_PUBLISHER_CURRENCY);
                 String bidPriceCurrencyCode = JsonUtil.getJSONString(ad, RESPONSE_KEY_CPM_CURRENCY_CODE);
+                JSONObject dsaObject = JsonUtil.getJSONObject(ad, RESPONSE_KEY_DSA);
 
                 ANAdResponseInfo adResponseInfo = new ANAdResponseInfo();
                 adResponseInfo.setAdType(getAdType(adType));
@@ -228,6 +231,7 @@ public class UTAdResponse {
                 adResponseInfo.setCpm(bidPriceCpm);
                 adResponseInfo.setCpmPublisherCurrency(bidPricePublisherCurrency);
                 adResponseInfo.setPublisherCurrencyCode(bidPriceCurrencyCode);
+                adResponseInfo.setDSAResponseInfo(new ANDSAResponseInfo().create(dsaObject));
 
 
                 if (contentSource != null && contentSource.equalsIgnoreCase(UTConstants.CSM)) {

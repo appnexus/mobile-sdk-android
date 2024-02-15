@@ -101,6 +101,7 @@ public class TestResponsesUT {
     public static final String RTB_VIDEO = "{\"cpm\":0.000010,\"cpm_publisher_currency\":0.000010,\"publisher_currency_code\":\"$\",\"content_source\":\"rtb\",\"ad_type\":\"video\",\"notify_url\":\"%s\",\"buyer_member_id\":123,\"creative_id\":6332753,\"media_type_id\":4,\"media_subtype_id\":64,\"client_initiated_ad_counting\":true,\"rtb\":{\"video\":{\"content\":\"%s\",\"duration_ms\":100}}}";
     public static final String CSR_NATIVE = "{\"cpm\":0.000010,\"cpm_publisher_currency\":0.000010,\"publisher_currency_code\":\"$\",\"version\":\"3.0.0\",\"tags\":[{\"tag_id\":16268678,\"auction_id\":\"4050477843877235823\",\"nobid\":false,\"no_ad_url\":\"https://nym1-mobile.adnxs.com/it\",\"timeout_ms\":0,\"ad_profile_id\":1266762,\"rtb_video_fallback\":false,\"ads\":[{\"content_source\":\"csr\",\"ad_type\":\"native\",\"buyer_member_id\":10094,\"creative_id\":163940558,\"media_type_id\":12,\"media_subtype_id\":65,\"brand_category_id\":17,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"<script></script>\"},\"csr\":{\"timeout_ms\":500,\"handler\":[{\"type\":\"android\",\"class\":\"%s\",\"payload\":\"{\\\"placement_id\\\":\\\"333673923704415_469697383435401\\\"}\",\"id\":\"333673923704415_469697383435401\"},{\"type\":\"ios\",\"class\":\"ANAdAdapterCSRNativeBannerFacebook\",\"payload\":\"test param\",\"id\":\"333673923704415_469697383435401\"}],\"trackers\":[{\"impression_urls\":[\"https://nym1-mobile.adnxs.com/it\"],\"video_events\":{}}],\"request_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_req\",\"response_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_resp\"}}]}]}";
     public static final String MULTIPLE_IMPRESSION_URLS = "{\"\"}";
+    public static final String BANNER_DSA_CONTENT_TEST = "{\"dsa\":{\"behalf\":\"test\",\"paid\":\"testname\",\"transparency\":[{\"domain\":\"test.com\",\"dsaparams\":[1,2,3]}],\"adrender\": 1},\"content_source\":\"rtb\",\"ad_type\":\"banner\",\"buyer_member_id\":123,\"creative_id\":4332753,\"media_type_id\":1,\"media_subtype_id\":1,\"client_initiated_ad_counting\":true,\"rtb\":{\"banner\":{\"content\":\"%s\",\"width\":%d,\"height\":%d},\"trackers\":[{\"impression_urls\":[\"%s\"],\"video_events\":{}}]}}";
 
     public static String mediationNoFillThenCSRSuccessfull() {
         return "{\"version\":\"3.0.0\",\"tags\":[{\"tag_id\":16268678,\"auction_id\":\"4050477843877235823\",\"nobid\":false,\"no_ad_url\":\"https://nym1-mobile.adnxs.com/it\",\"timeout_ms\":0,\"ad_profile_id\":1266762,\"rtb_video_fallback\":false,\"ads\":[{\"content_source\":\"csm\",\"ad_type\":\"native\",\"buyer_member_id\":10094,\"creative_id\":163940558,\"media_type_id\":12,\"media_subtype_id\":65,\"brand_category_id\":17,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"<script></script>\"},\"csm\":{\"timeout_ms\":500,\"handler\":[{\"type\":\"android\",\"class\":\"com.appnexus.opensdk.testviews.MediatedNativeNoFill\",\"param\":\"test param\",\"id\":\"2038077109846299_2317914228529251\"},{\"type\":\"ios\",\"class\":\"ANAdAdapterNativeFacebook\",\"param\":\"test param\",\"id\":\"2038077109846299_2317914228529251\"}],\"trackers\":[{\"impression_urls\":[\"https://nym1-mobile.adnxs.com/it\"],\"video_events\":{}}],\"request_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_req\",\"response_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_resp\"}},{\"content_source\":\"csr\",\"ad_type\":\"native\",\"buyer_member_id\":10094,\"creative_id\":163940558,\"media_type_id\":12,\"media_subtype_id\":65,\"brand_category_id\":17,\"client_initiated_ad_counting\":true,\"viewability\":{\"config\":\"<script></script>\"},\"csr\":{\"timeout_ms\":500,\"handler\":[{\"type\":\"android\",\"class\":\"com.appnexus.opensdk.testviews.CSRNativeSuccessful\",\"payload\":\"{\\\"placement_id\\\":\\\"333673923704415_469697383435401\\\"}\",\"id\":\"333673923704415_469697383435401\"},{\"type\":\"ios\",\"class\":\"ANAdAdapterCSRNativeBannerFacebook\",\"payload\":\"test param\",\"id\":\"333673923704415_469697383435401\"}],\"trackers\":[{\"impression_urls\":[\"https://nym1-mobile.adnxs.com/it\"],\"video_events\":{}}],\"request_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_req\",\"response_url\":\"https://nym1-mobile.adnxs.com/mediation/v2/log_resp\"}}]}]}";
@@ -514,6 +515,10 @@ public class TestResponsesUT {
         return templateResponse(NO_BID_FALSE, NO_AD_URL, ads);
     }
 
+    public static String bannerWithDSAResponse() {
+        String dsaContent = String.format(DUMMY_BANNER_CONTENT, "Test Banner Content");
+        return templateBannerWithDSAAdResponse(dsaContent, 320, 50, IMPRESSION_URL);
+    }
 
     // templates
 
@@ -692,6 +697,15 @@ public class TestResponsesUT {
         return String.format(NATIVE_RATING, value, scale);
     }
 
+    private static String templateBannerWithDSAAdResponse(String content, int width, int height, String impressionURL) {
+        String bannerDsaAd = bannerDSAAdResponse(content, width, height, impressionURL);
+        String ads = String.format(ADS, bannerDsaAd);
+        return templateResponse(NO_BID_FALSE, NO_AD_URL, ads);
+    }
+
+    private static String bannerDSAAdResponse(String content, int width, int height, String impressionURL) {
+        return (String.format(BANNER_DSA_CONTENT_TEST, content, width, height, impressionURL));
+    }
 
     private static final String DUMMY_VIDEO_CONTENT = "<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\" standalone=\\\"yes\\\"?>\n" +
             "<VAST version=\\\"2.0\\\">\n" +

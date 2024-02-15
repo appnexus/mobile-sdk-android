@@ -30,6 +30,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -1141,6 +1142,44 @@ public class UTAdRequestTest extends BaseRoboTest implements UTAdRequester {
         JSONObject geoOverride = postData.getJSONObject(REQUEST_CONTENT);
         assertTrue(geoOverride.has(CONTENT_LANGUAGE));
         assertTrue(geoOverride.getString(CONTENT_LANGUAGE).equals("EN"));
+    }
+
+    /**
+     * Test DSA parameters in /ut request body
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testDSAParams() throws Exception {
+
+        // Default params
+        executionSteps();
+        JSONObject postDataBefore = inspectPostData();
+        assertFalse(postDataBefore.has("dsa"));
+
+        // Set the params
+        ANDSASettings.setDSARequired(1);
+        ANDSASettings.setPubRender(0);
+        ANDSASettings.setDataToPub(1);
+        ArrayList<ANDSATransparencyInfo> transparencyList = new ArrayList<>();
+        transparencyList.add(new ANDSATransparencyInfo("example.com", new ArrayList<>(Arrays.asList(1, 2, 3))));
+        ANDSASettings.setTransparencyList(transparencyList);
+        executionSteps();
+        JSONObject postData = inspectPostData();
+        assertTrue(postData.has("dsa"));
+        JSONObject dsaObject = postData.getJSONObject("dsa");
+        assertEquals(1, dsaObject.getInt("dsarequired"));
+        assertEquals(0, dsaObject.getInt("pubrender"));
+        assertEquals(1, dsaObject.getInt("datatopub"));
+        JSONArray transparencyArray = dsaObject.getJSONArray("transparency");
+        ArrayList<String> expectedList = new ArrayList<>();
+        for (ANDSATransparencyInfo transparencyInfo : transparencyList) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("domain", transparencyInfo.getDomain());
+            jsonObject.put("dsaparams", new JSONArray(transparencyInfo.getDSAParams()));
+            expectedList.add(jsonObject.toString());
+        }
+        assertEquals(expectedList.toString(), transparencyArray.toString());
     }
 
     @Override

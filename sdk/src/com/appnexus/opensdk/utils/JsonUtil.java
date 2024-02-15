@@ -35,6 +35,23 @@ public class JsonUtil {
         return null;
     }
 
+    public static ArrayList<Integer> getIntegerArrayList(JSONArray array) {
+        if (array == null) return null;
+        try {
+            if (array.length() > 0) {
+                int l = array.length();
+                ArrayList<Integer> arrayList = new ArrayList<>(l);
+                for (int i = 0; i < l; i++) {
+                    arrayList.add(array.getInt(i));
+                }
+                return arrayList;
+            }
+        } catch (JSONException ignored) {
+        } catch (ClassCastException ignored) {
+        }
+        return null;
+    }
+
     public static HashMap<String, Object> getStringObjectHashMap(JSONObject object) {
         if (object == null) return null;
         try {

@@ -9,13 +9,14 @@ import com.appnexus.opensdk.ut.adresponse.CSRAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBNativeAdResponse;
 import com.appnexus.opensdk.ut.adresponse.RTBVASTAdResponse;
 import com.appnexus.opensdk.ut.adresponse.SSMHTMLAdResponse;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -241,6 +242,29 @@ public class UTAdResponseTest extends BaseRoboTest {
         @SuppressWarnings("UnusedAssignment") LinkedList<BaseAdResponse> list = utAdResponse.getAdList();
     }
 
+    /**
+     * Tests banner DSA response
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testBannerDSAResponse() throws Exception {
+        String bannerWithDSAAdResponse = TestResponsesUT.bannerWithDSAResponse();
+        utAdResponse = new UTAdResponse(bannerWithDSAAdResponse, null, MediaType.BANNER, "v");
+
+        assertNotNull(utAdResponse);
+        LinkedList<BaseAdResponse> list = utAdResponse.getAdList();
+        assertNotNull(utAdResponse.getAdList());
+        while (!list.isEmpty()) {
+            BaseAdResponse baseAdResponse = (BaseAdResponse) list.removeFirst();
+            assertEquals("test", baseAdResponse.getAdResponseInfo().getDSAResponseInfo().getBehalf());
+            assertEquals("testname", baseAdResponse.getAdResponseInfo().getDSAResponseInfo().getPaid());
+            assertEquals(1, baseAdResponse.getAdResponseInfo().getDSAResponseInfo().getAdRender());
+            ANDSATransparencyInfo expectedTransparency = baseAdResponse.getAdResponseInfo().getDSAResponseInfo().getTransparencyList().get(0);
+            assertEquals("test.com", expectedTransparency.getDomain());
+            assertEquals(Arrays.asList(1, 2, 3), expectedTransparency.getDSAParams());
+        }
+    }
 
     @Override
     public void tearDown() {
