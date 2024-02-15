@@ -1,3 +1,16 @@
+## 8.11
+
+### Announcements:
+This is the last minor release in SDK v8.x.
+The next major release will be SDK v9.0 and as already announced we will no longer release source code updates of iOS and Android Mobile SDKs to Github. This is not a deprecation of our SDKs, only an open-source deprecation as we are taking our Android and iOS Mobile SDKs private.
+There will be no breaking changes from v8.x to v9.0 but keep in mind any new functional changes going forward will be developed only in version v9.x.
+
+### New Feature
++ 6273926 Support for Digital Services Act (DSA) [https://docs.xandr.com/bundle/mobile-sdk/page/sdk-privacy-for-android.html]
+
+### Improvement/Bug Fixes
++ 6273738 Fixed HTML ad that automatically open image resources in an external browser
+
 ## 8.10
 
 ### New Feature

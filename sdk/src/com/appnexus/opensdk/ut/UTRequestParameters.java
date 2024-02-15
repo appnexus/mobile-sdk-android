@@ -28,6 +28,8 @@ import android.telephony.TelephonyManager;
 import android.util.Pair;
 
 import com.appnexus.opensdk.ANClickThroughAction;
+import com.appnexus.opensdk.ANDSASettings;
+import com.appnexus.opensdk.ANDSATransparencyInfo;
 import com.appnexus.opensdk.ANGDPRSettings;
 import com.appnexus.opensdk.ANMultiAdRequest;
 import com.appnexus.opensdk.ANUSPrivacySettings;
@@ -52,6 +54,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import com.appnexus.opensdk.viewability.ANOmidViewabilty;
@@ -180,6 +183,15 @@ public class UTRequestParameters {
     // Content Language
     private static final String REQUEST_CONTENT = "request_content";
     private static final String CONTENT_LANGUAGE = "language";
+
+    // DSA
+    private static final String DSA = "dsa";
+    private static final String DSA_REQUIRED = "dsarequired";
+    private static final String DSA_PUB_RENDER = "pubrender";
+    private static final String DSA_DATA_TO_PUB = "datatopub";
+    private static final String DSA_TRANSPARENCY = "transparency";
+    private static final String DSA_DOMAIN = "domain";
+    private static final String DSA_PARAMS = "dsaparams";
 
     private static final int ALLOWED_TYPE_BANNER = 1;
     private static final int ALLOWED_TYPE_INTERSTITIAL = 3;
@@ -583,6 +595,12 @@ public class UTRequestParameters {
                 postData.put(PRIVACY, privacy);
             }
 
+            // add DSA Privacy
+            JSONObject dsaPrivacy = getDSAPrivacyObject();
+            if (dsaPrivacy != null && dsaPrivacy.length() > 0) {
+                postData.put(DSA, dsaPrivacy);
+            }
+
             // add IAB Support Signal
 
             if (SDKSettings.getOMEnabled()) {
@@ -606,6 +624,42 @@ public class UTRequestParameters {
         }
         Clog.d(Clog.httpReqLogTag, "POST data: " + postData.toString());
         return postData.toString();
+    }
+
+    private JSONObject getDSAPrivacyObject() {
+        JSONObject dsaPrivacyObject = new JSONObject();
+        try {
+            if (ANDSASettings.getDSARequired() > -1) {
+                dsaPrivacyObject.put(DSA_REQUIRED, ANDSASettings.getDSARequired());
+            }
+            if (ANDSASettings.getPubRender() > -1) {
+                dsaPrivacyObject.put(DSA_PUB_RENDER, ANDSASettings.getPubRender());
+            }
+            if (ANDSASettings.getDataToPub() > -1) {
+                dsaPrivacyObject.put(DSA_DATA_TO_PUB, ANDSASettings.getDataToPub());
+            }
+
+            ArrayList<ANDSATransparencyInfo> transparencyList = ANDSASettings.getTransparencyList();
+            if (transparencyList != null && !transparencyList.isEmpty()) {
+                JSONArray transparencyArray = new JSONArray();
+                for (ANDSATransparencyInfo transparency : transparencyList) {
+                    String domain = transparency.getDomain();
+                    if (domain != null && !domain.isEmpty()) {
+                        JSONObject transparencyObject = new JSONObject();
+                        transparencyObject.put(DSA_DOMAIN, domain);
+
+                        List<Integer> params = transparency.getDSAParams();
+                        if (params != null && !params.isEmpty()) {
+                            transparencyObject.put(DSA_PARAMS, new JSONArray(params));
+                        }
+                        transparencyArray.put(transparencyObject);
+                    }
+                }
+                dsaPrivacyObject.put(DSA_TRANSPARENCY, transparencyArray);
+            }
+        }catch (JSONException e) {
+        }
+        return dsaPrivacyObject;
     }
 
     private JSONObject getPrivacyObject() {

@@ -523,10 +523,7 @@ class AdWebView extends WebView implements Displayable,
                     default:
                         break;
                     case HitTestResult.ANCHOR_TYPE:
-                    case HitTestResult.IMAGE_ANCHOR_TYPE:
                     case HitTestResult.SRC_ANCHOR_TYPE:
-                    case HitTestResult.SRC_IMAGE_ANCHOR_TYPE:
-
                         if (loadURLInCorrectBrowser(url)) {
                             fireAdClicked();
                         }
