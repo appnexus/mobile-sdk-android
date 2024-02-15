@@ -1,3 +1,11 @@
+## 8.11
+
+### New Feature
++ 6273926 Support for Digital Services Act (DSA) [https://docs.xandr.com/bundle/mobile-sdk/page/sdk-privacy-for-android.html]
+
+### Improvement/Bug Fixes
++ 6273738 Fixed HTML ad that automatically open image resources in an external browser
+
 ## 8.10
 
 ### New Feature
