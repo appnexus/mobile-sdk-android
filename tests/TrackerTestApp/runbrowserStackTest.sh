@@ -1,5 +1,3 @@
-echo "M0bil35DK" | sudo -S chown -R `whoami` ~/.npm
-echo "M0bil35DK" | sudo chown -R `whoami` /usr/local/lib/node_modules
 export PATH=/usr/local/bin:$PATH
 # Update homebrew recipes
 curl -s http://api.open-notify.org/iss-now.json | jq .timestamp
@@ -8,8 +6,8 @@ brew install jq
 presentWorkingDirectory=$(pwd)
 echo "presentWorkingDirectory==> $presentWorkingDirectory"
 # Set Browser Stack userName & accessKey
-userName="mobilesdkteam1"
-accessKey="eAqGKNyysiKQmX1wDUQ4"
+userName=""
+accessKey=""
 # Add devices list
 devices="\"Google Pixel 3-9.0\""
 echo " devcies==>$devices"

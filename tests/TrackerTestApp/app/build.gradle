@@ -52,7 +52,7 @@ dependencies {
 
 //configuration for ui test
 browserStackConfig {
-    username = "mobilesdkteam1"
-    accessKey = "eAqGKNyysiKQmX1wDUQ4"
+    username = ""
+    accessKey = ""
     configFilePath = "$projectDir/browserstack_config.json"
 }
